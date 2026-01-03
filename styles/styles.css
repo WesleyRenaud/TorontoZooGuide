@@ -1,0 +1,103 @@
+/* Global font for all pages */
+body, html {
+   font-family: 'Poppins', sans-serif;
+}
+
+/* Only affects home.html */
+html.home-page {
+   overflow: hidden; /* prevent scrolling for this page only */
+}
+
+.home-page {
+   position: relative;
+   display: flex;
+   flex-direction: column;
+   height: 100vh;
+   overflow: hidden;
+}
+
+/* Top green bar with title */
+.home-page .top-bar {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 8vh; /* height of the top bar */
+   background-color: #5e9600; /* lighter green like bottom nav */
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   font-size: 4em;
+   font-weight: bold;
+   color: white; /* Toronto Zoo green */
+   text-transform: uppercase;
+   z-index: 10;
+   box-sizing: border-box;
+}
+
+/* Main content: map container */
+.home-page main {
+   flex: 1 1 auto;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   width: 100%;
+   overflow: hidden;
+   box-sizing: border-box;
+   padding-top: 8vh;   /* reserve space for top-bar */
+}
+
+.home-page main img {
+   max-width: 95%;
+   max-height: 100%;
+   object-fit: contain;
+   border: 3px solid rgba(0, 51, 0, 0.5);
+   box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+/* Bottom navigation menu */
+.home-page nav {
+   width: 100%;
+   background-color: rgba(119, 184, 0, 0.3); /* lighter green background */
+   display: flex;
+   justify-content: center;
+   padding: 10px 0;
+   flex-shrink: 0;
+   box-sizing: border-box;
+   position: relative;
+   z-index: 5;
+}
+
+/* Menu list */
+.home-page nav ul {
+   margin: 0;
+   padding: 0;
+   display: flex;
+   gap: 20px;
+   list-style-type: none;
+}
+
+/* Bottom menu buttons */
+.home-page nav ul li a {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   width: 22vh;             /* uniform width */
+   height: 6vh;             /* uniform height */
+   min-width: 180px;
+   min-height: 60px;
+   background-color: #77B800;
+   color: #ffffff;
+   font-weight: bold;
+   font-size: 4em;
+   text-align: center;
+   border-radius: 20px;
+   text-decoration: none;
+   transition: background 0.3s, transform 0.3s;
+   flex-shrink: 0;
+}
+
+.home-page nav ul li a:hover {
+   background-color: #5e9600;
+   transform: translateY(-2px);
+}
