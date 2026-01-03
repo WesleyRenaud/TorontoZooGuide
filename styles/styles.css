@@ -35,24 +35,34 @@ html.home-page {
    box-sizing: border-box;
 }
 
-/* Main content: map container */
+/* Main content: container now flex row */
 .home-page main {
    flex: 1 1 auto;
    display: flex;
    justify-content: center;
-   align-items: center;
+   align-items: stretch; /* stretch side images vertically */
    width: 100%;
    overflow: hidden;
    box-sizing: border-box;
-   padding-top: 8vh;   /* reserve space for top-bar */
+   padding-top: 8vh;    /* space for top bar */
 }
 
-.home-page main img {
+/* Zoo map stays centered */
+.home-page main img.map {
    max-width: 95%;
    max-height: 100%;
    object-fit: contain;
    border: 3px solid rgba(0, 51, 0, 0.5);
    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+   flex-shrink: 0; /* prevent map from shrinking */
+}
+
+/* Side images fill vertical space and gaps */
+.home-page main img.side-image {
+   height: 100%;       /* match container height */
+   width: auto;        /* maintain aspect ratio */
+   object-fit: cover;  /* fill the vertical space */
+   flex-shrink: 0;
 }
 
 /* Bottom navigation menu */
