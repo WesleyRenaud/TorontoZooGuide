@@ -9,20 +9,47 @@
    <head>
       <meta charset="utf-8">
       <title>Toronto Zoo Guide</title>
+
+      <!-- Google Fonts -->
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+      <!-- Stylesheets -->
       <link rel="stylesheet" href="../styles/styles.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+      <!-- Scripts -->
+      <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+      <script src="../scripts/scripts.js" defer></script>
    </head>
+   
    <body>
       <div class="home-page">
+         
+         <!-- Top bar with title -->
          <div class="top-bar">Toronto Zoo Guide</div>
 
+         <!-- Dropdown container -->
+         <div class="map-controls">
+            <select id="mapPreset">
+               <option value="summer">Summer Map</option>
+               <option value="winter">Winter Map</option>
+               <option value="today">Today's Map</option>
+            </select>
+
+            <!-- Date picker only relevant if "Current Day Map" is selected -->
+            <input type="text" id="mapDate" placeholder="Select a date">
+         </div>
+
+         <!-- Main content with map and side images -->
          <main>
             <img class="side-image left" src="../images/left-side.png" alt="Left decoration">
-            
             <img src="../images/zoo_map.png" alt="Toronto Zoo Map" class="map">
-            
             <img class="side-image right" src="../images/right-side.png" alt="Right decoration">
          </main>
 
+         <!-- Bottom navigation menu -->
          <nav>
             <ul>
                <li><a href="#">Animals</a></li>
