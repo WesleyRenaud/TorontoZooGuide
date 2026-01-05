@@ -1,3 +1,20 @@
+// Ensure the DOM is loaded before running
+document.addEventListener('DOMContentLoaded', () => {
+  const mapElement = document.getElementById('zooMap');
+
+  if (mapElement) {
+    // Initialize Panzoom
+    const panzoom = Panzoom(mapElement, {
+      maxScale: 3,
+      minScale: 1,
+      contain: 'outside', // prevents white space around the map
+    });
+
+    // Enable mouse wheel zoom on the map's parent container
+    mapElement.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+  }
+});
+
 // Get elements
 const mapPreset = document.getElementById('mapPreset');
 const mapDateInput = document.getElementById('mapDate');
@@ -23,7 +40,6 @@ mapPreset.addEventListener('change', () => {
     } else {
         mapDateInput.style.display = 'none';
     }
-    updateMap(mapPreset.value, mapDateInput.value);
 });
 
 // Initialize visibility on page load

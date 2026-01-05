@@ -22,6 +22,8 @@
       <!-- Scripts -->
       <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
       <script src="../scripts/scripts.js" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/build/openseadragon/openseadragon.min.js" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js"></script>
    </head>
    
    <body>
@@ -45,7 +47,11 @@
          <!-- Main content with map and side images -->
          <main>
             <img class="side-image left" src="../images/left-side.png" alt="Left decoration">
-            <img src="../images/zoo_map.png" alt="Toronto Zoo Map" class="map">
+            
+            <div class="map-container">
+               <img id="zooMap" src="../images/zoo_map.png" alt="Toronto Zoo Map">
+            </div>
+                        
             <img class="side-image right" src="../images/right-side.png" alt="Right decoration">
          </main>
 

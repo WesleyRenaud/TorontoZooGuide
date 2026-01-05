@@ -47,14 +47,19 @@ html.home-page {
    padding-top: 8vh;    /* space for top bar */
 }
 
-/* Zoo map stays centered */
-.home-page main img.map {
-   max-width: 95%;
-   max-height: 100%;
-   object-fit: contain;
-   border: 3px solid rgba(0, 51, 0, 0.5);
-   box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-   flex-shrink: 0; /* prevent map from shrinking */
+.map-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  overflow: hidden;
+  width: 100%;
+}
+
+#zooMap {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fills container fully */
 }
 
 /* Side images fill vertical space and gaps */
