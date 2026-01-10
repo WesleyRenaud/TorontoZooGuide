@@ -155,74 +155,283 @@ function getDay(dateStr) {
    return date.getDate();
 }
 
+/* ============================================================
+   MARKERS & TOOLTIP SYSTEM (Click-to-Open)
+============================================================ */
+
+const tooltip = document.getElementById('tooltip');
+let currentCarousel = null;
+
+// Clear all markers from the map
+function clearMarkers() {
+   const mapInner = document.getElementById('mapInner');
+   mapInner.querySelectorAll('.marker').forEach(marker => marker.remove());
+}
+
+// Add markers to the map based on animal data
 function addMarkers(animals) {
    clearMarkers();
 
    const mapInner = document.getElementById('mapInner');
 
-   animalExhibitMarkers.forEach(marker => {
-      const speciesList = Array.isArray(marker.species)
-         ? marker.species
-         : [marker.species];
+   animalExhibitMarkers.forEach(markerData => {
+      const speciesList = Array.isArray(markerData.species)
+         ? markerData.species
+         : [markerData.species];
 
-      const location = marker.location;
-      const exhibitType = marker.exhibitType;
+      const location = markerData.location;
+      const exhibitType = markerData.exhibitType;
 
-      // Find the actual animal objects on exhibit
+      // Filter the actual animal objects that are on exhibit
       const animalsOnExhibit = speciesList.map(species => {
          return animals.find(a =>
             a.species === species &&
             a.location === location &&
             a.exhibit_type === exhibitType
          );
-      }).filter(a => a !== undefined); // remove any species not found
+      }).filter(a => a !== undefined);
 
-      if (animalsOnExhibit.length > 0) {
-         const el = document.createElement('div');
-         el.className = 'marker';
+      if (animalsOnExhibit.length === 0) return;
 
-         // Example: add a class based on likelihood
-         animalsOnExhibit.forEach(a => {
-            if (a.likelihood == 5) {
-               el.classList.add('likelihood-certain');
-            }
-            else if (a.likelihood >= 4) {
-               el.classList.add('likelihood-high');
-            }
-            else if (a.likelihood >= 3) {
-               el.classList.add('likelihood-medium');
-            }
-            else if (a.likelihood >= 2) {
-               el.classList.add('likelihood-moderate');
-            }
-            else if (a.likelihood >= 1) {
-               el.classList.add('likelihood-low');
-            }
-            else if (a.likelihood > 0) {
-               el.classList.add('likelihood-very-low');
-            }
-            else {
-               el.classList.add('likelihood-none');
-            }
-         });
+      const el = document.createElement('div');
+      el.className = 'marker';
+      el.style.left = `${markerData.x}%`;
+      el.style.top = `${markerData.y}%`;
+      el.title = ''; // remove default browser tooltip
 
-         el.style.left = `${marker.x}%`;
-         el.style.top = `${marker.y}%`;
-         el.title = animalsOnExhibit.map(a => a.species).join(', ');
+      // Optionally add a class based on likelihood of highest animal
+      const maxLikelihood = Math.max(...animalsOnExhibit.map(a => a.likelihood || 0));
+      el.classList.add(getLikelihoodClass(maxLikelihood));
 
-         el.addEventListener('click', () => {
-            alert(el.title);
-         });
+      mapInner.appendChild(el);
 
-         mapInner.appendChild(el);
+      // Attach click-to-open tooltip
+      attachTooltip(el, animalsOnExhibit);
+   });
+}
+
+// Determine class for marker color based on likelihood
+function getLikelihoodClass(likelihood) {
+   if (likelihood >= 5) {
+      return 'likelihood-very-high';
+   }
+   else if (likelihood >= 4) {
+      return 'likelihood-high';
+   }
+   else if (likelihood >= 3) {
+      return 'likelihood-medium';
+   }
+   else if (likelihood >= 2) {
+      return 'likelihood-moderate';
+   }
+   else if (likelihood >= 1) {
+      return 'likelihood-low';
+   }
+   else if (likelihood > 0) {
+      return 'likelihood-very-low';
+   }
+   return 'likelihood-none';
+}
+
+/* ============================================================
+   TOOLTIP FUNCTIONS
+============================================================ */
+
+// Attach click behavior to show/hide tooltip
+function attachTooltip(marker, animals) {
+   marker.addEventListener('click', (e) => {
+      e.stopPropagation(); // prevent map click events
+
+      const isVisible = tooltip.style.display === 'flex';
+      if (isVisible) {
+         hideTooltip();
+      } else {
+         showTooltipForMarker(marker, animals);
       }
    });
 }
 
-function clearMarkers() {
-   const mapInner = document.getElementById('mapInner');
-   mapInner.querySelectorAll('.marker').forEach(marker => marker.remove());
+function showTooltipForMarker(marker, animals) {
+   clearTooltip();
+   tooltip.style.display = 'flex';
+   tooltip.style.pointerEvents = 'auto';
+
+   const content = document.createElement('div');
+   content.className = 'tooltip-content';
+
+   const carousel = createCarousel(animals);
+   currentCarousel = carousel;
+
+   // Enable arrow key navigation
+   enableTooltipKeyboard(carousel);
+
+   content.appendChild(carousel);
+   tooltip.appendChild(content);
+
+   // Only create arrow nav if multiple cards
+   if (animals.length > 1) {
+      const nav = document.createElement('div');
+      nav.className = 'tooltip-nav';
+
+      const leftArrow = createArrow('<', () => carouselPrev(carousel));
+      leftArrow.classList.add('tooltip-prev', 'visible');
+
+      const rightArrow = createArrow('>', () => carouselNext(carousel));
+      rightArrow.classList.add('tooltip-next', 'visible');
+
+      nav.appendChild(leftArrow);
+      nav.appendChild(document.createElement('div')); // spacer
+      nav.appendChild(rightArrow);
+
+      tooltip.appendChild(nav);
+      tooltip.classList.remove('no-arrows');
+   } else {
+      // Single species - remove arrow spacing
+      tooltip.classList.add('no-arrows');
+   }
+
+   positionTooltip(marker);
 }
+
+// Hide tooltip completely
+function hideTooltip() {
+   tooltip.style.display = 'none';
+}
+
+// Clear the tooltip content
+function clearTooltip() {
+   tooltip.innerHTML = '';
+   currentCarousel = null;
+}
+
+/* ============================================================
+   CAROUSEL FUNCTIONS
+============================================================ */
+
+function createCarousel(animals) {
+   const carousel = document.createElement('div');
+   carousel.className = 'tooltip-carousel';
+   animals.forEach((a, i) => {
+      const card = document.createElement('div');
+      card.className = 'tooltip-card';
+      card.dataset.index = i;
+
+      card.innerHTML = `
+         <strong>${a.species}</strong>
+         <span>Location: ${a.location}</span>
+         <span>Exhibit: ${a.exhibit_type}</span>
+         <span>Likelihood: ${getLikelihoodPhrase(a.likelihood)}</span>
+      `;
+      card.style.display = i === 0 ? 'flex' : 'none';
+      carousel.appendChild(card);
+   });
+   carousel.dataset.index = 0;
+   return carousel;
+}
+
+function getLikelihoodPhrase(likelihood) {
+   if (likelihood >= 5) {
+      return 'Very high';
+   }
+   else if (likelihood >= 4) {
+      return 'High';
+   }
+   else if (likelihood >= 3) {
+      return 'Medium';
+   }
+   else if (likelihood >= 2) {
+      return 'Moderate';
+   }
+   else if (likelihood >= 1) {
+      return 'Low';
+   }
+   else if (likelihood > 0) {
+      return 'Very low';
+   }
+   return 'None';
+}
+
+function carouselNext(carousel) {
+   const cards = Array.from(carousel.children);
+   let index = Number(carousel.dataset.index);
+   cards[index].style.display = 'none';
+   index = (index + 1) % cards.length;
+   cards[index].style.display = 'flex';
+   carousel.dataset.index = index;
+}
+
+function carouselPrev(carousel) {
+   const cards = Array.from(carousel.children);
+   let index = Number(carousel.dataset.index);
+   cards[index].style.display = 'none';
+   index = (index - 1 + cards.length) % cards.length;
+   cards[index].style.display = 'flex';
+   carousel.dataset.index = index;
+}
+
+// Add keyboard navigation for carousel
+function enableTooltipKeyboard(carousel) {
+   function handleKey(e) {
+      if (e.key === "ArrowRight") {
+         carouselNext(carousel);
+      } else if (e.key === "ArrowLeft") {
+         carouselPrev(carousel);
+      }
+   }
+
+   document.addEventListener('keydown', handleKey);
+
+   // Remove listener when tooltip is hidden
+   tooltip.addEventListener('mouseleave', () => {
+      document.removeEventListener('keydown', handleKey);
+   }, { once: true });
+}
+
+/* ============================================================
+   ARROWS
+============================================================ */
+
+function createArrow(symbol, onClick) {
+   const arrow = document.createElement('div');
+   arrow.className = 'tooltip-arrow';
+   arrow.textContent = symbol;
+   arrow.addEventListener('click', e => {
+      e.stopPropagation();
+      onClick();
+   });
+   return arrow;
+}
+
+function updateArrowVisibility(count, left, right) {
+   if (count > 1) {
+      left.classList.add('visible');
+      right.classList.add('visible');
+   } else {
+      left.classList.remove('visible');
+      right.classList.remove('visible');
+   }
+}
+
+/* ============================================================
+   POSITIONING
+============================================================ */
+
+function positionTooltip(marker) {
+   const rect = marker.getBoundingClientRect();
+   const tooltipRect = tooltip.getBoundingClientRect();
+   tooltip.style.left = `${rect.left + rect.width/2 - tooltipRect.width/2}px`;
+   tooltip.style.top = `${rect.top - tooltipRect.height - 12}px`;
+}
+
+/* ============================================================
+   CLOSE TOOLTIP ON OUTSIDE CLICK
+============================================================ */
+
+document.addEventListener('click', (e) => {
+   if (!tooltip.contains(e.target)) {
+      hideTooltip();
+   }
+});
 
 const animalExhibitMarkers =
 [
@@ -231,9 +440,9 @@ const animalExhibitMarkers =
       species:
       [
          'Brownbanded bamboo shark', 'Central bearded dragon', 'Clown triggerfish', 'Crimson rosella', 'Eastern rosella',
-         'Emerald tree boa', 'Fly River turtle (pig-nosed turtle)', 'Green tree python', 'Green-winged dove (grey-capped emerald dove)',
-         'Komodo dragon', 'Kookaburra', 'Lau banded iguana', 'Lionfish', 'Live coral reefs', 'Longnose butterflyfish', 'MacLeay\'s spectres',
-         'Moon jellyfish', 'Nicobar pigeon', 'Pennant coral fish', 'Pot-bellied seahorse', 'Red claw yabby', 'Red-tailed black cockatoo',
+         'Emerald tree boa', 'Fly River turtle', 'Green tree python', 'Green-winged dove', 'Komodo dragon', 'Kookaburra',
+         'Lau banded iguana', 'Lionfish', 'Live coral reefs', 'Longnose butterflyfish', 'MacLeay\'s spectres', 'Moon jellyfish',
+         'Nicobar pigeon', 'Pennant coral fish', 'Pot-bellied seahorse', 'Red claw yabby', 'Red-tailed black cockatoo',
          'Short-beaked echidna', 'Solomon Island leaf frog', 'Southern hairy-nosed wombat', 'Thorny devil stick insect',
          'Victoria crowned pigeon', 'White\'s tree frog'
       ],

@@ -212,6 +212,122 @@ html.home-page {
    background: #66cc33;
 }
 
-.marker.likelihood-certain {
+.marker.likelihood-very-high {
    background: #339900;
+}
+
+/* ============================================================
+   TOOLTIP CONTAINER
+============================================================ */
+#tooltip {
+   position: absolute;
+   display: none;
+   flex-direction: column;
+   background-color: rgba(94, 150, 0, 0.95); /* Toronto Zoo dark green */
+   border-radius: 16px;
+   padding: 36px;
+   z-index: 20;
+   width: auto;              /* size to content */
+   max-width: 1200px;        /* optional max width */
+   height: auto;
+   box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+   color: #fff;
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.4em;
+   overflow: hidden;
+}
+
+/* Top content area (card goes here) */
+#tooltip .tooltip-content {
+   flex: 1;                         /* fill available space */
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+/* Bottom navigation bar */
+#tooltip .tooltip-nav {
+   height: 80px;
+   display: grid;
+   grid-template-columns: 80px 1fr 80px;   /* fixed columns for arrows */
+   align-items: center;
+   padding-top: 12px;
+}
+
+/* Left/right arrow positioning */
+#tooltip .tooltip-prev,
+#tooltip .tooltip-next {
+   justify-self: center;
+}
+
+/* ============================================================
+   TOOLTIP CARD
+============================================================ */
+/* Card container */
+.tooltip-card {
+   background-color: rgba(119, 184, 0, 0.95);
+   border-radius: 12px;
+   padding: 24px;
+   width: auto;          /* adapt to content */
+   max-width: 1150px;    /* optional max width */
+   box-sizing: border-box;
+   display: flex;
+   flex-direction: column;
+   gap: 18px;
+   overflow: hidden;     /* wrap content naturally */
+}
+
+/* Species title (always on one line) */
+.tooltip-card strong {
+   font-size: 1.25em;
+   color: #ffffff;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+/* Other info (location, exhibit type, likelihood) */
+.tooltip-card span {
+   font-size: 1em;
+   color: #ffffff;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+/* ============================================================
+   ARROWS
+============================================================ */
+.tooltip-arrow {
+   background-color: #77B800; /* match bottom nav green */
+   color: #fff;
+   padding: 12px 20px;
+   border-radius: 10px;
+   font-weight: bold;
+   cursor: pointer;
+   user-select: none;
+   visibility: hidden;
+   white-space: nowrap;
+}
+
+.tooltip-arrow.visible {
+   visibility: visible;
+}
+
+.tooltip-arrow:hover {
+   background-color: #5e9600; /* darker hover */
+}
+
+/* Bottom navigation bar */
+#tooltip .tooltip-nav {
+   height: 80px;
+   display: grid;
+   grid-template-columns: 80px 1fr 80px; /* kept for arrows by default */
+   align-items: center;
+   padding-top: 12px;
+}
+
+/* Hide nav completely if no arrows */
+#tooltip.no-arrows .tooltip-nav {
+   display: none;
 }

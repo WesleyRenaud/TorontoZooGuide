@@ -108,7 +108,7 @@ animals = [
       None,None,None,None,None,None,None,None,None,None,None,None
    ),
    (
-      'Fly River turtle (pig-nosed turtle)',
+      'Fly River turtle',
       'Australasia Pavilion',
       0, # Has outdoor viewing
       1, # Has indoor viewing
@@ -130,7 +130,7 @@ animals = [
       None,None,None,None,None,None,None,None,None,None,None,None
    ),
    (
-      'Green-winged dove (grey-capped emerald dove)',
+      'Green-winged dove',
       'Australasia Pavilion',
       0, # Has outdoor viewing
       1, # Has indoor viewing
