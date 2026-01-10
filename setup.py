@@ -26,6 +26,7 @@ cursor.execute( ''' CREATE TABLE Animal
                      OCT_VIEWABILITY            INTEGER     CHECK (OCT_VIEWABILITY BETWEEN 0 AND 5),
                      NOV_VIEWABILITY            INTEGER     CHECK (NOV_VIEWABILITY BETWEEN 0 AND 5),
                      DEC_VIEWABILITY            INTEGER     CHECK (DEC_VIEWABILITY BETWEEN 0 AND 5),
+                     WINTER_VIEWABILITY         INTEGER     CHECK (WINTER_VIEWABILITY BETWEEN 0 AND 5),
                      PRIMARY KEY (SPECIES, LOCATION) ); ''' )
 
 animals = [
@@ -39,7 +40,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Central bearded dragon',
@@ -50,7 +52,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Clown triggerfish',
@@ -61,7 +64,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Crimson rosella',
@@ -72,7 +76,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Demoiselle crane',
@@ -83,7 +88,8 @@ animals = [
       1, # Always viewable outdoors
       0,
       4,
-      1,1,4,5,5,5,5,5,5,5,4,3
+      1,1,4,5,5,5,5,5,5,5,4,3,
+      1
    ),
    (
       'Eastern rosella',
@@ -94,7 +100,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Emerald tree boa',
@@ -105,7 +112,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Fly River turtle',
@@ -116,7 +124,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Green tree python',
@@ -127,7 +136,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Green-winged dove',
@@ -138,7 +148,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Komodo dragon',
@@ -149,7 +160,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Kookaburra',
@@ -160,7 +172,8 @@ animals = [
       0, # Always viewable outdoors
       15,
       0,
-      0,0,0,3,4,5,5,5,5,3,0,0
+      0,0,0,3,4,5,5,5,5,3,0,0,
+      0
    ),
    (
       'Lau banded iguana',
@@ -171,7 +184,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Lionfish',
@@ -182,7 +196,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Live coral reefs',
@@ -193,7 +208,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Longnose butterflyfish',
@@ -204,7 +220,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'MacLeay\'s spectres',
@@ -215,7 +232,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Moon jellyfish',
@@ -226,7 +244,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Nicobar pigeon',
@@ -237,7 +256,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Pennant coral fish',
@@ -248,7 +268,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Pot-bellied seahorse',
@@ -259,7 +280,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Red claw yabby',
@@ -270,7 +292,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Red-tailed black cockatoo',
@@ -281,7 +304,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Short-beaked echidna',
@@ -292,7 +316,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Solomon Island leaf frog',
@@ -303,7 +328,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Southern hairy-nosed wombat',
@@ -314,7 +340,8 @@ animals = [
       0, # Always viewable outdoors
       10,
       0,
-      0,0,0,2,4,5,5,5,5,2,0,0
+      0,0,0,2,4,5,5,5,5,2,0,0,
+      0
    ),
    (
       'Thorny devil stick insect',
@@ -325,7 +352,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Victoria crowned pigeon',
@@ -336,7 +364,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'White\'s tree frog',
@@ -347,7 +376,8 @@ animals = [
       0, # Always viewable outdoors
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
 
    # Australasia Outdoor
@@ -360,7 +390,8 @@ animals = [
       1, # Always viewable outdoors
       0,
       2,
-      1,1,3,4,5,5,5,5,5,5,4,2
+      1,1,3,4,5,5,5,5,5,5,4,2,
+      1
    ),
 
    # Eurasia Wilds
@@ -373,7 +404,8 @@ animals = [
       1, # Always viewable outdoors
       -30,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Asian wild horse',
@@ -384,7 +416,8 @@ animals = [
       1, # Always viewable outdoors
       -25,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Bactrian camel',
@@ -395,7 +428,8 @@ animals = [
       1, # Always viewable outdoors
       -30,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Domestic yak',
@@ -406,7 +440,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Highland cattle',
@@ -417,7 +452,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -25,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Mouflon',
@@ -428,7 +464,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -15,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Red panda',
@@ -439,7 +476,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -10,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Snow leopard',
@@ -450,7 +488,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -30,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Steller\'s sea eagle',
@@ -461,7 +500,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -20,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'West caucasian tur',
@@ -472,7 +512,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -15,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
 
    # Tundra Trek
@@ -485,7 +526,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Caribou',
@@ -496,7 +538,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Lesser snow goose',
@@ -507,7 +550,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Northern bald eagle',
@@ -518,7 +562,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -30,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Polar bear',
@@ -529,7 +574,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
 
    # Americas Outdoor Mayan Temple Ruins
@@ -542,7 +588,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       5,
       0,
-      0,0,2,4,5,5,5,5,5,4,2,0
+      0,0,2,4,5,5,5,5,5,4,2,0,
+      0
    ),
    (
       'Black-handed spider monkey',
@@ -553,7 +600,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       15,
       0,
-      0,0,1,3,5,5,5,5,5,3,1,0
+      0,0,1,3,5,5,5,5,5,3,1,0,
+      0
    ),
    (
       'Capybara',
@@ -564,7 +612,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       5,
       0,
-      0,0,3,4,5,5,5,5,5,4,2,0
+      0,0,3,4,5,5,5,5,5,4,2,0,
+      0
    ),
 
    # Americas Pavilion
@@ -577,7 +626,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'American eel',
@@ -588,7 +638,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'American lobster',
@@ -599,7 +650,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Axolotl',
@@ -610,7 +662,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Black-footed ferret',
@@ -621,7 +674,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Black-widow spider',
@@ -632,7 +686,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Blanding\'s turtle',
@@ -643,7 +698,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Blue and yellow macaw',
@@ -654,7 +710,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Blue poison dart frog',
@@ -665,7 +722,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Boa constrictor',
@@ -676,7 +734,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Brazilian giant cockroach',
@@ -687,7 +746,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Brazilian salmon pink bird-eating tarantula',
@@ -698,7 +758,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Butterfly goodied',
@@ -709,7 +770,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Crested tinamou',
@@ -720,7 +782,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Cuvier\'s smooth fronted caiman (dwarf caiman)',
@@ -731,7 +794,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Desert grassland whiptail',
@@ -742,7 +806,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Dyeing poison dart frog',
@@ -753,7 +818,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Eastern loggerhead shrike',
@@ -764,7 +830,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Eastern lubber grasshopper',
@@ -775,7 +842,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Eyelash viper',
@@ -786,7 +854,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Ferocious water bug',
@@ -797,7 +866,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Golden lion tamarin',
@@ -808,7 +878,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       18,
       0,
-      0,0,0,2,4,5,5,5,5,2,0,0
+      0,0,0,2,4,5,5,5,5,2,0,0,
+      0
    ),
    (
       'Great-horned owl',
@@ -819,7 +890,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -20,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Green and black poison dart frog',
@@ -830,7 +902,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Green surf anemone',
@@ -841,7 +914,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Green-winged macaw',
@@ -852,7 +926,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Guatamalan beaded lizard',
@@ -863,7 +938,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Jamaican boa',
@@ -874,7 +950,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Leather sea star',
@@ -885,7 +962,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Lemur leaf frog',
@@ -896,7 +974,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Longnose dace',
@@ -907,7 +986,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Massasauga rattlesnake',
@@ -918,7 +998,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Midland painted turtle',
@@ -929,7 +1010,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'North American river otter',
@@ -940,7 +1022,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -5,
       5,
-      5,5,5,5,5,5,5,5,5,5,5,5
+      5,5,5,5,5,5,5,5,5,5,5,5,
+      5
    ),
    (
       'Opal-rumped tanagar',
@@ -951,7 +1034,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Painted anemone',
@@ -962,7 +1046,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Panamanian golden frog',
@@ -973,7 +1058,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Plumose anemone',
@@ -984,7 +1070,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Plush-crested jay',
@@ -995,7 +1082,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Puerto Rican crested toad',
@@ -1006,7 +1094,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Pumpkinseed sunfish',
@@ -1017,7 +1106,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Red Island bird-eating tarantula',
@@ -1028,7 +1118,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Red-crested finch',
@@ -1039,7 +1130,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Reticulated gila monster',
@@ -1050,7 +1142,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Round goby',
@@ -1061,7 +1154,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Rufous-collared sparrow',
@@ -1072,7 +1166,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'San-Esteban Island chuckwalla',
@@ -1083,7 +1178,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Snapping turtle',
@@ -1094,7 +1190,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Spot prawn',
@@ -1105,7 +1202,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Spotted river stingray',
@@ -1116,7 +1214,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Spotted turtle',
@@ -1127,7 +1226,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Timber rattlesnake',
@@ -1138,7 +1238,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Turquoise tanager',
@@ -1149,7 +1250,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Two-toed sloth',
@@ -1160,7 +1262,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       10,
       0,
-      0,0,0,2,4,5,5,5,5,3,0,0
+      0,0,0,2,4,5,5,5,5,3,0,0,
+      0
    ),
    (
       'Western blacknose dace',
@@ -1171,7 +1274,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'White-faced saki',
@@ -1182,7 +1286,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       12,
       0,
-      0,0,0,2,4,5,5,5,5,3,0,0
+      0,0,0,2,4,5,5,5,5,3,0,0,
+      0
    ),
    (
       'Yellow-banded poison dart frog',
@@ -1193,7 +1298,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Zebra finch',
@@ -1204,7 +1310,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
 
    # Canadian Domain
@@ -1217,7 +1324,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       -20,
       4,
-      0,0,5,5,5,5,5,5,5,5,5,5
+      0,0,5,5,5,5,5,5,5,5,5,5,
+      0
    ),
    (
       'Grizzly bear',
@@ -1228,7 +1336,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       -30,
       5,
-      0,0,2,5,5,5,5,5,5,4,2,0
+      0,0,2,5,5,5,5,5,5,4,2,0,
+      0
    ),
    (
       'Northern bald eagle',
@@ -1239,7 +1348,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       -30,
       5,
-      0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      0,0,5,5,5,5,5,5,5,5,5,5,
+      0
    ),
    (
       'Raccoon',
@@ -1250,7 +1360,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       -35,
       5,
-      0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      0,0,5,5,5,5,5,5,5,5,5,5,
+      0
    ),
    (
       'Wood bison',
@@ -1261,7 +1372,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      0,0,5,5,5,5,5,5,5,5,5,5,
+      0
    ),
 
    # Africa Savanna
@@ -1274,7 +1386,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -5,
       3,
-      4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4
+      4,4,5,5,5,5,5,5,5,5,5,4,
+      4
    ),
    (
       'African penguin',
@@ -1285,7 +1398,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       0,
       0,
-      0, 0, 2, 4, 5, 5, 5, 5, 5, 5, 3, 0
+      0,0,2,4,5,5,5,5,5,5,3,0,
+      0
    ),
    (
       'Cheetah',
@@ -1296,7 +1410,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -5,
       3,
-      4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4
+      4,4,5,5,5,5,5,5,5,5,5,4,
+      4
    ),
    (
       'Common eland',
@@ -1307,7 +1422,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       0,
       2,
-      0, 0, 2, 4, 5, 5, 5, 5, 5, 5, 3, 1
+      0,0,2,4,5,5,5,5,5,5,3,1,
+      0
    ),
    (
       'Greater kudu',
@@ -1318,7 +1434,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       10,
       0,
-      0, 0, 1, 3, 5, 5, 5, 5, 5, 3, 1, 0
+      0,0,1,3,5,5,5,5,5,3,1,0,
+      0
    ),
    (
       'Grevy\'s zebra',
@@ -1329,7 +1446,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       0,
       2,
-      1, 1, 3, 5, 5, 5, 5, 5, 5, 5, 4, 2
+      1,1,3,5,5,5,5,5,5,5,4,2,
+      1
    ),
    (
       'Marabou stork',
@@ -1340,7 +1458,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       15,
       0,
-      0, 0, 0, 1, 3, 5, 5, 5, 5, 2, 0, 0
+      0,0,0,1,3,5,5,5,5,2,0,0,
+      0
    ),
    (
       'Masai giraffe',
@@ -1351,7 +1470,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       10,
       0,
-      0, 0, 1, 3, 5, 5, 5, 5, 5, 4, 1, 0
+      0,0,1,3,5,5,5,5,5,4,1,0,
+      0
    ),
    (
       'Olive baboon',
@@ -1362,7 +1482,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -5,
       4,
-      4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4
+      4,4,5,5,5,5,5,5,5,5,5,4,
+      4
    ),
    (
       'Ostrich',
@@ -1373,7 +1494,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       0,
       1,
-      0, 0, 3, 5, 5, 5, 5, 5, 5, 5, 3, 1
+      0,0,3,5,5,5,5,5,5,5,3,1,
+      0
    ),
    (
       'River hippopotamus',
@@ -1384,7 +1506,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       10,
       0,
-      0, 0, 0, 2, 5, 5, 5, 5, 5, 3, 1, 0
+      0,0,0,2,5,5,5,5,5,3,1,0,
+      0
    ),
    (
       'Southern ground hornbill',
@@ -1395,7 +1518,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       15,
       0,
-      0, 0, 0, 1, 3, 5, 5, 5, 5, 2, 0, 0
+      0,0,0,1,3,5,5,5,5,2,0,0,
+      0
    ),
    (
       'Southern white rhinoceros',
@@ -1406,7 +1530,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       10,
       0,
-      0, 0, 1, 3, 5, 5, 5, 5, 5, 4, 1, 0
+      0,0,1,3,5,5,5,5,5,4,1,0,
+      0
    ),
    (
       'Spotted hyena',
@@ -1417,7 +1542,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -5,
       3,
-      4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4
+      4,4,5,5,5,5,5,5,5,5,5,4,
+      4
    ),
    (
       'Warthog',
@@ -1428,7 +1554,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       10,
       0,
-      0, 0, 0, 1, 3, 5, 5, 5, 5, 3, 1, 0
+      0,0,0,1,3,5,5,5,5,3,1,0,
+      0
    ),
    (
       'Watusi cattle',
@@ -1439,7 +1566,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -5,
       2,
-      4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4
+      4,4,5,5,5,5,5,5,5,5,5,4,
+      4
    ),
    (
       'White-headed vulture',
@@ -1450,7 +1578,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       15,
       0,
-      0, 0, 0, 1, 3, 5, 5, 5, 5, 2, 0, 0
+      0,0,0,1,3,5,5,5,5,2,0,0,
+      0
    ),
 
    # African Rainforest Pavilion
@@ -1463,7 +1592,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'African spoonbill',
@@ -1474,7 +1604,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Aldabra tortoise',
@@ -1485,7 +1616,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       20,
       0,
-      0,0,0,0,1,3,4,4,3,1,0,0
+      0,0,0,0,1,3,4,4,3,1,0,0,
+      0
    ),
    (
       'Blake Crake',
@@ -1496,7 +1628,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Blue-bellied roller',
@@ -1507,7 +1640,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Grey-necked crowned crane',
@@ -1518,7 +1652,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Hamerkop',
@@ -1529,7 +1664,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Lake Malawi cichlids',
@@ -1540,7 +1676,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Lau banded iguana',
@@ -1551,7 +1688,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Naked mole rat',
@@ -1562,7 +1700,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Ngege',
@@ -1573,7 +1712,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Nile soft-shelled turtle',
@@ -1584,7 +1724,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Pygmy hippopotamus',
@@ -1595,7 +1736,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Red-footed tortoise',
@@ -1606,7 +1748,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Red river hog',
@@ -1617,7 +1760,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       5,
       0,
-      0,0,2,4,5,5,5,5,5,5,3,1
+      0,0,2,4,5,5,5,5,5,5,3,1,
+      0
    ),
    (
       'Ring-tailed lemur',
@@ -1628,7 +1772,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Royal python',
@@ -1639,7 +1784,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Sacred ibis',
@@ -1650,7 +1796,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Slender-tailed meerkat',
@@ -1661,7 +1808,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'South African shelduck',
@@ -1672,7 +1820,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Speckled mousebird',
@@ -1683,7 +1832,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Straw coloured fruit bat',
@@ -1694,7 +1844,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Veiled chameleon',
@@ -1705,7 +1856,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'West African dwarf crocodile',
@@ -1716,7 +1868,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Western lowland gorilla',
@@ -1727,7 +1880,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       10,
       0,
-      0,0,1,3,5,5,5,5,5,3,1,0
+      0,0,1,3,5,5,5,5,5,3,1,0,
+      0
    ),
 
    # Indo-Malaya Pavilion
@@ -1740,7 +1894,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Bighead carp',
@@ -1751,7 +1906,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Black carp',
@@ -1762,7 +1918,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Black-breasted leaf turtle',
@@ -1773,7 +1930,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Black-throated laughing thrush',
@@ -1784,7 +1942,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Burmese star tortoise',
@@ -1795,7 +1954,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Concave casqued hornbill',
@@ -1806,7 +1966,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Crested wood partridge',
@@ -1817,7 +1978,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Crocodile lizard',
@@ -1828,7 +1990,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Crocodile newt',
@@ -1839,7 +2002,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Grass carp',
@@ -1850,7 +2014,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Green crested basilisk',
@@ -1861,7 +2026,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Luzon bleeding-heart dove',
@@ -1872,7 +2038,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Malayan bonytongue',
@@ -1883,7 +2050,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Malayan crested fireback pheasant',
@@ -1894,7 +2062,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Malaysian painted turtle',
@@ -1905,7 +2074,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Mekong barb',
@@ -1916,7 +2086,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Monocled cobra',
@@ -1927,7 +2098,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Nicobar pigeon',
@@ -1938,7 +2110,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Reticulated python',
@@ -1949,7 +2122,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Siamese catfish',
@@ -1960,7 +2134,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Spiny turtle',
@@ -1971,7 +2146,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Sumatran orangutan',
@@ -1982,7 +2158,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       10,
       0,
-      0,0,0,1,3,5,5,5,5,3,1,0
+      0,0,0,1,3,5,5,5,5,3,1,0,
+      0
    ),
    (
       'Tentacled snake',
@@ -1993,7 +2170,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Tinfoli barb',
@@ -2004,7 +2182,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Tomistoma',
@@ -2015,7 +2194,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Tri-coloured shark',
@@ -2026,7 +2206,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'White-handed gibbon',
@@ -2037,7 +2218,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
 
    # Indo-Malaya Outdoor
@@ -2050,7 +2232,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       10,
       0,
-      0,0,1,3,5,5,5,5,5,4,1,0
+      0,0,1,3,5,5,5,5,5,4,1,0,
+      0
    ),
    (
       'Greater one-horned rhinoceros',
@@ -2061,7 +2244,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Indian peafowl',
@@ -2072,7 +2256,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -15,
       4,
-      4,4,5,5,5,5,5,5,5,5,5,4
+      4,4,5,5,5,5,5,5,5,5,5,4,
+      4
    ),
    (
       'Sumatran tiger',
@@ -2083,7 +2268,8 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -5,
       3,
-      4,4,5,5,5,5,5,5,5,5,5,4
+      4,4,5,5,5,5,5,5,5,5,5,4,
+      4
    ),
 
    # Malayan Woods Pavilion
@@ -2096,7 +2282,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Clouded leopard',
@@ -2107,7 +2294,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Giant gourami',
@@ -2118,7 +2306,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Gooty sapphire ornamental tarantula',
@@ -2129,7 +2318,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Malaysian stick insect jungle wood nymph',
@@ -2140,7 +2330,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Red-tailed green ratsnake',
@@ -2151,7 +2342,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    ),
    (
       'Wrinkled hornbill',
@@ -2162,7 +2354,8 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       None,
       None,
-      None,None,None,None,None,None,None,None,None,None,None,None
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
    )
 ]
 
@@ -2186,11 +2379,10 @@ cursor.executemany( ''' INSERT INTO Animal (
                            SEP_VIEWABILITY,
                            OCT_VIEWABILITY,
                            NOV_VIEWABILITY,
-                           DEC_VIEWABILITY
+                           DEC_VIEWABILITY,
+                           WINTER_VIEWABILITY
                         ) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ''', animals )
-
-conn.commit()
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ''', animals )
 
 conn.commit()
 conn.close()

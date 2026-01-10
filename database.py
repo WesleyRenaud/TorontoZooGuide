@@ -39,7 +39,7 @@ class Database():
    def get_winter_animals( self ):
       cur = self.conn.cursor()
 
-      data = cur.execute( "SELECT SPECIES, LOCATION, HAS_INDOOR_VIEWING FROM ANIMAL WHERE ALWAYS_VIEWABLE = 1;" )
+      data = cur.execute( "SELECT SPECIES, LOCATION, HAS_INDOOR_VIEWING, WINTER_VIEWABILITY FROM ANIMAL WHERE ALWAYS_VIEWABLE = 1;" )
 
       animal_data = data.fetchall()
       animals = []
@@ -52,7 +52,7 @@ class Database():
          if has_indoor_viewing:
             animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor", likelihood=5 ) )
          else:
-            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Outdoor", likelihood=5 ) )
+            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Outdoor", likelihood=animal[3] ) )
 
       return animals
 
