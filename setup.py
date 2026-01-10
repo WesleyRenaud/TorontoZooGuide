@@ -79,11 +79,11 @@ animals = [
       'Australasia Pavilion',
       1, # Has outdoor viewing
       0, # Has indoor viewing
-      0, # Always viewable
-      0, # Always viewable outdoors
+      1, # Always viewable
+      1, # Always viewable outdoors
       0,
       4,
-      3,3,4,5,5,5,5,5,5,5,4,3
+      1,1,4,5,5,5,5,5,5,5,4,3
    ),
    (
       'Eastern rosella',
@@ -356,8 +356,8 @@ animals = [
       'Australasia Outdoor',
       1, # Has outdoor viewing
       0, # Has indoor viewing
-      0, # Always viewable
-      0, # Always viewable outdoors
+      1, # Always viewable
+      1, # Always viewable outdoors
       0,
       2,
       1,1,3,4,5,5,5,5,5,5,4,2
@@ -406,7 +406,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
       'Highland cattle',
@@ -417,7 +417,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -25,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
       'Mouflon',
@@ -428,7 +428,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -15,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
       'Red panda',
@@ -439,7 +439,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -10,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
       'Snow leopard',
@@ -450,7 +450,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -30,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
       'Steller\'s sea eagle',
@@ -461,7 +461,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -20,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
       'West caucasian tur',
@@ -472,7 +472,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -15,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
 
    # Tundra Trek
@@ -485,7 +485,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
       'Caribou',
@@ -496,7 +496,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
       'Lesser snow goose',
@@ -507,7 +507,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
       'Northern bald eagle',
@@ -518,7 +518,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -30,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
       'Polar bear',
@@ -529,7 +529,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -40,
       5,
-      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+      5,5,5,5,5,5,5,5,5,5,5,5
    ),
 
    # Americas Outdoor Mayan Temple Ruins
@@ -542,7 +542,7 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       5,
       0,
-      0, 0, 2, 4, 5, 5, 5, 5, 5, 4, 2, 0
+      0,0,2,4,5,5,5,5,5,4,2,0
    ),
    (
       'Black-handed spider monkey',
@@ -553,7 +553,7 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       15,
       0,
-      0, 0, 1, 3, 5, 5, 5, 5, 5, 3, 1, 0
+      0,0,1,3,5,5,5,5,5,3,1,0
    ),
    (
       'Capybara',
@@ -564,7 +564,7 @@ animals = [
       0,  # ALWAYS_VIEWABLE_OUTDOORS
       5,
       0,
-      0, 0, 3, 4, 5, 5, 5, 5, 5, 4, 2, 0
+      0,0,3,4,5,5,5,5,5,4,2,0
    ),
 
    # Americas Pavilion
@@ -939,7 +939,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -5,
-      4,
+      5,
       5,5,5,5,5,5,5,5,5,5,5,5
    ),
    (
@@ -1361,7 +1361,7 @@ animals = [
       1,  # ALWAYS_VIEWABLE
       1,  # ALWAYS_VIEWABLE_OUTDOORS
       -5,
-      2,
+      4,
       4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4
    ),
    (

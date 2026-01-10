@@ -165,25 +165,50 @@ function addMarkers(animals) {
          ? marker.species
          : [marker.species];
 
-         const location = marker.location;
-         const exhibitType = marker.exhibitType;
+      const location = marker.location;
+      const exhibitType = marker.exhibitType;
 
-      // Find which species are actually on exhibit
-      const animalsOnExhibit = speciesList.filter(species =>
-         animals.some(a =>
+      // Find the actual animal objects on exhibit
+      const animalsOnExhibit = speciesList.map(species => {
+         return animals.find(a =>
             a.species === species &&
-            a.location === location && 
+            a.location === location &&
             a.exhibit_type === exhibitType
-         )
-      );
+         );
+      }).filter(a => a !== undefined); // remove any species not found
 
-      // Only create marker if at least one animal is present
       if (animalsOnExhibit.length > 0) {
          const el = document.createElement('div');
          el.className = 'marker';
+
+         // Example: add a class based on likelihood
+         animalsOnExhibit.forEach(a => {
+            if (a.likelihood == 5) {
+               el.classList.add('likelihood-certain');
+            }
+            else if (a.likelihood >= 4) {
+               el.classList.add('likelihood-high');
+            }
+            else if (a.likelihood >= 3) {
+               el.classList.add('likelihood-medium');
+            }
+            else if (a.likelihood >= 2) {
+               el.classList.add('likelihood-moderate');
+            }
+            else if (a.likelihood >= 1) {
+               el.classList.add('likelihood-low');
+            }
+            else if (a.likelihood > 0) {
+               el.classList.add('likelihood-very-low');
+            }
+            else {
+               el.classList.add('likelihood-none');
+            }
+         });
+
          el.style.left = `${marker.x}%`;
          el.style.top = `${marker.y}%`;
-         el.title = animalsOnExhibit.join(', ');
+         el.title = animalsOnExhibit.map(a => a.species).join(', ');
 
          el.addEventListener('click', () => {
             alert(el.title);

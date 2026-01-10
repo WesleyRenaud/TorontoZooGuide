@@ -175,7 +175,6 @@ html.home-page {
    position: absolute;
    width: 32px;
    height: 32px;
-   background: #2fbf71;
    border-radius: 50%;
    transform: translate(-50%, -50%);
    cursor: pointer;
@@ -187,4 +186,32 @@ html.home-page {
 
 .marker.hidden {
    display: none;
+}
+
+.marker.likelihood-none {
+   background: #b30000;
+}
+
+.marker.likelihood-very-low {
+   background: #e64d00;
+}
+
+.marker.likelihood-low {
+   background: #ff8000;
+}
+
+.marker.likelihood-moderate {
+   background: #ffb300;
+}
+
+.marker.likelihood-medium {
+   background: #ccff33;
+}
+
+.marker.likelihood-high {
+   background: #66cc33;
+}
+
+.marker.likelihood-certain {
+   background: #339900;
 }

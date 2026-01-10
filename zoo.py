@@ -1,7 +1,7 @@
 import calendar, math
 
 class Animal:
-   def __init__( self, species, location, exhibit_type, likelihood = None ):
+   def __init__( self, species, location, exhibit_type, likelihood=None ):
       self.species = species
       self.location = location
       self.exhibit_type = exhibit_type

@@ -24,13 +24,13 @@ class Database():
          
          # If the animal has outdoor viewing, then it will be viewable outdoors in the heat of summer
          if has_outdoor_viewing:
-            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Outdoor" ) )
+            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Outdoor", likelihood=5 ) )
             
             # Check if the animal can be viewed outside and inside at the same time (it can also be viewed inside)
             if self.zoo_util.species_viewable_inside_and_outside( species=animal[0] ):
-               animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor" ) )
+               animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor", likelihood=5 ) )
          else:
-            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor" ) )
+            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor", likelihood=5 ) )
 
       return animals
 
@@ -50,9 +50,9 @@ class Database():
          # If the animal is viewable indoors, then it will be viewable indoors in the den of winter (now cold weather animals have
          # indoor viewing)
          if has_indoor_viewing:
-            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor") )
+            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor", likelihood=5 ) )
          else:
-            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Outdoor") )
+            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Outdoor", likelihood=5 ) )
 
       return animals
 
@@ -91,7 +91,7 @@ class Database():
 
          # The same logic for indoor-viewable-only animals
          elif has_indoor_viewing and not has_outdoor_viewing:
-            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor", likelihood=month_viewability ) )
+            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor", likelihood=5 ) )
 
          # If the animal is viewable outdoors and indoors, we must check whether they are viewable outdoors in this specific case.
          # More specifically, we must check the chance of the animal being viewable and if it is not either 0% or 100%, we must record
@@ -100,7 +100,7 @@ class Database():
             species = animal[0]
 
             if month_viewability < 5:
-               animals.append( zoo.Animal( species=species, location=animal[1], exhibit_type="Indoor", likelihood=month_viewability ) )
+               animals.append( zoo.Animal( species=species, location=animal[1], exhibit_type="Indoor", likelihood=5 ) )
             if month_viewability > 0:
                animals.append( zoo.Animal( species=species, location=animal[1], exhibit_type="Outdoor", likelihood=month_viewability ) )
 
@@ -154,14 +154,14 @@ class Database():
             
             # For every point below 5 (the max) an animal's snow resistance is, the more their likelihood of being viewable is tanked
             # by the likelihood of snow on the ground
-            likelihood = likelihood - (5 - snow_resistance) * snow_likelihood / 2
+            likelihood = max( likelihood - (5 - snow_resistance) * snow_likelihood / 2, 0 )
 
-            print( animal[0], likelihood, min_temperature, temp )
-            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Outdoor", likelihood=likelihood ) )
+            if likelihood > 0:
+               animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Outdoor", likelihood=likelihood ) )
 
          # The same logic for indoor-viewable-only animals
          elif has_indoor_viewing and not has_outdoor_viewing:
-            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor", likelihood=month_viewability ) )
+            animals.append( zoo.Animal( species=animal[0], location=animal[1], exhibit_type="Indoor", likelihood=5 ) )
 
          # If the animal is viewable outdoors and indoors, we must check whether they are viewable outdoors in this specific case.
          # More specifically, we must check the chance of the animal being viewable and if it is not either 0% or 100%, we must record
@@ -170,8 +170,20 @@ class Database():
             species = animal[0]
 
             if month_viewability < 5:
-               animals.append( zoo.Animal( species=species, location=animal[1], exhibit_type="Indoor", likelihood=month_viewability ) )
+               animals.append( zoo.Animal( species=species, location=animal[1], exhibit_type="Indoor", likelihood=5 ) )
             if month_viewability > 0:
-               animals.append( zoo.Animal( species=species, location=animal[1], exhibit_type="Outdoor", likelihood=month_viewability ) )
+               # Calculate their outdoor viewability
+               # The likelihood increases by 1 for every two 5 degrees that the temperature is warmer than their minimum temperature
+               likelihood = min( month_viewability + (temp - min_temperature) / 5, 5 )
+
+               # Also consider snow/ice based on the month + day
+               month_int = self.zoo_util.get_month_int( month )
+               snow_likelihood = self.zoo_util.snow_probability( month_int, day )
+               
+               # For every point below 5 (the max) an animal's snow resistance is, the more their likelihood of being viewable is tanked
+               # by the likelihood of snow on the ground
+               likelihood = likelihood - (5 - snow_resistance) * snow_likelihood / 2
+
+               animals.append( zoo.Animal( species=species, location=animal[1], exhibit_type="Outdoor", likelihood=likelihood ) )
 
       return animals
