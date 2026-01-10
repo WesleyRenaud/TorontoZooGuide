@@ -24,6 +24,9 @@
       <script src="../scripts/scripts.js" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/build/openseadragon/openseadragon.min.js" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js"></script>
+
+      <!-- jQuery -->
+      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
    </head>
    
    <body>
@@ -35,9 +38,10 @@
          <!-- Dropdown container -->
          <div class="map-controls">
             <select id="mapPreset">
+               <option value="" selected disabled hidden>Select a map</option>
                <option value="summer">Summer Map</option>
                <option value="winter">Winter Map</option>
-               <option value="today">Today's Map</option>
+               <option value="specific-day">Specific Map</option>
             </select>
 
             <!-- Date picker only relevant if "Current Day Map" is selected -->
@@ -49,7 +53,10 @@
             <img class="side-image left" src="../images/left-side.png" alt="Left decoration">
             
             <div class="map-container">
+            <div id="mapInner">
                <img id="zooMap" src="../images/zoo_map.png" alt="Toronto Zoo Map">
+               <!-- markers will be injected here -->
+            </div>
             </div>
                         
             <img class="side-image right" src="../images/right-side.png" alt="Right decoration">

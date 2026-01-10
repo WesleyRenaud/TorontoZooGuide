@@ -110,13 +110,18 @@ html.home-page {
 
 /* Scale the entire Flatpickr calendar */
 .flatpickr-calendar {
-   transform: scale(2);          /* make it twice as large */
+   transform: scale(3);           /* make it twice as large */
    transform-origin: top left;    /* keep position relative to input */
 }
 
 /* Optional: add some extra spacing so it doesn't overlap */
 .flatpickr-calendar.open {
    margin-top: 0.5em;
+}
+
+/* Make month names in the month dropdown larger */
+.flatpickr-monthDropdown-month {
+   font-size: 1.5em; /* increase size as needed */
 }
 
 /* Bottom navigation menu */
@@ -164,4 +169,22 @@ html.home-page {
 .home-page nav ul li a:hover {
    background-color: #5e9600;
    transform: translateY(-2px);
+}
+
+.marker {
+   position: absolute;
+   width: 32px;
+   height: 32px;
+   background: #2fbf71;
+   border-radius: 50%;
+   transform: translate(-50%, -50%);
+   cursor: pointer;
+   z-index: 10;
+
+   border: 2px solid #ffffff;
+   box-shadow: 0 0 8px rgba(47, 191, 113, 0.6);
+}
+
+.marker.hidden {
+   display: none;
 }
