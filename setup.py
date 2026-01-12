@@ -140,6 +140,18 @@ animals = [
       None
    ),
    (
+      'Galah',
+      'Australasia Pavilion',
+      0, # Has outdoor viewing
+      1, # Has indoor viewing
+      1, # Always viewable
+      0, # Always viewable outdoors
+      None,
+      None,
+      None,None,None,None,None,None,None,None,None,None,None,None,
+      None
+   ),
+   (
       'Green-winged dove',
       'Australasia Pavilion',
       0, # Has outdoor viewing
@@ -786,7 +798,7 @@ animals = [
       None
    ),
    (
-      'Cuvier\'s smooth fronted caiman (dwarf caiman)',
+      'Cuvier\'s smooth fronted caiman',
       'Americas Pavilion',
       0,  # HAS_OUTDOOR_VIEWING
       1,  # HAS_INDOOR_VIEWING
@@ -1134,7 +1146,7 @@ animals = [
       None
    ),
    (
-      'Reticulated gila monster',
+      'Reticulate gila monster',
       'Americas Pavilion',
       0,  # HAS_OUTDOOR_VIEWING
       1,  # HAS_INDOOR_VIEWING
@@ -1570,6 +1582,18 @@ animals = [
       4
    ),
    (
+      'White-breasted cormorant',
+      'Africa Savanna',
+      1,  # HAS_OUTDOOR_VIEWING
+      1,  # HAS_INDOOR_VIEWING
+      1,  # ALWAYS_VIEWABLE
+      0,  # ALWAYS_VIEWABLE_OUTDOORS
+      0,
+      0,
+      0,0,2,4,5,5,5,5,5,5,3,0,
+      0
+   ),
+   (
       'White-headed vulture',
       'Africa Savanna',
       1,  # HAS_OUTDOOR_VIEWING
@@ -1620,7 +1644,7 @@ animals = [
       0
    ),
    (
-      'Blake Crake',
+      'Black crake',
       'African Rainforest Pavilion',
       0,  # HAS_OUTDOOR_VIEWING
       1,  # HAS_INDOOR_VIEWING
@@ -2174,7 +2198,7 @@ animals = [
       None
    ),
    (
-      'Tinfoli barb',
+      'Tinfoil barb',
       'Indo-Malaya Pavilion',
       0,  # HAS_OUTDOOR_VIEWING
       1,  # HAS_INDOOR_VIEWING

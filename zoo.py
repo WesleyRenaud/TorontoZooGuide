@@ -22,7 +22,7 @@ class Zoo_Util:
       species_viewable_inside_and_outside =\
       [
          'African penguin', 'Golden lion tamarin', 'Southern hairy-nosed wombat', 'Sumatran orangutan', 'Two-toed sloth',
-         'Western lowland gorilla', 'White-faced saki'
+         'Western lowland gorilla', 'White-breasted cormorant', 'White-faced saki'
       ]
       
       if species in species_viewable_inside_and_outside:

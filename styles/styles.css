@@ -227,9 +227,8 @@ html.home-page {
    border-radius: 16px;
    padding: 36px;
    z-index: 20;
-   width: auto;              /* size to content */
-   max-width: 1200px;        /* optional max width */
-   height: auto;
+   width: 1200px;
+   height: 1025px;
    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
    color: #fff;
    font-family: 'Poppins', sans-serif;
@@ -268,8 +267,7 @@ html.home-page {
    background-color: rgba(119, 184, 0, 0.95);
    border-radius: 12px;
    padding: 24px;
-   width: auto;          /* adapt to content */
-   max-width: 1150px;    /* optional max width */
+   width: 1175px;
    box-sizing: border-box;
    display: flex;
    flex-direction: column;
@@ -330,4 +328,21 @@ html.home-page {
 /* Hide nav completely if no arrows */
 #tooltip.no-arrows .tooltip-nav {
    display: none;
+}
+
+.tooltip-image-frame {
+   width: 100%;
+   height: 600px;           /* choose the image height */
+   overflow: hidden;
+   border-radius: 12px;
+   flex-shrink: 0;
+   background: #4f7f00;    /* fallback while image loads */
+}
+
+.tooltip-image {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;      /* crop instead of distort */
+   object-position: center;
+   display: block;
 }

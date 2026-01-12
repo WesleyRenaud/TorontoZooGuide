@@ -317,11 +317,20 @@ function createCarousel(animals) {
       card.dataset.index = i;
 
       card.innerHTML = `
+         <div class="tooltip-image-frame">
+            <img 
+               src="images/animals/${a.location}/${a.species.replaceAll(' ', '-')}.png"
+               alt="${a.species}"
+               class="tooltip-image"
+            >
+         </div>
+
          <strong>${a.species}</strong>
          <span>Location: ${a.location}</span>
          <span>Exhibit: ${a.exhibit_type}</span>
          <span>Likelihood: ${getLikelihoodPhrase(a.likelihood)}</span>
       `;
+
       card.style.display = i === 0 ? 'flex' : 'none';
       carousel.appendChild(card);
    });
@@ -419,8 +428,28 @@ function updateArrowVisibility(count, left, right) {
 function positionTooltip(marker) {
    const rect = marker.getBoundingClientRect();
    const tooltipRect = tooltip.getBoundingClientRect();
-   tooltip.style.left = `${rect.left + rect.width/2 - tooltipRect.width/2}px`;
-   tooltip.style.top = `${rect.top - tooltipRect.height - 12}px`;
+
+   const padding = 12; // distance from screen edges
+
+   // Desired position (centered above marker)
+   let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+   let top  = rect.top - tooltipRect.height - 12;
+
+   // If it would go off the top, place it below instead
+   if (top < padding) {
+      top = rect.bottom + 12;
+   }
+
+   // Clamp horizontally inside viewport
+   left = Math.max(padding, left);
+   left = Math.min(window.innerWidth - tooltipRect.width - padding, left);
+
+   // Clamp vertically just in case
+   top = Math.max(padding, top);
+   top = Math.min(window.innerHeight - tooltipRect.height - padding, top);
+
+   tooltip.style.left = `${left}px`;
+   tooltip.style.top = `${top}px`;
 }
 
 /* ============================================================
@@ -440,7 +469,7 @@ const animalExhibitMarkers =
       species:
       [
          'Brownbanded bamboo shark', 'Central bearded dragon', 'Clown triggerfish', 'Crimson rosella', 'Eastern rosella',
-         'Emerald tree boa', 'Fly River turtle', 'Green tree python', 'Green-winged dove', 'Komodo dragon', 'Kookaburra',
+         'Emerald tree boa', 'Fly River turtle', 'Green tree python', 'Galah', 'Green-winged dove', 'Komodo dragon', 'Kookaburra',
          'Lau banded iguana', 'Lionfish', 'Live coral reefs', 'Longnose butterflyfish', 'MacLeay\'s spectres', 'Moon jellyfish',
          'Nicobar pigeon', 'Pennant coral fish', 'Pot-bellied seahorse', 'Red claw yabby', 'Red-tailed black cockatoo',
          'Short-beaked echidna', 'Solomon Island leaf frog', 'Southern hairy-nosed wombat', 'Thorny devil stick insect',
@@ -634,14 +663,15 @@ const animalExhibitMarkers =
       [
          'American alligator', 'American eel', 'American lobster', 'Axolotl', 'Black-footed ferret', 'Black-widow spider',
          'Blanding\'s turtle', 'Blue and yellow macaw', 'Blue poison dart frog', 'Boa constrictor', 'Brazilian giant cockroach',
-         'Brazilian salmon pink bird-eating tarantula', 'Butterfly goodied', 'Crested tinamou', 'Desert grassland whiptail',
-         'Dyeing poison dart frog', 'Eastern loggerhead shrike', 'Eastern lubber grasshopper', 'Eyelash viper', 'Ferocious water bug',
-         'Golden lion tamarin', 'Green and black poison dart frog', 'Green surf anemone', 'Green-winged macaw', 'Jamaican boa',
-         'Leather sea star', 'Lemur leaf frog', 'Longnose dace', 'Massasauga rattlesnake', 'Painted anemone', 'Panamanian golden frog',
-         'Plumose anemone', 'Plush-crested jay', 'Puerto Rican crested toad', 'Pumpkinseed sunfish', 'Red Island bird-eating tarantula',
-         'Red-crested finch', 'Reticulated gila monster', 'Round goby', 'Rufous-collared sparrow', 'San-Esteban Island chuckwalla',
-         'Snapping turtle', 'Spot prawn', 'Spotted river stingray', 'Spotted turtle', 'Timber rattlesnake', 'Turquoise tanager',
-         'Two-toed sloth', 'Western blacknose dace', 'White-faced saki', 'Yellow-banded poison dart frog', 'Zebra finch'
+         'Brazilian salmon pink bird-eating tarantula', 'Butterfly goodied', 'Crested tinamou', 'Cuvier\'s smooth fronted caiman',
+         'Desert grassland whiptail', 'Dyeing poison dart frog', 'Eastern loggerhead shrike', 'Eastern lubber grasshopper',
+         'Eyelash viper', 'Ferocious water bug', 'Golden lion tamarin', 'Green and black poison dart frog', 'Green surf anemone',
+         'Green-winged macaw', 'Jamaican boa', 'Leather sea star', 'Lemur leaf frog', 'Longnose dace', 'Massasauga rattlesnake',
+         'Painted anemone', 'Panamanian golden frog', 'Plumose anemone', 'Plush-crested jay', 'Puerto Rican crested toad',
+         'Pumpkinseed sunfish', 'Red Island bird-eating tarantula', 'Red-crested finch', 'Reticulate gila monster', 'Round goby',
+         'Rufous-collared sparrow', 'San-Esteban Island chuckwalla', 'Snapping turtle', 'Spot prawn', 'Spotted river stingray',
+         'Spotted turtle', 'Timber rattlesnake', 'Turquoise tanager', 'Two-toed sloth', 'Western blacknose dace', 'White-faced saki',
+         'Yellow-banded poison dart frog', 'Zebra finch'
       ],
       location: 'Americas Pavilion',
       exhibitType: 'Indoor',
@@ -723,14 +753,14 @@ const animalExhibitMarkers =
       y: 62
    },
    {
-      species: ['African penguin'],
+      species: ['African penguin', 'White-breasted cormorant'],
       location: 'Africa Savanna',
       exhibitType: 'Outdoor',
       x: 45.5,
       y: 66
    },
    {
-      species: ['African penguin'],
+      species: ['African penguin', 'White-breasted cormorant'],
       location: 'Africa Savanna',
       exhibitType: 'Indoor',
       x: 46.25,
@@ -867,7 +897,7 @@ const animalExhibitMarkers =
    {
       species:
       [
-         'African clawed frog', 'Blake Crake', 'Blue-bellied roller', 'Hamerkop', 'Lake Malawi cichlids', 'Lau banded iguana',
+         'African clawed frog', 'Black crake', 'Blue-bellied roller', 'Hamerkop', 'Lake Malawi cichlids', 'Lau banded iguana',
          'Naked mole rat', 'Ngege', 'Speckled mousebird', 'Veiled chameleon', 'West African dwarf crocodile'
       ],
       location: 'African Rainforest Pavilion',
@@ -930,7 +960,7 @@ const animalExhibitMarkers =
          'Burmese star tortoise', 'Concave casqued hornbill', 'Crested wood partridge', 'Crocodile lizard', 'Crocodile newt',
          'Grass carp', 'Green crested basilisk', 'Luzon bleeding-heart dove', 'Malayan bonytongue', 'Malayan crested fireback pheasant',
          'Malaysian painted turtle', 'Mekong barb', 'Monocled cobra', 'Nicobar pigeon', 'Reticulated python', 'Siamese catfish',
-         'Spiny turtle', 'Sumatran orangutan', 'Tentacled snake', 'Tinfoli barb', 'Tomistoma', 'Tri-coloured shark',
+         'Spiny turtle', 'Sumatran orangutan', 'Tentacled snake', 'Tinfoil barb', 'Tomistoma', 'Tri-coloured shark',
          'White-handed gibbon'
       ],
       location: 'Indo-Malaya Pavilion',
