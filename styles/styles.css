@@ -1,4 +1,4 @@
-/* Global font for all pages */
+/ * Global font for all pages */
 body, html {
    font-family: 'Poppins', sans-serif;
 }
@@ -169,6 +169,42 @@ html.home-page {
 .home-page nav ul li a:hover {
    background-color: #5e9600;
    transform: translateY(-2px);
+}
+
+/* Shared base style for all map labels */
+.map-label {
+   font-family: 'Impact', sans-serif;
+   font-weight: 900;
+   -webkit-text-stroke: 2px #fff;
+   color: #000;
+   font-stretch: extra-expanded;  /* wider letters */
+   transform: translate(-50%, -50%) scaleX(1);  /* horizontally stretch */
+   text-shadow:
+      2px 2px 0 #fff,
+      -2px -2px 0 #fff,
+      2px -2px 0 #fff,
+      -2px 2px 0 #fff,
+      0 0 3px #fff,
+      0 0 6px #fff;
+
+   position: absolute;
+   background: transparent;
+   pointer-events: none;
+   z-index: 12;
+}
+
+/* Larger region labels */
+.region-label {
+   composes: map-label;
+   font-size: 4rem;
+}
+
+/* Smaller exhibit labels */
+.exhibit-label {
+   composes: map-label;
+   font-size: 3rem;          /* increased from 2.5rem */
+   font-stretch: ultra-expanded;  /* make letters wider */
+   transform: translate(-50%, -50%) scaleX(1.05); /* small horizontal scale-up */
 }
 
 .marker {

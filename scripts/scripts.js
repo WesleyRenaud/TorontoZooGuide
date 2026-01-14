@@ -14,6 +14,39 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+
+      // Optional: enable wheel zoom
+      mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+
+      // Get all region labels
+      const regionLabels = document.querySelectorAll('.region-label');
+      const exhibitLabels = document.querySelectorAll('.exhibit-label');
+
+      // Threshold zoom scale for hiding labels
+      const regionHideZoomScale = 1.5;  // labels disappear when zoom > 1.5
+      const exhibitHideZoomScale = 2; // labels disappear when zoom > 2
+
+      // Listen to Panzoom events
+      mapInner.addEventListener('panzoomchange', () => {
+         const currentScale = panzoom.getScale();
+
+         // Remove the region/exhibit labels independently
+         regionLabels.forEach(label => {
+            if (currentScale > regionHideZoomScale) {
+                  label.style.display = 'none';
+            } else {
+                  label.style.display = 'block';
+            }
+         });
+
+         exhibitLabels.forEach(label => {
+            if (currentScale > exhibitHideZoomScale) {
+                  label.style.display = 'none';
+            } else {
+                  label.style.display = 'block';
+            }
+         });
+      });
    }
 
    const mapPreset = document.getElementById('mapPreset');
