@@ -394,6 +394,13 @@ function enableTooltipKeyboard(carousel) {
    tooltip.addEventListener('mouseleave', () => {
       document.removeEventListener('keydown', handleKey);
    }, { once: true });
+
+   document.addEventListener('keydown', e => {
+      // Close tooltip on Escape
+      if (e.key === 'Escape' && tooltip.style.display === 'flex') {
+         hideTooltip();
+      }
+   });
 }
 
 /* ============================================================
