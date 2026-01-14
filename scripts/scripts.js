@@ -238,18 +238,24 @@ function getLikelihoodClass(likelihood) {
 ============================================================ */
 
 // Attach click behavior to show/hide tooltip
+let openTooltipMarker = null;
 function attachTooltip(marker, animals) {
    marker.addEventListener('click', (e) => {
       e.stopPropagation(); // prevent map click events
 
       const isVisible = tooltip.style.display === 'flex';
-      if (isVisible) {
+      // If the tooltip is visible and this marker is the open one, toggle (close it)
+      if (isVisible && openTooltipMarker === marker) {
          hideTooltip();
+         openTooltipMarker = null;
       } else {
+         hideTooltip(); // Close any open tooltip first
          showTooltipForMarker(marker, animals);
+         openTooltipMarker = marker;
       }
    });
 }
+
 
 function showTooltipForMarker(marker, animals) {
    clearTooltip();
@@ -296,6 +302,7 @@ function showTooltipForMarker(marker, animals) {
 // Hide tooltip completely
 function hideTooltip() {
    tooltip.style.display = 'none';
+   openTooltipMarker = null;
 }
 
 // Clear the tooltip content
@@ -394,13 +401,6 @@ function enableTooltipKeyboard(carousel) {
    tooltip.addEventListener('mouseleave', () => {
       document.removeEventListener('keydown', handleKey);
    }, { once: true });
-
-   document.addEventListener('keydown', e => {
-      // Close tooltip on Escape
-      if (e.key === 'Escape' && tooltip.style.display === 'flex') {
-         hideTooltip();
-      }
-   });
 }
 
 /* ============================================================
@@ -465,6 +465,14 @@ function positionTooltip(marker) {
 
 document.addEventListener('click', (e) => {
    if (!tooltip.contains(e.target)) {
+      hideTooltip();
+   }
+});
+
+
+document.addEventListener('keydown', e => {
+   // Close tooltip on Escape
+   if (e.key === 'Escape' && tooltip.style.display === 'flex') {
       hideTooltip();
    }
 });
