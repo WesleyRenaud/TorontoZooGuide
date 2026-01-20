@@ -1,10 +1,18 @@
 import calendar, math
 
 class Animal:
-   def __init__( self, species, location, exhibit_type, likelihood=None ):
+   def __init__( self, species, location, seasonal_viewing_summary, seasonal_viewing_tips, general_viewing_tips, animal_info,
+                 specific_animal_info, exhibit_type, x_coord, y_coord, likelihood=None ):
       self.species = species
       self.location = location
+      self.seasonal_viewing_summary = seasonal_viewing_summary
+      self.seasonal_viewing_tips = seasonal_viewing_tips
+      self.general_viewing_tips = general_viewing_tips
+      self.animal_info = animal_info
+      self.specific_animal_info = specific_animal_info
       self.exhibit_type = exhibit_type
+      self.x_coord = x_coord
+      self.y_coord = y_coord
       self.likelihood = likelihood
 
 
@@ -12,7 +20,14 @@ class Animal:
       return {
          'species': self.species,
          'location': self.location,
+         'seasonal_viewing_summary': self.seasonal_viewing_summary,
+         'seasonal_viewing_tips': self.seasonal_viewing_tips,
+         'general_viewing_tips': self.general_viewing_tips,
+         'animal_info': self.animal_info,
+         'specific_animal_info': self.specific_animal_info,
          'exhibit_type': self.exhibit_type,
+         'x_coord': self.x_coord,
+         'y_coord': self.y_coord,
          'likelihood': self.likelihood
       }
    

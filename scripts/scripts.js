@@ -207,38 +207,45 @@ function addMarkers(animals) {
 
    const mapInner = document.getElementById('mapInner');
 
-   animalExhibitMarkers.forEach(markerData => {
-      const speciesList = Array.isArray(markerData.species)
-         ? markerData.species
-         : [markerData.species];
+   // Group animals by coordinate key "x|y"
+   const markerMap = new Map();
 
-      const location = markerData.location;
-      const exhibitType = markerData.exhibitType;
+   animals.forEach(animal => {
+      const x = animal.x_coord;
+      const y = animal.y_coord;
 
-      // Filter the actual animal objects that are on exhibit
-      const animalsOnExhibit = speciesList.map(species => {
-         return animals.find(a =>
-            a.species === species &&
-            a.location === location &&
-            a.exhibit_type === exhibitType
-         );
-      }).filter(a => a !== undefined);
+      const key = `${x}|${y}`;
+
+      if (!markerMap.has(key)) {
+         markerMap.set(key, {
+            x,
+            y,
+            animals: []
+         });
+      }
+
+      markerMap.get(key).animals.push(animal);
+   });
+
+   // Create one marker per coordinate
+   markerMap.forEach(group => {
+      const animalsOnExhibit = group.animals;
 
       if (animalsOnExhibit.length === 0) return;
 
       const el = document.createElement('div');
       el.className = 'marker';
-      el.style.left = `${markerData.x}%`;
-      el.style.top = `${markerData.y}%`;
+      el.style.left = `${group.x}%`;
+      el.style.top = `${group.y}%`;
       el.title = ''; // remove default browser tooltip
 
-      // Optionally add a class based on likelihood of highest animal
+      // Color marker based on highest likelihood in this group
       const maxLikelihood = Math.max(...animalsOnExhibit.map(a => a.likelihood || 0));
       el.classList.add(getLikelihoodClass(maxLikelihood));
 
       mapInner.appendChild(el);
 
-      // Attach click-to-open tooltip
+      // Attach click-to-open tooltip with all species at this location
       attachTooltip(el, animalsOnExhibit);
    });
 }
@@ -289,8 +296,11 @@ function attachTooltip(marker, animals) {
    });
 }
 
+let lastAnimals = [];
 
 function showTooltipForMarker(marker, animals) {
+   lastAnimals = animals;
+
    clearTooltip();
    tooltip.style.display = 'flex';
    tooltip.style.pointerEvents = 'auto';
@@ -365,7 +375,9 @@ function createCarousel(animals) {
             >
          </div>
 
-         <strong>${a.species}</strong>
+         <strong class="species-link" data-species="${a.species}" data-location="${a.location}" data-exhibit="${a.exhibit_type}">
+            ${a.species}
+         </strong>
          <span>Location: ${a.location}</span>
          <span>Exhibit: ${a.exhibit_type}</span>
          <span>Likelihood: ${getLikelihoodPhrase(a.likelihood)}</span>
@@ -497,11 +509,33 @@ function positionTooltip(marker) {
 ============================================================ */
 
 document.addEventListener('click', (e) => {
+   // For opening an animal card
+   const link = e.target.closest('.species-link');
+   if (!link) return;
+
+   e.stopPropagation();
+
+   const species = link.dataset.species;
+   openSpeciesOverlay(species);
+
+   // For closing an animl card
    if (!tooltip.contains(e.target)) {
       hideTooltip();
    }
 });
 
+// Global click listener
+document.addEventListener('click', (e) => {
+   // If the click is on a marker or inside the tooltip, do nothing
+   if (tooltip.contains(e.target) || e.target.closest('.marker')) {
+      return;
+   }
+
+   // Otherwise, hide the tooltip
+   if (tooltip.style.display === 'flex') {
+      hideTooltip();
+   }
+});
 
 document.addEventListener('keydown', e => {
    // Close tooltip on Escape
@@ -510,567 +544,77 @@ document.addEventListener('keydown', e => {
    }
 });
 
-const animalExhibitMarkers =
-[
-   // Australasia Pavilion
-   {
-      species:
-      [
-         'Brownbanded bamboo shark', 'Central bearded dragon', 'Clown triggerfish', 'Crimson rosella', 'Eastern rosella',
-         'Emerald tree boa', 'Fly River turtle', 'Green tree python', 'Galah', 'Green-winged dove', 'Komodo dragon', 'Kookaburra',
-         'Lau banded iguana', 'Lionfish', 'Live coral reefs', 'Longnose butterflyfish', 'MacLeay\'s spectres', 'Moon jellyfish',
-         'Nicobar pigeon', 'Pennant coral fish', 'Pot-bellied seahorse', 'Red claw yabby', 'Red-tailed black cockatoo',
-         'Short-beaked echidna', 'Solomon Island leaf frog', 'Southern hairy-nosed wombat', 'Thorny devil stick insect',
-         'Victoria crowned pigeon', 'White\'s tree frog'
-      ],
-      location: 'Australasia Pavilion',
-      exhibitType: 'Indoor',
-      x: 65,
-      y: 41
-   },
-   {
-      species: ['Demoiselle crane', 'Kookaburra'],
-      location: 'Australasia Pavilion',
-      exhibitType: 'Outdoor',
-      x: 63,
-      y: 39.75
-   },
-   {
-      species: ['Southern hairy-nosed wombat'],
-      location: 'Australasia Pavilion',
-      exhibitType: 'Outdoor',
-      x: 66.75,
-      y: 40.25
-   },
+/* ============================================================
+   SPECIES OVERLAY CONTENT
+============================================================ */
 
-   // Australasia Outdoor
-   {
-      species: ['Western grey kangaroo'],
-      location: 'Australasia Outdoor',
-      exhibitType: 'Outdoor',
-      x: 68,
-      y: 42.5
-   },
+const speciesOverlay = document.getElementById('speciesOverlay');
+const speciesOverlayContent = speciesOverlay.querySelector('.species-overlay-content');
 
-   // Eurasia Wilds
-   {
-      species: ['Amur tiger'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 71.5,
-      y: 39
-   },
-   {
-      species: ['Asian wild horse'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 85,
-      y: 22
-   },
-   {
-      species: ['Asian wild horse'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 67.5,
-      y: 25.75
-   },
-   {
-      species: ['Bactrian camel'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 78.25,
-      y: 34.25
-   },
-   {
-      species: ['Bactrian camel'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 80.5,
-      y: 28.5
-   },
-   {
-      species: ['Domestic yak'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 86,
-      y: 27.5
-   },
-   {
-      species: ['Highland cattle'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 87.75,
-      y: 41.25
-   },
-   {
-      species: ['Mouflon'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 68.75,
-      y: 32.25
-   },
-   {
-      species: ['Red panda'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 77.625,
-      y: 38.125
-   },
-   {
-      species: ['Snow leopard'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 75.125,
-      y: 25.25
-   },
-   {
-      species: ['Steller\'s sea eagle'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 77.125,
-      y: 24.875
-   },
-   {
-      species: ['West caucasian tur'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 72.5,
-      y: 25.5
-   },
-   {
-      species: ['West caucasian tur'],
-      location: 'Eurasia Wilds',
-      exhibitType: 'Outdoor',
-      x: 85.75,
-      y: 31
-   },
+function openSpeciesOverlay(species) {
+   const animal = getAnimalBySpecies(species);
+   if (!animal) return;
 
-   // Tundra Trek
-   {
-      species: ['Arctic wolf'],
-      location: 'Tundra Trek',
-      exhibitType: 'Outdoor',
-      x: 56,
-      y: 33.25
-   },
-   {
-      species: ['Caribou'],
-      location: 'Tundra Trek',
-      exhibitType: 'Outdoor',
-      x: 50.25,
-      y: 28.75
-   },
-   {
-      species: ['Lesser snow goose'],
-      location: 'Tundra Trek',
-      exhibitType: 'Outdoor',
-      x: 53.75,
-      y: 37
-   },
-   {
-      species: ['Northern bald eagle'],
-      location: 'Tundra Trek',
-      exhibitType: 'Outdoor',
-      x: 51.25,
-      y: 33.5
-   },
-   {
-      species: ['Polar bear'],
-      location: 'Tundra Trek',
-      exhibitType: 'Outdoor',
-      x: 55.5,
-      y: 29.375
-   },
+   const section = (title, value) => {
+      if (!value || !value.trim()) return '';
+      return `
+         <div class="section">
+            <strong>${title}:</strong>
+            <p>${value}</p>
+         </div>
+      `;
+   };
 
-   // Americas Outdoor Mayan Temple Ruins
-   {
-      species: ['American flamingo'],
-      location: 'Americas Outdoor Mayan Temple Ruins',
-      exhibitType: 'Outdoor',
-      x: 46,
-      y: 25.875
-   },
-   {
-      species: ['Black-handed spider monkey'],
-      location: 'Americas Outdoor Mayan Temple Ruins',
-      exhibitType: 'Outdoor',
-      x: 44.125,
-      y: 26.5
-   },
-   {
-      species: ['Capybara'],
-      location: 'Americas Outdoor Mayan Temple Ruins',
-      exhibitType: 'Outdoor',
-      x: 46.5,
-      y: 29.75
-   },
+   speciesOverlayContent.innerHTML = `
+      <div class="species-overlay-header">
+         <button class="species-close">×</button>
+      </div>
 
-   // Americas Pavilion
-   {
-      species:
-      [
-         'American alligator', 'American eel', 'American lobster', 'Axolotl', 'Black-footed ferret', 'Black-widow spider',
-         'Blanding\'s turtle', 'Blue and yellow macaw', 'Blue poison dart frog', 'Boa constrictor', 'Brazilian giant cockroach',
-         'Brazilian salmon pink bird-eating tarantula', 'Butterfly goodied', 'Crested tinamou', 'Cuvier\'s smooth fronted caiman',
-         'Desert grassland whiptail', 'Dyeing poison dart frog', 'Eastern loggerhead shrike', 'Eastern lubber grasshopper',
-         'Eyelash viper', 'Ferocious water bug', 'Golden lion tamarin', 'Green and black poison dart frog', 'Green surf anemone',
-         'Green-winged macaw', 'Jamaican boa', 'Leather sea star', 'Lemur leaf frog', 'Longnose dace', 'Massasauga rattlesnake',
-         'Painted anemone', 'Panamanian golden frog', 'Plumose anemone', 'Plush-crested jay', 'Puerto Rican crested toad',
-         'Pumpkinseed sunfish', 'Red Island bird-eating tarantula', 'Red-crested finch', 'Reticulate gila monster', 'Round goby',
-         'Rufous-collared sparrow', 'San-Esteban Island chuckwalla', 'Snapping turtle', 'Spot prawn', 'Spotted river stingray',
-         'Spotted turtle', 'Timber rattlesnake', 'Turquoise tanager', 'Two-toed sloth', 'Western blacknose dace', 'White-faced saki',
-         'Yellow-banded poison dart frog', 'Zebra finch'
-      ],
-      location: 'Americas Pavilion',
-      exhibitType: 'Indoor',
-      x: 51.375,
-      y: 41.75
-   },
-   {
-      species: ['Golden lion tamarin', 'Two-toed sloth', 'White-faced saki'],
-      location: 'Americas Pavilion',
-      exhibitType: 'Outdoor',
-      x: 53,
-      y: 42.5
-   },
-   {
-      species: ['Great-horned owl'],
-      location: 'Americas Pavilion',
-      exhibitType: 'Outdoor',
-      x: 50.375,
-      y: 40.75
-   },
-   {
-      species: ['North American river otter'],
-      location: 'Americas Pavilion',
-      exhibitType: 'Outdoor',
-      x: 49,
-      y: 40.625
-   },
+      <div class="species-overlay-scroll">
+         <img
+            src="images/animals/${animal.location}/${animal.species.replaceAll(' ', '-')}.png"
+            class="new-animal-image"
+         >
 
-   // Canadian Domain
-   {
-      species: ['Cougar'],
-      location: 'Canadian Domain',
-      exhibitType: 'Outdoor',
-      x: 9.25,
-      y: 60.75
-   },
-   {
-      species: ['Grizzly bear'],
-      location: 'Canadian Domain',
-      exhibitType: 'Outdoor',
-      x: 6.125,
-      y: 65
-   },
-   {
-      species: ['Northern bald eagle'],
-      location: 'Canadian Domain',
-      exhibitType: 'Outdoor',
-      x: 7.5,
-      y: 71
-   },
-   {
-      species: ['Raccoon'],
-      location: 'Canadian Domain',
-      exhibitType: 'Outdoor',
-      x: 15,
-      y: 65.5
-   },
-   {
-      species: ['Wood bison'],
-      location: 'Canadian Domain',
-      exhibitType: 'Outdoor',
-      x: 11,
-      y: 58.75
-   },
-   {
-      species: ['Wood bison'],
-      location: 'Canadian Domain',
-      exhibitType: 'Outdoor',
-      x: 8.5,
-      y: 76.125
-   },
+         <h2>${animal.species}</h2>
 
-   // Africa Savanna
-   {
-      species: ['African lion'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 39,
-      y: 62
-   },
-   {
-      species: ['African penguin', 'White-breasted cormorant'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 45.5,
-      y: 66
-   },
-   {
-      species: ['African penguin', 'White-breasted cormorant'],
-      location: 'Africa Savanna',
-      exhibitType: 'Indoor',
-      x: 46.25,
-      y: 63.75
-   },
-   {
-      species: ['Cheetah'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 36.125,
-      y: 75.5
-   },
-   {
-      species: ['Common eland'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 41.375,
-      y: 65.5
-   },
-   {
-      species: ['Greater kudu', 'Marabou stork', 'Southern ground hornbill', 'White-headed vulture'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 45.5,
-      y: 80
-   },
-   {
-      species: ['Greater kudu', 'Marabou stork', 'Southern ground hornbill', 'White-headed vulture'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 47.375,
-      y: 81.75
-   },
-   {
-      species: ['Greater kudu', 'Marabou stork', 'Southern ground hornbill', 'White-headed vulture'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 51.25,
-      y: 77.875
-   },
-   {
-      species: ['Grevy\'s zebra'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 38.5,
-      y: 70.25
-   },
-   {
-      species: ['Marabou stork'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 38.375,
-      y: 73.875
-   },
-   {
-      species: ['Masai giraffe'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 55,
-      y: 86.25
-   },
-   {
-      species: ['Masai giraffe'],
-      location: 'Africa Savanna',
-      exhibitType: 'Indoor',
-      x: 55.875,
-      y: 82.5
-   },
-   {
-      species: ['Olive baboon'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 36,
-      y: 68
-   },
-   {
-      species: ['Ostrich'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 36.25,
-      y: 65.5
-   },
-   {
-      species: ['Ostrich'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 32,
-      y: 63
-   },
-   {
-      species: ['River hippopotamus'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 52.5,
-      y: 87.375
-   },
-   {
-      species: ['Southern ground hornbill'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 40.5,
-      y: 61.75
-   },
-   {
-      species: ['Southern white rhinoceros'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 43.25,
-      y: 78.375
-   },
-   {
-      species: ['Spotted hyena'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 41.125,
-      y: 60
-   },
-   {
-      species: ['Warthog'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 51.75,
-      y: 82.5
-   },
-   {
-      species: ['Watusi cattle'],
-      location: 'Africa Savanna',
-      exhibitType: 'Outdoor',
-      x: 44.75,
-      y: 58.5
-   },
+         ${section('Location', animal.location)}
+         ${section('Seasonal Viewing Summary', animal.seasonal_viewing_summary)}
+         ${section('Seasonal Viewing Tips', animal.seasonal_viewing_tips)}
+         ${section('General Viewing Tips', animal.general_viewing_tips)}
+         ${section('Animal Info', animal.animal_info)}
+         ${section('Specific Animal Information', animal.specific_animal_info)}
+      </div>
+   `;
 
-   // African Rainforest Pavilion
-   {
-      species:
-      [
-         'African clawed frog', 'Black crake', 'Blue-bellied roller', 'Hamerkop', 'Lake Malawi cichlids', 'Lau banded iguana',
-         'Naked mole rat', 'Ngege', 'Speckled mousebird', 'Veiled chameleon', 'West African dwarf crocodile'
-      ],
-      location: 'African Rainforest Pavilion',
-      exhibitType: 'Indoor',
-      x: 53,
-      y: 76
-   },
-   {
-      species: ['Aldabra tortoise', 'Grey-necked crowned crane', 'Ring-tailed lemur', 'Royal python'],
-      location: 'African Rainforest Pavilion',
-      exhibitType: 'Indoor',
-      x: 54,
-      y: 80.5
-   },
-   {
-      species: ['Aldabra tortoise'],
-      location: 'African Rainforest Pavilion',
-      exhibitType: 'Outdoor',
-      x: 55,
-      y: 74
-   },
-   {
-      species:
-      [
-         'African spoonbill', 'Nile soft-shelled turtle', 'Pygmy hippopotamus', 'Red-footed tortoise', 'Sacred ibis',
-         'South African shelduck', 'Straw coloured fruit bat'
-      ],
-      location: 'African Rainforest Pavilion',
-      exhibitType: 'Indoor',
-      x: 53.75,
-      y: 78.625
-   },
-   {
-      species: ['Red river hog'],
-      location: 'African Rainforest Pavilion',
-      exhibitType: 'Outdoor',
-      x: 55.5,
-      y: 78.375
-   },
-   {
-      species: ['Western lowland gorilla'],
-      location: 'African Rainforest Pavilion',
-      exhibitType: 'Indoor',
-      x: 52.25,
-      y: 73.25
-   },
-   {
-      species: ['Western lowland gorilla'],
-      location: 'African Rainforest Pavilion',
-      exhibitType: 'Outdoor',
-      x: 51.75,
-      y: 70.125
-   },
+   speciesOverlayContent
+      .querySelector('.species-close')
+      .addEventListener('click', closeSpeciesOverlay);
 
-   // Indo-Malaya Pavilion
-   {
-      species:
-      [
-         'Asian brown tortoise', 'Bighead carp', 'Black carp', 'Black-breasted leaf turtle', 'Black-throated laughing thrush',
-         'Burmese star tortoise', 'Concave casqued hornbill', 'Crested wood partridge', 'Crocodile lizard', 'Crocodile newt',
-         'Grass carp', 'Green crested basilisk', 'Luzon bleeding-heart dove', 'Malayan bonytongue', 'Malayan crested fireback pheasant',
-         'Malaysian painted turtle', 'Mekong barb', 'Monocled cobra', 'Nicobar pigeon', 'Reticulated python', 'Siamese catfish',
-         'Spiny turtle', 'Sumatran orangutan', 'Tentacled snake', 'Tinfoil barb', 'Tomistoma', 'Tri-coloured shark',
-         'White-handed gibbon'
-      ],
-      location: 'Indo-Malaya Pavilion',
-      exhibitType: 'Indoor',
-      x: 60.75,
-      y: 78.75
-   },
-   {
-      species: ['Sumatran orangutan'],
-      location: 'Indo-Malaya Pavilion',
-      exhibitType: 'Outdoor',
-      x: 61.75,
-      y: 85
-   },
+   speciesOverlay.classList.remove('hidden');
+}
 
-   // Indo-Malaya Outdoor
-   {
-      species: ['Babirusa'],
-      location: 'Indo-Malaya Outdoor',
-      exhibitType: 'Outdoor',
-      x: 68.75,
-      y: 69.5
-   },
-   {
-      species: ['Babirusa', 'Greater one-horned rhinoceros'],
-      location: 'Indo-Malaya Outdoor',
-      exhibitType: 'Indoor',
-      x: 68.625,
-      y: 71.375
-   },
-   {
-      species: ['Indian peafowl'],
-      location: 'Indo-Malaya Outdoor',
-      exhibitType: 'Outdoor',
-      x: 65.125,
-      y: 71
-   },
-   {
-      species: ['Sumatran tiger'],
-      location: 'Indo-Malaya Outdoor',
-      exhibitType: 'Outdoor',
-      x: 61.25,
-      y: 73.25
-   },
-   {
-      species: ['Sumatran tiger'],
-      location: 'Indo-Malaya Outdoor',
-      exhibitType: 'Outdoor',
-      x: 59.75,
-      y: 74
-   },
+speciesOverlay.addEventListener('click', e => {
+   if (e.target === speciesOverlay) closeSpeciesOverlay();
+});
 
-   // Malayan Woods Pavilion
-   {
-      species:
-      [
-         'Asian giant millipede', 'Clouded leopard', 'Giant gourami', 'Gooty sapphire ornamental tarantula',
-         'Malaysian stick insect jungle wood nymph', 'Red-tailed green ratsnake', 'Wrinkled hornbill'
-      ],
-      location: 'Malayan Woods Pavilion',
-      exhibitType: 'Indoor',
-      x: 66.25,
-      y: 74.5
+function closeSpeciesOverlay() {
+   speciesOverlay.classList.add('hidden');
+}
+
+/* ============================================================
+   HELPERS/PLACEHOLDERS
+============================================================ */
+
+function getAnimalBySpecies(species) {
+   if (!currentCarousel) return null;
+
+   const cards = currentCarousel.querySelectorAll('.tooltip-card');
+   for (const card of cards) {
+      if (card.querySelector('.species-link')?.dataset.species === species) {
+         const index = card.dataset.index;
+         return lastAnimals[index];
+      }
    }
-];
+   return null;
+}

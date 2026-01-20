@@ -1,4 +1,4 @@
-/ * Global font for all pages */
+/* Global font for all pages */
 body, html {
    font-family: 'Poppins', sans-serif;
 }
@@ -381,4 +381,201 @@ html.home-page {
    object-fit: cover;      /* crop instead of distort */
    object-position: center;
    display: block;
+}
+
+/* ============================================================
+   SPECIES OVERLAY CARD
+============================================================ */
+
+/* Overlay background & centering */
+.species-overlay {
+   position: fixed;
+   inset: 0;
+   background: rgba(0, 0, 0, 0.55);
+   z-index: 9999;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.species-overlay.hidden {
+   display: none;
+}
+
+/* Keep outer card padding intact, only inner wrapper scrolls */
+.species-overlay-card {
+   background-color: rgba(119, 184, 0);
+   border-radius: 12px;
+   padding: 32px;
+   overflow: hidden;       /* prevent card itself from scrolling */
+   position: relative;
+   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+   max-width: 90vw;
+   width: 2000px;
+   max-height: 90vh;
+   color: #ffffff;
+}
+
+.species-overlay-card h2 {
+   font-size: 2.5em;
+   text-align: center;
+}
+
+/* New scrollable wrapper */
+.species-overlay-scroll {
+   overflow-y: auto;
+   max-height: calc(90vh - 64px);  /* subtract top+bottom padding of card */
+   padding-right: 8px;             /* ensures scrollbar doesn’t overlap content */
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+}
+
+/* ============================================================
+   IMAGE STYLING
+============================================================ */
+
+/* Default image inside overlay card */
+.species-overlay-card img {
+   width: 100%;
+   height: auto;
+   object-fit: cover;      
+   object-position: center;
+   border-radius: 8px;
+   margin-bottom: 16px;
+   display: block;
+}
+
+/* Crop specific new images to a fixed area */
+.species-overlay-card img.new-animal-image {
+   width: 100%;
+   height: 1200px;
+   object-fit: cover;
+   object-position: center;
+   border-radius: 12px;
+   margin-bottom: 20px;
+   display: block;
+}
+
+/* ============================================================
+   CONTENT & SECTIONS
+============================================================ */
+
+/* Container for all content inside overlay */
+.species-overlay-content {
+   width: 2000px;
+   max-width: 90vw;
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+   font-family: 'Arial', sans-serif;
+   font-size: 2em;          
+   line-height: 2.2em;
+   color: #ffffff;
+   text-align: left;
+}
+
+/* Section boxes around each piece of info */
+#speciesOverlay .species-overlay-content .section {
+   pointer-events: auto;
+   background-color: rgba(94, 150, 0, 0.95);  /* darker tooltip green */
+   border-radius: 12px;
+   padding: 16px;
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+}
+
+/* Section headings */
+#speciesOverlay .species-overlay-content .section strong {
+   font-size: 1.6em;
+   color: #ffffff;
+   margin-bottom: 6px;
+}
+
+/* Section paragraphs */
+#speciesOverlay .species-overlay-content .section p {
+   font-size: 1.4em;
+   line-height: 1.6;
+   color: #ffffff;
+   margin: 0;
+   white-space: pre-line;
+}
+
+/* ============================================================
+   LINKS
+============================================================ */
+
+/* Ensure species-link is clickable */
+.species-link {
+   cursor: pointer;
+   text-decoration: underline;
+   z-index: 1;
+   pointer-events: auto;
+}
+
+/* ============================================================
+   SCROLLBAR STYLING
+============================================================ */
+
+/* Firefox */
+.species-overlay-scroll {
+   scrollbar-width: thin;
+   scrollbar-color: rgba(94, 150, 0, 0.8) rgba(119, 184, 0, 0.3);
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.species-overlay-scroll::-webkit-scrollbar {
+   width: 16px;
+}
+
+.species-overlay-scroll::-webkit-scrollbar-track {
+   background: rgba(119, 184, 0, 0.3); /* lighter green track */
+   border-radius: 8px;
+}
+
+.species-overlay-scroll::-webkit-scrollbar-thumb {
+   background-color: rgba(94, 150, 0, 0.8); /* darker green thumb */
+   border-radius: 8px;
+   border: 4px solid rgba(119, 184, 0, 0.3); /* padding around thumb */
+}
+
+.species-overlay-scroll::-webkit-scrollbar-thumb:hover {
+   background-color: rgba(94, 150, 0, 1); /* slightly darker on hover */
+}
+
+/* ============================================================
+   CLOSE BUTTON (X) — LARGER & SPACED ABOVE SCROLLABLE CONTENT
+============================================================ */
+
+.species-close {
+   position: absolute;               /* stays fixed relative to card */
+   top: 16px;                        /* more space from top */
+   right: 16px;                      /* more space from right */
+   width: 70px;                      /* bigger circle */
+   height: 70px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   font-size: 42px;                  /* larger X */
+   font-weight: bold;
+   color: #ffffff;
+   background-color: rgba(94, 150, 0, 0.95); /* match section boxes */
+   border-radius: 50%;
+   border: none;
+   cursor: pointer;
+   box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+   transition: background-color 0.3s ease, transform 0.2s ease;
+   z-index: 20;                       /* above scrollable wrapper */
+   padding: 0;                        /* reset any inner padding */
+}
+
+.species-close:hover {
+   background-color: rgba(94, 150, 0, 1);
+   transform: scale(1.1);
+}
+
+/* Remove any ::before pseudo-element content */
+.species-close::before {
+   content: none;
 }
