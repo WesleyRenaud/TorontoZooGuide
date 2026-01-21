@@ -56,8 +56,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -73,8 +73,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -90,8 +90,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -107,8 +107,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -124,8 +124,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -141,8 +141,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -158,7 +158,7 @@ animals = [
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
       1,1,4,5,5,5,5,5,5,5,4,3,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      1,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
+      1,                                                             # Winter visibility (only for animals with outdoor viewing)
       'Mar-Nov',
       '''Demoiselle cranes are most reliably seen from the spring through the fall. They are fairly hardy birds, but will generally
          retreat to shelter in the coldest months.'''.replace( '\n', ' ' ),
@@ -179,8 +179,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -196,8 +196,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -213,8 +213,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -230,8 +230,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -247,8 +247,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -264,8 +264,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -281,8 +281,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The Komodo dragons at the zoo are young, and still getting used to their habitat. Most of the time you can find them high in the
          tree in the center of the enclosure. Look closely for a claw, or a dangling tail.'''.replace( '\n', ' ' ),
@@ -303,8 +303,8 @@ animals = [
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,3,4,5,5,5,5,3,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Jun-Sep (Outdoor), Oct-May (Indoor)',                         # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Jun-Sep (Outdoor), Oct-May (Indoor)',                         # Seasonal visibility summary
       '''Kookaburras are warm weather birds, and thus are only comfortable outside during the warmer months of the year. In these warmer
          months they can be seen outside in the Australasia outdoor aviary, alongside the demoiselle cranes. In the cooler months they
          can be spotted in their indoor habitat just past the red-tailed black cockatoos.'''.replace( '\n', ' ' ),
@@ -324,8 +324,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -341,8 +341,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -358,8 +358,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -375,8 +375,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -392,8 +392,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -409,8 +409,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -426,8 +426,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -443,8 +443,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -460,8 +460,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -477,8 +477,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -494,8 +494,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -511,8 +511,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -528,8 +528,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -545,8 +545,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -562,8 +562,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The short-beaked echidna is perhaps the most difficult animal to spot at the zoo. This is because the species is nocturnal,
          and rarely exits its burrow during the day. Your best chance of spotting the echidna is to visit the Australasia pavilion
@@ -584,8 +584,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -601,8 +601,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -618,8 +618,8 @@ animals = [
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,2,4,5,5,5,5,2,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)',           # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)',           # Seasonal visibility summary
       '''Wombats are warm weather animals, and tend to only venture outside in the warmer months of the year. They are also generally
          less active in the winter, spending more time sleeping in their burrows. Even in the warmer months, the wombats are often found
          in their indoor habitat in the Australasia Pavilion.'''.replace( '\n', ' ' ),
@@ -642,8 +642,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -659,8 +659,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -676,8 +676,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -693,8 +693,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -710,8 +710,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -727,8 +727,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -746,8 +746,8 @@ animals = [
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
       1,1,3,4,5,5,5,5,5,5,4,2,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      1,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Mar-Nov',                                                     # Seasonal VISIBILITY summary
+      1,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Mar-Nov',                                                     # Seasonal visibility summary
       '''The Western grey kangaroo is a fairly hardy species. As long as the temperature is above 0°C and there isn't much snow on the
          ground, they should be viewable outside.'''.replace( '\n', ' ' ),
       '''The kangaroos at the Toronto Zoo have a rather large habitat, meaning that sometimes the animals will be fairly far from the
@@ -772,8 +772,8 @@ animals = [
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary'
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary'
       '''While the Amur tigers at the zoo can be viewed year-round, these cats are actually most comfortable when it is cooler, so your
          best chance of seeing them active is in the winter.'''.replace( '\n', ' ' ),
       '''For a year-round, comfortable experience, the tigers at the zoo always have access to indoor and outdoor spaces. Specifically
@@ -798,8 +798,8 @@ animals = [
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The Asian wild horse (previously known as the Przewalski horse) is the last true surviving species of wild horse. They
@@ -821,8 +821,8 @@ animals = [
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Bactrian camels are native to Central Asia, where they live in some of the harshest habitats in the world, with temperatures
@@ -840,8 +840,8 @@ animals = [
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Yaks are incredibly well adapted for the cold. Additionally, their large lungs and hearts allow them to thrive in the thin air,
@@ -859,8 +859,8 @@ animals = [
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Highland cattle are recognized for their thick fur, and droopy hair that covers their eyes. Their fur protects them from bugs
@@ -880,8 +880,8 @@ animals = [
       -15,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Mouflon are one of the oldest species of wild sheep in the world. They are believed to be an ancestor of many modern
@@ -900,8 +900,8 @@ animals = [
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       '''Red pandas are most comfortable in the cooler weather, so visiting them from the fall through the spring will give you the
          best chance to see them active. During the summer months they spend much of their time sleeping high up in the trees. On the
          warmest summer days they may opt to spend their time inside, away from guests.'''.replace( '\n', ' ' ),
@@ -926,8 +926,8 @@ animals = [
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       '''Snow leopards are built for the extreme cold of the Himalayas, and thus are the most active in the winter. During the warmer
          months, they may be active earlier in the day, but they will spend a lot of the day sleeping in the shade, and perhaps away
          from the view of zoo visitors.'''.replace( '\n', ' ' ),
@@ -959,8 +959,8 @@ animals = [
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Steller's sea eagles are one of the largest and heaviest species of eagle in the world. They are native to Northeastern coastal
@@ -979,8 +979,8 @@ animals = [
       -15,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''West Caucasian turs get their name from where they come from--the West Caucasus mountains. They live in altitudes of up to
@@ -1001,8 +1001,8 @@ animals = [
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The arctic wolf enclosure at the Toronto Zoo is very large, and has many viewing points. To get the best view of the wolves,
          you can move 360° around the habitat which will also take you all the way around the Tundra Trek exhibit, and you should get a
@@ -1022,8 +1022,8 @@ animals = [
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The caribou exhibit at the zoo is very large, and expands quite far back to the left from the main viewing area. Most of the
          time the caribou can be seen towards the back, right section of the habitat in and around their shelter. Sometimes they may be
@@ -1044,8 +1044,8 @@ animals = [
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Lesser snow geese breed in the arctic tundra, but migrate in the winter to the Southern U.S., and Mexico. They have one of the
@@ -1063,8 +1063,8 @@ animals = [
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The recovery of bald eagles in North America is one of the greatest conservation stories of our time. In 1964 there were
@@ -1083,8 +1083,8 @@ animals = [
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       '''While visible all year-round, the polar bears at the zoo are far more active during the cooler months. During the summer, they
          are quite lethargic, and spend much of their time resting in the shade. If you want to see the polar bears in their glory
          playing with one another, consider visiting in the winter.'''.replace( '\n', ' ' ),
@@ -1111,8 +1111,8 @@ animals = [
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,2,4,5,5,5,5,5,4,2,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Oct',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
       '''American flamingos are a relatively hardy bird, tolerating temperatures as low as 5°C. They can be seen reliably from May
          through to October, but they can also often be seen on warmer days in March, April, and November.
          *The American flamingos are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit
@@ -1135,8 +1135,8 @@ animals = [
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,1,2,4,5,5,5,5,3,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Sep',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Sep',                                                     # Seasonal visibility summary
       '''Spider monkeys are warm-weather primates, and struggle to be outside in any temperature below 15°C. They can be reliably seen
          from May through September, but even then, on colder days they opt to spend their time inside.
          *The black-handed spider monkeys are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit
@@ -1161,7 +1161,7 @@ animals = [
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,3,4,5,5,5,5,5,4,2,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
       '''May-Oct''',
       '''The capybara is a warm-weather animal, and is most reliably seen from May until April. The capybara has a viewing pattern
          similar to the flamingos, and may also be viewable outside on warmer March, April, and November days. On days that aren't too
@@ -1187,8 +1187,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''American alligators are one of the largest reptiles in North America. Their range consists of the Southeastern part of the U.S.,
@@ -1208,8 +1208,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1225,8 +1225,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1242,8 +1242,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The axolotl is one of the rarest species in the world, found only in the lakes and canals around Mexico City. Axolotls are a
@@ -1261,8 +1261,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Black-footed ferrets were believed to be extinct in the wild, until they were rediscovered in Wyoming in 1981. At one point
@@ -1281,8 +1281,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1298,8 +1298,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The story of the blanding's turtle is one of the great conservation stories of the Toronto Zoo. Since being declared
@@ -1316,8 +1316,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The blue and gold macaw is one of the most recognizable species of parrot in the world. They are native to South America where
@@ -1336,8 +1336,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1353,8 +1353,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1370,8 +1370,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1387,8 +1387,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1404,8 +1404,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1421,8 +1421,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1438,8 +1438,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Cuvier's smooth-fronted caiman is the smallest species of caiman, and one of the smallest species of crocodilian in the world.
@@ -1457,8 +1457,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''This species is parthenogenetic, which means they can reproduce without males. The females lay eggs, which develop into
@@ -1475,8 +1475,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1492,8 +1492,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1509,8 +1509,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1526,8 +1526,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1543,8 +1543,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1560,8 +1560,8 @@ animals = [
       18,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,1,3,5,5,5,5,3,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Jun-Sep (Outdoor + Indoor), Oct-May (Indoor Only)',           # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Jun-Sep (Outdoor + Indoor), Oct-May (Indoor Only)',           # Seasonal visibility summary
       '''Golden lion tamarins are a species native to the tropical rainforests of South America, and can only be outside during the
          warmest months of the year. Even on these days, these little monkeys may opt to spend their time in their indoor habitat.'''
          .replace( '\n', ' ' ),
@@ -1574,7 +1574,7 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
-      'Great-horned owl',
+      'Great horned owl',
       'Americas Pavilion',
       1,                                                             # Has outdoor viewing
       0,                                                             # Has indoor viewing
@@ -1583,11 +1583,11 @@ animals = [
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
-      '''The great-horned owl is one of the largest species of owl in North America. They are easily recognized by the tufts on top of
+      '''The great horned owl is one of the largest species of owl in North America. They are easily recognized by the tufts on top of
          their heads, and their bright yellow eyes. They hunt at night, and their prey includes rabbits, squirrels, skunks, birds, and
          reptiles.'''.replace( '\n', ' ' ),
       None                                                           # Specific animal information
@@ -1602,8 +1602,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1619,8 +1619,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1636,8 +1636,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Green-winged macaws are an iconic species of parrot, identified through their red, green, and blue plumage, and the white
@@ -1657,8 +1657,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1674,8 +1674,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1691,8 +1691,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1708,8 +1708,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1725,8 +1725,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1742,8 +1742,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1759,8 +1759,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1776,8 +1776,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1793,8 +1793,8 @@ animals = [
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The North American river otters are a highly active species, and can be usually seen swimming around their water feature
          during the day. You can watch them swim around from above, at the outdoor viewing, or venture inside the pavilion to their
@@ -1819,8 +1819,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1836,8 +1836,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1853,8 +1853,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1870,8 +1870,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1887,8 +1887,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1904,8 +1904,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1921,8 +1921,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1938,8 +1938,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1955,8 +1955,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1972,8 +1972,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1989,8 +1989,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2006,8 +2006,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2023,8 +2023,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2040,8 +2040,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2057,8 +2057,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2074,8 +2074,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2091,8 +2091,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2108,8 +2108,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2125,8 +2125,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2142,8 +2142,8 @@ animals = [
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,2,4,5,5,5,5,3,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)',           # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)',           # Seasonal visibility summary
       '''The two-toed sloth is endemic to the rainforests of South America, and is suited to be outside in the warm weather. You have
          a good chance of spotting them outside through May into September, with a chance as well on warm days in April or October. Even
          on warm days, the sloths opt to spend their time inside. During the cooler months, they can always be spotted inside.'''
@@ -2167,8 +2167,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2184,8 +2184,8 @@ animals = [
       12,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,2,4,5,5,5,5,3,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      '''May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)''',       # Seasonal VISIBILITY summary''
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      '''May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)''',       # Seasonal visibility summary''
       '''White-faced sakis are warm weather primates, and are only comfortable outside in the warmer months. They are frequently spotted
          outdoors from May through September, but may also venture outside on other warmer days.'''.replace( '\n', ' ' ),
       '''The outdoor habitat for the white-faced saki is near the boardwalk connecting the Americas to Africa. If you don't spot them
@@ -2207,8 +2207,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2224,8 +2224,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2243,8 +2243,8 @@ animals = [
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Mar-Dec',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Mar-Dec',                                                     # Seasonal visibility summary
       '''The cougar is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom of
          the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March. To
          check whether the domain is open, consult the Toronto Zoo's official website. Cougars thrive in all seasons, and if the domain
@@ -2272,8 +2272,8 @@ animals = [
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,2,5,5,5,5,5,5,4,2,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Apr-Oct',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Apr-Oct',                                                     # Seasonal visibility summary
       '''The grizzly bear is viewable seasonably due to its hibernating patterns. Grizzly bears hibernate from sometime in November,
          usually until sometime in March, depending on the exact weather conditions of that year. Leading up to and coming out of
          hibernation, grizzly bears spend more of their time resting, and thus the bears at the zoo may be less visible as they spend
@@ -2304,8 +2304,8 @@ animals = [
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Mar-Dec',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Mar-Dec',                                                     # Seasonal visibility summary
       '''The Northern bald eagle is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at
          the bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime
          in March. To check whether the domain is open, consult the Toronto Zoo's official website. If the domain is open, then the
@@ -2328,8 +2328,8 @@ animals = [
       -35,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Mar-Dec',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Mar-Dec',                                                     # Seasonal visibility summary
       '''The raccoon is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom of
          the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March. To
          check whether the domain is open, consult the Toronto Zoo's official website. If the domain is open, then the raccoon will be
@@ -2348,8 +2348,8 @@ animals = [
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Mar-Dec',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Mar-Dec',                                                     # Seasonal visibility summary
       '''The wood bison is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom
          of the Rouge Valley, and for the safety of guests, the domain closes from about the start of Jaunary until sometime in March.
          To check whether the domain is open, consult the Toronto Zoo's official website. If the domain is open, then the wood bison
@@ -2375,8 +2375,8 @@ animals = [
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       3,                                                             # Snow resistance (only for animals with outdoor viewing)
       4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       '''The African lions are more or less viewable year round. During the den of winter they are given access to indoor spaces so
          they may decide to be inside if it is particularly cold or icy. In the winter, they are most often seen in their den, since
          this space is heated. You have the best chance of spotting the lions being active by visiting on a cooler day in the spring or
@@ -2400,8 +2400,8 @@ animals = [
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,2,4,5,5,5,5,5,5,3,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Apr-Nov (Outdoor + Indoor), Dec-Mar (Indoor Only)',           # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Apr-Nov (Outdoor + Indoor), Dec-Mar (Indoor Only)',           # Seasonal visibility summary
       '''African penguins are adapted to handle temperate climates, and thus can be seen outdoors for most of the year. They should be
          viewable on any day between April and November where the temperature is above 0°C and there is no snow on the ground. They may
          additionally be viewable on some days in March. From December to February and parts of March and April, they can be seen
@@ -2424,8 +2424,8 @@ animals = [
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       3,                                                             # Snow resistance (only for animals with outdoor viewing)
       4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       '''The cheetahs are on exhibit year-round. In the coldest months of the year they are given access to indoor spaces, so on very
          cold and/or icy days they may decide to spend their time inside. They are most active on cooler days in the fall and spring.
          ''',
@@ -2449,8 +2449,8 @@ animals = [
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,2,4,5,5,5,5,5,5,3,1,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Apr-Nov',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Apr-Nov',                                                     # Seasonal visibility summary
       '''Elands are one of the most-cold resistant antelopes, and can be seen outside during most months of the year through April into
          November. They may also be viewable on warmer March days where there is no snow on the ground, as they are not adapted to walk
          in it.'''.replace( '\n', ' ' ),
@@ -2471,8 +2471,8 @@ animals = [
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,1,3,5,5,5,5,5,4,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Oct',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
       '''Kudu are a warm weather antelope with little protection from the cold, and thus they are generally only viewable during the
          warmer months of the year. They can generally be viewed from May until October, and perhaps also on other warm days in spring
          or fall.'''.replace( '\n', ' ' ),
@@ -2495,8 +2495,8 @@ animals = [
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       1,                                                             # Snow resistance (only for animals with outdoor viewing)
       1,1,3,5,5,5,5,5,5,5,4,2,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      1,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Mar-Nov',                                                     # Seasonal VISIBILITY summary
+      1,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Mar-Nov',                                                     # Seasonal visibility summary
       '''Grevy's zebras are a very hardy species, tolerating temperatures around freezing. They are generally viewable outside from
          ealrly Spring through to the start of winter. On a lot of warmer winter days they would be able to go outside if not for the
          snow/ice on the ground. Zebras have no adaptation to allow them to move across the snow, and if one were to fall, it could be
@@ -2523,8 +2523,8 @@ animals = [
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,1,3,5,5,5,5,2,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Jun-Sep',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Jun-Sep',                                                     # Seasonal visibility summary
       '''Marabou storks are a warm weather bird and can only go on exhibit in the warmer months, particularly from June to September,
          but perhaps longer than that, depending on the specific weather.'''.replace( '\n', ' ' ),
       '''There are a couple different spots to spot the marabou storks. They go on exhibit with the kudu and can be spotted in that
@@ -2547,8 +2547,8 @@ animals = [
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,1,3,5,5,5,5,5,4,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Oct (Outdoor), Nov-Apr (Indoor)',                         # Winter VISIBILITY (only for animals with outdoor viewing)
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct (Outdoor), Nov-Apr (Indoor)',                         # Winter visibility (only for animals with outdoor viewing)
       '''Masai giraffes are warm-weather animals and have little protection against the cold. They can usually be seen outside from May
          until October and on other days above 10°C. If you don't see them outside, you can stop by the giraffe house, right beside
          their outdoor habitat and see them inside.'''.replace( '\n', ' ' ),
@@ -2572,8 +2572,8 @@ animals = [
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
       4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       '''The olive baboons can generally be seen year-round. In the coldest months they may be given access to indoor spaces, but they
          can generally be seen outside, most often on their main structure in the center of their enclosure.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
@@ -2593,8 +2593,8 @@ animals = [
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       1,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,3,5,5,5,5,5,5,5,3,1,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Mar-Nov',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Mar-Nov',                                                     # Seasonal visibility summary
       '''Ostriches are quite adaptive birds, comfortable in temperatures down to around 0°C. They can be fairly reliably seen between
          March and November, minus any freezing days, or days where there is much snow on the ground.'''.replace( '\n', ' ' ),
       '''The ostrich habitat has two main vantage points. One is between the lions and the baboons, while the other is across from the
@@ -2616,8 +2616,8 @@ animals = [
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,2,5,5,5,5,5,3,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Oct',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
       '''River hippos are native to sub-Saharan African and have exposed skin, and are thus not very adapted to the cold. At the zoo,
          they can be seen outside reliably from May through the warmer part of October, and occasionally on other warm spring and fall
          days.'''.replace( '\n', ' ' ),
@@ -2638,8 +2638,8 @@ animals = [
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,1,3,5,5,5,5,2,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Jun-Sep',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Jun-Sep',                                                     # Seasonal visibility summary
       '''Southern ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.'''
          .replace( '\n', ' ' ),
       '''Southern ground hornbills can be spotted in two habitats at the zoo. Some of them share a habitat with the kudus and other
@@ -2662,8 +2662,8 @@ animals = [
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,1,3,5,5,5,5,5,4,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Oct',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
       '''Southern white rhinoceroses are warm-weather animals and have exposed skin, and are only viewable outside during the warmer
          months of the year. They can be reliably seen from May through October, and on other warm spring or fall days.'''
          .replace( '\n', ' ' ),
@@ -2687,8 +2687,8 @@ animals = [
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       3,                                                             # Snow resistance (only for animals with outdoor viewing)
       4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       '''The spotted hyenas can generally be seen year-round, but during the coldest months they may be given indoor spaces, and decide
          to spend their time inside, specifically on the coldest and snowiest day. On the coldest days, look for them in their den,
          viewable from the glass viewing across from the watusi, which is heated.'''.replace( '\n', ' ' ),
@@ -2711,8 +2711,8 @@ animals = [
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,1,3,5,5,5,5,2,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Jun-Sep',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Jun-Sep',                                                     # Seasonal visibility summary
       '''Warthogs are very sensitive to the cold, and thus are only viewable outside during the warmest months, June to September, and
          on other warm days.'''.replace( '\n', ' ' ),
       '''The warthogs can most often be seen by looking directly down from their viewing. One of the warthogs at the zoo likes to rest
@@ -2733,8 +2733,8 @@ animals = [
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
       4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The watusi cattle can generally be seen outside year-round, as they have been bred to have a very high tolerance against the
          cold. On the iciest days, they may opt to stay inside as they need to move around a lot each day to graze.'''
@@ -2754,8 +2754,8 @@ animals = [
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,2,4,5,5,5,5,5,5,3,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Apr-Nov (Outdoor + Indoor), Dec-Mar (Indoor Only)',           # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Apr-Nov (Outdoor + Indoor), Dec-Mar (Indoor Only)',           # Seasonal visibility summary
       '''The white-breasted cormorant can handle temperate environments, and can thus be outside for most of the year, but cannot handle
          snow or ice. During the coldest months, from December through most of March, these birds are only visible indoors. When
          weather permits, this bird can normally be seen outside by the water's edge in the African penguin habitat.'''
@@ -2774,8 +2774,8 @@ animals = [
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,1,3,5,5,5,5,2,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Jun-Sep',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Jun-Sep',                                                     # Seasonal visibility summary
       '''The white-headed vulture is a warm-weather bird which can only be seen outside during the warmest months, and on other very
          warm days.'''.replace( '\n', ' ' ),
       '''The zoo is home to one white-headed vulture, Lloyd, and he is one of the more reclusive residents. He resides in the enclosure
@@ -2801,12 +2801,12 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
-      None                                                           # Specific animal information                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None                                                           # Specific animal information                                                          # Winter visibility (only for animals with outdoor viewing)
    ),
    (
       'African spoonbill',
@@ -2818,8 +2818,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2835,8 +2835,8 @@ animals = [
       20,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,0,1,3,4,4,3,1,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      '''Jul-Aug (Outdoor), Sep-Jun (Indoor)''',                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      '''Jul-Aug (Outdoor), Sep-Jun (Indoor)''',                     # Seasonal visibility summary
       '''The Aldabra tortoises only thrive in very warm weather and thus can only be reliably seen outdoors in the peak of summer,
          during July and August, and other very warm days. The rest of the time they can be seen inside the African Rainforest pavilion
          in their shared habitat with the ring-tailed lemurs and the grey-necked crowned cranes.'''.replace( '\n', ' ' ),
@@ -2856,8 +2856,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2873,8 +2873,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2890,8 +2890,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The grey-necked crowned crane is known for the golden features on the top of its head, and its multi-coloured plumage. Both
@@ -2909,8 +2909,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2926,8 +2926,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2943,8 +2943,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2960,8 +2960,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2977,8 +2977,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2994,8 +2994,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3011,8 +3011,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3028,8 +3028,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3045,8 +3045,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''This turtle has a soft, leathery shell, unlike the hard, boney ones which most others have. This soft shell helps them move
@@ -3065,8 +3065,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Pygmy hippos are significantly smaller, more timid, and less social than their counterparts. Unlike river hippos, pgymy hippos
@@ -3086,8 +3086,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3103,8 +3103,8 @@ animals = [
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,2,4,5,5,5,5,5,5,3,1,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Apr-Nov',                                                     # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Apr-Nov',                                                     # Seasonal visibility summary
       '''Red river hogs do surprisingly well in cooler temperatures can usually be seen outside from April until November.'''
          .replace( '\n', ' ' ),
       None,                                                          # General viewing tips
@@ -3125,8 +3125,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The ring-tailed lemur gets its name from the alternating black and white rings on its tail. Being a species of lemur, these
@@ -3147,8 +3147,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3164,8 +3164,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3181,8 +3181,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The slender-tailed meerkat is a small species of mongoose native to the savannas and semi-desert regions of Southern Africa.
@@ -3202,8 +3202,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3219,8 +3219,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3236,8 +3236,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3253,8 +3253,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3270,8 +3270,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3287,8 +3287,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3304,8 +3304,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3321,8 +3321,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The West African dwarf crocodile is the smallest species of crocodile in Africa. They can grow up to 5-6 ft, and are very
@@ -3341,8 +3341,8 @@ animals = [
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,1,3,5,5,5,5,5,4,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Oct (Outdoor + Indoor), Nov-Apr (Indoor Only)',           # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct (Outdoor + Indoor), Nov-Apr (Indoor Only)',           # Seasonal visibility summary
       '''Western lowland gorillas are warm weather primates and are only comfortable outside during the warmer months of the year,
          usually from May to October, and perhaps on other warmer days, specifically in the later part of April.'''.replace( '\n', ' ' ),
       '''In the warmer months, you can generally find the females in the outdoor habitat, and the males inside. When it is too cold for
@@ -3372,8 +3372,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3389,8 +3389,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3406,8 +3406,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3423,8 +3423,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3440,8 +3440,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3457,8 +3457,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3474,8 +3474,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3491,8 +3491,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3508,8 +3508,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3525,8 +3525,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3542,8 +3542,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3559,8 +3559,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3576,8 +3576,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3593,8 +3593,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3610,8 +3610,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3627,8 +3627,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3644,8 +3644,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3661,8 +3661,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3678,8 +3678,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3695,8 +3695,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3712,8 +3712,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3729,8 +3729,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3746,8 +3746,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3763,8 +3763,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3780,8 +3780,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3797,8 +3797,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The reticulated python is the longest snake species in the world. At their max, they can get up to 9 m (30 ft) in length. They
@@ -3816,8 +3816,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3833,8 +3833,8 @@ animals = [
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,0,1,4,5,5,5,5,3,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Oct (Outdoor + Indoor), Nov-Apr (Indoor Only)',           # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct (Outdoor + Indoor), Nov-Apr (Indoor Only)',           # Seasonal visibility summary
       '''Sumatran orangutans come from the tropical rainforests of Sumatra, and can only be outside during the warmer months. During the
          warmer months you may find these apes in their new, state-of-the-art outdoor habitat which opened in 2023, and their indoor
          habitat. If looking to see the orangutans outside, your best chance of seeing them actively exploring the habitat is to go
@@ -3864,8 +3864,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3881,8 +3881,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3898,8 +3898,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The tomistoma, also known as the false gharial, is a medium-sized crocodilian native to Southeast Asia. Despite their
@@ -3917,8 +3917,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3934,8 +3934,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The white-handed or Lar gibbon is a species of lesser ape known for its long limbs and agility, allowing them to cruise
@@ -3957,8 +3957,8 @@ animals = [
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
       0,0,1,3,5,5,5,5,5,4,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'May-Oct (Outdoor), Nov-Apr (Indoor)',                         # Seasonal VISIBILITY summary
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct (Outdoor), Nov-Apr (Indoor)',                         # Seasonal visibility summary
       '''Babirusa are a tropical species of pig and thus can only be outside in the warmer months, mostly from May to October, plus
          other warmer days. The rest of the time they can be viewed inside the greater one-horned rhino building to the left of their
          habitat.'''.replace( '\n', ' ' ),
@@ -3980,8 +3980,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The greater one-horned rhinoceros shares its indoor space with the babirusa. They rotate between the on-exhibit and off-exhibit
          spaces, and thus the rhino may not always be viewable. Your best chance of spotting him involves visiting the rhino house in
@@ -4006,8 +4006,8 @@ animals = [
       -15,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
       4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       '''The Indian peafowl are very well adapted to stay in the cold, but they also have access to indoor spaces in the winter, so they
          may choose to go inside on colder days.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
@@ -4027,8 +4027,8 @@ animals = [
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
       4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter VISIBILITY (only for animals with outdoor viewing)
-      'Year-round',                                                  # Seasonal VISIBILITY summary
+      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
       '''The Sumatran tigers are generally comfortable being outside year-round, but on cooler winter days they may choose to retreat
          inside.'''.replace( '\n', ' ' ),
       '''Like most cat species, the Sumatran tigers sleep quite a lot and are the most active when it is cooler. Your best chance to
@@ -4053,8 +4053,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -4070,8 +4070,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The clouded leopard is a nocturnal species, and thus your best chance of seeing them active is to visit their habitat earlier
          in the morning.'''.replace( '\n', ' ' ),
@@ -4093,8 +4093,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -4110,8 +4110,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -4127,8 +4127,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -4144,8 +4144,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -4161,8 +4161,8 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -4178,9 +4178,185 @@ animals = [
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
       None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+
+   # Goat World
+   (
+      'Domestic goat',
+      'Goat World',
+      1,                                                             # Has outdoor viewing
+      0,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      1,                                                             # Always viewable outdoors
+      -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
+      4,                                                             # Snow resistance (only for animals with outdoor viewing)
+      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
+      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'Year-round',                                                  # Seasonal visibility summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+
+   # Kidz Zoo
+   (
+      'Abyssinian ground hornbill',
+      'Kidz Zoo',
+      1,                                                             # Has outdoor viewing
+      0,                                                             # Has indoor viewing
+      0,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0,0,0,0,4,5,5,5,5,3,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
+      '''Southern ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.
+         *The Abyssinian ground hornbill is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through
+         October. To check whether the Kidz Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
+         .replace( '*', '\n' ),
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Common raven',
+      'Kidz Zoo',
+      1,                                                             # Has outdoor viewing
+      0,                                                             # Has indoor viewing
+      0,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
+      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
+      '''The common raven is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
+         check whether the Kidz Zoo is open, consult the Toronto Zoo's official website. The raven is a very hardy species, and should be
+         viewable if the Kidz Zoo is open.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Eurasian eagle owl',
+      'Kidz Zoo',
+      1,                                                             # Has outdoor viewing
+      0,                                                             # Has indoor viewing
+      0,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
+      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
+      '''The Eurasian eagle owl is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
+         To check whether the Kidz Zoo is open, consult the Toronto Zoo's official website. The Eurasian eagle owl is a very hardy
+         species, and should be viewable if the Kidz Zoo is open.'''.replace( '\n', ' ' ),
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Great horned owl',
+      'Kidz Zoo',
+      1,                                                             # Has outdoor viewing
+      0,                                                             # Has indoor viewing
+      0,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
+      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
+      '''The great horned owl is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
+         To check whether the Kidz Zoo is open, consult the Toronto Zoo's official website. The great horned owl is a very hardy
+         species, and should be viewable if the Kidz Zoo is open.'''.replace( '\n', ' ' ),
+      None,                                                          # General viewing tips
+      '''The great horned owl is one of the largest species of owl in North America. They are easily recognized by the tufts on top of
+         their heads, and their bright yellow eyes. They hunt at night, and their prey includes rabbits, squirrels, skunks, birds, and
+         reptiles.'''.replace( '\n', ' ' ),
+      None                                                           # Specific animal information
+   ),
+   (
+      'Guinea pig',
+      'Kidz Zoo',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      0,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
+      '''The guinea pig is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check
+         whether the Kidz Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ),
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Harris\'s hawk',
+      'Kidz Zoo',
+      1,                                                             # Has outdoor viewing
+      0,                                                             # Has indoor viewing
+      0,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      5,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      1,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
+      '''The Harris\'s hawk is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
+         check whether the Kidz Zoo is open, consult the Toronto Zoo's official website. The Harris's hawk is a somewhat hardy species,
+         and should be viewable if the Kidz Zoo is open.'''.replace( '\n', ' ' ),
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Marabou stork',
+      'Kidz Zoo',
+      1,                                                             # Has outdoor viewing
+      0,                                                             # Has indoor viewing
+      0,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0,0,0,0,3,5,5,5,5,2,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
+      '''Marabou storks are warm-weather birds which are usually only viewable during the warmest months of the year.
+         *The marabou stork is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
+         To check whether the Kidz Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      None,                                                          # General viewing tips
+      '''Marabou storks are large wadding birds native to sub-Saharan Africa. They are recognized for their bald heads, and are often
+         considered quite an ugly bird. They are quite an important part of the ecosystem, feeding on carcasses and carrion.''',
+      None                                                           # Specific animal information
+   ),
+   (
+      'Rabbit',
+      'Kidz Zoo',
+      1,                                                             # Has outdoor viewing
+      0,                                                             # Has indoor viewing
+      0,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      2,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
+      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      'May-Oct',                                                     # Seasonal visibility summary
+      '''The rabbit is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check
+         whether the Kidz Zoo is open, consult the Toronto Zoo's official website. The rabbit is a hardy species, and should be viewable
+         if the Kidz Zoo is open.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
@@ -5062,7 +5238,7 @@ enclosures =\
       42.5
    ),
    (
-      'Great-horned owl',
+      'Great horned owl',
       'Americas Pavilion',
       'Outdoor',
       50.375,
@@ -5920,6 +6096,73 @@ enclosures =\
       'Indoor',
       66.25,
       74.5
+   ),
+
+   # Goat World
+   (
+      'Domestic goat',
+      'Goat World',
+      'Outdoor',
+      65,
+      52.25
+   ),
+
+   # Kidz Zoo
+   (
+      'Abyssinian ground hornbill',
+      'Kidz Zoo',
+      'Outdoor',
+      70,
+      52.5
+   ),
+   (
+      'Common raven',
+      'Kidz Zoo',
+      'Outdoor',
+      70,
+      52.5
+   ),
+   (
+      'Eurasian eagle owl',
+      'Kidz Zoo',
+      'Outdoor',
+      70,
+      52.5
+   ),
+   (
+      'Great horned owl',
+      'Kidz Zoo',
+      'Outdoor',
+      70,
+      52.5
+   ),
+   (
+      'Guinea pig',
+      'Kidz Zoo',
+      'Indoor',
+      70,
+      52.5
+   ),
+   (
+      'Harris\'s hawk',
+      'Kidz Zoo',
+      'Outdoor',
+      70,
+      52.5
+   ),
+   (
+      'Marabou stork',
+      'Kidz Zoo',
+      'Outdoor',
+      70,
+      52.5
+   ),
+   (
+      'Rabbit',
+      'Kidz Zoo',
+      'Outdoor',
+      70,
+      52.5
    )
 ]
 
