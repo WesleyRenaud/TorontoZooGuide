@@ -49,7 +49,7 @@ class Database():
                                            y_coord=animal[10], likelihood=9 ) )
             
             # Check if the animal can be viewed outside and inside at the same time (it can also be viewed inside)
-            if self.zoo_util.species_viewable_inside_and_outside( species=animal[0] ):
+            if exhibit_type == 'Indoor' and self.zoo_util.species_viewable_inside_and_outside( species=animal[0] ):
                animals.append( zoo.Animal( species=animal[0], location=animal[1], seasonal_viewing_summary=animal[3],
                                            seasonal_viewing_tips=animal[4], general_viewing_tips=animal[5], animal_info=animal[6],
                                            specific_animal_info=animal[7], exhibit_type="Indoor", x_coord=animal[9],

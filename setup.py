@@ -47,6 +47,23 @@ cursor.execute( ''' CREATE TABLE Enclosure
 animals = [
    # Australasia Pavilion
    (
+      'Black tree monitor',
+      'Australasia Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Brownbanded bamboo shark',
       'Australasia Pavilion',
       0,                                                             # Has outdoor viewing
@@ -64,7 +81,24 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
-      'Central bearded dragon',
+      'Brush-tailed bettong',
+      'Australasia Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),   
+   (
+      'Clown triggerfish',
       'Australasia Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -81,7 +115,7 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
-      'Clown triggerfish',
+      'Crested pigeon',
       'Australasia Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -187,7 +221,7 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
-      'Green tree python',
+      'Galah',
       'Australasia Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -204,7 +238,7 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
-      'Galah',
+      'Green tree python',
       'Australasia Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -366,6 +400,23 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Malagasy rainbowfish',
+      'Australasia Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Moon jellyfish',
       'Australasia Pavilion',
       0,                                                             # Has outdoor viewing
@@ -417,6 +468,23 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Pied imperial pigeon',
+      'Australasia Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Pot-bellied seahorse',
       'Australasia Pavilion',
       0,                                                             # Has outdoor viewing
@@ -435,6 +503,23 @@ animals = [
    ),
    (
       'Red claw yabby',
+      'Australasia Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Red-bellied short-necked turtle',
       'Australasia Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -507,6 +592,23 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Solomon Island monkey-tailed skink',
+      'Australasia Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Southern hairy-nosed wombat',
       'Australasia Pavilion',
       1,                                                             # Has outdoor viewing
@@ -531,7 +633,58 @@ animals = [
       '''The Toronto Zoo has a breeding pair of wombats, male Arthur, and female Matilba.'''.replace( '\n', ' ' )
    ),
    (
+      'Stimson\'s python',
+      'Australasia Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Tawny frogmouth',
+      'Australasia Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Thorny devil stick insect',
+      'Australasia Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Threadfin butterflyfish',
       'Australasia Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -1495,7 +1648,7 @@ animals = [
          .replace( '\n', ' ' )
    ),
    (
-      'Guatamalan beaded lizard',
+      'Guatemalan beaded lizard',
       'Americas Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -1597,6 +1750,23 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Mexican blind cavefish',
+      'Americas Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Midland painted turtle',
       'Americas Pavilion',
       0,                                                             # Has outdoor viewing
@@ -1640,7 +1810,7 @@ animals = [
          being active, and the other not, it is likely that RJ is the one needing a rest.'''.replace( '\n', ' ' )
    ),
    (
-      'Opal-rumped tanagar',
+      'Opal-rumped tanager',
       'Americas Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -2730,6 +2900,23 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Gaboon viper',
+      'African Rainforest Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Hamerkop',
       'African Rainforest Pavilion',
       0,                                                             # Has outdoor viewing
@@ -2765,6 +2952,40 @@ animals = [
    ),
    (
       'Lau banded iguana',
+      'African Rainforest Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Leopard ctenopoma',
+      'African Rainforest Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Mantella (poison frog)',
       'African Rainforest Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -2856,7 +3077,7 @@ animals = [
          breeding, they can each be seen in on of their two habitats in the African Rainforest Pavilion.'''.replace( '\n', ' ' )
    ),
    (
-      'Red-footed tortoise',
+      'Radiated tortoise',
       'African Rainforest Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -2972,6 +3193,23 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'South African crested porcupine',
+      'African Rainforest Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'South African shelduck',
       'African Rainforest Pavilion',
       0,                                                             # Has outdoor viewing
@@ -3006,7 +3244,41 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Spider tortoise',
+      'African Rainforest Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Straw coloured fruit bat',
+      'African Rainforest Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Tomato frog',
       'African Rainforest Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -3193,6 +3465,23 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Cattle egret',
+      'Indo-Malaya Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Concave casqued hornbill',
       'Indo-Malaya Pavilion',
       0,                                                             # Has outdoor viewing
@@ -3261,6 +3550,40 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Edward\'s pheasant',
+      'Indo-Malaya Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Giant gourami',
+      'Indo-Malaya Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Grass carp',
       'Indo-Malaya Pavilion',
       0,                                                             # Has outdoor viewing
@@ -3295,6 +3618,40 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Hamilton\'s pond turtle',
+      'Indo-Malaya Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Iridescent shark catfish',
+      'Indo-Malaya Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Luzon bleeding-heart dove',
       'Indo-Malaya Pavilion',
       0,                                                             # Has outdoor viewing
@@ -3313,23 +3670,6 @@ animals = [
    ),
    (
       'Malayan bonytongue',
-      'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
-      None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
-      None,                                                          # Seasonal viewing tips
-      None,                                                          # General viewing tips
-      None,                                                          # Animal information
-      None                                                           # Specific animal information
-   ),
-   (
-      'Malayan crested fireback pheasant',
       'Indo-Malaya Pavilion',
       0,                                                             # Has outdoor viewing
       1,                                                             # Has indoor viewing
@@ -3414,6 +3754,40 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Palawan peacock-pheasant',
+      'Indo-Malaya Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
+      'Red-lined torpedo barb',
+      'Indo-Malaya Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Reticulated python',
       'Indo-Malaya Pavilion',
       0,                                                             # Has outdoor viewing
@@ -3430,23 +3804,6 @@ animals = [
       '''The reticulated python is the longest snake species in the world. At their max, they can get up to 9 m (30 ft) in length. They
          are constrictors, which means they kill their prey by wrapping their bodies around it. Large individuals can take down large
          prey items like deer, boars, and small antelopes.'''.replace( '\n', ' ' ),
-      None                                                           # Specific animal information
-   ),
-   (
-      'Siamese catfish',
-      'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
-      None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
-      None,                                                          # Seasonal VISIBILITY summary
-      None,                                                          # Seasonal viewing tips
-      None,                                                          # General viewing tips
-      None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
@@ -3761,6 +4118,23 @@ animals = [
       None                                                           # Specific animal information
    ),
    (
+      'Malayan walking stick',
+      'Malayan Woods Pavilion',
+      0,                                                             # Has outdoor viewing
+      1,                                                             # Has indoor viewing
+      1,                                                             # Always viewable
+      0,                                                             # Always viewable outdoors
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
+      None,                                                          # Winter VISIBILITY (only for animals with outdoor viewing)
+      None,                                                          # Seasonal VISIBILITY summary
+      None,                                                          # Seasonal viewing tips
+      None,                                                          # General viewing tips
+      None,                                                          # Animal information
+      None                                                           # Specific animal information
+   ),
+   (
       'Malaysian stick insect jungle wood nymph',
       'Malayan Woods Pavilion',
       0,                                                             # Has outdoor viewing
@@ -3817,6 +4191,13 @@ enclosures =\
 [
    # Australasia Pavilion indoor enclosures
    (
+      'Black tree monitor',
+      'Australasia Pavilion',
+      'Indoor',
+      65,
+      41,
+   ),
+   (
       'Brownbanded bamboo shark',
       'Australasia Pavilion',
       'Indoor',
@@ -3824,7 +4205,7 @@ enclosures =\
       41,
    ),
    (
-      'Central bearded dragon',
+      'Brush-tailed bettong',
       'Australasia Pavilion',
       'Indoor',
       65,
@@ -3832,6 +4213,13 @@ enclosures =\
    ),
    (
       'Clown triggerfish',
+      'Australasia Pavilion',
+      'Indoor',
+      65,
+      41,
+   ),
+   (
+      'Crested pigeon',
       'Australasia Pavilion',
       'Indoor',
       65,
@@ -3859,14 +4247,7 @@ enclosures =\
       41,
    ),
    (
-      'Fly river turtle',
-      'Australasia Pavilion',
-      'Indoor',
-      65,
-      41,
-   ),
-   (
-      'Green tree python',
+      'Fly River turtle',
       'Australasia Pavilion',
       'Indoor',
       65,
@@ -3874,6 +4255,13 @@ enclosures =\
    ),
    (
       'Galah',
+      'Australasia Pavilion',
+      'Indoor',
+      65,
+      41,
+   ),
+   (
+      'Green tree python',
       'Australasia Pavilion',
       'Indoor',
       65,
@@ -3936,6 +4324,13 @@ enclosures =\
       41,
    ),
    (
+      'Malagasy rainbowfish',
+      'Australasia Pavilion',
+      'Indoor',
+      65,
+      41,
+   ),
+   (
       'Moon jellyfish',
       'Australasia Pavilion',
       'Indoor',
@@ -3957,6 +4352,13 @@ enclosures =\
       41,
    ),
    (
+      'Pied imperial pigeon',
+      'Australasia Pavilion',
+      'Indoor',
+      65,
+      41,
+   ),
+   (
       'Pot-bellied seahorse',
       'Australasia Pavilion',
       'Indoor',
@@ -3965,6 +4367,13 @@ enclosures =\
    ),
    (
       'Red claw yabby',
+      'Australasia Pavilion',
+      'Indoor',
+      65,
+      41,
+   ),
+   (
+      'Red-bellied short-necked turtle',
       'Australasia Pavilion',
       'Indoor',
       65,
@@ -3992,6 +4401,13 @@ enclosures =\
       41,
    ),
    (
+      'Solomon Island monkey-tailed skink',
+      'Australasia Pavilion',
+      'Indoor',
+      65,
+      41,
+   ),
+   (
       'Southern hairy-nosed wombat',
       'Australasia Pavilion',
       'Indoor',
@@ -3999,7 +4415,28 @@ enclosures =\
       41,
    ),
    (
+      'Stimson\'s python',
+      'Australasia Pavilion',
+      'Indoor',
+      65,
+      41,
+   ),
+   (
+      'Tawny frogmouth',
+      'Australasia Pavilion',
+      'Indoor',
+      65,
+      41,
+   ),
+   (
       'Thorny devil stick insect',
+      'Australasia Pavilion',
+      'Indoor',
+      65,
+      41,
+   ),
+   (
+      'Threadfin butterflyfish',
       'Australasia Pavilion',
       'Indoor',
       65,
@@ -4062,8 +4499,8 @@ enclosures =\
       'Asian wild horse',
       'Eurasia Wilds',
       'Outdoor',
-      71.5,
-      39
+      85,
+      25
    ),
    (
       'Asian wild horse',
@@ -4296,14 +4733,14 @@ enclosures =\
       41.75
    ),
    (
-      'Cuvier\'s smooth-fronted caiman',
+      'Crested tinamou',
       'Americas Pavilion',
       'Indoor',
       51.375,
       41.75
    ),
    (
-      'Crested tinamou',
+      'Cuvier\'s smooth-fronted caiman',
       'Americas Pavilion',
       'Indoor',
       51.375,
@@ -4380,6 +4817,13 @@ enclosures =\
       41.75
    ),
    (
+      'Guatemalan beaded lizard',
+      'Americas Pavilion',
+      'Indoor',
+      51.375,
+      41.75
+   ),
+   (
       'Jamaican boa',
       'Americas Pavilion',
       'Indoor',
@@ -4409,6 +4853,27 @@ enclosures =\
    ),
    (
       'Massasauga rattlesnake',
+      'Americas Pavilion',
+      'Indoor',
+      51.375,
+      41.75
+   ),
+   (
+      'Mexican blind cavefish',
+      'Americas Pavilion',
+      'Indoor',
+      51.375,
+      41.75
+   ),
+   (
+      'Midland painted turtle',
+      'Americas Pavilion',
+      'Indoor',
+      51.375,
+      41.75
+   ),
+   (
+      'Opal-rumped tanager',
       'Americas Pavilion',
       'Indoor',
       51.375,
@@ -4458,6 +4923,13 @@ enclosures =\
    ),
    (
       'Red Island bird-eating tarantula',
+      'Americas Pavilion',
+      'Indoor',
+      51.375,
+      41.75
+   ),
+   (
+      'Red-crested finch',
       'Americas Pavilion',
       'Indoor',
       51.375,
@@ -4918,6 +5390,20 @@ enclosures =\
       76
    ),
    (
+      'Leopard ctenopoma',
+      'African Rainforest Pavilion',
+      'Indoor',
+      53,
+      76
+   ),
+   (
+      'Mantella (poison frog)',
+      'African Rainforest Pavilion',
+      'Indoor',
+      53,
+      76
+   ),
+   (
       'Naked mole rat',
       'African Rainforest Pavilion',
       'Indoor',
@@ -4932,7 +5418,35 @@ enclosures =\
       76
    ),
    (
+      'Slender-tailed meerkat',
+      'African Rainforest Pavilion',
+      'Indoor',
+      53,
+      76
+   ),
+   (
+      'South African crested porcupine',
+      'African Rainforest Pavilion',
+      'Indoor',
+      53,
+      76
+   ),
+   (
       'Speckled mousebird',
+      'African Rainforest Pavilion',
+      'Indoor',
+      53,
+      76
+   ),
+   (
+      'Spider tortoise',
+      'African Rainforest Pavilion',
+      'Indoor',
+      53,
+      76
+   ),
+   (
+      'Tomato frog',
       'African Rainforest Pavilion',
       'Indoor',
       53,
@@ -4954,6 +5468,13 @@ enclosures =\
    ),
    (
       'Aldabra tortoise',
+      'African Rainforest Pavilion',
+      'Indoor',
+      54,
+      80.5
+   ),
+   (
+      'Gaboon viper',
       'African Rainforest Pavilion',
       'Indoor',
       54,
@@ -5009,7 +5530,7 @@ enclosures =\
       78.625
    ),
    (
-      'Red-footed tortoise',
+      'Radiated tortoise',
       'African Rainforest Pavilion',
       'Indoor',
       53.75,
@@ -5102,6 +5623,13 @@ enclosures =\
       78.75
    ),
    (
+      'Cattle egret',
+      'Indo-Malaya Pavilion',
+      'Indoor',
+      60.75,
+      78.75
+   ),
+   (
       'Concave casqued hornbill',
       'Indo-Malaya Pavilion',
       'Indoor',
@@ -5130,6 +5658,20 @@ enclosures =\
       78.75
    ),
    (
+      'Edward\'s pheasant',
+      'Indo-Malaya Pavilion',
+      'Indoor',
+      60.75,
+      78.75
+   ),
+   (
+      'Giant gourami',
+      'Indo-Malaya Pavilion',
+      'Indoor',
+      60.75,
+      78.75
+   ),
+   (
       'Grass carp',
       'Indo-Malaya Pavilion',
       'Indoor',
@@ -5144,6 +5686,20 @@ enclosures =\
       78.75
    ),
    (
+      'Hamilton\'s pond turtle',
+      'Indo-Malaya Pavilion',
+      'Indoor',
+      60.75,
+      78.75
+   ),
+   (
+      'Iridescent shark catfish',
+      'Indo-Malaya Pavilion',
+      'Indoor',
+      60.75,
+      78.75
+   ),
+   (
       'Luzon bleeding-heart dove',
       'Indo-Malaya Pavilion',
       'Indoor',
@@ -5152,13 +5708,6 @@ enclosures =\
    ),
    (
       'Malayan bonytongue',
-      'Indo-Malaya Pavilion',
-      'Indoor',
-      60.75,
-      78.75
-   ),
-   (
-      'Malayan crested fireback pheasant',
       'Indo-Malaya Pavilion',
       'Indoor',
       60.75,
@@ -5193,14 +5742,21 @@ enclosures =\
       78.75
    ),
    (
-      'Reticulated python',
+      'Palawan peacock-pheasant',
       'Indo-Malaya Pavilion',
       'Indoor',
       60.75,
       78.75
    ),
    (
-      'Siamese catfish',
+      'Red-lined torpedo barb',
+      'Indo-Malaya Pavilion',
+      'Indoor',
+      60.75,
+      78.75
+   ),
+   (
+      'Reticulated python',
       'Indo-Malaya Pavilion',
       'Indoor',
       60.75,
@@ -5338,6 +5894,13 @@ enclosures =\
       74.5
    ),
    (
+      'Malayan walking stick',
+      'Malayan Woods Pavilion',
+      'Indoor',
+      66.25,
+      74.5
+   ),
+   (
       'Malaysian stick insect jungle wood nymph',
       'Malayan Woods Pavilion',
       'Indoor',
@@ -5359,10 +5922,6 @@ enclosures =\
       74.5
    )
 ]
-
-for a in animals:
-    if len(a) != 26:
-        print(len(a), a[0])
 
 cursor.executemany( ''' INSERT INTO Animal (
                            SPECIES,
