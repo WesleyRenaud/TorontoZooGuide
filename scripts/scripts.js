@@ -130,7 +130,7 @@ function updateMap(preset, date) {
 
                $.ajax({
                   type: 'POST',
-                  url: '/get-animals-viewable-in-day',
+                  url: '/get-animals-viewable-on-day-with-forecast',
                   contentType: 'application/json',
                   data: JSON.stringify({
                      month: getMonth(date),
@@ -144,12 +144,14 @@ function updateMap(preset, date) {
             });
       }
       else {
+         console.log(date, getDay(date));
          $.ajax({
             type: 'POST',
-            url: '/get-animals-viewable-in-month',
+            url: '/get-animals-viewable-on-day',
             contentType: 'application/json',
             data: JSON.stringify({
-               month: getMonth(date)
+               month: getMonth(date),
+               day: getDay(date)
             }),
             success: function (response) {
                addMarkers(response.animals);
@@ -184,7 +186,7 @@ function getMonth(dateStr) {
 }
 
 function getDay(dateStr) {
-   const date = new Date(dateStr);
+   const date = parseLocalDate(dateStr);
    return date.getDate();
 }
 
@@ -252,7 +254,7 @@ function addMarkers(animals) {
 
 // Determine class for marker color based on likelihood
 function getLikelihoodClass(likelihood) {
-   if (likelihood >= 5) {
+   if (likelihood >= 4.75) { // 95%
       return 'likelihood-very-high';
    }
    else if (likelihood >= 4) {

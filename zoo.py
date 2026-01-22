@@ -46,8 +46,52 @@ class Zoo_Util:
          return False
       
 
+   def get_average_temperature( self, month, day ):
+      # Convert month/day to day-of-year
+      month = self.get_month_int( month )
+      day_of_year = sum( calendar.monthrange( 2024, m )[1] for m in range( 1, month ) ) + day
+
+      # Month start temperatures (°C)
+      month_base = {
+         1: -1.0,   # January
+         2:  0.0,   # February
+         3:  5.0,   # March
+         4: 12.0,   # April
+         5: 18.0,   # May
+         6: 23.0,   # June
+         7: 26.0,   # July
+         8: 25.0,   # August
+         9: 21.0,   # September
+         10:15.0,  # October
+         11: 9.0,  # November
+         12: 2.0   # December
+      }
+
+      # Compute start-of-month day-of-year mapping
+      month_start_doy = []
+      cumulative = 1
+      for m in range( 1, 13 ):
+         month_start_doy.append( (cumulative, month_base[m]) )
+         cumulative += calendar.monthrange( 2024, m )[1]
+
+      # Find which interval the day-of-year falls into
+      for i in range( len( month_start_doy ) - 1 ):
+         start_day, start_temp = month_start_doy[i]
+         end_day, end_temp = month_start_doy[i+1]
+         if start_day <= day_of_year < end_day:
+            progress = (day_of_year - start_day) / (end_day - start_day)
+            temp = start_temp + (end_temp - start_temp) * progress
+            return round( temp, 1 )
+
+      # If day is in December
+      temp = month_start_doy[-1][1]
+      return round( temp, 1 )
+
+
    # Returns probability (0.0 – 1.0) that snow is on the ground in Toronto on the given month & day
-   def snow_probability( self, month, day ):
+   def get_snow_likelihood( self, month, day ):
+      month = self.get_month_int( month )
+
       MONTH_SNOW_BASE = {
          1: 0.90,   # January
          2: 0.85,
@@ -85,7 +129,7 @@ class Zoo_Util:
          base *= 1.0 - progress
 
       return round( max( 0.0, min( 1.0, base ) ), 2 )
-   
+
 
    def get_month_int( self, month ):
       if month == 'JAN':
@@ -114,46 +158,6 @@ class Zoo_Util:
          return 12
       
       return None
-   
-
-   def get_estimated_temp( self, month, day ):
-      TORONTO_MONTHLY_AVG = {
-         "JAN": -4,
-         "FEB": -3,
-         "MAR":  2,
-         "APR":  8,
-         "MAY": 14,
-         "JUN": 19,
-         "JUL": 22,
-         "AUG": 21,
-         "SEP": 17,
-         "OCT": 11,
-         "NOV":  5,
-         "DEC": -1
-      }
-
-      month = month.upper()
-
-      avg_month_temp = TORONTO_MONTHLY_AVG[month]
-      day_of_year = self.get_day_of_year( month, day )
-
-      # Peak summer ≈ July 24 (Toronto warmest day)
-      phase_shift = 205
-      radians = 2 * math.pi * ( day_of_year - phase_shift ) / 365
-
-      # Toronto seasonal swing (°C)
-      seasonal_swing = 14
-
-      # Toronto annual mean temp
-      annual_mean = 9
-
-      # Smooth seasonal curve
-      seasonal_temp = annual_mean + seasonal_swing * math.sin( radians )
-
-      # Blend monthly climate normals with smooth curve
-      temp = seasonal_temp * 0.6 + avg_month_temp * 0.4
-
-      return round( temp, 1 )
    
 
    def get_day_of_year(self, month, day ):

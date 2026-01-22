@@ -80,14 +80,15 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
-      elif self.path == '/get-animals-viewable-in-month':
+      elif self.path == '/get-animals-viewable-on-day':
          content_length = int( self.headers[ 'Content-Length'] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
          month = data.get( 'month' )
+         day = data.get( 'day' )
 
-         animals = self.database.get_animals_viewable_in_month( month )
+         animals = self.database.get_animals_viewable_on_day( month, day )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -96,7 +97,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
-      elif self.path == '/get-animals-viewable-in-day':
+      elif self.path == '/get-animals-viewable-on-day-with-forecast':
          content_length = int( self.headers[ 'Content-Length'] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
@@ -105,7 +106,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day = data.get( 'day' )
          temp = data.get( 'temp' )
 
-         animals = self.database.get_animals_viewable_on_day( month, day, temp )
+         animals = self.database.get_animals_viewable_on_day_with_forecast( month, day, temp )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
