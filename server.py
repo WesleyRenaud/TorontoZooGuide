@@ -13,91 +13,55 @@ class MyHandler( BaseHTTPRequestHandler ):
       parsed = urlparse( self.path )
 
       if parsed.path in ['/home.html']:
-         fp = open( './pages/home.html' )
-         content = fp.read()
-
          self.send_response( 200 )
          self.send_header( 'Content-type', 'text/html' )
-         self.send_header( 'Content-length', len( content ) )
          self.end_headers()
-         self.wfile.write( bytes( content, 'utf-8' ) )
-
+         with open( './pages/home.html', 'rb' ) as fp:
+            while True:
+               chunk = fp.read( 8192 )
+               if not chunk:
+                  break
+               self.wfile.write( chunk )
 
       elif parsed.path == '/styles/styles.css':
-         fp = open( './styles/styles.css', 'r' )
-         content = fp.read()
-
          self.send_response( 200 )
          self.send_header( 'Content-type', 'text/css' )
-         self.send_header( 'Content-length', len( content ) )
          self.end_headers()
-         self.wfile.write( bytes( content, 'utf-8' ) )
-
+         with open( './styles/styles.css', 'rb' ) as fp:
+            while True:
+               chunk = fp.read( 8192 )
+               if not chunk:
+                  break
+               self.wfile.write( chunk )
 
       elif parsed.path == '/scripts/scripts.js':
-         fp = open( './scripts/scripts.js', 'r' )
-         content = fp.read()
-
          self.send_response( 200 )
-         self.send_header( 'Content-type', 'text/css' )
-         self.send_header( 'Content-length', len( content ) )
+         self.send_header( 'Content-type', 'application/javascript' )
          self.end_headers()
-         self.wfile.write( bytes( content, 'utf-8' ) )
-
+         with open('./scripts/scripts.js', 'rb') as fp:
+            while True:
+               chunk = fp.read( 8192 )
+               if not chunk:
+                  break
+               self.wfile.write( chunk )
 
       elif 'png' in parsed.path:
          image_path = parsed.path.replace( '%20', ' ' )
          image_path = image_path[1:]
 
-         fp = open( image_path, 'rb' )
-         content = fp.read()
-
          self.send_response( 200 )
          self.send_header( 'Content-type', 'image/png' )
-         self.send_header( 'Content-length', str( len( content ) ) )
          self.end_headers()
-         self.wfile.write( content )
+         with open(image_path, 'rb') as fp:
+            while True:
+               chunk = fp.read( 8192 )
+               if not chunk:
+                  break
+               self.wfile.write( chunk )
 
 
    def do_POST( self ):
-      if self.path == '/get-summer-animals':
-         animals = self.database.get_summer_animals()
-         
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'application/json' )
-         self.end_headers()
-         response = {"animals": [animal.to_dict() for animal in animals]}
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-
-
-      elif self.path == '/get-winter-animals':
-         animals = self.database.get_winter_animals()
-         
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'application/json' )
-         self.end_headers()
-         response = {"animals": [animal.to_dict() for animal in animals]}
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-
-
-      elif self.path == '/get-animals-viewable-on-day':
-         content_length = int( self.headers[ 'Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
-         month = data.get( 'month' )
-         day = data.get( 'day' )
-
-         animals = self.database.get_animals_viewable_on_day( month, day )
-         
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'application/json' )
-         self.end_headers()
-         response = {"animals": [animal.to_dict() for animal in animals]}
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-
-
-      elif self.path == '/get-animals-viewable-on-day-with-forecast':
+      if self.path == '/get-visible-animals':
          content_length = int( self.headers[ 'Content-Length'] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
@@ -106,7 +70,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day = data.get( 'day' )
          temp = data.get( 'temp' )
 
-         animals = self.database.get_animals_viewable_on_day_with_forecast( month, day, temp )
+         animals = self.database.get_animals_viewable_on_day( month, day, temp )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )

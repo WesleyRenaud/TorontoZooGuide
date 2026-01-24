@@ -224,34 +224,6 @@ html.home-page {
    display: none;
 }
 
-.marker.likelihood-none {
-   background: #b30000;
-}
-
-.marker.likelihood-very-low {
-   background: #e64d00;
-}
-
-.marker.likelihood-low {
-   background: #ff8000;
-}
-
-.marker.likelihood-moderate {
-   background: #ffb300;
-}
-
-.marker.likelihood-medium {
-   background: #ccff33;
-}
-
-.marker.likelihood-high {
-   background: #66cc33;
-}
-
-.marker.likelihood-very-high {
-   background: #339900;
-}
-
 /* ============================================================
    TOOLTIP CONTAINER
 ============================================================ */

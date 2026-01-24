@@ -4,59 +4,270 @@ conn = sqlite3.connect( 'animals.db' )
 
 cursor = conn.cursor()
 
+cursor.execute( 'DROP TABLE IF EXISTS Exhibit;' )
+cursor.execute( ''' CREATE TABLE Exhibit
+                  (  NAME              VARCHAR(64) NOT NULL,
+                     JAN_PROBABILITY   DOUBLE CHECK (JAN_PROBABILITY BETWEEN 0 AND 1),
+                     FEB_PROBABILITY   DOUBLE CHECK (FEB_PROBABILITY BETWEEN 0 AND 1),
+                     MAR_PROBABILITY   DOUBLE CHECK (MAR_PROBABILITY BETWEEN 0 AND 1),
+                     APR_PROBABILITY   DOUBLE CHECK (APR_PROBABILITY BETWEEN 0 AND 1),
+                     MAY_PROBABILITY   DOUBLE CHECK (MAY_PROBABILITY BETWEEN 0 AND 1),
+                     JUN_PROBABILITY   DOUBLE CHECK (JUN_PROBABILITY BETWEEN 0 AND 1),
+                     JUL_PROBABILITY   DOUBLE CHECK (JUL_PROBABILITY BETWEEN 0 AND 1),
+                     AUG_PROBABILITY   DOUBLE CHECK (AUG_PROBABILITY BETWEEN 0 AND 1),
+                     SEP_PROBABILITY   DOUBLE CHECK (SEP_PROBABILITY BETWEEN 0 AND 1),
+                     OCT_PROBABILITY   DOUBLE CHECK (OCT_PROBABILITY BETWEEN 0 AND 1),
+                     NOV_PROBABILITY   DOUBLE CHECK (NOV_PROBABILITY BETWEEN 0 AND 1),
+                     DEC_PROBABILITY   DOUBLE CHECK (DEC_PROBABILITY BETWEEN 0 AND 1),
+                     PRIMARY KEY (NAME) ); ''' )
+
 cursor.execute( 'DROP TABLE IF EXISTS Animal;' )
 cursor.execute( ''' CREATE TABLE Animal
                   (  SPECIES                    VARCHAR(64) NOT NULL,
-                     LOCATION                   VARCHAR(64) NOT NULL,
-                     HAS_OUTDOOR_VIEWING        BOOL        NOT NULL,
-                     HAS_INDOOR_VIEWING         BOOL        NOT NULL,
-                     ALWAYS_VIEWABLE            BOOL        NOT NULL,
-                     ALWAYS_VIEWABLE_OUTDOORS   BOOL,
+                     EXHIBIT                    VARCHAR(64) NOT NULL,
                      MIN_TEMPERATURE            INTEGER,
                      SNOW_RESISTANCE            INTEGER     CHECK (SNOW_RESISTANCE BETWEEN 0 AND 5),
-                     JAN_VISIBILITY             INTEGER     CHECK (JAN_VISIBILITY BETWEEN 0 AND 5),
-                     FEB_VISIBILITY             INTEGER     CHECK (FEB_VISIBILITY BETWEEN 0 AND 5),
-                     MAR_VISIBILITY             INTEGER     CHECK (MAR_VISIBILITY BETWEEN 0 AND 5),
-                     APR_VISIBILITY             INTEGER     CHECK (APR_VISIBILITY BETWEEN 0 AND 5),
-                     MAY_VISIBILITY             INTEGER     CHECK (MAY_VISIBILITY BETWEEN 0 AND 5),
-                     JUN_VISIBILITY             INTEGER     CHECK (JUN_VISIBILITY BETWEEN 0 AND 5),
-                     JUL_VISIBILITY             INTEGER     CHECK (JUL_VISIBILITY BETWEEN 0 AND 5),
-                     AUG_VISIBILITY             INTEGER     CHECK (AUG_VISIBILITY BETWEEN 0 AND 5),
-                     SEP_VISIBILITY             INTEGER     CHECK (SEP_VISIBILITY BETWEEN 0 AND 5),
-                     OCT_VISIBILITY             INTEGER     CHECK (OCT_VISIBILITY BETWEEN 0 AND 5),
-                     NOV_VISIBILITY             INTEGER     CHECK (NOV_VISIBILITY BETWEEN 0 AND 5),
-                     DEC_VISIBILITY             INTEGER     CHECK (DEC_VISIBILITY BETWEEN 0 AND 5),
-                     WINTER_VISIBILITY          INTEGER     CHECK (WINTER_VISIBILITY BETWEEN 0 AND 5),
+                     PART_OF_SEASONAL_EXHIBIT   BOOL,
                      SEASONAL_VIEWING_SUMMARY   VARCHAR(64),
                      SEASONAL_VIEWING_TIPS      TEXT,
                      GENERAL_VIEWING_TIPS       TEXT,
                      ANIMAL_INFO                TEXT,
                      SPECIFIC_ANIMAL_INFO       TEXT,
-                     PRIMARY KEY (SPECIES, LOCATION) ); ''' )
+                     FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(Name),
+                     PRIMARY KEY (SPECIES, EXHIBIT) ); ''' )
 
 cursor.execute( 'DROP TABLE IF EXISTS Enclosure;' )
 cursor.execute( ''' CREATE TABLE Enclosure
                   (  SPECIES        VARCHAR(64) NOT NULL,
-                     LOCATION       VARCHAR(64) NOT NULL,
+                     EXHIBIT        VARCHAR(64) NOT NULL,
                      EXHIBIT_TYPE   VARCHAR(64) NOT NULL,
                      X_COORD        INTEGER     NOT NULL,
                      Y_COORD        INTEGER     NOT NULL,
-                     FOREIGN KEY (SPECIES, LOCATION) REFERENCES Animal,
+                     FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(Name),
+                     FOREIGN KEY (SPECIES, EXHIBIT) REFERENCES Animal,
                      PRIMARY KEY (SPECIES, X_COORD, Y_COORD) ); ''' )
+
+exhibits = [
+   (
+      'Australasia Pavilion',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'Australasia Outdoor',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'Eurasia Wilds',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'Tundra Trek',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'Americas Outdoor Mayan Temple Ruins',
+      0,                        # Probability of being open in January
+      0,                        # Probability of being open in February
+      0.2,                      # Probability of being open in March
+      0.7,                      # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      0.6,                      # Probability of being open in November
+      0.1                       # Probability of being open in December
+   ),
+   (
+      'Americas Pavilion',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'Canadian Domain',
+      0,                        # Probability of being open in January
+      0,                        # Probability of being open in February
+      0.7,                      # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      0.9                       # Probability of being open in December
+   ),
+   (
+      'Africa Savanna',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'African Rainforest Pavilion',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'Indo-Malaya Pavilion',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'Indo-Malaya Outdoor',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'Malayan Woods Pavilion',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'Goat World',
+      1,                        # Probability of being open in January
+      1,                        # Probability of being open in February
+      1,                        # Probability of being open in March
+      1,                        # Probability of being open in April
+      1,                        # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      1,                        # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+   (
+      'Kids Zoo',
+      0,                        # Probability of being open in January
+      0,                        # Probability of being open in February
+      0,                        # Probability of being open in March
+      0.4,                      # Probability of being open in April
+      0.9,                      # Probability of being open in May
+      1,                        # Probability of being open in June
+      1,                        # Probability of being open in July
+      1,                        # Probability of being open in August
+      1,                        # Probability of being open in September
+      0.7,                      # Probability of being open in October
+      1,                        # Probability of being open in November
+      1                         # Probability of being open in December
+   ),
+]
 
 animals = [
    # Australasia Pavilion
    (
       'Black tree monitor',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -66,14 +277,9 @@ animals = [
    (
       'Brownbanded bamboo shark',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -83,14 +289,9 @@ animals = [
    (
       'Brush-tailed bettong',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -100,14 +301,9 @@ animals = [
    (
       'Clown triggerfish',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -117,14 +313,9 @@ animals = [
    (
       'Crested pigeon',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -134,14 +325,9 @@ animals = [
    (
       'Crimson rosella',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -151,14 +337,9 @@ animals = [
    (
       'Demoiselle crane',
       'Australasia Pavilion',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,1,4,5,5,5,5,5,5,5,4,3,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      1,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Mar-Nov',
       '''Demoiselle cranes are most reliably seen from the spring through the fall. They are fairly hardy birds, but will generally
          retreat to shelter in the coldest months.'''.replace( '\n', ' ' ),
@@ -172,14 +353,9 @@ animals = [
    (
       'Eastern rosella',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -189,14 +365,9 @@ animals = [
    (
       'Emerald tree boa',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -206,14 +377,9 @@ animals = [
    (
       'Fly River turtle',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -223,14 +389,9 @@ animals = [
    (
       'Galah',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -240,14 +401,9 @@ animals = [
    (
       'Green tree python',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -257,14 +413,9 @@ animals = [
    (
       'Green-winged dove',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -274,14 +425,9 @@ animals = [
    (
       'Komodo dragon',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The Komodo dragons at the zoo are young, and still getting used to their habitat. Most of the time you can find them high in the
@@ -296,14 +442,9 @@ animals = [
    (
       'Kookaburra',
       'Australasia Pavilion',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,3,4,5,5,5,5,3,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Jun-Sep (Outdoor), Oct-May (Indoor)',                         # Seasonal visibility summary
       '''Kookaburras are warm weather birds, and thus are only comfortable outside during the warmer months of the year. In these warmer
          months they can be seen outside in the Australasia outdoor aviary, alongside the demoiselle cranes. In the cooler months they
@@ -317,14 +458,9 @@ animals = [
    (
       'Lau banded iguana',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -334,14 +470,9 @@ animals = [
    (
       'Lionfish',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -351,14 +482,9 @@ animals = [
    (
       'Live coral reefs',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -368,14 +494,9 @@ animals = [
    (
       'Longnose butterflyfish',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -385,14 +506,9 @@ animals = [
    (
       'MacLeay\'s spectres',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -402,14 +518,9 @@ animals = [
    (
       'Malagasy rainbowfish',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -419,14 +530,9 @@ animals = [
    (
       'Moon jellyfish',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -436,14 +542,9 @@ animals = [
    (
       'Nicobar pigeon',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -453,14 +554,9 @@ animals = [
    (
       'Pennant coral fish',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -470,14 +566,9 @@ animals = [
    (
       'Pied imperial pigeon',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -487,14 +578,9 @@ animals = [
    (
       'Pot-bellied seahorse',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -504,14 +590,9 @@ animals = [
    (
       'Red claw yabby',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -521,14 +602,9 @@ animals = [
    (
       'Red-bellied short-necked turtle',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -538,14 +614,9 @@ animals = [
    (
       'Red-tailed black cockatoo',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -555,14 +626,9 @@ animals = [
    (
       'Short-beaked echidna',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The short-beaked echidna is perhaps the most difficult animal to spot at the zoo. This is because the species is nocturnal,
@@ -577,14 +643,9 @@ animals = [
    (
       'Solomon Island leaf frog',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -594,14 +655,9 @@ animals = [
    (
       'Solomon Island monkey-tailed skink',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -611,14 +667,9 @@ animals = [
    (
       'Southern hairy-nosed wombat',
       'Australasia Pavilion',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      10,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      14,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,2,4,5,5,5,5,2,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)',           # Seasonal visibility summary
       '''Wombats are warm weather animals, and tend to only venture outside in the warmer months of the year. They are also generally
          less active in the winter, spending more time sleeping in their burrows. Even in the warmer months, the wombats are often found
@@ -635,14 +686,9 @@ animals = [
    (
       'Stimson\'s python',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -652,14 +698,9 @@ animals = [
    (
       'Tawny frogmouth',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -669,14 +710,9 @@ animals = [
    (
       'Thorny devil stick insect',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -686,14 +722,9 @@ animals = [
    (
       'Threadfin butterflyfish',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -703,14 +734,9 @@ animals = [
    (
       'Victoria crowned pigeon',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -720,14 +746,9 @@ animals = [
    (
       'White\'s tree frog',
       'Australasia Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -739,14 +760,9 @@ animals = [
    (
       'Western grey kangaroo',
       'Australasia Outdoor',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,1,3,4,5,5,5,5,5,5,4,2,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      1,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Mar-Nov',                                                     # Seasonal visibility summary
       '''The Western grey kangaroo is a fairly hardy species. As long as the temperature is above 0°C and there isn't much snow on the
          ground, they should be viewable outside.'''.replace( '\n', ' ' ),
@@ -765,14 +781,9 @@ animals = [
    (
       'Amur tiger',
       'Eurasia Wilds',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary'
       '''While the Amur tigers at the zoo can be viewed year-round, these cats are actually most comfortable when it is cooler, so your
          best chance of seeing them active is in the winter.'''.replace( '\n', ' ' ),
@@ -791,14 +802,9 @@ animals = [
    (
       'Asian wild horse',
       'Eurasia Wilds',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -814,14 +820,9 @@ animals = [
    (
       'Bactrian camel',
       'Eurasia Wilds',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -833,14 +834,9 @@ animals = [
    (
       'Domestic yak',
       'Eurasia Wilds',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -852,14 +848,9 @@ animals = [
    (
       'Highland cattle',
       'Eurasia Wilds',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -873,14 +864,9 @@ animals = [
    (
       'Mouflon',
       'Eurasia Wilds',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
-      -15,                                                           # Minimum temperature (only for animals with outdoor viewing)
+      -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -893,14 +879,9 @@ animals = [
    (
       'Red panda',
       'Eurasia Wilds',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       '''Red pandas are most comfortable in the cooler weather, so visiting them from the fall through the spring will give you the
          best chance to see them active. During the summer months they spend much of their time sleeping high up in the trees. On the
@@ -919,14 +900,9 @@ animals = [
    (
       'Snow leopard',
       'Eurasia Wilds',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       '''Snow leopards are built for the extreme cold of the Himalayas, and thus are the most active in the winter. During the warmer
          months, they may be active earlier in the day, but they will spend a lot of the day sleeping in the shade, and perhaps away
@@ -952,14 +928,9 @@ animals = [
    (
       'Steller\'s sea eagle',
       'Eurasia Wilds',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -972,14 +943,9 @@ animals = [
    (
       'West Caucasian tur',
       'Eurasia Wilds',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
-      -15,                                                           # Minimum temperature (only for animals with outdoor viewing)
+      -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -994,14 +960,9 @@ animals = [
    (
       'Arctic wolf',
       'Tundra Trek',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The arctic wolf enclosure at the Toronto Zoo is very large, and has many viewing points. To get the best view of the wolves,
@@ -1015,14 +976,9 @@ animals = [
    (
       'Caribou',
       'Tundra Trek',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The caribou exhibit at the zoo is very large, and expands quite far back to the left from the main viewing area. Most of the
@@ -1037,14 +993,9 @@ animals = [
    (
       'Lesser snow goose',
       'Tundra Trek',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1056,14 +1007,9 @@ animals = [
    (
       'Northern bald eagle',
       'Tundra Trek',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1076,14 +1022,9 @@ animals = [
    (
       'Polar bear',
       'Tundra Trek',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       '''While visible all year-round, the polar bears at the zoo are far more active during the cooler months. During the summer, they
          are quite lethargic, and spend much of their time resting in the shade. If you want to see the polar bears in their glory
@@ -1104,14 +1045,9 @@ animals = [
    (
       'American flamingo',
       'Americas Outdoor Mayan Temple Ruins',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,2,4,5,5,5,5,5,4,2,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
       '''American flamingos are a relatively hardy bird, tolerating temperatures as low as 5°C. They can be seen reliably from May
          through to October, but they can also often be seen on warmer days in March, April, and November.
@@ -1128,14 +1064,9 @@ animals = [
    (
       'Black-handed spider monkey',
       'Americas Outdoor Mayan Temple Ruins',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,1,2,4,5,5,5,5,3,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'May-Sep',                                                     # Seasonal visibility summary
       '''Spider monkeys are warm-weather primates, and struggle to be outside in any temperature below 15°C. They can be reliably seen
          from May through September, but even then, on colder days they opt to spend their time inside.
@@ -1154,14 +1085,9 @@ animals = [
    (
       'Capybara',
       'Americas Outdoor Mayan Temple Ruins',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,3,4,5,5,5,5,5,4,2,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       '''May-Oct''',
       '''The capybara is a warm-weather animal, and is most reliably seen from May until April. The capybara has a viewing pattern
          similar to the flamingos, and may also be viewable outside on warmer March, April, and November days. On days that aren't too
@@ -1180,14 +1106,9 @@ animals = [
    (
       'American alligator',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1201,14 +1122,9 @@ animals = [
    (
       'American eel',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1218,14 +1134,9 @@ animals = [
    (
       'American lobster',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1235,14 +1146,9 @@ animals = [
    (
       'Axolotl',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1254,14 +1160,9 @@ animals = [
    (
       'Black-footed ferret',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1274,14 +1175,9 @@ animals = [
    (
       'Black-widow spider',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1291,14 +1187,9 @@ animals = [
    (
       'Blanding\'s turtle',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1309,14 +1200,9 @@ animals = [
    (
       'Blue and yellow macaw',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1329,14 +1215,9 @@ animals = [
    (
       'Blue poison dart frog',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1346,14 +1227,9 @@ animals = [
    (
       'Boa constrictor',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1363,14 +1239,9 @@ animals = [
    (
       'Brazilian giant cockroach',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1380,14 +1251,9 @@ animals = [
    (
       'Brazilian salmon pink bird-eating tarantula',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1397,14 +1263,9 @@ animals = [
    (
       'Butterfly goodied',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1414,14 +1275,9 @@ animals = [
    (
       'Crested tinamou',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1431,14 +1287,9 @@ animals = [
    (
       'Cuvier\'s smooth-fronted caiman',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1450,14 +1301,9 @@ animals = [
    (
       'Desert grassland whiptail',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1468,14 +1314,9 @@ animals = [
    (
       'Dyeing poison dart frog',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1485,14 +1326,9 @@ animals = [
    (
       'Eastern loggerhead shrike',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1502,14 +1338,9 @@ animals = [
    (
       'Eastern lubber grasshopper',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1519,14 +1350,9 @@ animals = [
    (
       'Eyelash viper',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1536,14 +1362,9 @@ animals = [
    (
       'Ferocious water bug',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1553,14 +1374,9 @@ animals = [
    (
       'Golden lion tamarin',
       'Americas Pavilion',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       18,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,1,3,5,5,5,5,3,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Jun-Sep (Outdoor + Indoor), Oct-May (Indoor Only)',           # Seasonal visibility summary
       '''Golden lion tamarins are a species native to the tropical rainforests of South America, and can only be outside during the
          warmest months of the year. Even on these days, these little monkeys may opt to spend their time in their indoor habitat.'''
@@ -1576,14 +1392,9 @@ animals = [
    (
       'Great horned owl',
       'Americas Pavilion',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1595,14 +1406,9 @@ animals = [
    (
       'Green and black poison dart frog',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1612,14 +1418,9 @@ animals = [
    (
       'Green surf anemone',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1629,14 +1430,9 @@ animals = [
    (
       'Green-winged macaw',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1650,14 +1446,9 @@ animals = [
    (
       'Guatemalan beaded lizard',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1667,14 +1458,9 @@ animals = [
    (
       'Jamaican boa',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1684,14 +1470,9 @@ animals = [
    (
       'Leather sea star',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1701,14 +1482,9 @@ animals = [
    (
       'Lemur leaf frog',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1718,14 +1494,9 @@ animals = [
    (
       'Longnose dace',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1735,14 +1506,9 @@ animals = [
    (
       'Massasauga rattlesnake',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1752,14 +1518,9 @@ animals = [
    (
       'Mexican blind cavefish',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1769,14 +1530,9 @@ animals = [
    (
       'Midland painted turtle',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1786,14 +1542,9 @@ animals = [
    (
       'North American river otter',
       'Americas Pavilion',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
-      -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The North American river otters are a highly active species, and can be usually seen swimming around their water feature
@@ -1812,14 +1563,9 @@ animals = [
    (
       'Opal-rumped tanager',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1829,14 +1575,9 @@ animals = [
    (
       'Painted anemone',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1846,14 +1587,9 @@ animals = [
    (
       'Panamanian golden frog',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1863,14 +1599,9 @@ animals = [
    (
       'Plumose anemone',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1880,14 +1611,9 @@ animals = [
    (
       'Plush-crested jay',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1897,14 +1623,9 @@ animals = [
    (
       'Puerto Rican crested toad',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1914,14 +1635,9 @@ animals = [
    (
       'Pumpkinseed sunfish',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1931,14 +1647,9 @@ animals = [
    (
       'Red Island bird-eating tarantula',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1948,14 +1659,9 @@ animals = [
    (
       'Red-crested finch',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1965,14 +1671,9 @@ animals = [
    (
       'Reticulate gila monster',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1982,14 +1683,9 @@ animals = [
    (
       'Round goby',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -1999,14 +1695,9 @@ animals = [
    (
       'Rufous-collared sparrow',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2016,14 +1707,9 @@ animals = [
    (
       'San-Esteban Island chuckwalla',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2033,14 +1719,9 @@ animals = [
    (
       'Snapping turtle',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2050,14 +1731,9 @@ animals = [
    (
       'Spot prawn',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2067,14 +1743,9 @@ animals = [
    (
       'Spotted river stingray',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2084,14 +1755,9 @@ animals = [
    (
       'Spotted turtle',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2101,14 +1767,9 @@ animals = [
    (
       'Timber rattlesnake',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2118,14 +1779,9 @@ animals = [
    (
       'Turquoise tanager',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2135,14 +1791,9 @@ animals = [
    (
       'Two-toed sloth',
       'Americas Pavilion',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      10,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      20,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,2,4,5,5,5,5,3,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)',           # Seasonal visibility summary
       '''The two-toed sloth is endemic to the rainforests of South America, and is suited to be outside in the warm weather. You have
          a good chance of spotting them outside through May into September, with a chance as well on warm days in April or October. Even
@@ -2160,14 +1811,9 @@ animals = [
    (
       'Western blacknose dace',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2177,14 +1823,9 @@ animals = [
    (
       'White-faced saki',
       'Americas Pavilion',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      12,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,2,4,5,5,5,5,3,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       '''May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)''',       # Seasonal visibility summary''
       '''White-faced sakis are warm weather primates, and are only comfortable outside in the warmer months. They are frequently spotted
          outdoors from May through September, but may also venture outside on other warmer days.'''.replace( '\n', ' ' ),
@@ -2200,14 +1841,9 @@ animals = [
    (
       'Yellow-banded poison dart frog',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2217,14 +1853,9 @@ animals = [
    (
       'Zebra finch',
       'Americas Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2236,14 +1867,9 @@ animals = [
    (
       'Cougar',
       'Canadian Domain',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'Mar-Dec',                                                     # Seasonal visibility summary
       '''The cougar is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom of
          the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March. To
@@ -2265,14 +1891,9 @@ animals = [
    (
       'Grizzly bear',
       'Canadian Domain',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
+      5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,2,5,5,5,5,5,5,4,2,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'Apr-Oct',                                                     # Seasonal visibility summary
       '''The grizzly bear is viewable seasonably due to its hibernating patterns. Grizzly bears hibernate from sometime in November,
          usually until sometime in March, depending on the exact weather conditions of that year. Leading up to and coming out of
@@ -2297,14 +1918,9 @@ animals = [
    (
       'Northern bald eagle',
       'Canadian Domain',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'Mar-Dec',                                                     # Seasonal visibility summary
       '''The Northern bald eagle is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at
          the bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime
@@ -2321,14 +1937,9 @@ animals = [
    (
       'Raccoon',
       'Canadian Domain',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       -35,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'Mar-Dec',                                                     # Seasonal visibility summary
       '''The raccoon is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom of
          the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March. To
@@ -2341,14 +1952,9 @@ animals = [
    (
       'Wood bison',
       'Canadian Domain',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'Mar-Dec',                                                     # Seasonal visibility summary
       '''The wood bison is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom
          of the Rouge Valley, and for the safety of guests, the domain closes from about the start of Jaunary until sometime in March.
@@ -2368,14 +1974,9 @@ animals = [
    (
       'African lion',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
-      -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       3,                                                             # Snow resistance (only for animals with outdoor viewing)
-      4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       '''The African lions are more or less viewable year round. During the den of winter they are given access to indoor spaces so
          they may decide to be inside if it is particularly cold or icy. In the winter, they are most often seen in their den, since
@@ -2393,14 +1994,9 @@ animals = [
    (
       'African penguin',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,2,4,5,5,5,5,5,5,3,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Apr-Nov (Outdoor + Indoor), Dec-Mar (Indoor Only)',           # Seasonal visibility summary
       '''African penguins are adapted to handle temperate climates, and thus can be seen outdoors for most of the year. They should be
          viewable on any day between April and November where the temperature is above 0°C and there is no snow on the ground. They may
@@ -2417,14 +2013,9 @@ animals = [
    (
       'Cheetah',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
-      -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       3,                                                             # Snow resistance (only for animals with outdoor viewing)
-      4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       '''The cheetahs are on exhibit year-round. In the coldest months of the year they are given access to indoor spaces, so on very
          cold and/or icy days they may decide to spend their time inside. They are most active on cooler days in the fall and spring.
@@ -2442,14 +2033,9 @@ animals = [
    (
       'Common eland',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      0,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      2,                                                             # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,2,4,5,5,5,5,5,5,3,1,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Apr-Nov',                                                     # Seasonal visibility summary
       '''Elands are one of the most-cold resistant antelopes, and can be seen outside during most months of the year through April into
          November. They may also be viewable on warmer March days where there is no snow on the ground, as they are not adapted to walk
@@ -2464,14 +2050,9 @@ animals = [
    (
       'Greater kudu',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      10,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      12,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,1,3,5,5,5,5,5,4,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
       '''Kudu are a warm weather antelope with little protection from the cold, and thus they are generally only viewable during the
          warmer months of the year. They can generally be viewed from May until October, and perhaps also on other warm days in spring
@@ -2488,14 +2069,9 @@ animals = [
    (
       'Grevy\'s zebra',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      1,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,1,3,5,5,5,5,5,5,5,4,2,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      1,                                                             # Winter visibility (only for animals with outdoor viewing)
+      2,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Mar-Nov',                                                     # Seasonal visibility summary
       '''Grevy's zebras are a very hardy species, tolerating temperatures around freezing. They are generally viewable outside from
          ealrly Spring through to the start of winter. On a lot of warmer winter days they would be able to go outside if not for the
@@ -2516,14 +2092,9 @@ animals = [
    (
       'Marabou stork',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,1,3,5,5,5,5,2,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Jun-Sep',                                                     # Seasonal visibility summary
       '''Marabou storks are a warm weather bird and can only go on exhibit in the warmer months, particularly from June to September,
          but perhaps longer than that, depending on the specific weather.'''.replace( '\n', ' ' ),
@@ -2540,14 +2111,9 @@ animals = [
    (
       'Masai giraffe',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,1,3,5,5,5,5,5,4,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'May-Oct (Outdoor), Nov-Apr (Indoor)',                         # Winter visibility (only for animals with outdoor viewing)
       '''Masai giraffes are warm-weather animals and have little protection against the cold. They can usually be seen outside from May
          until October and on other days above 10°C. If you don't see them outside, you can stop by the giraffe house, right beside
@@ -2565,14 +2131,9 @@ animals = [
    (
       'Olive baboon',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
-      -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       '''The olive baboons can generally be seen year-round. In the coldest months they may be given access to indoor spaces, but they
          can generally be seen outside, most often on their main structure in the center of their enclosure.'''.replace( '\n', ' ' ),
@@ -2586,14 +2147,9 @@ animals = [
    (
       'Ostrich',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      0,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       1,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,3,5,5,5,5,5,5,5,3,1,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Mar-Nov',                                                     # Seasonal visibility summary
       '''Ostriches are quite adaptive birds, comfortable in temperatures down to around 0°C. They can be fairly reliably seen between
          March and November, minus any freezing days, or days where there is much snow on the ground.'''.replace( '\n', ' ' ),
@@ -2609,14 +2165,9 @@ animals = [
    (
       'River hippopotamus',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      10,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      14,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,2,5,5,5,5,5,3,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
       '''River hippos are native to sub-Saharan African and have exposed skin, and are thus not very adapted to the cold. At the zoo,
          they can be seen outside reliably from May through the warmer part of October, and occasionally on other warm spring and fall
@@ -2631,14 +2182,9 @@ animals = [
    (
       'Southern ground hornbill',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,1,3,5,5,5,5,2,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Jun-Sep',                                                     # Seasonal visibility summary
       '''Southern ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.'''
          .replace( '\n', ' ' ),
@@ -2655,14 +2201,9 @@ animals = [
    (
       'Southern white rhinoceros',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,1,3,5,5,5,5,5,4,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
       '''Southern white rhinoceroses are warm-weather animals and have exposed skin, and are only viewable outside during the warmer
          months of the year. They can be reliably seen from May through October, and on other warm spring or fall days.'''
@@ -2680,14 +2221,9 @@ animals = [
    (
       'Spotted hyena',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
-      -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       3,                                                             # Snow resistance (only for animals with outdoor viewing)
-      4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       '''The spotted hyenas can generally be seen year-round, but during the coldest months they may be given indoor spaces, and decide
          to spend their time inside, specifically on the coldest and snowiest day. On the coldest days, look for them in their den,
@@ -2704,14 +2240,9 @@ animals = [
    (
       'Warthog',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      10,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,1,3,5,5,5,5,2,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Jun-Sep',                                                     # Seasonal visibility summary
       '''Warthogs are very sensitive to the cold, and thus are only viewable outside during the warmest months, June to September, and
          on other warm days.'''.replace( '\n', ' ' ),
@@ -2726,14 +2257,9 @@ animals = [
    (
       'Watusi cattle',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
-      4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The watusi cattle can generally be seen outside year-round, as they have been bred to have a very high tolerance against the
@@ -2747,14 +2273,9 @@ animals = [
    (
       'White-breasted cormorant',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      0,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      2,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,2,4,5,5,5,5,5,5,3,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Apr-Nov (Outdoor + Indoor), Dec-Mar (Indoor Only)',           # Seasonal visibility summary
       '''The white-breasted cormorant can handle temperate environments, and can thus be outside for most of the year, but cannot handle
          snow or ice. During the coldest months, from December through most of March, these birds are only visible indoors. When
@@ -2767,14 +2288,9 @@ animals = [
    (
       'White-headed vulture',
       'Africa Savanna',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,1,3,5,5,5,5,2,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Jun-Sep',                                                     # Seasonal visibility summary
       '''The white-headed vulture is a warm-weather bird which can only be seen outside during the warmest months, and on other very
          warm days.'''.replace( '\n', ' ' ),
@@ -2794,14 +2310,9 @@ animals = [
    (
       'African clawed frog',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2811,14 +2322,9 @@ animals = [
    (
       'African spoonbill',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2828,14 +2334,9 @@ animals = [
    (
       'Aldabra tortoise',
       'African Rainforest Pavilion',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       20,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,0,1,3,4,4,3,1,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       '''Jul-Aug (Outdoor), Sep-Jun (Indoor)''',                     # Seasonal visibility summary
       '''The Aldabra tortoises only thrive in very warm weather and thus can only be reliably seen outdoors in the peak of summer,
          during July and August, and other very warm days. The rest of the time they can be seen inside the African Rainforest pavilion
@@ -2849,14 +2350,9 @@ animals = [
    (
       'Black crake',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2866,14 +2362,9 @@ animals = [
    (
       'Blue-bellied roller',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2883,14 +2374,9 @@ animals = [
    (
       'Grey-necked crowned crane',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2902,14 +2388,9 @@ animals = [
    (
       'Gaboon viper',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2919,14 +2400,9 @@ animals = [
    (
       'Hamerkop',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2936,14 +2412,9 @@ animals = [
    (
       'Lake Malawi cichlids',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2953,14 +2424,9 @@ animals = [
    (
       'Lau banded iguana',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2970,14 +2436,9 @@ animals = [
    (
       'Leopard ctenopoma',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -2987,14 +2448,9 @@ animals = [
    (
       'Mantella (poison frog)',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3004,14 +2460,9 @@ animals = [
    (
       'Naked mole rat',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3021,14 +2472,9 @@ animals = [
    (
       'Ngege',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3038,14 +2484,9 @@ animals = [
    (
       'Nile soft-shelled turtle',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3058,14 +2499,9 @@ animals = [
    (
       'Pygmy hippopotamus',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3079,14 +2515,9 @@ animals = [
    (
       'Radiated tortoise',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3096,14 +2527,9 @@ animals = [
    (
       'Red river hog',
       'African Rainforest Pavilion',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,2,4,5,5,5,5,5,5,3,1,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Apr-Nov',                                                     # Seasonal visibility summary
       '''Red river hogs do surprisingly well in cooler temperatures can usually be seen outside from April until November.'''
          .replace( '\n', ' ' ),
@@ -3118,14 +2544,9 @@ animals = [
    (
       'Ring-tailed lemur',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3140,14 +2561,9 @@ animals = [
    (
       'Royal python',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3157,14 +2573,9 @@ animals = [
    (
       'Sacred ibis',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3174,14 +2585,9 @@ animals = [
    (
       'Slender-tailed meerkat',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3195,14 +2601,9 @@ animals = [
    (
       'South African crested porcupine',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3212,14 +2613,9 @@ animals = [
    (
       'South African shelduck',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3229,14 +2625,9 @@ animals = [
    (
       'Speckled mousebird',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3246,14 +2637,9 @@ animals = [
    (
       'Spider tortoise',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3263,14 +2649,9 @@ animals = [
    (
       'Straw coloured fruit bat',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3280,14 +2661,9 @@ animals = [
    (
       'Tomato frog',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3297,14 +2673,9 @@ animals = [
    (
       'Veiled chameleon',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3314,14 +2685,9 @@ animals = [
    (
       'West African dwarf crocodile',
       'African Rainforest Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3334,14 +2700,9 @@ animals = [
    (
       'Western lowland gorilla',
       'African Rainforest Pavilion',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      10,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      12,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,1,3,5,5,5,5,5,4,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'May-Oct (Outdoor + Indoor), Nov-Apr (Indoor Only)',           # Seasonal visibility summary
       '''Western lowland gorillas are warm weather primates and are only comfortable outside during the warmer months of the year,
          usually from May to October, and perhaps on other warmer days, specifically in the later part of April.'''.replace( '\n', ' ' ),
@@ -3365,14 +2726,9 @@ animals = [
    (
       'Asian brown tortoise',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3382,14 +2738,9 @@ animals = [
    (
       'Bighead carp',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3399,14 +2750,9 @@ animals = [
    (
       'Black carp',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3416,14 +2762,9 @@ animals = [
    (
       'Black-breasted leaf turtle',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3433,14 +2774,9 @@ animals = [
    (
       'Black-throated laughing thrush',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3450,14 +2786,9 @@ animals = [
    (
       'Burmese star tortoise',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3467,14 +2798,9 @@ animals = [
    (
       'Cattle egret',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3484,14 +2810,9 @@ animals = [
    (
       'Concave casqued hornbill',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3501,14 +2822,9 @@ animals = [
    (
       'Crested wood partridge',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3518,14 +2834,9 @@ animals = [
    (
       'Crocodile lizard',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3535,14 +2846,9 @@ animals = [
    (
       'Crocodile newt',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3552,14 +2858,9 @@ animals = [
    (
       'Edward\'s pheasant',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3569,14 +2870,9 @@ animals = [
    (
       'Giant gourami',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3586,14 +2882,9 @@ animals = [
    (
       'Grass carp',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3603,14 +2894,9 @@ animals = [
    (
       'Green crested basilisk',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3620,14 +2906,9 @@ animals = [
    (
       'Hamilton\'s pond turtle',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3637,14 +2918,9 @@ animals = [
    (
       'Iridescent shark catfish',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3654,14 +2930,9 @@ animals = [
    (
       'Luzon bleeding-heart dove',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3671,14 +2942,9 @@ animals = [
    (
       'Malayan bonytongue',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3688,14 +2954,9 @@ animals = [
    (
       'Malaysian painted turtle',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3705,14 +2966,9 @@ animals = [
    (
       'Mekong barb',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3722,14 +2978,9 @@ animals = [
    (
       'Monocled cobra',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3739,14 +2990,9 @@ animals = [
    (
       'Nicobar pigeon',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3756,14 +3002,9 @@ animals = [
    (
       'Palawan peacock-pheasant',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3773,14 +3014,9 @@ animals = [
    (
       'Red-lined torpedo barb',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3790,14 +3026,9 @@ animals = [
    (
       'Reticulated python',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3809,14 +3040,9 @@ animals = [
    (
       'Spiny turtle',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3826,14 +3052,9 @@ animals = [
    (
       'Sumatran orangutan',
       'Indo-Malaya Pavilion',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
-      10,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      12,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,1,4,5,5,5,5,3,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'May-Oct (Outdoor + Indoor), Nov-Apr (Indoor Only)',           # Seasonal visibility summary
       '''Sumatran orangutans come from the tropical rainforests of Sumatra, and can only be outside during the warmer months. During the
          warmer months you may find these apes in their new, state-of-the-art outdoor habitat which opened in 2023, and their indoor
@@ -3857,14 +3078,9 @@ animals = [
    (
       'Tentacled snake',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3874,14 +3090,9 @@ animals = [
    (
       'Tinfoil barb',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3891,14 +3102,9 @@ animals = [
    (
       'Tomistoma',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3910,14 +3116,9 @@ animals = [
    (
       'Tri-coloured shark',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3927,14 +3128,9 @@ animals = [
    (
       'White-handed gibbon',
       'Indo-Malaya Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -3950,14 +3146,9 @@ animals = [
    (
       'Babirusa',
       'Indo-Malaya Outdoor',
-      1,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,1,3,5,5,5,5,5,4,1,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'May-Oct (Outdoor), Nov-Apr (Indoor)',                         # Seasonal visibility summary
       '''Babirusa are a tropical species of pig and thus can only be outside in the warmer months, mostly from May to October, plus
          other warmer days. The rest of the time they can be viewed inside the greater one-horned rhino building to the left of their
@@ -3973,14 +3164,9 @@ animals = [
    (
       'Greater one-horned rhinoceros',
       'Indo-Malaya Outdoor',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The greater one-horned rhinoceros shares its indoor space with the babirusa. They rotate between the on-exhibit and off-exhibit
@@ -3999,14 +3185,9 @@ animals = [
    (
       'Indian peafowl',
       'Indo-Malaya Outdoor',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -15,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       '''The Indian peafowl are very well adapted to stay in the cold, but they also have access to indoor spaces in the winter, so they
          may choose to go inside on colder days.'''.replace( '\n', ' ' ),
@@ -4020,14 +3201,9 @@ animals = [
    (
       'Sumatran tiger',
       'Indo-Malaya Outdoor',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
-      -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      4,4,5,5,5,5,5,5,5,5,5,4,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      4,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       '''The Sumatran tigers are generally comfortable being outside year-round, but on cooler winter days they may choose to retreat
          inside.'''.replace( '\n', ' ' ),
@@ -4046,14 +3222,9 @@ animals = [
    (
       'Asian giant millipede',
       'Malayan Woods Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -4063,14 +3234,9 @@ animals = [
    (
       'Clouded leopard',
       'Malayan Woods Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The clouded leopard is a nocturnal species, and thus your best chance of seeing them active is to visit their habitat earlier
@@ -4086,14 +3252,9 @@ animals = [
    (
       'Giant gourami',
       'Malayan Woods Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -4103,14 +3264,9 @@ animals = [
    (
       'Gooty sapphire ornamental tarantula',
       'Malayan Woods Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -4120,14 +3276,9 @@ animals = [
    (
       'Malayan walking stick',
       'Malayan Woods Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -4137,14 +3288,9 @@ animals = [
    (
       'Malaysian stick insect jungle wood nymph',
       'Malayan Woods Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -4154,14 +3300,9 @@ animals = [
    (
       'Red-tailed green ratsnake',
       'Malayan Woods Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -4171,14 +3312,9 @@ animals = [
    (
       'Wrinkled hornbill',
       'Malayan Woods Pavilion',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      None,None,None,None,None,None,None,None,None,None,None,None,   # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -4190,14 +3326,9 @@ animals = [
    (
       'Domestic goat',
       'Goat World',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      1,                                                             # Always viewable
-      1,                                                             # Always viewable outdoors
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      5,5,5,5,5,5,5,5,5,5,5,5,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      5,                                                             # Winter visibility (only for animals with outdoor viewing)
+      0,                                                             # Part of seasonal exhibit
       'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
@@ -4205,22 +3336,17 @@ animals = [
       None                                                           # Specific animal information
    ),
 
-   # Kidz Zoo
+   # Kids Zoo
    (
       'Abyssinian ground hornbill',
-      'Kidz Zoo',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
+      'Kids Zoo',
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,0,4,5,5,5,5,3,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
       '''Southern ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.
-         *The Abyssinian ground hornbill is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through
-         October. To check whether the Kidz Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
+         *The Abyssinian ground hornbill is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through
+         October. To check whether the Kids Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
          .replace( '*', '\n' ),
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -4228,57 +3354,42 @@ animals = [
    ),
    (
       'Common raven',
-      'Kidz Zoo',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
+      'Kids Zoo',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
-      '''The common raven is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
-         check whether the Kidz Zoo is open, consult the Toronto Zoo's official website. The raven is a very hardy species, and should be
-         viewable if the Kidz Zoo is open.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      '''The common raven is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
+         check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The raven is a very hardy species, and should be
+         viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
       'Eurasian eagle owl',
-      'Kidz Zoo',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
+      'Kids Zoo',
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
-      '''The Eurasian eagle owl is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
-         To check whether the Kidz Zoo is open, consult the Toronto Zoo's official website. The Eurasian eagle owl is a very hardy
-         species, and should be viewable if the Kidz Zoo is open.'''.replace( '\n', ' ' ),
+      '''The Eurasian eagle owl is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
+         To check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The Eurasian eagle owl is a very hardy
+         species, and should be viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
       'Great horned owl',
-      'Kidz Zoo',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
+      'Kids Zoo',
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
-      '''The great horned owl is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
-         To check whether the Kidz Zoo is open, consult the Toronto Zoo's official website. The great horned owl is a very hardy
-         species, and should be viewable if the Kidz Zoo is open.'''.replace( '\n', ' ' ),
+      '''The great horned owl is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
+         To check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The great horned owl is a very hardy
+         species, and should be viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
       '''The great horned owl is one of the largest species of owl in North America. They are easily recognized by the tufts on top of
          their heads, and their bright yellow eyes. They hunt at night, and their prey includes rabbits, squirrels, skunks, birds, and
@@ -4287,56 +3398,41 @@ animals = [
    ),
    (
       'Guinea pig',
-      'Kidz Zoo',
-      0,                                                             # Has outdoor viewing
-      1,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
+      'Kids Zoo',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      None,                                                          # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
-      '''The guinea pig is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check
-         whether the Kidz Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ),
+      '''The guinea pig is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check
+         whether the Kids Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
       'Harris\'s hawk',
-      'Kidz Zoo',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
+      'Kids Zoo',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       1,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
-      '''The Harris\'s hawk is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
-         check whether the Kidz Zoo is open, consult the Toronto Zoo's official website. The Harris's hawk is a somewhat hardy species,
-         and should be viewable if the Kidz Zoo is open.'''.replace( '\n', ' ' ),
+      '''The Harris\'s hawk is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
+         check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The Harris's hawk is a somewhat hardy species,
+         and should be viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
       'Marabou stork',
-      'Kidz Zoo',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
+      'Kids Zoo',
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,0,3,5,5,5,5,2,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
       '''Marabou storks are warm-weather birds which are usually only viewable during the warmest months of the year.
-         *The marabou stork is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
-         To check whether the Kidz Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+         *The marabou stork is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
+         To check whether the Kids Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       None,                                                          # General viewing tips
       '''Marabou storks are large wadding birds native to sub-Saharan Africa. They are recognized for their bald heads, and are often
          considered quite an ugly bird. They are quite an important part of the ecosystem, feeding on carcasses and carrion.''',
@@ -4344,19 +3440,14 @@ animals = [
    ),
    (
       'Rabbit',
-      'Kidz Zoo',
-      1,                                                             # Has outdoor viewing
-      0,                                                             # Has indoor viewing
-      0,                                                             # Always viewable
-      0,                                                             # Always viewable outdoors
+      'Kids Zoo',
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,0,0,0,5,5,5,5,5,5,0,0,                                       # Monthly outdoor viewing (only for animals with outdoor viewing)
-      0,                                                             # Winter visibility (only for animals with outdoor viewing)
+      1,                                                             # Part of seasonal exhibit
       'May-Oct',                                                     # Seasonal visibility summary
-      '''The rabbit is part of the Kidz Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check
-         whether the Kidz Zoo is open, consult the Toronto Zoo's official website. The rabbit is a hardy species, and should be viewable
-         if the Kidz Zoo is open.'''.replace( '\n', ' ' ),
+      '''The rabbit is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check
+         whether the Kids Zoo is open, consult the Toronto Zoo's official website. The rabbit is a hardy species, and should be viewable
+         if the Kids Zoo is open.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
@@ -5043,6 +4134,13 @@ enclosures =\
    ),
    (
       'Midland painted turtle',
+      'Americas Pavilion',
+      'Indoor',
+      51.375,
+      41.75
+   ),
+   (
+      'North American river otter',
       'Americas Pavilion',
       'Indoor',
       51.375,
@@ -6107,98 +5205,99 @@ enclosures =\
       52.25
    ),
 
-   # Kidz Zoo
+   # Kids Zoo
    (
       'Abyssinian ground hornbill',
-      'Kidz Zoo',
+      'Kids Zoo',
       'Outdoor',
       70,
       52.5
    ),
    (
       'Common raven',
-      'Kidz Zoo',
+      'Kids Zoo',
       'Outdoor',
       70,
       52.5
    ),
    (
       'Eurasian eagle owl',
-      'Kidz Zoo',
+      'Kids Zoo',
       'Outdoor',
       70,
       52.5
    ),
    (
       'Great horned owl',
-      'Kidz Zoo',
+      'Kids Zoo',
       'Outdoor',
       70,
       52.5
    ),
    (
       'Guinea pig',
-      'Kidz Zoo',
+      'Kids Zoo',
       'Indoor',
       70,
       52.5
    ),
    (
       'Harris\'s hawk',
-      'Kidz Zoo',
+      'Kids Zoo',
       'Outdoor',
       70,
       52.5
    ),
    (
       'Marabou stork',
-      'Kidz Zoo',
+      'Kids Zoo',
       'Outdoor',
       70,
       52.5
    ),
    (
       'Rabbit',
-      'Kidz Zoo',
+      'Kids Zoo',
       'Outdoor',
       70,
       52.5
    )
 ]
 
+cursor.executemany( ''' INSERT INTO Exhibit (
+                           Name,
+                           JAN_PROBABILITY,
+                           FEB_PROBABILITY,
+                           MAR_PROBABILITY,
+                           APR_PROBABILITY,
+                           MAY_PROBABILITY,
+                           JUN_PROBABILITY,
+                           JUL_PROBABILITY,
+                           AUG_PROBABILITY,
+                           SEP_PROBABILITY,
+                           OCT_PROBABILITY,
+                           NOV_PROBABILITY,
+                           DEC_PROBABILITY
+                        ) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ''', exhibits )
+
 cursor.executemany( ''' INSERT INTO Animal (
                            SPECIES,
-                           LOCATION,
-                           HAS_OUTDOOR_VIEWING,
-                           HAS_INDOOR_VIEWING,
-                           ALWAYS_VIEWABLE,
-                           ALWAYS_VIEWABLE_OUTDOORS,
+                           EXHIBIT,
                            MIN_TEMPERATURE,
                            SNOW_RESISTANCE,
-                           JAN_VISIBILITY,
-                           FEB_VISIBILITY,
-                           MAR_VISIBILITY,
-                           APR_VISIBILITY,
-                           MAY_VISIBILITY,
-                           JUN_VISIBILITY,
-                           JUL_VISIBILITY,
-                           AUG_VISIBILITY,
-                           SEP_VISIBILITY,
-                           OCT_VISIBILITY,
-                           NOV_VISIBILITY,
-                           DEC_VISIBILITY,
-                           WINTER_VISIBILITY,
+                           PART_OF_SEASONAL_EXHIBIT,
                            SEASONAL_VIEWING_SUMMARY,
                            SEASONAL_VIEWING_TIPS,
                            GENERAL_VIEWING_TIPS,
                            ANIMAL_INFO,
                            SPECIFIC_ANIMAL_INFO
                         ) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ''', animals )
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ''', animals )
 
 cursor.executemany( ''' INSERT INTO Enclosure (
                            SPECIES,
-                           LOCATION,
+                           EXHIBIT,
                            EXHIBIT_TYPE,
                            X_COORD,
                            Y_COORD
