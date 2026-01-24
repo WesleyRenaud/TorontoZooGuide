@@ -1,4 +1,5 @@
 import calendar, math
+import database
 
 class Animal:
    def __init__( self, species, exhibit, seasonal_viewing_summary, seasonal_viewing_tips, general_viewing_tips, animal_info,
@@ -157,6 +158,42 @@ class Zoo_Util:
 
       doy = sum( days_in_month[:month_index[month]] )
       return doy + (day - 1)
+   
+
+   def get_next_month( self, month ):
+      if month in ('JAN', 'Jan'):
+         return 'Feb'
+      elif month in ('FEB', 'Feb'):
+         return 'Mar'
+      elif month in ('MAR', 'Mar'):
+         return 'Apr'
+      elif month in ('APR', 'Apr'):
+         return 'May'
+      elif month in ('MAY', 'May'):
+         return 'Jun'
+      elif month in ('JUN', 'Jun'):
+         return 'Jul'
+      elif month in ('JUL', 'Jul'):
+         return 'Aug'
+      elif month in ('AUG', 'Aug'):
+         return 'Sep'
+      elif month in ('SEP', 'Sep'):
+         return 'Oct'
+      elif month in ('OCT', 'Oct'):
+         return 'Nov'
+      elif month in ('NOV', 'Nov'):
+         return 'Dec'
+      elif month in ('DEC', 'Dec'):
+         return 'Jan'
+      
+
+   def get_number_of_days_in_month( self, month ):
+      if month in ('JAN', 'Jan', 'MAR', 'Mar', 'MAY', 'May', 'JUL', 'Jul', 'AUG', 'Aug', 'OCT', 'Oct', 'DEC', 'Dec'):
+         return 31
+      elif month in ('APR', 'Apr', 'JUN', 'Jun', 'SEP', 'Sep', 'NOV', 'Nov'):
+         return 30
+      elif month in ('FEB', 'Feb'):
+         return 28
       
 
    # Returns probability (between 0 and 1) that temperature is >= min_temperature, assuming a normal distribution N(mu, sigma)

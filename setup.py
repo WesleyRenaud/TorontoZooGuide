@@ -50,213 +50,213 @@ cursor.execute( ''' CREATE TABLE Enclosure
 exhibits = [
    (
       'Australasia Pavilion',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'Australasia Outdoor',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'Eurasia Wilds',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'Tundra Trek',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'Americas Outdoor Mayan Temple Ruins',
-      0,                        # Probability of being open in January
-      0,                        # Probability of being open in February
-      0.2,                      # Probability of being open in March
-      0.7,                      # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      0.6,                      # Probability of being open in November
-      0.1                       # Probability of being open in December
+      0,                        # Probability of being open on the 1st day of January
+      0,                        # Probability of being open on the 1st day of February
+      0.05,                     # Probability of being open on the 1st day of March
+      0.3,                      # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      0.8,                      # Probability of being open on the 1st day of November
+      0.01                      # Probability of being open on the 1st day of December
    ),
    (
       'Americas Pavilion',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'Canadian Domain',
-      0,                        # Probability of being open in January
-      0,                        # Probability of being open in February
-      0.7,                      # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      0.9                       # Probability of being open in December
+      0.2,                      # Probability of being open on the 1st day of January
+      0,                        # Probability of being open on the 1st day of February
+      0.2,                      # Probability of being open on the 1st day of March
+      0.9,                      # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      0.9                       # Probability of being open on the 1st day of December
    ),
    (
       'Africa Savanna',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'African Rainforest Pavilion',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'Indo-Malaya Pavilion',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'Indo-Malaya Outdoor',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'Malayan Woods Pavilion',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'Goat World',
-      1,                        # Probability of being open in January
-      1,                        # Probability of being open in February
-      1,                        # Probability of being open in March
-      1,                        # Probability of being open in April
-      1,                        # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      1,                        # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      1,                        # Probability of being open on the 1st day of January
+      1,                        # Probability of being open on the 1st day of February
+      1,                        # Probability of being open on the 1st day of March
+      1,                        # Probability of being open on the 1st day of April
+      1,                        # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      1,                        # Probability of being open on the 1st day of November
+      1                         # Probability of being open on the 1st day of December
    ),
    (
       'Kids Zoo',
-      0,                        # Probability of being open in January
-      0,                        # Probability of being open in February
-      0,                        # Probability of being open in March
-      0.4,                      # Probability of being open in April
-      0.9,                      # Probability of being open in May
-      1,                        # Probability of being open in June
-      1,                        # Probability of being open in July
-      1,                        # Probability of being open in August
-      1,                        # Probability of being open in September
-      0.7,                      # Probability of being open in October
-      1,                        # Probability of being open in November
-      1                         # Probability of being open in December
+      0,                        # Probability of being open on the 1st day of January
+      0,                        # Probability of being open on the 1st day of February
+      0,                        # Probability of being open on the 1st day of March
+      0.05,                     # Probability of being open on the 1st day of April
+      0.5,                      # Probability of being open on the 1st day of May
+      1,                        # Probability of being open on the 1st day of June
+      1,                        # Probability of being open on the 1st day of July
+      1,                        # Probability of being open on the 1st day of August
+      1,                        # Probability of being open on the 1st day of September
+      1,                        # Probability of being open on the 1st day of October
+      0,                        # Probability of being open on the 1st day of November
+      0                         # Probability of being open on the 1st day of December
    ),
 ]
 

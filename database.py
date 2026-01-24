@@ -71,15 +71,7 @@ class Database():
          # We need to consider if the animal is a part of a seasonal exhibit, and whether that exhibit will be open on the specific day
          if part_of_seasonal_exhibit:
             # Get the probability that the exhibit is open, and scale the likelihood to that
-            data = cur.execute(
-               f"""  SELECT
-                        e.{month}_PROBABILITY
-                     FROM Exhibit e
-                     WHERE e.NAME = ?;
-               """, (exhibit, ) )
-            
-            exhibit_probability = data.fetchone()[0]
-            likelihood = likelihood * exhibit_probability
+            likelihood = likelihood * self.get_exhibit_likelihood( exhibit, month, day )
 
          likelihood = round( likelihood * 100 )
 
@@ -89,4 +81,34 @@ class Database():
                                         specific_animal_info=animal[9], exhibit_type=exhibit_type, likelihood=likelihood,
                                         x_coord=animal[11], y_coord=animal[12] ) )
 
+      cur.close()
+
       return animals
+   
+
+   def get_exhibit_likelihood( self, exhibit, month, day ):
+      next_month = self.zoo_util.get_next_month( month )
+
+      month_likelihood = self.get_exhibit_month_likelihood( exhibit, month )
+      next_month_likelihood = self.get_exhibit_month_likelihood( exhibit, next_month )
+
+      days_in_month = self.zoo_util.get_number_of_days_in_month( month )
+      
+      return month_likelihood + (next_month_likelihood - month_likelihood)/days_in_month * day
+      
+
+   def get_exhibit_month_likelihood( self, exhibit, month ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         f"""  SELECT
+                  e.{month}_PROBABILITY
+               FROM Exhibit e
+               WHERE e.NAME = ?;
+         """, (exhibit, ) )
+            
+      exhibit_probability = data.fetchone()[0]
+      cur.close()
+
+      return exhibit_probability
+
