@@ -1,10 +1,10 @@
 import calendar, math
 
 class Animal:
-   def __init__( self, species, location, seasonal_viewing_summary, seasonal_viewing_tips, general_viewing_tips, animal_info,
+   def __init__( self, species, exhibit, seasonal_viewing_summary, seasonal_viewing_tips, general_viewing_tips, animal_info,
                  specific_animal_info, exhibit_type, x_coord, y_coord, likelihood=None ):
       self.species = species
-      self.location = location
+      self.exhibit = exhibit
       self.seasonal_viewing_summary = seasonal_viewing_summary
       self.seasonal_viewing_tips = seasonal_viewing_tips
       self.general_viewing_tips = general_viewing_tips
@@ -19,7 +19,7 @@ class Animal:
    def to_dict( self ):
       return {
          'species': self.species,
-         'location': self.location,
+         'exhibit': self.exhibit,
          'seasonal_viewing_summary': self.seasonal_viewing_summary,
          'seasonal_viewing_tips': self.seasonal_viewing_tips,
          'general_viewing_tips': self.general_viewing_tips,
@@ -33,19 +33,6 @@ class Animal:
    
 
 class Zoo_Util:
-   def species_viewable_inside_and_outside( self, species ):
-      species_viewable_inside_and_outside =\
-      [
-         'African penguin', 'Golden lion tamarin', 'Southern hairy-nosed wombat', 'Sumatran orangutan', 'Two-toed sloth',
-         'Western lowland gorilla', 'White-breasted cormorant', 'White-faced saki'
-      ]
-      
-      if species in species_viewable_inside_and_outside:
-         return True
-      else:
-         return False
-      
-
    def get_average_temperature( self, month, day ):
       # Convert month/day to day-of-year
       month = self.get_month_int( month )
@@ -53,18 +40,18 @@ class Zoo_Util:
 
       # Month start temperatures (°C)
       month_base = {
-         1: -1.0,   # January
-         2:  0.0,   # February
-         3:  5.0,   # March
-         4: 12.0,   # April
-         5: 18.0,   # May
-         6: 23.0,   # June
+         1: -5.0,   # January
+         2: -4.0,   # February
+         3:  1.0,   # March
+         4:  8.0,   # April
+         5: 14.0,   # May
+         6: 22.0,   # June
          7: 26.0,   # July
-         8: 25.0,   # August
+         8: 24.0,   # August
          9: 21.0,   # September
-         10:15.0,  # October
-         11: 9.0,  # November
-         12: 2.0   # December
+         10: 17.0,  # October
+         11: 10.0,   # November
+         12: 1.0   # December
       }
 
       # Compute start-of-month day-of-year mapping
@@ -132,33 +119,33 @@ class Zoo_Util:
 
 
    def get_month_int( self, month ):
-      if month == 'JAN':
+      if month in ('JAN', 'Jan'):
          return 1
-      elif month == 'FEB':
+      elif month in ('FEB', 'Feb'):
          return 2
-      elif month == 'MAR':
+      elif month in ('MAR', 'Mar'):
          return 3
-      elif month == 'APR':
+      elif month in ('APR', 'Apr'):
          return 4
-      elif month == 'MAY':
+      elif month in ('MAY', 'May'):
          return 5
-      elif month == 'JUN':
+      elif month in ('JUN', 'Jun'):
          return 6
-      elif month == 'JUL':
+      elif month in ('JUL', 'Jul'):
          return 7
-      elif month == 'AUG':
+      elif month in ('AUG', 'Aug'):
          return 8
-      elif month == 'SEP':
+      elif month in ('SEP', 'Sep'):
          return 9
-      elif month == 'OCT':
+      elif month in ('OCT', 'Oct'):
          return 10
-      elif month == 'NOV':
+      elif month in ('NOV', 'Nov'):
          return 11
-      elif month == 'DEC':
+      elif month in ('DEC', 'Dec'):
          return 12
-      
+
       return None
-   
+      
 
    def get_day_of_year(self, month, day ):
       month_index = {
@@ -171,3 +158,12 @@ class Zoo_Util:
       doy = sum( days_in_month[:month_index[month]] )
       return doy + (day - 1)
       
+
+   # Returns probability (between 0 and 1) that temperature is >= min_temperature, assuming a normal distribution N(mu, sigma)
+   def get_temperature_probability( self, mu, sigma, min_temperature ):
+      z = (min_temperature - mu) / sigma
+
+      # Standard normal CDF via error function
+      cdf = 0.5 * (1 + math.erf( z / math.sqrt( 2) ) )
+
+      return round( 1.0 - cdf, 3 )

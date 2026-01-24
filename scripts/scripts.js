@@ -91,74 +91,66 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateMap(preset, date) {
+   let month = null;
+   let day = null;
+   let temp = null;
+
+   // Presets
    if (preset === 'summer') {
-      $.ajax({
-         type: 'POST',
-         url: '/get-summer-animals',
-         contentType: 'application/json',
-         success: function (response) {
-            addMarkers(response.animals);
-         }
-      });
+      month = 'Jul';
+      day = 20;
+      sendAnimalRequest(month, day, null);
+      return;
    }
-   else if (preset === 'winter') {
-      $.ajax({
-         type: 'POST',
-         url: '/get-winter-animals',
-         contentType: 'application/json',
-         success: function (response) {
-            addMarkers(response.animals);
-         }
-      });
+
+   if (preset === 'winter') {
+      month = 'Jan';
+      day = 30;
+      sendAnimalRequest(month, day, null);
+      return;
    }
-   // Specific day preset
-   else {
-      if (isWithinNextNDays(date, 7)) {
-         fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`)
-            .then(res => res.json())
-            .then(data => {
-               // Filter forecasts for the selected day
-               const targetDateStr = date; // 'YYYY-MM-DD'
-               const dailyForecasts = data.list.filter(forecast =>
-                  forecast.dt_txt.startsWith(targetDateStr)
-               );
 
-               var temp = null;
-               if (dailyForecasts.length > 0) {
-                  temp = Math.max(...dailyForecasts.map(f => f.main.temp_max));
-               }
+   // Specific day
+   month = getMonth(date);
+   day = getDay(date);
 
-               $.ajax({
-                  type: 'POST',
-                  url: '/get-animals-viewable-on-day-with-forecast',
-                  contentType: 'application/json',
-                  data: JSON.stringify({
-                     month: getMonth(date),
-                     day: getDay(date),
-                     temp: temp
-                  }),
-                  success: function (response) {
-                     addMarkers(response.animals);
-                  }
-               });
-            });
-      }
-      else {
-         console.log(date, getDay(date));
-         $.ajax({
-            type: 'POST',
-            url: '/get-animals-viewable-on-day',
-            contentType: 'application/json',
-            data: JSON.stringify({
-               month: getMonth(date),
-               day: getDay(date)
-            }),
-            success: function (response) {
-               addMarkers(response.animals);
+   // If within forecast range, fetch temperature
+   if (isWithinNextNDays(date, 7)) {
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`)
+         .then(res => res.json())
+         .then(data => {
+            const targetDateStr = date;
+
+            const dailyForecasts = data.list.filter(f =>
+               f.dt_txt.startsWith(targetDateStr)
+            );
+
+            if (dailyForecasts.length > 0) {
+               // IMPORTANT: use average, not max
+               temp =
+                  dailyForecasts.reduce((sum, f) => sum + f.main.temp, 0) /
+                  dailyForecasts.length;
             }
+
+            sendAnimalRequest(month, day, temp);
          });
-      }      
    }
+   else {
+      // Outside forecast range → backend average model
+      sendAnimalRequest(month, day, null);
+   }
+}
+
+function sendAnimalRequest(month, day, temp) {
+   $.ajax({
+      type: 'POST',
+      url: '/get-visible-animals',
+      contentType: 'application/json',
+      data: JSON.stringify({ month, day, temp }),
+      success: function (response) {
+         addMarkers(response.animals);
+      }
+   });
 }
 
 function isWithinNextNDays(dateStr, n) {
@@ -241,38 +233,31 @@ function addMarkers(animals) {
       el.style.top = `${group.y}%`;
       el.title = ''; // remove default browser tooltip
 
-      // Color marker based on highest likelihood in this group
-      const maxLikelihood = Math.max(...animalsOnExhibit.map(a => a.likelihood || 0));
-      el.classList.add(getLikelihoodClass(maxLikelihood));
+      el.style.backgroundColor = likelihoodToColor(animalsOnExhibit[0].likelihood);
 
       mapInner.appendChild(el);
 
-      // Attach click-to-open tooltip with all species at this location
+      // Attach click-to-open tooltip with all species at this exhibit
       attachTooltip(el, animalsOnExhibit);
    });
 }
 
-// Determine class for marker color based on likelihood
-function getLikelihoodClass(likelihood) {
-   if (likelihood >= 4.75) { // 95%
-      return 'likelihood-very-high';
-   }
-   else if (likelihood >= 4) {
-      return 'likelihood-high';
-   }
-   else if (likelihood >= 3) {
-      return 'likelihood-medium';
-   }
-   else if (likelihood >= 2) {
-      return 'likelihood-moderate';
-   }
-   else if (likelihood >= 1) {
-      return 'likelihood-low';
-   }
-   else if (likelihood > 0) {
-      return 'likelihood-very-low';
-   }
-   return 'likelihood-none';
+function likelihoodToColor(likelihood) {
+   // Clamp the likelihood to [0, 100]
+   likelihood = Math.max(0, Math.min(100, likelihood));
+
+   // 20-color palette, last color kept as #32b03a, greens adjusted to flow smoothly
+   const colors = [
+      '#7a0000', '#9c0d00', '#be1a00', '#e03f00', '#ff6500', // reds → oranges
+      '#ff7f00', '#ff9900', '#ffb300', '#ffcc33', '#ffff33', // oranges → yellow
+      '#e0ff33', '#c4ff33', '#a8ff33', '#8cff33', '#70ff33', // yellow → light green
+      '#55cc33', '#3abb33', '#2eb33a', '#259933', '#1fa544'  // greens adjusted → darker towards end
+   ];
+
+   // Map 0-100 value to palette index
+   const index = Math.round((likelihood / 100) * (colors.length - 1));
+
+   return colors[index];
 }
 
 /* ============================================================
@@ -311,6 +296,7 @@ function showTooltipForMarker(marker, animals) {
    content.className = 'tooltip-content';
 
    const carousel = createCarousel(animals);
+   carousel._marker = marker;
    currentCarousel = carousel;
 
    // Enable arrow key navigation
@@ -371,18 +357,18 @@ function createCarousel(animals) {
       card.innerHTML = `
          <div class="tooltip-image-frame">
             <img 
-               src="images/animals/${a.location}/${a.species.replaceAll(' ', '-')}.png"
+               src="images/animals/${a.exhibit}/${a.species.replaceAll(' ', '-')}.png"
                alt="${a.species}"
                class="tooltip-image"
             >
          </div>
 
-         <strong class="species-link" data-species="${a.species}" data-location="${a.location}" data-exhibit="${a.exhibit_type}">
+         <strong class="species-link" data-species="${a.species}" data-exhibit="${a.exhibit}" data-exhibit="${a.exhibit_type}">
             ${a.species}
          </strong>
-         <span>Location: ${a.location}</span>
+         <span>Exhibit: ${a.exhibit}</span>
          <span>Exhibit: ${a.exhibit_type}</span>
-         <span>Likelihood: ${getLikelihoodPhrase(a.likelihood)}</span>
+         <span>Likelihood: ${getLikelihoodPhrase(a.likelihood)} (~${a.likelihood}%)</span>
       `;
 
       card.style.display = i === 0 ? 'flex' : 'none';
@@ -393,25 +379,24 @@ function createCarousel(animals) {
 }
 
 function getLikelihoodPhrase(likelihood) {
-   if (likelihood >= 5) {
+   if (likelihood >= 95) { // 95%
       return 'Very high';
    }
-   else if (likelihood >= 4) {
+   else if (likelihood >= 80) {
       return 'High';
    }
-   else if (likelihood >= 3) {
+   else if (likelihood >= 60) {
       return 'Medium';
    }
-   else if (likelihood >= 2) {
+   else if (likelihood >= 40) {
       return 'Moderate';
    }
-   else if (likelihood >= 1) {
+   else if (likelihood >= 20) {
       return 'Low';
    }
-   else if (likelihood > 0) {
+   else {
       return 'Very low';
    }
-   return 'None';
 }
 
 function carouselNext(carousel) {
@@ -421,6 +406,10 @@ function carouselNext(carousel) {
    index = (index + 1) % cards.length;
    cards[index].style.display = 'flex';
    carousel.dataset.index = index;
+   if (carousel._marker) {
+      carousel._marker.style.backgroundColor =
+         likelihoodToColor(lastAnimals[index].likelihood);
+   }
 }
 
 function carouselPrev(carousel) {
@@ -430,6 +419,10 @@ function carouselPrev(carousel) {
    index = (index - 1 + cards.length) % cards.length;
    cards[index].style.display = 'flex';
    carousel.dataset.index = index;
+   if (carousel._marker) {
+      carousel._marker.style.backgroundColor =
+         likelihoodToColor(lastAnimals[index].likelihood);
+   }
 }
 
 // Add keyboard navigation for carousel
@@ -574,13 +567,13 @@ function openSpeciesOverlay(species) {
 
       <div class="species-overlay-scroll">
          <img
-            src="images/animals/${animal.location}/${animal.species.replaceAll(' ', '-')}.png"
+            src="images/animals/${animal.exhibit}/${animal.species.replaceAll(' ', '-')}.png"
             class="new-animal-image"
          >
 
          <h2>${animal.species}</h2>
 
-         ${section('Location', animal.location)}
+         ${section('exhibit', animal.exhibit)}
          ${section('Seasonal Viewing Summary', animal.seasonal_viewing_summary)}
          ${section('Seasonal Viewing Tips', animal.seasonal_viewing_tips)}
          ${section('General Viewing Tips', animal.general_viewing_tips)}
