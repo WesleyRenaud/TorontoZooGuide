@@ -363,7 +363,7 @@ function createCarousel(animals) {
             >
          </div>
 
-         <strong class="species-link" data-species="${a.species}" data-exhibit="${a.exhibit}" data-exhibit="${a.exhibit_type}">
+         <strong class="species-link" data-species="${a.species}" data-exhibit="${a.exhibit}" data-exhibit="${a.enclosure_type}">
             ${a.species}
          </strong>
          <span>Exhibit: ${a.exhibit}</span>
@@ -575,6 +575,7 @@ function openSpeciesOverlay(species) {
 
          ${section('exhibit', animal.exhibit)}
          ${section('Seasonal Viewing Summary', animal.seasonal_viewing_summary)}
+         ${section('Seasonal Viewing Information', animal.seasonal_viewing_information)}
          ${section('Seasonal Viewing Tips', animal.seasonal_viewing_tips)}
          ${section('General Viewing Tips', animal.general_viewing_tips)}
          ${section('Animal Info', animal.animal_info)}

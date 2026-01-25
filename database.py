@@ -26,22 +26,25 @@ class Database():
       data = cur.execute(
          """   SELECT
                   a.SPECIES,
-                  a.EXHIBIT,
                   a.MIN_TEMPERATURE,
                   a.SNOW_RESISTANCE,
-                  a.PART_OF_SEASONAL_EXHIBIT,
-                  a.SEASONAL_VIEWING_SUMMARY,
                   a.SEASONAL_VIEWING_TIPS,
                   a.GENERAL_VIEWING_TIPS,
                   a.ANIMAL_INFO,
                   a.SPECIFIC_ANIMAL_INFO,
-                  e.EXHIBIT_TYPE,
-                  e.X_COORD,
-                  e.Y_COORD
+                  e.EXHIBIT,
+                  e.SEASONAL_VIEWING_SUMMARY,
+                  e.PART_OF_SEASONAL_EXHIBIT,
+                  e.SEASONAL_VIEWING_INFORMATION,
+                  v.ENCLOSURE_TYPE,
+                  v.X_COORD,
+                  v.Y_COORD
                FROM Animal a
                JOIN Enclosure e
-               ON a.SPECIES = e.SPECIES
-               AND a.exhibit = e.exhibit;
+                  ON a.SPECIES = e.SPECIES
+               JOIN EnclosureViewing v
+                  ON e.SPECIES = v.SPECIES
+                  AND e.EXHIBIT = v.EXHIBIT;
          """ )
 
       animal_data = data.fetchall()
@@ -49,13 +52,13 @@ class Database():
 
       for animal in animal_data:
          species = animal[0]
-         exhibit = animal[1]
-         min_temperature = animal[2]
-         snow_resistance = animal[3]
-         part_of_seasonal_exhibit = animal[4]
-         exhibit_type = animal[10]
+         exhibit = animal[7]
+         min_temperature = animal[1]
+         snow_resistance = animal[2]
+         part_of_seasonal_exhibit = animal[9]
+         enclosure_type = animal[11]
 
-         if exhibit_type == 'Outdoor':
+         if enclosure_type == 'Outdoor':
             # The initial likelihood to see the animal is calculating via a probability that the temperature is warm enough for the animal
             # to be on display, which is retrieved via a normal distribution
             likelihood = self.zoo_util.get_temperature_probability( temp, sigma, min_temperature )
@@ -76,10 +79,10 @@ class Database():
          likelihood = round( likelihood * 100 )
 
          if likelihood > 0:
-            animals.append( zoo.Animal( species=species, exhibit=exhibit, seasonal_viewing_summary=animal[5],
-                                        seasonal_viewing_tips=animal[6], general_viewing_tips=animal[7], animal_info=animal[8],
-                                        specific_animal_info=animal[9], exhibit_type=exhibit_type, likelihood=likelihood,
-                                        x_coord=animal[11], y_coord=animal[12] ) )
+            animals.append( zoo.Animal( species=species, exhibit=exhibit, seasonal_viewing_summary=animal[10],
+                                        seasonal_viewing_tips=animal[3], general_viewing_tips=animal[4], animal_info=animal[5],
+                                        specific_animal_info=animal[6], enclosure_type=enclosure_type, x_coord=animal[12],
+                                        y_coord=animal[13], seasonal_viewing_information=animal[10], likelihood=likelihood ) )
 
       cur.close()
 

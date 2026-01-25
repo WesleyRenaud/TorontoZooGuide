@@ -3,7 +3,7 @@ import database
 
 class Animal:
    def __init__( self, species, exhibit, seasonal_viewing_summary, seasonal_viewing_tips, general_viewing_tips, animal_info,
-                 specific_animal_info, exhibit_type, x_coord, y_coord, likelihood=None ):
+                 specific_animal_info, enclosure_type, x_coord, y_coord, seasonal_viewing_information, likelihood=None ):
       self.species = species
       self.exhibit = exhibit
       self.seasonal_viewing_summary = seasonal_viewing_summary
@@ -11,9 +11,10 @@ class Animal:
       self.general_viewing_tips = general_viewing_tips
       self.animal_info = animal_info
       self.specific_animal_info = specific_animal_info
-      self.exhibit_type = exhibit_type
+      self.enclosure_type = enclosure_type
       self.x_coord = x_coord
       self.y_coord = y_coord
+      self.seasonal_viewing_information = seasonal_viewing_information
       self.likelihood = likelihood
 
 
@@ -26,9 +27,10 @@ class Animal:
          'general_viewing_tips': self.general_viewing_tips,
          'animal_info': self.animal_info,
          'specific_animal_info': self.specific_animal_info,
-         'exhibit_type': self.exhibit_type,
+         'enclosure_type': self.enclosure_type,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
+         'seasonal_viewing_information': self.seasonal_viewing_information,
          'likelihood': self.likelihood
       }
    

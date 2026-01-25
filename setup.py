@@ -24,28 +24,35 @@ cursor.execute( ''' CREATE TABLE Exhibit
 cursor.execute( 'DROP TABLE IF EXISTS Animal;' )
 cursor.execute( ''' CREATE TABLE Animal
                   (  SPECIES                    VARCHAR(64) NOT NULL,
-                     EXHIBIT                    VARCHAR(64) NOT NULL,
                      MIN_TEMPERATURE            INTEGER,
                      SNOW_RESISTANCE            INTEGER     CHECK (SNOW_RESISTANCE BETWEEN 0 AND 5),
-                     PART_OF_SEASONAL_EXHIBIT   BOOL,
-                     SEASONAL_VIEWING_SUMMARY   VARCHAR(64),
                      SEASONAL_VIEWING_TIPS      TEXT,
                      GENERAL_VIEWING_TIPS       TEXT,
                      ANIMAL_INFO                TEXT,
                      SPECIFIC_ANIMAL_INFO       TEXT,
-                     FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(Name),
-                     PRIMARY KEY (SPECIES, EXHIBIT) ); ''' )
+                     PRIMARY KEY (SPECIES) ); ''' )
 
 cursor.execute( 'DROP TABLE IF EXISTS Enclosure;' )
 cursor.execute( ''' CREATE TABLE Enclosure
-                  (  SPECIES        VARCHAR(64) NOT NULL,
-                     EXHIBIT        VARCHAR(64) NOT NULL,
-                     EXHIBIT_TYPE   VARCHAR(64) NOT NULL,
-                     X_COORD        INTEGER     NOT NULL,
-                     Y_COORD        INTEGER     NOT NULL,
+                  (  SPECIES                       VARCHAR(64) NOT NULL,
+                     EXHIBIT                       VARCHAR(64) NOT NULL,
+                     PART_OF_SEASONAL_EXHIBIT      BOOL        NOT NULL,
+                     SEASONAL_VIEWING_SUMMARY      VARCHAR(64) NOT NULL,
+                     SEASONAL_VIEWING_INFORMATION  TEXT,
+                     FOREIGN KEY (SPECIES) REFERENCES Animal,
                      FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(Name),
-                     FOREIGN KEY (SPECIES, EXHIBIT) REFERENCES Animal,
-                     PRIMARY KEY (SPECIES, X_COORD, Y_COORD) ); ''' )
+                     PRIMARY KEY (SPECIES, EXHIBIT) ); ''' )
+
+cursor.execute( 'DROP TABLE IF EXISTS EnclosureViewing;' )
+cursor.execute( ''' CREATE TABLE EnclosureViewing
+                  (  SPECIES                    VARCHAR(64) NOT NULL,
+                     EXHIBIT                    VARCHAR(64) NOT NULL,
+                     ENCLOSURE_TYPE             VARCHAR(64) NOT NULL,
+                     X_COORD                    INTEGER     NOT NULL,
+                     Y_COORD                    INTEGER     NOT NULL,
+                     FOREIGN KEY (SPECIES) REFERENCES Animal,
+                     FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(Name),
+                     PRIMARY KEY (SPECIES, EXHIBIT, X_COORD, Y_COORD) ); ''' )
 
 exhibits = [
    (
@@ -248,7 +255,7 @@ exhibits = [
       0,                        # Probability of being open on the 1st day of January
       0,                        # Probability of being open on the 1st day of February
       0,                        # Probability of being open on the 1st day of March
-      0.05,                     # Probability of being open on the 1st day of April
+      0,                        # Probability of being open on the 1st day of April
       0.5,                      # Probability of being open on the 1st day of May
       1,                        # Probability of being open on the 1st day of June
       1,                        # Probability of being open on the 1st day of July
@@ -264,11 +271,8 @@ animals = [
    # Australasia Pavilion
    (
       'Black tree monitor',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -276,11 +280,8 @@ animals = [
    ),
    (
       'Brownbanded bamboo shark',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -288,11 +289,8 @@ animals = [
    ),
    (
       'Brush-tailed bettong',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -300,11 +298,8 @@ animals = [
    ),   
    (
       'Clown triggerfish',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -312,11 +307,8 @@ animals = [
    ),
    (
       'Crested pigeon',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -324,11 +316,8 @@ animals = [
    ),
    (
       'Crimson rosella',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -336,11 +325,8 @@ animals = [
    ),
    (
       'Demoiselle crane',
-      'Australasia Pavilion',
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Mar-Nov',
       '''Demoiselle cranes are most reliably seen from the spring through the fall. They are fairly hardy birds, but will generally
          retreat to shelter in the coldest months.'''.replace( '\n', ' ' ),
       '''The demoiselle cranes are generally more active earlier in the day, when they can often be seen wandering around their habitat,
@@ -352,11 +338,8 @@ animals = [
    ),
    (
       'Eastern rosella',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -364,11 +347,8 @@ animals = [
    ),
    (
       'Emerald tree boa',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -376,11 +356,8 @@ animals = [
    ),
    (
       'Fly River turtle',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -388,11 +365,8 @@ animals = [
    ),
    (
       'Galah',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -400,11 +374,8 @@ animals = [
    ),
    (
       'Green tree python',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -412,11 +383,8 @@ animals = [
    ),
    (
       'Green-winged dove',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -424,11 +392,8 @@ animals = [
    ),
    (
       'Komodo dragon',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The Komodo dragons at the zoo are young, and still getting used to their habitat. Most of the time you can find them high in the
          tree in the center of the enclosure. Look closely for a claw, or a dangling tail.'''.replace( '\n', ' ' ),
@@ -441,11 +406,8 @@ animals = [
    ),
    (
       'Kookaburra',
-      'Australasia Pavilion',
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Jun-Sep (Outdoor), Oct-May (Indoor)',                         # Seasonal visibility summary
       '''Kookaburras are warm weather birds, and thus are only comfortable outside during the warmer months of the year. In these warmer
          months they can be seen outside in the Australasia outdoor aviary, alongside the demoiselle cranes. In the cooler months they
          can be spotted in their indoor habitat just past the red-tailed black cockatoos.'''.replace( '\n', ' ' ),
@@ -455,13 +417,10 @@ animals = [
          .replace( '\n', ' ' ),
       None                                                           # Specific animal information
    ),
-   (
+   ( # Also in African Rainforest Pavilion
       'Lau banded iguana',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -469,11 +428,8 @@ animals = [
    ),
    (
       'Lionfish',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -481,11 +437,8 @@ animals = [
    ),
    (
       'Live coral reefs',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -493,11 +446,8 @@ animals = [
    ),
    (
       'Longnose butterflyfish',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -505,11 +455,8 @@ animals = [
    ),
    (
       'MacLeay\'s spectres',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -517,11 +464,8 @@ animals = [
    ),
    (
       'Malagasy rainbowfish',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -529,23 +473,17 @@ animals = [
    ),
    (
       'Moon jellyfish',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
-   (
+   ( # Also in Indo-Malaya Pavilion
       'Nicobar pigeon',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -553,11 +491,8 @@ animals = [
    ),
    (
       'Pennant coral fish',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -565,11 +500,8 @@ animals = [
    ),
    (
       'Pied imperial pigeon',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -577,11 +509,8 @@ animals = [
    ),
    (
       'Pot-bellied seahorse',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -589,11 +518,8 @@ animals = [
    ),
    (
       'Red claw yabby',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -601,11 +527,8 @@ animals = [
    ),
    (
       'Red-bellied short-necked turtle',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -613,11 +536,8 @@ animals = [
    ),
    (
       'Red-tailed black cockatoo',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -625,11 +545,8 @@ animals = [
    ),
    (
       'Short-beaked echidna',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The short-beaked echidna is perhaps the most difficult animal to spot at the zoo. This is because the species is nocturnal,
          and rarely exits its burrow during the day. Your best chance of spotting the echidna is to visit the Australasia pavilion
@@ -642,11 +559,8 @@ animals = [
    ),
    (
       'Solomon Island leaf frog',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -654,11 +568,8 @@ animals = [
    ),
    (
       'Solomon Island monkey-tailed skink',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -666,11 +577,8 @@ animals = [
    ),
    (
       'Southern hairy-nosed wombat',
-      'Australasia Pavilion',
       14,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)',           # Seasonal visibility summary
       '''Wombats are warm weather animals, and tend to only venture outside in the warmer months of the year. They are also generally
          less active in the winter, spending more time sleeping in their burrows. Even in the warmer months, the wombats are often found
          in their indoor habitat in the Australasia Pavilion.'''.replace( '\n', ' ' ),
@@ -685,11 +593,8 @@ animals = [
    ),
    (
       'Stimson\'s python',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -697,11 +602,8 @@ animals = [
    ),
    (
       'Tawny frogmouth',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -709,11 +611,8 @@ animals = [
    ),
    (
       'Thorny devil stick insect',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -721,11 +620,8 @@ animals = [
    ),
    (
       'Threadfin butterflyfish',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -733,11 +629,8 @@ animals = [
    ),
    (
       'Victoria crowned pigeon',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -745,11 +638,8 @@ animals = [
    ),
    (
       'White\'s tree frog',
-      'Australasia Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -759,11 +649,8 @@ animals = [
    # Australasia Outdoor
    (
       'Western grey kangaroo',
-      'Australasia Outdoor',
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Mar-Nov',                                                     # Seasonal visibility summary
       '''The Western grey kangaroo is a fairly hardy species. As long as the temperature is above 0°C and there isn't much snow on the
          ground, they should be viewable outside.'''.replace( '\n', ' ' ),
       '''The kangaroos at the Toronto Zoo have a rather large habitat, meaning that sometimes the animals will be fairly far from the
@@ -780,11 +667,8 @@ animals = [
    # Eurasia Wilds
    (
       'Amur tiger',
-      'Eurasia Wilds',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary'
       '''While the Amur tigers at the zoo can be viewed year-round, these cats are actually most comfortable when it is cooler, so your
          best chance of seeing them active is in the winter.'''.replace( '\n', ' ' ),
       '''For a year-round, comfortable experience, the tigers at the zoo always have access to indoor and outdoor spaces. Specifically
@@ -801,11 +685,8 @@ animals = [
    ),
    (
       'Asian wild horse',
-      'Eurasia Wilds',
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The Asian wild horse (previously known as the Przewalski horse) is the last true surviving species of wild horse. They
@@ -819,11 +700,8 @@ animals = [
    ),
    (
       'Bactrian camel',
-      'Eurasia Wilds',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Bactrian camels are native to Central Asia, where they live in some of the harshest habitats in the world, with temperatures
@@ -833,11 +711,8 @@ animals = [
    ),
    (
       'Domestic yak',
-      'Eurasia Wilds',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Yaks are incredibly well adapted for the cold. Additionally, their large lungs and hearts allow them to thrive in the thin air,
@@ -847,11 +722,8 @@ animals = [
    ),
    (
       'Highland cattle',
-      'Eurasia Wilds',
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Highland cattle are recognized for their thick fur, and droopy hair that covers their eyes. Their fur protects them from bugs
@@ -863,11 +735,8 @@ animals = [
    ),
    (
       'Mouflon',
-      'Eurasia Wilds',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Mouflon are one of the oldest species of wild sheep in the world. They are believed to be an ancestor of many modern
@@ -878,11 +747,8 @@ animals = [
    ),
    (
       'Red panda',
-      'Eurasia Wilds',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       '''Red pandas are most comfortable in the cooler weather, so visiting them from the fall through the spring will give you the
          best chance to see them active. During the summer months they spend much of their time sleeping high up in the trees. On the
          warmest summer days they may opt to spend their time inside, away from guests.'''.replace( '\n', ' ' ),
@@ -899,11 +765,8 @@ animals = [
    ),
    (
       'Snow leopard',
-      'Eurasia Wilds',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       '''Snow leopards are built for the extreme cold of the Himalayas, and thus are the most active in the winter. During the warmer
          months, they may be active earlier in the day, but they will spend a lot of the day sleeping in the shade, and perhaps away
          from the view of zoo visitors.'''.replace( '\n', ' ' ),
@@ -927,11 +790,8 @@ animals = [
    ),
    (
       'Steller\'s sea eagle',
-      'Eurasia Wilds',
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Steller's sea eagles are one of the largest and heaviest species of eagle in the world. They are native to Northeastern coastal
@@ -942,11 +802,8 @@ animals = [
    ),
    (
       'West Caucasian tur',
-      'Eurasia Wilds',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''West Caucasian turs get their name from where they come from--the West Caucasus mountains. They live in altitudes of up to
@@ -959,11 +816,8 @@ animals = [
    # Tundra Trek
    (
       'Arctic wolf',
-      'Tundra Trek',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The arctic wolf enclosure at the Toronto Zoo is very large, and has many viewing points. To get the best view of the wolves,
          you can move 360° around the habitat which will also take you all the way around the Tundra Trek exhibit, and you should get a
@@ -975,11 +829,8 @@ animals = [
    ),
    (
       'Caribou',
-      'Tundra Trek',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The caribou exhibit at the zoo is very large, and expands quite far back to the left from the main viewing area. Most of the
          time the caribou can be seen towards the back, right section of the habitat in and around their shelter. Sometimes they may be
@@ -992,11 +843,8 @@ animals = [
    ),
    (
       'Lesser snow goose',
-      'Tundra Trek',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Lesser snow geese breed in the arctic tundra, but migrate in the winter to the Southern U.S., and Mexico. They have one of the
@@ -1004,13 +852,10 @@ animals = [
          plumage, while juveniles are grey.'''.replace( '\n', ' ' ),
       None                                                           # Specific animal information
    ),
-   (
+   ( # Also in Canadian Domain
       'Northern bald eagle',
-      'Tundra Trek',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The recovery of bald eagles in North America is one of the greatest conservation stories of our time. In 1964 there were
@@ -1021,11 +866,8 @@ animals = [
    ),
    (
       'Polar bear',
-      'Tundra Trek',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       '''While visible all year-round, the polar bears at the zoo are far more active during the cooler months. During the summer, they
          are quite lethargic, and spend much of their time resting in the shade. If you want to see the polar bears in their glory
          playing with one another, consider visiting in the winter.'''.replace( '\n', ' ' ),
@@ -1044,16 +886,10 @@ animals = [
    # Americas Outdoor Mayan Temple Ruins
    (
       'American flamingo',
-      'Americas Outdoor Mayan Temple Ruins',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
       '''American flamingos are a relatively hardy bird, tolerating temperatures as low as 5°C. They can be seen reliably from May
-         through to October, but they can also often be seen on warmer days in March, April, and November.
-         *The American flamingos are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit
-         typically opens for the season sometime in late March or April, and closes sometime in November. For confirmation on whether
-         the exhibit is open, consult the Toronto Zoo's official website.*'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+         through to October, but they can also often be seen on warmer days in March, April, and November.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
       '''American flamingos are the largest species of flamingo. They get their pink colouration from the carotenoid in their diets.
          Young flamingos have a light grey colouration. In the wild, flamingos live in very large colonies. A group of flamingos is
@@ -1063,16 +899,10 @@ animals = [
    ),
    (
       'Black-handed spider monkey',
-      'Americas Outdoor Mayan Temple Ruins',
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'May-Sep',                                                     # Seasonal visibility summary
       '''Spider monkeys are warm-weather primates, and struggle to be outside in any temperature below 15°C. They can be reliably seen
-         from May through September, but even then, on colder days they opt to spend their time inside.
-         *The black-handed spider monkeys are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit
-         typically opens for the season sometime in late March or April, and closes sometime in November. For confirmation on whether
-         the exhibit is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+         from May through September, but even then, on colder days they opt to spend their time inside.'''.replace( '\n', ' ' ),
       '''The spider monkeys often move through the indoor and outdoor habitats in a given day. Check all of their platforms, along the
          back of the exhibit, and above the glass viewing across from the flamingos. If you don't spot them, then they are likely inside
          for the moment. If you are patient, you may see them venture outside.'''.replace( '\n', ' ' ),
@@ -1084,17 +914,11 @@ animals = [
    ),
    (
       'Capybara',
-      'Americas Outdoor Mayan Temple Ruins',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      '''May-Oct''',
-      '''The capybara is a warm-weather animal, and is most reliably seen from May until April. The capybara has a viewing pattern
+      '''The capybara is a warm-weather animal, and is most reliably seen from May until October. The capybara has a viewing pattern
          similar to the flamingos, and may also be viewable outside on warmer March, April, and November days. On days that aren't too
-         warm, the capybara may move between her indoor and outdoor habitats.
-         *The capybara is part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit typically opens for
-         the season sometime in late March or April, and closes sometime in November. For confirmation on whether the exhibit is open,
-         consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+         warm, the capybara may move between her indoor and outdoor habitats.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
       '''The capybara is the world's largest rodent. They are endemic to South America. They often live in large social groups, but can
          also live independently. They are also excellent swimmers, and their eyes, ears and nostrils are placed high on their bodies to
@@ -1105,11 +929,8 @@ animals = [
    # Americas Pavilion
    (
       'American alligator',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''American alligators are one of the largest reptiles in North America. Their range consists of the Southeastern part of the U.S.,
@@ -1121,11 +942,8 @@ animals = [
    ),
    (
       'American eel',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1133,11 +951,8 @@ animals = [
    ),
    (
       'American lobster',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1145,11 +960,8 @@ animals = [
    ),
    (
       'Axolotl',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The axolotl is one of the rarest species in the world, found only in the lakes and canals around Mexico City. Axolotls are a
@@ -1159,11 +971,8 @@ animals = [
    ),
    (
       'Black-footed ferret',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Black-footed ferrets were believed to be extinct in the wild, until they were rediscovered in Wyoming in 1981. At one point
@@ -1174,11 +983,8 @@ animals = [
    ),
    (
       'Black-widow spider',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1186,11 +992,8 @@ animals = [
    ),
    (
       'Blanding\'s turtle',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
-      None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
+      None,                                                          # Snow resistance (only for animals with outdoor viewing
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The story of the blanding's turtle is one of the great conservation stories of the Toronto Zoo. Since being declared
@@ -1199,11 +1002,8 @@ animals = [
    ),
    (
       'Blue and yellow macaw',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The blue and gold macaw is one of the most recognizable species of parrot in the world. They are native to South America where
@@ -1214,11 +1014,8 @@ animals = [
    ),
    (
       'Blue poison dart frog',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1226,11 +1023,8 @@ animals = [
    ),
    (
       'Boa constrictor',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1238,11 +1032,8 @@ animals = [
    ),
    (
       'Brazilian giant cockroach',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1250,11 +1041,8 @@ animals = [
    ),
    (
       'Brazilian salmon pink bird-eating tarantula',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1262,11 +1050,8 @@ animals = [
    ),
    (
       'Butterfly goodied',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1274,11 +1059,8 @@ animals = [
    ),
    (
       'Crested tinamou',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1286,11 +1068,8 @@ animals = [
    ),
    (
       'Cuvier\'s smooth-fronted caiman',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Cuvier's smooth-fronted caiman is the smallest species of caiman, and one of the smallest species of crocodilian in the world.
@@ -1300,11 +1079,8 @@ animals = [
    ),
    (
       'Desert grassland whiptail',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''This species is parthenogenetic, which means they can reproduce without males. The females lay eggs, which develop into
@@ -1313,11 +1089,8 @@ animals = [
    ),
    (
       'Dyeing poison dart frog',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1325,11 +1098,8 @@ animals = [
    ),
    (
       'Eastern loggerhead shrike',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1337,11 +1107,8 @@ animals = [
    ),
    (
       'Eastern lubber grasshopper',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1349,11 +1116,8 @@ animals = [
    ),
    (
       'Eyelash viper',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1361,11 +1125,8 @@ animals = [
    ),
    (
       'Ferocious water bug',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1373,11 +1134,8 @@ animals = [
    ),
    (
       'Golden lion tamarin',
-      'Americas Pavilion',
       18,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Jun-Sep (Outdoor + Indoor), Oct-May (Indoor Only)',           # Seasonal visibility summary
       '''Golden lion tamarins are a species native to the tropical rainforests of South America, and can only be outside during the
          warmest months of the year. Even on these days, these little monkeys may opt to spend their time in their indoor habitat.'''
          .replace( '\n', ' ' ),
@@ -1389,13 +1147,10 @@ animals = [
          arboreal, and will rarely go to the rainforest floor in the wild.'''.replace( '\n', ' ' ),
       None                                                           # Specific animal information
    ),
-   (
+   ( # Also in Kids Zoo
       'Great horned owl',
-      'Americas Pavilion',
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The great horned owl is one of the largest species of owl in North America. They are easily recognized by the tufts on top of
@@ -1405,11 +1160,8 @@ animals = [
    ),
    (
       'Green and black poison dart frog',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1417,11 +1169,8 @@ animals = [
    ),
    (
       'Green surf anemone',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1429,11 +1178,8 @@ animals = [
    ),
    (
       'Green-winged macaw',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Green-winged macaws are an iconic species of parrot, identified through their red, green, and blue plumage, and the white
@@ -1445,11 +1191,8 @@ animals = [
    ),
    (
       'Guatemalan beaded lizard',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1457,11 +1200,8 @@ animals = [
    ),
    (
       'Jamaican boa',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1469,11 +1209,8 @@ animals = [
    ),
    (
       'Leather sea star',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1481,11 +1218,8 @@ animals = [
    ),
    (
       'Lemur leaf frog',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1493,11 +1227,8 @@ animals = [
    ),
    (
       'Longnose dace',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1505,11 +1236,8 @@ animals = [
    ),
    (
       'Massasauga rattlesnake',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1517,11 +1245,8 @@ animals = [
    ),
    (
       'Mexican blind cavefish',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1529,11 +1254,8 @@ animals = [
    ),
    (
       'Midland painted turtle',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1541,11 +1263,8 @@ animals = [
    ),
    (
       'North American river otter',
-      'Americas Pavilion',
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The North American river otters are a highly active species, and can be usually seen swimming around their water feature
          during the day. You can watch them swim around from above, at the outdoor viewing, or venture inside the pavilion to their
@@ -1562,11 +1281,8 @@ animals = [
    ),
    (
       'Opal-rumped tanager',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1574,11 +1290,8 @@ animals = [
    ),
    (
       'Painted anemone',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1586,11 +1299,8 @@ animals = [
    ),
    (
       'Panamanian golden frog',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1598,11 +1308,8 @@ animals = [
    ),
    (
       'Plumose anemone',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1610,11 +1317,8 @@ animals = [
    ),
    (
       'Plush-crested jay',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1622,11 +1326,8 @@ animals = [
    ),
    (
       'Puerto Rican crested toad',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1634,11 +1335,8 @@ animals = [
    ),
    (
       'Pumpkinseed sunfish',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1646,11 +1344,8 @@ animals = [
    ),
    (
       'Red Island bird-eating tarantula',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1658,11 +1353,8 @@ animals = [
    ),
    (
       'Red-crested finch',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1670,11 +1362,8 @@ animals = [
    ),
    (
       'Reticulate gila monster',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1682,11 +1371,8 @@ animals = [
    ),
    (
       'Round goby',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1694,11 +1380,8 @@ animals = [
    ),
    (
       'Rufous-collared sparrow',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1706,11 +1389,8 @@ animals = [
    ),
    (
       'San-Esteban Island chuckwalla',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1718,11 +1398,8 @@ animals = [
    ),
    (
       'Snapping turtle',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1730,11 +1407,8 @@ animals = [
    ),
    (
       'Spot prawn',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1742,11 +1416,8 @@ animals = [
    ),
    (
       'Spotted river stingray',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1754,11 +1425,8 @@ animals = [
    ),
    (
       'Spotted turtle',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1766,11 +1434,8 @@ animals = [
    ),
    (
       'Timber rattlesnake',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1778,11 +1443,8 @@ animals = [
    ),
    (
       'Turquoise tanager',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1790,11 +1452,8 @@ animals = [
    ),
    (
       'Two-toed sloth',
-      'Americas Pavilion',
       20,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)',           # Seasonal visibility summary
       '''The two-toed sloth is endemic to the rainforests of South America, and is suited to be outside in the warm weather. You have
          a good chance of spotting them outside through May into September, with a chance as well on warm days in April or October. Even
          on warm days, the sloths opt to spend their time inside. During the cooler months, they can always be spotted inside.'''
@@ -1810,11 +1469,8 @@ animals = [
    ),
    (
       'Western blacknose dace',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1822,11 +1478,8 @@ animals = [
    ),
    (
       'White-faced saki',
-      'Americas Pavilion',
       18,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      '''May-Sep (Outdoor + Indoor), Oct-Apr (Indoor Only)''',       # Seasonal visibility summary''
       '''White-faced sakis are warm weather primates, and are only comfortable outside in the warmer months. They are frequently spotted
          outdoors from May through September, but may also venture outside on other warmer days.'''.replace( '\n', ' ' ),
       '''The outdoor habitat for the white-faced saki is near the boardwalk connecting the Americas to Africa. If you don't spot them
@@ -1840,11 +1493,8 @@ animals = [
    ),
    (
       'Yellow-banded poison dart frog',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1852,11 +1502,8 @@ animals = [
    ),
    (
       'Zebra finch',
-      'Americas Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -1866,15 +1513,9 @@ animals = [
    # Canadian Domain
    (
       'Cougar',
-      'Canadian Domain',
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'Mar-Dec',                                                     # Seasonal visibility summary
-      '''The cougar is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom of
-         the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March. To
-         check whether the domain is open, consult the Toronto Zoo's official website. Cougars thrive in all seasons, and if the domain
-         is open, then the cougar will be viewable.'''.replace( '\n', ' ' ),
+      None,                                                          # Seasonal viewing tips
       '''The cougars at the zoo have access to a behind-the-scenes indoor habitat which they often spend time in. The cougars are fairly
          interested in zoo guests, and thus if you don't see them right away, but wait for a few minutes, you may get a close encounter
          with one of them. Also be sure to check for them inside their cave in the back right corner of the habitat, on top of all of
@@ -1890,19 +1531,13 @@ animals = [
    ),
    (
       'Grizzly bear',
-      'Canadian Domain',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'Apr-Oct',                                                     # Seasonal visibility summary
       '''The grizzly bear is viewable seasonably due to its hibernating patterns. Grizzly bears hibernate from sometime in November,
          usually until sometime in March, depending on the exact weather conditions of that year. Leading up to and coming out of
          hibernation, grizzly bears spend more of their time resting, and thus the bears at the zoo may be less visible as they spend
-         more of their time resting off-display. The grizzly bear can usually be spotted on exhibit from April through October. 
-         *The grizzly bear is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the
-         bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in
-         March. To check whether the domain is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
-         .replace( '*', '\n' ),
+         more of their time resting off-display. The grizzly bear can usually be spotted on exhibit from April through October.'''
+         .replace( '\n', ' ' ),
       '''The grizzly bear at the Toronto Zoo, Shintay, is in her golden years and may choose to spend some of her time behind the scenes.
          She can often be seen resting in the shade near the viewing areas of the exhibit, or by peering through the bars into her
          behind-the-scenes area. She is most active during wild encounters, where she will forage around her habitat, enjoying a variety
@@ -1916,50 +1551,19 @@ animals = [
          resting. Your best chance of seeing her active is to visit her habitat during a wild encounter.'''.replace( '\n', ' ' )
    ),
    (
-      'Northern bald eagle',
-      'Canadian Domain',
-      -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'Mar-Dec',                                                     # Seasonal visibility summary
-      '''The Northern bald eagle is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at
-         the bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime
-         in March. To check whether the domain is open, consult the Toronto Zoo's official website. If the domain is open, then the
-         Northern bald eagle will be viewable. Additionally, this species is viewable year-round in the Tundra Trek.'''
-         .replace( '\n', ' ' ),
-      None,                                                          # General viewing tips
-      '''The recovery of bald eagles in North America is one of the greatest conservation stories of our time. In 1964 there were
-         approximately 400 breeding pairs, and now there ~71,000. Banning DDT and habitat protection initiatives allowed their
-         population to grow exponentially. Bald eagles feed on fish and mammals, and are often year-round residents at their nests
-         as long as the water bodies they get their food from do not freeze over.'''.replace( '\n', ' ' ),
-      None                                                           # Specific animal information
-   ),
-   (
       'Raccoon',
-      'Canadian Domain',
       -35,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'Mar-Dec',                                                     # Seasonal visibility summary
-      '''The raccoon is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom of
-         the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March. To
-         check whether the domain is open, consult the Toronto Zoo's official website. If the domain is open, then the raccoon will be
-         viewable.'''.replace( '\n', ' ' ),
+      None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
       'Wood bison',
-      'Canadian Domain',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'Mar-Dec',                                                     # Seasonal visibility summary
-      '''The wood bison is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom
-         of the Rouge Valley, and for the safety of guests, the domain closes from about the start of Jaunary until sometime in March.
-         To check whether the domain is open, consult the Toronto Zoo's official website. If the domain is open, then the wood bison
-         will be viewable.'''.replace( '\n', ' ' ),
+      None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
          '''The wood bison is the largest land animal in North America, slightly edging out the plains bison. Adult males can weigh up to
          2200 lb. Bison calves are born a reddish-brown colour, and gain the shaggy, multi-coloured fur as they age. Bison grow their
@@ -1973,11 +1577,8 @@ animals = [
    # Africa Savanna
    (
       'African lion',
-      'Africa Savanna',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       3,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       '''The African lions are more or less viewable year round. During the den of winter they are given access to indoor spaces so
          they may decide to be inside if it is particularly cold or icy. In the winter, they are most often seen in their den, since
          this space is heated. You have the best chance of spotting the lions being active by visiting on a cooler day in the spring or
@@ -1993,11 +1594,8 @@ animals = [
    ),
    (
       'African penguin',
-      'Africa Savanna',
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Apr-Nov (Outdoor + Indoor), Dec-Mar (Indoor Only)',           # Seasonal visibility summary
       '''African penguins are adapted to handle temperate climates, and thus can be seen outdoors for most of the year. They should be
          viewable on any day between April and November where the temperature is above 0°C and there is no snow on the ground. They may
          additionally be viewable on some days in March. From December to February and parts of March and April, they can be seen
@@ -2012,11 +1610,8 @@ animals = [
    ),
    (
       'Cheetah',
-      'Africa Savanna',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       3,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       '''The cheetahs are on exhibit year-round. In the coldest months of the year they are given access to indoor spaces, so on very
          cold and/or icy days they may decide to spend their time inside. They are most active on cooler days in the fall and spring.
          ''',
@@ -2032,11 +1627,8 @@ animals = [
    ),
    (
       'Common eland',
-      'Africa Savanna',
       2,                                                             # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Apr-Nov',                                                     # Seasonal visibility summary
       '''Elands are one of the most-cold resistant antelopes, and can be seen outside during most months of the year through April into
          November. They may also be viewable on warmer March days where there is no snow on the ground, as they are not adapted to walk
          in it.'''.replace( '\n', ' ' ),
@@ -2049,11 +1641,8 @@ animals = [
    ),
    (
       'Greater kudu',
-      'Africa Savanna',
       12,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
       '''Kudu are a warm weather antelope with little protection from the cold, and thus they are generally only viewable during the
          warmer months of the year. They can generally be viewed from May until October, and perhaps also on other warm days in spring
          or fall.'''.replace( '\n', ' ' ),
@@ -2068,11 +1657,8 @@ animals = [
    ),
    (
       'Grevy\'s zebra',
-      'Africa Savanna',
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Mar-Nov',                                                     # Seasonal visibility summary
       '''Grevy's zebras are a very hardy species, tolerating temperatures around freezing. They are generally viewable outside from
          ealrly Spring through to the start of winter. On a lot of warmer winter days they would be able to go outside if not for the
          snow/ice on the ground. Zebras have no adaptation to allow them to move across the snow, and if one were to fall, it could be
@@ -2089,13 +1675,10 @@ animals = [
          be the females, but sometimes a male will be on exhibit with the females, particularly for breeding purposes.'''
          .replace( '\n', ' ' )
    ),
-   (
+   ( # Also in Kids Zoo
       'Marabou stork',
-      'Africa Savanna',
-      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Jun-Sep',                                                     # Seasonal visibility summary
       '''Marabou storks are a warm weather bird and can only go on exhibit in the warmer months, particularly from June to September,
          but perhaps longer than that, depending on the specific weather.'''.replace( '\n', ' ' ),
       '''There are a couple different spots to spot the marabou storks. They go on exhibit with the kudu and can be spotted in that
@@ -2110,11 +1693,8 @@ animals = [
    ),
    (
       'Masai giraffe',
-      'Africa Savanna',
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'May-Oct (Outdoor), Nov-Apr (Indoor)',                         # Winter visibility (only for animals with outdoor viewing)
       '''Masai giraffes are warm-weather animals and have little protection against the cold. They can usually be seen outside from May
          until October and on other days above 10°C. If you don't see them outside, you can stop by the giraffe house, right beside
          their outdoor habitat and see them inside.'''.replace( '\n', ' ' ),
@@ -2130,11 +1710,8 @@ animals = [
    ),
    (
       'Olive baboon',
-      'Africa Savanna',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       '''The olive baboons can generally be seen year-round. In the coldest months they may be given access to indoor spaces, but they
          can generally be seen outside, most often on their main structure in the center of their enclosure.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
@@ -2146,11 +1723,8 @@ animals = [
    ),
    (
       'Ostrich',
-      'Africa Savanna',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       1,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Mar-Nov',                                                     # Seasonal visibility summary
       '''Ostriches are quite adaptive birds, comfortable in temperatures down to around 0°C. They can be fairly reliably seen between
          March and November, minus any freezing days, or days where there is much snow on the ground.'''.replace( '\n', ' ' ),
       '''The ostrich habitat has two main vantage points. One is between the lions and the baboons, while the other is across from the
@@ -2164,11 +1738,8 @@ animals = [
    ),
    (
       'River hippopotamus',
-      'Africa Savanna',
       14,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
       '''River hippos are native to sub-Saharan African and have exposed skin, and are thus not very adapted to the cold. At the zoo,
          they can be seen outside reliably from May through the warmer part of October, and occasionally on other warm spring and fall
          days.'''.replace( '\n', ' ' ),
@@ -2181,11 +1752,8 @@ animals = [
    ),
    (
       'Southern ground hornbill',
-      'Africa Savanna',
-      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Jun-Sep',                                                     # Seasonal visibility summary
       '''Southern ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.'''
          .replace( '\n', ' ' ),
       '''Southern ground hornbills can be spotted in two habitats at the zoo. Some of them share a habitat with the kudus and other
@@ -2200,11 +1768,8 @@ animals = [
    ),
    (
       'Southern white rhinoceros',
-      'Africa Savanna',
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
       '''Southern white rhinoceroses are warm-weather animals and have exposed skin, and are only viewable outside during the warmer
          months of the year. They can be reliably seen from May through October, and on other warm spring or fall days.'''
          .replace( '\n', ' ' ),
@@ -2220,11 +1785,8 @@ animals = [
    ),
    (
       'Spotted hyena',
-      'Africa Savanna',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       3,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       '''The spotted hyenas can generally be seen year-round, but during the coldest months they may be given indoor spaces, and decide
          to spend their time inside, specifically on the coldest and snowiest day. On the coldest days, look for them in their den,
          viewable from the glass viewing across from the watusi, which is heated.'''.replace( '\n', ' ' ),
@@ -2239,11 +1801,8 @@ animals = [
    ),
    (
       'Warthog',
-      'Africa Savanna',
-      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      16,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Jun-Sep',                                                     # Seasonal visibility summary
       '''Warthogs are very sensitive to the cold, and thus are only viewable outside during the warmest months, June to September, and
          on other warm days.'''.replace( '\n', ' ' ),
       '''The warthogs can most often be seen by looking directly down from their viewing. One of the warthogs at the zoo likes to rest
@@ -2256,11 +1815,8 @@ animals = [
    ),
    (
       'Watusi cattle',
-      'Africa Savanna',
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The watusi cattle can generally be seen outside year-round, as they have been bred to have a very high tolerance against the
          cold. On the iciest days, they may opt to stay inside as they need to move around a lot each day to graze.'''
@@ -2272,11 +1828,8 @@ animals = [
    ),
    (
       'White-breasted cormorant',
-      'Africa Savanna',
       2,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Apr-Nov (Outdoor + Indoor), Dec-Mar (Indoor Only)',           # Seasonal visibility summary
       '''The white-breasted cormorant can handle temperate environments, and can thus be outside for most of the year, but cannot handle
          snow or ice. During the coldest months, from December through most of March, these birds are only visible indoors. When
          weather permits, this bird can normally be seen outside by the water's edge in the African penguin habitat.'''
@@ -2287,11 +1840,8 @@ animals = [
    ),
    (
       'White-headed vulture',
-      'Africa Savanna',
-      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Jun-Sep',                                                     # Seasonal visibility summary
       '''The white-headed vulture is a warm-weather bird which can only be seen outside during the warmest months, and on other very
          warm days.'''.replace( '\n', ' ' ),
       '''The zoo is home to one white-headed vulture, Lloyd, and he is one of the more reclusive residents. He resides in the enclosure
@@ -2309,11 +1859,8 @@ animals = [
    # African Rainforest Pavilion
    (
       'African clawed frog',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2321,11 +1868,8 @@ animals = [
    ),
    (
       'African spoonbill',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2333,11 +1877,8 @@ animals = [
    ),
    (
       'Aldabra tortoise',
-      'African Rainforest Pavilion',
       20,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      '''Jul-Aug (Outdoor), Sep-Jun (Indoor)''',                     # Seasonal visibility summary
       '''The Aldabra tortoises only thrive in very warm weather and thus can only be reliably seen outdoors in the peak of summer,
          during July and August, and other very warm days. The rest of the time they can be seen inside the African Rainforest pavilion
          in their shared habitat with the ring-tailed lemurs and the grey-necked crowned cranes.'''.replace( '\n', ' ' ),
@@ -2349,11 +1890,8 @@ animals = [
    ),
    (
       'Black crake',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2361,11 +1899,8 @@ animals = [
    ),
    (
       'Blue-bellied roller',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2373,11 +1908,8 @@ animals = [
    ),
    (
       'Grey-necked crowned crane',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The grey-necked crowned crane is known for the golden features on the top of its head, and its multi-coloured plumage. Both
@@ -2387,11 +1919,8 @@ animals = [
    ),
    (
       'Gaboon viper',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2399,11 +1928,8 @@ animals = [
    ),
    (
       'Hamerkop',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2411,23 +1937,8 @@ animals = [
    ),
    (
       'Lake Malawi cichlids',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
-      None,                                                          # Seasonal viewing tips
-      None,                                                          # General viewing tips
-      None,                                                          # Animal information
-      None                                                           # Specific animal information
-   ),
-   (
-      'Lau banded iguana',
-      'African Rainforest Pavilion',
-      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
-      None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2435,11 +1946,8 @@ animals = [
    ),
    (
       'Leopard ctenopoma',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2447,11 +1955,8 @@ animals = [
    ),
    (
       'Mantella (poison frog)',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2459,11 +1964,8 @@ animals = [
    ),
    (
       'Naked mole rat',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2471,11 +1973,8 @@ animals = [
    ),
    (
       'Ngege',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2483,11 +1982,8 @@ animals = [
    ),
    (
       'Nile soft-shelled turtle',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''This turtle has a soft, leathery shell, unlike the hard, boney ones which most others have. This soft shell helps them move
@@ -2498,11 +1994,8 @@ animals = [
    ),
    (
       'Pygmy hippopotamus',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''Pygmy hippos are significantly smaller, more timid, and less social than their counterparts. Unlike river hippos, pgymy hippos
@@ -2514,11 +2007,8 @@ animals = [
    ),
    (
       'Radiated tortoise',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2526,11 +2016,8 @@ animals = [
    ),
    (
       'Red river hog',
-      'African Rainforest Pavilion',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Apr-Nov',                                                     # Seasonal visibility summary
       '''Red river hogs do surprisingly well in cooler temperatures can usually be seen outside from April until November.'''
          .replace( '\n', ' ' ),
       None,                                                          # General viewing tips
@@ -2543,11 +2030,8 @@ animals = [
    ),
    (
       'Ring-tailed lemur',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The ring-tailed lemur gets its name from the alternating black and white rings on its tail. Being a species of lemur, these
@@ -2560,11 +2044,8 @@ animals = [
    ),
    (
       'Royal python',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2572,11 +2053,8 @@ animals = [
    ),
    (
       'Sacred ibis',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2584,11 +2062,8 @@ animals = [
    ),
    (
       'Slender-tailed meerkat',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The slender-tailed meerkat is a small species of mongoose native to the savannas and semi-desert regions of Southern Africa.
@@ -2600,11 +2075,8 @@ animals = [
    ),
    (
       'South African crested porcupine',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2612,11 +2084,8 @@ animals = [
    ),
    (
       'South African shelduck',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2624,11 +2093,8 @@ animals = [
    ),
    (
       'Speckled mousebird',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2636,11 +2102,8 @@ animals = [
    ),
    (
       'Spider tortoise',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2648,11 +2111,8 @@ animals = [
    ),
    (
       'Straw coloured fruit bat',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2660,11 +2120,8 @@ animals = [
    ),
    (
       'Tomato frog',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2672,11 +2129,8 @@ animals = [
    ),
    (
       'Veiled chameleon',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2684,11 +2138,8 @@ animals = [
    ),
    (
       'West African dwarf crocodile',
-      'African Rainforest Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The West African dwarf crocodile is the smallest species of crocodile in Africa. They can grow up to 5-6 ft, and are very
@@ -2699,11 +2150,8 @@ animals = [
    ),
    (
       'Western lowland gorilla',
-      'African Rainforest Pavilion',
       12,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'May-Oct (Outdoor + Indoor), Nov-Apr (Indoor Only)',           # Seasonal visibility summary
       '''Western lowland gorillas are warm weather primates and are only comfortable outside during the warmer months of the year,
          usually from May to October, and perhaps on other warmer days, specifically in the later part of April.'''.replace( '\n', ' ' ),
       '''In the warmer months, you can generally find the females in the outdoor habitat, and the males inside. When it is too cold for
@@ -2725,11 +2173,8 @@ animals = [
    # Indo-Malaya Pavilion
    (
       'Asian brown tortoise',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2737,11 +2182,8 @@ animals = [
    ),
    (
       'Bighead carp',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2749,11 +2191,8 @@ animals = [
    ),
    (
       'Black carp',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2761,11 +2200,8 @@ animals = [
    ),
    (
       'Black-breasted leaf turtle',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2773,11 +2209,8 @@ animals = [
    ),
    (
       'Black-throated laughing thrush',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2785,11 +2218,8 @@ animals = [
    ),
    (
       'Burmese star tortoise',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2797,11 +2227,8 @@ animals = [
    ),
    (
       'Cattle egret',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2809,11 +2236,8 @@ animals = [
    ),
    (
       'Concave casqued hornbill',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2821,11 +2245,8 @@ animals = [
    ),
    (
       'Crested wood partridge',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2833,11 +2254,8 @@ animals = [
    ),
    (
       'Crocodile lizard',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2845,11 +2263,8 @@ animals = [
    ),
    (
       'Crocodile newt',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2857,23 +2272,17 @@ animals = [
    ),
    (
       'Edward\'s pheasant',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
-   (
+   ( # Also in Malayan Woods Pavilion
       'Giant gourami',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2881,11 +2290,8 @@ animals = [
    ),
    (
       'Grass carp',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2893,11 +2299,8 @@ animals = [
    ),
    (
       'Green crested basilisk',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2905,11 +2308,8 @@ animals = [
    ),
    (
       'Hamilton\'s pond turtle',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2917,11 +2317,8 @@ animals = [
    ),
    (
       'Iridescent shark catfish',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2929,11 +2326,8 @@ animals = [
    ),
    (
       'Luzon bleeding-heart dove',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2941,11 +2335,8 @@ animals = [
    ),
    (
       'Malayan bonytongue',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2953,11 +2344,8 @@ animals = [
    ),
    (
       'Malaysian painted turtle',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2965,11 +2353,8 @@ animals = [
    ),
    (
       'Mekong barb',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -2977,23 +2362,8 @@ animals = [
    ),
    (
       'Monocled cobra',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
-      None,                                                          # Seasonal viewing tips
-      None,                                                          # General viewing tips
-      None,                                                          # Animal information
-      None                                                           # Specific animal information
-   ),
-   (
-      'Nicobar pigeon',
-      'Indo-Malaya Pavilion',
-      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
-      None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3001,11 +2371,8 @@ animals = [
    ),
    (
       'Palawan peacock-pheasant',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3013,11 +2380,8 @@ animals = [
    ),
    (
       'Red-lined torpedo barb',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3025,11 +2389,8 @@ animals = [
    ),
    (
       'Reticulated python',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The reticulated python is the longest snake species in the world. At their max, they can get up to 9 m (30 ft) in length. They
@@ -3039,11 +2400,8 @@ animals = [
    ),
    (
       'Spiny turtle',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3051,11 +2409,8 @@ animals = [
    ),
    (
       'Sumatran orangutan',
-      'Indo-Malaya Pavilion',
       12,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'May-Oct (Outdoor + Indoor), Nov-Apr (Indoor Only)',           # Seasonal visibility summary
       '''Sumatran orangutans come from the tropical rainforests of Sumatra, and can only be outside during the warmer months. During the
          warmer months you may find these apes in their new, state-of-the-art outdoor habitat which opened in 2023, and their indoor
          habitat. If looking to see the orangutans outside, your best chance of seeing them actively exploring the habitat is to go
@@ -3077,11 +2432,8 @@ animals = [
    ),
    (
       'Tentacled snake',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3089,11 +2441,8 @@ animals = [
    ),
    (
       'Tinfoil barb',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3101,11 +2450,8 @@ animals = [
    ),
    (
       'Tomistoma',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The tomistoma, also known as the false gharial, is a medium-sized crocodilian native to Southeast Asia. Despite their
@@ -3115,11 +2461,8 @@ animals = [
    ),
    (
       'Tri-coloured shark',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3127,11 +2470,8 @@ animals = [
    ),
    (
       'White-handed gibbon',
-      'Indo-Malaya Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       '''The white-handed or Lar gibbon is a species of lesser ape known for its long limbs and agility, allowing them to cruise
@@ -3145,11 +2485,8 @@ animals = [
    # Indo-Malaya Outdoor
    (
       'Babirusa',
-      'Indo-Malaya Outdoor',
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'May-Oct (Outdoor), Nov-Apr (Indoor)',                         # Seasonal visibility summary
       '''Babirusa are a tropical species of pig and thus can only be outside in the warmer months, mostly from May to October, plus
          other warmer days. The rest of the time they can be viewed inside the greater one-horned rhino building to the left of their
          habitat.'''.replace( '\n', ' ' ),
@@ -3163,11 +2500,8 @@ animals = [
    ),
    (
       'Greater one-horned rhinoceros',
-      'Indo-Malaya Outdoor',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The greater one-horned rhinoceros shares its indoor space with the babirusa. They rotate between the on-exhibit and off-exhibit
          spaces, and thus the rhino may not always be viewable. Your best chance of spotting him involves visiting the rhino house in
@@ -3184,11 +2518,8 @@ animals = [
    ),
    (
       'Indian peafowl',
-      'Indo-Malaya Outdoor',
       -15,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       '''The Indian peafowl are very well adapted to stay in the cold, but they also have access to indoor spaces in the winter, so they
          may choose to go inside on colder days.'''.replace( '\n', ' ' ),
       None,                                                          # General viewing tips
@@ -3200,11 +2531,8 @@ animals = [
    ),
    (
       'Sumatran tiger',
-      'Indo-Malaya Outdoor',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       '''The Sumatran tigers are generally comfortable being outside year-round, but on cooler winter days they may choose to retreat
          inside.'''.replace( '\n', ' ' ),
       '''Like most cat species, the Sumatran tigers sleep quite a lot and are the most active when it is cooler. Your best chance to
@@ -3221,11 +2549,8 @@ animals = [
    # Malayan Woods Pavilion
    (
       'Asian giant millipede',
-      'Malayan Woods Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3233,11 +2558,8 @@ animals = [
    ),
    (
       'Clouded leopard',
-      'Malayan Woods Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       '''The clouded leopard is a nocturnal species, and thus your best chance of seeing them active is to visit their habitat earlier
          in the morning.'''.replace( '\n', ' ' ),
@@ -3250,24 +2572,9 @@ animals = [
          time.'''.replace( '\n', ' ' )
    ),
    (
-      'Giant gourami',
-      'Malayan Woods Pavilion',
-      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
-      None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
-      None,                                                          # Seasonal viewing tips
-      None,                                                          # General viewing tips
-      None,                                                          # Animal information
-      None                                                           # Specific animal information
-   ),
-   (
       'Gooty sapphire ornamental tarantula',
-      'Malayan Woods Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3275,11 +2582,8 @@ animals = [
    ),
    (
       'Malayan walking stick',
-      'Malayan Woods Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3287,11 +2591,8 @@ animals = [
    ),
    (
       'Malaysian stick insect jungle wood nymph',
-      'Malayan Woods Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3299,11 +2600,8 @@ animals = [
    ),
    (
       'Red-tailed green ratsnake',
-      'Malayan Woods Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3311,11 +2609,8 @@ animals = [
    ),
    (
       'Wrinkled hornbill',
-      'Malayan Woods Pavilion',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      None,                                                          # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3325,11 +2620,8 @@ animals = [
    # Goat World
    (
       'Domestic goat',
-      'Goat World',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       4,                                                             # Snow resistance (only for animals with outdoor viewing)
-      0,                                                             # Part of seasonal exhibit
-      'Year-round',                                                  # Seasonal visibility summary
       None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
@@ -3339,115 +2631,55 @@ animals = [
    # Kids Zoo
    (
       'Abyssinian ground hornbill',
-      'Kids Zoo',
-      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
       0,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
-      '''Southern ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.
-         *The Abyssinian ground hornbill is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through
-         October. To check whether the Kids Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
-         .replace( '*', '\n' ),
+      '''Abyssinian ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.'''
+         .replace( '\n', ' ' ),
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
       'Common raven',
-      'Kids Zoo',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
-      '''The common raven is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
-         check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The raven is a very hardy species, and should be
-         viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
       'Eurasian eagle owl',
-      'Kids Zoo',
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
-      '''The Eurasian eagle owl is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
-         To check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The Eurasian eagle owl is a very hardy
-         species, and should be viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ),
+      None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
-      'Great horned owl',
-      'Kids Zoo',
-      -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
-      '''The great horned owl is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
-         To check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The great horned owl is a very hardy
-         species, and should be viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ),
-      None,                                                          # General viewing tips
-      '''The great horned owl is one of the largest species of owl in North America. They are easily recognized by the tufts on top of
-         their heads, and their bright yellow eyes. They hunt at night, and their prey includes rabbits, squirrels, skunks, birds, and
-         reptiles.'''.replace( '\n', ' ' ),
-      None                                                           # Specific animal information
-   ),
-   (
       'Guinea pig',
-      'Kids Zoo',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
       None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
-      '''The guinea pig is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check
-         whether the Kids Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ),
+      None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
       'Harris\'s hawk',
-      'Kids Zoo',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
       1,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
-      '''The Harris\'s hawk is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
-         check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The Harris's hawk is a somewhat hardy species,
-         and should be viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ),
+      None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
    ),
    (
-      'Marabou stork',
-      'Kids Zoo',
-      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
-      '''Marabou storks are warm-weather birds which are usually only viewable during the warmest months of the year.
-         *The marabou stork is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
-         To check whether the Kids Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
-      None,                                                          # General viewing tips
-      '''Marabou storks are large wadding birds native to sub-Saharan Africa. They are recognized for their bald heads, and are often
-         considered quite an ugly bird. They are quite an important part of the ecosystem, feeding on carcasses and carrion.''',
-      None                                                           # Specific animal information
-   ),
-   (
       'Rabbit',
-      'Kids Zoo',
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
       2,                                                             # Snow resistance (only for animals with outdoor viewing)
-      1,                                                             # Part of seasonal exhibit
-      'May-Oct',                                                     # Seasonal visibility summary
-      '''The rabbit is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check
-         whether the Kids Zoo is open, consult the Toronto Zoo's official website. The rabbit is a hardy species, and should be viewable
-         if the Kids Zoo is open.'''.replace( '\n', ' ' ),
+      None,                                                          # Seasonal viewing tips
       None,                                                          # General viewing tips
       None,                                                          # Animal information
       None                                                           # Specific animal information
@@ -3460,289 +2692,1930 @@ enclosures =\
    (
       'Black tree monitor',
       'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Brownbanded bamboo shark',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Brush-tailed bettong',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Clown triggerfish',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Crested pigeon',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Crimson rosella',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Demoiselle crane',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Mar-Nov',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Eastern rosella',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Emerald tree boa',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Fly River turtle',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Galah',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Green tree python',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Green-winged dove',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Komodo dragon',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Kookaburra',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: May-Sep, Indoor: Oct-Apr',         # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Lau banded iguana',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Lionfish',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Live coral reefs',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Longnose butterflyfish',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'MacLeay\'s spectres',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Malagasy rainbowfish',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Moon jellyfish',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Nicobar pigeon',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Pennant coral fish',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Pied imperial pigeon',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Pot-bellied seahorse',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Red claw yabby',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Red-bellied short-necked turtle',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Red-tailed black cockatoo',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Short-beaked echidna',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Solomon Island leaf frog',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Solomon Island monkey-tailed skink',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Southern hairy-nosed wombat',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: May-Sep, Indoor: Year-round',      # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Stimson\'s python',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Tawny frogmouth',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Thorny devil stick insect',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Threadfin butterflyfish',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Victoria crowned pigeon',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'White\'s tree frog',
+      'Australasia Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # Australasia Outdoor
+   (
+      'Western grey kangaroo',
+      'Australasia Outdoor',
+      0,                                           # Part of seasonal exhibit
+      'Mar-Nov',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # Eurasia Wilds
+   (
+      'Amur tiger',
+      'Eurasia Wilds',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Asian wild horse',
+      'Eurasia Wilds',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Bactrian camel',
+      'Eurasia Wilds',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Domestic yak',
+      'Eurasia Wilds',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Highland cattle',
+      'Eurasia Wilds',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Mouflon',
+      'Eurasia Wilds',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Red panda',
+      'Eurasia Wilds',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Snow leopard',
+      'Eurasia Wilds',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Steller\'s sea eagle',
+      'Eurasia Wilds',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'West Caucasian tur',
+      'Eurasia Wilds',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # Tundra Trek
+   (
+      'Arctic wolf',
+      'Tundra Trek',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Caribou',
+      'Tundra Trek',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Lesser snow goose',
+      'Tundra Trek',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Northern bald eagle',
+      'Tundra Trek',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Polar bear',
+      'Tundra Trek',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # Americas Outdoor Mayan Temple Ruins
+   (
+      'American flamingo',
+      'Americas Outdoor Mayan Temple Ruins',
+      1,                                           # Part of seasonal exhibit
+      'May-Oct',                                   # Seasonal viewing summary
+      '''The American flamingos are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit
+         typically opens for the season sometime in late March or April, and closes sometime in November. For confirmation on whether
+         the exhibit is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
+   ),
+   (
+      'Black-handed spider monkey',
+      'Americas Outdoor Mayan Temple Ruins',
+      1,                                           # Part of seasonal exhibit
+      'May-Sep',                                   # Seasonal viewing summary
+      '''The black-handed spider monkeys are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit
+         typically opens for the season sometime in late March or April, and closes sometime in November. For confirmation on whether
+         the exhibit is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
+   ),
+   (
+      'Capybara',
+      'Americas Outdoor Mayan Temple Ruins',
+      1,                                           # Part of seasonal exhibit
+      'May-Oct',                                   # Seasonal viewing summary
+      '''The capybara is part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit typically opens for
+         the season sometime in late March or April, and closes sometime in November. For confirmation on whether the exhibit is open,
+         consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
+   ),
+
+   # Americas Pavilion
+   (
+      'American alligator',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'American eel',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'American lobster',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Axolotl',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Black-footed ferret',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Black-widow spider',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Blanding\'s turtle',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Blue and yellow macaw',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Boa constrictor',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Blue poison dart frog',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Brazilian giant cockroach',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Brazilian salmon pink bird-eating tarantula',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Butterfly goodied',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Crested tinamou',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Cuvier\'s smooth-fronted caiman',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Desert grassland whiptail',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Dyeing poison dart frog',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Eastern loggerhead shrike',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Eastern lubber grasshopper',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Eyelash viper',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Ferocious water bug',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Golden lion tamarin',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: May-Sep, Indoor: Year-round',      # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Great horned owl',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Green and black poison dart frog',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Green surf anemone',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Green-winged macaw',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Guatemalan beaded lizard',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Jamaican boa',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Leather sea star',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Lemur leaf frog',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Longnose dace',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Massasauga rattlesnake',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Mexican blind cavefish',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Midland painted turtle',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'North American river otter',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Opal-rumped tanager',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Painted anemone',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Panamanian golden frog',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Plumose anemone',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Plush-crested jay',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Puerto Rican crested toad',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Pumpkinseed sunfish',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Red Island bird-eating tarantula',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Red-crested finch',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Reticulate gila monster',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Round goby',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Rufous-collared sparrow',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'San-Esteban Island chuckwalla',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Snapping turtle',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Spot prawn',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Spotted river stingray',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Spotted turtle',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Timber rattlesnake',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Turquoise tanager',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Two-toed sloth',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: May-Sep, Indoor:Year-round',       # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Western blacknose dace',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'White-faced saki',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: May-Sep, Indoor: Year-round',      # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Yellow-banded poison dart frog',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Zebra finch',
+      'Americas Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # Canadian Domain
+   (
+      'Cougar',
+      'Canadian Domain',
+      1,                                           # Part of seasonal exhibit
+      'Mar-Dec',                                   # Seasonal viewing summary
+      '''The cougars are part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom
+         of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March.
+         To check whether the domain is open, consult the Toronto Zoo's official website. Cougars thrive in all seasons, and if the
+         domain is open, then the cougar will be viewable.'''.replace( '\n', ' ' ),
+   ),
+   (
+      'Grizzly bear',
+      'Canadian Domain',
+      1,                                           # Part of seasonal exhibit
+      'Mar-Dec',                                   # Seasonal viewing summary
+      '''The grizzly bear is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the
+         bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in
+         March. To check whether the domain is open, consult the Toronto Zoo's official website. Keep in mind, that even if the domain
+         is open, the grizzly bear may be off display due to hibernation.'''.replace( '\n', ' ' ),
+   ),
+   (
+      'Northern bald eagle',
+      'Canadian Domain',
+      1,                                           # Part of seasonal exhibit
+      'Mar-Dec',                                   # Seasonal viewing summary
+      '''The Northern bald eagle is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at
+         the bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime
+         in March. To check whether the domain is open, consult the Toronto Zoo's official website. Bald eagles thrive in all seasons,
+         and if the domain is open, then the cougar will be viewable.'''.replace( '\n', ' ' ),
+   ),
+   (
+      'Raccoon',
+      'Canadian Domain',
+      1,                                           # Part of seasonal exhibit
+      'Mar-Dec',                                   # Seasonal viewing summary
+      '''The raccoons are part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom
+         of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March.
+         To check whether the domain is open, consult the Toronto Zoo's official website. Raccoons thrive in all seasons, and if the
+         domain is open, then the cougar will be viewable.'''.replace( '\n', ' ' ),
+   ),
+   (
+      'Wood bison',
+      'Canadian Domain',
+      1,                                           # Part of seasonal exhibit
+      'Mar-Dec',                                   # Seasonal viewing summary
+      '''The wood bison are part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the
+         bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in
+         March. To check whether the domain is open, consult the Toronto Zoo's official website. Cougars thrive in all seasons, and if 
+         the domain is open, then the cougar will be viewable.'''.replace( '\n', ' ' ),
+   ),
+
+   # Africa Savanna
+   (
+      'African lion',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'African penguin',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: Mar-Nov, Indoor: Year-round',      # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Cheetah',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Common eland',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Mar-Nov',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Greater kudu',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'May-Oct',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Grevy\'s zebra',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Mar-Nov',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Marabou stork',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Jun-Sep',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Masai giraffe',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: May-Oct, Indoor: Nov-Apr',         # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Olive baboon',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Ostrich',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Apr-Nov',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'River hippopotamus',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'May-Oct',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Southern ground hornbill',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Jun-Sep',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Southern white rhinoceros',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'May-Oct',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Spotted hyena',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Warthog',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Jun-Sep',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Watusi cattle',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'White-breasted cormorant',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: Mar-Nov, Indoor: Year-round',      # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'White-headed vulture',
+      'Africa Savanna',
+      0,                                           # Part of seasonal exhibit
+      'Jun-Sep',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # African Rainforest Pavilion
+   (
+      'African clawed frog',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'African spoonbill',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Aldabra tortoise',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: Jul and Aug, Indoor: Sep-Jun',     # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Black crake',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Blue-bellied roller',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Gaboon viper',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Grey-necked crowned crane',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Hamerkop',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Lake Malawi cichlids',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Lau banded iguana',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Leopard ctenopoma',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Mantella (poison frog)',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Naked mole rat',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Ngege',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Nile soft-shelled turtle',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Pygmy hippopotamus',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Radiated tortoise',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Red river hog',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Apr-Nov',                                   # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Ring-tailed lemur',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Royal python',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Sacred ibis',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Slender-tailed meerkat',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'South African crested porcupine',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'South African shelduck',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Speckled mousebird',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Spider tortoise',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Straw coloured fruit bat',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Tomato frog',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Veiled chameleon',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'West African dwarf crocodile',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Western lowland gorilla',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: May-Oct, Indoor: Year-round',      # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # Indo-Malaya Pavilion
+   (
+      'Asian brown tortoise',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Bighead carp',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Black carp',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Black-breasted leaf turtle',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Black-throated laughing thrush',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Burmese star tortoise',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Cattle egret',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Concave casqued hornbill',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Crested wood partridge',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Crocodile lizard',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Crocodile newt',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Edward\'s pheasant',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Giant gourami',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Grass carp',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Green crested basilisk',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Hamilton\'s pond turtle',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Iridescent shark catfish',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Luzon bleeding-heart dove',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Malayan bonytongue',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Malaysian painted turtle',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Mekong barb',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Monocled cobra',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Nicobar pigeon',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Palawan peacock-pheasant',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Red-lined torpedo barb',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Reticulated python',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Spiny turtle',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   (
+      'Sumatran orangutan',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: May-Oct, Indoor: Year-round',      # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Tentacled snake',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Tinfoil barb',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Tomistoma',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Tri-coloured shark',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'White-handed gibbon',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # Indo-Malaya Outdoor
+   (
+      'Babirusa',
+      'Indo-Malaya Outdoor',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: May-Oct, Indoor: Nov-Apr',         # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Greater one-horned rhinoceros',
+      'Indo-Malaya Outdoor',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Indian peafowl',
+      'Indo-Malaya Outdoor',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Sumatran tiger',
+      'Indo-Malaya Outdoor',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # Malayan Woods Pavilion
+   (
+      'Asian giant millipede',
+      'Malayan Woods Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Clouded leopard',
+      'Malayan Woods Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Giant gourami',
+      'Malayan Woods Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Gooty sapphire ornamental tarantula',
+      'Malayan Woods Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Malayan walking stick',
+      'Malayan Woods Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Malaysian stick insect jungle wood nymph',
+      'Malayan Woods Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Red-tailed green ratsnake',
+      'Malayan Woods Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Wrinkled hornbill',
+      'Malayan Woods Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # Goat World
+   (
+      'Domestic goat',
+      'Goat World',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+
+   # Kids Zoo
+   (
+      'Abyssinian ground hornbill',
+      'Kids Zoo',
+      1,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      '''The Abyssinian ground hornbill is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through
+         October. To check whether the Kids Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
+   ),
+   (
+      'Common raven',
+      'Kids Zoo',
+      1,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      '''The common raven is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
+         check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The raven is a very hardy species, and should
+         be viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ).replace( '*', '\n' )
+   ),
+   (
+      'Eurasian eagle owl',
+      'Kids Zoo',
+      1,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      '''The Eurasian eagle owl is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
+         To check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The Eurasian eagle owl is a very hardy
+         species, and should be viewable if the Kids Zoo is open.'''.replace( '\n', ' ' )
+   ),
+   (
+      'Great horned owl',
+      'Kids Zoo',
+      1,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      '''The great horned owl is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.
+         To check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The great horned owl is a very hardy
+         species, and should be viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ),
+   ),
+   (
+      'Guinea pig',
+      'Kids Zoo',
+      1,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      '''The guinea pig is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check
+         whether the Kids Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ),
+   ),
+   (
+      'Harris\'s hawk',
+      'Kids Zoo',
+      1,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      '''The Harris\'s hawk is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
+         check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The Harris's hawk is a somewhat hardy species,
+         and should be viewable if the Kids Zoo is open.'''.replace( '\n', ' ' ),
+   ),
+   (
+      'Marabou stork',
+      'Kids Zoo',
+      1,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      '''The marabou stork is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To
+         check whether the Kids Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' ),
+   ),
+   (
+      'Rabbit',
+      'Kids Zoo',
+      1,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      '''The rabbit is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check
+         whether the Kids Zoo is open, consult the Toronto Zoo's official website. The rabbit is a hardy species, and should be viewable
+         if the Kids Zoo is open.'''.replace( '\n', ' ' ),
+   )
+]
+
+enclosureViewings =\
+[
+   # Australasia Pavilion
+   (
+      'Black tree monitor',
+      'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Brownbanded bamboo shark',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Brush-tailed bettong',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Clown triggerfish',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Crested pigeon',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Crimson rosella',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Eastern rosella',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Emerald tree boa',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Fly River turtle',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Galah',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Green tree python',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Green-winged dove',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Komodo dragon',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Kookaburra',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Lau banded iguana',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Lionfish',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Live coral reefs',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Longnose butterflyfish',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'MacLeay\'s spectres',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Malagasy rainbowfish',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Moon jellyfish',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Nicobar pigeon',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Pennant coral fish',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Pied imperial pigeon',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Pot-bellied seahorse',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Red claw yabby',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Red-bellied short-necked turtle',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Red-tailed black cockatoo',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Short-beaked echidna',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Solomon Island leaf frog',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Solomon Island monkey-tailed skink',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Southern hairy-nosed wombat',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Stimson\'s python',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Tawny frogmouth',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Thorny devil stick insect',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Threadfin butterflyfish',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Victoria crowned pigeon',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'White\'s tree frog',
       'Australasia Pavilion',
       'Indoor',
-      65,
-      41,
+      65,                     # X coordinate on map
+      41,                     # Y coordinate on map
    ),
    (
       'Demoiselle crane',
       'Australasia Pavilion',
       'Outdoor',
-      63,
-      39.75,
+      63,                     # X coordinate on map
+      39.75,                  # Y coordinate on map
    ),
    (
       'Kookaburra',
       'Australasia Pavilion',
       'Outdoor',
-      63,
-      39.75,
+      63,                     # X coordinate on map
+      39.75,                  # Y coordinate on map
    ),
    (
       'Southern hairy-nosed wombat',
       'Australasia Pavilion',
       'Outdoor',
-      66.75,
-      40.25,
+      66.75,                  # X coordinate on map
+      40.25,                  # Y coordinate on map
    ),
 
    # Australasia Outdoor
@@ -3750,8 +4623,8 @@ enclosures =\
       'Western grey kangaroo',
       'Australasia Outdoor',
       'Outdoor',
-      68,
-      42.5,
+      68,                     # X coordinate on map
+      42.5,                   # Y coordinate on map
    ),
 
    # Eurasia Wilds
@@ -3759,92 +4632,92 @@ enclosures =\
       'Amur tiger',
       'Eurasia Wilds',
       'Outdoor',
-      71.5,
-      39,
+      71.5,                   # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Asian wild horse',
       'Eurasia Wilds',
       'Outdoor',
-      85,
-      25
+      85,                     # X coordinate on map
+      25                      # Y coordinate on map
    ),
    (
       'Asian wild horse',
       'Eurasia Wilds',
       'Outdoor',
-      67.5,
-      25.75
+      67.5,                   # X coordinate on map
+      25.75                   # Y coordinate on map
    ),
    (
       'Bactrian camel',
       'Eurasia Wilds',
       'Outdoor',
-      78.25,
-      34.25
+      78.25,                  # X coordinate on map
+      34.25                   # Y coordinate on map
    ),
    (
       'Bactrian camel',
       'Eurasia Wilds',
       'Outdoor',
-      80.5,
-      28.5
+      80.5,                   # X coordinate on map
+      28.5                    # Y coordinate on map
    ),
    (
       'Domestic yak',
       'Eurasia Wilds',
       'Outdoor',
-      86,
-      27.5
+      86,                     # X coordinate on map
+      27.5                    # Y coordinate on map
    ),
    (
       'Highland cattle',
       'Eurasia Wilds',
       'Outdoor',
-      87.75,
-      41.25
+      87.75,                  # X coordinate on map
+      41.25                   # Y coordinate on map
    ),
    (
       'Mouflon',
       'Eurasia Wilds',
       'Outdoor',
-      68.75,
-      32.25
+      68.75,                  # X coordinate on map
+      32.25                   # Y coordinate on map
    ),
    (
       'Red panda',
       'Eurasia Wilds',
       'Outdoor',
-      77.625,
-      38.125
+      77.625,                 # X coordinate on map
+      38.125                  # Y coordinate on map
    ),
    (
       'Snow leopard',
       'Eurasia Wilds',
       'Outdoor',
-      75.125,
-      25.25
+      75.125,                 # X coordinate on map
+      25.25                   # Y coordinate on map
    ),
    (
       'Steller\'s sea eagle',
       'Eurasia Wilds',
       'Outdoor',
-      77.125,
-      24.875
+      77.125,                 # X coordinate on map
+      24.875                  # Y coordinate on map
    ),
    (
       'West Caucasian tur',
       'Eurasia Wilds',
       'Outdoor',
-      72.5,
-      25.5
+      72.5,                   # X coordinate on map
+      25.5                    # Y coordinate on map
    ),
    (
       'West Caucasian tur',
       'Eurasia Wilds',
       'Outdoor',
-      85.75,
-      31
+      85.75,                  # X coordinate on map
+      31                      # Y coordinate on map
    ),
 
    # Tundra Trek
@@ -3852,36 +4725,36 @@ enclosures =\
       'Arctic wolf',
       'Tundra Trek',
       'Outdoor',
-      56,
-      33.25
+      56,                     # X coordinate on map
+      33.25                   # Y coordinate on map
    ),
    (
       'Caribou',
       'Tundra Trek',
       'Outdoor',
-      50.25,
-      28.75
+      50.25,                  # X coordinate on map
+      28.75                   # Y coordinate on map
    ),
    (
       'Lesser snow goose',
       'Tundra Trek',
       'Outdoor',
-      53.75,
-      37
+      53.75,                  # X coordinate on map
+      37                      # Y coordinate on map
    ),
    (
       'Northern bald eagle',
       'Tundra Trek',
       'Outdoor',
-      51.25,
-      33.5
+      51.25,                  # X coordinate on map
+      33.5                    # Y coordinate on map
    ),
    (
       'Polar bear',
       'Tundra Trek',
       'Outdoor',
-      55.5,
-      29.375
+      55.5,                   # X coordinate on map
+      29.375                  # Y coordinate on map
    ),
 
    # Americas Outdoor Mayan Temple Ruins
@@ -3889,22 +4762,22 @@ enclosures =\
       'American flamingo',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
-      46,
-      25.875
+      46,                     # X coordinate on map
+      25.875                  # Y coordinate on map
    ),
    (
       'Black-handed spider monkey',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
-      44.125,
-      26.5
+      44.125,                 # X coordinate on map
+      26.5                    # Y coordinate on map
    ),
    (
       'Capybara',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
-      46.5,
-      29.75
+      46.5,                   # X coordinate on map
+      29.75                   # Y coordinate on map
    ),
 
    # Americas Pavilion
@@ -3912,442 +4785,442 @@ enclosures =\
       'American alligator',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'American eel',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'American lobster',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Axolotl',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Black-footed ferret',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Black-widow spider',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Blanding\'s turtle',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Blue and yellow macaw',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Boa constrictor',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Blue poison dart frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Brazilian giant cockroach',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Brazilian salmon pink bird-eating tarantula',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Butterfly goodied',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Crested tinamou',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Cuvier\'s smooth-fronted caiman',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Desert grassland whiptail',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Dyeing poison dart frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Eastern loggerhead shrike',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Eastern lubber grasshopper',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Eyelash viper',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Ferocious water bug',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Golden lion tamarin',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Green and black poison dart frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Green surf anemone',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Green-winged macaw',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Guatemalan beaded lizard',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Jamaican boa',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Leather sea star',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Lemur leaf frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Longnose dace',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Massasauga rattlesnake',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Mexican blind cavefish',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Midland painted turtle',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'North American river otter',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Opal-rumped tanager',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Painted anemone',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Panamanian golden frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Plumose anemone',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Plush-crested jay',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Puerto Rican crested toad',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Pumpkinseed sunfish',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Red Island bird-eating tarantula',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Red-crested finch',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Reticulate gila monster',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Round goby',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Rufous-collared sparrow',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'San-Esteban Island chuckwalla',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Snapping turtle',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Spot prawn',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Spotted river stingray',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Spotted turtle',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Timber rattlesnake',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Turquoise tanager',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Two-toed sloth',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Western blacknose dace',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'White-faced saki',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Yellow-banded poison dart frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Zebra finch',
       'Americas Pavilion',
       'Indoor',
-      51.375,
-      41.75
+      51.375,                 # X coordinate on map
+      41.75                   # Y coordinate on map
    ),
    (
       'Golden lion tamarin',
       'Americas Pavilion',
       'Outdoor',
-      53,
-      42.5
+      53,                     # X coordinate on map
+      42.5                    # Y coordinate on map
    ),
    (
       'Two-toed sloth',
       'Americas Pavilion',
       'Outdoor',
-      53,
-      42.5
+      53,                     # X coordinate on map
+      42.5                    # Y coordinate on map
    ),
    (
       'White-faced saki',
       'Americas Pavilion',
       'Outdoor',
-      53,
-      42.5
+      53,                     # X coordinate on map
+      42.5                    # Y coordinate on map
    ),
    (
       'Great horned owl',
       'Americas Pavilion',
       'Outdoor',
-      50.375,
-      40.75
+      50.375,                 # X coordinate on map
+      40.75                   # Y coordinate on map
    ),
    (
       'North American river otter',
       'Americas Pavilion',
       'Outdoor',
-      49,
-      40.625
+      49,                     # X coordinate on map
+      40.625                  # Y coordinate on map
    ),
 
    # Canadian Domain
@@ -4355,43 +5228,43 @@ enclosures =\
       'Cougar',
       'Canadian Domain',
       'Outdoor',
-      9.25,
-      60.75
+      9.25,                   # X coordinate on map
+      60.75                   # Y coordinate on map
    ),
    (
       'Grizzly bear',
       'Canadian Domain',
       'Outdoor',
-      6.125,
-      65
+      6.125,                  # X coordinate on map
+      65                      # Y coordinate on map
    ),
    (
       'Northern bald eagle',
       'Canadian Domain',
       'Outdoor',
-      7.5,
-      71
+      7.5,                    # X coordinate on map
+      71                      # Y coordinate on map
    ),
    (
       'Raccoon',
       'Canadian Domain',
       'Outdoor',
-      15,
-      65.5
+      15,                     # X coordinate on map
+      65.5                    # Y coordinate on map
    ),
    (
       'Wood bison',
       'Canadian Domain',
       'Outdoor',
-      11,
-      58.75
+      11,                     # X coordinate on map      
+      58.75                   # Y coordinate on map
    ),
    (
       'Wood bison',
       'Canadian Domain',
       'Outdoor',
-      8.5,
-      76.125
+      8.5,                    # X coordinate on map
+      76.125                  # Y coordinate on map
    ),
 
    # Africa Savanna
@@ -4399,225 +5272,225 @@ enclosures =\
       'African lion',
       'Africa Savanna',
       'Outdoor',
-      39,
-      62
+      39,                     # X coordinate on map
+      62                      # Y coordinate on map
    ),
    (
       'African penguin',
       'Africa Savanna',
       'Outdoor',
-      45.5,
-      66
+      45.5,                   # X coordinate on map
+      66                      # Y coordinate on map
    ),
    (
       'White-breasted cormorant',
       'Africa Savanna',
       'Outdoor',
-      45.5,
-      66
+      45.5,                   # X coordinate on map
+      66                      # Y coordinate on map
    ),
    (
       'African penguin',
       'Africa Savanna',
       'Indoor',
-      46.25,
-      63.75
+      46.25,                  # X coordinate on map
+      63.75                   # Y coordinate on map
    ),
    (
       'White-breasted cormorant',
       'Africa Savanna',
       'Indoor',
-      46.25,
-      63.75
+      46.25,                  # X coordinate on map
+      63.75                   # Y coordinate on map
    ),
    (
       'Cheetah',
       'Africa Savanna',
       'Outdoor',
-      36.125,
-      75.5
+      36.125,                 # X coordinate on map
+      75.5                    # Y coordinate on map
    ),
    (
       'Common eland',
       'Africa Savanna',
       'Outdoor',
-      41.375,
-      65.5
+      41.375,                 # X coordinate on map
+      65.5                    # Y coordinate on map
    ),
    (
       'Greater kudu',
       'Africa Savanna',
       'Outdoor',
-      45.5,
-      80
+      45.5,                   # X coordinate on map
+      80                      # Y coordinate on map
    ),
    (
       'Marabou stork',
       'Africa Savanna',
       'Outdoor',
-      45.5,
-      80
+      45.5,                   # X coordinate on map
+      80                      # Y coordinate on map
    ),
    (
       'Southern ground hornbill',
       'Africa Savanna',
       'Outdoor',
-      45.5,
-      80
+      45.5,                   # X coordinate on map
+      80                      # Y coordinate on map
    ),
    (
       'White-headed vulture',
       'Africa Savanna',
       'Outdoor',
-      45.5,
-      80
+      45.5,                   # X coordinate on map
+      80                      # Y coordinate on map
    ),
    (
       'Greater kudu',
       'Africa Savanna',
       'Outdoor',
-      47.375,
-      81.75
+      47.375,                 # X coordinate on map
+      81.75                   # Y coordinate on map
    ),
    (
       'Marabou stork',
       'Africa Savanna',
       'Outdoor',
-      47.375,
-      81.75
+      47.375,                 # X coordinate on map
+      81.75                   # Y coordinate on map
    ),
    (
       'Southern ground hornbill',
       'Africa Savanna',
       'Outdoor',
-      47.375,
-      81.75
+      47.375,                 # X coordinate on map
+      81.75                   # Y coordinate on map
    ),
    (
       'White-headed vulture',
       'Africa Savanna',
       'Outdoor',
-      47.375,
-      81.75
+      47.375,                 # X coordinate on map
+      81.75                   # Y coordinate on map
    ),
    (
       'Greater kudu',
       'Africa Savanna',
       'Outdoor',
-      51.25,
-      77.875
+      51.25,                  # X coordinate on map
+      77.875                  # Y coordinate on map
    ),
    (
       'Marabou stork',
       'Africa Savanna',
       'Outdoor',
-      51.25,
-      77.875
+      51.25,                  # X coordinate on map
+      77.875                  # Y coordinate on map
    ),
    (
       'Southern ground hornbill',
       'Africa Savanna',
       'Outdoor',
-      51.25,
-      77.875
+      51.25,                  # X coordinate on map
+      77.875                  # Y coordinate on map
    ),
    (
       'White-headed vulture',
       'Africa Savanna',
       'Outdoor',
-      51.25,
-      77.875
+      51.25,                  # X coordinate on map
+      77.875                  # Y coordinate on map
    ),
    (
       'Grevy\'s zebra',
       'Africa Savanna',
       'Outdoor',
-      38.5,
-      70.25
+      38.5,                   # X coordinate on map
+      70.25                   # Y coordinate on map
    ),
    (
       'Marabou stork',
       'Africa Savanna',
       'Outdoor',
-      38.375,
-      73.875
+      38.375,                 # X coordinate on map
+      73.875                  # Y coordinate on map
    ),
    (
       'Masai giraffe',
       'Africa Savanna',
       'Outdoor',
-      55,
-      86.25
+      55,                     # X coordinate on map
+      86.25                   # Y coordinate on map
    ),
    (
       'Masai giraffe',
       'Africa Savanna',
       'Indoor',
-      55.875,
-      82.5
+      55.875,                 # X coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Olive baboon',
       'Africa Savanna',
       'Outdoor',
-      36,
-      68
+      36,                     # X coordinate on map
+      68                      # Y coordinate on map
    ),
    (
       'Ostrich',
       'Africa Savanna',
       'Outdoor',
-      36.25,
-      65.5
+      36.25,                  # X coordinate on map
+      65.5                    # Y coordinate on map
    ),
    (
       'Ostrich',
       'Africa Savanna',
       'Outdoor',
-      32,
-      63
+      32,                     # X coordinate on map
+      63                      # Y coordinate on map
    ),
    (
       'River hippopotamus',
       'Africa Savanna',
       'Outdoor',
-      52.5,
-      87.375
+      52.5,                   # X coordinate on map
+      87.375                  # Y coordinate on map
    ),
    (
       'Southern ground hornbill',
       'Africa Savanna',
       'Outdoor',
-      40.5,
-      61.75
+      40.5,                   # X coordinate on map
+      61.75                   # Y coordinate on map
    ),
    (
       'Southern white rhinoceros',
       'Africa Savanna',
       'Outdoor',
-      43.25,
-      78.375
+      43.25,                  # X coordinate on map
+      78.375                  # Y coordinate on map
    ),
    (
       'Spotted hyena',
       'Africa Savanna',
       'Outdoor',
-      41.125,
-      60
+      41.125,                 # X coordinate on map
+      60                      # Y coordinate on map
    ),
    (
       'Warthog',
       'Africa Savanna',
       'Outdoor',
-      51.75,
-      82.5
+      51.75,                  # X coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Watusi cattle',
       'Africa Savanna',
       'Outdoor',
-      44.75,
-      58.5
+      44.75,                  # X coordinate on map
+      58.5                    # Y coordinate on map
    ),
 
    # African Rainforest Pavilion
@@ -4625,232 +5498,232 @@ enclosures =\
       'African clawed frog',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Black crake',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Blue-bellied roller',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Hamerkop',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Lake Malawi cichlids',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Lau banded iguana',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Leopard ctenopoma',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Mantella (poison frog)',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Naked mole rat',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Ngege',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Slender-tailed meerkat',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'South African crested porcupine',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Speckled mousebird',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Spider tortoise',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Tomato frog',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Veiled chameleon',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'West African dwarf crocodile',
       'African Rainforest Pavilion',
       'Indoor',
-      53,
-      76
+      53,                     # X coordinate on map
+      76                      # Y coordinate on map
    ),
    (
       'Aldabra tortoise',
       'African Rainforest Pavilion',
       'Indoor',
-      54,
-      80.5
+      54,                     # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Gaboon viper',
       'African Rainforest Pavilion',
       'Indoor',
-      54,
-      80.5
+      54,                     # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Grey-necked crowned crane',
       'African Rainforest Pavilion',
       'Indoor',
-      54,
-      80.5
+      54,                     # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Ring-tailed lemur',
       'African Rainforest Pavilion',
       'Indoor',
-      54,
-      80.5
+      54,                     # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Royal python',
       'African Rainforest Pavilion',
       'Indoor',
-      54,
-      80.5
+      54,                     # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Aldabra tortoise',
       'African Rainforest Pavilion',
       'Outdoor',
-      55,
-      74
+      55,                     # X coordinate on map
+      74                      # Y coordinate on map
    ),
    (
       'African spoonbill',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,
-      78.625
+      53.75,                  # X coordinate on map
+      78.625                  # Y coordinate on map
    ),
    (
       'Nile soft-shelled turtle',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,
-      78.625
+      53.75,                  # X coordinate on map
+      78.625                  # Y coordinate on map
    ),
    (
       'Pygmy hippopotamus',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,
-      78.625
+      53.75,                  # X coordinate on map
+      78.625                  # Y coordinate on map
    ),
    (
       'Radiated tortoise',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,
-      78.625
+      53.75,                  # X coordinate on map
+      78.625                  # Y coordinate on map
    ),
    (
       'Sacred ibis',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,
-      78.625
+      53.75,                  # X coordinate on map
+      78.625                  # Y coordinate on map
    ),
    (
       'South African shelduck',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,
-      78.625
+      53.75,                  # X coordinate on map
+      78.625                  # Y coordinate on map
    ),
    (
       'Straw coloured fruit bat',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,
-      78.625
+      53.75,                  # X coordinate on map
+      78.625                  # Y coordinate on map
    ),
    (
       'Red river hog',
       'African Rainforest Pavilion',
       'Outdoor',
-      55.5,
-      78.375
+      55.5,                   # X coordinate on map
+      78.375                  # Y coordinate on map
    ),
    (
       'Western lowland gorilla',
       'African Rainforest Pavilion',
       'Indoor',
-      52.25,
-      73.25
+      52.25,                  # X coordinate on map
+      73.25                   # Y coordinate on map
    ),
    (
       'Western lowland gorilla',
       'African Rainforest Pavilion',
       'Outdoor',
-      51.75,
-      70.125
+      51.75,                  # X coordinate on map
+      70.125                  # Y coordinate on map
    ),
 
    # Indo-Malaya Pavilion
@@ -4858,240 +5731,240 @@ enclosures =\
       'Asian brown tortoise',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Bighead carp',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Black carp',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Black-breasted leaf turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Black-throated laughing thrush',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Burmese star tortoise',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Cattle egret',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Concave casqued hornbill',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Crested wood partridge',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Crocodile lizard',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Crocodile newt',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Edward\'s pheasant',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Giant gourami',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Grass carp',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Green crested basilisk',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Hamilton\'s pond turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Iridescent shark catfish',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Luzon bleeding-heart dove',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Malayan bonytongue',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Malaysian painted turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Mekong barb',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Monocled cobra',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Nicobar pigeon',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Palawan peacock-pheasant',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Red-lined torpedo barb',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Reticulated python',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Spiny turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
 
    (
       'Sumatran orangutan',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Tentacled snake',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Tinfoil barb',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Tomistoma',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Tri-coloured shark',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'White-handed gibbon',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,
-      78.75
+      60.75,                  # X coordinate on map
+      78.75                   # Y coordinate on map
    ),
    (
       'Sumatran orangutan',
       'Indo-Malaya Pavilion',
       'Outdoor',
-      61.75,
-      85
+      61.75,                  # X coordinate on map
+      85                      # Y coordinate on map
    ),
 
    # Indo-Malaya Outdoor
@@ -5099,43 +5972,43 @@ enclosures =\
       'Babirusa',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      68.75,
-      69.5
+      68.75,                  # X coordinate on map
+      69.5                    # Y coordinate on map
    ),
    (
       'Babirusa',
       'Indo-Malaya Outdoor',
       'Indoor',
-      68.625,
-      71.375
+      68.625,                 # X coordinate on map
+      71.375                  # Y coordinate on map
    ),
    (
       'Greater one-horned rhinoceros',
       'Indo-Malaya Outdoor',
       'Indoor',
-      68.625,
-      71.375
+      68.625,                 # X coordinate on map
+      71.375                  # Y coordinate on map
    ),
    (
       'Indian peafowl',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      65.125,
-      71
+      65.125,                 # X coordinate on map
+      71                      # Y coordinate on map
    ),
    (
       'Sumatran tiger',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      61.25,
-      73.25
+      61.25,                  # X coordinate on map
+      73.25                   # Y coordinate on map
    ),
    (
       'Sumatran tiger',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      59.75,
-      74
+      59.75,                  # X coordinate on map
+      74                      # Y coordinate on mpa
    ),
 
    # Malayan Woods Pavilion
@@ -5143,57 +6016,57 @@ enclosures =\
       'Asian giant millipede',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,
-      74.5
+      66.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Clouded leopard',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,
-      74.5
+      66.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Giant gourami',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,
-      74.5
+      66.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Gooty sapphire ornamental tarantula',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,
-      74.5
+      66.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Malayan walking stick',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,
-      74.5
+      66.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Malaysian stick insect jungle wood nymph',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,
-      74.5
+      66.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Red-tailed green ratsnake',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,
-      74.5
+      66.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Wrinkled hornbill',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,
-      74.5
+      66.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
 
    # Goat World
@@ -5201,8 +6074,8 @@ enclosures =\
       'Domestic goat',
       'Goat World',
       'Outdoor',
-      65,
-      52.25
+      65,                     # X coordinate on map
+      52.25                   # Y coordinate on map
    ),
 
    # Kids Zoo
@@ -5210,57 +6083,57 @@ enclosures =\
       'Abyssinian ground hornbill',
       'Kids Zoo',
       'Outdoor',
-      70,
-      52.5
+      70,                     # X coordinate on map
+      52.5                    # Y coordinate on map
    ),
    (
       'Common raven',
       'Kids Zoo',
       'Outdoor',
-      70,
-      52.5
+      70,                     # X coordinate on map
+      52.5                    # Y coordinate on map
    ),
    (
       'Eurasian eagle owl',
       'Kids Zoo',
       'Outdoor',
-      70,
-      52.5
+      70,                     # X coordinate on map
+      52.5                    # Y coordinate on map
    ),
    (
       'Great horned owl',
       'Kids Zoo',
       'Outdoor',
-      70,
-      52.5
+      70,                     # X coordinate on map
+      52.5                    # Y coordinate on map
    ),
    (
       'Guinea pig',
       'Kids Zoo',
       'Indoor',
-      70,
-      52.5
+      70,                     # X coordinate on map
+      52.5                    # Y coordinate on map
    ),
    (
       'Harris\'s hawk',
       'Kids Zoo',
       'Outdoor',
-      70,
-      52.5
+      70,                     # X coordinate on map
+      52.5                    # Y coordinate on map
    ),
    (
       'Marabou stork',
       'Kids Zoo',
       'Outdoor',
-      70,
-      52.5
+      70,                     # X coordinate on map
+      52.5                    # Y coordinate on map
    ),
    (
       'Rabbit',
       'Kids Zoo',
       'Outdoor',
-      70,
-      52.5
+      70,                     # X coordinate on map
+      52.5                    # Y coordinate on map
    )
 ]
 
@@ -5283,26 +6156,32 @@ cursor.executemany( ''' INSERT INTO Exhibit (
 
 cursor.executemany( ''' INSERT INTO Animal (
                            SPECIES,
-                           EXHIBIT,
                            MIN_TEMPERATURE,
                            SNOW_RESISTANCE,
-                           PART_OF_SEASONAL_EXHIBIT,
-                           SEASONAL_VIEWING_SUMMARY,
                            SEASONAL_VIEWING_TIPS,
                            GENERAL_VIEWING_TIPS,
                            ANIMAL_INFO,
                            SPECIFIC_ANIMAL_INFO
                         ) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ''', animals )
+                        VALUES (?, ?, ?, ?, ?, ?, ?) ''', animals )
 
 cursor.executemany( ''' INSERT INTO Enclosure (
                            SPECIES,
                            EXHIBIT,
-                           EXHIBIT_TYPE,
+                           PART_OF_SEASONAL_EXHIBIT,
+                           SEASONAL_VIEWING_SUMMARY,
+                           SEASONAL_VIEWING_INFORMATION
+                        ) 
+                        VALUES (?, ?, ?, ?, ?) ''', enclosures )
+
+cursor.executemany( ''' INSERT INTO EnclosureViewing (
+                           SPECIES,
+                           EXHIBIT,
+                           ENCLOSURE_TYPE,
                            X_COORD,
                            Y_COORD
                         ) 
-                        VALUES (?, ?, ?, ?, ?) ''', enclosures )
+                        VALUES (?, ?, ?, ?, ?) ''', enclosureViewings )
 
 conn.commit()
 conn.close()
