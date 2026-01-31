@@ -573,13 +573,18 @@ function openSpeciesOverlay(species) {
 
          <h2>${animal.species}</h2>
 
-         ${section('exhibit', animal.exhibit)}
+         ${section('Exhibit', animal.exhibit)}
          ${section('Seasonal Viewing Summary', animal.seasonal_viewing_summary)}
          ${section('Seasonal Viewing Information', animal.seasonal_viewing_information)}
-         ${section('Seasonal Viewing Tips', animal.seasonal_viewing_tips)}
          ${section('General Viewing Tips', animal.general_viewing_tips)}
-         ${section('Animal Info', animal.animal_info)}
-         ${section('Specific Animal Information', animal.specific_animal_info)}
+         ${section('Seasonal Viewing Tips', animal.seasonal_viewing_tips)}
+         ${section('Identification', animal.identification)}
+         ${section('Habitat And Range', animal.habitat_and_range)}
+         ${section('Diet And Feeding', animal.diet_and_feeding)}
+         ${section('Behaviour And Life Cycle', animal.behaviour_and_life_cycle)}
+         ${section('Adaptations', animal.adaptations)}
+         ${section('Reproduction And Life Cycle', animal.reproduction_and_life_cycle)}
+         ${section('Animals At The Zoo', animal.animals_at_the_zoo)}
       </div>
    `;
 

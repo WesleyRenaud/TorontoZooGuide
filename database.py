@@ -28,13 +28,18 @@ class Database():
                   a.SPECIES,
                   a.MIN_TEMPERATURE,
                   a.SNOW_RESISTANCE,
-                  a.SEASONAL_VIEWING_TIPS,
                   a.GENERAL_VIEWING_TIPS,
-                  a.ANIMAL_INFO,
-                  a.SPECIFIC_ANIMAL_INFO,
+                  a.SEASONAL_VIEWING_TIPS,
+                  a.IDENTIFICATION,
+                  a.HABITAT_AND_RANGE,
+                  a.DIET_AND_FEEDING,
+                  a.BEHAVIOUR_AND_SOCIAL_LIFE,
+                  a.ADAPTATIONS,
+                  a.REPRODUCTION_AND_LIFE_CYCLE,
+                  a.ANIMALS_AT_THE_ZOO,
                   e.EXHIBIT,
-                  e.SEASONAL_VIEWING_SUMMARY,
                   e.PART_OF_SEASONAL_EXHIBIT,
+                  e.SEASONAL_VIEWING_SUMMARY,
                   e.SEASONAL_VIEWING_INFORMATION,
                   v.ENCLOSURE_TYPE,
                   v.X_COORD,
@@ -52,11 +57,11 @@ class Database():
 
       for animal in animal_data:
          species = animal[0]
-         exhibit = animal[7]
+         exhibit = animal[12]
          min_temperature = animal[1]
          snow_resistance = animal[2]
-         part_of_seasonal_exhibit = animal[9]
-         enclosure_type = animal[11]
+         part_of_seasonal_exhibit = animal[13]
+         enclosure_type = animal[16]
 
          if enclosure_type == 'Outdoor':
             # The initial likelihood to see the animal is calculating via a probability that the temperature is warm enough for the animal
@@ -79,10 +84,12 @@ class Database():
          likelihood = round( likelihood * 100 )
 
          if likelihood > 0:
-            animals.append( zoo.Animal( species=species, exhibit=exhibit, seasonal_viewing_summary=animal[10],
-                                        seasonal_viewing_tips=animal[3], general_viewing_tips=animal[4], animal_info=animal[5],
-                                        specific_animal_info=animal[6], enclosure_type=enclosure_type, x_coord=animal[12],
-                                        y_coord=animal[13], seasonal_viewing_information=animal[10], likelihood=likelihood ) )
+            animals.append( zoo.Animal( species=species, general_viewing_tips=animal[3], seasonal_viewing_tips=animal[4],
+                                        identification=animal[5], habitat_and_range=animal[6], diet_and_feeding=animal[7],
+                                        behaviour_and_life_cycle=animal[8], adaptations=animal[9],
+                                        reproduction_and_life_cycle=animal[10], animals_at_the_zoo=animal[11], exhibit=exhibit,
+                                        seasonal_viewing_summary=animal[14], seasonal_viewing_information=animal[15],
+                                        enclosure_type=enclosure_type, x_coord=animal[17], y_coord=animal[18], likelihood=likelihood ) )
 
       cur.close()
 
