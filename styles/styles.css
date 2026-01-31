@@ -388,9 +388,17 @@ html.home-page {
    color: #ffffff;
 }
 
+.species-overlay-card h2, h4 {
+   text-align: center;
+}
+
 .species-overlay-card h2 {
    font-size: 2.5em;
-   text-align: center;
+}
+
+.species-overlay-card h4 {
+   margin-top: 0;
+   font-size: 2em;
 }
 
 /* New scrollable wrapper */
@@ -461,8 +469,12 @@ html.home-page {
 /* Section headings */
 #speciesOverlay .species-overlay-content .section strong {
    font-size: 1.6em;
-   color: #ffffff;
+   font-style: italic;
+   text-decoration: underline;
    margin-bottom: 6px;
+   text-decoration-color: #2f5e00; /* dark green underline */
+   text-decoration-thickness: 12px;  /* thicker underline */
+   text-underline-offset: 12px;      /* lower the underline */
 }
 
 /* Section paragraphs */

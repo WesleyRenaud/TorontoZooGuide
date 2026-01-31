@@ -367,7 +367,7 @@ function createCarousel(animals) {
             ${a.species}
          </strong>
          <span>Exhibit: ${a.exhibit}</span>
-         <span>Exhibit: ${a.exhibit_type}</span>
+         <span>Enclosure Type: ${a.enclosure_type}</span>
          <span>Likelihood: ${getLikelihoodPhrase(a.likelihood)} (~${a.likelihood}%)</span>
       `;
 
@@ -572,8 +572,8 @@ function openSpeciesOverlay(species) {
          >
 
          <h2>${animal.species}</h2>
+         <h4>${animal.exhibit}</h4>
 
-         ${section('Exhibit', animal.exhibit)}
          ${section('Seasonal Viewing Summary', animal.seasonal_viewing_summary)}
          ${section('Seasonal Viewing Information', animal.seasonal_viewing_information)}
          ${section('General Viewing Tips', animal.general_viewing_tips)}
