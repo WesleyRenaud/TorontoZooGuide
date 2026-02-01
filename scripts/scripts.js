@@ -572,6 +572,7 @@ function openSpeciesOverlay(species) {
          >
 
          <h2>${animal.species}</h2>
+         ${animal.latin_name ? `<h6 class="latin-name">${animal.latin_name}</h6>` : ''}
          <h4>${animal.exhibit}</h4>
 
          ${section('Seasonal Viewing Summary', animal.seasonal_viewing_summary)}

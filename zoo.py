@@ -1,10 +1,11 @@
 import calendar, math
 
 class Animal:
-   def __init__( self, species, general_viewing_tips, seasonal_viewing_tips, identification, habitat_and_range, diet_and_feeding,
-                 behaviour_and_life_cycle, adaptations, reproduction_and_life_cycle, animals_at_the_zoo, exhibit,
+   def __init__( self, species, latin_name, general_viewing_tips, seasonal_viewing_tips, identification, habitat_and_range,
+                 diet_and_feeding, behaviour_and_life_cycle, adaptations, reproduction_and_life_cycle, animals_at_the_zoo, exhibit,
                  seasonal_viewing_summary, seasonal_viewing_information, enclosure_type, x_coord, y_coord, likelihood=None ):
       self.species = species
+      self.latin_name = latin_name
       self.general_viewing_tips = general_viewing_tips
       self.seasonal_viewing_tips = seasonal_viewing_tips
       self.identification = identification
@@ -26,6 +27,7 @@ class Animal:
    def to_dict( self ):
       return {
          'species': self.species,
+         'latin_name': self.latin_name,
          'general_viewing_tips': self.general_viewing_tips,
          'seasonal_viewing_tips': self.seasonal_viewing_tips,
          'identification': self.identification,

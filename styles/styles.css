@@ -388,8 +388,9 @@ html.home-page {
    color: #ffffff;
 }
 
-.species-overlay-card h2, h4 {
+.species-overlay-card h2, h4, h6 {
    text-align: center;
+   margin: 0;
 }
 
 .species-overlay-card h2 {
@@ -397,8 +398,13 @@ html.home-page {
 }
 
 .species-overlay-card h4 {
-   margin-top: 0;
    font-size: 2em;
+}
+
+.species-overlay-card h6 {
+   color: #D2691E;   /* dark orange / chocolate-like */
+   font-style: italic;
+   font-size: 1.5em;
 }
 
 /* New scrollable wrapper */

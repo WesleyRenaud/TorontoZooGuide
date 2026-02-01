@@ -12,11 +12,33 @@ class MyHandler( BaseHTTPRequestHandler ):
    def do_GET( self ):
       parsed = urlparse( self.path )
 
-      if parsed.path in ['/home.html']:
+      if parsed.path in ['/map.html']:
          self.send_response( 200 )
          self.send_header( 'Content-type', 'text/html' )
          self.end_headers()
-         with open( './pages/home.html', 'rb' ) as fp:
+         with open( './pages/map.html', 'rb' ) as fp:
+            while True:
+               chunk = fp.read( 8192 )
+               if not chunk:
+                  break
+               self.wfile.write( chunk )
+      
+      if parsed.path in ['/animals.html']:
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'text/html' )
+         self.end_headers()
+         with open( './pages/animals.html', 'rb' ) as fp:
+            while True:
+               chunk = fp.read( 8192 )
+               if not chunk:
+                  break
+               self.wfile.write( chunk )
+
+      if parsed.path in ['/itinerary.html']:
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'text/html' )
+         self.end_headers()
+         with open( './pages/itinerary.html', 'rb' ) as fp:
             while True:
                chunk = fp.read( 8192 )
                if not chunk:
