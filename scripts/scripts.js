@@ -800,8 +800,11 @@ function displayAnimalInformation(region, exhibit, animal) {
          const list = document.querySelector('.list');
 
          list.innerHTML =
-         buildAnimalInfoBackButtonHTML() +
-         buildSpeciesContentHTML(animal_info);
+            buildAnimalInfoBackButtonHTML() +
+            buildSpeciesContentHTML(animal_info);
+
+         // ✅ Reset scroll so the back button is visible
+         list.scrollTop = 0;
 
          // Wire the back button behavior
          list.querySelector('.animal-info-back-button')
