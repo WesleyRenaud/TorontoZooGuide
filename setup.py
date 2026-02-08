@@ -4,9 +4,11 @@ conn = sqlite3.connect( 'animals.db' )
 
 cursor = conn.cursor()
 
+
 cursor.execute( 'DROP TABLE IF EXISTS Exhibit;' )
 cursor.execute( ''' CREATE TABLE Exhibit
                   (  NAME              VARCHAR(64) NOT NULL,
+                     REGION            VARCHAR(64) NOT NULL,
                      JAN_PROBABILITY   DOUBLE CHECK (JAN_PROBABILITY BETWEEN 0 AND 1),
                      FEB_PROBABILITY   DOUBLE CHECK (FEB_PROBABILITY BETWEEN 0 AND 1),
                      MAR_PROBABILITY   DOUBLE CHECK (MAR_PROBABILITY BETWEEN 0 AND 1),
@@ -63,6 +65,7 @@ cursor.execute( ''' CREATE TABLE EnclosureViewing
 exhibits = [
    (
       'Australasia Pavilion',
+      'Australasia',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
       1,                        # Probability of being open on the 1st day of March
@@ -78,6 +81,7 @@ exhibits = [
    ),
    (
       'Australasia Outdoor',
+      'Australasia',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
       1,                        # Probability of being open on the 1st day of March
@@ -92,6 +96,7 @@ exhibits = [
       1                         # Probability of being open on the 1st day of December
    ),
    (
+      'Eurasia Wilds',
       'Eurasia Wilds',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
@@ -108,6 +113,7 @@ exhibits = [
    ),
    (
       'Tundra Trek',
+      'Tundra Trek',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
       1,                        # Probability of being open on the 1st day of March
@@ -123,6 +129,7 @@ exhibits = [
    ),
    (
       'Americas Outdoor Mayan Temple Ruins',
+      'Americas',
       0,                        # Probability of being open on the 1st day of January
       0,                        # Probability of being open on the 1st day of February
       0.05,                     # Probability of being open on the 1st day of March
@@ -138,6 +145,7 @@ exhibits = [
    ),
    (
       'Americas Pavilion',
+      'Americas',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
       1,                        # Probability of being open on the 1st day of March
@@ -152,6 +160,7 @@ exhibits = [
       1                         # Probability of being open on the 1st day of December
    ),
    (
+      'Canadian Domain',
       'Canadian Domain',
       0.2,                      # Probability of being open on the 1st day of January
       0,                        # Probability of being open on the 1st day of February
@@ -168,6 +177,7 @@ exhibits = [
    ),
    (
       'Africa Savanna',
+      'Africa',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
       1,                        # Probability of being open on the 1st day of March
@@ -183,6 +193,7 @@ exhibits = [
    ),
    (
       'African Rainforest Pavilion',
+      'Africa',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
       1,                        # Probability of being open on the 1st day of March
@@ -198,6 +209,7 @@ exhibits = [
    ),
    (
       'Indo-Malaya Pavilion',
+      'Indo-Malaya',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
       1,                        # Probability of being open on the 1st day of March
@@ -213,6 +225,7 @@ exhibits = [
    ),
    (
       'Indo-Malaya Outdoor',
+      'Indo-Malaya',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
       1,                        # Probability of being open on the 1st day of March
@@ -228,6 +241,7 @@ exhibits = [
    ),
    (
       'Malayan Woods Pavilion',
+      'Indo-Malaya',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
       1,                        # Probability of being open on the 1st day of March
@@ -243,6 +257,7 @@ exhibits = [
    ),
    (
       'Goat World',
+      'Discovery Zone',
       1,                        # Probability of being open on the 1st day of January
       1,                        # Probability of being open on the 1st day of February
       1,                        # Probability of being open on the 1st day of March
@@ -258,6 +273,7 @@ exhibits = [
    ),
    (
       'Kids Zoo',
+      'Discovery Zone',
       0,                        # Probability of being open on the 1st day of January
       0,                        # Probability of being open on the 1st day of February
       0,                        # Probability of being open on the 1st day of March
@@ -11033,7 +11049,8 @@ enclosureViewings =\
 ]
 
 cursor.executemany( ''' INSERT INTO Exhibit (
-                           Name,
+                           NAME,
+                           REGION,
                            JAN_PROBABILITY,
                            FEB_PROBABILITY,
                            MAR_PROBABILITY,
@@ -11047,7 +11064,7 @@ cursor.executemany( ''' INSERT INTO Exhibit (
                            NOV_PROBABILITY,
                            DEC_PROBABILITY
                         ) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ''', exhibits )
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ''', exhibits )
 
 cursor.executemany( ''' INSERT INTO Animal (
                            SPECIES,

@@ -122,4 +122,76 @@ class Database():
       cur.close()
 
       return exhibit_probability
+   
 
+   def get_exhibits_in_region( self, region ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         f"""  SELECT
+                  e.NAME
+               FROM Exhibit e
+               WHERE e.REGION = ?;
+         """, (region, ) )
+      
+      exhibits = [row[0] for row in data.fetchall()]
+      cur.close()
+
+      return exhibits
+   
+
+   def get_animals_in_exhibit( self, exhibit ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  a.SPECIES
+               FROM Animal a
+               JOIN Enclosure e
+                  ON a.SPECIES = e.SPECIES
+               WHERE e.EXHIBIT = ?
+         """, (exhibit, ) )
+
+      animals = [row[0] for row in data.fetchall()]
+
+      cur.close()
+
+      return animals
+   
+
+   def get_animal_information( self, species ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  a.LATIN_NAME,
+                  a.GENERAL_VIEWING_TIPS,
+                  a.SEASONAL_VIEWING_TIPS,
+                  a.IDENTIFICATION,
+                  a.HABITAT_AND_RANGE,
+                  a.DIET_AND_FEEDING,
+                  a.BEHAVIOUR_AND_SOCIAL_LIFE,
+                  a.ADAPTATIONS,
+                  a.REPRODUCTION_AND_LIFE_CYCLE,
+                  a.ANIMALS_AT_THE_ZOO,
+                  e.EXHIBIT,
+                  e.SEASONAL_VIEWING_SUMMARY,
+                  e.SEASONAL_VIEWING_INFORMATION
+               FROM Animal a
+               JOIN Enclosure e
+                  ON a.SPECIES = e.SPECIES
+               WHERE a.SPECIES = ?;
+         """, (species, ) )
+      
+      animal = data.fetchone()
+      
+      animal_info = zoo.Animal( species=species, latin_name=animal[0], general_viewing_tips=animal[1], seasonal_viewing_tips=animal[2],
+                                identification=animal[3], habitat_and_range=animal[4],  diet_and_feeding=animal[5],
+                                behaviour_and_life_cycle=animal[6], adaptations=animal[7], reproduction_and_life_cycle=animal[8],
+                                animals_at_the_zoo=animal[9], exhibit=animal[10], seasonal_viewing_summary=animal[11],
+                                seasonal_viewing_information=animal[12], enclosure_type=None, x_coord=None, y_coord=None,
+                                likelihood=None )
+
+      cur.close()
+
+      return animal_info

@@ -101,6 +101,54 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-exhibits-in-region':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         region = data.get( 'region' )
+
+         exhibits = self.database.get_exhibits_in_region( region )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"exhibits": exhibits}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-animals-in-exhibit':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         exhibit = data.get( 'exhibit' )
+
+         animals = self.database.get_animals_in_exhibit( exhibit )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"animals": animals}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-animal-information':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         species = data.get( 'species' )
+
+         animal_info = self.database.get_animal_information( species )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"information": [animal_info.to_dict()]}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
 if __name__ == '__main__':
    httpd = HTTPServer( ( 'localhost', int( sys.argv[1] ) ), MyHandler )
    print( 'Server listing in port:  ', int( sys.argv[1] ) )

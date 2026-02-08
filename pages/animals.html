@@ -1,0 +1,85 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+   href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+   rel="stylesheet">
+
+<!DOCTYPE html>
+<html lang="en" class="home-page">
+   <head>
+      <meta charset="utf-8">
+      <title>Toronto Zoo Guide</title>
+
+      <!-- Google Fonts -->
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+      <!-- Stylesheets -->
+      <link rel="stylesheet" href="../styles/styles.css">
+
+      <!-- Scripts -->
+      <script src="../scripts/scripts.js" defer></script>
+      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+   </head>
+
+   <body>
+      <div class="home-page">
+
+         <!-- Top bar with title -->
+         <div class="top-bar">Toronto Zoo Guide</div>
+
+         <!-- Main content with region buttons -->
+         <main>
+            <img class="side-image left" src="../images/map/left-side.png" alt="Left decoration">
+
+            <div class="list">
+               <button class="list-button" onclick="displayExhibits('Africa')">
+                  <img src="../images/regions/africa.png" alt="Africa" class="list-image">
+                  Africa
+               </button>
+               <button class="list-button" onclick="displayExhibits('Americas')">
+                  <img src="../images/regions/americas.png" alt="Americas" class="list-image">
+                  Americas
+               </button>
+               <button class="list-button" onclick="displayExhibits('Australasia')">
+                  <img src="../images/regions/australasia.png" alt="Australasia" class="list-image">
+                  Australasia
+               </button>
+               <button class="list-button" onclick="displayAnimals('Canadian Domain', 'Canadian Domain')">
+                  <img src="../images/regions/canadian-domain.png" alt="Canadian Domain" class="list-image">
+                  Canadian Domain
+               </button>
+               <button class="list-button" onclick="displayExhibits('Discovery Zone')">
+                  <img src="../images/regions/discovery-zone.png" alt="Discovery Zone" class="list-image">
+                  Discovery Zone
+               </button>
+               <button class="list-button" onclick="displayAnimals('Eurasia Wilds', 'Eurasia Wilds')">
+                  <img src="../images/regions/eurasia-wilds.png" alt="Eurasia Wilds" class="list-image">
+                  Eurasia Wilds
+               </button>
+               <button class="list-button" onclick="displayExhibits('Indo-Malaya')">
+                  <img src="../images/regions/indo-malaya.png" alt="Indo-Malaya" class="list-image">
+                  Indo-Malaya
+               </button>
+               <button class="list-button" onclick="displayAnimals('Tundra Trek', 'Tundra Trek')">
+                  <img src="../images/regions/tundra-trek.png" alt="Tundra Trek" class="list-image">
+                  Tundra Trek
+               </button>
+            </div>
+
+            <img class="side-image right" src="../images/map/right-side.png" alt="Right decoration">
+         </main>
+
+         <!-- Bottom navigation menu -->
+         <nav>
+            <ul>
+               <li><a href="map.html">Map</a></li>
+               <li><a href="animals.html" class="active">Animals</a></li>
+               <li><a href="map.html">Itinerary</a></li>
+            </ul>
+         </nav>
+
+      </div>
+   </body>
+</html>

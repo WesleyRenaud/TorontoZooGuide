@@ -1,6 +1,7 @@
 const apiKey = '657afbbbe68b892616c765dce8e68d6b';
 const lat = 43.8177;   // Toronto Zoo latitude
 const lon = -79.1859;
+const pageName = window.location.pathname.split('/').pop().replace('.html','');
 
 // Ensure the DOM is loaded before running
 document.addEventListener('DOMContentLoaded', () => {
@@ -521,14 +522,16 @@ document.addEventListener('click', (e) => {
 
 // Global click listener
 document.addEventListener('click', (e) => {
-   // If the click is on a marker or inside the tooltip, do nothing
-   if (tooltip.contains(e.target) || e.target.closest('.marker')) {
-      return;
-   }
+   if (pageName == 'map') {
+      // If the click is on a marker or inside the tooltip, do nothing
+      if (tooltip.contains(e.target) || e.target.closest('.marker')) {
+         return;
+      }
 
-   // Otherwise, hide the tooltip
-   if (tooltip.style.display === 'flex') {
-      hideTooltip();
+      // Otherwise, hide the tooltip
+      if (tooltip.style.display === 'flex') {
+         hideTooltip();
+      }
    }
 });
 
@@ -544,50 +547,21 @@ document.addEventListener('keydown', e => {
 ============================================================ */
 
 const speciesOverlay = document.getElementById('speciesOverlay');
-const speciesOverlayContent = speciesOverlay.querySelector('.species-overlay-content');
+let speciesOverlayContent = null;
+
+if (speciesOverlay != null) {
+   speciesOverlayContent = speciesOverlay.querySelector('.species-overlay-content');
+}
 
 function openSpeciesOverlay(species) {
    const animal = getAnimalBySpecies(species);
    if (!animal) return;
 
-   const section = (title, value) => {
-      if (!value || !value.trim()) return '';
-      return `
-         <div class="section">
-            <strong>${title}:</strong>
-            <p>${value}</p>
-         </div>
-      `;
-   };
+   const contentHTML = buildSpeciesContentHTML(animal);
 
-   speciesOverlayContent.innerHTML = `
-      <div class="species-overlay-header">
-         <button class="species-close">×</button>
-      </div>
-
-      <div class="species-overlay-scroll">
-         <img
-            src="images/animals/${animal.exhibit}/${animal.species.replaceAll(' ', '-')}.png"
-            class="new-animal-image"
-         >
-
-         <h2>${animal.species}</h2>
-         ${animal.latin_name ? `<h6 class="latin-name">${animal.latin_name}</h6>` : ''}
-         <h4>${animal.exhibit}</h4>
-
-         ${section('Seasonal Viewing Summary', animal.seasonal_viewing_summary)}
-         ${section('Seasonal Viewing Information', animal.seasonal_viewing_information)}
-         ${section('General Viewing Tips', animal.general_viewing_tips)}
-         ${section('Seasonal Viewing Tips', animal.seasonal_viewing_tips)}
-         ${section('Identification', animal.identification)}
-         ${section('Habitat And Range', animal.habitat_and_range)}
-         ${section('Diet And Feeding', animal.diet_and_feeding)}
-         ${section('Behaviour And Life Cycle', animal.behaviour_and_life_cycle)}
-         ${section('Adaptations', animal.adaptations)}
-         ${section('Reproduction And Life Cycle', animal.reproduction_and_life_cycle)}
-         ${section('Animals At The Zoo', animal.animals_at_the_zoo)}
-      </div>
-   `;
+   speciesOverlayContent.innerHTML =
+      buildOverlayHeaderHTML() +
+      buildOverlayScrollHTML(contentHTML);
 
    speciesOverlayContent
       .querySelector('.species-close')
@@ -596,9 +570,62 @@ function openSpeciesOverlay(species) {
    speciesOverlay.classList.remove('hidden');
 }
 
-speciesOverlay.addEventListener('click', e => {
-   if (e.target === speciesOverlay) closeSpeciesOverlay();
-});
+function buildOverlayHeaderHTML() {
+   return `
+      <div class="species-overlay-header">
+         <button class="species-close" type="button" aria-label="Close">×</button>
+      </div>
+   `;
+}
+
+function buildOverlayScrollHTML(innerHTML) {
+   return `
+      <div class="species-overlay-scroll">
+         ${innerHTML}
+      </div>
+   `;
+}
+
+function buildSpeciesContentHTML(animal) {
+   const section = (title, value) => {
+      if (!value || !value.trim()) return '';
+      return `
+         <div class="section">
+         <strong>${title}:</strong>
+         <p>${value}</p>
+         </div>
+      `;
+   };
+
+   return `
+      <img
+         src="images/animals/${animal.exhibit}/${animal.species.replaceAll(' ', '-')}.png"
+         class="new-animal-image"
+      >
+
+      <h2>${animal.species}</h2>
+      ${animal.latin_name ? `<h6 class="latin-name">${animal.latin_name}</h6>` : ''}
+      <h4>${animal.exhibit}</h4>
+
+      ${section('Seasonal Viewing Summary', animal.seasonal_viewing_summary)}
+      ${section('Seasonal Viewing Information', animal.seasonal_viewing_information)}
+      ${section('General Viewing Tips', animal.general_viewing_tips)}
+      ${section('Seasonal Viewing Tips', animal.seasonal_viewing_tips)}
+      ${section('Identification', animal.identification)}
+      ${section('Habitat And Range', animal.habitat_and_range)}
+      ${section('Diet And Feeding', animal.diet_and_feeding)}
+      ${section('Behaviour And Life Cycle', animal.behaviour_and_life_cycle)}
+      ${section('Adaptations', animal.adaptations)}
+      ${section('Reproduction And Life Cycle', animal.reproduction_and_life_cycle)}
+      ${section('Animals At The Zoo', animal.animals_at_the_zoo)}
+   `;
+}
+
+if (speciesOverlay != null) {
+   speciesOverlay.addEventListener('click', e => {
+      if (e.target === speciesOverlay) closeSpeciesOverlay();
+   });
+}
 
 function closeSpeciesOverlay() {
    speciesOverlay.classList.add('hidden');
@@ -619,4 +646,176 @@ function getAnimalBySpecies(species) {
       }
    }
    return null;
+}
+
+/* ============================================================
+   animals.html
+============================================================ */
+
+function displayRegions() {
+   const regions = [
+      { name: 'Africa', hasExhibits: true },
+      { name: 'Americas', hasExhibits: true },
+      { name: 'Australasia', hasExhibits: true },
+      { name: 'Canadian Domain', hasExhibits: false },
+      { name: 'Discovery Zone', hasExhibits: true },
+      { name: 'Eurasia Wilds', hasExhibits: false },
+      { name: 'Indo-Malaya', hasExhibits: true },
+      { name: 'Tundra Trek', hasExhibits: false },
+   ];
+
+   const list = document.querySelector('.list');
+   list.innerHTML = '';
+
+   regions.forEach(({ name, hasExhibits }) => {
+      const btn = document.createElement('button');
+      btn.classList.add('list-button');
+
+      const fileName = name.toLowerCase().replace(/ /g, '-') + '.png';
+
+      const img = document.createElement('img');
+      img.src = `images/regions/${fileName}`;
+      img.classList.add('list-image');
+
+      btn.appendChild(img);
+      btn.appendChild(document.createTextNode(name));
+
+      btn.addEventListener('click', () => {
+         if (hasExhibits) {
+            displayExhibits(name);
+         } else {
+         // If there are no exhibits, go straight to animals for the region.
+            displayAnimals(name, name);
+         }
+      });
+
+      list.appendChild(btn);
+   });
+}
+
+function displayExhibits(region) {
+   $.ajax({
+      type: 'POST',
+      url: '/get-exhibits-in-region',
+      contentType: 'application/json',
+      data: JSON.stringify({ region }),
+      success: function (response) {
+         const list = document.querySelector('.list');
+
+         list.innerHTML = '';
+
+         const backBtn = document.createElement('button');
+         backBtn.classList.add('list-button', 'back-button');
+         backBtn.textContent = 'Back';
+
+         backBtn.addEventListener('click', () => {
+            displayRegions();
+         });
+
+         list.appendChild(backBtn);
+
+         response.exhibits.forEach(exhibit => {
+            const btn = document.createElement('button');
+            btn.classList.add('list-button');
+
+            const fileName = exhibit.toLowerCase().replace(/ /g, '-') + '.png';
+
+            const img = document.createElement('img');
+            img.src = `images/exhibits/${fileName}`;
+            img.classList.add('list-image');
+
+            btn.appendChild(img);
+            btn.appendChild(document.createTextNode(exhibit));
+
+            btn.addEventListener('click', () => {
+               displayAnimals(region, exhibit);
+            });
+
+            list.appendChild(btn);
+         });
+      }
+   });
+}
+
+function displayAnimals(region, exhibit) {
+   $.ajax({
+      type: 'POST',
+      url: '/get-animals-in-exhibit',
+      contentType: 'application/json',
+      data: JSON.stringify({ exhibit }),
+      success: function (response) {
+         const list = document.querySelector('.list');
+
+         list.innerHTML = '';
+
+         const backBtn = document.createElement('button');
+         backBtn.classList.add('list-button', 'back-button');
+         backBtn.textContent = 'Back';
+
+         backBtn.addEventListener('click', () => {
+            if (region == exhibit) {
+               displayRegions();
+            }
+            else {
+               displayExhibits(region);
+            }
+         });
+
+         list.appendChild(backBtn);
+
+         response.animals.forEach(animal => {
+            const btn = document.createElement('button');
+            btn.classList.add('list-button');
+
+            const fileName = animal.toLowerCase().replace(/ /g, '-') + '.png';
+
+            const img = document.createElement('img');
+            img.src = `images/animal-icons/${exhibit}/${fileName}`;
+            img.classList.add('list-image');
+
+            btn.appendChild(img);
+            btn.appendChild(document.createTextNode(animal));
+
+            btn.addEventListener('click', () => {
+               displayAnimalInformation(region, exhibit, animal);
+            });
+
+            list.appendChild(btn);
+         });
+      }
+   });
+}
+
+function displayAnimalInformation(region, exhibit, animal) {
+   $.ajax({
+      type: 'POST',
+      url: '/get-animal-information',
+      contentType: 'application/json',
+      dataType: 'json',
+      data: JSON.stringify({ species: animal }),
+      success: function (response) {
+         const animal_info = response.information[0];
+         if (!animal_info) return;
+
+         const list = document.querySelector('.list');
+
+         list.innerHTML =
+         buildAnimalInfoBackButtonHTML() +
+         buildSpeciesContentHTML(animal_info);
+
+         // Wire the back button behavior
+         list.querySelector('.animal-info-back-button')
+         .addEventListener('click', () => {
+            displayAnimals(region, exhibit);
+         });
+      }
+   });
+}
+
+function buildAnimalInfoBackButtonHTML() {
+  return `
+    <button class="animal-info-back-button" type="button">
+      ← Back
+    </button>
+  `;
 }

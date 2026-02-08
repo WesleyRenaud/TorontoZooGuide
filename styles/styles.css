@@ -375,7 +375,7 @@ html.home-page {
 }
 
 /* Keep outer card padding intact, only inner wrapper scrolls */
-.species-overlay-card {
+.species-overlay-card, .list {
    background-color: rgba(119, 184, 0);
    border-radius: 12px;
    padding: 32px;
@@ -388,7 +388,7 @@ html.home-page {
    color: #ffffff;
 }
 
-.species-overlay-card h2, h4, h6 {
+.species-overlay-card h2, h4, h6, .list h2, h4, h6 {
    text-align: center;
    margin: 0;
 }
@@ -397,14 +397,29 @@ html.home-page {
    font-size: 2.5em;
 }
 
+.list h2 {
+   font-size: 5em;
+}
+
 .species-overlay-card h4 {
    font-size: 2em;
 }
 
-.species-overlay-card h6 {
-   color: #D2691E;   /* dark orange / chocolate-like */
+.list h4 {
+   font-size: 4em;
+}
+
+.species-overlay-card h6, .list h6 {
+   color: #D2691E;
    font-style: italic;
+}
+
+.species-overlay-card h6 {
    font-size: 1.5em;
+}
+
+.list h6 {
+   font-size: 3em;
 }
 
 /* New scrollable wrapper */
@@ -433,14 +448,31 @@ html.home-page {
 }
 
 /* Crop specific new images to a fixed area */
-.species-overlay-card img.new-animal-image {
-   width: 100%;
-   height: 1200px;
+.species-overlay-card img.new-animal-image, .list img.new-animal-image {
    object-fit: cover;
    object-position: center;
-   border-radius: 12px;
    margin-bottom: 20px;
    display: block;
+}
+
+.species-overlay-card img.new-animal-image {
+   height: 1200px;
+}
+
+.list img.new-animal-image {
+   height: 1400px;
+}
+
+.species-overlay-card img.new-animal-image {
+   width: 100%;
+   border-radius: 12px;
+}
+
+.list img.new-animal-image {
+   align-self: center;
+   width: 70%;
+   border-radius: 128px;
+   margin-top: 100px;
 }
 
 /* ============================================================
@@ -457,39 +489,71 @@ html.home-page {
    font-family: 'Arial', sans-serif;
    font-size: 2em;          
    line-height: 2.2em;
-   color: #ffffff;
    text-align: left;
 }
 
 /* Section boxes around each piece of info */
-#speciesOverlay .species-overlay-content .section {
+#speciesOverlay .species-overlay-content .section, .list .section {
    pointer-events: auto;
    background-color: rgba(94, 150, 0, 0.95);  /* darker tooltip green */
    border-radius: 12px;
-   padding: 16px;
    display: flex;
    flex-direction: column;
+   padding: 16px;
+}
+
+#speciesOverlay .species-overlay-content .section {
    gap: 8px;
 }
 
+.list .section {
+   gap: 16px;
+   margin-top: 32px;
+   margin-bottom: 32px;
+   margin-left: 64px;
+   margin-right: 64px;
+}
+
+.list .section:last-child {
+  margin-bottom: 768px;
+}
+
 /* Section headings */
-#speciesOverlay .species-overlay-content .section strong {
-   font-size: 1.6em;
+#speciesOverlay .species-overlay-content .section strong, .list .section strong {
    font-style: italic;
    text-decoration: underline;
+   text-decoration-color: #2f5e00;
+}
+
+#speciesOverlay .species-overlay-content .section strong {
+   font-size: 1.6em;
    margin-bottom: 6px;
-   text-decoration-color: #2f5e00; /* dark green underline */
-   text-decoration-thickness: 12px;  /* thicker underline */
-   text-underline-offset: 12px;      /* lower the underline */
+   text-decoration-thickness: 12px;
+   text-underline-offset: 12px;
+}
+
+.list .section strong {
+   font-size: 3em;
+   margin-bottom: 12px;
+   text-decoration-thickness: 24px;
+   text-underline-offset: 24px;
 }
 
 /* Section paragraphs */
-#speciesOverlay .species-overlay-content .section p {
-   font-size: 1.4em;
+#speciesOverlay .species-overlay-content .section p, .list .section p {
    line-height: 1.6;
    color: #ffffff;
    margin: 0;
    white-space: pre-line;
+}
+
+#speciesOverlay .species-overlay-content .section p {
+   font-size: 1.4em;
+}
+
+/* Section paragraphs */
+.list .section p {
+   font-size: 4em;
 }
 
 /* ============================================================
@@ -568,4 +632,100 @@ html.home-page {
 /* Remove any ::before pseudo-element content */
 .species-close::before {
    content: none;
+}
+
+/* ==============================
+   Animals Page – Region Buttons
+   ============================== */
+
+.animals-page {
+   display: flex;
+   justify-content: center;
+   padding: 0;
+   background-color: #8bc34a;   /* SAME as button background */
+}
+
+.list {
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   gap: 0;
+   padding: 0;
+   margin: 0;
+   background-color: #8bc34a;   /* ensures no contrast gaps */
+   overflow-y: auto;         /* enable vertical scrolling */
+}
+
+.list-button {
+   display: flex;             /* flex container */
+   align-items: center;       /* vertical centering */
+   gap: 210px;                /* space between image and text */
+   width: 100%;
+   height: 400px;
+   padding: 48px 32px;
+   font-family: 'Poppins', sans-serif;
+   font-size: 6em;
+   font-weight: 700;
+   background-color: #8bc34a;
+   color: #ffffff;
+   border: 2px solid #5e9600;
+   border-left: none;
+   border-right: none;
+   border-radius: 0;
+   cursor: pointer;
+   text-align: left;
+   box-sizing: border-box;
+   transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.list-image {
+   height: 320px;
+   width: 320px;
+   object-fit: cover;
+   border-radius: 50%;
+   flex-shrink: 0;           /* prevent shrinking */
+   margin-left: 200px;
+}
+
+.list-button:hover {
+   background-color: #77B800;
+}
+
+.list-button:active {
+   background-color: #6aa500;
+}
+
+/* Back button styling */
+.back-button {
+   position: relative;
+}
+
+/* Add left arrow before the text using ::before */
+.back-button::before {
+   content: "←";               /* arrow character or use SVG via url() */
+   display: inline-block;
+   margin-right: 50px;         /* space between icon and text */
+   margin-left: 230px;
+   font-size: 2.5em;           /* adjust as needed */
+   vertical-align: middle;     /* align with text */
+}
+
+/* Optional hover effect */
+.back-button:hover::before {
+   transform: translateX(-4px); /* subtle slide on hover */
+   transition: transform 0.2s ease;
+}
+
+.animal-info-back-button {
+   position: absolute;
+   top: 32px;
+   left: 32px;
+   padding: 32px;
+   border-radius: 32px;
+   background-color: rgba(94, 150, 0, 0.95);
+   color: #ffffff;
+   border: none;
+   cursor: pointer;
+   font-size: 80px;
+   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
