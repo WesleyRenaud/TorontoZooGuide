@@ -209,15 +209,22 @@ html.home-page {
 
 .marker {
    position: absolute;
-   width: 32px;
-   height: 32px;
+   width: 48px;
+   height: 48px;
    border-radius: 50%;
    transform: translate(-50%, -50%);
    cursor: pointer;
    z-index: 10;
-
    border: 2px solid #ffffff;
-   box-shadow: 0 0 8px rgba(47, 191, 113, 0.6);
+   background-size: cover;
+   background-position: center;
+   background-repeat: no-repeat;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-weight: bold;
+   color: #ffffff;
+   font-size: 32px;
 }
 
 .marker.hidden {

@@ -1,78 +1,77 @@
 const apiKey = '657afbbbe68b892616c765dce8e68d6b';
-const lat = 43.8177;   // Toronto Zoo latitude
+const lat = 43.8177;
 const lon = -79.1859;
-const pageName = window.location.pathname.split('/').pop().replace('.html','');
 
-// Ensure the DOM is loaded before running
+function getPageName() {
+   return window.location.pathname.split('/').pop().replace('.html', '');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+   if (getPageName() !== 'map') return;
+   initMapPage();
+});
+
+function initMapPage() {
+   TooltipController.initGlobalListeners();
+
    const mapInner = document.getElementById('mapInner');
-
-   if (mapInner != null) {
-      const panzoom = Panzoom(mapInner, {
-      maxScale: 3,
-      minScale: 1,
-      contain: 'outside'
-      });
-
-      mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
-
-      // Optional: enable wheel zoom
-      mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
-
-      // Get all region labels
-      const regionLabels = document.querySelectorAll('.region-label');
-      const exhibitLabels = document.querySelectorAll('.exhibit-label');
-
-      // Threshold zoom scale for hiding labels
-      const regionHideZoomScale = 1.5;  // labels disappear when zoom > 1.5
-      const exhibitHideZoomScale = 2; // labels disappear when zoom > 2
-
-      // Listen to Panzoom events
-      mapInner.addEventListener('panzoomchange', () => {
-         const currentScale = panzoom.getScale();
-
-         // Remove the region/exhibit labels independently
-         regionLabels.forEach(label => {
-            if (currentScale > regionHideZoomScale) {
-                  label.style.display = 'none';
-            } else {
-                  label.style.display = 'block';
-            }
-         });
-
-         exhibitLabels.forEach(label => {
-            if (currentScale > exhibitHideZoomScale) {
-                  label.style.display = 'none';
-            } else {
-                  label.style.display = 'block';
-            }
-         });
-      });
-   }
-
    const mapPreset = document.getElementById('mapPreset');
    const mapDateInput = document.getElementById('mapDate');
 
-   // Initialize Flatpickr
+   if (!mapInner || !mapPreset || !mapDateInput) return;
+
+   initPanzoom(mapInner);
+   initMapControls(mapPreset, mapDateInput);
+}
+
+function initPanzoom(mapInner) {
+   const panzoom = Panzoom(mapInner, {
+      maxScale: 3,
+      minScale: 1,
+      contain: 'outside',
+   });
+
+   mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+
+   const regionLabels = document.querySelectorAll('.region-label');
+   const exhibitLabels = document.querySelectorAll('.exhibit-label');
+
+   const regionHideZoomScale = 1.5;
+   const exhibitHideZoomScale = 2;
+
+   mapInner.addEventListener('panzoomchange', () => {
+      const currentScale = panzoom.getScale();
+
+      regionLabels.forEach(label => {
+         label.style.display = currentScale > regionHideZoomScale ? 'none' : 'block';
+      });
+
+      exhibitLabels.forEach(label => {
+         label.style.display = currentScale > exhibitHideZoomScale ? 'none' : 'block';
+      });
+   });
+
+   return panzoom;
+}
+
+function initMapControls(mapPreset, mapDateInput) {
    const fp = flatpickr(mapDateInput, {
       defaultDate: new Date(),
       dateFormat: 'Y-m-d',
       allowInput: true,
       clickOpens: true,
       minDate: 'today',
-      monthSelectorType: "static",
-      onChange: function (_, dateStr) {
+      monthSelectorType: 'static',
+      onChange: (_, dateStr) => {
          if (mapPreset.value === 'specific-day') {
             updateMap('specific-day', dateStr);
          }
-      }
+      },
    });
 
-   // Handle preset changes
    mapPreset.addEventListener('change', () => {
       const preset = mapPreset.value;
 
-      // No selection (placeholder)
       if (!preset) {
          mapDateInput.style.display = 'none';
          return;
@@ -87,59 +86,46 @@ document.addEventListener('DOMContentLoaded', () => {
       }
    });
 
-   // Initialize visibility on page load
    mapPreset.dispatchEvent(new Event('change'));
-});
+}
+
+/* ============================================================
+   MAP UPDATE
+============================================================ */
 
 function updateMap(preset, date) {
-   let month = null;
-   let day = null;
-   let temp = null;
+   if (preset === 'summer') return sendAnimalRequest('Jul', 20, null);
+   if (preset === 'winter') return sendAnimalRequest('Jan', 30, null);
 
-   // Presets
-   if (preset === 'summer') {
-      month = 'Jul';
-      day = 20;
-      sendAnimalRequest(month, day, null);
-      return;
-   }
+   const month = getMonth(date);
+   const day = getDay(date);
 
-   if (preset === 'winter') {
-      month = 'Jan';
-      day = 30;
-      sendAnimalRequest(month, day, null);
-      return;
-   }
-
-   // Specific day
-   month = getMonth(date);
-   day = getDay(date);
-
-   // If within forecast range, fetch temperature
    if (isWithinNextNDays(date, 7)) {
-      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`)
-         .then(res => res.json())
-         .then(data => {
-            const targetDateStr = date;
-
-            const dailyForecasts = data.list.filter(f =>
-               f.dt_txt.startsWith(targetDateStr)
-            );
-
-            if (dailyForecasts.length > 0) {
-               // IMPORTANT: use average, not max
-               temp =
-                  dailyForecasts.reduce((sum, f) => sum + f.main.temp, 0) /
-                  dailyForecasts.length;
-            }
-
-            sendAnimalRequest(month, day, temp);
-         });
-   }
-   else {
-      // Outside forecast range → backend average model
+      fetchForecastTemp(date)
+         .then(temp => sendAnimalRequest(month, day, temp))
+         .catch(() => sendAnimalRequest(month, day, null));
+   } else {
       sendAnimalRequest(month, day, null);
    }
+}
+
+function fetchForecastTemp(dateStr) {
+   return fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
+   )
+      .then(res => res.json())
+      .then(data => {
+         const dailyForecasts = data.list.filter(f =>
+            f.dt_txt.startsWith(dateStr)
+         );
+
+         if (dailyForecasts.length === 0) return null;
+
+         return (
+            dailyForecasts.reduce((sum, f) => sum + f.main.temp, 0) /
+            dailyForecasts.length
+         );
+      });
 }
 
 function sendAnimalRequest(month, day, temp) {
@@ -234,12 +220,19 @@ function addMarkers(animals) {
       el.style.top = `${group.y}%`;
       el.title = ''; // remove default browser tooltip
 
-      el.style.backgroundColor = likelihoodToColor(animalsOnExhibit[0].likelihood);
+      const backgroundColour = likelihoodToColor(animalsOnExhibit[0].likelihood).replace('#', '');
+      if (animalsOnExhibit.length === 1) {
+         el.style.backgroundImage = getAnimalIconUrl(animalsOnExhibit[0].exhibit, animalsOnExhibit[0].species, backgroundColour);
+      }
+      else {
+         el.style.backgroundColor = backgroundColour;
+         el.textContent = animalsOnExhibit.length;
+      }
 
       mapInner.appendChild(el);
 
       // Attach click-to-open tooltip with all species at this exhibit
-      attachTooltip(el, animalsOnExhibit);
+      TooltipController.attachToMarker(el, animalsOnExhibit);
    });
 }
 
@@ -261,191 +254,250 @@ function likelihoodToColor(likelihood) {
    return colors[index];
 }
 
-/* ============================================================
-   TOOLTIP FUNCTIONS
-============================================================ */
+function getAnimalIconUrl(exhibit, species, backgroundColour) {
+   const normalizedExhibit = normalizeParameter(exhibit);
+   const normalizedAnimal = normalizeParameter(species);
 
-// Attach click behavior to show/hide tooltip
-let openTooltipMarker = null;
-function attachTooltip(marker, animals) {
-   marker.addEventListener('click', (e) => {
-      e.stopPropagation(); // prevent map click events
-
-      const isVisible = tooltip.style.display === 'flex';
-      // If the tooltip is visible and this marker is the open one, toggle (close it)
-      if (isVisible && openTooltipMarker === marker) {
-         hideTooltip();
-         openTooltipMarker = null;
-      } else {
-         hideTooltip(); // Close any open tooltip first
-         showTooltipForMarker(marker, animals);
-         openTooltipMarker = marker;
-      }
-   });
+   return `url("/images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${backgroundColour}.png")`;
 }
 
-let lastAnimals = [];
+/* ============================================================
+   TOOLTIP MODULE (single source of truth)
+============================================================ */
 
-function showTooltipForMarker(marker, animals) {
-   lastAnimals = animals;
+const TooltipController = (() => {
+   let openMarker = null;
+   let animalsForOpen = [];
+   let carousel = null;
 
-   clearTooltip();
-   tooltip.style.display = 'flex';
-   tooltip.style.pointerEvents = 'auto';
+   function isOpen() {
+      return tooltip.style.display === 'flex';
+   }
 
-   const content = document.createElement('div');
-   content.className = 'tooltip-content';
+   function attachToMarker(marker, animals) {
+      marker.addEventListener('click', (e) => {
+         e.stopPropagation();
+         toggle(marker, animals);
+      });
+   }
 
-   const carousel = createCarousel(animals);
-   carousel._marker = marker;
-   currentCarousel = carousel;
+   function toggle(marker, animals) {
+      if (isOpen() && openMarker === marker) {
+         close();
+      } else {
+         open(marker, animals);
+      }
+   }
 
-   // Enable arrow key navigation
-   enableTooltipKeyboard(carousel);
+   function open(marker, animals) {
+      // close anything already open
+      if (isOpen()) close();
 
-   content.appendChild(carousel);
-   tooltip.appendChild(content);
+      openMarker = marker;
+      animalsForOpen = animals;
 
-   // Only create arrow nav if multiple cards
-   if (animals.length > 1) {
+      // when opening, show icon for first animal (and clear count text)
+      setMarkerToAnimalIcon(marker, animals[0]);
+      marker.textContent = '';
+
+      renderTooltip(marker, animals);
+      tooltip.style.display = 'flex';
+      tooltip.style.pointerEvents = 'auto';
+      positionTooltip(marker);
+   }
+
+   function close() {
+      if (!isOpen()) return;
+
+      tooltip.style.display = 'none';
+      tooltip.style.pointerEvents = 'none';
+      clearTooltipContent();
+
+      // restore marker to count style
+      if (openMarker && animalsForOpen.length > 1) {
+         setMarkerToCount(openMarker, animalsForOpen.length);
+      }
+
+      openMarker = null;
+      animalsForOpen = [];
+      carousel = null;
+   }
+
+   function renderTooltip(marker, animals) {
+      clearTooltipContent();
+
+      const content = document.createElement('div');
+      content.className = 'tooltip-content';
+
+      carousel = createCarousel(animals);
+      content.appendChild(carousel);
+      tooltip.appendChild(content);
+
+      if (animals.length > 1) {
+         tooltip.classList.remove('no-arrows');
+         tooltip.appendChild(createTooltipNav(carousel));
+      } else {
+         tooltip.classList.add('no-arrows');
+      }
+   }
+
+   function createTooltipNav(carouselEl) {
       const nav = document.createElement('div');
       nav.className = 'tooltip-nav';
 
-      const leftArrow = createArrow('<', () => carouselPrev(carousel));
+      const leftArrow = createArrow('<', () => carouselStep(carouselEl, -1));
       leftArrow.classList.add('tooltip-prev', 'visible');
 
-      const rightArrow = createArrow('>', () => carouselNext(carousel));
+      const rightArrow = createArrow('>', () => carouselStep(carouselEl, +1));
       rightArrow.classList.add('tooltip-next', 'visible');
 
       nav.appendChild(leftArrow);
       nav.appendChild(document.createElement('div')); // spacer
       nav.appendChild(rightArrow);
-
-      tooltip.appendChild(nav);
-      tooltip.classList.remove('no-arrows');
-   } else {
-      // Single species - remove arrow spacing
-      tooltip.classList.add('no-arrows');
+      return nav;
    }
 
-   positionTooltip(marker);
-}
+   function clearTooltipContent() {
+      tooltip.innerHTML = '';
+   }
 
-// Hide tooltip completely
-function hideTooltip() {
-   tooltip.style.display = 'none';
-   openTooltipMarker = null;
-}
+   function setMarkerToCount(marker, count) {
+      marker.textContent = count;
+      marker.style.backgroundImage = '';
+      // keep marker backgroundColor as whatever you already set for clusters
+   }
 
-// Clear the tooltip content
-function clearTooltip() {
-   tooltip.innerHTML = '';
-   currentCarousel = null;
-}
+   function setMarkerToAnimalIcon(marker, animal) {
+      if (!animal) return;
+      const backgroundColour = likelihoodToColor(animal.likelihood).replace('#', '');
+      marker.style.backgroundImage = getAnimalIconUrl(animal.exhibit, animal.species, backgroundColour);
+   }
+
+   // step carousel + update marker icon to match the active card
+   function carouselStep(carouselEl, delta) {
+      const cards = Array.from(carouselEl.children);
+      let index = Number(carouselEl.dataset.index || 0);
+
+      cards[index].style.display = 'none';
+      index = (index + delta + cards.length) % cards.length;
+      cards[index].style.display = 'flex';
+
+      carouselEl.dataset.index = index;
+
+      // keep marker icon synced with active animal
+      if (openMarker && animalsForOpen[index]) {
+         setMarkerToAnimalIcon(openMarker, animalsForOpen[index]);
+         openMarker.textContent = '';
+      }
+   }
+
+   // global listeners (called once)
+   let tooltipGlobalListenersInstalled = false;
+
+   function initGlobalListeners() {
+      if (tooltipGlobalListenersInstalled) return;
+      tooltipGlobalListenersInstalled = true;
+
+      document.addEventListener('click', (e) => {
+         // 1) Species link click (open overlay)
+         const link = e.target.closest('.species-link');
+         if (link) {
+            e.stopPropagation();
+            openSpeciesOverlay(link.dataset.species);
+            return;
+         }
+
+         // 2) Outside click closes tooltip
+         if (!isOpen()) return;
+
+         const clickedMarker = e.target.closest('.marker');
+         const clickedTooltip = tooltip.contains(e.target);
+
+         if (!clickedMarker && !clickedTooltip) close();
+      });
+
+      document.addEventListener('keydown', (e) => {
+         if (!isOpen()) return;
+
+         if (e.key === 'Escape') {
+            close();
+            return;
+         }
+
+         if (e.key === 'ArrowRight') carouselStep(carousel, +1);
+         if (e.key === 'ArrowLeft') carouselStep(carousel, -1);
+      });
+   }
+
+   return {
+      attachToMarker,
+      initGlobalListeners,
+      open,
+      close,
+      toggle,
+   };
+})();
 
 /* ============================================================
-   CAROUSEL FUNCTIONS
+   CAROUSEL (smaller/cleaner)
 ============================================================ */
 
 function createCarousel(animals) {
    const carousel = document.createElement('div');
    carousel.className = 'tooltip-carousel';
-   animals.forEach((a, i) => {
-      const card = document.createElement('div');
-      card.className = 'tooltip-card';
-      card.dataset.index = i;
-
-      card.innerHTML = `
-         <div class="tooltip-image-frame">
-            <img 
-               src="images/animals/${a.exhibit}/${a.species.replaceAll(' ', '-')}.png"
-               alt="${a.species}"
-               class="tooltip-image"
-            >
-         </div>
-
-         <strong class="species-link" data-species="${a.species}" data-exhibit="${a.exhibit}" data-exhibit="${a.enclosure_type}">
-            ${a.species}
-         </strong>
-         <span>Exhibit: ${a.exhibit}</span>
-         <span>Enclosure Type: ${a.enclosure_type}</span>
-         <span>Likelihood: ${getLikelihoodPhrase(a.likelihood)} (~${a.likelihood}%)</span>
-      `;
-
-      card.style.display = i === 0 ? 'flex' : 'none';
-      carousel.appendChild(card);
-   });
    carousel.dataset.index = 0;
+
+   animals.forEach((a, i) => {
+      carousel.appendChild(createTooltipCard(a, i));
+   });
+
    return carousel;
 }
 
+function createTooltipCard(a, index) {
+   const card = document.createElement('div');
+   card.className = 'tooltip-card';
+   card.dataset.index = index;
+   card.style.display = index === 0 ? 'flex' : 'none';
+
+   const exhibit = normalizeParameter(a.exhibit);
+   const species = normalizeParameter(a.species);
+
+   card.innerHTML = `
+      <div class="tooltip-image-frame">
+         <img 
+         src="images/animals/${exhibit}/${species}.png"
+         alt="${a.species}"
+         class="tooltip-image"
+         >
+      </div>
+
+      <strong class="species-link"
+         data-species="${a.species}"
+         data-exhibit="${a.exhibit}"
+         data-enclosure="${a.enclosure_type}">
+         ${a.species}
+      </strong>
+
+      <span>Exhibit: ${a.exhibit}</span>
+      <span>Enclosure Type: ${a.enclosure_type}</span>
+      <span>Likelihood: ${getLikelihoodPhrase(a.likelihood)} (~${a.likelihood}%)</span>
+   `;
+
+   return card;
+}
+
 function getLikelihoodPhrase(likelihood) {
-   if (likelihood >= 95) { // 95%
-      return 'Very high';
-   }
-   else if (likelihood >= 80) {
-      return 'High';
-   }
-   else if (likelihood >= 60) {
-      return 'Medium';
-   }
-   else if (likelihood >= 40) {
-      return 'Moderate';
-   }
-   else if (likelihood >= 20) {
-      return 'Low';
-   }
-   else {
-      return 'Very low';
-   }
-}
-
-function carouselNext(carousel) {
-   const cards = Array.from(carousel.children);
-   let index = Number(carousel.dataset.index);
-   cards[index].style.display = 'none';
-   index = (index + 1) % cards.length;
-   cards[index].style.display = 'flex';
-   carousel.dataset.index = index;
-   if (carousel._marker) {
-      carousel._marker.style.backgroundColor =
-         likelihoodToColor(lastAnimals[index].likelihood);
-   }
-}
-
-function carouselPrev(carousel) {
-   const cards = Array.from(carousel.children);
-   let index = Number(carousel.dataset.index);
-   cards[index].style.display = 'none';
-   index = (index - 1 + cards.length) % cards.length;
-   cards[index].style.display = 'flex';
-   carousel.dataset.index = index;
-   if (carousel._marker) {
-      carousel._marker.style.backgroundColor =
-         likelihoodToColor(lastAnimals[index].likelihood);
-   }
-}
-
-// Add keyboard navigation for carousel
-function enableTooltipKeyboard(carousel) {
-   function handleKey(e) {
-      if (e.key === "ArrowRight") {
-         carouselNext(carousel);
-      } else if (e.key === "ArrowLeft") {
-         carouselPrev(carousel);
-      }
-   }
-
-   document.addEventListener('keydown', handleKey);
-
-   // Remove listener when tooltip is hidden
-   tooltip.addEventListener('mouseleave', () => {
-      document.removeEventListener('keydown', handleKey);
-   }, { once: true });
+   if (likelihood >= 95) return 'Very high';
+   if (likelihood >= 80) return 'High';
+   if (likelihood >= 60) return 'Medium';
+   if (likelihood >= 40) return 'Moderate';
+   if (likelihood >= 20) return 'Low';
+   return 'Very low';
 }
 
 /* ============================================================
-   ARROWS
+   ARROWS (unchanged)
 ============================================================ */
 
 function createArrow(symbol, onClick) {
@@ -459,88 +511,26 @@ function createArrow(symbol, onClick) {
    return arrow;
 }
 
-function updateArrowVisibility(count, left, right) {
-   if (count > 1) {
-      left.classList.add('visible');
-      right.classList.add('visible');
-   } else {
-      left.classList.remove('visible');
-      right.classList.remove('visible');
-   }
-}
-
 /* ============================================================
-   POSITIONING
+   POSITIONING (unchanged)
 ============================================================ */
 
 function positionTooltip(marker) {
    const rect = marker.getBoundingClientRect();
    const tooltipRect = tooltip.getBoundingClientRect();
+   const padding = 12;
 
-   const padding = 12; // distance from screen edges
-
-   // Desired position (centered above marker)
    let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
    let top  = rect.top - tooltipRect.height - 12;
 
-   // If it would go off the top, place it below instead
-   if (top < padding) {
-      top = rect.bottom + 12;
-   }
+   if (top < padding) top = rect.bottom + 12;
 
-   // Clamp horizontally inside viewport
-   left = Math.max(padding, left);
-   left = Math.min(window.innerWidth - tooltipRect.width - padding, left);
-
-   // Clamp vertically just in case
-   top = Math.max(padding, top);
-   top = Math.min(window.innerHeight - tooltipRect.height - padding, top);
+   left = Math.max(padding, Math.min(window.innerWidth - tooltipRect.width - padding, left));
+   top  = Math.max(padding, Math.min(window.innerHeight - tooltipRect.height - padding, top));
 
    tooltip.style.left = `${left}px`;
    tooltip.style.top = `${top}px`;
 }
-
-/* ============================================================
-   CLOSE TOOLTIP ON OUTSIDE CLICK
-============================================================ */
-
-document.addEventListener('click', (e) => {
-   // For opening an animal card
-   const link = e.target.closest('.species-link');
-   if (!link) return;
-
-   e.stopPropagation();
-
-   const species = link.dataset.species;
-   openSpeciesOverlay(species);
-
-   // For closing an animl card
-   if (!tooltip.contains(e.target)) {
-      hideTooltip();
-   }
-});
-
-// Global click listener
-document.addEventListener('click', (e) => {
-   if (pageName == 'map') {
-      // If the click is on a marker or inside the tooltip, do nothing
-      if (tooltip.contains(e.target) || e.target.closest('.marker')) {
-         return;
-      }
-
-      // Otherwise, hide the tooltip
-      if (tooltip.style.display === 'flex') {
-         hideTooltip();
-      }
-   }
-});
-
-document.addEventListener('keydown', e => {
-   // Close tooltip on Escape
-   if (e.key === 'Escape' && tooltip.style.display === 'flex') {
-      hideTooltip();
-   }
-});
 
 /* ============================================================
    SPECIES OVERLAY CONTENT
@@ -599,7 +589,7 @@ function buildSpeciesContentHTML(animal) {
 
    return `
       <img
-         src="images/animals/${animal.exhibit}/${animal.species.replaceAll(' ', '-')}.png"
+         src="images/animals/${normalizeParameter(animal.exhibit)}/${normalizeParameter(animal.species)}.png"
          class="new-animal-image"
       >
 
@@ -671,10 +661,10 @@ function displayRegions() {
       const btn = document.createElement('button');
       btn.classList.add('list-button');
 
-      const fileName = name.toLowerCase().replace(/ /g, '-') + '.png';
+      const fileName = normalizeParameter(name);
 
       const img = document.createElement('img');
-      img.src = `images/regions/${fileName}`;
+      img.src = `images/regions/${fileName}.png`;
       img.classList.add('list-image');
 
       btn.appendChild(img);
@@ -718,10 +708,10 @@ function displayExhibits(region) {
             const btn = document.createElement('button');
             btn.classList.add('list-button');
 
-            const fileName = exhibit.toLowerCase().replace(/ /g, '-') + '.png';
+            const fileName = normalizeParameter(exhibit.toLowerCase);
 
             const img = document.createElement('img');
-            img.src = `images/exhibits/${fileName}`;
+            img.src = `images/exhibits/${fileName}.png`;
             img.classList.add('list-image');
 
             btn.appendChild(img);
@@ -767,10 +757,11 @@ function displayAnimals(region, exhibit) {
             const btn = document.createElement('button');
             btn.classList.add('list-button');
 
-            const fileName = animal.toLowerCase().replace(/ /g, '-') + '.png';
+            const normalizedExhibit = normalizeParameter(exhibit);
+            const normalizedAnimal =normalizeParameter(animal);
 
             const img = document.createElement('img');
-            img.src = `images/animal-icons/${exhibit}/${fileName}`;
+            img.src = `images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}.png`;
             img.classList.add('list-image');
 
             btn.appendChild(img);
@@ -821,4 +812,8 @@ function buildAnimalInfoBackButtonHTML() {
       ← Back
     </button>
   `;
+}
+
+function normalizeParameter(parameter) {
+   return parameter.toLowerCase().replaceAll(' ', '-').replaceAll("'", '');
 }
