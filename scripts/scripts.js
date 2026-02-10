@@ -26,7 +26,7 @@ function initMapPage() {
 
 function initPanzoom(mapInner) {
    const panzoom = Panzoom(mapInner, {
-      maxScale: 3,
+      maxScale: 10,
       minScale: 1,
       contain: 'outside',
    });
