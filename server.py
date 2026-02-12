@@ -91,8 +91,9 @@ class MyHandler( BaseHTTPRequestHandler ):
          month = data.get( 'month' )
          day = data.get( 'day' )
          temp = data.get( 'temp' )
+         include_off_display_animals = data.get( 'includeOffDisplayAnimals' )
 
-         animals = self.database.get_animals_viewable_on_day( month, day, temp )
+         animals = self.database.get_animals_viewable_on_day( month, day, temp, include_off_display_animals )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )

@@ -11,7 +11,7 @@ class Database():
 
 
    # Returns all animals which may be viewable in the given month with their likelihoods (probability from 0 to 1)
-   def get_animals_viewable_on_day( self, month, day, temp=None ):
+   def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False ):
       if temp == None:
          temp = self.zoo_util.get_average_temperature( month, day )
          sigma = 3
@@ -82,9 +82,9 @@ class Database():
             # Get the probability that the exhibit is open, and scale the likelihood to that
             likelihood = likelihood * self.get_exhibit_likelihood( exhibit, month, day )
 
-         likelihood = round( likelihood * 100 )
+         likelihood = max( round( likelihood * 100 ), 0 )
 
-         if likelihood > 0:
+         if likelihood > 0 or include_off_display_animals:
             animals.append( zoo.Animal( species=species, latin_name=animal[1], general_viewing_tips=animal[4],
                                         seasonal_viewing_tips=animal[5], identification=animal[6], habitat_and_range=animal[7],
                                         diet_and_feeding=animal[8], behaviour_and_life_cycle=animal[9], adaptations=animal[10],

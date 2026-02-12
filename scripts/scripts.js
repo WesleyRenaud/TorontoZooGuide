@@ -17,11 +17,12 @@ function initMapPage() {
    const mapInner = document.getElementById('mapInner');
    const mapPreset = document.getElementById('mapPreset');
    const mapDateInput = document.getElementById('mapDate');
+   const includeOffDisplayCheckbox = document.getElementById('includeOffDisplayAnimals');
 
    if (!mapInner || !mapPreset || !mapDateInput) return;
 
    initPanzoom(mapInner);
-   initMapControls(mapPreset, mapDateInput);
+   initMapControls(mapPreset, mapDateInput, includeOffDisplayCheckbox);
 }
 
 function initPanzoom(mapInner) {
@@ -54,7 +55,7 @@ function initPanzoom(mapInner) {
    return panzoom;
 }
 
-function initMapControls(mapPreset, mapDateInput) {
+function initMapControls(mapPreset, mapDateInput, includeOffDisplayCheckbox) {
    const fp = flatpickr(mapDateInput, {
       defaultDate: new Date(),
       dateFormat: 'Y-m-d',
@@ -68,6 +69,19 @@ function initMapControls(mapPreset, mapDateInput) {
          }
       },
    });
+
+   function refetchCurrentSelection() {
+      const preset = mapPreset.value;
+      if (!preset) return;
+
+      if (preset === 'specific-day') {
+         const dateStr = mapDateInput.value || fp.input.value;
+         if (!dateStr) return;
+         updateMap('specific-day', dateStr);
+      } else {
+         updateMap(preset, null);
+      }
+   }
 
    mapPreset.addEventListener('change', () => {
       const preset = mapPreset.value;
@@ -85,6 +99,12 @@ function initMapControls(mapPreset, mapDateInput) {
          updateMap(preset, null);
       }
    });
+
+   if (includeOffDisplayCheckbox) {
+      includeOffDisplayCheckbox.addEventListener('change', () => {
+         refetchCurrentSelection();
+      });
+   }
 
    mapPreset.dispatchEvent(new Event('change'));
 }
@@ -129,11 +149,12 @@ function fetchForecastTemp(dateStr) {
 }
 
 function sendAnimalRequest(month, day, temp) {
+   const includeOffDisplayAnimals = document.querySelector('#includeOffDisplayAnimals').checked;
    $.ajax({
       type: 'POST',
       url: '/get-visible-animals',
       contentType: 'application/json',
-      data: JSON.stringify({ month, day, temp }),
+      data: JSON.stringify({ month, day, temp, includeOffDisplayAnimals }),
       success: function (response) {
          addMarkers(response.animals);
       },
@@ -406,11 +427,6 @@ const TooltipController = (() => {
          setMarkerToAnimalIcon(openMarker, animalsForOpen[index]);
          openMarker.textContent = '';
       }
-   }
-
-   function getOpenAnimalBySpecies(species) {
-      if (!species) return null;
-      return animalsForOpen.find(a => a.species === species) || null;
    }
 
    function initGlobalListeners() {

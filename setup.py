@@ -10352,7 +10352,7 @@ enclosureViewings =\
       'Africa Savanna',
       'Outdoor',
       33.125,                 # X coordinate on map
-      63.25                   # Y coordinate on map
+      66.125                  # Y coordinate on map
    ),
    (
       'River Hippopotamus',
@@ -10459,7 +10459,7 @@ enclosureViewings =\
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Ngege',
@@ -10480,7 +10480,7 @@ enclosureViewings =\
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Speckled Mousebird',
