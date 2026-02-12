@@ -967,3 +967,23 @@ html.home-page {
    font-size: 80px;
    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
+
+.view-on-map-button {
+   display: block;
+   margin: 128px auto 40px auto;
+   padding: 24px 48px;
+   font-size: 4em;
+   font-weight: 700;
+   border-radius: 20px;
+   border: none;
+   background-color: #5e9600;
+   color: white;
+   cursor: pointer;
+   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+   transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.view-on-map-button:hover {
+   background-color: #4b7c00;
+   transform: translateY(-3px);
+}

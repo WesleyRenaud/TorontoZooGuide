@@ -1,9 +1,47 @@
+// ============================================================
+// scripts.js (updated with edge-marker focus fix)
+// - Uses contain:'outside' normally
+// - Temporarily disables containment during focus so edge markers can be centered
+// - Restores containment after the focus animation
+// ============================================================
+
 const apiKey = '657afbbbe68b892616c765dce8e68d6b';
 const lat = 43.8177;
 const lon = -79.1859;
 
+// ✅ store panzoom globally so focus can use it
+let mapPanzoom = null;
+let lastAnimals = [];
+let markerElsByCoord = new Map(); // key: "x|y" -> marker element
+
+// ✅ containment modes
+const DEFAULT_CONTAIN = 'outside'; // your normal mode
+const FOCUS_CONTAIN = 'none';      // temporarily allow centering anywhere
+
 function getPageName() {
    return window.location.pathname.split('/').pop().replace('.html', '');
+}
+
+function getQueryParam(name) {
+   return new URLSearchParams(window.location.search).get(name);
+}
+
+function wantsFocusFlow() {
+   return Boolean(getQueryParam('focus'));
+}
+
+function setContain(mode) {
+   if (!mapPanzoom) return;
+
+   // panzoom stores options on .options in this library
+   if (mapPanzoom.options) {
+      mapPanzoom.options.contain = mode;
+   }
+
+   // if your version supports setOptions, use it too
+   if (typeof mapPanzoom.setOptions === 'function') {
+      mapPanzoom.setOptions({ contain: mode });
+   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -21,16 +59,19 @@ function initMapPage() {
 
    if (!mapInner || !mapPreset || !mapDateInput) return;
 
-   initPanzoom(mapInner);
+   mapPanzoom = initPanzoom(mapInner);
    initMapControls(mapPreset, mapDateInput, includeOffDisplayCheckbox);
+   initFocusFromQuery();
 }
 
 function initPanzoom(mapInner) {
    const panzoom = Panzoom(mapInner, {
       maxScale: 10,
       minScale: 1,
-      contain: 'outside',
+      contain: DEFAULT_CONTAIN,
    });
+
+   mapPanzoom = panzoom;
 
    mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
@@ -109,23 +150,48 @@ function initMapControls(mapPreset, mapDateInput, includeOffDisplayCheckbox) {
    mapPreset.dispatchEvent(new Event('change'));
 }
 
+function initFocusFromQuery() {
+   const focusSpecies = getQueryParam('focus');
+   if (!focusSpecies) return;
+
+   const off = getQueryParam('off') === '1';
+   const checkbox = document.getElementById('includeOffDisplayAnimals');
+   if (checkbox) checkbox.checked = off;
+
+   const mapPreset = document.getElementById('mapPreset');
+   const mapDateInput = document.getElementById('mapDate');
+
+   if (mapPreset && !mapPreset.value) {
+      mapPreset.value = 'specific-day';
+   }
+
+   const preset = mapPreset ? mapPreset.value : 'specific-day';
+   const date = mapDateInput ? mapDateInput.value : null;
+
+   updateMap(
+      preset,
+      preset === 'specific-day' ? (date || new Date().toISOString().slice(0, 10)) : null,
+      { focusSpecies: decodeURIComponent(focusSpecies) }
+   );
+}
+
 /* ============================================================
    MAP UPDATE
 ============================================================ */
 
-function updateMap(preset, date) {
-   if (preset === 'summer') return sendAnimalRequest('Jul', 20, null);
-   if (preset === 'winter') return sendAnimalRequest('Jan', 30, null);
+function updateMap(preset, date, options = null) {
+   if (preset === 'summer') return sendAnimalRequest('Jul', 20, null, options);
+   if (preset === 'winter') return sendAnimalRequest('Jan', 30, null, options);
 
    const month = getMonth(date);
    const day = getDay(date);
 
    if (isWithinNextNDays(date, 7)) {
       fetchForecastTemp(date)
-         .then(temp => sendAnimalRequest(month, day, temp))
-         .catch(() => sendAnimalRequest(month, day, null));
+         .then(temp => sendAnimalRequest(month, day, temp, options))
+         .catch(() => sendAnimalRequest(month, day, null, options));
    } else {
-      sendAnimalRequest(month, day, null);
+      sendAnimalRequest(month, day, null, options);
    }
 }
 
@@ -135,10 +201,7 @@ function fetchForecastTemp(dateStr) {
    )
       .then(res => res.json())
       .then(data => {
-         const dailyForecasts = data.list.filter(f =>
-            f.dt_txt.startsWith(dateStr)
-         );
-
+         const dailyForecasts = data.list.filter(f => f.dt_txt.startsWith(dateStr));
          if (dailyForecasts.length === 0) return null;
 
          return (
@@ -148,8 +211,10 @@ function fetchForecastTemp(dateStr) {
       });
 }
 
-function sendAnimalRequest(month, day, temp) {
-   const includeOffDisplayAnimals = document.querySelector('#includeOffDisplayAnimals').checked;
+function sendAnimalRequest(month, day, temp, options = null) {
+   const includeOffDisplayAnimals =
+      document.querySelector('#includeOffDisplayAnimals')?.checked ?? false;
+
    $.ajax({
       type: 'POST',
       url: '/get-visible-animals',
@@ -157,6 +222,11 @@ function sendAnimalRequest(month, day, temp) {
       data: JSON.stringify({ month, day, temp, includeOffDisplayAnimals }),
       success: function (response) {
          addMarkers(response.animals);
+
+         if (options?.focusSpecies) {
+            // wait one tick so markers exist
+            setTimeout(() => focusSpeciesOnMap(options.focusSpecies), 0);
+         }
       },
    });
 }
@@ -193,38 +263,31 @@ function getDay(dateStr) {
 
 const tooltip = document.getElementById('tooltip');
 
-// Clear all markers from the map
 function clearMarkers() {
    const mapInner = document.getElementById('mapInner');
    if (!mapInner) return;
    mapInner.querySelectorAll('.marker').forEach(marker => marker.remove());
 }
 
-// Add markers to the map based on animal data
 function addMarkers(animals) {
    clearMarkers();
+
+   lastAnimals = animals || [];
+   markerElsByCoord.clear();
 
    const mapInner = document.getElementById('mapInner');
    if (!mapInner) return;
 
-   // Group animals by coordinate key "x|y"
    const markerMap = new Map();
 
    animals.forEach(animal => {
       const key = `${animal.x_coord}|${animal.y_coord}`;
-
       if (!markerMap.has(key)) {
-         markerMap.set(key, {
-            x: animal.x_coord,
-            y: animal.y_coord,
-            animals: [],
-         });
+         markerMap.set(key, { x: animal.x_coord, y: animal.y_coord, animals: [] });
       }
-
       markerMap.get(key).animals.push(animal);
    });
 
-   // Create one marker per coordinate
    markerMap.forEach(group => {
       const animalsOnExhibit = group.animals;
       if (animalsOnExhibit.length === 0) return;
@@ -235,11 +298,17 @@ function addMarkers(animals) {
       el.style.top = `${group.y}%`;
       el.title = '';
 
+      const coordKey = `${group.x}|${group.y}`;
+      markerElsByCoord.set(coordKey, el);
+
+      // ✅ attach animals to marker so we can find it later
+      el.__animals = animalsOnExhibit;
+
       const colour = likelihoodToColor(animalsOnExhibit[0].likelihood);
       const colourForUrl = colour.replace('#', '');
 
       if (animalsOnExhibit.length === 1) {
-         el.style.backgroundColor = colour; // nice fallback behind icon
+         el.style.backgroundColor = colour;
          el.style.backgroundImage = getAnimalIconUrl(
             animalsOnExhibit[0].exhibit,
             animalsOnExhibit[0].species,
@@ -253,22 +322,18 @@ function addMarkers(animals) {
       }
 
       mapInner.appendChild(el);
-
-      // Attach click-to-open tooltip with all species at this exhibit
       TooltipController.attachToMarker(el, animalsOnExhibit);
    });
 }
 
 function likelihoodToColor(likelihood) {
    likelihood = Math.max(0, Math.min(100, likelihood));
-
    const colors = [
       '#7a0000', '#9c0d00', '#be1a00', '#e03f00', '#ff6500',
       '#ff7f00', '#ff9900', '#ffb300', '#ffcc33', '#ffff33',
       '#e0ff33', '#c4ff33', '#a8ff33', '#8cff33', '#70ff33',
       '#55cc33', '#3abb33', '#2eb33a', '#259933', '#1fa544',
    ];
-
    const index = Math.round((likelihood / 100) * (colors.length - 1));
    return colors[index];
 }
@@ -276,8 +341,95 @@ function likelihoodToColor(likelihood) {
 function getAnimalIconUrl(exhibit, species, backgroundColourForUrl) {
    const normalizedExhibit = normalizeParameter(exhibit);
    const normalizedAnimal = normalizeParameter(species);
-
    return `url("/images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${backgroundColourForUrl}.png")`;
+}
+
+/* ============================================================
+   FOCUS FLOW (View on Map) — updated
+   Key change:
+   - Use contain:'none' DURING focus so edge markers can be centered.
+   - Restore DEFAULT_CONTAIN after animation so normal bounds return.
+============================================================ */
+
+function focusSpeciesOnMap(speciesName) {
+   if (!mapPanzoom) return;
+
+   // Find marker containing the species
+   let targetMarker = null;
+   let targetAnimals = null;
+
+   for (const marker of markerElsByCoord.values()) {
+      const animals = marker.__animals || [];
+      if (animals.some(a => a.species === speciesName)) {
+         targetMarker = marker;
+         targetAnimals = animals;
+         break;
+      }
+   }
+
+   if (!targetMarker || !targetAnimals) return;
+
+   const mapInner = document.getElementById('mapInner');
+   const viewport = mapInner?.parentElement; // your .map-container
+   if (!mapInner || !viewport) return;
+
+   const targetScale = 3;
+
+   // Zoom first (no animation = reliable measurements)
+   mapPanzoom.zoom(targetScale, { animate: false });
+
+   // After zoom applies, center marker using screen-delta panning
+   requestAnimationFrame(() => {
+      centerMarkerWithContain(targetMarker, viewport);
+
+      // Do it a 2nd time to settle (helps near edges / after zoom)
+      requestAnimationFrame(() => {
+         centerMarkerWithContain(targetMarker, viewport);
+
+         // Open tooltip + jump carousel
+         TooltipController.open(targetMarker, targetAnimals);
+         setTimeout(() => jumpTooltipToSpecies(speciesName), 0);
+      });
+   });
+}
+
+function centerMarkerWithContain(markerEl, viewportEl) {
+   const vRect = viewportEl.getBoundingClientRect();
+   const mRect = markerEl.getBoundingClientRect();
+
+   const vCx = vRect.left + (vRect.width / 2);
+   const vCy = vRect.top + (vRect.height / 2);
+
+   const mCx = mRect.left + (mRect.width / 2);
+   const mCy = mRect.top + (mRect.height / 2);
+
+   const dx = vCx - mCx;
+   const dy = vCy - mCy;
+
+   const scale = mapPanzoom.getScale ? mapPanzoom.getScale() : 1;
+
+   // Panzoom translate is applied BEFORE scale, so convert screen delta -> pan delta
+   mapPanzoom.pan(dx / scale, dy / scale, { relative: true, animate: false });
+}
+
+function jumpTooltipToSpecies(species) {
+   const carousel = document.querySelector('.tooltip-carousel');
+   if (!carousel) return;
+
+   const cards = Array.from(carousel.children);
+   if (cards.length === 0) return;
+
+   let index = Number(carousel.dataset.index || 0);
+   if (cards[index]) cards[index].style.display = 'none';
+
+   const targetIndex = cards.findIndex(card =>
+      card.querySelector('.species-link')?.dataset.species === species
+   );
+
+   const newIndex = targetIndex >= 0 ? targetIndex : 0;
+
+   cards[newIndex].style.display = 'flex';
+   carousel.dataset.index = newIndex;
 }
 
 /* ============================================================
@@ -288,7 +440,6 @@ const TooltipController = (() => {
    let openMarker = null;
    let animalsForOpen = [];
    let carousel = null;
-
    let globalListenersInstalled = false;
 
    function isOpen() {
@@ -303,23 +454,18 @@ const TooltipController = (() => {
    }
 
    function toggle(marker, animals) {
-      if (isOpen() && openMarker === marker) {
-         close();
-      } else {
-         open(marker, animals);
-      }
+      if (isOpen() && openMarker === marker) close();
+      else open(marker, animals);
    }
 
    function open(marker, animals) {
       if (!tooltip) return;
-
       if (isOpen()) close();
 
       openMarker = marker;
       animalsForOpen = animals || [];
       carousel = null;
 
-      // when opening, show icon for first animal (and clear count text)
       if (animalsForOpen[0]) {
          setMarkerToAnimalIcon(marker, animalsForOpen[0]);
          marker.textContent = '';
@@ -339,7 +485,6 @@ const TooltipController = (() => {
       tooltip.style.pointerEvents = 'none';
       clearTooltipContent();
 
-      // restore marker to count style ONLY if it was a cluster
       if (openMarker && animalsForOpen.length > 1) {
          const colour = likelihoodToColor(animalsForOpen[0].likelihood);
          setMarkerToCount(openMarker, animalsForOpen.length, colour);
@@ -401,7 +546,7 @@ const TooltipController = (() => {
       const colour = likelihoodToColor(animal.likelihood);
       const colourForUrl = colour.replace('#', '');
 
-      marker.style.backgroundColor = colour; // fallback behind icon
+      marker.style.backgroundColor = colour;
       marker.style.backgroundImage = getAnimalIconUrl(
          animal.exhibit,
          animal.species,
@@ -422,7 +567,6 @@ const TooltipController = (() => {
       cards[index].style.display = 'flex';
       carouselEl.dataset.index = index;
 
-      // keep marker icon synced with active animal
       if (openMarker && animalsForOpen[index]) {
          setMarkerToAnimalIcon(openMarker, animalsForOpen[index]);
          openMarker.textContent = '';
@@ -434,12 +578,10 @@ const TooltipController = (() => {
       globalListenersInstalled = true;
 
       document.addEventListener('click', (e) => {
-         // 1) Species link click (open overlay)
          const link = e.target.closest('.species-link');
          if (link) {
             e.stopPropagation();
 
-            // Prefer the card's index (most reliable)
             const card = link.closest('.tooltip-card');
             let animal = null;
 
@@ -448,7 +590,6 @@ const TooltipController = (() => {
                if (!Number.isNaN(idx)) animal = animalsForOpen[idx] || null;
             }
 
-            // Fallback: match by species string
             if (!animal) {
                const species = link.dataset.species;
                animal = animalsForOpen.find(a => a.species === species) || null;
@@ -458,7 +599,6 @@ const TooltipController = (() => {
             return;
          }
 
-         // 2) Outside click closes tooltip
          if (!isOpen()) return;
 
          const clickedMarker = e.target.closest('.marker');
@@ -534,7 +674,6 @@ function createTooltipCard(a, index) {
       <span>Enclosure Type: ${a.enclosure_type}</span>
       <span>Likelihood: ${getLikelihoodPhrase(a.likelihood)} (~${a.likelihood}%)</span>
    `;
-
    return card;
 }
 
@@ -547,10 +686,6 @@ function getLikelihoodPhrase(likelihood) {
    return 'Very low';
 }
 
-/* ============================================================
-   ARROWS
-============================================================ */
-
 function createArrow(symbol, onClick) {
    const arrow = document.createElement('div');
    arrow.className = 'tooltip-arrow';
@@ -561,10 +696,6 @@ function createArrow(symbol, onClick) {
    });
    return arrow;
 }
-
-/* ============================================================
-   TOOLTIP POSITIONING
-============================================================ */
 
 function positionTooltip(marker) {
    if (!tooltip) return;
@@ -586,7 +717,7 @@ function positionTooltip(marker) {
 }
 
 /* ============================================================
-   SPECIES OVERLAY
+   SPECIES OVERLAY (unchanged)
 ============================================================ */
 
 const speciesOverlay = document.getElementById('speciesOverlay');
@@ -649,9 +780,9 @@ function buildSpeciesContentHTML(animal) {
          class="new-animal-image"
       >
 
-      <h2>${animal.species}</h2>
+      <h2 class="animal-species-name">${animal.species}</h2>
       ${animal.latin_name ? `<h6 class="latin-name">${animal.latin_name}</h6>` : ''}
-      <h4>${animal.exhibit}</h4>
+      <h4 class="animal-exhibit">${animal.exhibit}</h4>
 
       ${section('Seasonal Viewing Summary', animal.seasonal_viewing_summary)}
       ${section('Seasonal Viewing Information', animal.seasonal_viewing_information)}
@@ -673,7 +804,7 @@ function closeSpeciesOverlay() {
 }
 
 /* ============================================================
-   animals.html (unchanged)
+   animals.html bits (unchanged)
 ============================================================ */
 
 function displayRegions() {
@@ -741,7 +872,7 @@ function displayExhibits(region) {
             const btn = document.createElement('button');
             btn.classList.add('list-button');
 
-            const fileName = normalizeParameter(exhibit.toLowerCase);
+            const fileName = normalizeParameter(exhibit);
 
             const img = document.createElement('img');
             img.src = `images/exhibits/${fileName}.png`;
@@ -768,7 +899,6 @@ function displayAnimals(region, exhibit) {
       data: JSON.stringify({ exhibit }),
       success: function (response) {
          const list = document.querySelector('.list');
-
          list.innerHTML = '';
 
          const backBtn = document.createElement('button');
@@ -776,31 +906,28 @@ function displayAnimals(region, exhibit) {
          backBtn.textContent = 'Back';
 
          backBtn.addEventListener('click', () => {
-            if (region == exhibit) {
-               displayRegions();
-            } else {
-               displayExhibits(region);
-            }
+            if (region == exhibit) displayRegions();
+            else displayExhibits(region);
          });
 
          list.appendChild(backBtn);
 
-         response.animals.forEach(animal => {
+         response.animals.forEach(animalName => {
             const btn = document.createElement('button');
             btn.classList.add('list-button');
 
             const normalizedExhibit = normalizeParameter(exhibit);
-            const normalizedAnimal = normalizeParameter(animal);
+            const normalizedAnimal = normalizeParameter(animalName);
 
             const img = document.createElement('img');
             img.src = `images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}.png`;
             img.classList.add('list-image');
 
             btn.appendChild(img);
-            btn.appendChild(document.createTextNode(animal));
+            btn.appendChild(document.createTextNode(animalName));
 
             btn.addEventListener('click', () => {
-               displayAnimalInformation(region, exhibit, animal);
+               displayAnimalInformation(region, exhibit, animalName);
             });
 
             list.appendChild(btn);
@@ -832,6 +959,22 @@ function displayAnimalInformation(region, exhibit, animal) {
             .addEventListener('click', () => {
                displayAnimals(region, exhibit);
             });
+
+         const exhibitHeading = list.querySelector('.animal-exhibit');
+
+         if (exhibitHeading) {
+            const viewBtn = document.createElement('button');
+            viewBtn.className = 'view-on-map-button';
+            viewBtn.textContent = 'View on Map';
+            viewBtn.type = 'button';
+
+            viewBtn.addEventListener('click', () => {
+               const species = encodeURIComponent(animal);
+               window.location.href = `map.html?focus=${species}&off=1`;
+            });
+
+            exhibitHeading.insertAdjacentElement('afterend', viewBtn);
+         }
       },
    });
 }
