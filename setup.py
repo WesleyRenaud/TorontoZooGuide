@@ -8437,7 +8437,7 @@ enclosures =\
       'Grizzly Bear',
       'Canadian Domain',
       1,                                           # Part of seasonal exhibit
-      'Mar-Dec',                                   # Seasonal viewing summary
+      'Apr-Oct',                                   # Seasonal viewing summary
       '''The grizzly bear is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the
          bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in
          March. To check whether the domain is open, consult the Toronto Zoo's official website. Keep in mind, that even if the domain
@@ -9238,288 +9238,288 @@ enclosureViewings =\
       'Black Tree Monitor',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Brownbanded Bamboo Shark',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Brush-Tailed Bettong',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Clown Triggerfish',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Crested Pigeon',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Crimson Rosella',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Eastern Rosella',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Emerald Tree Boa',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Fly River Turtle',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Galah',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Green Tree Python',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Green-Winged Dove',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Komodo Dragon',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Kookaburra',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Lau Banded Iguana',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Lionfish',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Live Coral Reefs',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Longnose Butterflyfish',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'MacLeay\'s Spectres',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Malagasy Rainbowfish',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Moon Jellyfish',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Nicobar Pigeon',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Pennant Coral Fish',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Pied Imperial Pigeon',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Pot-Bellied Seahorse',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Red Claw Yabby',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Red-Bellied Short-Necked Turtle',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Red-Tailed Black Cockatoo',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Short-Beaked Echidna',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Solomon Island Leaf Frog',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Solomon Island Monkey-Tailed Skink',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Southern Hairy-Nosed Wombat',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Stimson\'s Python',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Tawny Frogmouth',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Thorny Devil Stick Insect',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Threadfin Butterflyfish',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Victoria Crowned Pigeon',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'White\'s Tree Frog',
       'Australasia Pavilion',
       'Indoor',
-      65,                     # X coordinate on map
-      41,                     # Y coordinate on map
+      63.75,                  # X coordinate on map
+      39,                     # Y coordinate on map
    ),
    (
       'Demoiselle Crane',
       'Australasia Pavilion',
       'Outdoor',
-      63,                     # X coordinate on map
-      39.75,                  # Y coordinate on map
+      62.25,                   # X coordinate on map
+      37.5,                    # Y coordinate on map
    ),
    (
       'Kookaburra',
       'Australasia Pavilion',
       'Outdoor',
-      63,                     # X coordinate on map
-      39.75,                  # Y coordinate on map
+      62.25,                   # X coordinate on map
+      37.5,                    # Y coordinate on map
    ),
    (
       'Southern Hairy-Nosed Wombat',
       'Australasia Pavilion',
       'Outdoor',
-      66.75,                  # X coordinate on map
-      40.25,                  # Y coordinate on map
+      64.125,                 # X coordinate on map
+      37,                     # Y coordinate on map
    ),
 
    # Australasia Outdoor
@@ -9527,8 +9527,8 @@ enclosureViewings =\
       'Western Grey Kangaroo',
       'Australasia Outdoor',
       'Outdoor',
-      68,                     # X coordinate on map
-      42.5,                   # Y coordinate on map
+      65.875,                 # X coordinate on map
+      38.375,                 # Y coordinate on map
    ),
 
    # Eurasia Wilds
@@ -9536,92 +9536,92 @@ enclosureViewings =\
       'Amur Tiger',
       'Eurasia Wilds',
       'Outdoor',
-      71.5,                   # X coordinate on map
-      39,                     # Y coordinate on map
+      70.25,                  # X coordinate on map
+      36,                     # Y coordinate on map
    ),
    (
       'Asian Wild Horse',
       'Eurasia Wilds',
       'Outdoor',
-      85,                     # X coordinate on map
-      25                      # Y coordinate on map
+      80,                     # X coordinate on map
+      11                      # Y coordinate on map
    ),
    (
       'Asian Wild Horse',
       'Eurasia Wilds',
       'Outdoor',
-      67.5,                   # X coordinate on map
-      25.75                   # Y coordinate on map
+      66.25,                  # X coordinate on map
+      19.875                  # Y coordinate on map
    ),
    (
       'Bactrian Camel',
       'Eurasia Wilds',
       'Outdoor',
-      78.25,                  # X coordinate on map
-      34.25                   # Y coordinate on map
+      76.625,                 # X coordinate on map
+      30.125                  # Y coordinate on map
    ),
    (
       'Bactrian Camel',
       'Eurasia Wilds',
       'Outdoor',
-      80.5,                   # X coordinate on map
-      28.5                    # Y coordinate on map
+      78.5,                   # X coordinate on map
+      23.5                    # Y coordinate on map
    ),
    (
       'Domestic Yak',
       'Eurasia Wilds',
       'Outdoor',
-      86,                     # X coordinate on map
-      27.5                    # Y coordinate on map
+      84,                     # X coordinate on map
+      19.                     # Y coordinate on map
    ),
    (
       'Highland Cattle',
       'Eurasia Wilds',
       'Outdoor',
-      87.75,                  # X coordinate on map
-      41.25                   # Y coordinate on map
+      85.75,                  # X coordinate on map
+      39.25                   # Y coordinate on map
    ),
    (
       'Mouflon',
       'Eurasia Wilds',
       'Outdoor',
-      68.75,                  # X coordinate on map
-      32.25                   # Y coordinate on map
+      68.875,                 # X coordinate on map
+      28.375                  # Y coordinate on map
    ),
    (
       'Red Panda',
       'Eurasia Wilds',
       'Outdoor',
-      77.625,                 # X coordinate on map
-      38.125                  # Y coordinate on map
+      76,                     # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Snow Leopard',
       'Eurasia Wilds',
       'Outdoor',
-      75.125,                 # X coordinate on map
-      25.25                   # Y coordinate on map
+      73.5,                   # X coordinate on map
+      20.25                   # Y coordinate on map
    ),
    (
       'Steller\'s Sea Eagle',
       'Eurasia Wilds',
       'Outdoor',
-      77.125,                 # X coordinate on map
-      24.875                  # Y coordinate on map
+      75.5,                   # X coordinate on map
+      18.625                  # Y coordinate on map
    ),
    (
       'West Caucasian Tur',
       'Eurasia Wilds',
       'Outdoor',
-      72.5,                   # X coordinate on map
-      25.5                    # Y coordinate on map
+      71,                     # X coordinate on map
+      19                      # Y coordinate on map
    ),
    (
       'West Caucasian Tur',
       'Eurasia Wilds',
       'Outdoor',
-      85.75,                  # X coordinate on map
-      31                      # Y coordinate on map
+      83.5,                   # X coordinate on map
+      25                      # Y coordinate on map
    ),
 
    # Tundra Trek
@@ -9630,35 +9630,35 @@ enclosureViewings =\
       'Tundra Trek',
       'Outdoor',
       56,                     # X coordinate on map
-      33.25                   # Y coordinate on map
+      29.                     # Y coordinate on map
    ),
    (
       'Caribou',
       'Tundra Trek',
       'Outdoor',
       50.25,                  # X coordinate on map
-      28.75                   # Y coordinate on map
+      23.75                   # Y coordinate on map
    ),
    (
       'Lesser Snow Goose',
       'Tundra Trek',
       'Outdoor',
-      53.75,                  # X coordinate on map
-      37                      # Y coordinate on map
+      52.5,                   # X coordinate on map
+      33.5                    # Y coordinate on map
    ),
    (
       'Northern Bald Eagle',
       'Tundra Trek',
       'Outdoor',
-      51.25,                  # X coordinate on map
-      33.5                    # Y coordinate on map
+      51,                     # X coordinate on map
+      29.                     # Y coordinate on map
    ),
    (
       'Polar Bear',
       'Tundra Trek',
       'Outdoor',
-      55.5,                   # X coordinate on map
-      29.375                  # Y coordinate on map
+      55.25,                  # X coordinate on map
+      24.25                   # Y coordinate on map
    ),
 
    # Americas Outdoor Mayan Temple Ruins
@@ -9666,22 +9666,22 @@ enclosureViewings =\
       'American Flamingo',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
-      46,                     # X coordinate on map
-      25.875                  # Y coordinate on map
+      46.25,                  # X coordinate on map
+      20.                     # Y coordinate on map
    ),
    (
       'Black-Handed Spider Monkey',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
-      44.125,                 # X coordinate on map
-      26.5                    # Y coordinate on map
+      44.5,                   # X coordinate on map
+      20.75                   # Y coordinate on map
    ),
    (
       'Capybara',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
       46.5,                   # X coordinate on map
-      29.75                   # Y coordinate on map
+      24.5                    # Y coordinate on map
    ),
 
    # Americas Pavilion
@@ -9689,442 +9689,442 @@ enclosureViewings =\
       'American Alligator',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'American Eel',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'American Lobster',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Axolotl',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Black-Footed Ferret',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Black-Widow Spider',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Blanding\'s Turtle',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Blue And Yellow Macaw',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Boa Constrictor',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Blue Poison Dart Frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Brazilian Giant Cockroach',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Brazilian Salmon Pink Bird-Eating Tarantula',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Butterfly Goodeid',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Crested Tinamou',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Cuvier\'s Smooth-Fronted Caiman',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Desert Grassland Whiptail',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Dyeing Poison Dart Frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Eastern Loggerhead Shrike',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Eastern Lubber Grasshopper',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Eyelash Viper',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Ferocious Water Bug',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Golden Lion Tamarin',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Green And Black Poison Dart Frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Green Surf Anemone',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Green-Winged Macaw',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Guatemalan Beaded Lizard',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Jamaican Boa',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Leather Sea Star',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Lemur Leaf Frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Longnose Dace',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Massasauga Rattlesnake',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Mexican Blind Cavefish',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Midland Painted Turtle',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'North American River Otter',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Opal-Rumped Tanager',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Painted Anemone',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Panamanian Golden Frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Plumose Anemone',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Plush-Crested Jay',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Puerto Rican Crested Toad',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Pumpkinseed Sunfish',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Red Island Bird-Eating Tarantula',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Red-Crested Finch',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Reticulate Gila Monster',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Round Goby',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Rufous-Collared Sparrow',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'San-Esteban Island Chuckwalla',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Snapping Turtle',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Spot Prawn',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Spotted River Stingray',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Spotted Turtle',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Timber Rattlesnake',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Turquoise Tanager',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Two-Toed Sloth',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Western Blacknose Dace',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'White-Faced Saki',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Yellow-Banded Poison Dart Frog',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Zebra Finch',
       'Americas Pavilion',
       'Indoor',
-      51.375,                 # X coordinate on map
-      41.75                   # Y coordinate on map
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
    ),
    (
       'Golden Lion Tamarin',
       'Americas Pavilion',
       'Outdoor',
-      53,                     # X coordinate on map
-      42.5                    # Y coordinate on map
+      52.75,                  # X coordinate on map
+      40.75                   # Y coordinate on map
    ),
    (
       'Two-Toed Sloth',
       'Americas Pavilion',
       'Outdoor',
-      53,                     # X coordinate on map
-      42.5                    # Y coordinate on map
+      52.75,                  # X coordinate on map
+      40.75                   # Y coordinate on map
    ),
    (
       'White-Faced Saki',
       'Americas Pavilion',
       'Outdoor',
-      53,                     # X coordinate on map
-      42.5                    # Y coordinate on map
+      52.75,                  # X coordinate on map
+      40.75                   # Y coordinate on map
    ),
    (
       'Great Horned Owl',
       'Americas Pavilion',
       'Outdoor',
-      50.375,                 # X coordinate on map
-      40.75                   # Y coordinate on map
+      50.625,                 # X coordinate on map
+      38.625                  # Y coordinate on map
    ),
    (
       'North American River Otter',
       'Americas Pavilion',
       'Outdoor',
-      49,                     # X coordinate on map
-      40.625                  # Y coordinate on map
+      49.5,                   # X coordinate on map
+      38.25                   # Y coordinate on map
    ),
 
    # Canadian Domain
@@ -10132,43 +10132,43 @@ enclosureViewings =\
       'Cougar',
       'Canadian Domain',
       'Outdoor',
-      9.25,                   # X coordinate on map
-      60.75                   # Y coordinate on map
+      12,                     # X coordinate on map
+      63.375                  # Y coordinate on map
    ),
    (
       'Grizzly Bear',
       'Canadian Domain',
       'Outdoor',
-      6.125,                  # X coordinate on map
+      7.875,                  # X coordinate on map
       65                      # Y coordinate on map
    ),
    (
       'Northern Bald Eagle',
       'Canadian Domain',
       'Outdoor',
-      7.5,                    # X coordinate on map
-      71                      # Y coordinate on map
+      10.125,                 # X coordinate on map
+      75.75                   # Y coordinate on map
    ),
    (
       'Raccoon',
       'Canadian Domain',
       'Outdoor',
-      15,                     # X coordinate on map
-      65.5                    # Y coordinate on map
+      18,                     # X coordinate on map
+      69.75                   # Y coordinate on map
    ),
    (
       'Wood Bison',
       'Canadian Domain',
       'Outdoor',
-      11,                     # X coordinate on map      
-      58.75                   # Y coordinate on map
+      13,                     # X coordinate on map      
+      61.                     # Y coordinate on map
    ),
    (
       'Wood Bison',
       'Canadian Domain',
       'Outdoor',
-      8.5,                    # X coordinate on map
-      76.125                  # Y coordinate on map
+      11,                     # X coordinate on map
+      82.5                    # Y coordinate on map
    ),
 
    # Africa Savanna
@@ -10176,225 +10176,225 @@ enclosureViewings =\
       'African Lion',
       'Africa Savanna',
       'Outdoor',
-      39,                     # X coordinate on map
-      62                      # Y coordinate on map
+      39.5,                   # X coordinate on map
+      66.25                   # Y coordinate on map
    ),
    (
       'African Penguin',
       'Africa Savanna',
       'Outdoor',
-      45.5,                   # X coordinate on map
-      66                      # Y coordinate on map
+      45.75,                  # X coordinate on map
+      69.75                   # Y coordinate on map
    ),
    (
       'White-Breasted Cormorant',
       'Africa Savanna',
       'Outdoor',
-      45.5,                   # X coordinate on map
-      66                      # Y coordinate on map
+      45.75,                  # X coordinate on map
+      69.75                   # Y coordinate on map
    ),
    (
       'African Penguin',
       'Africa Savanna',
       'Indoor',
-      46.25,                  # X coordinate on map
-      63.75                   # Y coordinate on map
+      46,                     # X coordinate on map
+      67.5                    # Y coordinate on map
    ),
    (
       'White-Breasted Cormorant',
       'Africa Savanna',
       'Indoor',
-      46.25,                  # X coordinate on map
-      63.75                   # Y coordinate on map
+      46,                     # X coordinate on map
+      67.5                    # Y coordinate on map
    ),
    (
       'Cheetah',
       'Africa Savanna',
       'Outdoor',
-      36.125,                 # X coordinate on map
-      75.5                    # Y coordinate on map
+      37,                     # X coordinate on map
+      81.75                   # Y coordinate on map
    ),
    (
       'Common Eland',
       'Africa Savanna',
       'Outdoor',
-      41.375,                 # X coordinate on map
-      65.5                    # Y coordinate on map
+      41.875,                 # X coordinate on map
+      69.5                    # Y coordinate on map
    ),
    (
       'Greater Kudu',
       'Africa Savanna',
       'Outdoor',
-      45.5,                   # X coordinate on map
-      80                      # Y coordinate on map
+      46.375,                 # X coordinate on map
+      85.875                  # Y coordinate on map
    ),
    (
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
-      45.5,                   # X coordinate on map
-      80                      # Y coordinate on map
+      46.375,                 # X coordinate on map
+      85.875                  # Y coordinate on map
    ),
    (
       'Southern Ground Hornbill',
       'Africa Savanna',
       'Outdoor',
-      45.5,                   # X coordinate on map
-      80                      # Y coordinate on map
+      46.375,                 # X coordinate on map
+      85.875                  # Y coordinate on map
    ),
    (
       'White-Headed Vulture',
       'Africa Savanna',
       'Outdoor',
-      45.5,                   # X coordinate on map
-      80                      # Y coordinate on map
+      46.375,                 # X coordinate on map
+      85.875                  # Y coordinate on map
    ),
    (
       'Greater Kudu',
       'Africa Savanna',
       'Outdoor',
-      47.375,                 # X coordinate on map
-      81.75                   # Y coordinate on map
+      47.5,                   # X coordinate on map
+      89.75                   # Y coordinate on map
    ),
    (
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
-      47.375,                 # X coordinate on map
-      81.75                   # Y coordinate on map
+      47.5,                   # X coordinate on map
+      89.75                   # Y coordinate on map
    ),
    (
       'Southern Ground Hornbill',
       'Africa Savanna',
       'Outdoor',
-      47.375,                 # X coordinate on map
-      81.75                   # Y coordinate on map
+      47.5,                   # X coordinate on map
+      89.75                   # Y coordinate on map
    ),
    (
       'White-Headed Vulture',
       'Africa Savanna',
       'Outdoor',
-      47.375,                 # X coordinate on map
-      81.75                   # Y coordinate on map
+      47.5,                   # X coordinate on map
+      89.75                   # Y coordinate on map
    ),
    (
       'Greater Kudu',
       'Africa Savanna',
       'Outdoor',
       51.25,                  # X coordinate on map
-      77.875                  # Y coordinate on map
+      85.25                   # Y coordinate on map
    ),
    (
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
       51.25,                  # X coordinate on map
-      77.875                  # Y coordinate on map
+      85.25                   # Y coordinate on map
    ),
    (
       'Southern Ground Hornbill',
       'Africa Savanna',
       'Outdoor',
       51.25,                  # X coordinate on map
-      77.875                  # Y coordinate on map
+      85.25                   # Y coordinate on map
    ),
    (
       'White-Headed Vulture',
       'Africa Savanna',
       'Outdoor',
       51.25,                  # X coordinate on map
-      77.875                  # Y coordinate on map
+      85.25                   # Y coordinate on map
    ),
    (
       'Grevy\'s Zebra',
       'Africa Savanna',
       'Outdoor',
-      38.5,                   # X coordinate on map
-      70.25                   # Y coordinate on map
+      39.125,                 # X coordinate on map
+      74.625                  # Y coordinate on map
    ),
    (
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
-      38.375,                 # X coordinate on map
-      73.875                  # Y coordinate on map
+      39,                     # X coordinate on map
+      79.625                  # Y coordinate on map
    ),
    (
       'Masai Giraffe',
       'Africa Savanna',
       'Outdoor',
       55,                     # X coordinate on map
-      86.25                   # Y coordinate on map
+      95.25                   # Y coordinate on map
    ),
    (
       'Masai Giraffe',
       'Africa Savanna',
       'Indoor',
-      55.875,                 # X coordinate on map
-      82.5                    # Y coordinate on map
+      56,                     # X coordinate on map
+      91                      # Y coordinate on map
    ),
    (
       'Olive Baboon',
       'Africa Savanna',
       'Outdoor',
-      36,                     # X coordinate on map
-      68                      # Y coordinate on map
+      36.75,                  # X coordinate on map
+      72.625                  # Y coordinate on map
    ),
    (
       'Ostrich',
       'Africa Savanna',
       'Outdoor',
-      36.25,                  # X coordinate on map
-      65.5                    # Y coordinate on map
+      36.125,                 # X coordinate on map
+      70.125                  # Y coordinate on map
    ),
    (
       'Ostrich',
       'Africa Savanna',
       'Outdoor',
-      32,                     # X coordinate on map
-      63                      # Y coordinate on map
+      33.125,                 # X coordinate on map
+      63.25                   # Y coordinate on map
    ),
    (
       'River Hippopotamus',
       'Africa Savanna',
       'Outdoor',
-      52.5,                   # X coordinate on map
-      87.375                  # Y coordinate on map
+      52.25,                  # X coordinate on map
+      96.875                  # Y coordinate on map
    ),
    (
       'Southern Ground Hornbill',
       'Africa Savanna',
       'Outdoor',
-      40.5,                   # X coordinate on map
-      61.75                   # Y coordinate on map
+      41,                     # X coordinate on map
+      65                      # Y coordinate on map
    ),
    (
       'Southern White Rhinoceros',
       'Africa Savanna',
       'Outdoor',
-      43.25,                  # X coordinate on map
-      78.375                  # Y coordinate on map
+      43.875,                 # X coordinate on map
+      85.                     # Y coordinate on map
    ),
    (
       'Spotted Hyena',
       'Africa Savanna',
       'Outdoor',
-      41.125,                 # X coordinate on map
-      60                      # Y coordinate on map
+      42,                     # X coordinate on map
+      62.75                   # Y coordinate on map
    ),
    (
       'Warthog',
       'Africa Savanna',
       'Outdoor',
       51.75,                  # X coordinate on map
-      82.5                    # Y coordinate on map
+      90.625                  # Y coordinate on map
    ),
    (
       'Watusi Cattle',
       'Africa Savanna',
       'Outdoor',
-      44.75,                  # X coordinate on map
-      58.5                    # Y coordinate on map
+      44.25,                  # X coordinate on map
+      60.375                  # Y coordinate on map
    ),
 
    # African Rainforest Pavilion
@@ -10403,56 +10403,56 @@ enclosureViewings =\
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Black Crake',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Blue-Bellied Roller',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Hamerkop',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Lake Malawi Cichlids',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Lau Banded Iguana',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Leopard Ctenopoma',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Mantella (Poison Frog)',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Naked Mole Rat',
@@ -10466,14 +10466,14 @@ enclosureViewings =\
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Slender-Tailed Meerkat',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'South African Crested Porcupine',
@@ -10487,154 +10487,154 @@ enclosureViewings =\
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Spider Tortoise',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Tomato Frog',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Veiled Chameleon',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Violaceous Plantain Eater',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'West African Dwarf Crocodile',
       'African Rainforest Pavilion',
       'Indoor',
       53,                     # X coordinate on map
-      76                      # Y coordinate on map
+      82.5                    # Y coordinate on map
    ),
    (
       'Aldabra Tortoise',
       'African Rainforest Pavilion',
       'Indoor',
       54,                     # X coordinate on map
-      80.5                    # Y coordinate on map
+      88.5                    # Y coordinate on map
    ),
    (
       'Gaboon Viper',
       'African Rainforest Pavilion',
       'Indoor',
       54,                     # X coordinate on map
-      80.5                    # Y coordinate on map
+      88.5                    # Y coordinate on map
    ),
    (
       'Grey-Necked Crowned Crane',
       'African Rainforest Pavilion',
       'Indoor',
       54,                     # X coordinate on map
-      80.5                    # Y coordinate on map
+      88.5                    # Y coordinate on map
    ),
    (
       'Ring-Tailed Lemur',
       'African Rainforest Pavilion',
       'Indoor',
       54,                     # X coordinate on map
-      80.5                    # Y coordinate on map
+      88.5                    # Y coordinate on map
    ),
    (
       'Royal Python',
       'African Rainforest Pavilion',
       'Indoor',
       54,                     # X coordinate on map
-      80.5                    # Y coordinate on map
+      88.5                    # Y coordinate on map
    ),
    (
       'Aldabra Tortoise',
       'African Rainforest Pavilion',
       'Outdoor',
-      55,                     # X coordinate on map
-      74                      # Y coordinate on map
+      54.75,                  # X coordinate on map
+      80                      # Y coordinate on map
    ),
    (
       'African Spoonbill',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,                  # X coordinate on map
-      78.625                  # Y coordinate on map
+      53.25,                  # X coordinate on map
+      85.75                   # Y coordinate on map
    ),
    (
       'Nile Soft-Shelled Turtle',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,                  # X coordinate on map
-      78.625                  # Y coordinate on map
+      53.25,                  # X coordinate on map
+      85.75                   # Y coordinate on map
    ),
    (
       'Pygmy Hippopotamus',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,                  # X coordinate on map
-      78.625                  # Y coordinate on map
+      53.25,                  # X coordinate on map
+      85.75                   # Y coordinate on map
    ),
    (
       'Radiated Tortoise',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,                  # X coordinate on map
-      78.625                  # Y coordinate on map
+      53.25,                  # X coordinate on map
+      85.75                   # Y coordinate on map
    ),
    (
       'Sacred Ibis',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,                  # X coordinate on map
-      78.625                  # Y coordinate on map
+      53.25,                  # X coordinate on map
+      85.75                   # Y coordinate on map
    ),
    (
       'South African Shelduck',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,                  # X coordinate on map
-      78.625                  # Y coordinate on map
+      53.25,                  # X coordinate on map
+      85.75                   # Y coordinate on map
    ),
    (
       'Straw Coloured Fruit Bat',
       'African Rainforest Pavilion',
       'Indoor',
-      53.75,                  # X coordinate on map
-      78.625                  # Y coordinate on map
+      53.25,                  # X coordinate on map
+      85.75                   # Y coordinate on map
    ),
    (
       'Red River Hog',
       'African Rainforest Pavilion',
       'Outdoor',
-      55.5,                   # X coordinate on map
-      78.375                  # Y coordinate on map
+      55.25,                  # X coordinate on map
+      85.75                   # Y coordinate on map
    ),
    (
       'Western Lowland Gorilla',
       'African Rainforest Pavilion',
       'Indoor',
-      52.25,                  # X coordinate on map
-      73.25                   # Y coordinate on map
+      52.75,                  # X coordinate on map
+      79.5                    # Y coordinate on map
    ),
    (
       'Western Lowland Gorilla',
       'African Rainforest Pavilion',
       'Outdoor',
       51.75,                  # X coordinate on map
-      70.125                  # Y coordinate on map
+      75.5                    # Y coordinate on map
    ),
 
    # Indo-Malaya Pavilion
@@ -10642,240 +10642,240 @@ enclosureViewings =\
       'Asian Brown Tortoise',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map 
    ),
    (
       'Bighead Carp',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Black Carp',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Black-Breasted Leaf Turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Black-Throated Laughing Thrush',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Burmese Star Tortoise',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Cattle Egret',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Concave Casqued Hornbill',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Crested Wood Partridge',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Crocodile Lizard',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Crocodile Newt',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Edward\'s Pheasant',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Giant Gourami',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Grass Carp',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Green Crested Basilisk',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Hamilton\'s Pond Turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Iridescent Shark Catfish',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Luzon Bleeding-Heart Dove',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Malayan Bonytongue',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Malaysian Painted Turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Mekong Barb',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Monocled Cobra',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Nicobar Pigeon',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Palawan Peacock-Pheasant',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Red-Lined Torpedo Barb',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Reticulated Python',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Spiny Turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
 
    (
       'Sumatran Orangutan',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Tentacled Snake',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Tinfoil Barb',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Tomistoma',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Tri-Coloured Shark',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'White-Handed Gibbon',
       'Indo-Malaya Pavilion',
       'Indoor',
-      60.75,                  # X coordinate on map
-      78.75                   # Y coordinate on map
+      60,                     # X coordinate on map
+      85.5                    # Y coordinate on map
    ),
    (
       'Sumatran Orangutan',
       'Indo-Malaya Pavilion',
       'Outdoor',
-      61.75,                  # X coordinate on map
-      85                      # Y coordinate on map
+      61.125,                 # X coordinate on map
+      93.375                  # Y coordinate on map
    ),
 
    # Indo-Malaya Outdoor
@@ -10883,43 +10883,43 @@ enclosureViewings =\
       'Babirusa',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      68.75,                  # X coordinate on map
-      69.5                    # Y coordinate on map
+      67.625,                 # X coordinate on map
+      74.375                  # Y coordinate on map
    ),
    (
       'Babirusa',
       'Indo-Malaya Outdoor',
       'Indoor',
-      68.625,                 # X coordinate on map
-      71.375                  # Y coordinate on map
+      67.5,                   # X coordinate on map
+      76.625                  # Y coordinate on map
    ),
    (
       'Greater One-Horned Rhinoceros',
       'Indo-Malaya Outdoor',
       'Indoor',
-      68.625,                 # X coordinate on map
-      71.375                  # Y coordinate on map
+      67.5,                   # X coordinate on map
+      76.625                  # Y coordinate on map
    ),
    (
       'Indian Peafowl',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      65.125,                 # X coordinate on map
-      71                      # Y coordinate on map
+      64.25,                  # X coordinate on map
+      76.25                   # Y coordinate on map
    ),
    (
       'Sumatran Tiger',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      61.25,                  # X coordinate on map
-      73.25                   # Y coordinate on map
+      60.625,                 # X coordinate on map
+      79.5                    # Y coordinate on map
    ),
    (
       'Sumatran Tiger',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      59.75,                  # X coordinate on map
-      74                      # Y coordinate on mpa
+      59.125,                 # X coordinate on map
+      80.25                   # Y coordinate on mpa
    ),
 
    # Malayan Woods Pavilion
@@ -10927,57 +10927,57 @@ enclosureViewings =\
       'Asian Giant Millipede',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,                  # X coordinate on map
-      74.5                    # Y coordinate on map
+      65.375,                 # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Clouded Leopard',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,                  # X coordinate on map
-      74.5                    # Y coordinate on map
+      65.375,                 # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Giant Gourami',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,                  # X coordinate on map
-      74.5                    # Y coordinate on map
+      65.375,                 # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Gooty Sapphire Ornamental Tarantula',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,                  # X coordinate on map
-      74.5                    # Y coordinate on map
+      65.375,                 # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Malayan Walking Stick',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,                  # X coordinate on map
-      74.5                    # Y coordinate on map
+      65.375,                 # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Malaysian Stick Insect Jungle Wood Nymph',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,                  # X coordinate on map
-      74.5                    # Y coordinate on map
+      65.375,                 # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Red-Tailed Green Ratsnake',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,                  # X coordinate on map
-      74.5                    # Y coordinate on map
+      65.375,                 # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
    (
       'Wrinkled Hornbill',
       'Malayan Woods Pavilion',
       'Indoor',
-      66.25,                  # X coordinate on map
-      74.5                    # Y coordinate on map
+      65.375,                 # X coordinate on map
+      80.5                    # Y coordinate on map
    ),
 
    # Goat World
@@ -10985,8 +10985,8 @@ enclosureViewings =\
       'Domestic Goat',
       'Goat World',
       'Outdoor',
-      65,                     # X coordinate on map
-      52.25                   # Y coordinate on map
+      64.375,                 # X coordinate on map
+      52.875                  # Y coordinate on map
    ),
 
    # Kids Zoo
@@ -10994,56 +10994,56 @@ enclosureViewings =\
       'Abyssinian Ground Hornbill',
       'Kids Zoo',
       'Outdoor',
-      70,                     # X coordinate on map
+      68.75,                  # X coordinate on map
       52.5                    # Y coordinate on map
    ),
    (
       'Common Raven',
       'Kids Zoo',
       'Outdoor',
-      70,                     # X coordinate on map
+      68.75,                  # X coordinate on map
       52.5                    # Y coordinate on map
    ),
    (
       'Eurasian Eagle Owl',
       'Kids Zoo',
       'Outdoor',
-      70,                     # X coordinate on map
+      68.75,                  # X coordinate on map
       52.5                    # Y coordinate on map
    ),
    (
       'Great Horned Owl',
       'Kids Zoo',
       'Outdoor',
-      70,                     # X coordinate on map
+      68.75,                  # X coordinate on map
       52.5                    # Y coordinate on map
    ),
    (
       'Guinea Pig',
       'Kids Zoo',
       'Indoor',
-      70,                     # X coordinate on map
+      68.75,                  # X coordinate on map
       52.5                    # Y coordinate on map
    ),
    (
       'Harris\'s Hawk',
       'Kids Zoo',
       'Outdoor',
-      70,                     # X coordinate on map
+      68.75,                  # X coordinate on map
       52.5                    # Y coordinate on map
    ),
    (
       'Marabou Stork',
       'Kids Zoo',
       'Outdoor',
-      70,                     # X coordinate on map
+      68.75,                  # X coordinate on map
       52.5                    # Y coordinate on map
    ),
    (
       'Rabbit',
       'Kids Zoo',
       'Outdoor',
-      70,                     # X coordinate on map
+      68.75,                  # X coordinate on map
       52.5                    # Y coordinate on map
    )
 ]

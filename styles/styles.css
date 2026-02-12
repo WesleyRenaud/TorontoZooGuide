@@ -1,11 +1,30 @@
-/* Global font for all pages */
-body, html {
+/* ============================================================
+   GLOBAL
+============================================================ */
+
+html, body {
    font-family: 'Poppins', sans-serif;
 }
 
-/* Only affects home.html */
+/* Screen-reader only utility */
+.sr-only {
+   position: absolute;
+   width: 1px;
+   height: 1px;
+   padding: 0;
+   margin: -1px;
+   overflow: hidden;
+   clip: rect(0, 0, 0, 0);
+   white-space: nowrap;
+   border: 0;
+}
+
+/* ============================================================
+   HOME PAGE LAYOUT (map.html)
+============================================================ */
+
 html.home-page {
-   overflow: hidden; /* prevent scrolling for this page only */
+   overflow: hidden;
 }
 
 .home-page {
@@ -16,74 +35,296 @@ html.home-page {
    overflow: hidden;
 }
 
-/* Top green bar with title */
+/* ============================================================
+   TOP BAR
+============================================================ */
+
 .home-page .top-bar {
    position: absolute;
    top: 0;
    left: 0;
    width: 100%;
-   height: 8vh; /* height of the top bar */
-   background-color: #5e9600; /* lighter green like bottom nav */
+   height: 8vh;
+   background-color: #5e9600;
    display: flex;
    justify-content: center;
    align-items: center;
    font-size: 4em;
    font-weight: bold;
-   color: white; /* Toronto Zoo green */
+   color: #ffffff;
    text-transform: uppercase;
    z-index: 10;
    box-sizing: border-box;
 }
 
-/* Main content: container now flex row */
+/* ============================================================
+   MAIN CONTENT ROW
+============================================================ */
+
 .home-page main {
    flex: 1 1 auto;
    display: flex;
-   justify-content: center;
-   align-items: stretch; /* stretch side images vertically */
+   align-items: stretch;
    width: 100%;
    overflow: hidden;
    box-sizing: border-box;
-   padding-top: 8vh;    /* space for top bar */
+   padding-top: 8vh;
+   gap: 0;
 }
 
-.map-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  overflow: hidden;
-  width: 100%;
+/* ============================================================
+   LAYOUT VARIABLES
+============================================================ */
+
+:root {
+   --side-column-width: clamp(630px, 39vw, 1050px);
+   --map-menu-width: clamp(840px, 52vw, 1400px);
 }
 
-#zooMap {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* fills container fully */
+/* ============================================================
+   LEFT EXPLORE PANEL
+============================================================ */
+
+/* Map-only menu sizing */
+.home-page main.map-layout .side-panel.left {
+   flex: 0 0 var(--map-menu-width);
+   width: var(--map-menu-width);
 }
 
-/* Side images fill vertical space and gaps */
-.home-page main img.side-image {
-   height: 100%;       /* match container height */
-   width: auto;        /* maintain aspect ratio */
-   object-fit: cover;  /* fill the vertical space */
+.side-panel.left {
+   flex: 0 0 var(--side-column-width);
+   width: var(--side-column-width);
+   height: 100%;
+   overflow: hidden;
+   display: flex;
+   flex-direction: column;
+
+   background: rgba(255, 255, 255, 0.75);
+   backdrop-filter: blur(6px);
+   border-right: 2px solid rgba(94, 150, 0, 0.35);
+}
+
+.side-panel-header {
+   background-color: #53841c;
+   padding: 28px 28px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.side-panel-title {
+   margin: 0;
+   color: #ffffff;
+   font-size: 6em;
+   font-weight: 700;
+   letter-spacing: 0.02em;
+}
+
+.side-panel-body {
+   padding: 22px;
+   display: flex;
+   flex-direction: column;
+   gap: 18px;
+   overflow: hidden;
+}
+
+/* Search */
+.side-panel-search input[type="search"] {
+   width: 100%;
+   font-family: 'Poppins', sans-serif;
+   font-size: 2em;
+   padding: 18px 18px;
+   border-radius: 16px;
+   border: 2px solid rgba(0, 0, 0, 0.12);
+   outline: none;
+   box-sizing: border-box;
+}
+
+.side-panel-search input[type="search"]:focus {
+   border-color: rgba(94, 150, 0, 0.8);
+   box-shadow: 0 0 0 6px rgba(94, 150, 0, 0.2);
+}
+
+/* Tabs */
+.side-panel-tabs {
+   display: grid;
+   grid-template-columns: repeat(4, 1fr);
+   gap: 10px;
+}
+
+.side-panel-tabs .tab {
+   font-family: 'Poppins', sans-serif;
+   font-weight: 700;
+   font-size: 1.4em;
+   padding: 14px 10px;
+   border-radius: 14px;
+   border: 2px solid rgba(94, 150, 0, 0.35);
+   background: rgba(255, 255, 255, 0.65);
+   color: rgba(20, 35, 10, 0.9);
+   cursor: pointer;
+}
+
+.side-panel-tabs .tab.active {
+   background: rgba(94, 150, 0, 0.95);
+   border-color: rgba(94, 150, 0, 0.95);
+   color: #ffffff;
+}
+
+/* Toggle */
+.side-panel-toggle {
+   padding: 10px 4px;
+}
+
+.toggle-row {
+   display: flex;
+   align-items: center;
+   gap: 14px;
+   font-size: 1.8em;
+   font-weight: 600;
+   color: rgba(20, 35, 10, 0.9);
+   user-select: none;
+}
+
+.toggle-row input[type="checkbox"] {
+   width: 28px;
+   height: 28px;
+   accent-color: #5e9600;
+   cursor: pointer;
+}
+
+/* Results section */
+.side-panel-section {
+   display: flex;
+   flex-direction: column;
+   gap: 14px;
+   overflow: hidden;
+}
+
+.side-panel-section-header {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+}
+
+.side-panel-section-title {
+   margin: 0;
+   font-size: 2em;
+   font-weight: 700;
+   color: rgba(20, 35, 10, 0.95);
+}
+
+.side-panel-list {
+   display: flex;
+   flex-direction: column;
+   gap: 12px;
+   overflow-y: auto;
+   padding-right: 6px;
+}
+
+/* Result row */
+.side-panel-item {
+   display: grid;
+   grid-template-columns: 84px 1fr 32px;
+   gap: 16px;
+   align-items: center;
+   width: 100%;
+   padding: 14px;
+   border-radius: 18px;
+   border: 2px solid rgba(0, 0, 0, 0.08);
+   background: rgba(255, 255, 255, 0.75);
+   cursor: pointer;
+   text-align: left;
+}
+
+.side-panel-item:hover {
+   border-color: rgba(94, 150, 0, 0.55);
+   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.10);
+}
+
+.side-panel-item-thumb {
+   width: 84px;
+   height: 84px;
+   border-radius: 16px;
+   background: rgba(94, 150, 0, 0.15);
+   border: 2px solid rgba(94, 150, 0, 0.25);
+}
+
+.side-panel-item-text strong {
+   display: block;
+   font-size: 1.8em;
+   color: rgba(20, 35, 10, 0.95);
+}
+
+.side-panel-item-text .muted {
+   display: block;
+   font-size: 1.4em;
+   color: rgba(0, 0, 0, 0.55);
+}
+
+.side-panel-item-chevron {
+   font-size: 2.2em;
+   color: rgba(0, 0, 0, 0.6);
+   justify-self: end;
+}
+
+/* ============================================================
+   RIGHT DECORATION IMAGE
+============================================================ */
+
+.home-page main img.side-image.right {
+   flex: 0 0 var(--side-column-width);
+   width: var(--side-column-width);
+   height: 100%;
+   object-fit: cover;
    flex-shrink: 0;
 }
 
-/* Dropdown controls above the map */
+/* ============================================================
+   MAP CONTAINER
+============================================================ */
+
+.map-container {
+   flex: 1 1 auto;
+   min-width: 0;
+   min-height: 0;
+   overflow: hidden;
+   display: flex;
+}
+
+#mapInner {
+   flex: 1 1 auto;
+   min-width: 0;
+   min-height: 0;
+   position: relative;
+   overflow: hidden;
+}
+
+#zooMap {
+   position: absolute;
+   inset: 0;
+   width: 100%;
+   height: 100%;
+   object-fit: cover;         /* use cover if you want it cropped */
+   object-position: center;
+}
+
+/* ============================================================
+   MAP CONTROLS (dropdown/date)
+============================================================ */
+
 .home-page .map-controls {
    position: absolute;
-   top: 10vh; /* below top-bar */
+   top: 10vh;
    left: 50%;
    transform: translateX(-50%);
-   background-color: rgba(255,255,255,0.85);
+   background-color: rgba(255, 255, 255, 0.85);
    padding: 10px 20px;
    border-radius: 12px;
    display: flex;
    gap: 10px;
    align-items: center;
    z-index: 15;
-   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
    font-size: 2em;
 }
 
@@ -96,7 +337,7 @@ html.home-page {
    border: 1px solid #ccc;
 }
 
-/* Only the date picker input */
+/* Flatpickr input */
 .home-page .map-controls input#mapDate {
    font-family: 'Poppins', sans-serif;
    font-size: 1.5em;
@@ -108,26 +349,27 @@ html.home-page {
    box-sizing: border-box;
 }
 
-/* Scale the entire Flatpickr calendar */
+/* Flatpickr sizing */
 .flatpickr-calendar {
-   transform: scale(3);           /* make it twice as large */
-   transform-origin: top left;    /* keep position relative to input */
+   transform: scale(3);
+   transform-origin: top left;
 }
 
-/* Optional: add some extra spacing so it doesn't overlap */
 .flatpickr-calendar.open {
    margin-top: 0.5em;
 }
 
-/* Make month names in the month dropdown larger */
 .flatpickr-monthDropdown-month {
-   font-size: 1.5em; /* increase size as needed */
+   font-size: 1.5em;
 }
 
-/* Bottom navigation menu */
+/* ============================================================
+   BOTTOM NAV
+============================================================ */
+
 .home-page nav {
    width: 100%;
-   background-color: rgba(119, 184, 0, 0.3); /* lighter green background */
+   background-color: rgba(119, 184, 0, 0.3);
    display: flex;
    justify-content: center;
    padding: 10px 0;
@@ -137,7 +379,6 @@ html.home-page {
    z-index: 5;
 }
 
-/* Menu list */
 .home-page nav ul {
    margin: 0;
    padding: 0;
@@ -146,13 +387,12 @@ html.home-page {
    list-style-type: none;
 }
 
-/* Bottom menu buttons */
 .home-page nav ul li a {
    display: flex;
    justify-content: center;
    align-items: center;
-   width: 22vh;             /* uniform width */
-   height: 6vh;             /* uniform height */
+   width: 22vh;
+   height: 6vh;
    min-width: 180px;
    min-height: 60px;
    background-color: #77B800;
@@ -171,14 +411,17 @@ html.home-page {
    transform: translateY(-2px);
 }
 
-/* Shared base style for all map labels */
+/* ============================================================
+   MAP LABELS
+============================================================ */
+
 .map-label {
    font-family: 'Impact', sans-serif;
    font-weight: 900;
    -webkit-text-stroke: 2px #fff;
    color: #000;
-   font-stretch: extra-expanded;  /* wider letters */
-   transform: translate(-50%, -50%) scaleX(1);  /* horizontally stretch */
+   font-stretch: extra-expanded;
+   transform: translate(-50%, -50%) scaleX(1);
    text-shadow:
       2px 2px 0 #fff,
       -2px -2px 0 #fff,
@@ -193,19 +436,19 @@ html.home-page {
    z-index: 12;
 }
 
-/* Larger region labels */
 .region-label {
-   composes: map-label;
    font-size: 4rem;
 }
 
-/* Smaller exhibit labels */
 .exhibit-label {
-   composes: map-label;
-   font-size: 3rem;          /* increased from 2.5rem */
-   font-stretch: ultra-expanded;  /* make letters wider */
-   transform: translate(-50%, -50%) scaleX(1.05); /* small horizontal scale-up */
+   font-size: 3rem;
+   font-stretch: ultra-expanded;
+   transform: translate(-50%, -50%) scaleX(1.05);
 }
+
+/* ============================================================
+   MARKERS
+============================================================ */
 
 .marker {
    position: absolute;
@@ -219,6 +462,7 @@ html.home-page {
    background-size: cover;
    background-position: center;
    background-repeat: no-repeat;
+
    display: flex;
    align-items: center;
    justify-content: center;
@@ -234,50 +478,52 @@ html.home-page {
 /* ============================================================
    TOOLTIP CONTAINER
 ============================================================ */
+
 #tooltip {
    position: absolute;
    display: none;
    flex-direction: column;
-   background-color: rgba(94, 150, 0, 0.95); /* Toronto Zoo dark green */
+   background-color: rgba(94, 150, 0, 0.95);
    border-radius: 16px;
    padding: 36px;
    z-index: 20;
    width: 1200px;
    height: 1025px;
-   box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-   color: #fff;
+   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+   color: #ffffff;
    font-family: 'Poppins', sans-serif;
    font-size: 2.4em;
    overflow: hidden;
 }
 
-/* Top content area (card goes here) */
 #tooltip .tooltip-content {
-   flex: 1;                         /* fill available space */
+   flex: 1;
    display: flex;
    align-items: center;
    justify-content: center;
 }
 
-/* Bottom navigation bar */
 #tooltip .tooltip-nav {
    height: 80px;
    display: grid;
-   grid-template-columns: 80px 1fr 80px;   /* fixed columns for arrows */
+   grid-template-columns: 80px 1fr 80px;
    align-items: center;
    padding-top: 12px;
 }
 
-/* Left/right arrow positioning */
 #tooltip .tooltip-prev,
 #tooltip .tooltip-next {
    justify-self: center;
 }
 
+#tooltip.no-arrows .tooltip-nav {
+   display: none;
+}
+
 /* ============================================================
    TOOLTIP CARD
 ============================================================ */
-/* Card container */
+
 .tooltip-card {
    background-color: rgba(119, 184, 0, 0.95);
    border-radius: 12px;
@@ -287,10 +533,9 @@ html.home-page {
    display: flex;
    flex-direction: column;
    gap: 18px;
-   overflow: hidden;     /* wrap content naturally */
+   overflow: hidden;
 }
 
-/* Species title (always on one line) */
 .tooltip-card strong {
    font-size: 1.25em;
    color: #ffffff;
@@ -299,7 +544,6 @@ html.home-page {
    text-overflow: ellipsis;
 }
 
-/* Other info (location, exhibit type, likelihood) */
 .tooltip-card span {
    font-size: 1em;
    color: #ffffff;
@@ -308,12 +552,31 @@ html.home-page {
    text-overflow: ellipsis;
 }
 
+/* Tooltip image */
+.tooltip-image-frame {
+   width: 100%;
+   height: 600px;
+   overflow: hidden;
+   border-radius: 12px;
+   flex-shrink: 0;
+   background: #4f7f00;
+}
+
+.tooltip-image {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   object-position: center;
+   display: block;
+}
+
 /* ============================================================
-   ARROWS
+   TOOLTIP ARROWS
 ============================================================ */
+
 .tooltip-arrow {
-   background-color: #77B800; /* match bottom nav green */
-   color: #fff;
+   background-color: #77B800;
+   color: #ffffff;
    padding: 12px 20px;
    border-radius: 10px;
    font-weight: bold;
@@ -328,45 +591,13 @@ html.home-page {
 }
 
 .tooltip-arrow:hover {
-   background-color: #5e9600; /* darker hover */
-}
-
-/* Bottom navigation bar */
-#tooltip .tooltip-nav {
-   height: 80px;
-   display: grid;
-   grid-template-columns: 80px 1fr 80px; /* kept for arrows by default */
-   align-items: center;
-   padding-top: 12px;
-}
-
-/* Hide nav completely if no arrows */
-#tooltip.no-arrows .tooltip-nav {
-   display: none;
-}
-
-.tooltip-image-frame {
-   width: 100%;
-   height: 600px;           /* choose the image height */
-   overflow: hidden;
-   border-radius: 12px;
-   flex-shrink: 0;
-   background: #4f7f00;    /* fallback while image loads */
-}
-
-.tooltip-image {
-   width: 100%;
-   height: 100%;
-   object-fit: cover;      /* crop instead of distort */
-   object-position: center;
-   display: block;
+   background-color: #5e9600;
 }
 
 /* ============================================================
-   SPECIES OVERLAY CARD
+   SPECIES OVERLAY
 ============================================================ */
 
-/* Overlay background & centering */
 .species-overlay {
    position: fixed;
    inset: 0;
@@ -381,12 +612,12 @@ html.home-page {
    display: none;
 }
 
-/* Keep outer card padding intact, only inner wrapper scrolls */
-.species-overlay-card, .list {
+.species-overlay-card,
+.list {
    background-color: rgba(119, 184, 0);
    border-radius: 12px;
    padding: 32px;
-   overflow: hidden;       /* prevent card itself from scrolling */
+   overflow: hidden;
    position: relative;
    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
    max-width: 90vw;
@@ -395,7 +626,12 @@ html.home-page {
    color: #ffffff;
 }
 
-.species-overlay-card h2, h4, h6, .list h2, h4, h6 {
+.species-overlay-card h2,
+.species-overlay-card h4,
+.species-overlay-card h6,
+.list h2,
+.list h4,
+.list h6 {
    text-align: center;
    margin: 0;
 }
@@ -416,7 +652,8 @@ html.home-page {
    font-size: 4em;
 }
 
-.species-overlay-card h6, .list h6 {
+.species-overlay-card h6,
+.list h6 {
    color: #D2691E;
    font-style: italic;
 }
@@ -429,33 +666,31 @@ html.home-page {
    font-size: 3em;
 }
 
-/* New scrollable wrapper */
 .species-overlay-scroll {
    overflow-y: auto;
-   max-height: calc(90vh - 64px);  /* subtract top+bottom padding of card */
-   padding-right: 8px;             /* ensures scrollbar doesn’t overlap content */
+   max-height: calc(90vh - 64px);
+   padding-right: 8px;
    display: flex;
    flex-direction: column;
    gap: 24px;
 }
 
 /* ============================================================
-   IMAGE STYLING
+   SPECIES OVERLAY IMAGES
 ============================================================ */
 
-/* Default image inside overlay card */
 .species-overlay-card img {
    width: 100%;
    height: auto;
-   object-fit: cover;      
+   object-fit: cover;
    object-position: center;
    border-radius: 8px;
    margin-bottom: 16px;
    display: block;
 }
 
-/* Crop specific new images to a fixed area */
-.species-overlay-card img.new-animal-image, .list img.new-animal-image {
+.species-overlay-card img.new-animal-image,
+.list img.new-animal-image {
    object-fit: cover;
    object-position: center;
    margin-bottom: 20px;
@@ -464,18 +699,12 @@ html.home-page {
 
 .species-overlay-card img.new-animal-image {
    height: 1200px;
-}
-
-.list img.new-animal-image {
-   height: 1400px;
-}
-
-.species-overlay-card img.new-animal-image {
    width: 100%;
    border-radius: 12px;
 }
 
 .list img.new-animal-image {
+   height: 1400px;
    align-self: center;
    width: 70%;
    border-radius: 128px;
@@ -483,10 +712,9 @@ html.home-page {
 }
 
 /* ============================================================
-   CONTENT & SECTIONS
+   SPECIES OVERLAY CONTENT & SECTIONS
 ============================================================ */
 
-/* Container for all content inside overlay */
 .species-overlay-content {
    width: 2000px;
    max-width: 90vw;
@@ -494,15 +722,15 @@ html.home-page {
    flex-direction: column;
    gap: 24px;
    font-family: 'Arial', sans-serif;
-   font-size: 2em;          
+   font-size: 2em;
    line-height: 2.2em;
    text-align: left;
 }
 
-/* Section boxes around each piece of info */
-#speciesOverlay .species-overlay-content .section, .list .section {
+#speciesOverlay .species-overlay-content .section,
+.list .section {
    pointer-events: auto;
-   background-color: rgba(94, 150, 0, 0.95);  /* darker tooltip green */
+   background-color: rgba(94, 150, 0, 0.95);
    border-radius: 12px;
    display: flex;
    flex-direction: column;
@@ -522,11 +750,11 @@ html.home-page {
 }
 
 .list .section:last-child {
-  margin-bottom: 768px;
+   margin-bottom: 768px;
 }
 
-/* Section headings */
-#speciesOverlay .species-overlay-content .section strong, .list .section strong {
+#speciesOverlay .species-overlay-content .section strong,
+.list .section strong {
    font-style: italic;
    text-decoration: underline;
    text-decoration-color: #2f5e00;
@@ -546,8 +774,8 @@ html.home-page {
    text-underline-offset: 24px;
 }
 
-/* Section paragraphs */
-#speciesOverlay .species-overlay-content .section p, .list .section p {
+#speciesOverlay .species-overlay-content .section p,
+.list .section p {
    line-height: 1.6;
    color: #ffffff;
    margin: 0;
@@ -558,7 +786,6 @@ html.home-page {
    font-size: 1.4em;
 }
 
-/* Section paragraphs */
 .list .section p {
    font-size: 4em;
 }
@@ -567,7 +794,6 @@ html.home-page {
    LINKS
 ============================================================ */
 
-/* Ensure species-link is clickable */
 .species-link {
    cursor: pointer;
    text-decoration: underline;
@@ -576,59 +802,57 @@ html.home-page {
 }
 
 /* ============================================================
-   SCROLLBAR STYLING
+   OVERLAY SCROLLBAR
 ============================================================ */
 
-/* Firefox */
 .species-overlay-scroll {
    scrollbar-width: thin;
    scrollbar-color: rgba(94, 150, 0, 0.8) rgba(119, 184, 0, 0.3);
 }
 
-/* Webkit browsers (Chrome, Safari, Edge) */
 .species-overlay-scroll::-webkit-scrollbar {
    width: 16px;
 }
 
 .species-overlay-scroll::-webkit-scrollbar-track {
-   background: rgba(119, 184, 0, 0.3); /* lighter green track */
+   background: rgba(119, 184, 0, 0.3);
    border-radius: 8px;
 }
 
 .species-overlay-scroll::-webkit-scrollbar-thumb {
-   background-color: rgba(94, 150, 0, 0.8); /* darker green thumb */
+   background-color: rgba(94, 150, 0, 0.8);
    border-radius: 8px;
-   border: 4px solid rgba(119, 184, 0, 0.3); /* padding around thumb */
+   border: 4px solid rgba(119, 184, 0, 0.3);
 }
 
 .species-overlay-scroll::-webkit-scrollbar-thumb:hover {
-   background-color: rgba(94, 150, 0, 1); /* slightly darker on hover */
+   background-color: rgba(94, 150, 0, 1);
 }
 
 /* ============================================================
-   CLOSE BUTTON (X) — LARGER & SPACED ABOVE SCROLLABLE CONTENT
+   OVERLAY CLOSE BUTTON
 ============================================================ */
 
 .species-close {
-   position: absolute;               /* stays fixed relative to card */
-   top: 16px;                        /* more space from top */
-   right: 16px;                      /* more space from right */
-   width: 70px;                      /* bigger circle */
+   position: absolute;
+   top: 16px;
+   right: 16px;
+   width: 70px;
    height: 70px;
    display: flex;
    justify-content: center;
    align-items: center;
-   font-size: 42px;                  /* larger X */
+   font-size: 42px;
    font-weight: bold;
    color: #ffffff;
-   background-color: rgba(94, 150, 0, 0.95); /* match section boxes */
+   background-color: rgba(94, 150, 0, 0.95);
    border-radius: 50%;
    border: none;
    cursor: pointer;
-   box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
    transition: background-color 0.3s ease, transform 0.2s ease;
-   z-index: 20;                       /* above scrollable wrapper */
-   padding: 0;                        /* reset any inner padding */
+   z-index: 20;
+   padding: 0;
 }
 
 .species-close:hover {
@@ -636,20 +860,19 @@ html.home-page {
    transform: scale(1.1);
 }
 
-/* Remove any ::before pseudo-element content */
 .species-close::before {
    content: none;
 }
 
-/* ==============================
-   Animals Page – Region Buttons
-   ============================== */
+/* ============================================================
+   ANIMALS PAGE LISTS
+============================================================ */
 
 .animals-page {
    display: flex;
    justify-content: center;
    padding: 0;
-   background-color: #8bc34a;   /* SAME as button background */
+   background-color: #8bc34a;
 }
 
 .list {
@@ -659,14 +882,14 @@ html.home-page {
    gap: 0;
    padding: 0;
    margin: 0;
-   background-color: #8bc34a;   /* ensures no contrast gaps */
-   overflow-y: auto;         /* enable vertical scrolling */
+   background-color: #8bc34a;
+   overflow-y: auto;
 }
 
 .list-button {
-   display: flex;             /* flex container */
-   align-items: center;       /* vertical centering */
-   gap: 210px;                /* space between image and text */
+   display: flex;
+   align-items: center;
+   gap: 210px;
    width: 100%;
    height: 400px;
    padding: 48px 32px;
@@ -690,7 +913,7 @@ html.home-page {
    width: 320px;
    object-fit: cover;
    border-radius: 50%;
-   flex-shrink: 0;           /* prevent shrinking */
+   flex-shrink: 0;
    margin-left: 200px;
 }
 
@@ -702,24 +925,21 @@ html.home-page {
    background-color: #6aa500;
 }
 
-/* Back button styling */
 .back-button {
    position: relative;
 }
 
-/* Add left arrow before the text using ::before */
 .back-button::before {
-   content: "←";               /* arrow character or use SVG via url() */
+   content: "←";
    display: inline-block;
-   margin-right: 50px;         /* space between icon and text */
+   margin-right: 50px;
    margin-left: 230px;
-   font-size: 2.5em;           /* adjust as needed */
-   vertical-align: middle;     /* align with text */
+   font-size: 2.5em;
+   vertical-align: middle;
 }
 
-/* Optional hover effect */
 .back-button:hover::before {
-   transform: translateX(-4px); /* subtle slide on hover */
+   transform: translateX(-4px);
    transition: transform 0.2s ease;
 }
 

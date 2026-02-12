@@ -136,7 +136,7 @@ function sendAnimalRequest(month, day, temp) {
       data: JSON.stringify({ month, day, temp }),
       success: function (response) {
          addMarkers(response.animals);
-      }
+      },
    });
 }
 
@@ -148,20 +148,17 @@ function isWithinNextNDays(dateStr, n) {
    target.setHours(0, 0, 0, 0);
 
    const diffDays = (target - today) / 86400000;
-
    return diffDays >= 0 && diffDays <= n;
 }
 
 function parseLocalDate(dateStr) {
    const [year, month, day] = dateStr.split('-').map(Number);
-   return new Date(year, month - 1, day); // LOCAL time
+   return new Date(year, month - 1, day);
 }
 
 function getMonth(dateStr) {
    const date = parseLocalDate(dateStr);
-   return date
-      .toLocaleString('en-US', { month: 'short' })
-      .toUpperCase();
+   return date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
 }
 
 function getDay(dateStr) {
@@ -170,15 +167,15 @@ function getDay(dateStr) {
 }
 
 /* ============================================================
-   MARKERS & TOOLTIP SYSTEM (Click-to-Open)
+   MARKERS
 ============================================================ */
 
 const tooltip = document.getElementById('tooltip');
-let currentCarousel = null;
 
 // Clear all markers from the map
 function clearMarkers() {
    const mapInner = document.getElementById('mapInner');
+   if (!mapInner) return;
    mapInner.querySelectorAll('.marker').forEach(marker => marker.remove());
 }
 
@@ -187,21 +184,19 @@ function addMarkers(animals) {
    clearMarkers();
 
    const mapInner = document.getElementById('mapInner');
+   if (!mapInner) return;
 
    // Group animals by coordinate key "x|y"
    const markerMap = new Map();
 
    animals.forEach(animal => {
-      const x = animal.x_coord;
-      const y = animal.y_coord;
-
-      const key = `${x}|${y}`;
+      const key = `${animal.x_coord}|${animal.y_coord}`;
 
       if (!markerMap.has(key)) {
          markerMap.set(key, {
-            x,
-            y,
-            animals: []
+            x: animal.x_coord,
+            y: animal.y_coord,
+            animals: [],
          });
       }
 
@@ -211,21 +206,28 @@ function addMarkers(animals) {
    // Create one marker per coordinate
    markerMap.forEach(group => {
       const animalsOnExhibit = group.animals;
-
       if (animalsOnExhibit.length === 0) return;
 
       const el = document.createElement('div');
       el.className = 'marker';
       el.style.left = `${group.x}%`;
       el.style.top = `${group.y}%`;
-      el.title = ''; // remove default browser tooltip
+      el.title = '';
 
-      const backgroundColour = likelihoodToColor(animalsOnExhibit[0].likelihood).replace('#', '');
+      const colour = likelihoodToColor(animalsOnExhibit[0].likelihood);
+      const colourForUrl = colour.replace('#', '');
+
       if (animalsOnExhibit.length === 1) {
-         el.style.backgroundImage = getAnimalIconUrl(animalsOnExhibit[0].exhibit, animalsOnExhibit[0].species, backgroundColour);
-      }
-      else {
-         el.style.backgroundColor = backgroundColour;
+         el.style.backgroundColor = colour; // nice fallback behind icon
+         el.style.backgroundImage = getAnimalIconUrl(
+            animalsOnExhibit[0].exhibit,
+            animalsOnExhibit[0].species,
+            colourForUrl
+         );
+         el.textContent = '';
+      } else {
+         el.style.backgroundImage = 'none';
+         el.style.backgroundColor = colour;
          el.textContent = animalsOnExhibit.length;
       }
 
@@ -237,32 +239,28 @@ function addMarkers(animals) {
 }
 
 function likelihoodToColor(likelihood) {
-   // Clamp the likelihood to [0, 100]
    likelihood = Math.max(0, Math.min(100, likelihood));
 
-   // 20-color palette, last color kept as #32b03a, greens adjusted to flow smoothly
    const colors = [
-      '#7a0000', '#9c0d00', '#be1a00', '#e03f00', '#ff6500', // reds → oranges
-      '#ff7f00', '#ff9900', '#ffb300', '#ffcc33', '#ffff33', // oranges → yellow
-      '#e0ff33', '#c4ff33', '#a8ff33', '#8cff33', '#70ff33', // yellow → light green
-      '#55cc33', '#3abb33', '#2eb33a', '#259933', '#1fa544'  // greens adjusted → darker towards end
+      '#7a0000', '#9c0d00', '#be1a00', '#e03f00', '#ff6500',
+      '#ff7f00', '#ff9900', '#ffb300', '#ffcc33', '#ffff33',
+      '#e0ff33', '#c4ff33', '#a8ff33', '#8cff33', '#70ff33',
+      '#55cc33', '#3abb33', '#2eb33a', '#259933', '#1fa544',
    ];
 
-   // Map 0-100 value to palette index
    const index = Math.round((likelihood / 100) * (colors.length - 1));
-
    return colors[index];
 }
 
-function getAnimalIconUrl(exhibit, species, backgroundColour) {
+function getAnimalIconUrl(exhibit, species, backgroundColourForUrl) {
    const normalizedExhibit = normalizeParameter(exhibit);
    const normalizedAnimal = normalizeParameter(species);
 
-   return `url("/images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${backgroundColour}.png")`;
+   return `url("/images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${backgroundColourForUrl}.png")`;
 }
 
 /* ============================================================
-   TOOLTIP MODULE (single source of truth)
+   TOOLTIP CONTROLLER
 ============================================================ */
 
 const TooltipController = (() => {
@@ -270,8 +268,10 @@ const TooltipController = (() => {
    let animalsForOpen = [];
    let carousel = null;
 
+   let globalListenersInstalled = false;
+
    function isOpen() {
-      return tooltip.style.display === 'flex';
+      return tooltip && tooltip.style.display === 'flex';
    }
 
    function attachToMarker(marker, animals) {
@@ -290,32 +290,38 @@ const TooltipController = (() => {
    }
 
    function open(marker, animals) {
-      // close anything already open
+      if (!tooltip) return;
+
       if (isOpen()) close();
 
       openMarker = marker;
-      animalsForOpen = animals;
+      animalsForOpen = animals || [];
+      carousel = null;
 
       // when opening, show icon for first animal (and clear count text)
-      setMarkerToAnimalIcon(marker, animals[0]);
-      marker.textContent = '';
+      if (animalsForOpen[0]) {
+         setMarkerToAnimalIcon(marker, animalsForOpen[0]);
+         marker.textContent = '';
+      }
 
-      renderTooltip(marker, animals);
+      renderTooltip(animalsForOpen);
+
       tooltip.style.display = 'flex';
       tooltip.style.pointerEvents = 'auto';
       positionTooltip(marker);
    }
 
    function close() {
-      if (!isOpen()) return;
+      if (!tooltip || !isOpen()) return;
 
       tooltip.style.display = 'none';
       tooltip.style.pointerEvents = 'none';
       clearTooltipContent();
 
-      // restore marker to count style
+      // restore marker to count style ONLY if it was a cluster
       if (openMarker && animalsForOpen.length > 1) {
-         setMarkerToCount(openMarker, animalsForOpen.length);
+         const colour = likelihoodToColor(animalsForOpen[0].likelihood);
+         setMarkerToCount(openMarker, animalsForOpen.length, colour);
       }
 
       openMarker = null;
@@ -323,7 +329,7 @@ const TooltipController = (() => {
       carousel = null;
    }
 
-   function renderTooltip(marker, animals) {
+   function renderTooltip(animals) {
       clearTooltipContent();
 
       const content = document.createElement('div');
@@ -352,36 +358,47 @@ const TooltipController = (() => {
       rightArrow.classList.add('tooltip-next', 'visible');
 
       nav.appendChild(leftArrow);
-      nav.appendChild(document.createElement('div')); // spacer
+      nav.appendChild(document.createElement('div'));
       nav.appendChild(rightArrow);
       return nav;
    }
 
    function clearTooltipContent() {
+      if (!tooltip) return;
       tooltip.innerHTML = '';
    }
 
-   function setMarkerToCount(marker, count) {
+   function setMarkerToCount(marker, count, colour) {
       marker.textContent = count;
-      marker.style.backgroundImage = '';
-      // keep marker backgroundColor as whatever you already set for clusters
+      marker.style.backgroundImage = 'none';
+      marker.style.backgroundColor = colour;
    }
 
    function setMarkerToAnimalIcon(marker, animal) {
       if (!animal) return;
-      const backgroundColour = likelihoodToColor(animal.likelihood).replace('#', '');
-      marker.style.backgroundImage = getAnimalIconUrl(animal.exhibit, animal.species, backgroundColour);
+
+      const colour = likelihoodToColor(animal.likelihood);
+      const colourForUrl = colour.replace('#', '');
+
+      marker.style.backgroundColor = colour; // fallback behind icon
+      marker.style.backgroundImage = getAnimalIconUrl(
+         animal.exhibit,
+         animal.species,
+         colourForUrl
+      );
    }
 
-   // step carousel + update marker icon to match the active card
    function carouselStep(carouselEl, delta) {
+      if (!carouselEl) return;
+
       const cards = Array.from(carouselEl.children);
+      if (cards.length === 0) return;
+
       let index = Number(carouselEl.dataset.index || 0);
 
       cards[index].style.display = 'none';
       index = (index + delta + cards.length) % cards.length;
       cards[index].style.display = 'flex';
-
       carouselEl.dataset.index = index;
 
       // keep marker icon synced with active animal
@@ -391,19 +408,37 @@ const TooltipController = (() => {
       }
    }
 
-   // global listeners (called once)
-   let tooltipGlobalListenersInstalled = false;
+   function getOpenAnimalBySpecies(species) {
+      if (!species) return null;
+      return animalsForOpen.find(a => a.species === species) || null;
+   }
 
    function initGlobalListeners() {
-      if (tooltipGlobalListenersInstalled) return;
-      tooltipGlobalListenersInstalled = true;
+      if (globalListenersInstalled) return;
+      globalListenersInstalled = true;
 
       document.addEventListener('click', (e) => {
          // 1) Species link click (open overlay)
          const link = e.target.closest('.species-link');
          if (link) {
             e.stopPropagation();
-            openSpeciesOverlay(link.dataset.species);
+
+            // Prefer the card's index (most reliable)
+            const card = link.closest('.tooltip-card');
+            let animal = null;
+
+            if (card) {
+               const idx = Number(card.dataset.index);
+               if (!Number.isNaN(idx)) animal = animalsForOpen[idx] || null;
+            }
+
+            // Fallback: match by species string
+            if (!animal) {
+               const species = link.dataset.species;
+               animal = animalsForOpen.find(a => a.species === species) || null;
+            }
+
+            if (animal) openSpeciesOverlayFromAnimal(animal);
             return;
          }
 
@@ -439,7 +474,7 @@ const TooltipController = (() => {
 })();
 
 /* ============================================================
-   CAROUSEL (smaller/cleaner)
+   CAROUSEL
 ============================================================ */
 
 function createCarousel(animals) {
@@ -465,10 +500,10 @@ function createTooltipCard(a, index) {
 
    card.innerHTML = `
       <div class="tooltip-image-frame">
-         <img 
-         src="images/animals/${exhibit}/${species}.png"
-         alt="${a.species}"
-         class="tooltip-image"
+         <img
+            src="images/animals/${exhibit}/${species}.png"
+            alt="${a.species}"
+            class="tooltip-image"
          >
       </div>
 
@@ -497,7 +532,7 @@ function getLikelihoodPhrase(likelihood) {
 }
 
 /* ============================================================
-   ARROWS (unchanged)
+   ARROWS
 ============================================================ */
 
 function createArrow(symbol, onClick) {
@@ -512,40 +547,45 @@ function createArrow(symbol, onClick) {
 }
 
 /* ============================================================
-   POSITIONING (unchanged)
+   TOOLTIP POSITIONING
 ============================================================ */
 
 function positionTooltip(marker) {
+   if (!tooltip) return;
+
    const rect = marker.getBoundingClientRect();
    const tooltipRect = tooltip.getBoundingClientRect();
    const padding = 12;
 
    let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
-   let top  = rect.top - tooltipRect.height - 12;
+   let top = rect.top - tooltipRect.height - 12;
 
    if (top < padding) top = rect.bottom + 12;
 
    left = Math.max(padding, Math.min(window.innerWidth - tooltipRect.width - padding, left));
-   top  = Math.max(padding, Math.min(window.innerHeight - tooltipRect.height - padding, top));
+   top = Math.max(padding, Math.min(window.innerHeight - tooltipRect.height - padding, top));
 
    tooltip.style.left = `${left}px`;
    tooltip.style.top = `${top}px`;
 }
 
 /* ============================================================
-   SPECIES OVERLAY CONTENT
+   SPECIES OVERLAY
 ============================================================ */
 
 const speciesOverlay = document.getElementById('speciesOverlay');
 let speciesOverlayContent = null;
 
-if (speciesOverlay != null) {
+if (speciesOverlay) {
    speciesOverlayContent = speciesOverlay.querySelector('.species-overlay-content');
+
+   speciesOverlay.addEventListener('click', e => {
+      if (e.target === speciesOverlay) closeSpeciesOverlay();
+   });
 }
 
-function openSpeciesOverlay(species) {
-   const animal = getAnimalBySpecies(species);
-   if (!animal) return;
+function openSpeciesOverlayFromAnimal(animal) {
+   if (!speciesOverlay || !speciesOverlayContent || !animal) return;
 
    const contentHTML = buildSpeciesContentHTML(animal);
 
@@ -581,8 +621,8 @@ function buildSpeciesContentHTML(animal) {
       if (!value || !value.trim()) return '';
       return `
          <div class="section">
-         <strong>${title}:</strong>
-         <p>${value}</p>
+            <strong>${title}:</strong>
+            <p>${value}</p>
          </div>
       `;
    };
@@ -611,35 +651,13 @@ function buildSpeciesContentHTML(animal) {
    `;
 }
 
-if (speciesOverlay != null) {
-   speciesOverlay.addEventListener('click', e => {
-      if (e.target === speciesOverlay) closeSpeciesOverlay();
-   });
-}
-
 function closeSpeciesOverlay() {
+   if (!speciesOverlay) return;
    speciesOverlay.classList.add('hidden');
 }
 
 /* ============================================================
-   HELPERS/PLACEHOLDERS
-============================================================ */
-
-function getAnimalBySpecies(species) {
-   if (!currentCarousel) return null;
-
-   const cards = currentCarousel.querySelectorAll('.tooltip-card');
-   for (const card of cards) {
-      if (card.querySelector('.species-link')?.dataset.species === species) {
-         const index = card.dataset.index;
-         return lastAnimals[index];
-      }
-   }
-   return null;
-}
-
-/* ============================================================
-   animals.html
+   animals.html (unchanged)
 ============================================================ */
 
 function displayRegions() {
@@ -674,7 +692,6 @@ function displayRegions() {
          if (hasExhibits) {
             displayExhibits(name);
          } else {
-         // If there are no exhibits, go straight to animals for the region.
             displayAnimals(name, name);
          }
       });
@@ -723,7 +740,7 @@ function displayExhibits(region) {
 
             list.appendChild(btn);
          });
-      }
+      },
    });
 }
 
@@ -745,8 +762,7 @@ function displayAnimals(region, exhibit) {
          backBtn.addEventListener('click', () => {
             if (region == exhibit) {
                displayRegions();
-            }
-            else {
+            } else {
                displayExhibits(region);
             }
          });
@@ -758,7 +774,7 @@ function displayAnimals(region, exhibit) {
             btn.classList.add('list-button');
 
             const normalizedExhibit = normalizeParameter(exhibit);
-            const normalizedAnimal =normalizeParameter(animal);
+            const normalizedAnimal = normalizeParameter(animal);
 
             const img = document.createElement('img');
             img.src = `images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}.png`;
@@ -773,7 +789,7 @@ function displayAnimals(region, exhibit) {
 
             list.appendChild(btn);
          });
-      }
+      },
    });
 }
 
@@ -794,24 +810,22 @@ function displayAnimalInformation(region, exhibit, animal) {
             buildAnimalInfoBackButtonHTML() +
             buildSpeciesContentHTML(animal_info);
 
-         // ✅ Reset scroll so the back button is visible
          list.scrollTop = 0;
 
-         // Wire the back button behavior
          list.querySelector('.animal-info-back-button')
-         .addEventListener('click', () => {
-            displayAnimals(region, exhibit);
-         });
-      }
+            .addEventListener('click', () => {
+               displayAnimals(region, exhibit);
+            });
+      },
    });
 }
 
 function buildAnimalInfoBackButtonHTML() {
-  return `
-    <button class="animal-info-back-button" type="button">
-      ← Back
-    </button>
-  `;
+   return `
+      <button class="animal-info-back-button" type="button">
+         ← Back
+      </button>
+   `;
 }
 
 function normalizeParameter(parameter) {
