@@ -987,3 +987,97 @@ html.home-page {
    background-color: #4b7c00;
    transform: translateY(-3px);
 }
+
+/* ============================================================
+   OFF-DISPLAY ALERT — ABSOLUTELY MASSIVE
+============================================================ */
+
+.off-display-banner {
+   position: fixed;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   z-index: 9999;
+
+   display: flex;
+   align-items: center;
+   gap: 60px;
+
+   width: min(1400px, 96vw);
+   padding: 80px 120px;
+
+   background: linear-gradient(180deg, #5d8f2a, #4f7e22);
+   color: #ffffff;
+
+   border-radius: 30px;
+   box-shadow: 0 40px 120px rgba(0,0,0,0.55);
+
+   font-size: 64px;
+   font-weight: 900;
+   line-height: 1.1;
+
+   animation: massiveFade 0.35s ease;
+}
+
+/* Giant warning block */
+.off-display-icon {
+   width: 200px;
+   height: 150px;
+
+   display: grid;
+   place-items: center;
+
+   border-radius: 24px;
+   background: #ffd54d;
+   color: #2f2f2f;
+
+   font-size: 90px;
+   font-weight: 900;
+
+   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* Species emphasis */
+.off-display-text strong {
+   font-weight: 1000;
+   text-decoration: underline;
+}
+
+/* Massive close button */
+.off-display-close {
+   margin-left: auto;
+
+   width: 160px;
+   height: 120px;
+
+   display: grid;
+   place-items: center;
+
+   background: rgba(255,255,255,0.15);
+   border: none;
+   border-radius: 24px;
+
+   color: #ffffff;
+   font-size: 70px;
+   font-weight: 700;
+
+   cursor: pointer;
+
+   transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.off-display-close:hover {
+   background: rgba(255,255,255,0.3);
+   transform: scale(1.08);
+}
+
+@keyframes massiveFade {
+   from {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% - 40px)) scale(0.95);
+   }
+   to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+   }
+}

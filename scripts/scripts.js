@@ -154,10 +154,6 @@ function initFocusFromQuery() {
    const focusSpecies = getQueryParam('focus');
    if (!focusSpecies) return;
 
-   const off = getQueryParam('off') === '1';
-   const checkbox = document.getElementById('includeOffDisplayAnimals');
-   if (checkbox) checkbox.checked = off;
-
    const mapPreset = document.getElementById('mapPreset');
    const mapDateInput = document.getElementById('mapDate');
 
@@ -215,16 +211,24 @@ function sendAnimalRequest(month, day, temp, options = null) {
    const includeOffDisplayAnimals =
       document.querySelector('#includeOffDisplayAnimals')?.checked ?? false;
 
+   const speciesToInclude =
+      options?.focusSpecies ? [options.focusSpecies] : [];
+
    $.ajax({
       type: 'POST',
       url: '/get-visible-animals',
       contentType: 'application/json',
-      data: JSON.stringify({ month, day, temp, includeOffDisplayAnimals }),
+      data: JSON.stringify({
+         month,
+         day,
+         temp,
+         includeOffDisplayAnimals,
+         speciesToInclude
+      }),
       success: function (response) {
          addMarkers(response.animals);
 
          if (options?.focusSpecies) {
-            // wait one tick so markers exist
             setTimeout(() => focusSpeciesOnMap(options.focusSpecies), 0);
          }
       },
@@ -389,8 +393,14 @@ function focusSpeciesOnMap(speciesName) {
          // Open tooltip + jump carousel
          TooltipController.open(targetMarker, targetAnimals);
          setTimeout(() => jumpTooltipToSpecies(speciesName), 0);
+
+         const focusedAnimal = targetAnimals.find(a => a.species === speciesName) || targetAnimals[0];
+         showOffDisplayBannerForAnimal(focusedAnimal);
       });
    });
+
+   // Remove ?focus=... from URL so refresh doesn't re-trigger
+   history.replaceState({}, '', 'map.html');
 }
 
 function centerMarkerWithContain(markerEl, viewportEl) {
@@ -430,6 +440,60 @@ function jumpTooltipToSpecies(species) {
 
    cards[newIndex].style.display = 'flex';
    carousel.dataset.index = newIndex;
+}
+
+/* ============================================================
+   Off-display modal (centered version)
+============================================================ */
+
+let offDisplayBannerEl = null;
+
+function ensureOffDisplayBanner() {
+   if (offDisplayBannerEl) return offDisplayBannerEl;
+
+   const el = document.createElement('div');
+   el.className = 'off-display-banner';
+   el.style.display = 'none';
+
+   el.innerHTML = `
+      <div class="off-display-icon">⚠</div>
+      <div class="off-display-text"></div>
+      <button class="off-display-close" type="button" aria-label="Close">×</button>
+   `;
+
+   // ✅ Clicking anywhere on the banner should NOT close the tooltip
+   el.addEventListener('click', (e) => {
+      e.stopPropagation();
+   });
+
+   // ✅ Clicking X should ONLY close the banner (not the tooltip)
+   el.querySelector('.off-display-close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      hideOffDisplayBanner();
+   });
+
+   document.body.appendChild(el);
+   offDisplayBannerEl = el;
+   return el;
+}
+
+function showOffDisplayBannerForAnimal(animal) {
+   const banner = ensureOffDisplayBanner();
+
+   if (!animal || Number(animal.likelihood) !== 0) {
+      hideOffDisplayBanner();
+      return;
+   }
+
+   banner.querySelector('.off-display-text').innerHTML =
+      `<strong>${animal.species}</strong> is seasonally off-display right now.`;
+
+   banner.style.display = 'flex';
+}
+
+function hideOffDisplayBanner() {
+   if (!offDisplayBannerEl) return;
+   offDisplayBannerEl.style.display = 'none';
 }
 
 /* ============================================================
@@ -476,6 +540,9 @@ const TooltipController = (() => {
       tooltip.style.display = 'flex';
       tooltip.style.pointerEvents = 'auto';
       positionTooltip(marker);
+
+      // ✅ Show banner only if the currently shown animal is off-display (likelihood === 0)
+      showOffDisplayBannerForAnimal(animalsForOpen[0] || null);
    }
 
    function close() {
@@ -493,6 +560,8 @@ const TooltipController = (() => {
       openMarker = null;
       animalsForOpen = [];
       carousel = null;
+
+      hideOffDisplayBanner();
    }
 
    function renderTooltip(animals) {
@@ -571,6 +640,9 @@ const TooltipController = (() => {
          setMarkerToAnimalIcon(openMarker, animalsForOpen[index]);
          openMarker.textContent = '';
       }
+
+      // ✅ Update banner based on the newly active species
+      showOffDisplayBannerForAnimal(animalsForOpen[index] || null);
    }
 
    function initGlobalListeners() {
@@ -970,7 +1042,7 @@ function displayAnimalInformation(region, exhibit, animal) {
 
             viewBtn.addEventListener('click', () => {
                const species = encodeURIComponent(animal);
-               window.location.href = `map.html?focus=${species}&off=1`;
+               window.location.href = `map.html?focus=${species}`;
             });
 
             exhibitHeading.insertAdjacentElement('afterend', viewBtn);
