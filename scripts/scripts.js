@@ -179,14 +179,37 @@ function initMapControls(mapPreset, mapDateInput, includeOffDisplayCheckbox) {
 ============================================================ */
 
 function initFocusFromQuery() {
-   const focusSpecies = getQueryParam('focus');
-   if (!focusSpecies) return;
+   const focus = getQueryParam('focus');
+   if (!focus) return;
 
-   const species = decodeURIComponent(focusSpecies);
-   focusSpeciesFromSearch(species);
+   const species = decodeURIComponent(focus);
+   const exhibitParam = getQueryParam('exhibit');
+   const exhibit = exhibitParam ? decodeURIComponent(exhibitParam) : null;
 
-   // Remove focus param so refresh doesn't re-trigger
+   focusAnimalFromQuery(species, exhibit);
+
+   // Remove params so refresh doesn't re-trigger
    history.replaceState({}, '', 'map.html');
+}
+
+function focusAnimalFromQuery(speciesName, exhibitName) {
+   if (!speciesName) return;
+
+   const mapPreset = document.getElementById('mapPreset');
+   const mapDateInput = document.getElementById('mapDate');
+
+   const preset = mapPreset?.value || 'specific-day';
+   const date =
+      preset === 'specific-day'
+         ? (mapDateInput?.value || new Date().toISOString().slice(0, 10))
+         : null;
+
+   // Fetch markers (optionally filtered) then focus
+   updateMap(
+      preset,
+      preset === 'specific-day' ? date : null,
+      { focusSpecies: speciesName, focusExhibit: exhibitName }
+   );
 }
 
 /* ============================================================
@@ -270,7 +293,7 @@ function renderAnimalSearchResults(response) {
       // ✅ NO PAGE RELOAD: focus in-place
       btn.addEventListener('click', (e) => {
          e.stopPropagation();
-         focusSpeciesFromSearch(species);
+         focusAnimalOnMap(species, exhibit);
       });
 
       item.appendChild(left);
@@ -364,8 +387,9 @@ function sendAnimalRequest(month, day, temp, options = null) {
          addMarkers(response.animals);
 
          if (options?.focusSpecies) {
-            // Defer so markers exist in DOM
-            setTimeout(() => focusSpeciesOnMap(options.focusSpecies), 0);
+            setTimeout(() => {
+               focusAnimalOnMap(options.focusSpecies, options.focusExhibit || null);
+            }, 0);
          }
       },
    });
@@ -489,47 +513,63 @@ function getAnimalIconUrl(exhibit, species, backgroundColourForUrl) {
    FOCUS FLOW (NO RELOAD)
 ============================================================ */
 
-function focusSpeciesOnMap(speciesName) {
-   if (!mapPanzoom) return;
+function focusAnimalOnMap(speciesName, exhibitName) {
+   if (!mapPanzoom || !speciesName) return;
 
-   // Find marker containing the species
-   let targetMarker = null;
-   let targetAnimals = null;
+   const target = findBestAnimalMatch(speciesName, exhibitName);
+   if (!target) return;
 
-   for (const marker of markerElsByCoord.values()) {
-      const animals = marker.__animals || [];
-      if (animals.some(a => a.species === speciesName)) {
-         targetMarker = marker;
-         targetAnimals = animals;
-         break;
-      }
-   }
-
-   if (!targetMarker || !targetAnimals) return;
+   const { markerEl, animals } = target;
 
    const mapInner = document.getElementById('mapInner');
    const viewport = mapInner?.parentElement;
    if (!mapInner || !viewport) return;
 
    const targetScale = 3;
-
    mapPanzoom.zoom(targetScale, { animate: false });
 
    requestAnimationFrame(() => {
-      centerMarkerWithContain(targetMarker, viewport);
+      centerMarkerWithContain(markerEl, viewport);
 
       requestAnimationFrame(() => {
-         centerMarkerWithContain(targetMarker, viewport);
+         centerMarkerWithContain(markerEl, viewport);
 
-         TooltipController.open(targetMarker, targetAnimals);
-         setTimeout(() => jumpTooltipToSpecies(speciesName), 0);
+         TooltipController.open(markerEl, animals);
+
+         // Jump to the exact animal card (match both fields)
+         setTimeout(() => jumpTooltipToAnimal(speciesName, exhibitName), 0);
 
          const focusedAnimal =
-            targetAnimals.find(a => a.species === speciesName) || targetAnimals[0];
+            animals.find(a => a.species === speciesName && a.exhibit === exhibitName) ||
+            animals.find(a => a.species === speciesName) ||
+            animals[0];
 
          showOffDisplayBannerForAnimal(focusedAnimal);
       });
    });
+}
+
+function findBestAnimalMatch(speciesName, exhibitName) {
+   let best = null; 
+   // best = { markerEl, animals, animal, likelihood }
+
+   for (const marker of markerElsByCoord.values()) {
+      const animals = marker.__animals || [];
+
+      for (const a of animals) {
+         if (a.species !== speciesName) continue;
+         if (exhibitName && a.exhibit !== exhibitName) continue;
+
+         const l = Number(a.likelihood) || 0;
+
+         // Choose the single best matching animal across ALL markers
+         if (!best || l > best.likelihood) {
+            best = { markerEl: marker, animals, animal: a, likelihood: l };
+         }
+      }
+   }
+
+   return best; // or null
 }
 
 function centerMarkerWithContain(markerEl, viewportEl) {
@@ -549,7 +589,7 @@ function centerMarkerWithContain(markerEl, viewportEl) {
    mapPanzoom.pan(dx / scale, dy / scale, { relative: true, animate: false });
 }
 
-function jumpTooltipToSpecies(species) {
+function jumpTooltipToAnimal(speciesName, exhibitName) {
    const carousel = document.querySelector('.tooltip-carousel');
    if (!carousel) return;
 
@@ -559,12 +599,16 @@ function jumpTooltipToSpecies(species) {
    let index = Number(carousel.dataset.index || 0);
    if (cards[index]) cards[index].style.display = 'none';
 
-   const targetIndex = cards.findIndex(card =>
-      card.querySelector('.species-link')?.dataset.species === species
-   );
+   const targetIndex = cards.findIndex(card => {
+      const link = card.querySelector('.species-link');
+      if (!link) return false;
+
+      const s = link.dataset.species;
+      const e = link.dataset.exhibit;
+      return s === speciesName && (!exhibitName || e === exhibitName);
+   });
 
    const newIndex = targetIndex >= 0 ? targetIndex : 0;
-
    cards[newIndex].style.display = 'flex';
    carousel.dataset.index = newIndex;
 }
@@ -1159,7 +1203,8 @@ function displayAnimalInformation(region, exhibit, animal) {
 
             viewBtn.addEventListener('click', () => {
                const species = encodeURIComponent(animal);
-               window.location.href = `map.html?focus=${species}`;
+               const ex = encodeURIComponent(exhibit);
+               window.location.href = `map.html?focus=${species}&exhibit=${ex}`;
             });
 
             exhibitHeading.insertAdjacentElement('afterend', viewBtn);
