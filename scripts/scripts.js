@@ -1,22 +1,37 @@
 // ============================================================
-// scripts.js (updated with edge-marker focus fix)
-// - Uses contain:'outside' normally
-// - Temporarily disables containment during focus so edge markers can be centered
-// - Restores containment after the focus animation
+// scripts.js
+// - Map markers + tooltip carousel
+// - Map preset (summer/winter/specific-day) + date picker
+// - Search animals + inline "View on Map" (NO page reload)
+// - Focus flow supports both:
+//    1) URL ?focus=... (optional deep-linking)
+//    2) search results button (stays on page)
 // ============================================================
+
+/* ============================================================
+   CONFIG
+============================================================ */
 
 const apiKey = '657afbbbe68b892616c765dce8e68d6b';
 const lat = 43.8177;
 const lon = -79.1859;
 
-// ✅ store panzoom globally so focus can use it
+/* ============================================================
+   GLOBAL STATE
+============================================================ */
+
 let mapPanzoom = null;
 let lastAnimals = [];
 let markerElsByCoord = new Map(); // key: "x|y" -> marker element
 
-// ✅ containment modes
-const DEFAULT_CONTAIN = 'outside'; // your normal mode
-const FOCUS_CONTAIN = 'none';      // temporarily allow centering anywhere
+const DEFAULT_CONTAIN = 'outside';
+const FOCUS_CONTAIN = 'none';
+
+const tooltip = document.getElementById('tooltip');
+
+/* ============================================================
+   PAGE HELPERS
+============================================================ */
 
 function getPageName() {
    return window.location.pathname.split('/').pop().replace('.html', '');
@@ -26,23 +41,21 @@ function getQueryParam(name) {
    return new URLSearchParams(window.location.search).get(name);
 }
 
-function wantsFocusFlow() {
-   return Boolean(getQueryParam('focus'));
-}
-
 function setContain(mode) {
    if (!mapPanzoom) return;
 
-   // panzoom stores options on .options in this library
    if (mapPanzoom.options) {
       mapPanzoom.options.contain = mode;
    }
 
-   // if your version supports setOptions, use it too
    if (typeof mapPanzoom.setOptions === 'function') {
       mapPanzoom.setOptions({ contain: mode });
    }
 }
+
+/* ============================================================
+   INIT
+============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
    if (getPageName() !== 'map') return;
@@ -56,13 +69,21 @@ function initMapPage() {
    const mapPreset = document.getElementById('mapPreset');
    const mapDateInput = document.getElementById('mapDate');
    const includeOffDisplayCheckbox = document.getElementById('includeOffDisplayAnimals');
+   const animalSearchInput = document.getElementById('animalSearch');
 
    if (!mapInner || !mapPreset || !mapDateInput) return;
 
    mapPanzoom = initPanzoom(mapInner);
    initMapControls(mapPreset, mapDateInput, includeOffDisplayCheckbox);
+   initAnimalSearch(animalSearchInput);
+
+   // Optional deep-link support (?focus=...)
    initFocusFromQuery();
 }
+
+/* ============================================================
+   PANZOOM
+============================================================ */
 
 function initPanzoom(mapInner) {
    const panzoom = Panzoom(mapInner, {
@@ -70,8 +91,6 @@ function initPanzoom(mapInner) {
       minScale: 1,
       contain: DEFAULT_CONTAIN,
    });
-
-   mapPanzoom = panzoom;
 
    mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
@@ -95,6 +114,10 @@ function initPanzoom(mapInner) {
 
    return panzoom;
 }
+
+/* ============================================================
+   MAP PRESET + DATE PICKER
+============================================================ */
 
 function initMapControls(mapPreset, mapDateInput, includeOffDisplayCheckbox) {
    const fp = flatpickr(mapDateInput, {
@@ -147,28 +170,140 @@ function initMapControls(mapPreset, mapDateInput, includeOffDisplayCheckbox) {
       });
    }
 
+   // Fire initial fetch
    mapPreset.dispatchEvent(new Event('change'));
 }
+
+/* ============================================================
+   OPTIONAL: FOCUS FROM URL (?focus=Species)
+============================================================ */
 
 function initFocusFromQuery() {
    const focusSpecies = getQueryParam('focus');
    if (!focusSpecies) return;
 
+   const species = decodeURIComponent(focusSpecies);
+   focusSpeciesFromSearch(species);
+
+   // Remove focus param so refresh doesn't re-trigger
+   history.replaceState({}, '', 'map.html');
+}
+
+/* ============================================================
+   SEARCH
+============================================================ */
+
+function debounce(fn, delay = 250) {
+   let t = null;
+   return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), delay);
+   };
+}
+
+function initAnimalSearch(inputEl) {
+   if (!inputEl) return;
+
+   const onChange = debounce(() => {
+      const query = (inputEl.value || '').trim();
+
+      // Optional: clear results when empty
+      const resultsEl = document.getElementById('animalSearchResults');
+      if (resultsEl && !query) {
+         resultsEl.innerHTML = '';
+         return;
+      }
+
+      $.ajax({
+         type: 'POST',
+         url: '/search-animals',
+         contentType: 'application/json',
+         dataType: 'json',
+         data: JSON.stringify({ query }),
+         success: function (response) {
+            renderAnimalSearchResults(response);
+         },
+      });
+   }, 250);
+
+   inputEl.addEventListener('input', onChange);
+}
+
+function renderAnimalSearchResults(response) {
+   const resultsEl = document.getElementById('animalSearchResults');
+   if (!resultsEl) return;
+
+   const rows = response?.results ?? response?.animals ?? response ?? [];
+   resultsEl.innerHTML = '';
+
+   if (!Array.isArray(rows) || rows.length === 0) {
+      resultsEl.innerHTML = `<div class="animal-result-empty">No results.</div>`;
+      return;
+   }
+
+   rows.forEach(row => {
+      const species = row.SPECIES ?? row.species ?? '';
+      const exhibit = row.EXHIBIT ?? row.exhibit ?? '';
+
+      const item = document.createElement('div');
+      item.className = 'animal-result';
+
+      const left = document.createElement('div');
+      left.className = 'animal-result-left';
+
+      const speciesEl = document.createElement('div');
+      speciesEl.className = 'animal-result-species';
+      speciesEl.textContent = species;
+
+      const exhibitEl = document.createElement('div');
+      exhibitEl.className = 'animal-result-exhibit';
+      exhibitEl.textContent = exhibit ? `Exhibit: ${exhibit}` : '';
+
+      left.appendChild(speciesEl);
+      left.appendChild(exhibitEl);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'animal-result-map-btn';
+      btn.textContent = 'View on Map';
+
+      // ✅ NO PAGE RELOAD: focus in-place
+      btn.addEventListener('click', (e) => {
+         e.stopPropagation();
+         focusSpeciesFromSearch(species);
+      });
+
+      item.appendChild(left);
+      item.appendChild(btn);
+
+      resultsEl.appendChild(item);
+   });
+}
+
+/* ============================================================
+   FOCUS FROM SEARCH (NO NAVIGATION)
+============================================================ */
+
+function focusSpeciesFromSearch(speciesName) {
+   if (!speciesName) return;
+
+   // Use current preset/date and refetch markers with speciesToInclude,
+   // then focusSpeciesOnMap runs in the AJAX success callback.
    const mapPreset = document.getElementById('mapPreset');
    const mapDateInput = document.getElementById('mapDate');
 
-   if (mapPreset && !mapPreset.value) {
-      mapPreset.value = 'specific-day';
+   const preset = mapPreset?.value || 'specific-day';
+
+   const date =
+      preset === 'specific-day'
+         ? (mapDateInput?.value || new Date().toISOString().slice(0, 10))
+         : null;
+
+   if (preset === 'specific-day') {
+      updateMap('specific-day', date, { focusSpecies: speciesName });
+   } else {
+      updateMap(preset, null, { focusSpecies: speciesName });
    }
-
-   const preset = mapPreset ? mapPreset.value : 'specific-day';
-   const date = mapDateInput ? mapDateInput.value : null;
-
-   updateMap(
-      preset,
-      preset === 'specific-day' ? (date || new Date().toISOString().slice(0, 10)) : null,
-      { focusSpecies: decodeURIComponent(focusSpecies) }
-   );
 }
 
 /* ============================================================
@@ -223,17 +358,22 @@ function sendAnimalRequest(month, day, temp, options = null) {
          day,
          temp,
          includeOffDisplayAnimals,
-         speciesToInclude
+         speciesToInclude,
       }),
       success: function (response) {
          addMarkers(response.animals);
 
          if (options?.focusSpecies) {
+            // Defer so markers exist in DOM
             setTimeout(() => focusSpeciesOnMap(options.focusSpecies), 0);
          }
       },
    });
 }
+
+/* ============================================================
+   DATE HELPERS
+============================================================ */
 
 function isWithinNextNDays(dateStr, n) {
    const today = new Date();
@@ -264,8 +404,6 @@ function getDay(dateStr) {
 /* ============================================================
    MARKERS
 ============================================================ */
-
-const tooltip = document.getElementById('tooltip');
 
 function clearMarkers() {
    const mapInner = document.getElementById('mapInner');
@@ -302,10 +440,9 @@ function addMarkers(animals) {
       el.style.top = `${group.y}%`;
       el.title = '';
 
-      const coordKey = `${group.x}|${group.y}`;
-      markerElsByCoord.set(coordKey, el);
+      markerElsByCoord.set(`${group.x}|${group.y}`, el);
 
-      // ✅ attach animals to marker so we can find it later
+      // attach animals to marker so focus can find it
       el.__animals = animalsOnExhibit;
 
       const colour = likelihoodToColor(animalsOnExhibit[0].likelihood);
@@ -349,10 +486,7 @@ function getAnimalIconUrl(exhibit, species, backgroundColourForUrl) {
 }
 
 /* ============================================================
-   FOCUS FLOW (View on Map) — updated
-   Key change:
-   - Use contain:'none' DURING focus so edge markers can be centered.
-   - Restore DEFAULT_CONTAIN after animation so normal bounds return.
+   FOCUS FLOW (NO RELOAD)
 ============================================================ */
 
 function focusSpeciesOnMap(speciesName) {
@@ -374,51 +508,44 @@ function focusSpeciesOnMap(speciesName) {
    if (!targetMarker || !targetAnimals) return;
 
    const mapInner = document.getElementById('mapInner');
-   const viewport = mapInner?.parentElement; // your .map-container
+   const viewport = mapInner?.parentElement;
    if (!mapInner || !viewport) return;
 
    const targetScale = 3;
 
-   // Zoom first (no animation = reliable measurements)
    mapPanzoom.zoom(targetScale, { animate: false });
 
-   // After zoom applies, center marker using screen-delta panning
    requestAnimationFrame(() => {
       centerMarkerWithContain(targetMarker, viewport);
 
-      // Do it a 2nd time to settle (helps near edges / after zoom)
       requestAnimationFrame(() => {
          centerMarkerWithContain(targetMarker, viewport);
 
-         // Open tooltip + jump carousel
          TooltipController.open(targetMarker, targetAnimals);
          setTimeout(() => jumpTooltipToSpecies(speciesName), 0);
 
-         const focusedAnimal = targetAnimals.find(a => a.species === speciesName) || targetAnimals[0];
+         const focusedAnimal =
+            targetAnimals.find(a => a.species === speciesName) || targetAnimals[0];
+
          showOffDisplayBannerForAnimal(focusedAnimal);
       });
    });
-
-   // Remove ?focus=... from URL so refresh doesn't re-trigger
-   history.replaceState({}, '', 'map.html');
 }
 
 function centerMarkerWithContain(markerEl, viewportEl) {
    const vRect = viewportEl.getBoundingClientRect();
    const mRect = markerEl.getBoundingClientRect();
 
-   const vCx = vRect.left + (vRect.width / 2);
-   const vCy = vRect.top + (vRect.height / 2);
+   const vCx = vRect.left + vRect.width / 2;
+   const vCy = vRect.top + vRect.height / 2;
 
-   const mCx = mRect.left + (mRect.width / 2);
-   const mCy = mRect.top + (mRect.height / 2);
+   const mCx = mRect.left + mRect.width / 2;
+   const mCy = mRect.top + mRect.height / 2;
 
    const dx = vCx - mCx;
    const dy = vCy - mCy;
 
    const scale = mapPanzoom.getScale ? mapPanzoom.getScale() : 1;
-
-   // Panzoom translate is applied BEFORE scale, so convert screen delta -> pan delta
    mapPanzoom.pan(dx / scale, dy / scale, { relative: true, animate: false });
 }
 
@@ -443,7 +570,7 @@ function jumpTooltipToSpecies(species) {
 }
 
 /* ============================================================
-   Off-display modal (centered version)
+   OFF-DISPLAY BANNER
 ============================================================ */
 
 let offDisplayBannerEl = null;
@@ -461,12 +588,8 @@ function ensureOffDisplayBanner() {
       <button class="off-display-close" type="button" aria-label="Close">×</button>
    `;
 
-   // ✅ Clicking anywhere on the banner should NOT close the tooltip
-   el.addEventListener('click', (e) => {
-      e.stopPropagation();
-   });
+   el.addEventListener('click', (e) => e.stopPropagation());
 
-   // ✅ Clicking X should ONLY close the banner (not the tooltip)
    el.querySelector('.off-display-close').addEventListener('click', (e) => {
       e.stopPropagation();
       hideOffDisplayBanner();
@@ -541,7 +664,6 @@ const TooltipController = (() => {
       tooltip.style.pointerEvents = 'auto';
       positionTooltip(marker);
 
-      // ✅ Show banner only if the currently shown animal is off-display (likelihood === 0)
       showOffDisplayBannerForAnimal(animalsForOpen[0] || null);
    }
 
@@ -641,7 +763,6 @@ const TooltipController = (() => {
          openMarker.textContent = '';
       }
 
-      // ✅ Update banner based on the newly active species
       showOffDisplayBannerForAnimal(animalsForOpen[index] || null);
    }
 
@@ -682,11 +803,7 @@ const TooltipController = (() => {
       document.addEventListener('keydown', (e) => {
          if (!isOpen()) return;
 
-         if (e.key === 'Escape') {
-            close();
-            return;
-         }
-
+         if (e.key === 'Escape') close();
          if (e.key === 'ArrowRight') carouselStep(carousel, +1);
          if (e.key === 'ArrowLeft') carouselStep(carousel, -1);
       });
@@ -702,7 +819,7 @@ const TooltipController = (() => {
 })();
 
 /* ============================================================
-   CAROUSEL
+   CAROUSEL + TOOLTIP UI HELPERS
 ============================================================ */
 
 function createCarousel(animals) {
@@ -876,7 +993,7 @@ function closeSpeciesOverlay() {
 }
 
 /* ============================================================
-   animals.html bits (unchanged)
+   animals.html bits
 ============================================================ */
 
 function displayRegions() {

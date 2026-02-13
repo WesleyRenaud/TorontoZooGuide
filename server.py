@@ -151,6 +151,22 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/search-animals':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         query = data.get( 'query' )
+
+         animals = self.database.get_animals_matching_query( query )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"animals": [animal.to_dict() for animal in animals]}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
 if __name__ == '__main__':
    httpd = HTTPServer( ( 'localhost', int( sys.argv[1] ) ), MyHandler )
    print( 'Server listing in port:  ', int( sys.argv[1] ) )

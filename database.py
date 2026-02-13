@@ -189,9 +189,31 @@ class Database():
                                 identification=animal[3], habitat_and_range=animal[4],  diet_and_feeding=animal[5],
                                 behaviour_and_life_cycle=animal[6], adaptations=animal[7], reproduction_and_life_cycle=animal[8],
                                 animals_at_the_zoo=animal[9], exhibit=animal[10], seasonal_viewing_summary=animal[11],
-                                seasonal_viewing_information=animal[12], enclosure_type=None, x_coord=None, y_coord=None,
-                                likelihood=None )
+                                seasonal_viewing_information=animal[12] )
+      
+      return animal_info
+      
+
+   def get_animals_matching_query( self, query ):
+      cur = self.conn.cursor()
+
+      pattern = f"%{query}%"
+      data = cur.execute(
+         """   SELECT
+                  a.SPECIES,
+                  e.EXHIBIT
+               FROM Animal a
+               JOIN Enclosure e
+                  ON a.SPECIES = e.SPECIES
+               WHERE a.SPECIES LIKE ? ESCAPE '\\';
+         """, (pattern, ) )
+      
+      animal_data = data.fetchall()
+
+      animals = []
+      for animal in animal_data: 
+         animals.append( zoo.Animal( species=animal[0], exhibit=animal[1] ) )
 
       cur.close()
 
-      return animal_info
+      return animals
