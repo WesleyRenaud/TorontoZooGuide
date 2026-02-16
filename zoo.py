@@ -4,7 +4,8 @@ class Animal:
    def __init__( self, species, latin_name=None, general_viewing_tips=None, seasonal_viewing_tips=None, identification=None,
                  habitat_and_range=None, diet_and_feeding=None, behaviour_and_life_cycle=None, adaptations=None,
                  reproduction_and_life_cycle=None, animals_at_the_zoo=None, exhibit=None, seasonal_viewing_summary=None,
-                 seasonal_viewing_information=None, enclosure_type=None, x_coord=None, y_coord=None, likelihood=None ):
+                 seasonal_viewing_information=None, seasonally_off_display_message=None, enclosure_type=None, x_coord=None,y_coord=None,
+                 likelihood=None ):
       self.species = species
       self.latin_name = latin_name
       self.general_viewing_tips = general_viewing_tips
@@ -19,6 +20,7 @@ class Animal:
       self.exhibit = exhibit
       self.seasonal_viewing_summary = seasonal_viewing_summary
       self.seasonal_viewing_information = seasonal_viewing_information
+      self.seasonally_off_display_message = seasonally_off_display_message
       self.enclosure_type = enclosure_type
       self.x_coord = x_coord
       self.y_coord = y_coord
@@ -41,6 +43,7 @@ class Animal:
          'exhibit': self.exhibit,
          'seasonal_viewing_summary': self.seasonal_viewing_summary,
          'seasonal_viewing_information': self.seasonal_viewing_information,
+         'seasonally_off_display_message': self.seasonally_off_display_message,
          'enclosure_type': self.enclosure_type,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,

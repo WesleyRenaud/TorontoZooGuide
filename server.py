@@ -22,6 +22,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                if not chunk:
                   break
                self.wfile.write( chunk )
+
       
       if parsed.path in ['/animals.html']:
          self.send_response( 200 )
@@ -44,6 +45,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                if not chunk:
                   break
                self.wfile.write( chunk )
+               
 
       elif parsed.path == '/styles/styles.css':
          self.send_response( 200 )
@@ -56,6 +58,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   break
                self.wfile.write( chunk )
 
+
       elif parsed.path == '/scripts/scripts.js':
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/javascript' )
@@ -66,6 +69,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                if not chunk:
                   break
                self.wfile.write( chunk )
+               
 
       elif 'png' in parsed.path:
          image_path = parsed.path.replace( '%20', ' ' )

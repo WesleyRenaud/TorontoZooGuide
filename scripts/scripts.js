@@ -458,11 +458,21 @@ function addMarkers(animals) {
       const animalsOnExhibit = group.animals;
       if (animalsOnExhibit.length === 0) return;
 
+
       const el = document.createElement('div');
       el.className = 'marker';
       el.style.left = `${group.x}%`;
       el.style.top = `${group.y}%`;
-      el.title = '';
+      el.style.title = '';
+
+      // ✅ custom hover tooltip text (no native tooltip)
+      if (animalsOnExhibit.length === 1) {
+         el.dataset.hover = animalsOnExhibit[0].species;
+      } else {
+         const first = animalsOnExhibit[0].species;
+         el.dataset.hover = `${first} + ${animalsOnExhibit.length - 1}`;
+      }
+      el.removeAttribute('title'); // ensure browser tooltip doesn't show
 
       markerElsByCoord.set(`${group.x}|${group.y}`, el);
 
@@ -510,6 +520,47 @@ function getAnimalIconUrl(exhibit, species, backgroundColourForUrl) {
 }
 
 /* ============================================================
+   HOVER TOOLTIP (themed)
+============================================================ */
+
+const hoverTooltip = document.getElementById('hoverTooltip');
+
+function showHoverTooltip(text) {
+   if (!hoverTooltip) return;
+   hoverTooltip.textContent = text || '';
+   hoverTooltip.style.display = text ? 'block' : 'none';
+}
+
+function hideHoverTooltip() {
+   if (!hoverTooltip) return;
+   hoverTooltip.style.display = 'none';
+}
+
+function positionHoverTooltip(clientX, clientY) {
+   if (!hoverTooltip || hoverTooltip.style.display === 'none') return;
+
+   const pad = 14;
+   const offsetX = 18;
+   const offsetY = 22;
+
+   // measure after content is set
+   const rect = hoverTooltip.getBoundingClientRect();
+
+   let x = clientX + offsetX;
+   let y = clientY - rect.height - offsetY;
+
+   // if it would go off the top, place below cursor instead
+   if (y < pad) y = clientY + offsetY;
+
+   // clamp inside viewport
+   x = Math.max(pad, Math.min(window.innerWidth - rect.width - pad, x));
+   y = Math.max(pad, Math.min(window.innerHeight - rect.height - pad, y));
+
+   hoverTooltip.style.left = `${x}px`;
+   hoverTooltip.style.top = `${y}px`;
+}
+
+/* ============================================================
    FOCUS FLOW (NO RELOAD)
 ============================================================ */
 
@@ -540,9 +591,14 @@ function focusAnimalOnMap(speciesName, exhibitName) {
          setTimeout(() => jumpTooltipToAnimal(speciesName, exhibitName), 0);
 
          const focusedAnimal =
-            animals.find(a => a.species === speciesName && a.exhibit === exhibitName) ||
-            animals.find(a => a.species === speciesName) ||
-            animals[0];
+            animals
+               .filter(a => a.species === speciesName && (!exhibitName || a.exhibit === exhibitName))
+               .reduce((best, a) => (!best || Number(a.likelihood) > Number(best.likelihood) ? a : best), null)
+            || animals.find(a => a.species === speciesName)
+            || animals[0];
+
+         // ✅ force marker icon to match the focused animal (not “first in marker”)
+         setMarkerToSpecificAnimalIcon(markerEl, focusedAnimal);
 
          showOffDisplayBannerForAnimal(focusedAnimal);
       });
@@ -570,6 +626,21 @@ function findBestAnimalMatch(speciesName, exhibitName) {
    }
 
    return best; // or null
+}
+
+function setMarkerToSpecificAnimalIcon(markerEl, animal) {
+   if (!markerEl || !animal) return;
+
+   const colour = likelihoodToColor(animal.likelihood);
+   const colourForUrl = colour.replace('#', '');
+
+   markerEl.textContent = '';
+   markerEl.style.backgroundColor = colour;
+   markerEl.style.backgroundImage = getAnimalIconUrl(
+      animal.exhibit,
+      animal.species,
+      colourForUrl
+   );
 }
 
 function centerMarkerWithContain(markerEl, viewportEl) {
@@ -645,6 +716,8 @@ function ensureOffDisplayBanner() {
 }
 
 function showOffDisplayBannerForAnimal(animal) {
+   if (!animal.seasonally_off_display_message) return;
+
    const banner = ensureOffDisplayBanner();
 
    if (!animal || Number(animal.likelihood) !== 0) {
@@ -652,8 +725,7 @@ function showOffDisplayBannerForAnimal(animal) {
       return;
    }
 
-   banner.querySelector('.off-display-text').innerHTML =
-      `<strong>${animal.species}</strong> is seasonally off-display right now.`;
+   banner.querySelector('.off-display-text').innerHTML = animal.seasonally_off_display_message;
 
    banner.style.display = 'flex';
 }
@@ -681,6 +753,20 @@ const TooltipController = (() => {
       marker.addEventListener('click', (e) => {
          e.stopPropagation();
          toggle(marker, animals);
+      });
+
+      // ✅ themed hover tooltip
+      marker.addEventListener('mouseenter', (e) => {
+         showHoverTooltip(marker.dataset.hover || '');
+         positionHoverTooltip(e.clientX, e.clientY);
+      });
+
+      marker.addEventListener('mousemove', (e) => {
+         positionHoverTooltip(e.clientX, e.clientY);
+      });
+
+      marker.addEventListener('mouseleave', () => {
+         hideHoverTooltip();
       });
    }
 

@@ -43,6 +43,7 @@ class Database():
                   e.SEASONAL_VIEWING_SUMMARY,
                   e.SEASONAL_VIEWING_INFORMATION,
                   v.ENCLOSURE_TYPE,
+                  v.SEASONALLY_OFF_DISPLAY_MESSAGE,
                   v.X_COORD,
                   v.Y_COORD
                FROM Animal a
@@ -90,7 +91,8 @@ class Database():
                                         diet_and_feeding=animal[8], behaviour_and_life_cycle=animal[9], adaptations=animal[10],
                                         reproduction_and_life_cycle=animal[11], animals_at_the_zoo=animal[12], exhibit=exhibit,
                                         seasonal_viewing_summary=animal[15], seasonal_viewing_information=animal[16],
-                                        enclosure_type=enclosure_type, x_coord=animal[18], y_coord=animal[19], likelihood=likelihood ) )
+                                        seasonally_off_display_message=animal[18], enclosure_type=enclosure_type, x_coord=animal[19],
+                                        y_coord=animal[20], likelihood=likelihood ) )
 
       cur.close()
 

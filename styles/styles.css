@@ -498,6 +498,47 @@ html.home-page {
 }
 
 /* ============================================================
+   HOVER TOOLTIP (native-style, but themed)
+============================================================ */
+
+.hover-tooltip{
+   position: fixed;
+   z-index: 99999;
+   pointer-events: none;
+
+   padding: 16px 18px;
+   border-radius: 14px;
+
+   background: rgba(94, 150, 0, 0.97);
+   color: #fff;
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 3em;
+   font-weight: 800;
+   line-height: 1.2;
+
+   box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+   border: 2px solid rgba(255,255,255,0.35);
+
+   white-space: nowrap; 
+   overflow-wrap: anywhere;
+}
+
+/* little arrow */
+.hover-tooltip::after{
+   content: "";
+   position: absolute;
+   left: 18px;
+   bottom: -10px;
+   width: 0;
+   height: 0;
+   border-left: 10px solid transparent;
+   border-right: 10px solid transparent;
+   border-top: 10px solid rgba(94, 150, 0, 0.97);
+   filter: drop-shadow(0 6px 10px rgba(0,0,0,0.25));
+}
+
+/* ============================================================
    TOOLTIP CONTAINER
 ============================================================ */
 
