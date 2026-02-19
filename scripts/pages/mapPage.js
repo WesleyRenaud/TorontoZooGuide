@@ -28,7 +28,6 @@ export function initMapPage() {
 
    if (!mapInner || !mapPreset || !mapDateInput || !tooltipEl || !viewportEl) return;
 
-   // Core systems
    const panzoom = createPanzoom(mapInner, { contain: CONFIG.DEFAULT_CONTAIN });
 
    const store = createMapStore();
@@ -37,17 +36,15 @@ export function initMapPage() {
    const hover = createHoverTooltip(hoverTooltipEl);
 
    const offDisplay = createOffDisplayBanner();
-   const speciesOverlay = initSpeciesOverlay(); // returns { openFromAnimal(animal) }
+   const speciesOverlay = initSpeciesOverlay();
 
    const tooltip = createTooltipController({
       tooltipEl,
       onAnimalCardClick: (item) => {
-         // keep this behavior animals-only
          if (!item || String(item.type || '').toLowerCase() !== 'animal') return;
          speciesOverlay.openFromAnimal(item);
       },
       onOpenItemsChanged: (items) => {
-         // show/hide banner using the first animal (or currently displayed animal if you prefer)
          const firstAnimal = (items || []).find(i => String(i.type || '').toLowerCase() === 'animal') || null;
          offDisplay.sync(firstAnimal);
       }
@@ -74,43 +71,47 @@ export function initMapPage() {
       markers,
       focus,
       getIncludeOffDisplay: () => includeOffDisplayCheckbox?.checked ?? false,
-      getSelectedTypes: () => initExploreTypeFilter.getSelectedTypes(), // injected below
+      getSelectedTypes: () => initExploreTypeFilter.getSelectedTypes(),
    });
 
-   // Wire controls
-   initMapControls({
-      mapPreset,
-      mapDateInput,
-      includeOffDisplayCheckbox,
-      onUpdate: (preset, dateStr) => updater.updateMap(preset, dateStr, null),
-   });
-
-   // Explore multi-select
-   const explore = initExploreTypeFilter({
-      onChange: () => updater.refetchWithCurrentControls(null),
-      onAnimalsUnchecked: () => {
-         const resultsEl = document.getElementById('animalSearchResults');
-         if (resultsEl) resultsEl.innerHTML = '';
-      }
-   });
-   // allow updater to read selected types
-   initExploreTypeFilter.getSelectedTypes = explore.getSelectedTypes;
-
-   // Search
-   initSearch({
+   // Search (✅ keep this before we wire change handlers that call search.refresh)
+   const search = initSearch({
       inputEl: animalSearchInput,
       getIncludeFlags: () => explore.buildSearchIncludeFlags(),
       onFocusRow: (row) => updater.focusFromSearchRow(row),
    });
 
-   // Deep link focus (?focus=... etc)
+   // Wire controls (✅ refresh search after map updates)
+   initMapControls({
+      mapPreset,
+      mapDateInput,
+      includeOffDisplayCheckbox,
+      onUpdate: (preset, dateStr) => {
+         updater.updateMap(preset, dateStr, null);
+         search.refresh();
+      },
+   });
+
+   // Explore multi-select (✅ refresh search after refetch)
+   const explore = initExploreTypeFilter({
+      onChange: () => {
+         updater.refetchWithCurrentControls(null);
+         search.refresh();
+      },
+      onAnimalsUnchecked: () => {
+         const resultsEl = document.getElementById('animalSearchResults');
+         if (resultsEl) resultsEl.innerHTML = '';
+      }
+   });
+
+   initExploreTypeFilter.getSelectedTypes = explore.getSelectedTypes;
+
+   // Deep link focus
    initFocusFromQuery({
       onFocus: (rowOrSpec) => {
-         // If the deep link is the old animals-only pattern, updater handles it.
          updater.focusFromDeepLink(rowOrSpec);
       }
    });
 
-   // Initial fetch (trigger preset change handler)
    mapPreset.dispatchEvent(new Event('change'));
 }

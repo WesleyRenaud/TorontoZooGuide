@@ -21,9 +21,11 @@ function normalizeSearchRows(response) {
 }
 
 export function initSearch({ inputEl, getIncludeFlags, onFocusRow }) {
-   if (!inputEl) return;
+   if (!inputEl) {
+      return { refresh: () => {} };
+   }
 
-   const onChange = debounce(async () => {
+   async function run() {
       const query = (inputEl.value || '').trim();
       const resultsEl = document.getElementById('animalSearchResults');
       if (!resultsEl) return;
@@ -41,9 +43,17 @@ export function initSearch({ inputEl, getIncludeFlags, onFocusRow }) {
       } catch {
          // ignore
       }
-   }, 250);
+   }
 
+   const onChange = debounce(run, 250);
    inputEl.addEventListener('input', onChange);
+
+   // ✅ allow other parts of the app to re-run search when filters change
+   function refresh() {
+      run();
+   }
+
+   return { refresh };
 }
 
 function renderSearchResults(resultsEl, rows, onFocusRow) {
