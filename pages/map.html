@@ -1,26 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" class="home-page">
    <head>
-      <meta charset="utf-8">
-      <title>Toronto Zoo Guide</title>
-
-      <!-- Google Fonts -->
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
       <!-- Stylesheets -->
       <link rel="stylesheet" href="../styles/styles.css">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-      <!-- Scripts -->
-      <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
-      <script src="../scripts/scripts.js" defer></script>
-      <script src="https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/build/openseadragon/openseadragon.min.js" defer></script>
-      <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js"></script>
-
-      <!-- jQuery -->
+      <!-- jQuery (must be available before your module runs if you still use $.ajax) -->
       <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+      <!-- Vendor libs your modules rely on -->
+      <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js" defer></script>
+
+      <!-- ✅ Your map entry module (this replaces scripts.js on map.html) -->
+      <script type="module" src="../scripts/main-map.js"></script>
    </head>
 
    <body>
@@ -67,6 +60,26 @@
                      </label>
                   </div>
 
+                  <div class="filter-wrapper">
+                     <div class="multi-select" id="typeFilter">
+                        <button class="multi-select-button" type="button">
+                           <span class="filter-label">Filter:</span>
+                           <span class="selected-values"></span>
+                        </button>
+
+                        <div class="multi-select-dropdown">
+                           <label>
+                              <input type="checkbox" value="animal" checked>
+                              Animals
+                           </label>
+                           <label>
+                              <input type="checkbox" value="pavilion">
+                              Pavilions
+                           </label>
+                        </div>
+                     </div>
+                  </div>
+
                   <!-- Search -->
                   <div class="side-panel-search">
                      <label for="animalSearch" class="sr-only">Search animals</label>
@@ -74,7 +87,7 @@
                         id="animalSearch"
                         class="animal-search"
                         type="text"
-                        placeholder="Search animals..."
+                        placeholder="Search..."
                         autocomplete="off"
                      >
                   </div>

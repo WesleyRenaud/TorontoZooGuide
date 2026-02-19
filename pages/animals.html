@@ -15,12 +15,12 @@
 
       <!-- Scripts -->
       <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
-      <script src="../scripts/scripts.js" defer></script>
-      <script src="https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/build/openseadragon/openseadragon.min.js" defer></script>
-      <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js"></script>
 
-      <!-- jQuery -->
+      <!-- jQuery (needed for $.ajax in our animals API module) -->
       <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+      <!-- Page entrypoint -->
+      <script type="module" src="../scripts/pages/animalsPage.js"></script>
    </head>
 
    <body>
@@ -36,44 +36,11 @@
             >
          </div>
 
-         <!-- Main content with region buttons -->
+         <!-- Main content -->
          <main>
             <img class="side-image left" src="../images/map/left-side.png" alt="Left decoration">
 
-            <div class="list">
-               <button class="list-button" onclick="displayExhibits('Africa')">
-                  <img src="../images/regions/africa.png" alt="Africa" class="list-image">
-                  Africa
-               </button>
-               <button class="list-button" onclick="displayExhibits('Americas')">
-                  <img src="../images/regions/americas.png" alt="Americas" class="list-image">
-                  Americas
-               </button>
-               <button class="list-button" onclick="displayExhibits('Australasia')">
-                  <img src="../images/regions/australasia.png" alt="Australasia" class="list-image">
-                  Australasia
-               </button>
-               <button class="list-button" onclick="displayAnimals('Canadian Domain', 'Canadian Domain')">
-                  <img src="../images/regions/canadian-domain.png" alt="Canadian Domain" class="list-image">
-                  Canadian Domain
-               </button>
-               <button class="list-button" onclick="displayExhibits('Discovery Zone')">
-                  <img src="../images/regions/discovery-zone.png" alt="Discovery Zone" class="list-image">
-                  Discovery Zone
-               </button>
-               <button class="list-button" onclick="displayAnimals('Eurasia Wilds', 'Eurasia Wilds')">
-                  <img src="../images/regions/eurasia-wilds.png" alt="Eurasia Wilds" class="list-image">
-                  Eurasia Wilds
-               </button>
-               <button class="list-button" onclick="displayExhibits('Indo-Malaya')">
-                  <img src="../images/regions/indo-malaya.png" alt="Indo-Malaya" class="list-image">
-                  Indo-Malaya
-               </button>
-               <button class="list-button" onclick="displayAnimals('Tundra Trek', 'Tundra Trek')">
-                  <img src="../images/regions/tundra-trek.png" alt="Tundra Trek" class="list-image">
-                  Tundra Trek
-               </button>
-            </div>
+            <div class="list"></div>
 
             <img class="side-image right" src="../images/map/right-side.png" alt="Right decoration">
          </main>

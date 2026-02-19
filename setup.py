@@ -4,6 +4,10 @@ conn = sqlite3.connect( 'animals.db' )
 
 cursor = conn.cursor()
 
+cursor.execute( 'DROP TABLE IF EXISTS Region;' )
+cursor.execute( ''' CREATE TABLE Region
+                  (  NAME  VARCHAR(64) NOT NULL,
+                     PRIMARY KEY (NAME) ); ''' )
 
 cursor.execute( 'DROP TABLE IF EXISTS Exhibit;' )
 cursor.execute( ''' CREATE TABLE Exhibit
@@ -21,6 +25,7 @@ cursor.execute( ''' CREATE TABLE Exhibit
                      OCT_PROBABILITY   DOUBLE CHECK (OCT_PROBABILITY BETWEEN 0 AND 1),
                      NOV_PROBABILITY   DOUBLE CHECK (NOV_PROBABILITY BETWEEN 0 AND 1),
                      DEC_PROBABILITY   DOUBLE CHECK (DEC_PROBABILITY BETWEEN 0 AND 1),
+                     FOREIGN KEY (REGION) REFERENCES Region(Name),
                      PRIMARY KEY (NAME) ); ''' )
 
 cursor.execute( 'DROP TABLE IF EXISTS Animal;' )
@@ -57,11 +62,48 @@ cursor.execute( ''' CREATE TABLE EnclosureViewing
                      EXHIBIT                          VARCHAR(64) NOT NULL,
                      ENCLOSURE_TYPE                   VARCHAR(64) NOT NULL,
                      SEASONALLY_OFF_DISPLAY_MESSAGE   TEXT,     
-                     X_COORD                    INTEGER     NOT NULL,
-                     Y_COORD                    INTEGER     NOT NULL,
+                     X_COORD                          FLOAT       NOT NULL,
+                     Y_COORD                          FLOAT       NOT NULL,
                      FOREIGN KEY (SPECIES) REFERENCES Animal,
                      FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(Name),
                      PRIMARY KEY (SPECIES, EXHIBIT, X_COORD, Y_COORD) ); ''' )
+
+cursor.execute( 'DROP TABLE IF EXISTS Pavilion;' )
+cursor.execute( ''' CREATE TABLE Pavilion
+                  (  NAME        VARCHAR(64) NOT NULL,
+                     REGION      VARCHAR(64),
+                     DESCRIPTION TEXT        NOT NULL,
+                     X_COORD     FLOAT       NOT NULL,
+                     Y_COORD     FLOAT       NOT NULL,
+                     FOREIGN KEY (REGION) REFERENCES Region(Name),
+                     PRIMARY KEY (NAME) ); ''' )
+
+regions = [
+   (
+      'Austrailasia',
+   ),
+   (
+      'Eurasia Wilds',
+   ),
+   (
+      'Tundra Trek',
+   ),
+   (
+      'Americas',
+   ),
+   (
+      'Canadian Domain',
+   ),
+   (
+      'Africa',
+   ),
+   (
+      'Indo-Malaya',
+   ),
+   (
+      'Discovery Zone',
+   )
+]
 
 exhibits = [
    (
@@ -9926,6 +9968,14 @@ enclosureViewings =\
       40.25                   # Y coordinate on map
    ),
    (
+      'Great Horned Owl',
+      'Americas Pavilion',
+      'Outdoor',
+      None,                   # Seasonally off-display message
+      51.5,                   # X coordinate on map
+      40.25                   # Y coordinate on map
+   ),
+   (
       'Green And Black Poison Dart Frog',
       'Americas Pavilion',
       'Indoor',
@@ -10236,14 +10286,6 @@ enclosureViewings =\
       '''The white-faced sakis are inside for the season. They can be seen outside again in the spring.''',
       52.75,                  # X coordinate on map
       40.75                   # Y coordinate on map
-   ),
-   (
-      'Great Horned Owl',
-      'Americas Pavilion',
-      'Outdoor',
-      None,                   # Seasonally off-display message
-      50.625,                 # X coordinate on map
-      38.625                  # Y coordinate on map
    ),
    (
       'North American River Otter',
@@ -11167,64 +11209,64 @@ enclosureViewings =\
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65.375,                 # X coordinate on map
-      80.5                    # Y coordinate on map
+      65,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'Clouded Leopard',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65.375,                 # X coordinate on map
-      80.5                    # Y coordinate on map
+      65,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'Giant Gourami',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65.375,                 # X coordinate on map
-      80.5                    # Y coordinate on map
+      65,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'Gooty Sapphire Ornamental Tarantula',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65.375,                 # X coordinate on map
-      80.5                    # Y coordinate on map
+      65,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'Malayan Walking Stick',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65.375,                 # X coordinate on map
-      80.5                    # Y coordinate on map
+      65,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'Malaysian Stick Insect Jungle Wood Nymph',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65.375,                 # X coordinate on map
-      80.5                    # Y coordinate on map
+      65,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'Red-Tailed Green Ratsnake',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65.375,                 # X coordinate on map
-      80.5                    # Y coordinate on map
+      65,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'Wrinkled Hornbill',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65.375,                 # X coordinate on map
-      80.5                    # Y coordinate on map
+      65,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
 
    # Goat World
@@ -11304,6 +11346,72 @@ enclosureViewings =\
    )
 ]
 
+pavilions = [
+   (
+      'Australasia Pavilion',
+      'Australasia',
+      '''Explore a variety of flora and fauna from Oceania and Southeast Asia. Birdwatch for species like cockatoos, Victoria
+         crowned pigeons, and the elusive tawny frogmouth. Venture through the jungle to find a variety of species of reptiles and
+         invertebrates, most notably the Komodo dragons. Stop by the Southern hairy-nosed wombats, and then exit through the Great
+         Barrier Reef exhibit where you can spot lionfish, seahorses, jellyfish, and much more.'''.replace( '\n', ' ' ),
+      62.75,                                    # X coordinate on map
+      35.75                                     # Y coordinate on map
+   ),
+   (
+      'Greenhouse',
+      None,                                     # Region
+      '''Take a peak into the zoo's flora collection. See plant species from all pavilions of the zoo, and in all sizes.''',
+      59,                                       # X coordinate on map
+      19                                        # Y coordinate on map
+   ),
+   (
+      'Americas Pavilion',
+      'Americas',
+      '''View species in a variety of habitats from all across the Americas. Begin with the tropical birds and primates of South
+         America. Next venture through a number of aquatic habitats, and into the everglades wing where you can spot a number of
+         invertebrates and the American Alligators. Move through the Costa Rican wing, and enjoy the playful river otters. Finally
+         see a variety of North American reptiles, including the native Blanding's turtle.'''.replace( '\n', ' ' ),
+      51,                                       # X coordinate on map
+      38                                        # Y coordinate on map
+   ),
+   (
+      'African Rainforest Pavilion',
+      'Africa',
+      '''Experience Africa's breathtaking rainforests as this pavilion provides a home to a wide range of Africa's most stunning
+         species. Watch intelligent gorillas, playful lemurs, charismatic pygmy hippos, and so much more.'''.replace( '\n', ' ' ),
+      54,                                       # X coordinate on map
+      84                                        # Y coordinate on map
+   ),
+   (
+      'Indo-Malaya Pavilion',
+      'Indo-Malaya',
+      '''Walk through this expansive pavilion which captures the beauty and scale of the beautiful Indonesian rainforest pavilions.
+         Watch orangutans and gibbons swing through the tree canopy, listen to the calls of the tropical birds, and watch a number
+         of species of reptile scurry across the forest floor.'''.replace( '\n', ' ' ),
+      60.25,                                    # X coordinate on map
+      83                                        # Y coordinate on map
+   ),
+   (
+      'Malayan Woods Pavilion',
+      'Indo-Malaya',
+      '''Come in and spot the clouded leopars and experience the forests of Malaysian as you walk through this pavilion.''',
+      65.5,                                     # X coordinate on map
+      79.25                                     # Y coordinate on map
+   ),
+   (
+      'Greater One-Horned Rhinoceros Pavilion',
+      'Indo-Malaya',
+      '''Come in and spot the clouded leopars and experience the forests of Malaysian as you walk through this pavilion.''',
+      66.25,                                    # X coordinate on map
+      76                                        # Y coordinate on map
+   )
+]
+
+cursor.executemany( ''' INSERT INTO Region (
+                           NAME
+                        ) 
+                        VALUES (?) ''', regions )
+
 cursor.executemany( ''' INSERT INTO Exhibit (
                            NAME,
                            REGION,
@@ -11348,11 +11456,6 @@ cursor.executemany( ''' INSERT INTO Enclosure (
                         ) 
                         VALUES (?, ?, ?, ?, ?) ''', enclosures )
 
-for i, row in enumerate(enclosureViewings):
-    if len(row) != 6:
-        print(f"❌ Problem at index {i}: length = {len(row)}")
-        print("   Tuple:", row)
-
 cursor.executemany( ''' INSERT INTO EnclosureViewing (
                            SPECIES,
                            EXHIBIT,
@@ -11362,6 +11465,15 @@ cursor.executemany( ''' INSERT INTO EnclosureViewing (
                            Y_COORD
                         ) 
                         VALUES (?, ?, ?, ?, ?, ?) ''', enclosureViewings )
+
+cursor.executemany( ''' INSERT INTO Pavilion (
+                           NAME,
+                           REGION,
+                           DESCRIPTION,
+                           X_COORD,
+                           Y_COORD
+                        ) 
+                        VALUES (?, ?, ?, ?, ?) ''', pavilions )
 
 conn.commit()
 conn.close()

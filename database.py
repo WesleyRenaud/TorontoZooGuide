@@ -194,6 +194,31 @@ class Database():
                                 seasonal_viewing_information=animal[12] )
       
       return animal_info
+   
+
+   def get_pavilions( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  p.NAME,
+                  p.REGION,
+                  p.DESCRIPTION,
+                  p.X_COORD,
+                  p.Y_COORD
+               FROM Pavilion p;
+         """ )
+      
+      pavilion_data = data.fetchall()
+
+      pavilions = []
+      for pavilion in pavilion_data: 
+         pavilions.append( zoo.Pavilion( name=pavilion[0], region=pavilion[1], description=pavilion[2], x_coord=pavilion[3],
+                                         y_coord=pavilion[4] ) )
+
+      cur.close()
+
+      return pavilions
       
 
    def get_animals_matching_query( self, query ):
@@ -219,3 +244,29 @@ class Database():
       cur.close()
 
       return animals
+   
+
+   def get_pavilions_matching_query( self, query ):
+      cur = self.conn.cursor()
+
+      pattern = f"%{query}%"
+      data = cur.execute(
+         """   SELECT
+                  p.NAME,
+                  p.REGION,
+                  p.X_COORD,
+                  p.Y_COORD
+               FROM Pavilion p
+               WHERE p.NAME LIKE ? ESCAPE '\\';
+         """, (pattern, ) )
+      
+      pavilion_data = data.fetchall()
+
+      pavilions = []
+      for pavilion in pavilion_data: 
+         pavilions.append( zoo.Pavilion( name=pavilion[0], region=pavilion[1], x_coord=pavilion[2], y_coord=pavilion[3] ) )
+
+      cur.close()
+
+      return pavilions
+   

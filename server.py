@@ -1,7 +1,9 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
+import mimetypes
+import os
 import sys
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 import database
 
@@ -9,81 +11,46 @@ import database
 class MyHandler( BaseHTTPRequestHandler ):
    database = database.Database()
 
+   def _send_file( self, filepath, content_type=None ):
+      if not os.path.isfile( filepath ):
+         self.send_error( 404, "Not Found" )
+         return
+
+      self.send_response( 200 )
+      if not content_type:
+         content_type, _ = mimetypes.guess_type( filepath )
+      self.send_header( "Content-type", content_type or "application/octet-stream" )
+      self.end_headers()
+
+      with open( filepath, "rb" ) as fp:
+         while True:
+               chunk = fp.read( 8192 )
+               if not chunk:
+                  break
+               self.wfile.write( chunk )
+
    def do_GET( self ):
       parsed = urlparse( self.path )
+      path = unquote( parsed.path )  # handles %20 etc
 
-      if parsed.path in ['/map.html']:
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'text/html' )
-         self.end_headers()
-         with open( './pages/map.html', 'rb' ) as fp:
-            while True:
-               chunk = fp.read( 8192 )
-               if not chunk:
-                  break
-               self.wfile.write( chunk )
+      # Pages
+      if path == "/map.html":
+         return self._send_file( "./pages/map.html", "text/html" )
+      if path == "/animals.html":
+         return self._send_file( "./pages/animals.html", "text/html" )
+      if path == "/itinerary.html":
+         return self._send_file( "./pages/itinerary.html", "text/html" )
 
-      
-      if parsed.path in ['/animals.html']:
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'text/html' )
-         self.end_headers()
-         with open( './pages/animals.html', 'rb' ) as fp:
-            while True:
-               chunk = fp.read( 8192 )
-               if not chunk:
-                  break
-               self.wfile.write( chunk )
+      # Static folders (serve anything inside)
+      if path.startswith( "/styles/" ):
+         return self._send_file( "." + path )
+      if path.startswith( "/scripts/" ):
+         return self._send_file("." + path )   # serves ALL modules
+      if path.startswith( "/images/" ):
+         return self._send_file( "." + path )
 
-      if parsed.path in ['/itinerary.html']:
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'text/html' )
-         self.end_headers()
-         with open( './pages/itinerary.html', 'rb' ) as fp:
-            while True:
-               chunk = fp.read( 8192 )
-               if not chunk:
-                  break
-               self.wfile.write( chunk )
-               
-
-      elif parsed.path == '/styles/styles.css':
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'text/css' )
-         self.end_headers()
-         with open( './styles/styles.css', 'rb' ) as fp:
-            while True:
-               chunk = fp.read( 8192 )
-               if not chunk:
-                  break
-               self.wfile.write( chunk )
-
-
-      elif parsed.path == '/scripts/scripts.js':
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'application/javascript' )
-         self.end_headers()
-         with open('./scripts/scripts.js', 'rb') as fp:
-            while True:
-               chunk = fp.read( 8192 )
-               if not chunk:
-                  break
-               self.wfile.write( chunk )
-               
-
-      elif 'png' in parsed.path:
-         image_path = parsed.path.replace( '%20', ' ' )
-         image_path = image_path[1:]
-
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'image/png' )
-         self.end_headers()
-         with open( image_path, 'rb' ) as fp:
-            while True:
-               chunk = fp.read( 8192 )
-               if not chunk:
-                  break
-               self.wfile.write( chunk )
+      # Otherwise
+      self.send_error( 404, "Not Found" )
 
 
    def do_POST( self ):
@@ -155,19 +122,54 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
-      elif self.path == '/search-animals':
+      elif self.path == '/get-pavilions':
          content_length = int( self.headers[ 'Content-Length'] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
-         query = data.get( 'query' )
-
-         animals = self.database.get_animals_matching_query( query )
+         pavilions = self.database.get_pavilions()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"animals": [animal.to_dict() for animal in animals]}
+         response = {"pavilions": [pavilion.to_dict() for pavilion in pavilions]}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/search':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         query = ( data.get( 'query' ) or '' ).strip()
+         include_animals = bool( data.get( 'includeAnimals' ) )
+         include_pavilions = bool( data.get( 'includePavilions' ) )
+
+         animals_json = []
+         pavilions_json = []
+
+         if include_animals and query:
+            animals = self.database.get_animals_matching_query( query ) or []
+            for animal in animals:
+                  d = animal.to_dict()
+                  d['type'] = d.get( 'type', 'animal' )
+                  animals_json.append( d )
+
+         if include_pavilions and query:
+            pavilions = self.database.get_pavilions_matching_query( query ) or []
+            for pavilion in pavilions:
+                  d = pavilion.to_dict()
+                  d['type'] = d.get( 'type', 'pavilion' )
+                  pavilions_json.append( d )
+
+         response = {
+            "animals": animals_json,
+            "pavilions": pavilions_json,
+         }
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
