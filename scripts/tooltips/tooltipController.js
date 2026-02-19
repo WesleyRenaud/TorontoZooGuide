@@ -1,5 +1,6 @@
 import { getRendererForItem } from './tooltipRenderers.js';
 import { positionTooltip } from '../utils/dom.js';
+import { setMarkerToAnimalIcon } from '../markers/markerVisuals.js';
 
 export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
    let openMarker = null;
@@ -42,6 +43,9 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
       positionTooltip(tooltipEl, markerEl);
 
       installGlobalListeners();
+
+      // ✅ ensure marker matches whatever card is showing
+      showIndex(Number(carouselEl?.dataset.index || 0) || 0);
    }
 
    function close() {
@@ -72,8 +76,12 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
       content.appendChild(carouselEl);
       tooltipEl.appendChild(content);
 
-      if (items.length > 1) tooltipEl.appendChild(createNav());
-      else tooltipEl.classList.add('no-arrows');
+      if (items.length > 1) {
+         tooltipEl.classList.remove('no-arrows');
+         tooltipEl.appendChild(createNav());
+      } else {
+         tooltipEl.classList.add('no-arrows');
+      }
    }
 
    function createNav() {
@@ -103,17 +111,46 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
       return el;
    }
 
+   function showIndex(newIndex) {
+      if (!carouselEl) return;
+
+      const cards = Array.from(carouselEl.children);
+      if (cards.length === 0) return;
+
+      const safeIndex = Math.max(0, Math.min(cards.length - 1, newIndex));
+
+      cards.forEach((c) => (c.style.display = 'none'));
+      if (cards[safeIndex]) cards[safeIndex].style.display = 'flex';
+
+      carouselEl.dataset.index = String(safeIndex);
+
+      // ✅ marker icon follows the active animal card
+      syncMarkerToIndex(safeIndex);
+   }
+
+   function syncMarkerToIndex(index) {
+      if (!openMarker) return;
+
+      const item = itemsForOpen[index] || null;
+      if (!item) return;
+
+      const type = String(item.type || '').toLowerCase();
+      if (type !== 'animal') return;
+
+      setMarkerToAnimalIcon(openMarker, item);
+   }
+
    function step(delta) {
       if (!carouselEl) return;
+
       const cards = Array.from(carouselEl.children);
       if (cards.length === 0) return;
 
       let index = Number(carouselEl.dataset.index || 0);
-      cards[index].style.display = 'none';
+      if (!Number.isFinite(index)) index = 0;
 
       index = (index + delta + cards.length) % cards.length;
-      cards[index].style.display = 'flex';
-      carouselEl.dataset.index = index;
+      showIndex(index);
    }
 
    function installGlobalListeners() {
@@ -123,11 +160,11 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
       document.addEventListener('click', (e) => {
          const speciesLink = e.target.closest('.species-link');
          if (speciesLink) {
-         e.stopPropagation();
-         const idx = Number(speciesLink.dataset.index);
-         const item = itemsForOpen[idx];
-         if (onAnimalCardClick) onAnimalCardClick(item);
-         return;
+            e.stopPropagation();
+            const idx = Number(speciesLink.dataset.index);
+            const item = itemsForOpen[idx];
+            if (onAnimalCardClick) onAnimalCardClick(item);
+            return;
          }
 
          if (!isOpen()) return;
@@ -147,14 +184,11 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
    function jumpTo(matchFn) {
       if (!carouselEl) return;
 
-      const items = itemsForOpen;
-      const idx = items.findIndex(matchFn);
+      const idx = itemsForOpen.findIndex(matchFn);
       const newIndex = idx >= 0 ? idx : 0;
 
-      const cards = Array.from(carouselEl.children);
-      cards.forEach((c) => (c.style.display = 'none'));
-      if (cards[newIndex]) cards[newIndex].style.display = 'flex';
-      carouselEl.dataset.index = newIndex;
+      // ✅ this is the key: focus flow uses jumpTo()
+      showIndex(newIndex);
    }
 
    function getOpenItems() {

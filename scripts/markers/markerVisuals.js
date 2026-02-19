@@ -45,3 +45,22 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
    markerEl.style.backgroundColor = 'rgba(94,150,0,0.95)';
    markerEl.textContent = String(itemsAtPoint.length);
 }
+
+
+export function setMarkerToAnimalIcon(markerEl, animal) {
+   if (!markerEl || !animal) return;
+
+   const colour = likelihoodToColor(animal.likelihood);
+   const colourForUrl = String(colour || '').replace('#', '');
+
+   markerEl.textContent = '';
+   markerEl.style.backgroundColor = colour;
+   markerEl.style.backgroundImage = getAnimalIconUrl(
+      animal.exhibit,
+      animal.species,
+      colourForUrl
+   );
+   markerEl.style.backgroundRepeat = 'no-repeat';
+   markerEl.style.backgroundPosition = 'center';
+   markerEl.style.backgroundSize = 'cover';
+}
