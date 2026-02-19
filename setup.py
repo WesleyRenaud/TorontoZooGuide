@@ -7958,7 +7958,7 @@ enclosures =\
    ),
    (
       'Red Panda',
-      'Eurasia Wilds',
+      'Africa Savanna',
       0,                                           # Part of seasonal exhibit
       'Year-round',                                # Seasonal viewing summary
       None                                         # Seasonal viewing information (for seasonal exhibits)
@@ -9684,7 +9684,7 @@ enclosureViewings =\
    ),
    (
       'Red Panda',
-      'Eurasia Wilds',
+      'Africa Savanna',
       'Outdoor',
       '''The red pandas are likely off-display today due to particularly harsh conditions.''',
       # 76,
