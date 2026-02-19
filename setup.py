@@ -7183,9 +7183,7 @@ animals = [
          the mother for up to 2 years, learning hunting and survival skills before dispersing to establish their own territories.
          Sexual maturity is reached at 3–4 years, and tigers can live 15–20 years in the wild and up to 25 years in managed care.'''
          .replace( '\n', ' ' ),
-      '''The Toronto Zoo is home to a pair of Sumatran tigers, male Hari and female Kemala. Hari is significantly larger than
-         Kemala. The tigers are kept in separate habitats, rotating between them. On a given visit you will see each one on either
-         side of the bridge.'''.replace( '\n', ' ' )
+      '''The Toronto Zoo is home to a female Sumatran tiger, Kemala.'''
    ),
 
    # Malayan Woods Pavilion
@@ -11186,14 +11184,14 @@ enclosureViewings =\
       64.25,                  # X coordinate on map
       76.25                   # Y coordinate on map
    ),
-   (
-      'Sumatran Tiger',
-      'Indo-Malaya Outdoor',
-      'Outdoor',
-      '''The Sumatran tigers are likely off-display today due to particularly harsh conditions.''',
-      60.625,                 # X coordinate on map
-      79.5                    # Y coordinate on map
-   ),
+   # (
+   #    'Sumatran Tiger',
+   #    'Indo-Malaya Outdoor',
+   #    'Outdoor',
+   #    '''The Sumatran tigers are likely off-display today due to particularly harsh conditions.''',
+   #    60.625,                 # X coordinate on map
+   #    79.5                    # Y coordinate on map
+   # ),
    (
       'Sumatran Tiger',
       'Indo-Malaya Outdoor',
