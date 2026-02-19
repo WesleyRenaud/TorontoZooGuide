@@ -13,12 +13,13 @@ import { createFocusController } from '../focus/focusController.js';
 import { initFocusFromQuery } from '../focus/focusFromQuery.js';
 import { createOffDisplayBanner } from '../ui/offDisplayBanner.js';
 import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
-import { coordKey } from '../utils/coords.js';
+import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
 
 export function initMapPage() {
    const mapInner = document.getElementById('mapInner');
    const mapPreset = document.getElementById('mapPreset');
    const mapDateInput = document.getElementById('mapDate');
+   const showMapLabelsCheckbox = document.getElementById('showMapLabels');
    const includeOffDisplayCheckbox = document.getElementById('includeOffDisplayAnimals');
    const animalSearchInput = document.getElementById('animalSearch');
 
@@ -48,6 +49,11 @@ export function initMapPage() {
          const firstAnimal = (items || []).find(i => String(i.type || '').toLowerCase() === 'animal') || null;
          offDisplay.sync(firstAnimal);
       }
+   });
+
+   initLabelVisibilityToggle({
+      checkboxEl: showMapLabelsCheckbox,
+      rootEl: document.body
    });
 
    const markers = createMarkerLayer({
