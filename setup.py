@@ -1733,12 +1733,15 @@ animals = [
       'Ailurus Fulgens',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       5,                                                             # Snow resistance (only for animals with outdoor viewing)
-      '''You can get to the red panda habitat by taking the Eurasia Wilds loop from the side with the Amur tigers. The red panda
-         enclosure will be the first one you encounter after the tigers. The red pandas will be in the second habitat, the one with
-         the glass viewing. Red pandas are most active early and late in the day, so your best chance of seeing them active is to
-         visit their enclosure first thing in the morning. Through much of the day they spend their time sleeping way up in the
-         trees. To spot them in their exhibit, look all the way up to the top branches of the tallest trees in their habitat, and
-         look for a couple of red-black furry balls.'''.replace( '\n', ' ' ),
+      # '''You can get to the red panda habitat by taking the Eurasia Wilds loop from the side with the Amur tigers. The red panda
+      #    enclosure will be the first one you encounter after the tigers. The red pandas will be in the second habitat, the one with
+      #    the glass viewing. Red pandas are most active early and late in the day, so your best chance of seeing them active is to
+      #    visit their enclosure first thing in the morning. Through much of the day they spend their time sleeping way up in the
+      #    trees. To spot them in their exhibit, look all the way up to the top branches of the tallest trees in their habitat, and
+      #    look for a couple of red-black furry balls.'''.replace( '\n', ' ' ),
+      '''The red pandas' normal habitat in Eurasia is currently under construction and inaccessible. In the meantime, the red pandas
+         have moved into a temporary habitat in the Africa savanna in between the lions and hyenas. It is across from the main
+         open-air lion viewing.'''.replace( '\n', ' ' ),
       '''Red pandas are most comfortable in the cooler weather, so visiting them from the fall through the spring will give you the
          best chance to see them active. During the summer months they spend much of their time sleeping high up in the trees. On
          the warmest summer days they may opt to spend their time inside, away from guests.'''.replace( '\n', ' ' ),
@@ -9684,8 +9687,10 @@ enclosureViewings =\
       'Eurasia Wilds',
       'Outdoor',
       '''The red pandas are likely off-display today due to particularly harsh conditions.''',
-      76,                     # X coordinate on map
-      35.25                   # Y coordinate on map
+      # 76,
+      # 35.25
+      41,                     # X coordinate on map
+      65                      # Y coordinate on map
    ),
    (
       'Snow Leopard',
@@ -10561,14 +10566,14 @@ enclosureViewings =\
       52.25,                  # X coordinate on map
       96.875                  # Y coordinate on map
    ),
-   (
-      'Southern Ground Hornbill',
-      'Africa Savanna',
-      'Outdoor',
-      '''The southern ground hornbills are off-display for the season. They can be seen outside again in the summer.''',
-      41,                     # X coordinate on map
-      65                      # Y coordinate on map
-   ),
+   # (
+   #    'Southern Ground Hornbill',
+   #    'Africa Savanna',
+   #    'Outdoor',
+   #    '''The southern ground hornbills are off-display for the season. They can be seen outside again in the summer.''',
+   #    41,                     # X coordinate on map
+   #    65                      # Y coordinate on map
+   # ),
    (
       'Southern White Rhinoceros',
       'Africa Savanna',
