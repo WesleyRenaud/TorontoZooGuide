@@ -21,6 +21,7 @@ export function initMapPage() {
    const mapDateInput = document.getElementById('mapDate');
    const showMapLabelsCheckbox = document.getElementById('showMapLabels');
    const includeOffDisplayCheckbox = document.getElementById('includeOffDisplayAnimals');
+   const includeSeasonalRestaurantsCheckbox = document.getElementById('includeSeasonalRestaurants');
    const animalSearchInput = document.getElementById('animalSearch');
 
    const tooltipEl = document.getElementById('tooltip');
@@ -77,6 +78,7 @@ export function initMapPage() {
       markers,
       focus,
       getIncludeOffDisplay: () => includeOffDisplayCheckbox?.checked ?? false,
+      getIncludeSeasonalRestaurants: () => includeSeasonalRestaurantsCheckbox?.checked ?? false,
       getSelectedTypes: () => initExploreTypeFilter.getSelectedTypes(),
    });
 
@@ -92,6 +94,7 @@ export function initMapPage() {
       mapPreset,
       mapDateInput,
       includeOffDisplayCheckbox,
+      includeSeasonalRestaurantsCheckbox,
       onUpdate: (preset, dateStr) => {
          updater.updateMap(preset, dateStr, null);
          search.refresh();

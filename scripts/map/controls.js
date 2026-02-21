@@ -1,4 +1,4 @@
-export function initMapControls({ mapPreset, mapDateInput, includeOffDisplayCheckbox, onUpdate }) {
+export function initMapControls({ mapPreset, mapDateInput, includeOffDisplayCheckbox, includeSeasonalRestaurantsCheckbox, onUpdate }) {
    if (!mapPreset || !mapDateInput || !onUpdate) {
       console.warn('[controls] missing elements:', { mapPreset, mapDateInput, onUpdate });
       return;
@@ -69,6 +69,12 @@ export function initMapControls({ mapPreset, mapDateInput, includeOffDisplayChec
 
    if (includeOffDisplayCheckbox) {
       includeOffDisplayCheckbox.addEventListener('change', () => {
+         refetch();
+      });
+   }
+
+   if (includeSeasonalRestaurantsCheckbox) {
+      includeSeasonalRestaurantsCheckbox.addEventListener('change', () => {
          refetch();
       });
    }

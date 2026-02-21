@@ -12,14 +12,14 @@ class Database():
 
    # Returns all animals which may be viewable in the given month with their likelihoods (probability from 0 to 1)
    def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False, speciesToInclude = False ):
+      cur = self.conn.cursor()
+
       if temp == None:
          temp = self.zoo_util.get_average_temperature( month, day )
          sigma = 3
       else:
          sigma = 2
       snow_likelihood = self.zoo_util.get_snow_likelihood( month, day )
-
-      cur = self.conn.cursor()
    
       # We need to know whether the animal is viewable indoors and/or outdoors. If they are viewable in both, then we need to calculate
       # whether they are viewable outside or not in this case.
@@ -221,8 +221,10 @@ class Database():
       return pavilions
    
 
-   def get_restaurants( self ):
+   def get_restaurants( self, month, include_seasonal_restaurants ):
       cur = self.conn.cursor()
+
+      is_peak_season_month = self.zoo_util.is_peak_season_month( month )
 
       data = cur.execute(
          """   SELECT
@@ -230,6 +232,7 @@ class Database():
                   r.LOCATION,
                   r.SUB_LOCATION,
                   r.SEASONAL_SCHEDULE,
+                  r.OPEN_SEASONALLY,
                   r.DESCRIPTION,
                   r.MENU_LINK,
                   r.X_COORD,
@@ -241,9 +244,11 @@ class Database():
 
       restaurants = []
       for restaurant in restaurant_data: 
-         restaurants.append( zoo.Restaurant( name=restaurant[0], location=restaurant[1], sub_location=restaurant[2],
-                                             seasonal_schedule=restaurant[3], description=restaurant[4], menu_link=restaurant[5],
-                                             x_coord=restaurant[6], y_coord=restaurant[7] ) )
+         open_seasonally = restaurant[4]
+         if is_peak_season_month or include_seasonal_restaurants or not open_seasonally:
+            restaurants.append( zoo.Restaurant( name=restaurant[0], location=restaurant[1], sub_location=restaurant[2],
+                                                seasonal_schedule=restaurant[3], description=restaurant[5], menu_link=restaurant[6],
+                                                x_coord=restaurant[7], y_coord=restaurant[8] ) )
 
       cur.close()
 

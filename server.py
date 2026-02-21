@@ -141,7 +141,10 @@ class MyHandler( BaseHTTPRequestHandler ):
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
-         restaurants = self.database.get_restaurants()
+         month = data.get( 'month' )
+         include_seasonal_restaurants = data.get( 'includeSeasonalRestaurants' )
+
+         restaurants = self.database.get_restaurants( month, include_seasonal_restaurants )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )

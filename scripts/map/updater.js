@@ -7,6 +7,7 @@ export function createMapUpdater({
    markers,
    focus,
    getIncludeOffDisplay,
+   getIncludeSeasonalRestaurants,
    getSelectedTypes,
 }) {
    let lastPreset = null;
@@ -45,6 +46,7 @@ export function createMapUpdater({
 
    async function run(dateCtx, options = null) {
       const includeOffDisplayAnimals = getIncludeOffDisplay();
+      const includeSeasonalRestaurants = getIncludeSeasonalRestaurants();
 
       let selectedTypes = (getSelectedTypes() || []).map(t => String(t).toLowerCase());
 
@@ -76,6 +78,7 @@ export function createMapUpdater({
          day: dateCtx.day,
          temp: dateCtx.temp ?? null,
          includeOffDisplayAnimals,
+         includeSeasonalRestaurants,
          speciesToInclude,
       };
 

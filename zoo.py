@@ -267,3 +267,12 @@ class Zoo_Util:
       cdf = 0.5 * (1 + math.erf( z / math.sqrt( 2) ) )
 
       return round( 1.0 - cdf, 3 )
+   
+
+   def is_peak_season_month( self, month ):
+      month = self.get_month_int( month )
+
+      if month >= 5 and month <= 10:
+         return True
+      
+      return False
