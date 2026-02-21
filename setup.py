@@ -78,6 +78,19 @@ cursor.execute( ''' CREATE TABLE Pavilion
                      FOREIGN KEY (REGION) REFERENCES Region(Name),
                      PRIMARY KEY (NAME) ); ''' )
 
+cursor.execute( 'DROP TABLE IF EXISTS Restaurant;' )
+cursor.execute( ''' CREATE TABLE Restaurant
+                  (  NAME                 VARCHAR(64) NOT NULL,
+                     LOCATION             VARCHAR(64),
+                     SUB_LOCATION         VARCHAR(64),
+                     SEASONAL_SCHEDULE    TEXT        NOT NULL,
+                     DESCRIPTION          TEXT        NOT NULL,
+                     MENU_LINK            TEXT,
+                     X_COORD              FLOAT       NOT NULL,
+                     Y_COORD              FLOAT       NOT NULL,
+                     FOREIGN KEY (LOCATION) REFERENCES Region(Name),
+                     PRIMARY KEY (NAME) ); ''' )
+
 regions = [
    (
       'Austrailasia',
@@ -102,6 +115,9 @@ regions = [
    ),
    (
       'Discovery Zone',
+   ),
+   (
+      'Front Courtyard',
    )
 ]
 
@@ -11410,6 +11426,162 @@ pavilions = [
    )
 ]
 
+restaurants = [
+   (
+      'Peacock Café',                                                                                    # Name
+      'Front Courtyard',                                                                                 # Location
+      None,                                                                                              # Sub-location
+      'Open Daily Year-Round',                                                                           # Seasonal schedule
+      '''Enjoy Tim Hortons fresh coffee, hot and cold beverages, breakfast sandwiches, pastries and more.''',
+      '''https://www.torontozoo.com/!/pdfs/food/Peacock%20Menu.pdf''',                                   # Menu link
+      67.25,                                                                                             # X coordinate on map
+      69.25                                                                                              # Y coordinate on map
+   ),
+   (
+      'Africa Restaurant',                                                                               # Name
+      'Africa',                                                                                          # Location
+      None,                                                                                              # Sub-location
+      'Open Daily Year-Round (Weather Permitting)',                                                      # Seasonal schedule
+      '''Enjoy a variety of cuisine including Pizza Pizza, Smokes Poutinerie (seasonal), and our very own Zoo Grill. *Fully Licensed.
+      '''.replace( '\n', ' ' ),
+      '''https://www.torontozoo.com/!/pdfs/food/Africa%20Menu%202025.pdf?''',                            # Menu link
+      51,                                                                                                # X coordinate on map
+      68                                                                                                 # Y coordinate on map
+   ),
+   (
+      'BeaverTails Trailer',                                                                             # Name
+      'Front Courtyard',                                                                                 # Location
+      None,                                                                                              # Sub-location
+      'Off-Season: Open Weekends & Holidays • Peak Season: Open Daily (Weather Permitting)',             # Seasonal schedule
+      '''Iconic hand-stretched pastries, creating delicious memories since 1978.''',
+      '''https://www.torontozoo.com/!/pdfs/food/BeavertailsMenu.pdf''',                                  # Menu link
+      64,                                                                                                # X coordinate on map
+      62.75                                                                                              # Y coordinate on map
+   ),
+   (
+      'Americas Pretzel Bar',                                                                            # Name
+      'Americas',                                                                                        # Location
+      None,                                                                                              # Sub-location
+      'Off-Season: Open Weekends • Peak Season: Daily (Weather Permitting)',                             # Seasonal schedule
+      '''Serving warm Jumbo pretzels, assorted Craft beers, wine, seltzers, soft drinks, ice cream, and snacks''',
+      None,                                                                                              # Menu link
+      56,                                                                                                # X coordinate on map
+      40                                                                                                 # Y coordinate on map
+   ),
+   (
+      'Caribou Café',                                                                                    # Name
+      'Tundra Trek',                                                                                     # Location
+      None,                                                                                              # Sub-location
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Located next to the arctic wolves, enjoy a variety of options including Zoo Grill, and Pizza Pizza! *Fully Licensed.''',
+      '''https://www.torontozoo.com/!/pdfs/food/Caribou%20Cafe%20Menu%202025.pdf?''',                    # Menu link
+      56.25,                                                                                             # X coordinate on map
+      36                                                                                                 # Y coordinate on map
+   ),
+   (
+      'BeaverTails Lodge',                                                                               # Name
+      'Tundra Trek',                                                                                     # Location
+      None,                                                                                              # Sub-location
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Delicious whole-wheat deep fried pastry with a variety of toppings plus cold drinks.''',
+      'https://www.torontozoo.com/!/pdfs/food/BeavertailsMenu.pdf',                                      # Menu link
+      59,                                                                                                # X coordinate on map
+      25.5                                                                                               # Y coordinate on map
+   ),
+   (
+      'Thorntree Café',                                                                                  # Name
+      'Africa',                                                                                          # Location
+      None,                                                                                              # Sub-location
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Come hang out for bubble tea and smoothies at Palgong Tea near the Masai giraffes!''',
+      '''https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf''',                                     # Menu link
+      54.75,                                                                                             # X coordinate on map
+      91.75                                                                                              # Y coordinate on map
+   ),
+   (
+      'Eurasia Pizza Pizza',                                                                             # Name
+      'Eurasia Wilds',                                                                                   # Location
+      None,                                                                                              # Sub-location
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Enjoy a hot slice of Pizza Pizza or order a whole pizza for the whole family!''',
+      'https://www.torontozoo.com/!/pdfs/food/Eurasia%20pizza%20pizza%20menu%202025.pdf',                # Menu link
+      67.75,                                                                                             # X coordinate on map
+      30.75                                                                                              # Y coordinate on map
+   ),
+   (
+      'Souvlaki Bros',                                                                                   # Name
+      'Africa',                                                                                          # Location
+      'Africa Restaurant',                                                                               # Sub-location
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Enjoy Chicken Souvlaki, Falafel, Greek Salad, Wraps and Churros!''',
+      'https://www.torontozoo.com/!/pdfs/food/Souvlaki%20Bros%20Menu.pdf',                               # Menu link
+      51.75,                                                                                             # X coordinate on map
+      68.75                                                                                              # Y coordinate on map
+   ),
+   (
+      'Caribou Café Palgong',                                                                            # Name
+      'Tundra Trek',                                                                                     # Location
+      None,                                                                                              # Sub-location
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Located next to the arctic wolves, outside of Caribou Café!''',
+      'https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf',                                         # Menu link
+      57.25,                                                                                             # X coordinate on map
+      36.5                                                                                               # Y coordinate on map
+   ),
+   (
+      'Polar Patio',                                                                                     # Name
+      'Tundra Trek',                                                                                     # Location
+      None,                                                                                              # Sub-location
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Join us at our fully licensed Polar Patio next to the Arctic wolves, enjoy beer, wine, ciders & seltzers or try our wings,
+         nachos, poutine and tenders!'''.replace( '\n', ' ' ),
+      'https://www.torontozoo.com/!/pdfs/food/Polar%20Patio%20Menu%202024.pdf',                          # Menu link
+      56.25,                                                                                             # X coordinate on map
+      33.5                                                                                               # Y coordinate on map
+   ),
+   (
+      'Savanna Snack Bar',                                                                               # Name
+      'Africa Savanna',                                                                                  # Location
+      None,                                                                                              # Sub-location
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Snacks, Beverages, Ice cream, Beer, Wine, and Pizza Pizza!''',
+      'https://www.torontozoo.com/!/pdfs/food/Toronto%20Zoo%20Savana%20Hut%20Menu%20Spring%202025.pdf',  # Menu link
+      42,                                                                                                # X coordinate on map
+      57.25                                                                                              # Y coordinate on map
+   ),
+   (
+      'Simba Safari Lodge',                                                                              # Name
+      'Africa Savanna',                                                                                  # Location
+      None,                                                                                              # Sub-location
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Located overlooking the white rhinos, enjoy a variety of drinks, snacks, burgers, hot dogs, salads, poutine and chicken.
+         *Fully Licensed.'''.replace( '\n', ' ' ),
+      'https://www.torontozoo.com/!/pdfs/food/Simba%20Menu%202025.pdf?',                                 # Menu link
+      42,                                                                                                # X coordinate on map
+      92                                                                                                 # Y coordinate on map
+   ),
+   (
+      'Smokes Poutinerie Trailer',                                                                       # Name
+      'Front Courtyard',                                                                                 # Location
+      None,                                                                                              # Sub-location                                                                      
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Enjoy a variety of poutine creations.''',
+      'https://www.torontozoo.com/!/pdfs/food/Smokes-Front-Courtyard-Menu.pdf',                          # Menu link
+      64,                                                                                                # X coordinate on map
+      64                                                                                                 # Y coordinate on map
+   ),
+   (
+      'Tim Hortons Express',                                                                             # Name
+      'Tundra Trek',                                                                                     # Location
+      None,                                                                                              # Sub-location        
+      'Open Peak-Season Only (Weather Permitting)',                                                      # Seasonal schedule
+      '''Grab a quick beverage or snack including coffee, tea, iced caps, timbits, and frozen lemonade.''',
+      'https://www.torontozoo.com/!/pdfs/food/Express%20Menu%202025.pdf',                                # Menu link
+      58.75,                                                                                             # X coordinate on map
+      23.5                                                                                               # Y coordinate on map
+   )
+]
+
 cursor.executemany( ''' INSERT INTO Region (
                            NAME
                         ) 
@@ -11477,6 +11649,18 @@ cursor.executemany( ''' INSERT INTO Pavilion (
                            Y_COORD
                         ) 
                         VALUES (?, ?, ?, ?, ?) ''', pavilions )
+
+cursor.executemany( ''' INSERT INTO Restaurant (
+                           NAME,
+                           LOCATION,
+                           SUB_LOCATION,
+                           SEASONAL_SCHEDULE,
+                           DESCRIPTION,
+                           MENU_LINK,
+                           X_COORD,
+                           Y_COORD
+                        ) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?) ''', restaurants )
 
 conn.commit()
 conn.close()

@@ -1,4 +1,4 @@
-import { normalizeParameter } from './strings.js';
+import { normalizeParameter } from './normalize.js';
 
 export function likelihoodToColor(likelihood) {
    const v = Math.max(0, Math.min(100, Number(likelihood) || 0));

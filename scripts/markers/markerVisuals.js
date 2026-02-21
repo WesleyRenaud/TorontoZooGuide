@@ -1,59 +1,91 @@
 import { likelihoodToColor, getAnimalIconUrl } from '../utils/icons.js';
 
+function resetMarkerVisual(markerEl) {
+   // Clear anything from prior renders
+   markerEl.textContent = '';
+   markerEl.style.backgroundImage = 'none';
+   markerEl.style.backgroundColor = 'transparent';
+   markerEl.style.backgroundRepeat = 'no-repeat';
+   markerEl.style.backgroundPosition = 'center';
+   markerEl.style.backgroundSize = 'cover';
+}
+
+function applyGenericIcon(markerEl, iconUrl, count) {
+   // If multiple items of this same type share the coordinate, show a count badge
+   if (count > 1) {
+      markerEl.style.backgroundColor = 'rgba(94,150,0,0.95)';
+      markerEl.style.backgroundImage = 'none';
+      markerEl.textContent = String(count);
+      return;
+   }
+
+   markerEl.style.backgroundColor = 'transparent';
+   markerEl.style.backgroundImage = `url("${iconUrl}")`;
+   markerEl.style.backgroundRepeat = 'no-repeat';
+   markerEl.style.backgroundPosition = 'center';
+   markerEl.style.backgroundSize = 'cover';
+   markerEl.textContent = '';
+}
+
 export function applyMarkerVisual(markerEl, itemsAtPoint) {
-   const animals = itemsAtPoint.filter(i => String(i.type || '').toLowerCase() === 'animal');
-   const pavilions = itemsAtPoint.filter(i => String(i.type || '').toLowerCase() === 'pavilion');
+   if (!markerEl) return;
 
-   if (animals.length > 0 && pavilions.length === 0) {
-      const colour = likelihoodToColor(animals[0].likelihood);
-      const colourForUrl = colour.replace('#', '');
+   resetMarkerVisual(markerEl);
 
-      if (animals.length === 1) {
+   const items = Array.isArray(itemsAtPoint) ? itemsAtPoint : [];
+   if (items.length === 0) return;
+
+   // ✅ Markers are single-type, so just read the first item
+   const type = String(items[0]?.type || '').toLowerCase();
+   const count = items.length;
+
+   if (type === 'animal') {
+      const a = items[0];
+
+      const colour = likelihoodToColor(a.likelihood);
+      const colourForUrl = String(colour || '').replace('#', '');
+
+      if (count === 1) {
          markerEl.style.backgroundColor = colour;
          markerEl.style.backgroundImage = getAnimalIconUrl(
-         animals[0].exhibit,
-         animals[0].species,
-         colourForUrl
+            a.exhibit,
+            a.species,
+            colourForUrl
          );
          markerEl.style.backgroundSize = 'cover';
          markerEl.textContent = '';
       } else {
          markerEl.style.backgroundImage = 'none';
          markerEl.style.backgroundColor = colour;
-         markerEl.textContent = String(animals.length);
+         markerEl.textContent = String(count);
       }
       return;
    }
 
-   if (pavilions.length > 0 && animals.length === 0) {
-      markerEl.textContent = '';
-      markerEl.style.backgroundColor = 'transparent';
-      markerEl.style.backgroundImage = 'url("/images/generic-icons/pavilion.png")';
-      markerEl.style.backgroundRepeat = 'no-repeat';
-      markerEl.style.backgroundPosition = 'center';
-      markerEl.style.backgroundSize = 'cover';
-
-      if (pavilions.length > 1) {
-         markerEl.style.backgroundColor = 'rgba(94,150,0,0.95)';
-         markerEl.style.backgroundImage = 'none';
-         markerEl.textContent = String(pavilions.length);
-      }
+   if (type === 'pavilion') {
+      applyGenericIcon(markerEl, '/images/generic-icons/pavilion.png', count);
       return;
    }
 
-   markerEl.style.backgroundImage = 'none';
+   if (type === 'restaurant') {
+      markerEl.classList.add('marker-restaurant');
+      applyGenericIcon(markerEl, '/images/generic-icons/restaurant.png', count);
+      return;
+   }
+
+   // Fallback for future types
    markerEl.style.backgroundColor = 'rgba(94,150,0,0.95)';
-   markerEl.textContent = String(itemsAtPoint.length);
+   markerEl.textContent = String(count);
 }
-
 
 export function setMarkerToAnimalIcon(markerEl, animal) {
    if (!markerEl || !animal) return;
 
+   resetMarkerVisual(markerEl);
+
    const colour = likelihoodToColor(animal.likelihood);
    const colourForUrl = String(colour || '').replace('#', '');
 
-   markerEl.textContent = '';
    markerEl.style.backgroundColor = colour;
    markerEl.style.backgroundImage = getAnimalIconUrl(
       animal.exhibit,
@@ -63,4 +95,5 @@ export function setMarkerToAnimalIcon(markerEl, animal) {
    markerEl.style.backgroundRepeat = 'no-repeat';
    markerEl.style.backgroundPosition = 'center';
    markerEl.style.backgroundSize = 'cover';
+   markerEl.textContent = '';
 }

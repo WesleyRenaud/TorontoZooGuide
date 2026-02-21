@@ -40,7 +40,7 @@ export function createMarkerLayer({ mapInner, tooltip, hover }) {
          el.removeAttribute('title');
 
          const key = coordKey(group.x, group.y);
-         if (!key) return;                   // ✅ add this
+         if (!key) return;
          markerElsByCoord.set(key, el);
 
          applyMarkerVisual(el, itemsAtPoint);

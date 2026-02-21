@@ -58,5 +58,42 @@ export function createDataSources(store) {
          },
          cachePolicy: 'static',
       },
+
+      // ✅ singular layer key
+      restaurant: {
+         fetch: async () => {
+            // Back-compat if store/cache were previously plural
+            const cache = store.cache.restaurant ?? store.cache.restaurants;
+            if (!cache) {
+               // If cache object wasn't initialized, behave like no-cache
+               const res = await ajaxPost('/get-restaurants', {});
+               const rows = res?.restaurants ?? res?.results ?? res ?? [];
+               const normalized = rows.map(p => ({ ...p, type: 'restaurant' }));
+               store.byType.restaurant = normalized;
+               return normalized;
+            }
+
+            if (cache.loaded) return store.byType.restaurant ?? store.byType.restaurants ?? [];
+            if (cache.inFlight) return cache.inFlight;
+
+            cache.inFlight = ajaxPost('/get-restaurants', {})
+               .then(res => {
+                  const rows = res?.restaurants ?? res?.results ?? res ?? [];
+                  const normalized = rows.map(p => ({ ...p, type: 'restaurant' }));
+
+                  store.byType.restaurant = normalized;
+                  cache.loaded = true;
+                  cache.inFlight = null;
+                  return normalized;
+               })
+               .catch(err => {
+                  cache.inFlight = null;
+                  throw err;
+               });
+
+            return cache.inFlight;
+         },
+         cachePolicy: 'static',
+      },
    };
 }

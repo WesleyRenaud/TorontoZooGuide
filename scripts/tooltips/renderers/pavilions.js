@@ -1,14 +1,7 @@
-import { normalizeParameter } from '../../utils/strings.js';
-import { getPavilionName } from '../../utils/dom.js';
+import { normalizeParameter } from '../../utils/normalize.js';
 
 export const pavilionRenderer = {
    key: 'pavilion',
-
-   isMatch(item, row) {
-      const a = normalizeParameter(getPavilionName(item) || '');
-      const b = normalizeParameter(getPavilionName(row) || '');
-      return a && b && a === b;
-   },
 
    createCard(p, index) {
       const card = document.createElement('div');
@@ -16,7 +9,7 @@ export const pavilionRenderer = {
       card.dataset.index = index;
       card.style.display = index === 0 ? 'flex' : 'none';
 
-      const name = getPavilionName(p) || 'Pavilion';
+      const name = p.name || 'Pavilion';
       const normalizedName = normalizeParameter(name);
       const imgSrc = `images/pavilions/${normalizedName}.png`;
 

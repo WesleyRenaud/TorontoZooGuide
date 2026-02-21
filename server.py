@@ -136,6 +136,20 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-restaurants':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restaurants = self.database.get_restaurants()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"restaurants": [restaurant.to_dict() for restaurant in restaurants]}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/search':
          content_length = int( self.headers['Content-Length'] )
          post_data = self.rfile.read( content_length )
@@ -144,9 +158,11 @@ class MyHandler( BaseHTTPRequestHandler ):
          query = ( data.get( 'query' ) or '' ).strip()
          include_animals = bool( data.get( 'includeAnimals' ) )
          include_pavilions = bool( data.get( 'includePavilions' ) )
+         include_restaurants = bool( data.get( 'includeRestaurants') )
 
          animals_json = []
          pavilions_json = []
+         restaurants_json = []
 
          if include_animals and query:
             animals = self.database.get_animals_matching_query( query ) or []
@@ -162,9 +178,17 @@ class MyHandler( BaseHTTPRequestHandler ):
                   d['type'] = d.get( 'type', 'pavilion' )
                   pavilions_json.append( d )
 
+         if include_restaurants and query:
+            restaurants = self.database.get_restaurants_matching_query( query ) or []
+            for restaurant in restaurants:
+                  d = restaurant.to_dict()
+                  d['type'] = d.get( 'type', 'restaurant' )
+                  restaurants_json.append( d )
+
          response = {
-            "animals": animals_json,
-            "pavilions": pavilions_json,
+            'animals': animals_json,
+            'pavilions': pavilions_json,
+            'restaurants': restaurants_json
          }
 
          self.send_response( 200 )

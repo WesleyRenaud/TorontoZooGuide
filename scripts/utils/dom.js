@@ -1,14 +1,3 @@
-export function getPavilionName(p) {
-   return (
-      p?.name ||
-      p?.pavilion_name ||
-      p?.PAVILION_NAME ||
-      p?.PAVILION ||
-      p?.pavilion ||
-      ''
-   );
-}
-
 export function getLikelihoodPhrase(likelihood) {
    const v = Number(likelihood) || 0;
    if (v >= 95) return 'Very high';

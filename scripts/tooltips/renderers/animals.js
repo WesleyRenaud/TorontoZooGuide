@@ -1,4 +1,4 @@
-import { normalizeParameter } from '../../utils/strings.js';
+import { normalizeParameter } from '../../utils/normalize.js';
 import { getLikelihoodPhrase } from '../../utils/dom.js';
 
 export const animalRenderer = {

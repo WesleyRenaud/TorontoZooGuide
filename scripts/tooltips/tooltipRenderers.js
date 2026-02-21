@@ -1,9 +1,11 @@
 import { animalRenderer } from './renderers/animals.js';
 import { pavilionRenderer } from './renderers/pavilions.js';
+import { restaurantRenderer } from './renderers/restaurants.js';
 
 export const TYPE_REGISTRY = {
    animal: animalRenderer,
    pavilion: pavilionRenderer,
+   restaurant: restaurantRenderer,
 };
 
 export function getRendererForItem(item) {

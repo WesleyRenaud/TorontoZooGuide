@@ -639,6 +639,12 @@ html.home-page {
    display: none;
 }
 
+.marker.marker-restaurant {
+   width: 32px;
+   height: 32px;
+   font-size: 16px;
+}
+
 /* ============================================================
    HOVER TOOLTIP
 ============================================================ */
@@ -753,8 +759,19 @@ html.home-page {
    word-break: break-word;
 }
 
-.tooltip-card strong { font-size: 1.25em; }
-.tooltip-card span { font-size: 1em; }
+.tooltip-card strong { font-size: 2em; }
+.tooltip-card span { font-size: 1.5em; }
+
+.restaurant-menu-link {
+   font-weight: 800;
+   text-decoration: underline;
+   color: #ffffff;
+   cursor: pointer;
+}
+
+.restaurant-menu-link:hover {
+   color: #ffd54d;
+}
 
 .tooltip-image-frame {
    width: 100%;

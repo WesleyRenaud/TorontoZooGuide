@@ -1,4 +1,4 @@
-import { normalizeParameter } from '../utils/strings.js';
+import { normalizeParameter } from '../utils/normalize.js';
 
 export function buildSpeciesContentHTML(animal) {
    const section = (title, value) => {

@@ -1,5 +1,4 @@
 import { ajaxPost } from '../utils/ajax.js';
-import { getPavilionName } from '../utils/dom.js';
 
 function debounce(fn, delay = 250) {
    let t = null;
@@ -17,6 +16,7 @@ function normalizeSearchRows(response) {
    const out = [];
    if (Array.isArray(response.animals)) out.push(...response.animals.map(x => ({ ...x, type: x.type || 'animal' })));
    if (Array.isArray(response.pavilions)) out.push(...response.pavilions.map(x => ({ ...x, type: x.type || 'pavilion' })));
+   if (Array.isArray(response.restaurants)) out.push(...response.restaurants.map(x => ({ ...x, type: x.type || 'restaurant' })));
    return out;
 }
 
@@ -56,20 +56,49 @@ export function initSearch({ inputEl, getIncludeFlags, onFocusRow }) {
    return { refresh };
 }
 
+function getRowType(row) {
+   return String(row.type || row.TYPE || 'animal').toLowerCase();
+}
+
+function getRowTitle(row, type) {
+   if (type === 'restaurant') {
+      return row.name ?? row.NAME ?? 'Restaurant';
+   }
+
+   if (type === 'pavilion') {
+      return row.name ?? row.NAME ?? 'Pavilion';
+   }
+
+   return row.SPECIES ?? row.species ?? 'Animal';
+}
+
+function getRowSubtitle(row, type) {
+   if (type === 'restaurant') {
+      const parts = [];
+
+      if (row.location) parts.push(`Location: ${row.location}`);
+      if (row.sub_location) parts.push(row.sub_location);
+
+      return parts.join(', ') || 'Restaurant';
+   }
+
+   if (type === 'pavilion') {
+      const region = row.region ?? row.REGION;
+      return region ? `Region: ${region}` : 'Pavilion';
+   }
+
+   const exhibit = row.EXHIBIT ?? row.exhibit;
+   return exhibit ? `Exhibit: ${exhibit}` : 'Animal';
+}
+
 function renderSearchResults(resultsEl, rows, onFocusRow) {
    resultsEl.innerHTML = '';
    if (!Array.isArray(rows) || rows.length === 0) return;
 
    rows.forEach(row => {
-      const type = String(row.type || row.TYPE || 'animal').toLowerCase();
-
-      const title = type === 'pavilion'
-         ? (getPavilionName(row) || 'Pavilion')
-         : (row.SPECIES ?? row.species ?? 'Animal');
-
-      const subtitle = type === 'pavilion'
-         ? ((row.region ?? row.REGION) ? `Region: ${row.region ?? row.REGION}` : 'Pavilion')
-         : ((row.EXHIBIT ?? row.exhibit) ? `Exhibit: ${row.EXHIBIT ?? row.exhibit}` : 'Animal');
+      const type = getRowType(row);
+      const title = getRowTitle(row, type);
+      const subtitle = getRowSubtitle(row, type);
 
       const item = document.createElement('div');
       item.className = 'animal-result';
@@ -95,12 +124,7 @@ function renderSearchResults(resultsEl, rows, onFocusRow) {
 
       btn.addEventListener('click', (e) => {
          e.stopPropagation();
-
-         try {
-            onFocusRow?.(row);
-         } catch (err) {
-            console.error('[search] Error inside onFocusRow:', err);
-         }
+         onFocusRow?.(row);
       });
 
       item.appendChild(left);

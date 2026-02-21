@@ -219,6 +219,35 @@ class Database():
       cur.close()
 
       return pavilions
+   
+
+   def get_restaurants( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  r.NAME,
+                  r.LOCATION,
+                  r.SUB_LOCATION,
+                  r.SEASONAL_SCHEDULE,
+                  r.DESCRIPTION,
+                  r.MENU_LINK,
+                  r.X_COORD,
+                  r.Y_COORD
+               FROM Restaurant r;
+         """ )
+      
+      restaurant_data = data.fetchall()
+
+      restaurants = []
+      for restaurant in restaurant_data: 
+         restaurants.append( zoo.Restaurant( name=restaurant[0], location=restaurant[1], sub_location=restaurant[2],
+                                             seasonal_schedule=restaurant[3], description=restaurant[4], menu_link=restaurant[5],
+                                             x_coord=restaurant[6], y_coord=restaurant[7] ) )
+
+      cur.close()
+
+      return restaurants
       
 
    def get_animals_matching_query( self, query ):
@@ -269,4 +298,31 @@ class Database():
       cur.close()
 
       return pavilions
+   
+
+   def get_restaurants_matching_query( self, query ):
+      cur = self.conn.cursor()
+
+      pattern = f"%{query}%"
+      data = cur.execute(
+         """   SELECT
+                  r.NAME,
+                  r.LOCATION,
+                  r.SUB_LOCATION,
+                  r.X_COORD,
+                  r.Y_COORD
+               FROM Restaurant r
+               WHERE r.NAME LIKE ? ESCAPE '\\';
+         """, (pattern, ) )
+      
+      restaurant_data = data.fetchall()
+
+      restaurants = []
+      for restaurant in restaurant_data: 
+         restaurants.append( zoo.Restaurant( name=restaurant[0], location=restaurant[1], sub_location=restaurant[2],
+                                             x_coord=restaurant[3], y_coord=restaurant[4] ) )
+
+      cur.close()
+
+      return restaurants
    
