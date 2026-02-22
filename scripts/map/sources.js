@@ -73,5 +73,41 @@ export function createDataSources(store) {
          },
          cachePolicy: 'no-cache',
       },
+
+      // ✅ singular layer key
+      restroom: {
+         fetch: async () => {
+            const cache = store.cache.restroom ?? store.cache.restroom;
+
+            if (!cache) {
+               const res = await ajaxPost('/get-restrooms', {});
+               const rows = res?.restrooms ?? res?.results ?? res ?? [];
+               const normalized = rows.map(p => ({ ...p, type: 'restroom' }));
+               store.byType.restroom = normalized;
+               return normalized;
+            }
+
+            if (cache.loaded) return store.byType.restroom ?? store.byType.restrooms ?? [];
+            if (cache.inFlight) return cache.inFlight;
+
+            cache.inFlight = ajaxPost('/get-restrooms', {})
+               .then(res => {
+                  const rows = res?.restrooms ?? res?.results ?? res ?? [];
+                  const normalized = rows.map(p => ({ ...p, type: 'restroom' }));
+
+                  store.byType.restroom = normalized;
+                  cache.loaded = true;
+                  cache.inFlight = null;
+                  return normalized;
+               })
+               .catch(err => {
+                  cache.inFlight = null;
+                  throw err;
+               });
+
+            return cache.inFlight;
+         },
+         cachePolicy: 'static',
+      },
    };
 }

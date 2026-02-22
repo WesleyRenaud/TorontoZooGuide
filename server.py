@@ -153,6 +153,20 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-restrooms':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restrooms = self.database.get_restrooms()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"restrooms": [restroom.to_dict() for restroom in restrooms]}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/search':
          content_length = int( self.headers['Content-Length'] )
          post_data = self.rfile.read( content_length )
@@ -162,10 +176,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_animals = bool( data.get( 'includeAnimals' ) )
          include_pavilions = bool( data.get( 'includePavilions' ) )
          include_restaurants = bool( data.get( 'includeRestaurants') )
+         include_restrooms = bool( data.get( 'includeRestrooms' ) )
 
          animals_json = []
          pavilions_json = []
          restaurants_json = []
+         restrooms_json = []
 
          if include_animals and query:
             animals = self.database.get_animals_matching_query( query ) or []
@@ -188,10 +204,18 @@ class MyHandler( BaseHTTPRequestHandler ):
                   d['type'] = d.get( 'type', 'restaurant' )
                   restaurants_json.append( d )
 
+         if include_restrooms and query:
+            restrooms = self.database.get_restrooms_matching_query( query ) or []
+            for restroom in restrooms:
+                  d = restroom.to_dict()
+                  d['type'] = d.get( 'type', 'restroom' )
+                  restrooms_json.append( d )
+
          response = {
             'animals': animals_json,
             'pavilions': pavilions_json,
-            'restaurants': restaurants_json
+            'restaurants': restaurants_json,
+            'restrooms': restrooms_json
          }
 
          self.send_response( 200 )

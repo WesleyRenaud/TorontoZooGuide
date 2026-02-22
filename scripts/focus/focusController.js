@@ -23,11 +23,11 @@ function distToViewportCenter(markerEl, viewportEl) {
    }
 
    export function createFocusController({
-   panzoom,
-   getMarkerByCoord,
-   getViewportEl,
-   tooltip,
-   getAllMarkers,
+      panzoom,
+      getMarkerByCoord,
+      getViewportEl,
+      tooltip,
+      getAllMarkers,
    }) {
    async function focus({ row, type }) {
       if (!row) return;

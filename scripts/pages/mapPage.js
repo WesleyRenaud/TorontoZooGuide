@@ -46,10 +46,7 @@ export function initMapPage() {
          if (!item || String(item.type || '').toLowerCase() !== 'animal') return;
          speciesOverlay.openFromAnimal(item);
       },
-      onOpenItemsChanged: (items) => {
-         const firstAnimal = (items || []).find(i => String(i.type || '').toLowerCase() === 'animal') || null;
-         offDisplay.sync(firstAnimal);
-      }
+      offDisplayBanner: offDisplay   // ✅ THIS is what was missing
    });
 
    initLabelVisibilityToggle({

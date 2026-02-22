@@ -92,6 +92,13 @@ cursor.execute( ''' CREATE TABLE Restaurant
                      FOREIGN KEY (LOCATION) REFERENCES Region(Name),
                      PRIMARY KEY (NAME) ); ''' )
 
+cursor.execute( 'DROP TABLE IF EXISTS Restroom;' )
+cursor.execute( ''' CREATE TABLE Restroom
+                  (  TITLE    VARCHAR(64) NOT NULL,
+                     X_COORD  FLOAT       NOT NULL,
+                     Y_COORD  FLOAT       NOT NULL,
+                     PRIMARY KEY (TITLE) ); ''' )
+
 regions = [
    (
       'Austrailasia',
@@ -9300,328 +9307,328 @@ enclosureViewings =\
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Brownbanded Bamboo Shark',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Brush-Tailed Bettong',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Clown Triggerfish',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Crested Pigeon',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Crimson Rosella',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Eastern Rosella',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Emerald Tree Boa',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Fly River Turtle',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Galah',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Green Tree Python',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Green-Winged Dove',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Komodo Dragon',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Kookaburra',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Lau Banded Iguana',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Lionfish',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Live Coral Reefs',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Longnose Butterflyfish',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'MacLeay\'s Spectres',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Malagasy Rainbowfish',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Moon Jellyfish',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Nicobar Pigeon',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Pennant Coral Fish',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Pied Imperial Pigeon',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Pot-Bellied Seahorse',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Red Claw Yabby',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Red-Bellied Short-Necked Turtle',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Red-Tailed Black Cockatoo',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Short-Beaked Echidna',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Solomon Island Leaf Frog',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Solomon Island Monkey-Tailed Skink',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Southern Hairy-Nosed Wombat',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Stimson\'s Python',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Tawny Frogmouth',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Thorny Devil Stick Insect',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Threadfin Butterflyfish',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Victoria Crowned Pigeon',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'White\'s Tree Frog',
       'Australasia Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      63.75,                  # X coordinate on map
-      39,                     # Y coordinate on map
+      60.5,                   # X coordinate on map
+      34.5,                   # Y coordinate on map
    ),
    (
       'Demoiselle Crane',
       'Australasia Pavilion',
       'Outdoor',
       '''The demoiselle cranes are off-display for the season. They can be seen outside again in the spring.''',
-      62.25,                   # X coordinate on map
-      37.5,                    # Y coordinate on map
+      59,                     # X coordinate on map
+      33,                     # Y coordinate on map
    ),
    (
       'Kookaburra',
       'Australasia Pavilion',
       'Outdoor',
       '''The kookaburras can be found inside for the season. They can be seen outside again in the summer.''',
-      62.25,                   # X coordinate on map
-      37.5,                    # Y coordinate on map
+      59,                     # X coordinate on map
+      33,                     # Y coordinate on map
    ),
    (
       'Southern Hairy-Nosed Wombat',
       'Australasia Pavilion',
       'Outdoor',
       '''The wombats are inside for the season. They can be seen outside again in the spring.''',
-      64.125,                 # X coordinate on map
-      37,                     # Y coordinate on map
+      61,                     # X coordinate on map
+      32.75,                  # Y coordinate on map
    ),
 
    # Australasia Outdoor
@@ -9630,8 +9637,8 @@ enclosureViewings =\
       'Australasia Outdoor',
       'Outdoor',
       '''The kangaroos cranes are off-display for the season. They can be seen outside again in the spring.''',
-      65.875,                 # X coordinate on map
-      38.375,                 # Y coordinate on map
+      62.5,                   # X coordinate on map
+      34,                     # Y coordinate on map
    ),
 
    # Eurasia Wilds
@@ -9640,47 +9647,47 @@ enclosureViewings =\
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      70.25,                  # X coordinate on map
-      36,                     # Y coordinate on map
+      66.75,                  # X coordinate on map
+      31.75,                  # Y coordinate on map
    ),
    (
       'Asian Wild Horse',
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      80,                     # X coordinate on map
-      11                      # Y coordinate on map
+      63,                     # X coordinate on map
+      16.25                   # Y coordinate on map
    ),
    (
       'Asian Wild Horse',
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      66.25,                  # X coordinate on map
-      19.875                  # Y coordinate on map
+      78,                     # X coordinate on map
+      11.5                    # Y coordinate on map
    ),
    (
       'Bactrian Camel',
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      76.625,                 # X coordinate on map
-      30.125                  # Y coordinate on map
+      74.5,                   # X coordinate on map
+      20.25                   # Y coordinate on map
    ),
    (
       'Bactrian Camel',
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      78.5,                   # X coordinate on map
-      23.5                    # Y coordinate on map
+      72.75,                  # X coordinate on map
+      26.25                   # Y coordinate on map
    ),
    (
       'Domestic Yak',
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      84,                     # X coordinate on map
+      79.5,                   # X coordinate on map
       19.                     # Y coordinate on map
    ),
    (
@@ -9688,16 +9695,16 @@ enclosureViewings =\
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      85.75,                  # X coordinate on map
-      39.25                   # Y coordinate on map
+      81.5,                   # X coordinate on map
+      35                      # Y coordinate on map
    ),
    (
       'Mouflon',
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      68.875,                 # X coordinate on map
-      28.375                  # Y coordinate on map
+      65.5,                   # X coordinate on map
+      24.5                    # Y coordinate on map
    ),
    (
       'Red Panda',
@@ -9706,40 +9713,40 @@ enclosureViewings =\
       '''The red pandas are likely off-display today due to particularly harsh conditions.''',
       # 76,
       # 35.25
-      41,                     # X coordinate on map
-      65                      # Y coordinate on map
+      39,                     # X coordinate on map
+      59.25                   # Y coordinate on map
    ),
    (
       'Snow Leopard',
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      73.5,                   # X coordinate on map
-      20.25                   # Y coordinate on map
+      70,                     # X coordinate on map
+      17                      # Y coordinate on map
    ),
    (
       'Steller\'s Sea Eagle',
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      75.5,                   # X coordinate on map
-      18.625                  # Y coordinate on map
+      72,                     # X coordinate on map
+      15.25                   # Y coordinate on map
    ),
    (
       'West Caucasian Tur',
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      71,                     # X coordinate on map
-      19                      # Y coordinate on map
+      67.5,                   # X coordinate on map
+      16                      # Y coordinate on map
    ),
    (
       'West Caucasian Tur',
       'Eurasia Wilds',
       'Outdoor',
       None,                   # Seasonally off-display message
-      83.5,                   # X coordinate on map
-      25                      # Y coordinate on map
+      80.5,                   # X coordinate on map
+      25.5                    # Y coordinate on map
    ),
 
    # Tundra Trek
@@ -9748,40 +9755,40 @@ enclosureViewings =\
       'Tundra Trek',
       'Outdoor',
       None,                   # Seasonally off-display message
-      56,                     # X coordinate on map
-      29.                     # Y coordinate on map
+      53,                     # X coordinate on map
+      25                     # Y coordinate on map
    ),
    (
       'Caribou',
       'Tundra Trek',
       'Outdoor',
       None,                   # Seasonally off-display message
-      50.25,                  # X coordinate on map
-      23.75                   # Y coordinate on map
+      48,                     # X coordinate on map
+      20                      # Y coordinate on map
    ),
    (
       'Lesser Snow Goose',
       'Tundra Trek',
       'Outdoor',
       None,                   # Seasonally off-display message
-      52.5,                   # X coordinate on map
-      33.5                    # Y coordinate on map
+      50,                     # X coordinate on map
+      29.25                   # Y coordinate on map
    ),
    (
       'Northern Bald Eagle',
       'Tundra Trek',
       'Outdoor',
       None,                   # Seasonally off-display message
-      51,                     # X coordinate on map
-      29.                     # Y coordinate on map
+      48.5,                   # X coordinate on map
+      25                      # Y coordinate on map
    ),
    (
       'Polar Bear',
       'Tundra Trek',
       'Outdoor',
       None,                   # Seasonally off-display message
-      55.25,                  # X coordinate on map
-      24.25                   # Y coordinate on map
+      52.5,                   # X coordinate on map
+      20.5                    # Y coordinate on map
    ),
 
    # Americas Outdoor Mayan Temple Ruins
@@ -9790,24 +9797,24 @@ enclosureViewings =\
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
       '''The American flamingos are off-display for the season. They can be seen outside again in the spring.''',
-      46.25,                  # X coordinate on map
-      20.                     # Y coordinate on map
+      44,                     # X coordinate on map
+      16.75                   # Y coordinate on map
    ),
    (
       'Black-Handed Spider Monkey',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
       '''The black-handed spider monkeys are off-display for the season. They can be seen outside again in the spring.''',
-      44.5,                   # X coordinate on map
-      20.75                   # Y coordinate on map
+      42.25,                  # X coordinate on map
+      17.25                   # Y coordinate on map
    ),
    (
       'Capybara',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
       '''The capybaras are off-display for the season. They can be seen outside again in the spring.''',
-      46.5,                   # X coordinate on map
-      24.5                    # Y coordinate on map
+      44.5,                   # X coordinate on map
+      21                      # Y coordinate on map
    ),
 
    # Americas Pavilion
@@ -9816,504 +9823,504 @@ enclosureViewings =\
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'American Eel',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'American Lobster',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Axolotl',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Black-Footed Ferret',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Black-Widow Spider',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Blanding\'s Turtle',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Blue And Yellow Macaw',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Boa Constrictor',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Blue Poison Dart Frog',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Brazilian Giant Cockroach',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Brazilian Salmon Pink Bird-Eating Tarantula',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Butterfly Goodeid',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Crested Tinamou',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Cuvier\'s Smooth-Fronted Caiman',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Desert Grassland Whiptail',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Dyeing Poison Dart Frog',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Eastern Loggerhead Shrike',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Eastern Lubber Grasshopper',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Eyelash Viper',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Ferocious Water Bug',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Golden Lion Tamarin',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Great Horned Owl',
       'Americas Pavilion',
       'Outdoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Green And Black Poison Dart Frog',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Green Surf Anemone',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Green-Winged Macaw',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Guatemalan Beaded Lizard',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Jamaican Boa',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Leather Sea Star',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Lemur Leaf Frog',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Longnose Dace',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Massasauga Rattlesnake',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Mexican Blind Cavefish',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Midland Painted Turtle',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'North American River Otter',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Opal-Rumped Tanager',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Painted Anemone',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Panamanian Golden Frog',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Plumose Anemone',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Plush-Crested Jay',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Puerto Rican Crested Toad',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Pumpkinseed Sunfish',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Red Island Bird-Eating Tarantula',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Red-Crested Finch',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Reticulate Gila Monster',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Round Goby',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Rufous-Collared Sparrow',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'San-Esteban Island Chuckwalla',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Snapping Turtle',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Spot Prawn',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Spotted River Stingray',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Spotted Turtle',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Timber Rattlesnake',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Turquoise Tanager',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Two-Toed Sloth',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Western Blacknose Dace',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'White-Faced Saki',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Yellow-Banded Poison Dart Frog',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Zebra Finch',
       'Americas Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      51.5,                   # X coordinate on map
-      40.25                   # Y coordinate on map
+      48.75,                  # X coordinate on map
+      35.25                   # Y coordinate on map
    ),
    (
       'Golden Lion Tamarin',
       'Americas Pavilion',
       'Outdoor',
       '''The golden lion tamarins are inside for the season. They can be seen outside again in the spring.''',
-      52.75,                  # X coordinate on map
-      40.75                   # Y coordinate on map
+      50,                     # X coordinate on map
+      36.5                    # Y coordinate on map
    ),
    (
       'Two-Toed Sloth',
       'Americas Pavilion',
       'Outdoor',
       '''The sloths are inside for the season. They can be seen outside again in the spring.''',
-      52.75,                  # X coordinate on map
-      40.75                   # Y coordinate on map
+      50,                     # X coordinate on map
+      36.5                    # Y coordinate on map
    ),
    (
       'White-Faced Saki',
       'Americas Pavilion',
       'Outdoor',
       '''The white-faced sakis are inside for the season. They can be seen outside again in the spring.''',
-      52.75,                  # X coordinate on map
-      40.75                   # Y coordinate on map
+      50,                     # X coordinate on map
+      36.5                    # Y coordinate on map
    ),
    (
       'North American River Otter',
       'Americas Pavilion',
       'Outdoor',
       None,                   # Seasonally off-display message
-      49.5,                   # X coordinate on map
-      38.25                   # Y coordinate on map
+      47.25,                  # X coordinate on map
+      34                      # Y coordinate on map
    ),
 
    # Canadian Domain
@@ -10322,48 +10329,48 @@ enclosureViewings =\
       'Canadian Domain',
       'Outdoor',
       '''The cougars are off-display for the season. They can be seen outside again when the Canadian Domain opens in the spring.''',
-      12,                     # X coordinate on map
-      63.375                  # Y coordinate on map
+      11.25,                  # X coordinate on map
+      57.75                   # Y coordinate on map
    ),
    (
       'Grizzly Bear',
       'Canadian Domain',
       'Outdoor',
       '''The grizzly bears are off-display for the season. They can be seen outside again in the spring.''',
-      7.875,                  # X coordinate on map
-      65                      # Y coordinate on map
+      7.5,                    # X coordinate on map
+      59.5                    # Y coordinate on map
    ),
    (
       'Northern Bald Eagle',
       'Canadian Domain',
       'Outdoor',
       '''The bald eagles are off-display for the season. They can be seen outside again when the Canadian Domain opens in the spring.''',
-      10.125,                 # X coordinate on map
-      75.75                   # Y coordinate on map
+      9.75,                   # X coordinate on map
+      70                      # Y coordinate on map
    ),
    (
       'Raccoon',
       'Canadian Domain',
       'Outdoor',
       '''The raccoons are off-display for the season. They can be seen outside again when the Canadian Domain opens in the spring.''',
-      18,                     # X coordinate on map
-      69.75                   # Y coordinate on map
+      17,                     # X coordinate on map
+      64                      # Y coordinate on map
    ),
    (
       'Wood Bison',
       'Canadian Domain',
       'Outdoor',
       '''The bison are off-display for the season. They can be seen outside again when the Canadian Domain opens in the spring.''',
-      13,                     # X coordinate on map      
-      61.                     # Y coordinate on map
+      12,                     # X coordinate on map      
+      55.5                    # Y coordinate on map
    ),
    (
       'Wood Bison',
       'Canadian Domain',
       'Outdoor',
       '''The bison are off-display for the season. They can be seen outside again when the Canadian Domain opens in the spring.''',
-      11,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      10.5,                   # X coordinate on map
+      76                      # Y coordinate on map
    ),
 
    # Africa Savanna
@@ -10372,216 +10379,216 @@ enclosureViewings =\
       'Africa Savanna',
       'Outdoor',
       '''The African lions are likely off-display today due to particularly harsh conditions.''',
-      39.5,                   # X coordinate on map
-      66.25                   # Y coordinate on map
+      37.625,                 # X coordinate on map
+      60.75                   # Y coordinate on map
    ),
    (
       'African Penguin',
       'Africa Savanna',
       'Outdoor',
       '''The African penguins are inside for the season. They can be seen outside again in the spring.''',
-      45.75,                  # X coordinate on map
-      69.75                   # Y coordinate on map
+      43.75,                  # X coordinate on map
+      64                      # Y coordinate on map
    ),
    (
       'White-Breasted Cormorant',
       'Africa Savanna',
       'Outdoor',
       '''The cormorants are inside for the season. They can be seen outside again in the spring.''',
-      45.75,                  # X coordinate on map
-      69.75                   # Y coordinate on map
+      43.75,                  # X coordinate on map
+      64                      # Y coordinate on map
    ),
    (
       'African Penguin',
       'Africa Savanna',
       'Indoor',
       None,                   # Seasonally off-display message
-      46,                     # X coordinate on map
-      67.5                    # Y coordinate on map
+      43.5,                   # X coordinate on map
+      62                      # Y coordinate on map
    ),
    (
       'White-Breasted Cormorant',
       'Africa Savanna',
       'Indoor',
       None,                   # Seasonally off-display message
-      46,                     # X coordinate on map
-      67.5                    # Y coordinate on map
+      43.5,                   # X coordinate on map
+      62                      # Y coordinate on map
    ),
    (
       'Cheetah',
       'Africa Savanna',
       'Outdoor',
       '''The cheetahs are likely off-display today due to particularly harsh conditions.''',
-      37,                     # X coordinate on map
-      81.75                   # Y coordinate on map
+      35.25,                  # X coordinate on map
+      75.5                    # Y coordinate on map
    ),
    (
       'Common Eland',
       'Africa Savanna',
       'Outdoor',
       '''The common eland are off-display for the season. They can be seen outside again in the spring.''',
-      41.875,                 # X coordinate on map
-      69.5                    # Y coordinate on map
+      40,                     # X coordinate on map
+      63.5                    # Y coordinate on map
    ),
    (
       'Greater Kudu',
       'Africa Savanna',
       'Outdoor',
       '''The greater kudu are off-display for the season. They can be seen outside again in the spring.''',
-      46.375,                 # X coordinate on map
-      85.875                  # Y coordinate on map
+      44,                     # X coordinate on map
+      79.25                   # Y coordinate on map
    ),
    (
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
       '''The marabou storks are off-display for the season. They can be seen outside again in the summer.''',
-      46.375,                 # X coordinate on map
-      85.875                  # Y coordinate on map
+      44,                     # X coordinate on map
+      79.25                   # Y coordinate on map
    ),
    (
       'Southern Ground Hornbill',
       'Africa Savanna',
       'Outdoor',
       '''The southern ground hornbills are off-display for the season. They can be seen outside again in the summer.''',
-      46.375,                 # X coordinate on map
-      85.875                  # Y coordinate on map
+      44,                     # X coordinate on map
+      79.25                   # Y coordinate on map
    ),
    (
       'White-Headed Vulture',
       'Africa Savanna',
       'Outdoor',
       '''The white-headed vultures are off-display for the season. They can be seen outside again in the summer.''',
-      46.375,                 # X coordinate on map
-      85.875                  # Y coordinate on map
+      44,                     # X coordinate on map
+      79.25                   # Y coordinate on map
    ),
    (
       'Greater Kudu',
       'Africa Savanna',
       'Outdoor',
       '''The greater kudu are off-display for the season. They can be seen outside again in the spring.''',
-      47.5,                   # X coordinate on map
-      89.75                   # Y coordinate on map
+      45.5,                   # X coordinate on map
+      83.25                   # Y coordinate on map
    ),
    (
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
       '''The marabou storks are off-display for the season. They can be seen outside again in the summer.''',
-      47.5,                   # X coordinate on map
-      89.75                   # Y coordinate on map
+      45.5,                   # X coordinate on map
+      83.25                   # Y coordinate on map
    ),
    (
       'Southern Ground Hornbill',
       'Africa Savanna',
       'Outdoor',
       '''The southern ground hornbills are off-display for the season. They can be seen outside again in the summer.''',
-      47.5,                   # X coordinate on map
-      89.75                   # Y coordinate on map
+      45.5,                   # X coordinate on map
+      83.25                   # Y coordinate on map
    ),
    (
       'White-Headed Vulture',
       'Africa Savanna',
       'Outdoor',
       '''The white-headed vultures are off-display for the season. They can be seen outside again in the summer.''',
-      47.5,                   # X coordinate on map
-      89.75                   # Y coordinate on map
+      45.5,                   # X coordinate on map
+      83.25                   # Y coordinate on map
    ),
    (
       'Greater Kudu',
       'Africa Savanna',
       'Outdoor',
       '''The greater kudu are off-display for the season. They can be seen outside again in the spring.''',
-      51.25,                  # X coordinate on map
-      85.25                   # Y coordinate on map
+      49,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
       '''The marabou storks are off-display for the season. They can be seen outside again in the summer.''',
-      51.25,                  # X coordinate on map
-      85.25                   # Y coordinate on map
+      49,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'Southern Ground Hornbill',
       'Africa Savanna',
       'Outdoor',
       '''The marabou storks are off-display for the season. They can be seen outside again in the summer.''',
-      51.25,                  # X coordinate on map
-      85.25                   # Y coordinate on map
+      49,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'White-Headed Vulture',
       'Africa Savanna',
       'Outdoor',
       '''The white-headed vultures are off-display for the season. They can be seen outside again in the summer.''',
-      51.25,                  # X coordinate on map
-      85.25                   # Y coordinate on map
+      49,                     # X coordinate on map
+      81                      # Y coordinate on map
    ),
    (
       'Grevy\'s Zebra',
       'Africa Savanna',
       'Outdoor',
       '''The zebras are off-display for the season. They can be seen outside again in the spring.''',
-      39.125,                 # X coordinate on map
-      74.625                  # Y coordinate on map
+      37.25,                  # X coordinate on map
+      69                      # Y coordinate on map
    ),
    (
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
       '''The marabou storks are off-display for the season. They can be seen outside again in the summer.''',
-      39,                     # X coordinate on map
-      79.625                  # Y coordinate on map
+      37.25,                  # X coordinate on map
+      73.5                    # Y coordinate on map
    ),
    (
       'Masai Giraffe',
       'Africa Savanna',
       'Outdoor',
       '''The giraffes are inside for the season. They can be seen outside again in the spring.''',
-      55,                     # X coordinate on map
-      95.25                   # Y coordinate on map
+      52,                     # X coordinate on map
+      88.25                   # Y coordinate on map
    ),
    (
       'Masai Giraffe',
       'Africa Savanna',
       'Indoor',
       None,                   # Seasonally off-display message
-      56,                     # X coordinate on map
-      91                      # Y coordinate on map
+      53.25,                  # X coordinate on map
+      84.75                   # Y coordinate on map
    ),
    (
       'Olive Baboon',
       'Africa Savanna',
       'Outdoor',
       '''The baboons are likely off-display today due to particularly harsh conditions.''',
-      36.75,                  # X coordinate on map
-      72.625                  # Y coordinate on map
+      35,                     # X coordinate on map
+      66.5                    # Y coordinate on map
    ),
    (
       'Ostrich',
       'Africa Savanna',
       'Outdoor',
       '''The ostriches are off-display for the season. They can be seen outside again in the spring.''',
-      36.125,                 # X coordinate on map
-      70.125                  # Y coordinate on map
+      31.5,                   # X coordinate on map
+      60.5                    # Y coordinate on map
    ),
    (
       'Ostrich',
       'Africa Savanna',
       'Outdoor',
       '''The ostriches are off-display for the season. They can be seen outside again in the spring.''',
-      33.125,                 # X coordinate on map
-      66.125                  # Y coordinate on map
+      34.75,                  # X coordinate on map
+      64.25                   # Y coordinate on map
    ),
    (
       'River Hippopotamus',
       'Africa Savanna',
       'Outdoor',
       '''The hippos are off-display for the season. They can be seen outside again in the spring.''',
-      52.25,                  # X coordinate on map
-      96.875                  # Y coordinate on map
+      49.75,                  # X coordinate on map
+      89.625                  # Y coordinate on map
    ),
    # (
    #    'Southern Ground Hornbill',
@@ -10596,32 +10603,32 @@ enclosureViewings =\
       'Africa Savanna',
       'Outdoor',
       '''The white rhinos are off-display for the season. They can be seen outside again in the spring.''',
-      43.875,                 # X coordinate on map
-      85.                     # Y coordinate on map
+      41.25,                  # X coordinate on map
+      79.5                    # Y coordinate on map
    ),
    (
       'Spotted Hyena',
       'Africa Savanna',
       'Outdoor',
       '''The hyenas are likely off-display today due to particularly harsh conditions.''',
-      42,                     # X coordinate on map
-      62.75                   # Y coordinate on map
+      40,                     # X coordinate on map
+      57.25                   # Y coordinate on map
    ),
    (
       'Warthog',
       'Africa Savanna',
       'Outdoor',
       '''The warthogs are off-display for the season. They can be seen outside again in the spring.''',
-      51.75,                  # X coordinate on map
-      90.625                  # Y coordinate on map
+      49.25,                  # X coordinate on map
+      83.75                   # Y coordinate on map
    ),
    (
       'Watusi Cattle',
       'Africa Savanna',
       'Outdoor',
       '''The watusi cattle are likely off-display today due to particularly harsh conditions.''',
-      44.25,                  # X coordinate on map
-      60.375                  # Y coordinate on map
+      42.25,                  # X coordinate on map
+      55                      # Y coordinate on map
    ),
 
    # African Rainforest Pavilion
@@ -10630,272 +10637,272 @@ enclosureViewings =\
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Black Crake',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Blue-Bellied Roller',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Hamerkop',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Lake Malawi Cichlids',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Lau Banded Iguana',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Leopard Ctenopoma',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Mantella (Poison Frog)',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Naked Mole Rat',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Ngege',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Slender-Tailed Meerkat',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'South African Crested Porcupine',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Speckled Mousebird',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Spider Tortoise',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Tomato Frog',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Veiled Chameleon',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Violaceous Plantain Eater',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'West African Dwarf Crocodile',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53,                     # X coordinate on map
-      82.5                    # Y coordinate on map
+      50.75,                  # X coordinate on map
+      77.5                    # Y coordinate on map
    ),
    (
       'Aldabra Tortoise',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      54,                     # X coordinate on map
-      88.5                    # Y coordinate on map
+      51.25,                  # X coordinate on map
+      82.                     # Y coordinate on map
    ),
    (
       'Gaboon Viper',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      54,                     # X coordinate on map
-      88.5                    # Y coordinate on map
+      51.25,                  # X coordinate on map
+      82.                     # Y coordinate on map
    ),
    (
       'Grey-Necked Crowned Crane',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      54,                     # X coordinate on map
-      88.5                    # Y coordinate on map
+      51.25,                  # X coordinate on map
+      82.                     # Y coordinate on map
    ),
    (
       'Ring-Tailed Lemur',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      54,                     # X coordinate on map
-      88.5                    # Y coordinate on map
+      51.25,                  # X coordinate on map
+      82.                     # Y coordinate on map
    ),
    (
       'Royal Python',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      54,                     # X coordinate on map
-      88.5                    # Y coordinate on map
+      51.25,                  # X coordinate on map
+      82.                     # Y coordinate on map
    ),
    (
       'Aldabra Tortoise',
       'African Rainforest Pavilion',
       'Outdoor',
       '''The aldabra tortoises are inside for the season. They can be seen outside again in the spring.''',
-      54.75,                  # X coordinate on map
-      80                      # Y coordinate on map
+      52,                     # X coordinate on map
+      73.75                   # Y coordinate on map
    ),
    (
       'African Spoonbill',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53.25,                  # X coordinate on map
-      85.75                   # Y coordinate on map
+      50.5,                   # X coordinate on map
+      79.75                   # Y coordinate on map
    ),
    (
       'Nile Soft-Shelled Turtle',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53.25,                  # X coordinate on map
-      85.75                   # Y coordinate on map
+      50.5,                   # X coordinate on map
+      79.75                   # Y coordinate on map
    ),
    (
       'Pygmy Hippopotamus',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53.25,                  # X coordinate on map
-      85.75                   # Y coordinate on map
+      50.5,                   # X coordinate on map
+      79.75                   # Y coordinate on map
    ),
    (
       'Radiated Tortoise',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53.25,                  # X coordinate on map
-      85.75                   # Y coordinate on map
+      50.5,                   # X coordinate on map
+      79.75                   # Y coordinate on map
    ),
    (
       'Sacred Ibis',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53.25,                  # X coordinate on map
-      85.75                   # Y coordinate on map
+      50.5,                   # X coordinate on map
+      79.75                   # Y coordinate on map
    ),
    (
       'South African Shelduck',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53.25,                  # X coordinate on map
-      85.75                   # Y coordinate on map
+      50.5,                   # X coordinate on map
+      79.75                   # Y coordinate on map
    ),
    (
       'Straw Coloured Fruit Bat',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      53.25,                  # X coordinate on map
-      85.75                   # Y coordinate on map
+      50.5,                   # X coordinate on map
+      79.75                   # Y coordinate on map
    ),
    (
       'Red River Hog',
       'African Rainforest Pavilion',
       'Outdoor',
       '''The red river hogs are off-display for the season. They can be seen outside again in the spring.''',
-      55.25,                  # X coordinate on map
-      85.75                   # Y coordinate on map
+      52.5,                   # X coordinate on map
+      79.25                   # Y coordinate on map
    ),
    (
       'Western Lowland Gorilla',
       'African Rainforest Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      52.75,                  # X coordinate on map
-      79.5                    # Y coordinate on map
+      50.25,                  # X coordinate on map
+      73                      # Y coordinate on map
    ),
    (
       'Western Lowland Gorilla',
       'African Rainforest Pavilion',
       'Outdoor',
       '''The gorillas are inside for the season. They can be seen outside again in the spring.''',
-      51.75,                  # X coordinate on map
-      75.5                    # Y coordinate on map
+      49.25,                  # X coordinate on map
+      69.5                    # Y coordinate on map
    ),
 
    # Indo-Malaya Pavilion
@@ -10904,216 +10911,216 @@ enclosureViewings =\
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map 
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Bighead Carp',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Black Carp',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Black-Breasted Leaf Turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Black-Throated Laughing Thrush',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Burmese Star Tortoise',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Cattle Egret',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Concave Casqued Hornbill',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Crested Wood Partridge',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Crocodile Lizard',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Crocodile Newt',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Edward\'s Pheasant',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Giant Gourami',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Grass Carp',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Green Crested Basilisk',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Hamilton\'s Pond Turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Iridescent Shark Catfish',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Luzon Bleeding-Heart Dove',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Malayan Bonytongue',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Malaysian Painted Turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Mekong Barb',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Monocled Cobra',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Nicobar Pigeon',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Palawan Peacock-Pheasant',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Red-Lined Torpedo Barb',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Reticulated Python',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Spiny Turtle',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
 
    (
@@ -11121,56 +11128,56 @@ enclosureViewings =\
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Tentacled Snake',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Tinfoil Barb',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Tomistoma',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Tri-Coloured Shark',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'White-Handed Gibbon',
       'Indo-Malaya Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      60,                     # X coordinate on map
-      85.5                    # Y coordinate on map
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
    ),
    (
       'Sumatran Orangutan',
       'Indo-Malaya Pavilion',
       'Outdoor',
       '''The orangutans are inside for the season. They can be seen outside again in the spring.''',
-      61.125,                 # X coordinate on map
-      93.375                  # Y coordinate on map
+      58.25,                  # X coordinate on map
+      86.75                   # Y coordinate on map
    ),
 
    # Indo-Malaya Outdoor
@@ -11179,32 +11186,32 @@ enclosureViewings =\
       'Indo-Malaya Outdoor',
       'Outdoor',
       '''The babirusas are inside for the season. They can be seen outside again in the spring.''',
-      67.625,                 # X coordinate on map
-      74.375                  # Y coordinate on map
+      64.25,                  # X coordinate on map
+      68.25                   # Y coordinate on map
    ),
    (
       'Babirusa',
       'Indo-Malaya Outdoor',
       'Indoor',
       None,                   # Seasonally off-display message
-      67.5,                   # X coordinate on map
-      76.625                  # Y coordinate on map
+      64.25,                  # X coordinate on map
+      70.25                   # Y coordinate on map
    ),
    (
       'Greater One-Horned Rhinoceros',
       'Indo-Malaya Outdoor',
       'Indoor',
       None,                   # Seasonally off-display message
-      67.5,                   # X coordinate on map
-      76.625                  # Y coordinate on map
+      64.25,                  # X coordinate on map
+      70.25                   # Y coordinate on map
    ),
    (
       'Indian Peafowl',
       'Indo-Malaya Outdoor',
       'Outdoor',
       None,                   # Seasonally off-display message
-      64.25,                  # X coordinate on map
-      76.25                   # Y coordinate on map
+      61,                     # X coordinate on map
+      70.25                   # Y coordinate on map
    ),
    # (
    #    'Sumatran Tiger',
@@ -11219,8 +11226,8 @@ enclosureViewings =\
       'Indo-Malaya Outdoor',
       'Outdoor',
       '''The Sumatran tigers are likely off-display today due to particularly harsh conditions.''',
-      59.125,                 # X coordinate on map
-      80.25                   # Y coordinate on mpa
+      56.25,                  # X coordinate on map
+      73.                     # Y coordinate on mpa
    ),
 
    # Malayan Woods Pavilion
@@ -11229,64 +11236,64 @@ enclosureViewings =\
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65,                     # X coordinate on map
-      81                      # Y coordinate on map
+      62.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Clouded Leopard',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65,                     # X coordinate on map
-      81                      # Y coordinate on map
+      62.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Giant Gourami',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65,                     # X coordinate on map
-      81                      # Y coordinate on map
+      62.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Gooty Sapphire Ornamental Tarantula',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65,                     # X coordinate on map
-      81                      # Y coordinate on map
+      62.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Malayan Walking Stick',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65,                     # X coordinate on map
-      81                      # Y coordinate on map
+      62.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Malaysian Stick Insect Jungle Wood Nymph',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65,                     # X coordinate on map
-      81                      # Y coordinate on map
+      62.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Red-Tailed Green Ratsnake',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65,                     # X coordinate on map
-      81                      # Y coordinate on map
+      62.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
    (
       'Wrinkled Hornbill',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message
-      65,                     # X coordinate on map
-      81                      # Y coordinate on map
+      62.25,                  # X coordinate on map
+      74.5                    # Y coordinate on map
    ),
 
    # Goat World
@@ -11295,8 +11302,8 @@ enclosureViewings =\
       'Goat World',
       'Outdoor',
       None,                   # Seasonally off-display message
-      64.375,                 # X coordinate on map
-      52.875                  # Y coordinate on map
+      61.25,                  # X coordinate on map
+      47.75                   # Y coordinate on map
    ),
 
    # Kids Zoo
@@ -11305,64 +11312,64 @@ enclosureViewings =\
       'Kids Zoo',
       'Outdoor',
       '''The Abyssinian ground hornbills are off-display for the season. They can be seen outside again in the summer.''',
-      68.75,                  # X coordinate on map
-      52.5                    # Y coordinate on map
+      65.5,                   # X coordinate on map
+      48.5                    # Y coordinate on map
    ),
    (
       'Common Raven',
       'Kids Zoo',
       'Outdoor',
       '''The ravens are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
-      68.75,                  # X coordinate on map
-      52.5                    # Y coordinate on map
+      65.5,                   # X coordinate on map
+      48.5                    # Y coordinate on map
    ),
    (
       'Eurasian Eagle Owl',
       'Kids Zoo',
       'Outdoor',
       '''The Eurasian eagle owls are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
-      68.75,                  # X coordinate on map
-      52.5                    # Y coordinate on map
+      65.5,                   # X coordinate on map
+      48.5                    # Y coordinate on map
    ),
    (
       'Great Horned Owl',
       'Kids Zoo',
       'Outdoor',
       '''The great-horned owls are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
-      68.75,                  # X coordinate on map
-      52.5                    # Y coordinate on map
+      65.5,                   # X coordinate on map
+      48.5                    # Y coordinate on map
    ),
    (
       'Guinea Pig',
       'Kids Zoo',
       'Indoor',
       '''The guinea pigs are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
-      68.75,                  # X coordinate on map
-      52.5                    # Y coordinate on map
+      65.5,                   # X coordinate on map
+      48.5                    # Y coordinate on map
    ),
    (
       'Harris\'s Hawk',
       'Kids Zoo',
       'Outdoor',
       '''The Harris's hawks are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
-      68.75,                  # X coordinate on map
-      52.5                    # Y coordinate on map
+      65.5,                   # X coordinate on map
+      48.5                    # Y coordinate on map
    ),
    (
       'Marabou Stork',
       'Kids Zoo',
       'Outdoor',
       '''The marabou storks ground hornbills are off-display for the season. They can be seen outside again in the summer.''',
-      68.75,                  # X coordinate on map
-      52.5                    # Y coordinate on map
+      65.5,                   # X coordinate on map
+      48.5                    # Y coordinate on map
    ),
    (
       'Rabbit',
       'Kids Zoo',
       'Outdoor',
       '''The rabbits are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
-      68.75,                  # X coordinate on map
-      52.5                    # Y coordinate on map
+      65.5,                   # X coordinate on map
+      48.5                    # Y coordinate on map
    )
 ]
 
@@ -11374,15 +11381,15 @@ pavilions = [
          crowned pigeons, and the elusive tawny frogmouth. Venture through the jungle to find a variety of species of reptiles and
          invertebrates, most notably the Komodo dragons. Stop by the Southern hairy-nosed wombats, and then exit through the Great
          Barrier Reef exhibit where you can spot lionfish, seahorses, jellyfish, and much more.'''.replace( '\n', ' ' ),
-      62.75,                                    # X coordinate on map
-      35.75                                     # Y coordinate on map
+      60,                                       # X coordinate on map
+      32                                        # Y coordinate on map
    ),
    (
       'Greenhouse',
       None,                                     # Region
       '''Take a peak into the zoo's flora collection. See plant species from all pavilions of the zoo, and in all sizes.''',
-      59,                                       # X coordinate on map
-      19                                        # Y coordinate on map
+      56,                                       # X coordinate on map
+      15.5                                      # Y coordinate on map
    ),
    (
       'Americas Pavilion',
@@ -11391,16 +11398,16 @@ pavilions = [
          America. Next venture through a number of aquatic habitats, and into the everglades wing where you can spot a number of
          invertebrates and the American Alligators. Move through the Costa Rican wing, and enjoy the playful river otters. Finally
          see a variety of North American reptiles, including the native Blanding's turtle.'''.replace( '\n', ' ' ),
-      51,                                       # X coordinate on map
-      38                                        # Y coordinate on map
+      48.5,                                     # X coordinate on map
+      33.5                                      # Y coordinate on map
    ),
    (
       'African Rainforest Pavilion',
       'Africa',
       '''Experience Africa's breathtaking rainforests as this pavilion provides a home to a wide range of Africa's most stunning
          species. Watch intelligent gorillas, playful lemurs, charismatic pygmy hippos, and so much more.'''.replace( '\n', ' ' ),
-      54,                                       # X coordinate on map
-      84                                        # Y coordinate on map
+      51,                                       # X coordinate on map
+      75                                        # Y coordinate on map
    ),
    (
       'Indo-Malaya Pavilion',
@@ -11408,22 +11415,22 @@ pavilions = [
       '''Walk through this expansive pavilion which captures the beauty and scale of the beautiful Indonesian rainforest pavilions.
          Watch orangutans and gibbons swing through the tree canopy, listen to the calls of the tropical birds, and watch a number
          of species of reptile scurry across the forest floor.'''.replace( '\n', ' ' ),
-      60.25,                                    # X coordinate on map
-      83                                        # Y coordinate on map
+      57.25,                                    # X coordinate on map
+      76                                        # Y coordinate on map
    ),
    (
       'Malayan Woods Pavilion',
       'Indo-Malaya',
-      '''Come in and spot the clouded leopars and experience the forests of Malaysian as you walk through this pavilion.''',
-      65.5,                                     # X coordinate on map
-      79.25                                     # Y coordinate on map
+      '''Come in and spot the clouded leopards and experience the forests of Malaysian as you walk through this pavilion.''',
+      61.75,                                    # X coordinate on map
+      73                                        # Y coordinate on map
    ),
    (
       'Greater One-Horned Rhinoceros Pavilion',
       'Indo-Malaya',
-      '''Come in and spot the clouded leopars and experience the forests of Malaysian as you walk through this pavilion.''',
-      66.25,                                    # X coordinate on map
-      76                                        # Y coordinate on map
+      '''Enter this building to perhaps catch of glimpse of the greater one-horned rhinoceros or babirusa.''',
+      63.5,                                     # X coordinate on map
+      71.5                                      # Y coordinate on map
    )
 ]
 
@@ -11436,8 +11443,8 @@ restaurants = [
       0,                                                                                                 # Open seasonally
       '''Enjoy Tim Hortons fresh coffee, hot and cold beverages, breakfast sandwiches, pastries and more.''',
       '''https://www.torontozoo.com/!/pdfs/food/Peacock%20Menu.pdf''',                                   # Menu link
-      67.25,                                                                                             # X coordinate on map
-      69.25                                                                                              # Y coordinate on map
+      64,                                                                                                # X coordinate on map
+      64                                                                                                 # Y coordinate on map
    ),
    (
       'Africa Restaurant',                                                                               # Name
@@ -11448,8 +11455,8 @@ restaurants = [
       '''Enjoy a variety of cuisine including Pizza Pizza, Smokes Poutinerie (seasonal), and our very own Zoo Grill. *Fully Licensed.
       '''.replace( '\n', ' ' ),
       '''https://www.torontozoo.com/!/pdfs/food/Africa%20Menu%202025.pdf?''',                            # Menu link
-      51,                                                                                                # X coordinate on map
-      68                                                                                                 # Y coordinate on map
+      48.25,                                                                                             # X coordinate on map
+      62                                                                                                 # Y coordinate on map
    ),
    (
       'BeaverTails Trailer',                                                                             # Name
@@ -11459,8 +11466,8 @@ restaurants = [
       0,                                                                                                 # Open seasonally
       '''Iconic hand-stretched pastries, creating delicious memories since 1978.''',
       '''https://www.torontozoo.com/!/pdfs/food/BeavertailsMenu.pdf''',                                  # Menu link
-      64,                                                                                                # X coordinate on map
-      62.75                                                                                              # Y coordinate on map
+      61,                                                                                                # X coordinate on map
+      57                                                                                                 # Y coordinate on map
    ),
    (
       'Americas Pretzel Bar',                                                                            # Name
@@ -11470,8 +11477,8 @@ restaurants = [
       0,                                                                                                 # Open seasonally
       '''Serving warm Jumbo pretzels, assorted Craft beers, wine, seltzers, soft drinks, ice cream, and snacks''',
       None,                                                                                              # Menu link
-      56,                                                                                                # X coordinate on map
-      40                                                                                                 # Y coordinate on map
+      53,                                                                                                # X coordinate on map
+      36                                                                                                 # Y coordinate on map
    ),
    (
       'Caribou Café',                                                                                    # Name
@@ -11481,8 +11488,8 @@ restaurants = [
       1,                                                                                                 # Open seasonally
       '''Located next to the arctic wolves, enjoy a variety of options including Zoo Grill, and Pizza Pizza! *Fully Licensed.''',
       '''https://www.torontozoo.com/!/pdfs/food/Caribou%20Cafe%20Menu%202025.pdf?''',                    # Menu link
-      56.25,                                                                                             # X coordinate on map
-      36                                                                                                 # Y coordinate on map
+      53.75,                                                                                             # X coordinate on map
+      31.75                                                                                              # Y coordinate on map
    ),
    (
       'BeaverTails Lodge',                                                                               # Name
@@ -11492,8 +11499,8 @@ restaurants = [
       '''Delicious whole-wheat deep fried pastry with a variety of toppings plus cold drinks.''',
       1,                                                                                                 # Open seasonally
       'https://www.torontozoo.com/!/pdfs/food/BeavertailsMenu.pdf',                                      # Menu link
-      59,                                                                                                # X coordinate on map
-      25.5                                                                                               # Y coordinate on map
+      56.25,                                                                                             # X coordinate on map
+      22.5                                                                                               # Y coordinate on map
    ),
    (
       'Thorntree Café',                                                                                  # Name
@@ -11503,8 +11510,8 @@ restaurants = [
       '''Come hang out for bubble tea and smoothies at Palgong Tea near the Masai giraffes!''',
       1,                                                                                                 # Open seasonally
       '''https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf''',                                     # Menu link
-      54.75,                                                                                             # X coordinate on map
-      91.75                                                                                              # Y coordinate on map
+      52,                                                                                                # X coordinate on map
+      85                                                                                                 # Y coordinate on map
    ),
    (
       'Eurasia Pizza Pizza',                                                                             # Name
@@ -11514,8 +11521,8 @@ restaurants = [
       1,                                                                                                 # Open seasonally
       '''Enjoy a hot slice of Pizza Pizza or order a whole pizza for the whole family!''',
       'https://www.torontozoo.com/!/pdfs/food/Eurasia%20pizza%20pizza%20menu%202025.pdf',                # Menu link
-      67.75,                                                                                             # X coordinate on map
-      30.75                                                                                              # Y coordinate on map
+      64.5,                                                                                              # X coordinate on map
+      27                                                                                                 # Y coordinate on map
    ),
    (
       'Souvlaki Bros',                                                                                   # Name
@@ -11525,8 +11532,8 @@ restaurants = [
       1,                                                                                                 # Open seasonally
       '''Enjoy Chicken Souvlaki, Falafel, Greek Salad, Wraps and Churros!''',
       'https://www.torontozoo.com/!/pdfs/food/Souvlaki%20Bros%20Menu.pdf',                               # Menu link
-      51.75,                                                                                             # X coordinate on map
-      68.75                                                                                              # Y coordinate on map
+      49,                                                                                                # X coordinate on map
+      62.5                                                                                               # Y coordinate on map
    ),
    (
       'Caribou Café Palgong',                                                                            # Name
@@ -11536,8 +11543,8 @@ restaurants = [
       1,                                                                                                 # Open seasonally
       '''Located next to the arctic wolves, outside of Caribou Café!''',
       'https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf',                                         # Menu link
-      57.25,                                                                                             # X coordinate on map
-      36.5                                                                                               # Y coordinate on map
+      54.5,                                                                                              # X coordinate on map
+      33                                                                                                 # Y coordinate on map
    ),
    (
       'Polar Patio',                                                                                     # Name
@@ -11548,8 +11555,8 @@ restaurants = [
       '''Join us at our fully licensed Polar Patio next to the Arctic wolves, enjoy beer, wine, ciders & seltzers or try our wings,
          nachos, poutine and tenders!'''.replace( '\n', ' ' ),
       'https://www.torontozoo.com/!/pdfs/food/Polar%20Patio%20Menu%202024.pdf',                          # Menu link
-      56.25,                                                                                             # X coordinate on map
-      33.5                                                                                               # Y coordinate on map
+      53.5,                                                                                              # X coordinate on map
+      29.5                                                                                               # Y coordinate on map
    ),
    (
       'Savanna Snack Bar',                                                                               # Name
@@ -11559,8 +11566,8 @@ restaurants = [
       1,                                                                                                 # Open seasonally
       '''Snacks, Beverages, Ice cream, Beer, Wine, and Pizza Pizza!''',
       'https://www.torontozoo.com/!/pdfs/food/Toronto%20Zoo%20Savana%20Hut%20Menu%20Spring%202025.pdf',  # Menu link
-      42,                                                                                                # X coordinate on map
-      57.25                                                                                              # Y coordinate on map
+      40,                                                                                                # X coordinate on map
+      52                                                                                                 # Y coordinate on map
    ),
    (
       'Simba Safari Lodge',                                                                              # Name
@@ -11571,8 +11578,8 @@ restaurants = [
       '''Located overlooking the white rhinos, enjoy a variety of drinks, snacks, burgers, hot dogs, salads, poutine and chicken.
          *Fully Licensed.'''.replace( '\n', ' ' ),
       'https://www.torontozoo.com/!/pdfs/food/Simba%20Menu%202025.pdf?',                                 # Menu link
-      42,                                                                                                # X coordinate on map
-      92                                                                                                 # Y coordinate on map
+      40,                                                                                                # X coordinate on map
+      85                                                                                                 # Y coordinate on map
    ),
    (
       'Smokes Poutinerie Trailer',                                                                       # Name
@@ -11582,8 +11589,8 @@ restaurants = [
       '''Enjoy a variety of poutine creations.''',
       1,                                                                                                 # Open seasonally
       'https://www.torontozoo.com/!/pdfs/food/Smokes-Front-Courtyard-Menu.pdf',                          # Menu link
-      64,                                                                                                # X coordinate on map
-      64                                                                                                 # Y coordinate on map
+      61,                                                                                                # X coordinate on map
+      58.25                                                                                              # Y coordinate on map
    ),
    (
       'Tim Hortons Express',                                                                             # Name
@@ -11593,8 +11600,51 @@ restaurants = [
       1,                                                                                                 # Open seasonally
       '''Grab a quick beverage or snack including coffee, tea, iced caps, timbits, and frozen lemonade.''',
       'https://www.torontozoo.com/!/pdfs/food/Express%20Menu%202025.pdf',                                # Menu link
-      58.75,                                                                                             # X coordinate on map
-      23.5                                                                                               # Y coordinate on map
+      55.75,                                                                                             # X coordinate on map
+      20                                                                                                 # Y coordinate on map
+   )
+]
+
+restrooms = [
+   (
+      'Entrance Restroom',
+      64.5,    # X coordinate on map
+      63       # Y coordinate on map
+   ),
+   (
+      'Africa Restaurant Restroom',
+      49.5,    # X coordinate on map
+      64       # Y coordinate on map
+   ),
+   (
+      'Simba Safari Lodge Restroom',
+      41,      # X coordinate on map
+      85       # Y coordinate on map
+   ),
+   (
+      'Canadian Domain Zoomobile Stop Restroom',
+      25,      # X coordinate on map
+      68       # Y coordinate on map
+   ),
+   (
+      'Canadian Domain Restroom',
+      5.75,    # X coordinate on map
+      72.5     # Y coordinate on map
+   ),
+   (
+      'Caribou Café Restroom',
+      52.75,   # X coordinate on map
+      31       # Y coordinate on map
+   ),
+   (
+      'Eurasia Restroom',
+      62.5,    # X coordinate on map
+      28       # Y coordinate on map
+   ),
+   (
+      'Splash Island Restroom',
+      63.5,    # X coordinate on map
+      45       # Y coordinate on map
    )
 ]
 
@@ -11678,6 +11728,13 @@ cursor.executemany( ''' INSERT INTO Restaurant (
                            Y_COORD
                         ) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ''', restaurants )
+
+cursor.executemany( ''' INSERT INTO Restroom (
+                           TITLE,
+                           X_COORD,
+                           Y_COORD
+                        ) 
+                        VALUES (?, ?, ?) ''', restrooms )
 
 conn.commit()
 conn.close()

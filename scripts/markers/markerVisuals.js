@@ -73,6 +73,12 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
       return;
    }
 
+   if (type === 'restroom') {
+      markerEl.classList.add('marker-restroom');
+      applyGenericIcon(markerEl, '/images/generic-icons/restroom.png', count);
+      return;
+   }
+
    // Fallback for future types
    markerEl.style.backgroundColor = 'rgba(94,150,0,0.95)';
    markerEl.textContent = String(count);

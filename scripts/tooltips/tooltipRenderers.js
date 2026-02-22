@@ -6,9 +6,10 @@ export const TYPE_REGISTRY = {
    animal: animalRenderer,
    pavilion: pavilionRenderer,
    restaurant: restaurantRenderer,
+   // ✅ do NOT include restroom here at all
 };
 
 export function getRendererForItem(item) {
    const key = String(item?.type || '').toLowerCase();
-   return TYPE_REGISTRY[key] ?? TYPE_REGISTRY.animal;
+   return TYPE_REGISTRY[key] || null;
 }

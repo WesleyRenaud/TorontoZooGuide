@@ -17,6 +17,7 @@ function normalizeSearchRows(response) {
    if (Array.isArray(response.animals)) out.push(...response.animals.map(x => ({ ...x, type: x.type || 'animal' })));
    if (Array.isArray(response.pavilions)) out.push(...response.pavilions.map(x => ({ ...x, type: x.type || 'pavilion' })));
    if (Array.isArray(response.restaurants)) out.push(...response.restaurants.map(x => ({ ...x, type: x.type || 'restaurant' })));
+   if (Array.isArray(response.restrooms)) out.push(...response.restrooms.map(x => ({ ...x, type: x.type || 'restroom' })));
    return out;
 }
 
@@ -61,10 +62,14 @@ function getRowType(row) {
 }
 
 function getRowTitle(row, type) {
+   if (type === 'restroom') {
+      return row.title ?? row.TITLE ?? 'Restroom';
+   }
+
    if (type === 'restaurant') {
       return row.name ?? row.NAME ?? 'Restaurant';
    }
-
+   
    if (type === 'pavilion') {
       return row.name ?? row.NAME ?? 'Pavilion';
    }
@@ -73,6 +78,10 @@ function getRowTitle(row, type) {
 }
 
 function getRowSubtitle(row, type) {
+   if (type == 'restroom') {
+      return null;
+   }
+
    if (type === 'restaurant') {
       const parts = [];
 

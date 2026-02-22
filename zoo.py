@@ -96,6 +96,21 @@ class Restaurant:
       }
    
 
+class Restroom:
+   def __init__( self, title, x_coord=None, y_coord=None ):
+      self.title = title
+      self.x_coord = x_coord
+      self.y_coord = y_coord
+
+
+   def to_dict( self ):
+      return {
+         'title': self.title,
+         'x_coord': self.x_coord,
+         'y_coord': self.y_coord
+      }
+   
+
 class Zoo_Util:
    def get_average_temperature( self, month, day ):
       # Convert month/day to day-of-year

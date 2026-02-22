@@ -30,6 +30,15 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
+   // Restrooms ✅
+   if (type === 'restroom') {
+      if (itemsAtPoint.length === 1) {
+         return itemsAtPoint[0].title || 'Restroom';
+      }
+      const first = itemsAtPoint[0].title || 'Restroom';
+      return `${first} + ${itemsAtPoint.length - 1}`;
+   }
+
    // Fallback
    return type ? `${type} (${itemsAtPoint.length})` : String(itemsAtPoint.length);
 }

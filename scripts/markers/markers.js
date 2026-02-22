@@ -46,7 +46,13 @@ export function createMarkerLayer({ mapInner, tooltip, hover }) {
          applyMarkerVisual(el, itemsAtPoint);
 
          mapInner.appendChild(el);
-         tooltip.attachToMarker(el, itemsAtPoint, hover);
+
+         // ✅ IMPORTANT: determine type from THIS marker's items
+         const type = String(itemsAtPoint[0]?.type || '').toLowerCase();
+         const clickable = type !== 'restroom';
+
+         // ✅ IMPORTANT: attach with THIS marker's items
+         tooltip.attachToMarker(el, itemsAtPoint, hover, { clickable });
       });
    }
 

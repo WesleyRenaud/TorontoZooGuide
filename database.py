@@ -253,6 +253,28 @@ class Database():
       cur.close()
 
       return restaurants
+   
+
+   def get_restrooms( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  r.TITLE,
+                  r.X_COORD,
+                  r.Y_COORD
+               FROM Restroom r;
+         """ )
+      
+      restroom_data = data.fetchall()
+
+      restrooms = []
+      for restroom in restroom_data: 
+         restrooms.append( zoo.Restroom( title=restroom[0], x_coord=restroom[1], y_coord=restroom[2] ) )
+
+      cur.close()
+
+      return restrooms
       
 
    def get_animals_matching_query( self, query ):
@@ -330,4 +352,28 @@ class Database():
       cur.close()
 
       return restaurants
+   
+
+   def get_restrooms_matching_query( self, query ):
+      cur = self.conn.cursor()
+
+      pattern = f"%{query}%"
+      data = cur.execute(
+         """   SELECT
+                  r.TITLE,
+                  r.X_COORD,
+                  r.Y_COORD
+               FROM Restroom r
+               WHERE r.TITLE LIKE ? ESCAPE '\\';
+         """, (pattern, ) )
+      
+      restroom_data = data.fetchall()
+
+      restrooms = []
+      for restroom in restroom_data: 
+         restrooms.append( zoo.Restroom( title=restroom[0], x_coord=restroom[1], y_coord=restroom[2] ) )
+
+      cur.close()
+
+      return restrooms
    

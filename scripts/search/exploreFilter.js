@@ -3,7 +3,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
    if (!multiSelect) {
       return {
          getSelectedTypes: () => ['animal'],
-         buildSearchIncludeFlags: () => ({ includeAnimals: true, includePavilions: false, includeRestaurants: false }),
+         buildSearchIncludeFlags: () => ({ includeAnimals: true, includePavilions: false, includeRestaurants: false, includeRestrooms: false }),
       };
    }
 
@@ -69,6 +69,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
          includeAnimals: selected.includes('animal'),
          includePavilions: selected.includes('pavilion'),
          includeRestaurants: selected.includes('restaurant'),
+         includeRestrooms: selected.includes('restroom'),
       };
    }
 

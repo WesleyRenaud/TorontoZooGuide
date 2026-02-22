@@ -1,8 +1,8 @@
 import { getRendererForItem } from './tooltipRenderers.js';
 import { positionTooltip } from '../utils/dom.js';
-import { setMarkerToAnimalIcon } from '../markers/markerVisuals.js';
+import { setMarkerToAnimalIcon, applyMarkerVisual } from '../markers/markerVisuals.js';
 
-export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
+export function createTooltipController({ tooltipEl, onAnimalCardClick, offDisplayBanner }) {
    let openMarker = null;
    let itemsForOpen = [];
    let carouselEl = null;
@@ -12,11 +12,15 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
       return tooltipEl && tooltipEl.style.display === 'flex';
    }
 
-   function attachToMarker(markerEl, items, hover) {
-      markerEl.addEventListener('click', (e) => {
-         e.stopPropagation();
-         toggle(markerEl, items);
-      });
+   function attachToMarker(markerEl, items, hover, opts = {}) {
+      const clickable = opts.clickable !== false; // default true
+
+      if (clickable) {
+         markerEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggle(markerEl, items);
+         });
+      }
 
       markerEl.addEventListener('mouseenter', (e) => hover.show(markerEl.dataset.hover || '', e));
       markerEl.addEventListener('mousemove', (e) => hover.move(e));
@@ -38,6 +42,14 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
 
       render(itemsForOpen);
 
+      // ✅ If nothing was rendered (e.g. restroom), do NOT open the tooltip
+      if (!carouselEl || carouselEl.children.length === 0) {
+         openMarker = null;
+         itemsForOpen = [];
+         carouselEl = null;
+         return;
+      }
+
       tooltipEl.style.display = 'flex';
       tooltipEl.style.pointerEvents = 'auto';
       positionTooltip(tooltipEl, markerEl);
@@ -45,11 +57,18 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
       installGlobalListeners();
 
       // ✅ ensure marker matches whatever card is showing
-      showIndex(Number(carouselEl?.dataset.index || 0) || 0);
+      showIndex(Number(carouselEl.dataset.index || 0) || 0);
    }
 
    function close() {
       if (!tooltipEl || !isOpen()) return;
+
+      offDisplayBanner?.hide?.();
+
+      if (openMarker) {
+         applyMarkerVisual(openMarker, itemsForOpen || openMarker.__items || []);
+      }
+
       tooltipEl.style.display = 'none';
       tooltipEl.style.pointerEvents = 'none';
       tooltipEl.innerHTML = '';
@@ -61,6 +80,14 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
    function render(items) {
       tooltipEl.innerHTML = '';
 
+      // ✅ If the first item has no renderer (restroom), bail
+      const first = items?.[0] || null;
+      const firstRenderer = first ? getRendererForItem(first) : null;
+      if (!firstRenderer) {
+         carouselEl = null;
+         return;
+      }
+
       const content = document.createElement('div');
       content.className = 'tooltip-content';
 
@@ -70,6 +97,8 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
 
       items.forEach((item, i) => {
          const renderer = getRendererForItem(item);
+         // renderer should exist for all items if markers are single-type
+         if (!renderer) return;
          carouselEl.appendChild(renderer.createCard(item, i));
       });
 
@@ -124,8 +153,8 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
 
       carouselEl.dataset.index = String(safeIndex);
 
-      // ✅ marker icon follows the active animal card
       syncMarkerToIndex(safeIndex);
+      syncOffDisplayToIndex(safeIndex);
    }
 
    function syncMarkerToIndex(index) {
@@ -138,6 +167,14 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
       if (type !== 'animal') return;
 
       setMarkerToAnimalIcon(openMarker, item);
+   }
+
+   function syncOffDisplayToIndex(index) {
+      const item = itemsForOpen[index] || null;
+      const type = String(item?.type || '').toLowerCase();
+
+      if (type === 'animal') offDisplayBanner?.sync?.(item);
+      else offDisplayBanner?.hide?.();
    }
 
    function step(delta) {
@@ -187,7 +224,6 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick }) {
       const idx = itemsForOpen.findIndex(matchFn);
       const newIndex = idx >= 0 ? idx : 0;
 
-      // ✅ this is the key: focus flow uses jumpTo()
       showIndex(newIndex);
    }
 

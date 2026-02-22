@@ -3,9 +3,12 @@ export function createMapStore() {
       byType: {
          animal: [],
          pavilion: [],
+         restaurant: [],
+         restroom: []
       },
       cache: {
          pavilion: { loaded: false, inFlight: null },
+         restroom: { loaded: false, inFlight: null }
       },
    };
 }

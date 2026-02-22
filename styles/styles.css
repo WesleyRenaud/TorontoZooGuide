@@ -642,7 +642,11 @@ html.home-page {
 .marker.marker-restaurant {
    width: 32px;
    height: 32px;
-   font-size: 16px;
+}
+
+.marker.marker-restroom {
+   width: 24px;
+   height: 24px;
 }
 
 /* ============================================================
