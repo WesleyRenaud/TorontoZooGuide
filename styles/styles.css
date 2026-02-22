@@ -150,7 +150,6 @@ html.home-page {
    display: flex;
    flex-direction: column;
    gap: 96px;
-   overflow: hidden;
 }
 
 /* ============================================================
@@ -1157,7 +1156,7 @@ html.home-page {
 
 .view-on-map-button {
    display: block;
-   margin: 128px auto 40px auto;
+   margin: 96px auto 40px auto;
    padding: 24px 48px;
 
    font-size: 4em;
