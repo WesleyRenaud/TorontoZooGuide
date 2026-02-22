@@ -163,7 +163,7 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
       const item = itemsForOpen[index] || null;
       if (!item) return;
 
-      const type = String(item.type || '').toLowerCase();
+      const type = String(item.type || '');
       if (type !== 'animal') return;
 
       setMarkerToAnimalIcon(openMarker, item);
@@ -171,7 +171,7 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
 
    function syncOffDisplayToIndex(index) {
       const item = itemsForOpen[index] || null;
-      const type = String(item?.type || '').toLowerCase();
+      const type = String(item?.type || '');
 
       if (type === 'animal') offDisplayBanner?.sync?.(item);
       else offDisplayBanner?.hide?.();

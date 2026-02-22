@@ -3,7 +3,15 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
    if (!multiSelect) {
       return {
          getSelectedTypes: () => ['animal'],
-         buildSearchIncludeFlags: () => ({ includeAnimals: true, includePavilions: false, includeRestaurants: false, includeRestrooms: false }),
+         buildSearchIncludeFlags:
+            () => ({
+               includeAnimals: true,
+               includePavilions: false,
+               includeRestaurants: false,
+               includeRestrooms: false,
+               includeGiftShops: false,
+            }),
+                  
       };
    }
 
@@ -15,7 +23,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
    function getSelectedTypes() {
       return Array.from(checkboxes)
          .filter(cb => cb.checked)
-         .map(cb => String(cb.value || '').toLowerCase());
+         .map(cb => String(cb.value || ''));
    }
 
    function updateSelectedText() {
@@ -70,6 +78,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
          includePavilions: selected.includes('pavilion'),
          includeRestaurants: selected.includes('restaurant'),
          includeRestrooms: selected.includes('restroom'),
+         includeGiftShops: selected.includes('giftShop'),
       };
    }
 

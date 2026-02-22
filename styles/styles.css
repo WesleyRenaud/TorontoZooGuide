@@ -639,7 +639,7 @@ html.home-page {
    display: none;
 }
 
-.marker.marker-restaurant {
+.marker.marker-restaurant, .marker.marker-gift-shop {
    width: 32px;
    height: 32px;
 }

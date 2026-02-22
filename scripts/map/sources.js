@@ -109,5 +109,22 @@ export function createDataSources(store) {
          },
          cachePolicy: 'static',
       },
+
+      // ✅ singular layer key
+      giftShop: {
+         fetch: async (ctx) => {
+            const res = await ajaxPost('/get-gift-shops', {
+               month: ctx.month,
+               includeSeasonalGiftShops: ctx.includeSeasonalGiftShops,
+            });
+
+            const rows = res?.gift_shops ?? res?.results ?? res ?? [];
+            const normalized = rows.map(r => ({ ...r, type: 'giftShop' }));
+
+            store.byType.giftShop = normalized;
+            return normalized;
+         },
+         cachePolicy: 'no-cache',
+      },
    };
 }

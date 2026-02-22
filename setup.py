@@ -83,8 +83,8 @@ cursor.execute( ''' CREATE TABLE Restaurant
                   (  NAME              VARCHAR(64) NOT NULL,
                      LOCATION          VARCHAR(64),
                      SUB_LOCATION      VARCHAR(64),
-                     SEASONAL_SCHEDULE TEXT        NOT NULL,
                      OPEN_SEASONALLY   BOOL        NOT NULL,
+                     SEASONAL_SCHEDULE TEXT        NOT NULL,
                      DESCRIPTION       TEXT        NOT NULL,
                      MENU_LINK         TEXT,
                      X_COORD           FLOAT       NOT NULL,
@@ -98,6 +98,17 @@ cursor.execute( ''' CREATE TABLE Restroom
                      X_COORD  FLOAT       NOT NULL,
                      Y_COORD  FLOAT       NOT NULL,
                      PRIMARY KEY (TITLE) ); ''' )
+
+cursor.execute( 'DROP TABLE IF EXISTS GiftShop;' )
+cursor.execute( ''' CREATE TABLE GiftShop
+                  (  NAME              VARCHAR(64) NOT NULL,
+                     LOCATION          VARCHAR(64) NOT NULL,
+                     OPEN_SEASONALLY   BOOL        NOT NULL,
+                     SEASONAL_SCHEDULE TEXT        NOT NULL,
+                     DESCRIPTION       TEXT        NOT NULL,
+                     X_COORD           FLOAT       NOT NULL,
+                     Y_COORD           FLOAT       NOT NULL,
+                     PRIMARY KEY (NAME) ); ''' )
 
 regions = [
    (
@@ -11510,7 +11521,7 @@ restaurants = [
       '''Come hang out for bubble tea and smoothies at Palgong Tea near the Masai giraffes!''',
       1,                                                                                                 # Open seasonally
       '''https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf''',                                     # Menu link
-      52,                                                                                                # X coordinate on map
+      51,                                                                                                # X coordinate on map
       85                                                                                                 # Y coordinate on map
    ),
    (
@@ -11648,6 +11659,87 @@ restrooms = [
    )
 ]
 
+gift_shops = [
+   (
+      'Zootique',
+      'Learning & Engagement Centre',
+      0,       # Open seasonally
+      '''Open Daily''',
+      '''Our largest main boutique with the widest variety of souvenirs, toys, plush, apparel, books, jewelry, and more! Something
+         for everyone, from every region of the Zoo.'''.replace( '\n', ' ' ),
+      60.5,    # X coordinate on map
+      53       # Y coordinate on map
+   ),
+   (
+      'Courtyard Kiosk',
+      'Front Courtyard',
+      1,       # Open seasonally
+      '''Open Peak-Season Only *
+         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      '''This green pod is a quick stop shop in the main front courtyard for all your Zoo necessities! *
+         Located beside our Conservation Carousel.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      61.25,   # X coordinate on map
+      60.      # Y coordinate on map
+   ),
+   (
+      'Eurasia Wilds Outpost',
+      'Eurasia Wilds',
+      1,       # Open seasonally
+      '''Open Peak-Season Only *
+         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      '''Located by our endangered Amur Tiger exhibit, this indoor shop offers a variety of tiger themed souvenirs and gifts, as
+         well as your other favourite Eurasian species!'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      63.75,   # X coordinate on map
+      28.75    # Y coordinate on map
+   ),
+   (
+      'Savanna Shop',
+      'Africa Savanna',
+      1,       # Open seasonally
+      '''Open Peak-Season Only *
+         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      '''An indoor gift shop located by the Africa Zoomobile station. Souvenirs, toys, plush, apparel, and exclusive African gifts
+         to remember some of your favourite species found in the African Savanna.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      39.25,   # X coordinate on map
+      51.25    # Y coordinate on map
+   ),
+   (
+      'Twiga Market',
+      'Africa Savanna',
+      1,       # Open seasonally
+      '''Open Peak-Season Only *
+         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      '''A breezy outdoor market located directly in front of our Giraffe exhibit. Specializing in Giraffe, Hippo, and Gorilla
+         themed souvenirs and gifts.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      52,      # X coordinate on map
+      85.25    # Y coordinate on map
+   ),
+   (
+      'Discovery Zone',
+      'Next to Splash Island',
+      1,       # Open seasonally
+      '''Open Peak-Season Only *
+         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      '''An aquatic-themed outdoor kiosk that has you covered for summer. Towels, apparel, sunscreen, toys, and more! Located by the
+         entrance of Splash Island.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      64,      # X coordinate on map
+      46       # Y coordinate on map
+   ),
+   (
+      'Tundra Trading Post',
+      'Tundra Trek',
+      1,       # Open seasonally
+      '''Open Peak-Season Only *
+         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      '''This arctic-themed outdoor kiosk has you covered for summer adventures! Find apparel, sunscreen, toys, and other essentials
+         perfect for your day at the Zoo. Conveniently located beside BeaverTails and the polar bear habitat near the Tundra Trek
+         Loop.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
+      54,      # X coordinate on map
+      33.75    # Y coordinate on map
+   ),
+]
+
+
 cursor.executemany( ''' INSERT INTO Region (
                            NAME
                         ) 
@@ -11735,6 +11827,17 @@ cursor.executemany( ''' INSERT INTO Restroom (
                            Y_COORD
                         ) 
                         VALUES (?, ?, ?) ''', restrooms )
+
+cursor.executemany( ''' INSERT INTO GiftShop (
+                           NAME,
+                           LOCATION,
+                           OPEN_SEASONALLY,
+                           SEASONAL_SCHEDULE,
+                           DESCRIPTION,
+                           X_COORD,
+                           Y_COORD
+                        ) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?) ''', gift_shops )
 
 conn.commit()
 conn.close()

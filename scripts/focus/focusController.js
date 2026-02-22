@@ -37,7 +37,7 @@ function distToViewportCenter(markerEl, viewportEl) {
       const y = row.y_coord ?? row.y ?? row.Y ?? null;
 
       // Build matchFn (for tooltip jump) but don’t let it block focusing
-      const typeKey = String(type || row.type || '').toLowerCase();
+      const typeKey = String(type || row.type || '');
       const renderer = TYPE_REGISTRY?.[typeKey] ?? TYPE_REGISTRY?.animal ?? null;
 
       const matchFn = renderer?.isMatch
@@ -53,6 +53,8 @@ function distToViewportCenter(markerEl, viewportEl) {
    }
 
    function focusByCoord(x, y, matchFn) {
+      console.log(x, y, matchFn);
+
       const key = coordKey(x, y);
       const marker = getMarkerByCoord(key);
       if (!marker) return;
@@ -93,7 +95,7 @@ function distToViewportCenter(markerEl, viewportEl) {
          const matches = [];
          for (let i = 0; i < items.length; i++) {
          const it = items[i];
-         if (String(it?.type || '').toLowerCase() !== typeKey) continue;
+         if (String(it?.type || '') !== typeKey) continue;
          if (matchFn(it)) matches.push(it);
          }
          if (!matches.length) continue;

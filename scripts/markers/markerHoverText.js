@@ -1,7 +1,7 @@
 export function buildHoverText(itemsAtPoint) {
    if (!itemsAtPoint || itemsAtPoint.length === 0) return '';
 
-   const type = String(itemsAtPoint[0].type || '').toLowerCase();
+   const type = String(itemsAtPoint[0].type || '');
 
    // Animals
    if (type === 'animal') {
@@ -36,6 +36,15 @@ export function buildHoverText(itemsAtPoint) {
          return itemsAtPoint[0].title || 'Restroom';
       }
       const first = itemsAtPoint[0].title || 'Restroom';
+      return `${first} + ${itemsAtPoint.length - 1}`;
+   }
+
+   // Gift Shops ✅
+   if (type === 'giftShop') {
+      if (itemsAtPoint.length === 1) {
+         return itemsAtPoint[0].name || 'Gift Shop';
+      }
+      const first = itemsAtPoint[0].name || 'Gift Shop';
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 

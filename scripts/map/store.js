@@ -4,7 +4,8 @@ export function createMapStore() {
          animal: [],
          pavilion: [],
          restaurant: [],
-         restroom: []
+         restroom: [],
+         giftShop: [],
       },
       cache: {
          pavilion: { loaded: false, inFlight: null },

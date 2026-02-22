@@ -48,7 +48,7 @@ export function createMarkerLayer({ mapInner, tooltip, hover }) {
          mapInner.appendChild(el);
 
          // ✅ IMPORTANT: determine type from THIS marker's items
-         const type = String(itemsAtPoint[0]?.type || '').toLowerCase();
+         const type = String(itemsAtPoint[0]?.type || '');
          const clickable = type !== 'restroom';
 
          // ✅ IMPORTANT: attach with THIS marker's items

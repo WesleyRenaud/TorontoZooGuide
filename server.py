@@ -167,6 +167,23 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-gift-shops':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         month = data.get( 'month' )
+         include_seasonal_gift_shops = data.get( 'includeSeasonalGiftShops' )
+
+         gift_shops = self.database.get_gift_shops( month, include_seasonal_gift_shops )
+         
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"gift_shops": [gift_shop.to_dict() for gift_shop in gift_shops]}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/search':
          content_length = int( self.headers['Content-Length'] )
          post_data = self.rfile.read( content_length )
@@ -177,11 +194,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_pavilions = bool( data.get( 'includePavilions' ) )
          include_restaurants = bool( data.get( 'includeRestaurants') )
          include_restrooms = bool( data.get( 'includeRestrooms' ) )
+         include_gift_shops = bool( data.get( 'includeGiftShops' ) )
 
          animals_json = []
          pavilions_json = []
          restaurants_json = []
          restrooms_json = []
+         gift_shops_json = []
 
          if include_animals and query:
             animals = self.database.get_animals_matching_query( query ) or []
@@ -211,11 +230,19 @@ class MyHandler( BaseHTTPRequestHandler ):
                   d['type'] = d.get( 'type', 'restroom' )
                   restrooms_json.append( d )
 
+         if include_gift_shops and query:
+            gift_shops = self.database.get_gift_shops_matching_query( query ) or []
+            for gift_shop in gift_shops:
+                  d = gift_shop.to_dict()
+                  d['type'] = d.get( 'type', 'giftShop' )
+                  gift_shops_json.append( d )
+
          response = {
             'animals': animals_json,
             'pavilions': pavilions_json,
             'restaurants': restaurants_json,
-            'restrooms': restrooms_json
+            'restrooms': restrooms_json,
+            'gift_shops': gift_shops_json
          }
 
          self.send_response( 200 )

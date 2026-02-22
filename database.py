@@ -275,6 +275,37 @@ class Database():
       cur.close()
 
       return restrooms
+   
+
+   def get_gift_shops( self, month, include_seasonal_gift_shops ):
+      cur = self.conn.cursor()
+
+      is_peak_season_month = self.zoo_util.is_peak_season_month( month )
+
+      data = cur.execute(
+         """   SELECT
+                  g.NAME,
+                  g.LOCATION,
+                  g.OPEN_SEASONALLY,
+                  g.SEASONAL_SCHEDULE,
+                  g.DESCRIPTION,
+                  g.X_COORD,
+                  g.Y_COORD
+               FROM GiftShop g;
+         """ )
+      
+      gift_shop_data = data.fetchall()
+
+      gift_shops = []
+      for gift_shop in gift_shop_data: 
+         open_seasonally = gift_shop[2]
+         if is_peak_season_month or include_seasonal_gift_shops or not open_seasonally:
+            gift_shops.append( zoo.GiftShop( name=gift_shop[0], location=gift_shop[1], seasonal_schedule=gift_shop[3],
+                                             description=gift_shop[4], x_coord=gift_shop[5], y_coord=gift_shop[6] ) )
+
+      cur.close()
+
+      return gift_shops
       
 
    def get_animals_matching_query( self, query ):
@@ -376,4 +407,29 @@ class Database():
       cur.close()
 
       return restrooms
+   
+
+   def get_gift_shops_matching_query( self, query ):
+      cur = self.conn.cursor()
+
+      pattern = f"%{query}%"
+      data = cur.execute(
+         """   SELECT
+                  g.NAME,
+                  g.LOCATION,
+                  g.X_COORD,
+                  g.Y_COORD
+               FROM GiftShop g
+               WHERE g.NAME LIKE ? ESCAPE '\\';
+         """, (pattern, ) )
+      
+      gift_shop_data = data.fetchall()
+
+      gift_shops = []
+      for gift_shop in gift_shop_data: 
+         gift_shops.append( zoo.GiftShop( name=gift_shop[0], location=gift_shop[1], x_coord=gift_shop[2], y_coord=gift_shop[3] ) )
+
+      cur.close()
+
+      return gift_shops
    

@@ -8,6 +8,7 @@ export function createMapUpdater({
    focus,
    getIncludeOffDisplay,
    getIncludeSeasonalRestaurants,
+   getIncludeSeasonalGiftShops,
    getSelectedTypes,
 }) {
    let lastPreset = null;
@@ -47,11 +48,12 @@ export function createMapUpdater({
    async function run(dateCtx, options = null) {
       const includeOffDisplayAnimals = getIncludeOffDisplay();
       const includeSeasonalRestaurants = getIncludeSeasonalRestaurants();
+      const includeSeasonalGiftShops = getIncludeSeasonalGiftShops();
 
-      let selectedTypes = (getSelectedTypes() || []).map(t => String(t).toLowerCase());
+      let selectedTypes = (getSelectedTypes() || []).map(t => String(t));
 
       // If focusing from search/deeplink, ensure focused type is loaded
-      const focusType = String(options?.focus?.type || options?.focus?.row?.type || '').toLowerCase();
+      const focusType = String(options?.focus?.type || options?.focus?.row?.type || '');
       if (focusType && !selectedTypes.includes(focusType)) {
          selectedTypes = [focusType, ...selectedTypes];
       }
@@ -66,7 +68,7 @@ export function createMapUpdater({
       let speciesToInclude = [];
 
       const focusRow = options?.focus?.row || null;
-      const focusRowType = String(options?.focus?.type || focusRow?.type || '').toLowerCase();
+      const focusRowType = String(options?.focus?.type || focusRow?.type || '');
 
       if (focusRow && focusRowType === 'animal') {
          const s = String(focusRow.species ?? focusRow.SPECIES ?? '').trim();
@@ -79,6 +81,7 @@ export function createMapUpdater({
          temp: dateCtx.temp ?? null,
          includeOffDisplayAnimals,
          includeSeasonalRestaurants,
+         includeSeasonalGiftShops,
          speciesToInclude,
       };
 
@@ -90,7 +93,7 @@ export function createMapUpdater({
       // universal focus flow
       if (options?.focus?.row) {
          const row = options.focus.row;
-         const type = String(options.focus.type || row.type || '').toLowerCase();
+         const type = String(options.focus.type || row.type || '');
 
          setTimeout(() => {
             focus.focus({ row, type });
@@ -141,7 +144,7 @@ export function createMapUpdater({
       // ✅ Unwrap { type, x, y, row: {...} } into a real row object
       const base = payload.row && typeof payload.row === 'object' ? payload.row : payload;
 
-      const type = String(payload.type || base.type || payload.TYPE || base.TYPE || '').toLowerCase();
+      const type = String(payload.type || base.type || payload.TYPE || base.TYPE || '');
 
       // ✅ Ensure coords are on the row we pass down
       const row = {
@@ -179,7 +182,7 @@ export function createMapUpdater({
 
       // (Redundant but harmless)
       if (payload.row) {
-         const type = String(payload.type || payload.row.type || '').toLowerCase();
+         const type = String(payload.type || payload.row.type || '');
          refetchWithCurrentControls({ focus: { type, row: payload.row } });
       }
    }

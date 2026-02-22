@@ -36,7 +36,7 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
    if (items.length === 0) return;
 
    // ✅ Markers are single-type, so just read the first item
-   const type = String(items[0]?.type || '').toLowerCase();
+   const type = String(items[0]?.type || '');
    const count = items.length;
 
    if (type === 'animal') {
@@ -76,6 +76,12 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
    if (type === 'restroom') {
       markerEl.classList.add('marker-restroom');
       applyGenericIcon(markerEl, '/images/generic-icons/restroom.png', count);
+      return;
+   }
+
+   if (type === 'giftShop') {
+      markerEl.classList.add('marker-gift-shop');
+      applyGenericIcon(markerEl, '/images/generic-icons/gift-shop.png', count);
       return;
    }
 

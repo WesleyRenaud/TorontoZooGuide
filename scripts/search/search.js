@@ -18,6 +18,7 @@ function normalizeSearchRows(response) {
    if (Array.isArray(response.pavilions)) out.push(...response.pavilions.map(x => ({ ...x, type: x.type || 'pavilion' })));
    if (Array.isArray(response.restaurants)) out.push(...response.restaurants.map(x => ({ ...x, type: x.type || 'restaurant' })));
    if (Array.isArray(response.restrooms)) out.push(...response.restrooms.map(x => ({ ...x, type: x.type || 'restroom' })));
+   if (Array.isArray(response.gift_shops)) out.push(...response.gift_shops.map(x => ({ ...x, type: x.type || 'giftShop' })));
    return out;
 }
 
@@ -58,10 +59,14 @@ export function initSearch({ inputEl, getIncludeFlags, onFocusRow }) {
 }
 
 function getRowType(row) {
-   return String(row.type || row.TYPE || 'animal').toLowerCase();
+   return String(row.type || row.TYPE || 'animal');
 }
 
 function getRowTitle(row, type) {
+   if (type === 'giftShop') {
+      return row.name ?? row.NAME ?? 'Gift Shop';
+   }
+
    if (type === 'restroom') {
       return row.title ?? row.TITLE ?? 'Restroom';
    }
@@ -78,6 +83,15 @@ function getRowTitle(row, type) {
 }
 
 function getRowSubtitle(row, type) {
+   if (type === 'giftShop') {
+      const parts = [];
+
+      if (row.location) parts.push(`Location: ${row.location}`);
+      if (row.sub_location) parts.push(row.sub_location);
+
+      return parts.join(', ') || 'Gift Shop';
+   }
+
    if (type == 'restroom') {
       return null;
    }
