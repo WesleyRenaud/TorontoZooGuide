@@ -143,8 +143,9 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          month = data.get( 'month' )
          include_seasonal_restaurants = data.get( 'includeSeasonalRestaurants' )
+         restaurants_to_include = data.get( 'restaurantsToInclude' )
 
-         restaurants = self.database.get_restaurants( month, include_seasonal_restaurants )
+         restaurants = self.database.get_restaurants( month, include_seasonal_restaurants, restaurants_to_include )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -174,8 +175,9 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          month = data.get( 'month' )
          include_seasonal_gift_shops = data.get( 'includeSeasonalGiftShops' )
+         gift_shops_to_include = data.get( 'giftShopsToInclude' )
 
-         gift_shops = self.database.get_gift_shops( month, include_seasonal_gift_shops )
+         gift_shops = self.database.get_gift_shops( month, include_seasonal_gift_shops, gift_shops_to_include )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )

@@ -221,7 +221,7 @@ class Database():
       return pavilions
    
 
-   def get_restaurants( self, month, include_seasonal_restaurants ):
+   def get_restaurants( self, month, include_seasonal_restaurants, restaurants_to_include=None ):
       cur = self.conn.cursor()
 
       is_peak_season_month = self.zoo_util.is_peak_season_month( month )
@@ -244,9 +244,10 @@ class Database():
 
       restaurants = []
       for restaurant in restaurant_data: 
+         name = restaurant[0]
          open_seasonally = restaurant[4]
-         if is_peak_season_month or include_seasonal_restaurants or not open_seasonally:
-            restaurants.append( zoo.Restaurant( name=restaurant[0], location=restaurant[1], sub_location=restaurant[2],
+         if is_peak_season_month or include_seasonal_restaurants or not open_seasonally or name in restaurants_to_include:
+            restaurants.append( zoo.Restaurant( name=name, location=restaurant[1], sub_location=restaurant[2],
                                                 seasonal_schedule=restaurant[3], description=restaurant[5], menu_link=restaurant[6],
                                                 x_coord=restaurant[7], y_coord=restaurant[8] ) )
 
@@ -277,7 +278,7 @@ class Database():
       return restrooms
    
 
-   def get_gift_shops( self, month, include_seasonal_gift_shops ):
+   def get_gift_shops( self, month, include_seasonal_gift_shops, gift_shops_to_include=None ):
       cur = self.conn.cursor()
 
       is_peak_season_month = self.zoo_util.is_peak_season_month( month )
@@ -297,10 +298,11 @@ class Database():
       gift_shop_data = data.fetchall()
 
       gift_shops = []
-      for gift_shop in gift_shop_data: 
+      for gift_shop in gift_shop_data:
+         name = gift_shop[0]
          open_seasonally = gift_shop[2]
-         if is_peak_season_month or include_seasonal_gift_shops or not open_seasonally:
-            gift_shops.append( zoo.GiftShop( name=gift_shop[0], location=gift_shop[1], seasonal_schedule=gift_shop[3],
+         if is_peak_season_month or include_seasonal_gift_shops or not open_seasonally or name in gift_shops_to_include:
+            gift_shops.append( zoo.GiftShop( name=name, location=gift_shop[1], seasonal_schedule=gift_shop[3],
                                              description=gift_shop[4], x_coord=gift_shop[5], y_coord=gift_shop[6] ) )
 
       cur.close()

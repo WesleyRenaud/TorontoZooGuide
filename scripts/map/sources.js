@@ -63,6 +63,7 @@ export function createDataSources(store) {
             const res = await ajaxPost('/get-restaurants', {
                month: ctx.month,
                includeSeasonalRestaurants: ctx.includeSeasonalRestaurants,
+               restaurantsToInclude: ctx.restaurantsToInclude,
             });
 
             const rows = res?.restaurants ?? res?.results ?? res ?? [];
@@ -116,6 +117,7 @@ export function createDataSources(store) {
             const res = await ajaxPost('/get-gift-shops', {
                month: ctx.month,
                includeSeasonalGiftShops: ctx.includeSeasonalGiftShops,
+               giftShopsToInclude: ctx.giftShopsToInclude,
             });
 
             const rows = res?.gift_shops ?? res?.results ?? res ?? [];

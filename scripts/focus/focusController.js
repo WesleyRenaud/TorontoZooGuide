@@ -53,8 +53,6 @@ function distToViewportCenter(markerEl, viewportEl) {
    }
 
    function focusByCoord(x, y, matchFn) {
-      console.log(x, y, matchFn);
-
       const key = coordKey(x, y);
       const marker = getMarkerByCoord(key);
       if (!marker) return;

@@ -66,13 +66,27 @@ export function createMapUpdater({
 
       // ✅ If focusing an animal, force-include that species in the animals fetch
       let speciesToInclude = [];
+      let restaurantsToInclude = [];
+      let giftShopsToInclude = [];
 
       const focusRow = options?.focus?.row || null;
       const focusRowType = String(options?.focus?.type || focusRow?.type || '');
 
-      if (focusRow && focusRowType === 'animal') {
-         const s = String(focusRow.species ?? focusRow.SPECIES ?? '').trim();
-         if (s) speciesToInclude = [s];
+      if (focusRow) {
+         if (focusRowType === 'animal') {
+            const s = String(focusRow.species ?? focusRow.SPECIES ?? '').trim();
+            if (s) speciesToInclude = [s];
+         }
+
+         if (focusRowType === 'restaurant') {
+            const r = focusRow.name ?? focusRow.NAME ?? null;
+            if (r != null) restaurantsToInclude = [r];
+         }
+
+         if (focusRowType === 'giftShop') {
+            const g = focusRow.name ?? focusRow.NAME ?? null;
+            if (g != null) giftShopsToInclude = [g];
+         }
       }
 
       const ctx = {
@@ -83,6 +97,8 @@ export function createMapUpdater({
          includeSeasonalRestaurants,
          includeSeasonalGiftShops,
          speciesToInclude,
+         restaurantsToInclude,
+         giftShopsToInclude,
       };
 
       await fetchAll(selectedTypes, ctx);
