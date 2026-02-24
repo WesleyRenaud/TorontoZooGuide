@@ -1,5 +1,13 @@
-export function initMapControls(
-   { mapPreset, mapDateInput, includeOffDisplayCheckbox, includeSeasonalRestaurantsCheckbox, includeSeasonalGiftShopsCheckbox, onUpdate }) {
+export function initMapControls
+   ({
+      mapPreset,
+      mapDateInput,
+      includeOffDisplayCheckbox,
+      includeSeasonalRestaurantsCheckbox,
+      includeSeasonalGiftShopsCheckbox,
+      includeSeasonalAttractionsCheckbox,
+      onUpdate
+   }) {
    if (!mapPreset || !mapDateInput || !onUpdate) {
       console.warn('[controls] missing elements:', { mapPreset, mapDateInput, onUpdate });
       return;
@@ -82,6 +90,12 @@ export function initMapControls(
 
    if (includeSeasonalGiftShopsCheckbox) {
       includeSeasonalGiftShopsCheckbox.addEventListener('change', () => {
+         refetch();
+      });
+   }
+
+   if (includeSeasonalAttractionsCheckbox) {
+      includeSeasonalAttractionsCheckbox.addEventListener('change', () => {
          refetch();
       });
    }

@@ -1,4 +1,5 @@
 import { likelihoodToColor, getAnimalIconUrl } from '../utils/icons.js';
+import { normalizeParameter } from '../utils/normalize.js';
 
 function resetMarkerVisual(markerEl) {
    // Clear anything from prior renders
@@ -82,6 +83,18 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
    if (type === 'giftShop') {
       markerEl.classList.add('marker-gift-shop');
       applyGenericIcon(markerEl, '/images/generic-icons/gift-shop.png', count);
+      return;
+   }
+
+   if (type === 'attraction') {
+      markerEl.classList.add('marker-attraction');
+
+      const attraction = items[0]; // first item at marker
+      const slug = normalizeParameter(attraction.name); 
+      const iconPath = `/images/attraction-icons/${slug}.png`;
+
+      applyGenericIcon(markerEl, iconPath, count);
+
       return;
    }
 

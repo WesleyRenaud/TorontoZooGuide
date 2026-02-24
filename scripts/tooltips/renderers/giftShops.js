@@ -3,13 +3,13 @@ import { normalizeParameter } from '../../utils/normalize.js';
 export const giftShopRenderer = {
    key: 'giftShop',
 
-   createCard(r, index) {
+   createCard(g, index) {
       const card = document.createElement('div');
       card.className = 'tooltip-card';
       card.dataset.index = index;
       card.style.display = index === 0 ? 'flex' : 'none';
 
-      const name = r.name || 'Gift Shop';
+      const name = g.name || 'Gift Shop';
       const normalizedName = normalizeParameter(name);
       const imgSrc = `images/gift-shops/${normalizedName}.png`;
 
@@ -24,8 +24,8 @@ export const giftShopRenderer = {
          </div>
 
          <strong>${name}</strong>
-         ${r.seasonal_schedule ? `<span>Seasonal Schedule: ${r.seasonal_schedule}</span>` : ''}
-         ${r.description ? `<span>Description: ${r.description}</span>` : ''}       
+         ${g.seasonal_schedule ? `<span>Seasonal Schedule: ${g.seasonal_schedule}</span>` : ''}
+         ${g.description ? `<span>Description: ${g.description}</span>` : ''}       
       `;
       return card;
    },

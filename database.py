@@ -308,6 +308,41 @@ class Database():
       cur.close()
 
       return gift_shops
+   
+
+   def get_attractions( self, month, include_seasonal_attractions, attractions_to_include=None ):
+      cur = self.conn.cursor()
+
+      is_peak_season_month = self.zoo_util.is_peak_season_month( month )
+
+      data = cur.execute(
+         """   SELECT
+                  a.NAME,
+                  a.OPEN_SEASONALLY,
+                  a.FREE_WITH_ADMISSION,
+                  a.SEASONAL_SCHEDULE,
+                  a.DESCRIPTION,
+                  a.INFO_LINK,
+                  a.HYPERLINK_TEXT,
+                  a.X_COORD,
+                  a.Y_COORD
+               FROM Attraction a;
+         """ )
+      
+      attraction_data = data.fetchall()
+
+      attractions = []
+      for attraction in attraction_data:
+         name = attraction[0]
+         open_seasonally = attraction[1]
+         if is_peak_season_month or include_seasonal_attractions or not open_seasonally or name in attractions_to_include:
+            attractions.append( zoo.Attraction( name=name, free_with_admission=attraction[2], seasonal_schedule=attraction[3],
+                                                description=attraction[4], info_link=attraction[5], hyperlink_text=attraction[6],
+                                                x_coord=attraction[7], y_coord=attraction[8] ) )
+
+      cur.close()
+
+      return attractions
       
 
    def get_animals_matching_query( self, query ):
@@ -434,4 +469,30 @@ class Database():
       cur.close()
 
       return gift_shops
+   
+
+   def get_attractions_matching_query( self, query ):
+      cur = self.conn.cursor()
+
+      pattern = f"%{query}%"
+      data = cur.execute(
+         """   SELECT
+                  a.NAME,
+                  a.FREE_WITH_ADMISSION,
+                  a.X_COORD,
+                  a.Y_COORD
+               FROM Attraction a
+               WHERE a.NAME LIKE ? ESCAPE '\\';
+         """, (pattern, ) )
+      
+      attraction_data = data.fetchall()
+
+      attractions = []
+      for attraction in attraction_data: 
+         attractions.append( zoo.Attraction( name=attraction[0], free_with_admission=attraction[1], x_coord=attraction[2],
+                                             y_coord=attraction[3] ) )
+
+      cur.close()
+
+      return attractions
    

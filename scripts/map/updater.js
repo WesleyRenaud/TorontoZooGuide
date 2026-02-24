@@ -9,6 +9,7 @@ export function createMapUpdater({
    getIncludeOffDisplay,
    getIncludeSeasonalRestaurants,
    getIncludeSeasonalGiftShops,
+   getIncludeSeasonalAttractions,
    getSelectedTypes,
 }) {
    let lastPreset = null;
@@ -49,6 +50,7 @@ export function createMapUpdater({
       const includeOffDisplayAnimals = getIncludeOffDisplay();
       const includeSeasonalRestaurants = getIncludeSeasonalRestaurants();
       const includeSeasonalGiftShops = getIncludeSeasonalGiftShops();
+      const includeSeasonalAttractions = getIncludeSeasonalAttractions();
 
       let selectedTypes = (getSelectedTypes() || []).map(t => String(t));
 
@@ -68,6 +70,7 @@ export function createMapUpdater({
       let speciesToInclude = [];
       let restaurantsToInclude = [];
       let giftShopsToInclude = [];
+      let attractionsToInclude = [];
 
       const focusRow = options?.focus?.row || null;
       const focusRowType = String(options?.focus?.type || focusRow?.type || '');
@@ -87,6 +90,11 @@ export function createMapUpdater({
             const g = focusRow.name ?? focusRow.NAME ?? null;
             if (g != null) giftShopsToInclude = [g];
          }
+
+         if (focusRowType === 'attraction') {
+            const g = focusRow.name ?? focusRow.NAME ?? null;
+            if (g != null) attractionsToInclude = [g];
+         }
       }
 
       const ctx = {
@@ -96,9 +104,11 @@ export function createMapUpdater({
          includeOffDisplayAnimals,
          includeSeasonalRestaurants,
          includeSeasonalGiftShops,
+         includeSeasonalAttractions,
          speciesToInclude,
          restaurantsToInclude,
          giftShopsToInclude,
+         attractionsToInclude,
       };
 
       await fetchAll(selectedTypes, ctx);

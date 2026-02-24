@@ -10,6 +10,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
                includeRestaurants: false,
                includeRestrooms: false,
                includeGiftShops: false,
+               includeAttractions: false,
             }),
                   
       };
@@ -79,6 +80,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
          includeRestaurants: selected.includes('restaurant'),
          includeRestrooms: selected.includes('restroom'),
          includeGiftShops: selected.includes('giftShop'),
+         includeAttractions: selected.includes('attraction'),
       };
    }
 

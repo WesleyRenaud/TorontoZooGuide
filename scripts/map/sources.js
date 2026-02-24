@@ -128,5 +128,23 @@ export function createDataSources(store) {
          },
          cachePolicy: 'no-cache',
       },
+
+      // ✅ singular layer key
+      attraction: {
+         fetch: async (ctx) => {
+            const res = await ajaxPost('/get-attractions', {
+               month: ctx.month,
+               includeSeasonalAttractions: ctx.includeSeasonalAttractions,
+               attractionsToInclude: ctx.attractionsToInclude,
+            });
+
+            const rows = res?.attractions ?? res?.results ?? res ?? [];
+            const normalized = rows.map(r => ({ ...r, type: 'attraction' }));
+
+            store.byType.attraction = normalized;
+            return normalized;
+         },
+         cachePolicy: 'no-cache',
+      },
    };
 }

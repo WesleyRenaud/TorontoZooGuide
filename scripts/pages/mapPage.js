@@ -23,6 +23,7 @@ export function initMapPage() {
    const includeOffDisplayCheckbox = document.getElementById('includeOffDisplayAnimals');
    const includeSeasonalRestaurantsCheckbox = document.getElementById('includeSeasonalRestaurants');
    const includeSeasonalGiftShopsCheckbox = document.getElementById('includeSeasonalGiftShops');
+   const includeSeasonalAttractionsCheckbox = document.getElementById('includeSeasonalAttractions');
    const animalSearchInput = document.getElementById('animalSearch');
 
    const tooltipEl = document.getElementById('tooltip');
@@ -78,6 +79,7 @@ export function initMapPage() {
       getIncludeOffDisplay: () => includeOffDisplayCheckbox?.checked ?? false,
       getIncludeSeasonalRestaurants: () => includeSeasonalRestaurantsCheckbox?.checked ?? false,
       getIncludeSeasonalGiftShops: () => includeSeasonalGiftShopsCheckbox?.checked ?? false,
+      getIncludeSeasonalAttractions: () => includeSeasonalAttractionsCheckbox?.checked ?? false,
       getSelectedTypes: () => initExploreTypeFilter.getSelectedTypes(),
    });
 
@@ -95,6 +97,7 @@ export function initMapPage() {
       includeOffDisplayCheckbox,
       includeSeasonalRestaurantsCheckbox,
       includeSeasonalGiftShopsCheckbox,
+      includeSeasonalAttractionsCheckbox,
       onUpdate: (preset, dateStr) => {
          updater.updateMap(preset, dateStr, null);
          search.refresh();

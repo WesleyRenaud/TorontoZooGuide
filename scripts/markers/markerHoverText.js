@@ -48,6 +48,15 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
+   // Attractions ✅
+   if (type === 'attraction') {
+      if (itemsAtPoint.length === 1) {
+         return itemsAtPoint[0].name || 'Attraction';
+      }
+      const first = itemsAtPoint[0].name || 'Attraction';
+      return `${first} + ${itemsAtPoint.length - 1}`;
+   }
+
    // Fallback
    return type ? `${type} (${itemsAtPoint.length})` : String(itemsAtPoint.length);
 }

@@ -19,6 +19,7 @@ function normalizeSearchRows(response) {
    if (Array.isArray(response.restaurants)) out.push(...response.restaurants.map(x => ({ ...x, type: x.type || 'restaurant' })));
    if (Array.isArray(response.restrooms)) out.push(...response.restrooms.map(x => ({ ...x, type: x.type || 'restroom' })));
    if (Array.isArray(response.gift_shops)) out.push(...response.gift_shops.map(x => ({ ...x, type: x.type || 'giftShop' })));
+   if (Array.isArray(response.attractions)) out.push(...response.attractions.map(x => ({ ...x, type: x.type || 'attraction' })));
    return out;
 }
 
@@ -63,6 +64,10 @@ function getRowType(row) {
 }
 
 function getRowTitle(row, type) {
+   if (type === 'attraction') {
+      return row.name ?? row.NAME ?? 'Attraction';
+   }
+
    if (type === 'giftShop') {
       return row.name ?? row.NAME ?? 'Gift Shop';
    }
@@ -83,6 +88,14 @@ function getRowTitle(row, type) {
 }
 
 function getRowSubtitle(row, type) {
+   if (type === 'attraction') {
+      const parts = [];
+
+      parts.push(row.free_with_admission ? 'Free With Admission' : 'Extra Charge');
+
+      return parts.join(', ') || 'Attraction';
+   }
+
    if (type === 'giftShop') {
       const parts = [];
 

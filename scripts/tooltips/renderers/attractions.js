@@ -1,17 +1,17 @@
 import { normalizeParameter } from '../../utils/normalize.js';
 
-export const restaurantRenderer = {
-   key: 'restaurant',
+export const attractionRenderer = {
+   key: 'attraction',
 
-   createCard(r, index) {
+   createCard(a, index) {
       const card = document.createElement('div');
       card.className = 'tooltip-card';
       card.dataset.index = index;
       card.style.display = index === 0 ? 'flex' : 'none';
 
-      const name = r.name || 'Restaurant';
+      const name = a.name || 'Attraction';
       const normalizedName = normalizeParameter(name);
-      const imgSrc = `images/restaurants/${normalizedName}.png`;
+      const imgSrc = `images/attractions/${normalizedName}.png`;
 
       card.innerHTML = `
          <div class="tooltip-image-frame">
@@ -19,22 +19,22 @@ export const restaurantRenderer = {
             src="${imgSrc}"
             alt="${name}"
             class="tooltip-image"
-            onerror="this.onerror=null; this.src='images/generic-icons/restaurant.png';"
+            onerror="this.onerror=null; this.src='images/generic-icons/attraction.png';"
          >
          </div>
 
          <strong>${name}</strong>
-         ${r.sub_location ? `<span>Location: ${r.sub_location}</span>` : r.location ? `<span>Location: ${r.location}</span>` : ''}
-         ${r.seasonal_schedule ? `<span>Seasonal Schedule: ${r.seasonal_schedule}</span>` : ''}
-         ${r.description ? `<span>Description: ${r.description}</span>` : ''}       
-         ${r.menu_link ? `<span>
+         ${a.free_with_admission ? `<span>Free With Admission</span>` : `<span>Extra Charge</span>`}
+         ${a.seasonal_schedule ? `<span>Seasonal Schedule: ${a.seasonal_schedule}</span>` : ''}
+         ${a.description ? `<span>Description: ${a.description}</span>` : ''}       
+         ${a.info_link ? `<span>
                   <a 
-                     href="${r.menu_link}" 
+                     href="${a.info_link}" 
                      target="_blank" 
                      rel="noopener noreferrer"
-                     class="tooltip-link restaurant-menu-link"
+                     class="tooltip-link gift-shop-link"
                   >
-                     MENU
+                     ${a.hyperlink_text}
                   </a>
                </span>` 
             : ''

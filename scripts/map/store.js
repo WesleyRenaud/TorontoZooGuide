@@ -6,6 +6,7 @@ export function createMapStore() {
          restaurant: [],
          restroom: [],
          giftShop: [],
+         attraction: [],
       },
       cache: {
          pavilion: { loaded: false, inFlight: null },

@@ -96,6 +96,21 @@ class Restaurant:
       }
    
 
+class Restroom:
+   def __init__( self, title, x_coord=None, y_coord=None ):
+      self.title = title
+      self.x_coord = x_coord
+      self.y_coord = y_coord
+
+
+   def to_dict( self ):
+      return {
+         'title': self.title,
+         'x_coord': self.x_coord,
+         'y_coord': self.y_coord
+      }
+   
+
 class GiftShop:
    def __init__( self, name, location, seasonal_schedule=None, description=None, x_coord=None, y_coord=None ):
       self.name = name
@@ -117,16 +132,27 @@ class GiftShop:
       }
    
 
-class Restroom:
-   def __init__( self, title, x_coord=None, y_coord=None ):
-      self.title = title
+class Attraction:
+   def __init__( self, name, free_with_admission, seasonal_schedule=None, description=None, info_link=None, hyperlink_text=None,
+                 x_coord=None, y_coord=None ):
+      self.name = name
+      self.free_with_admission = free_with_admission
+      self.seasonal_schedule = seasonal_schedule
+      self.description = description
+      self.info_link = info_link
+      self.hyperlink_text = hyperlink_text
       self.x_coord = x_coord
       self.y_coord = y_coord
 
 
    def to_dict( self ):
       return {
-         'title': self.title,
+         'name': self.name,
+         'free_with_admission': self.free_with_admission,
+         'seasonal_schedule': self.seasonal_schedule,
+         'description': self.description,
+         'info_link': self.info_link,
+         'hyperlink_text': self.hyperlink_text,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord
       }
