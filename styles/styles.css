@@ -595,30 +595,21 @@ html.home-page {
 ============================================================ */
 
 .map-label {
-   font-family: 'Impact', sans-serif;
-   font-weight: 900;
-   -webkit-text-stroke: 2px #fff;
-   color: #000;
-   font-stretch: extra-expanded;
-   transform: translate(-50%, -50%) scaleX(1);
-   text-shadow:
-      2px 2px 0 #fff,
-      -2px -2px 0 #fff,
-      2px -2px 0 #fff,
-      -2px 2px 0 #fff,
-      0 0 3px #fff,
-      0 0 6px #fff;
+   font-family: 'Poppins', sans-serif;
+   font-weight: 700;          /* was 900 */
+   letter-spacing: 0.04em;    /* improves readability */
+   color: #111;
 
+   transform: translate(-50%, -50%);
    position: absolute;
    background: transparent;
    pointer-events: none;
    z-index: 12;
 }
-
-.region-label { font-size: 4rem; }
+.region-label { font-size: 3rem; }
 
 .exhibit-label {
-   font-size: 3rem;
+   font-size: 2rem;
    font-stretch: ultra-expanded;
    transform: translate(-50%, -50%) scaleX(1.05);
 }
