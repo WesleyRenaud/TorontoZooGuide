@@ -185,6 +185,48 @@ html.home-page {
 }
 
 /* ============================================================
+   ZOOMOBILE ROUTE MODULE
+============================================================ */
+
+.zoomobile-route {
+   padding: 10px 4px;
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+}
+
+.zoomobile-route-title {
+   font-size: 4em;
+   font-weight: 700;
+   color: rgba(20, 35, 10, 0.95);
+}
+
+.zoomobile-route-options {
+   display: flex;
+   gap: 24px;
+   align-items: center;
+}
+
+.zoomobile-route-option {
+   white-space: nowrap;
+   display: flex;
+   align-items: center;
+   gap: 32px;
+
+   font-size: 3em;
+   font-weight: 600;
+   color: rgba(20, 35, 10, 0.9);
+   cursor: pointer;
+}
+
+.zoomobile-route-option input[type="radio"] {
+   width: 64px;
+   height: 64px;
+   accent-color: #5e9600;
+   cursor: pointer;
+}
+
+/* ============================================================
    EXPLORE: MULTI-SELECT
 ============================================================ */
 
@@ -653,7 +695,7 @@ html.home-page {
    display: none;
 }
 
-.marker.marker-attraction {
+.marker.marker-attraction, .marker.marker-zoomobile-station {
    width: 32px;
    height: 32px;   
 }

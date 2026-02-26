@@ -57,6 +57,15 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
+   // Zoomobile Stations ✅
+   if (type === 'zoomobileStation') {
+      if (itemsAtPoint.length === 1) {
+         return itemsAtPoint[0].name || 'Zoomobile Station';
+      }
+      const first = itemsAtPoint[0].name || 'Zoomobile Station';
+      return `${first} + ${itemsAtPoint.length - 1}`;
+   }
+
    // Fallback
    return type ? `${type} (${itemsAtPoint.length})` : String(itemsAtPoint.length);
 }

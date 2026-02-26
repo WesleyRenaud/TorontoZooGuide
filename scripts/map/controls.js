@@ -6,8 +6,10 @@ export function initMapControls
       includeSeasonalRestaurantsCheckbox,
       includeSeasonalGiftShopsCheckbox,
       includeSeasonalAttractionsCheckbox,
+      zoomobileRouteTypeRadios,
       onUpdate
    }) {
+
    if (!mapPreset || !mapDateInput || !onUpdate) {
       console.warn('[controls] missing elements:', { mapPreset, mapDateInput, onUpdate });
       return;
@@ -98,5 +100,11 @@ export function initMapControls
       includeSeasonalAttractionsCheckbox.addEventListener('change', () => {
          refetch();
       });
+   }
+
+   if (zoomobileRouteTypeRadios) {
+      Array.from(zoomobileRouteTypeRadios || []).forEach(r => r.addEventListener('change', () => {
+         refetch()
+      }));
    }
 }

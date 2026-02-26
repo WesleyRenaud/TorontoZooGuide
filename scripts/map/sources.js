@@ -146,5 +146,22 @@ export function createDataSources(store) {
          },
          cachePolicy: 'no-cache',
       },
+
+      // ✅ singular layer key
+      zoomobileRoute: {
+         fetch: async (ctx) => {
+            const res = await ajaxPost('/get-zoomobile-route', {
+               zoomobileRouteType: ctx.zoomobileRouteType,
+               zoomobileStationsToInclude: ctx.zoomobileStationsToInclude,
+            });
+
+            const rows = res?.zoomobile_stations ?? res?.results ?? res ?? [];
+            const normalized = rows.map(r => ({ ...r, type: 'zoomobileStation' }));
+
+            store.byType.zoomobileStation = normalized;
+            return normalized;
+         },
+         cachePolicy: 'no-cache',
+      },
    };
 }

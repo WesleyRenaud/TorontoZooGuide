@@ -10,6 +10,7 @@ export function createMapUpdater({
    getIncludeSeasonalRestaurants,
    getIncludeSeasonalGiftShops,
    getIncludeSeasonalAttractions,
+   getZoomobileRouteType,
    getSelectedTypes,
 }) {
    let lastPreset = null;
@@ -56,7 +57,18 @@ export function createMapUpdater({
 
       // If focusing from search/deeplink, ensure focused type is loaded
       const focusType = String(options?.focus?.type || options?.focus?.row?.type || '');
-      if (focusType && !selectedTypes.includes(focusType)) {
+      const zoomobileRouteType = getZoomobileRouteType(); // you already compute this in run()
+
+      const routeActive = zoomobileRouteType !== 'none';
+      const focusIsZoomobileStation = focusType === 'zoomobileStation';
+
+      // If route is active, don't also add zoomobileStation layer on focus,
+      // because zoomobileRoute layer already contains those same stations.
+      if (
+         focusType &&
+         !selectedTypes.includes(focusType) &&
+         !(routeActive && focusIsZoomobileStation && selectedTypes.includes('zoomobileRoute'))
+      ) {
          selectedTypes = [focusType, ...selectedTypes];
       }
 
@@ -66,11 +78,12 @@ export function createMapUpdater({
          return;
       }
 
-      // ✅ If focusing an animal, force-include that species in the animals fetch
+      // ✅ If focusing an object, force-include that object in the data fetch
       let speciesToInclude = [];
       let restaurantsToInclude = [];
       let giftShopsToInclude = [];
       let attractionsToInclude = [];
+      let zoomobileStationsToInclude = [];
 
       const focusRow = options?.focus?.row || null;
       const focusRowType = String(options?.focus?.type || focusRow?.type || '');
@@ -95,6 +108,11 @@ export function createMapUpdater({
             const g = focusRow.name ?? focusRow.NAME ?? null;
             if (g != null) attractionsToInclude = [g];
          }
+
+         if (focusRowType === 'zoomobileStation') {
+            const g = focusRow.name ?? focusRow.NAME ?? null;
+            if (g != null) zoomobileStationsToInclude = [g];
+         }
       }
 
       const ctx = {
@@ -105,10 +123,12 @@ export function createMapUpdater({
          includeSeasonalRestaurants,
          includeSeasonalGiftShops,
          includeSeasonalAttractions,
+         zoomobileRouteType,
          speciesToInclude,
          restaurantsToInclude,
          giftShopsToInclude,
          attractionsToInclude,
+         zoomobileStationsToInclude
       };
 
       await fetchAll(selectedTypes, ctx);

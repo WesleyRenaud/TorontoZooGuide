@@ -20,6 +20,7 @@ function normalizeSearchRows(response) {
    if (Array.isArray(response.restrooms)) out.push(...response.restrooms.map(x => ({ ...x, type: x.type || 'restroom' })));
    if (Array.isArray(response.gift_shops)) out.push(...response.gift_shops.map(x => ({ ...x, type: x.type || 'giftShop' })));
    if (Array.isArray(response.attractions)) out.push(...response.attractions.map(x => ({ ...x, type: x.type || 'attraction' })));
+   if (Array.isArray(response.zoomobile_stations)) out.push(...response.zoomobile_stations.map(x => ({ ...x, type: x.type || 'zoomobileStation' })));
    return out;
 }
 
@@ -64,6 +65,10 @@ function getRowType(row) {
 }
 
 function getRowTitle(row, type) {
+   if (type === 'zoomobileStation') {
+      return row.name ?? row.NAME ?? 'Zoomobile Station';
+   }
+
    if (type === 'attraction') {
       return row.name ?? row.NAME ?? 'Attraction';
    }
@@ -88,6 +93,10 @@ function getRowTitle(row, type) {
 }
 
 function getRowSubtitle(row, type) {
+   if (type === 'zoomobileStation') {
+      return null;
+   }
+
    if (type === 'attraction') {
       const parts = [];
 

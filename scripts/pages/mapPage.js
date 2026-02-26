@@ -24,6 +24,7 @@ export function initMapPage() {
    const includeSeasonalRestaurantsCheckbox = document.getElementById('includeSeasonalRestaurants');
    const includeSeasonalGiftShopsCheckbox = document.getElementById('includeSeasonalGiftShops');
    const includeSeasonalAttractionsCheckbox = document.getElementById('includeSeasonalAttractions');
+   const zoomobileRouteTypeRadios = document.querySelectorAll?.('input[name="zoomobileRoute"]');
    const animalSearchInput = document.getElementById('animalSearch');
 
    const tooltipEl = document.getElementById('tooltip');
@@ -80,6 +81,7 @@ export function initMapPage() {
       getIncludeSeasonalRestaurants: () => includeSeasonalRestaurantsCheckbox?.checked ?? false,
       getIncludeSeasonalGiftShops: () => includeSeasonalGiftShopsCheckbox?.checked ?? false,
       getIncludeSeasonalAttractions: () => includeSeasonalAttractionsCheckbox?.checked ?? false,
+      getZoomobileRouteType: () => Array.from(zoomobileRouteTypeRadios).find(r => r.checked)?.value ?? 'none',
       getSelectedTypes: () => initExploreTypeFilter.getSelectedTypes(),
    });
 
@@ -98,6 +100,7 @@ export function initMapPage() {
       includeSeasonalRestaurantsCheckbox,
       includeSeasonalGiftShopsCheckbox,
       includeSeasonalAttractionsCheckbox,
+      zoomobileRouteTypeRadios,
       onUpdate: (preset, dateStr) => {
          updater.updateMap(preset, dateStr, null);
          search.refresh();

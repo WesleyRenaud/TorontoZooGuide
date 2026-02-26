@@ -98,6 +98,12 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
       return;
    }
 
+   if (type === 'zoomobileStation') {
+      markerEl.classList.add('marker-zoomobile-station');
+      applyGenericIcon(markerEl, '/images/generic-icons/zoomobile-station.png', count);
+      return;
+   }
+
    // Fallback for future types
    markerEl.style.backgroundColor = 'rgba(94,150,0,0.95)';
    markerEl.textContent = String(count);

@@ -11,6 +11,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
                includeRestrooms: false,
                includeGiftShops: false,
                includeAttractions: false,
+               includeZoomobileStations: false,
             }),
                   
       };
@@ -21,10 +22,21 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
    const checkboxes = dropdown?.querySelectorAll('input[type="checkbox"]') || [];
    const chipContainer = multiSelect.querySelector('.selected-values');
 
+   function getZoomobileRouteType() {
+      const checked = document.querySelector('input[name="zoomobileRoute"]:checked');
+      return checked?.value ?? 'none'; // 'none' | 'summer' | 'winter'
+   }
+
    function getSelectedTypes() {
-      return Array.from(checkboxes)
+      const selected = Array.from(checkboxes)
          .filter(cb => cb.checked)
          .map(cb => String(cb.value || ''));
+
+      if (getZoomobileRouteType() !== 'none' && !selected.includes('zoomobileRoute')) {
+         selected.push('zoomobileRoute');
+      }
+
+      return selected;
    }
 
    function updateSelectedText() {
@@ -74,6 +86,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
 
    function buildSearchIncludeFlags() {
       const selected = getSelectedTypes();
+      const zoomobileRouteType = getZoomobileRouteType();
       return {
          includeAnimals: selected.includes('animal'),
          includePavilions: selected.includes('pavilion'),
@@ -81,6 +94,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
          includeRestrooms: selected.includes('restroom'),
          includeGiftShops: selected.includes('giftShop'),
          includeAttractions: selected.includes('attraction'),
+         includeZoomobileStations: zoomobileRouteType !== 'none',
       };
    }
 

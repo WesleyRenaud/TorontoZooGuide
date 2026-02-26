@@ -11,7 +11,7 @@ class Database():
 
 
    # Returns all animals which may be viewable in the given month with their likelihoods (probability from 0 to 1)
-   def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False, speciesToInclude = False ):
+   def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False, speciesToInclude=[] ):
       cur = self.conn.cursor()
 
       if temp == None:
@@ -221,7 +221,7 @@ class Database():
       return pavilions
    
 
-   def get_restaurants( self, month, include_seasonal_restaurants, restaurants_to_include=None ):
+   def get_restaurants( self, month, include_seasonal_restaurants, restaurants_to_include=[] ):
       cur = self.conn.cursor()
 
       is_peak_season_month = self.zoo_util.is_peak_season_month( month )
@@ -278,7 +278,7 @@ class Database():
       return restrooms
    
 
-   def get_gift_shops( self, month, include_seasonal_gift_shops, gift_shops_to_include=None ):
+   def get_gift_shops( self, month, include_seasonal_gift_shops, gift_shops_to_include=[] ):
       cur = self.conn.cursor()
 
       is_peak_season_month = self.zoo_util.is_peak_season_month( month )
@@ -301,6 +301,7 @@ class Database():
       for gift_shop in gift_shop_data:
          name = gift_shop[0]
          open_seasonally = gift_shop[2]
+         print( is_peak_season_month, include_seasonal_gift_shops, open_seasonally, name, gift_shops_to_include )
          if is_peak_season_month or include_seasonal_gift_shops or not open_seasonally or name in gift_shops_to_include:
             gift_shops.append( zoo.GiftShop( name=name, location=gift_shop[1], seasonal_schedule=gift_shop[3],
                                              description=gift_shop[4], x_coord=gift_shop[5], y_coord=gift_shop[6] ) )
@@ -310,7 +311,7 @@ class Database():
       return gift_shops
    
 
-   def get_attractions( self, month, include_seasonal_attractions, attractions_to_include=None ):
+   def get_attractions( self, month, include_seasonal_attractions, attractions_to_include=[] ):
       cur = self.conn.cursor()
 
       is_peak_season_month = self.zoo_util.is_peak_season_month( month )
@@ -343,6 +344,34 @@ class Database():
       cur.close()
 
       return attractions
+
+
+   def get_zoomobile_route( self, route_type, zoomobile_stations_to_include=[] ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  s.NAME,
+                  s.ON_WINTER_ROUTE,
+                  s.DESCRIPTION,
+                  s.X_COORD,
+                  s.Y_COORD
+               FROM ZoomobileStation s;
+         """ )
+      
+      zoomobile_station_data = data.fetchall()
+
+      zoomobile_stations = []
+      for zoomobile_station in zoomobile_station_data:
+         name = zoomobile_station[0]
+         on_winter_route = zoomobile_station[1]
+         if route_type == 'summer' or on_winter_route or name in zoomobile_stations_to_include:
+            zoomobile_stations.append( zoo.ZoomobileStation( name=zoomobile_station[0], description=zoomobile_station[2],
+                                                             x_coord=zoomobile_station[3], y_coord=zoomobile_station[4] ) )
+
+      cur.close()
+
+      return zoomobile_stations
       
 
    def get_animals_matching_query( self, query ):
@@ -405,7 +434,7 @@ class Database():
                   r.LOCATION,
                   r.SUB_LOCATION,
                   r.X_COORD,
-                  r.Y_COORD
+                  y.Y_COORD
                FROM Restaurant r
                WHERE r.NAME LIKE ? ESCAPE '\\';
          """, (pattern, ) )
@@ -495,4 +524,29 @@ class Database():
       cur.close()
 
       return attractions
+   
+
+   def get_zoomobile_stations_matching_query( self, query ):
+      cur = self.conn.cursor()
+
+      pattern = f"%{query}%"
+      data = cur.execute(
+         """   SELECT
+                  s.NAME,
+                  s.X_COORD,
+                  s.Y_COORD
+               FROM ZoomobileStation s
+               WHERE s.NAME LIKE ? ESCAPE '\\';
+         """, (pattern, ) )
+      
+      zoomobile_station_data = data.fetchall()
+
+      zoomobile_stations = []
+      for zoomobile_station in zoomobile_station_data: 
+         zoomobile_stations.append( zoo.ZoomobileStation( name=zoomobile_station[0], x_coord=zoomobile_station[1],
+                                                          y_coord=zoomobile_station[2] ) )
+
+      cur.close()
+
+      return zoomobile_stations
    

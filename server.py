@@ -204,6 +204,23 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-zoomobile-route':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         route_type = data.get( 'zoomobileRouteType' )
+         zoomobile_stations_to_include = data.get( 'zoomobileStationsToInclude' )
+
+         zoomobile_stations = self.database.get_zoomobile_route( route_type, zoomobile_stations_to_include )
+         
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"zoomobile_stations": [zoomobile_station.to_dict() for zoomobile_station in zoomobile_stations]}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/search':
          content_length = int( self.headers['Content-Length'] )
          post_data = self.rfile.read( content_length )
@@ -216,6 +233,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_restrooms = bool( data.get( 'includeRestrooms' ) )
          include_gift_shops = bool( data.get( 'includeGiftShops' ) )
          include_attractions = bool( data.get( 'includeAttractions' ) )
+         include_zoomobile_stations = bool( data.get( 'includeZoomobileStations' ) )
 
          animals_json = []
          pavilions_json = []
@@ -223,6 +241,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          restrooms_json = []
          gift_shops_json = []
          attractions_json = []
+         zoomobile_stations_json = []
 
          if include_animals and query:
             animals = self.database.get_animals_matching_query( query ) or []
@@ -264,7 +283,14 @@ class MyHandler( BaseHTTPRequestHandler ):
             for attraction in attractions:
                   d = attraction.to_dict()
                   d['type'] = d.get( 'type', 'attraction' )
-                  gift_shops_json.append( d )
+                  attractions_json.append( d )
+
+         if include_zoomobile_stations and query:
+            zoomobile_stations = self.database.get_zoomobile_stations_matching_query( query ) or []
+            for zoomobile_station in zoomobile_stations:
+                  d = zoomobile_station.to_dict()
+                  d['type'] = d.get( 'type', 'zoomobileStation' )
+                  zoomobile_stations_json.append( d )
 
          response = {
             'animals': animals_json,
@@ -272,7 +298,8 @@ class MyHandler( BaseHTTPRequestHandler ):
             'restaurants': restaurants_json,
             'restrooms': restrooms_json,
             'gift_shops': gift_shops_json,
-            'attractions': attractions_json
+            'attractions': attractions_json,
+            'zoomobile_stations': zoomobile_stations_json
          }
 
          self.send_response( 200 )
