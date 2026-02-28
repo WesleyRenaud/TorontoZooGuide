@@ -1,5 +1,5 @@
 export function buildHoverText(itemsAtPoint) {
-   if (!itemsAtPoint || itemsAtPoint.length === 0) return '';
+   if (!itemsAtPoint || itemsAtPoint.length === 0 || itemsAtPoint[0].type === 'zoomobileRouteMarker') return '';
 
    const type = String(itemsAtPoint[0].type || '');
 
@@ -65,7 +65,4 @@ export function buildHoverText(itemsAtPoint) {
       const first = itemsAtPoint[0].name || 'Zoomobile Station';
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
-
-   // Fallback
-   return type ? `${type} (${itemsAtPoint.length})` : String(itemsAtPoint.length);
 }

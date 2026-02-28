@@ -212,12 +212,15 @@ class MyHandler( BaseHTTPRequestHandler ):
          route_type = data.get( 'zoomobileRouteType' )
          zoomobile_stations_to_include = data.get( 'zoomobileStationsToInclude' )
 
-         zoomobile_stations = self.database.get_zoomobile_route( route_type, zoomobile_stations_to_include )
+         zoomobile_route = self.database.get_zoomobile_route( route_type, zoomobile_stations_to_include )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"zoomobile_stations": [zoomobile_station.to_dict() for zoomobile_station in zoomobile_stations]}
+         response = {
+            "zoomobile_stations": [station.to_dict() for station in zoomobile_route[0]],
+            "zoomobile_route_markers": [marker.to_dict() for marker in zoomobile_route[1]]
+         }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 

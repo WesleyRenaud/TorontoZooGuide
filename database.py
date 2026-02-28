@@ -349,6 +349,7 @@ class Database():
    def get_zoomobile_route( self, route_type, zoomobile_stations_to_include=[] ):
       cur = self.conn.cursor()
 
+      # Zoomobile stations
       data = cur.execute(
          """   SELECT
                   s.NAME,
@@ -368,10 +369,30 @@ class Database():
          if route_type == 'summer' or on_winter_route or name in zoomobile_stations_to_include:
             zoomobile_stations.append( zoo.ZoomobileStation( name=zoomobile_station[0], description=zoomobile_station[2],
                                                              x_coord=zoomobile_station[3], y_coord=zoomobile_station[4] ) )
+            
+      # Zoomobile route markers
+      data = cur.execute(
+         """   SELECT
+                  m.ON_WINTER_ROUTE,
+                  m.ON_SUMMER_ROUTE,
+                  m.X_COORD,
+                  m.Y_COORD
+               FROM ZoomobileRouteMarker m;
+         """ )
+      
+      zoomobile_route_marker_data = data.fetchall()
+
+      zoomobile_route_markers = []
+      for zoomobile_route_marker in zoomobile_route_marker_data:
+         on_winter_route = zoomobile_route_marker[0]
+         on_summer_route = zoomobile_route_marker[1]
+         if route_type == 'winter' and on_winter_route or route_type == 'summer' and on_summer_route:
+            zoomobile_route_markers.append( zoo.ZoomobileRouteMarker( x_coord=zoomobile_route_marker[2],
+                                                                      y_coord=zoomobile_route_marker[3] ) )
 
       cur.close()
 
-      return zoomobile_stations
+      return [zoomobile_stations, zoomobile_route_markers]
       
 
    def get_animals_matching_query( self, query ):

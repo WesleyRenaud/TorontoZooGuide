@@ -155,11 +155,22 @@ export function createDataSources(store) {
                zoomobileStationsToInclude: ctx.zoomobileStationsToInclude,
             });
 
-            const rows = res?.zoomobile_stations ?? res?.results ?? res ?? [];
-            const normalized = rows.map(r => ({ ...r, type: 'zoomobileStation' }));
+            const stations = (res?.zoomobile_stations ?? []).map(r => ({
+               ...r,
+               type: 'zoomobileStation',
+            }));
 
-            store.byType.zoomobileStation = normalized;
-            return normalized;
+            const routeMarkers = (res?.zoomobile_route_markers ?? []).map(r => ({
+               ...r,
+               type: 'zoomobileRouteMarker',
+            }));
+
+            // 🔥 Store separately so combine() can merge correctly
+            store.byType.zoomobileStation = stations;
+            store.byType.zoomobileRouteMarker = routeMarkers;
+
+            // Return both so this layer renders both
+            return [...stations, ...routeMarkers];
          },
          cachePolicy: 'no-cache',
       },

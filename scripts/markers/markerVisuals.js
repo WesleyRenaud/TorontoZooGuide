@@ -104,6 +104,12 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
       return;
    }
 
+   if (type === 'zoomobileRouteMarker') {
+      markerEl.style.backgroundColor = '#556B2F';
+      markerEl.classList.add('marker-zoomobile-route-marker');
+      return;
+   }
+
    // Fallback for future types
    markerEl.style.backgroundColor = 'rgba(94,150,0,0.95)';
    markerEl.textContent = String(count);
