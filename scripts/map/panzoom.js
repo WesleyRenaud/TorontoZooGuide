@@ -8,21 +8,21 @@ export function createPanzoom(mapInner, { contain }) {
    mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
    // hide labels at zoom
-   const regionLabels = document.querySelectorAll('.region-label');
-   const exhibitLabels = document.querySelectorAll('.exhibit-label');
+   const primaryLabels = document.querySelectorAll('.map-label-primary');
+   const secondaryLabels = document.querySelectorAll('.map-label-secondary');
 
-   const regionHideZoomScale = 1.5;
-   const exhibitHideZoomScale = 2;
+   const primaryLabelHideZoomScale = 1.5;
+   const secondaryLabelHideZoomScale = 2;
 
    mapInner.addEventListener('panzoomchange', () => {
       const currentScale = panzoom.getScale();
 
-      regionLabels.forEach(label => {
-         label.style.display = currentScale > regionHideZoomScale ? 'none' : 'block';
+      primaryLabels.forEach(label => {
+         label.style.display = currentScale > primaryLabelHideZoomScale ? 'none' : 'block';
       });
 
-      exhibitLabels.forEach(label => {
-         label.style.display = currentScale > exhibitHideZoomScale ? 'none' : 'block';
+      secondaryLabels.forEach(label => {
+         label.style.display = currentScale > secondaryLabelHideZoomScale ? 'none' : 'block';
       });
    });
 

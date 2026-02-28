@@ -648,17 +648,18 @@ html.home-page {
    pointer-events: none;
    z-index: 12;
 }
-.region-label { font-size: 3rem; }
 
-.exhibit-label {
+.map-label-primary {
+   font-size: 3rem;
+}
+
+.map-label-secondary {
    font-size: 2rem;
-   font-stretch: ultra-expanded;
-   transform: translate(-50%, -50%) scaleX(1.05);
 }
 
 /* Hide region/exhibit/pavilion labels when toggle is off */
-.hide-map-labels .region-label,
-.hide-map-labels .exhibit-label,
+.hide-map-labels .map-label-primary,
+.hide-map-labels .map-label-secondary,
 .hide-map-labels .pavilion-label,
 .hide-map-labels .pavilion-text,
 .hide-map-labels .map-label {
