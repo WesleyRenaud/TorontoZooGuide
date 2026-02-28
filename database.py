@@ -301,7 +301,6 @@ class Database():
       for gift_shop in gift_shop_data:
          name = gift_shop[0]
          open_seasonally = gift_shop[2]
-         print( is_peak_season_month, include_seasonal_gift_shops, open_seasonally, name, gift_shops_to_include )
          if is_peak_season_month or include_seasonal_gift_shops or not open_seasonally or name in gift_shops_to_include:
             gift_shops.append( zoo.GiftShop( name=name, location=gift_shop[1], seasonal_schedule=gift_shop[3],
                                              description=gift_shop[4], x_coord=gift_shop[5], y_coord=gift_shop[6] ) )
@@ -387,7 +386,7 @@ class Database():
          on_winter_route = zoomobile_route_marker[0]
          on_summer_route = zoomobile_route_marker[1]
          if route_type == 'winter' and on_winter_route or route_type == 'summer' and on_summer_route:
-            zoomobile_route_markers.append( zoo.ZoomobileRouteMarker( x_coord=zoomobile_route_marker[2],
+            zoomobile_route_markers.append( zoo.ZoomobileRouteMarker( route_type=route_type, x_coord=zoomobile_route_marker[2],
                                                                       y_coord=zoomobile_route_marker[3] ) )
 
       cur.close()

@@ -105,7 +105,15 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
    }
 
    if (type === 'zoomobileRouteMarker') {
-      markerEl.style.backgroundColor = '#556B2F';
+      const routeType = items[0].route_type;
+
+      if (routeType == 'winter') {
+         markerEl.style.backgroundColor = '#003366';
+      }
+      else {
+         markerEl.style.backgroundColor = '#556B2F';
+      }
+      
       markerEl.classList.add('marker-zoomobile-route-marker');
       return;
    }
