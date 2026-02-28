@@ -695,7 +695,7 @@ html.home-page {
    display: none;
 }
 
-.marker.marker-attraction, .marker.marker-zoomobile-station {
+.marker.marker-attraction, .marker.marker-zoomobile-station, .marker-wild-encounter-meeting-spot {
    width: 32px;
    height: 32px;   
 }

@@ -118,6 +118,12 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
       return;
    }
 
+   if (type === 'wildEncounterMeetingSpot') {
+      markerEl.classList.add('marker-wild-encounter-meeting-spot');
+      applyGenericIcon(markerEl, '/images/generic-icons/wild-encounter-meeting-spot.png', count);
+      return;
+   }
+
    // Fallback for future types
    markerEl.style.backgroundColor = 'rgba(94,150,0,0.95)';
    markerEl.textContent = String(count);

@@ -8,10 +8,12 @@ export function createMapStore() {
          giftShop: [],
          attraction: [],
          zoomobileStation: [],
+         wildEncounterMeetingSpot: [],
       },
       cache: {
          pavilion: { loaded: false, inFlight: null },
-         restroom: { loaded: false, inFlight: null }
+         restroom: { loaded: false, inFlight: null },
+         wildEncounterMeetingSpot: { loaded: false, inFlight: null }
       },
    };
 }

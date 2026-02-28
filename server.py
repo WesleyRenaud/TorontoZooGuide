@@ -224,6 +224,20 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-wild-encounter-meeting-spots':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         wild_encounter_meeting_spots = self.database.get_wild_encounter_meeting_spots()
+         
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"wild_encounter_meeting_spots": [wild_encounter_meeting_spot.to_dict() for wild_encounter_meeting_spot in wild_encounter_meeting_spots]}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/search':
          content_length = int( self.headers['Content-Length'] )
          post_data = self.rfile.read( content_length )
@@ -237,6 +251,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_gift_shops = bool( data.get( 'includeGiftShops' ) )
          include_attractions = bool( data.get( 'includeAttractions' ) )
          include_zoomobile_stations = bool( data.get( 'includeZoomobileStations' ) )
+         include_wild_encounter_meeting_spots = bool( data.get( 'includeWildEncounterMeetingSpots' ) )
 
          animals_json = []
          pavilions_json = []
@@ -245,6 +260,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          gift_shops_json = []
          attractions_json = []
          zoomobile_stations_json = []
+         wild_encounter_meeting_spots_json = []
 
          if include_animals and query:
             animals = self.database.get_animals_matching_query( query ) or []
@@ -295,6 +311,13 @@ class MyHandler( BaseHTTPRequestHandler ):
                   d['type'] = d.get( 'type', 'zoomobileStation' )
                   zoomobile_stations_json.append( d )
 
+         if include_wild_encounter_meeting_spots and query:
+            wild_encounter_meeting_spots = self.database.get_wild_encounter_meeting_spots_matching_query( query ) or []
+            for wild_encounter_meeting_spot in wild_encounter_meeting_spots:
+                  d = wild_encounter_meeting_spot.to_dict()
+                  d['type'] = d.get( 'type', 'wildEncounterMeetingSpot' )
+                  wild_encounter_meeting_spots_json.append( d )
+
          response = {
             'animals': animals_json,
             'pavilions': pavilions_json,
@@ -302,7 +325,8 @@ class MyHandler( BaseHTTPRequestHandler ):
             'restrooms': restrooms_json,
             'gift_shops': gift_shops_json,
             'attractions': attractions_json,
-            'zoomobile_stations': zoomobile_stations_json
+            'zoomobile_stations': zoomobile_stations_json,
+            'wild_encounter_meeting_spots': wild_encounter_meeting_spots_json
          }
 
          self.send_response( 200 )

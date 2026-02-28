@@ -65,4 +65,13 @@ export function buildHoverText(itemsAtPoint) {
       const first = itemsAtPoint[0].name || 'Zoomobile Station';
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
+
+   // Wild Encounter Meeting Spots ✅
+   if (type === 'wildEncounterMeetingSpot') {
+      if (itemsAtPoint.length === 1) {
+         return itemsAtPoint[0].name || 'Wild Encounter Meeting Spot';
+      }
+      const first = itemsAtPoint[0].name || 'Wild Encounter Meeting Spot';
+      return `${first} + ${itemsAtPoint.length - 1}`;
+   }
 }

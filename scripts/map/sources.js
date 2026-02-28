@@ -174,5 +174,41 @@ export function createDataSources(store) {
          },
          cachePolicy: 'no-cache',
       },
+
+      // ✅ singular layer key
+      wildEncounterMeetingSpot: {
+         fetch: async () => {
+            const cache = store.cache.wildEncounterMeetingSpot ?? store.cache.wildEncounterMeetingSpot;
+
+            if (!cache) {
+               const res = await ajaxPost('/get-wild-encounter-meeting-spots', {});
+               const rows = res?.wild_encounter_meeting_spots ?? res?.results ?? res ?? [];
+               const normalized = rows.map(p => ({ ...p, type: 'wildEncounterMeetingSpot' }));
+               store.byType.wildEncounterMeetingSpot = normalized;
+               return normalized;
+            }
+
+            if (cache.loaded) return store.byType.wildEncounterMeetingSpot ?? store.byType.wildEncounterMeetingSpot ?? [];
+            if (cache.inFlight) return cache.inFlight;
+
+            cache.inFlight = ajaxPost('/get-wild-encounter-meeting-spots', {})
+               .then(res => {
+                  const rows = res?.wild_encounter_meeting_spots ?? res?.results ?? res ?? [];
+                  const normalized = rows.map(p => ({ ...p, type: 'wildEncounterMeetingSpot' }));
+
+                  store.byType.wildEncounterMeetingSpot = normalized;
+                  cache.loaded = true;
+                  cache.inFlight = null;
+                  return normalized;
+               })
+               .catch(err => {
+                  cache.inFlight = null;
+                  throw err;
+               });
+
+            return cache.inFlight;
+         },
+         cachePolicy: 'static',
+      },
    };
 }

@@ -134,11 +134,18 @@ cursor.execute( ''' CREATE TABLE ZoomobileStation
 
 cursor.execute( 'DROP TABLE IF EXISTS ZoomobileRouteMarker;' )
 cursor.execute( ''' CREATE TABLE ZoomobileRouteMarker
-                  (  ON_WINTER_ROUTE   BOOL        NOT NULL,
-                     ON_SUMMER_ROUTE   BOOL        NOT NULL,
-                     X_COORD           FLOAT       NOT NULL,
-                     Y_COORD           FLOAT       NOT NULL,
+                  (  ON_WINTER_ROUTE   BOOL  NOT NULL,
+                     ON_SUMMER_ROUTE   BOOL  NOT NULL,
+                     X_COORD           FLOAT NOT NULL,
+                     Y_COORD           FLOAT NOT NULL,
                      PRIMARY KEY (X_COORD, Y_COORD) ); ''' )
+
+cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingSpot;' )
+cursor.execute( ''' CREATE TABLE WildEncounterMeetingSpot
+                  (  NAME     TEXT  NOT NULL,
+                     X_COORD  FLOAT NOT NULL,
+                     Y_COORD  FLOAT NOT NULL,
+                     PRIMARY KEY (NAME) ); ''' )
 
 regions = [
    (
@@ -12297,6 +12304,49 @@ zoomobile_route_markers = [
    (1, 0, 56.248, 19.985),
 ]
 
+wild_encounter_meeting_spots = [
+   (
+      '''Wild Encounter - Domain Hill Meeting Spot''',
+      24.5, # X coordinate on map
+      63    # Y coordinate on map
+   ),
+   (
+      '''Wild Encounter - Penguin Entrance Meeting Spot''',
+      43.5, # X coordinate on map
+      57.5  # Y coordinate on map
+   ),
+   (
+      '''Wild Encounter - Hippo Meeting Spot''',
+      48.5, # X coordinate on map
+      89.5  # Y coordinate on map
+   ),
+   (
+      '''Wild Encounter - Africa Meeting Spot''',
+      51.5, # X coordinate on map
+      86.5  # Y coordinate on map
+   ),
+   ( 
+      '''Wild Encounter - Discovery Zone Meeting Spot''',
+      64.5, # X coordinate on map
+      48    # Y coordinate on map
+   ),
+   (
+      '''Wild Encounter - Eurasia Meeting Spot''',
+      62,   # X coordinate on map
+      26    # Y coordinate on map
+   ),
+   (
+      '''Wild Encounter - Tundra Meeting Spot''',
+      56,   # X coordinate on map
+      16    # Y coordinate on map
+   ),
+   (
+      '''Wild Encounter - Mayan Temple Meeting Spot''',
+      46,   # X coordinate on map
+      21    # Y coordinate on map
+   )
+]
+
 cursor.executemany( ''' INSERT INTO Region (
                            NAME
                         ) 
@@ -12425,6 +12475,13 @@ cursor.executemany( ''' INSERT INTO ZoomobileRouteMarker (
                            Y_COORD
                         ) 
                         VALUES (?, ?, ?, ?) ''', zoomobile_route_markers )
+
+cursor.executemany( ''' INSERT INTO WildEncounterMeetingSpot (
+                           NAME,
+                           X_COORD,
+                           Y_COORD
+                        ) 
+                        VALUES (?, ?, ?) ''', wild_encounter_meeting_spots )
 
 conn.commit()
 conn.close()

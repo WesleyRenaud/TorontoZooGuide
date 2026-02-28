@@ -392,6 +392,30 @@ class Database():
       cur.close()
 
       return [zoomobile_stations, zoomobile_route_markers]
+   
+
+   def get_wild_encounter_meeting_spots( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  w.NAME,
+                  w.X_COORD,
+                  w.Y_COORD
+               FROM WildEncounterMeetingSpot w;
+         """ )
+      
+      wild_encounter_meeting_spot_data = data.fetchall()
+
+      wild_encounter_meeting_spots = []
+      for wild_encounter_meeting_spot in wild_encounter_meeting_spot_data:
+         wild_encounter_meeting_spots.append( zoo.WildEncounterMeetingSpot( name=wild_encounter_meeting_spot[0],
+                                                                            x_coord=wild_encounter_meeting_spot[1],
+                                                                            y_coord=wild_encounter_meeting_spot[2] ) )
+
+      cur.close()
+
+      return wild_encounter_meeting_spots
       
 
    def get_animals_matching_query( self, query ):
@@ -569,4 +593,30 @@ class Database():
       cur.close()
 
       return zoomobile_stations
+   
+
+   def get_wild_encounter_meeting_spots_matching_query( self, query ):
+      cur = self.conn.cursor()
+
+      pattern = f"%{query}%"
+      data = cur.execute(
+         """   SELECT
+                  w.NAME,
+                  w.X_COORD,
+                  w.Y_COORD
+               FROM WildEncounterMeetingSpot w
+               WHERE w.NAME LIKE ? ESCAPE '\\';
+         """, (pattern, ) )
+      
+      wild_encounter_meeting_spot_data = data.fetchall()
+
+      wild_encounter_meeting_spots = []
+      for wild_encounter_meeting_spot in wild_encounter_meeting_spot_data:
+         wild_encounter_meeting_spots.append( zoo.WildEncounterMeetingSpot( name=wild_encounter_meeting_spot[0],
+                                                                            x_coord=wild_encounter_meeting_spot[1],
+                                                                            y_coord=wild_encounter_meeting_spot[2] ) )
+
+      cur.close()
+
+      return wild_encounter_meeting_spots
    
