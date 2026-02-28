@@ -14,6 +14,7 @@ import { initFocusFromQuery } from '../focus/focusFromQuery.js';
 import { createOffDisplayBanner } from '../ui/offDisplayBanner.js';
 import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
 import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
+import { initMapLegend } from '../ui/mapLegend.js';
 
 export function initMapPage() {
    const mapInner = document.getElementById('mapInner');
@@ -26,6 +27,7 @@ export function initMapPage() {
    const includeSeasonalAttractionsCheckbox = document.getElementById('includeSeasonalAttractions');
    const zoomobileRouteTypeRadios = document.querySelectorAll?.('input[name="zoomobileRoute"]');
    const animalSearchInput = document.getElementById('animalSearch');
+   const legend = initMapLegend();
 
    const tooltipEl = document.getElementById('tooltip');
    const hoverTooltipEl = document.getElementById('hoverTooltip');
