@@ -11,7 +11,8 @@ class Database():
 
 
    # Returns all animals which may be viewable in the given month with their likelihoods (probability from 0 to 1)
-   def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False, speciesToInclude=[] ):
+   def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False, species_to_include=[],
+                                    itinerary_mode=False ):
       cur = self.conn.cursor()
 
       if temp == None:
@@ -85,7 +86,8 @@ class Database():
 
          likelihood = max( round( likelihood * 100 ), 0 )
 
-         if likelihood > 0 or include_off_display_animals or species in speciesToInclude:
+         if (not itinerary_mode and (likelihood > 0 or include_off_display_animals or species in species_to_include)) \
+            or (itinerary_mode and species in species_to_include):
             animals.append( zoo.Animal( species=species, latin_name=animal[1], general_viewing_tips=animal[4],
                                         seasonal_viewing_tips=animal[5], identification=animal[6], habitat_and_range=animal[7],
                                         diet_and_feeding=animal[8], behaviour_and_life_cycle=animal[9], adaptations=animal[10],
@@ -310,7 +312,7 @@ class Database():
       return gift_shops
    
 
-   def get_attractions( self, month, include_seasonal_attractions, attractions_to_include=[] ):
+   def get_attractions( self, month, include_seasonal_attractions=False, attractions_to_include=[], itinerary_mode=False ):
       cur = self.conn.cursor()
 
       is_peak_season_month = self.zoo_util.is_peak_season_month( month )
@@ -335,7 +337,9 @@ class Database():
       for attraction in attraction_data:
          name = attraction[0]
          open_seasonally = attraction[1]
-         if is_peak_season_month or include_seasonal_attractions or not open_seasonally or name in attractions_to_include:
+         if ((not itinerary_mode) and (is_peak_season_month or include_seasonal_attractions or (not open_seasonally) \
+            or (name in attractions_to_include))) \
+            or (itinerary_mode and (name in attractions_to_include)):
             attractions.append( zoo.Attraction( name=name, free_with_admission=attraction[2], seasonal_schedule=attraction[3],
                                                 description=attraction[4], info_link=attraction[5], hyperlink_text=attraction[6],
                                                 x_coord=attraction[7], y_coord=attraction[8] ) )
@@ -394,6 +398,66 @@ class Database():
       return [zoomobile_stations, zoomobile_route_markers]
    
 
+
+   def get_meet_the_guardians_talks( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  t.NAME,
+                  t.LOCATION,
+                  t.X_COORD,
+                  t.Y_COORD
+               FROM MeetTheGuardiansTalk t;
+         """ )
+      
+      meet_the_guardians_talk_data = data.fetchall()
+
+      meet_the_guardians_talks = []
+      for meet_the_guardians_talk in meet_the_guardians_talk_data:
+         meet_the_guardians_talks.append( zoo.MeetTheGuardiansTalk( name=meet_the_guardians_talk[0],
+                                                                    location=meet_the_guardians_talk[1],
+                                                                    x_coord=meet_the_guardians_talk[2],
+                                                                    y_coord=meet_the_guardians_talk[3] ) )
+
+      cur.close()
+
+      return meet_the_guardians_talks
+   
+
+   def get_meet_the_guardians_talks_with_date_times( self, meet_the_guardians_talks_to_include=[], itinerary_mode=False ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  t.NAME,
+                  t.LOCATION,
+                  t.X_COORD,
+                  t.Y_COORD,
+                  d.DAY_OF_WEEK,
+                  d.TIME_OF_DAY
+               FROM MeetTheGuardiansTalk t
+               JOIN MeetTheGuardiansTalkDateTime d
+                  ON t.NAME = d.NAME;
+         """ )
+      
+      meet_the_guardians_talk_data = data.fetchall()
+
+      meet_the_guardians_talks = []
+      for meet_the_guardians_talk in meet_the_guardians_talk_data:
+         name = meet_the_guardians_talk[0]
+         if (not itinerary_mode) or (name in meet_the_guardians_talks_to_include):
+            meet_the_guardians_talks.append( zoo.MeetTheGuardiansTalk( name=name, location=meet_the_guardians_talk[1],
+                                                                       x_coord=meet_the_guardians_talk[2],
+                                                                       y_coord=meet_the_guardians_talk[3],
+                                                                       day_of_week=meet_the_guardians_talk[4],
+                                                                       time_of_day=meet_the_guardians_talk[5] ) )
+
+      cur.close()
+
+      return meet_the_guardians_talks
+   
+
    def get_wild_encounter_meeting_spots( self ):
       cur = self.conn.cursor()
 
@@ -410,13 +474,40 @@ class Database():
       wild_encounter_meeting_spots = []
       for wild_encounter_meeting_spot in wild_encounter_meeting_spot_data:
          wild_encounter_meeting_spots.append( zoo.WildEncounterMeetingSpot( name=wild_encounter_meeting_spot[0],
-                                                                            x_coord=wild_encounter_meeting_spot[1],
-                                                                            y_coord=wild_encounter_meeting_spot[2] ) )
+                                                                           x_coord=wild_encounter_meeting_spot[1],
+                                                                           y_coord=wild_encounter_meeting_spot[2] ) )
 
       cur.close()
 
       return wild_encounter_meeting_spots
-      
+   
+
+   def get_wild_encounter_meeting_spots_for_wild_encounters( self, wild_encounters_to_include ):    
+      cur = self.conn.cursor()
+
+      wild_encounters = []
+      for wild_encounter in wild_encounters_to_include:
+         cur.execute(
+            """   SELECT
+                     m.NAME,
+                     m.X_COORD,
+                     m.Y_COORD,
+                     w.LINK
+                  FROM WildEncounterMeetingSpot m
+                  JOIN WildEncounter w
+                     ON m.NAME = w.MEETING_SPOT
+                  WHERE w.NAME = ?;
+            """, (wild_encounter, ) )
+
+         wild_encounter_data = cur.fetchone()
+
+         wild_encounters.append( zoo.WildEncounter( name=wild_encounter, meeting_spot=wild_encounter_data[0],
+                                                    x_coord=wild_encounter_data[1], y_coord=wild_encounter_data[2],
+                                                    link=wild_encounter_data[3] ) )
+
+      cur.close()
+      return wild_encounters
+   
 
    def get_animals_matching_query( self, query ):
       cur = self.conn.cursor()
@@ -552,6 +643,7 @@ class Database():
          """   SELECT
                   a.NAME,
                   a.FREE_WITH_ADMISSION,
+                  a.INFO_LINK,
                   a.X_COORD,
                   a.Y_COORD
                FROM Attraction a
@@ -562,8 +654,8 @@ class Database():
 
       attractions = []
       for attraction in attraction_data: 
-         attractions.append( zoo.Attraction( name=attraction[0], free_with_admission=attraction[1], x_coord=attraction[2],
-                                             y_coord=attraction[3] ) )
+         attractions.append( zoo.Attraction( name=attraction[0], free_with_admission=attraction[1],info_link=attraction[2],
+                                             x_coord=attraction[2], y_coord=attraction[3] ) )
 
       cur.close()
 
@@ -595,6 +687,48 @@ class Database():
       return zoomobile_stations
    
 
+   def get_meet_the_guardians_talks_matching_query( self, query, day_of_week=None ):
+      cur = self.conn.cursor()
+
+      pattern = f"%{query}%"
+
+      if day_of_week:
+         data = cur.execute(
+            """   SELECT
+                     t.NAME,
+                     t.LOCATION,
+                     t.X_COORD,
+                     t.Y_COORD
+                  FROM MeetTheGuardiansTalk t
+                  JOIN MeetTheGuardiansTalkDateTime d
+                     ON t.NAME = d.NAME
+                  WHERE t.NAME LIKE ? ESCAPE '\\'
+                     AND d.DAY_OF_WEEK = ?;
+            """, (pattern, day_of_week ) )
+      else:
+         data = cur.execute(
+            """   SELECT
+                     t.NAME,
+                     t.LOCATION,
+                     t.X_COORD,
+                     t.Y_COORD
+                  FROM MeetTheGuardiansTalk t
+                  WHERE t.NAME LIKE ? ESCAPE '\\';
+            """, (pattern, ) )
+      
+      meet_the_guardians_talk_data = data.fetchall()
+
+      meet_the_guardians_talks = []
+      for meet_the_guardians_talk in meet_the_guardians_talk_data:
+         meet_the_guardians_talks.append( zoo.MeetTheGuardiansTalk( name=meet_the_guardians_talk[0], location=meet_the_guardians_talk[1],
+                                                                    day_of_week=day_of_week, x_coord=meet_the_guardians_talk[2],
+                                                                    y_coord=meet_the_guardians_talk[3] ) )
+
+      cur.close()
+
+      return meet_the_guardians_talks
+   
+
    def get_wild_encounter_meeting_spots_matching_query( self, query ):
       cur = self.conn.cursor()
 
@@ -619,4 +753,33 @@ class Database():
       cur.close()
 
       return wild_encounter_meeting_spots
+   
+
+   def get_wild_encounters_matching_query( self, query, day_of_week ):
+      cur = self.conn.cursor()
+
+      pattern = f"%{query}%"
+      data = cur.execute(
+         """   SELECT
+                  w.NAME,
+                  w.MEETING_SPOT,
+                  w.LINK,
+                  m.TIME_OF_DAY
+               FROM WildEncounter w
+               JOIN WildEncounterMeetingTime m
+                  ON w.NAME = m.NAME
+               WHERE w.NAME LIKE ? ESCAPE '\\'
+                  AND m.DAY_OF_WEEK = ?;
+         """, (pattern, day_of_week ) )
+      
+      wild_encounter_data = data.fetchall()
+
+      wild_encounters = []
+      for wild_encounter in wild_encounter_data:
+         wild_encounters.append( zoo.WildEncounter( name=wild_encounter[0], meeting_spot=wild_encounter[1], link=wild_encounter[2],
+                                                    day_of_week=day_of_week, time_of_day=wild_encounter[3] ) )
+
+      cur.close()
+
+      return wild_encounters
    

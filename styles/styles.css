@@ -730,7 +730,7 @@ html.home-page {
    border-bottom: 5px solid rgba(20, 35, 10, 0.85);
 
    /* expanded: point LEFT (matches your “rotate(180deg)” intent) */
-   transform: rotate(135deg);
+   transform: rotate(90deg);
 }
 
 /* Collapsed state */
@@ -869,7 +869,7 @@ html.home-page {
    height: 32px;   
 }
 
-.marker.marker-restaurant, .marker.marker-gift-shop, .marker.marker-restroom {
+.marker.marker-restaurant, .marker.marker-restroom, .marker.marker-gift-shop, .marker.marker-meet-the-guardians-talk {
    width: 24px;
    height: 24px;
 }
@@ -1497,4 +1497,813 @@ html.home-page {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
    }
+}
+
+/* ============================================================
+   ITINERARY: FLOW SHELL
+============================================================ */
+
+.itinerary-flow {
+   position: fixed;      /* ✅ was absolute */
+   inset: 0;             /* full viewport */
+   z-index: 9999;        /* above map + side panel */
+   pointer-events: none;
+}
+
+.itin-overlay {
+   position: absolute;   /* stays relative to itinerary-flow */
+   inset: 0;
+   background: rgba(20, 35, 10, 0.22);
+
+   display: flex;
+   justify-content: center;
+
+   /* Keep slightly high so Flatpickr has room */
+   align-items: flex-start;
+   padding-top: 15vh;
+   padding-bottom: 5vh;
+
+   pointer-events: auto;
+}
+
+/* ============================================================
+   ITINERARY: BASE CARD (shared)
+============================================================ */
+
+.itin-card {
+   width: min(1800px, 92vw);
+
+   background: rgba(252, 248, 236, 0.98);
+   border-radius: 28px;
+
+   border: 3px solid rgba(94, 150, 0, 0.25);
+   box-shadow: 0 30px 120px rgba(0,0,0,0.35);
+
+   overflow: hidden;
+}
+
+/* Top bar inside card (title only) */
+.itin-card-topbar {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+
+   padding: 30px 40px;
+
+   background: linear-gradient(180deg, rgba(119,184,0,0.22), rgba(119,184,0,0.10));
+   border-bottom: 2px solid rgba(94,150,0,0.18);
+}
+
+.itin-top-title {
+   font-family: 'Poppins', sans-serif;
+   font-size: 4.2em;
+   font-weight: 900;
+   color: rgba(20,35,10,0.92);
+   letter-spacing: 0.02em;
+}
+
+.itin-card-body {
+   padding: 64px 64px 52px 64px;
+}
+
+.itin-h1 {
+   font-family: 'Poppins', sans-serif;
+   font-size: 6.2em;
+   font-weight: 900;
+   margin: 0 0 18px 0;
+   color: rgba(20,35,10,0.95);
+}
+
+.itin-subtitle {
+   font-family: 'Poppins', sans-serif;
+   font-size: 3.2em;
+   font-weight: 650;
+   margin: 0 0 52px 0;
+   color: rgba(20,35,10,0.60);
+}
+
+/* Bottom actions */
+.itin-card-actions {
+   display: flex;
+   justify-content: flex-end;
+   padding: 0 64px 64px 64px;
+}
+
+.itin-actions-right {
+   display: flex;
+   gap: 22px;
+   align-items: center;
+}
+
+.itin-next {
+   font-family: 'Poppins', sans-serif;
+   font-size: 3.8em;
+   font-weight: 950;
+
+   padding: 26px 58px;
+   border-radius: 18px;
+   border: none;
+
+   background: #5e9600;
+   color: #ffffff;
+
+   cursor: pointer;
+   box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+   transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.itin-next:hover {
+   background-color: #4b7c00;
+   transform: translateY(-2px);
+}
+
+/* Finish = same primary style as Next */
+.itin-finish {
+   font-family: 'Poppins', sans-serif;
+   font-size: 3.8em;
+   font-weight: 950;
+
+   padding: 26px 58px;
+   border-radius: 18px;
+   border: none;
+
+   background: #5e9600;
+   color: #ffffff;
+
+   cursor: pointer;
+   box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+   transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.itin-finish:hover {
+   background-color: #4b7c00;
+   transform: translateY(-2px);
+}
+
+/* ============================================================
+   ITINERARY: DATE SELECTOR
+============================================================ */
+
+.itin-field-label {
+   font-family: 'Poppins', sans-serif;
+   font-size: 3.2em;
+   font-weight: 850;
+   color: rgba(20,35,10,0.85);
+   margin-bottom: 18px;
+}
+
+.itin-date-input {
+   width: 100%;
+   box-sizing: border-box;
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 4.2em;
+   font-weight: 850;
+   color: rgba(20,35,10,0.95);
+
+   padding: 34px 34px;
+   border-radius: 22px;
+
+   background: rgba(255,255,255,0.92);
+   border: 6px solid rgba(94,150,0,0.35);
+
+   box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+   outline: none;
+}
+
+.itin-date-input:focus {
+   border-color: rgba(94,150,0,0.95);
+   box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+}
+
+/* Flatpickr: larger, but keep it clickable */
+.itin-overlay .flatpickr-calendar {
+   transform: scale(2.6);
+   transform-origin: top left;
+}
+
+/* Make the calendar text itself bigger */
+.itin-overlay .flatpickr-current-month,
+.itin-overlay .flatpickr-weekday,
+.itin-overlay .flatpickr-day,
+.itin-overlay .flatpickr-time input {
+   font-size: 22px;
+}
+
+/* Remove the month dropdown (so it looks like your map.html calendar) */
+.itin-overlay .flatpickr-monthDropdown-months {
+   display: none !important;
+}
+
+.itin-overlay .flatpickr-current-month {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 18px;
+}
+
+.itin-overlay .flatpickr-current-month .cur-month {
+   margin: 0 !important;
+}
+
+.itin-overlay .flatpickr-current-month .cur-year {
+   margin: 0 !important;
+   padding: 0 !important;
+}
+
+/* ============================================================
+   ITINERARY: ANIMALS SELECTOR (tall) — SYNCED WITH animalSelector.js
+============================================================ */
+
+/* Matches: <section class="itin-card itin-card-tall"> */
+.itin-card.itin-card-tall {
+   height: 88vh;                 /* fill most of screen */
+   max-height: 2400px;           /* allow big displays */
+   display: flex;
+   flex-direction: column;
+}
+
+/* Matches: <div class="itin-card-body itin-card-body-tall"> */
+.itin-card-body.itin-card-body-tall {
+   flex: 1 1 auto;
+   min-height: 0;                /* allow results to scroll */
+   display: flex;
+   flex-direction: column;
+}
+
+/* Search input — same scale as date selector input */
+.itin-search-input {
+   width: 100%;
+   box-sizing: border-box;
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 4.2em;             /* match .itin-date-input */
+   font-weight: 850;
+   color: rgba(20,35,10,0.95);
+
+   padding: 34px 34px;           /* match .itin-date-input */
+   border-radius: 22px;
+
+   background: rgba(255,255,255,0.92);
+   border: 6px solid rgba(94,150,0,0.35);
+
+   box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+   outline: none;
+
+   /* Prevent multi-line / tall textbox look */
+   line-height: 1.15;
+}
+
+.itin-search-input:focus {
+   border-color: rgba(94,150,0,0.95);
+   box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+}
+
+.itin-search-input::placeholder {
+   color: rgba(20,35,10,0.45);
+   font-weight: 850;
+}
+
+/* Results list */
+.itin-results {
+   margin-top: 36px;
+   flex: 1 1 auto;
+   min-height: 0;
+   overflow-y: auto;
+   padding-right: 18px;
+
+   display: flex;
+   flex-direction: column;
+   gap: 22px;
+}
+
+/* Scrollbar (matches your green style) */
+.itin-results::-webkit-scrollbar { width: 28px; }
+.itin-results::-webkit-scrollbar-track {
+   background: rgba(94, 150, 0, 0.12);
+   border-radius: 999px;
+}
+.itin-results::-webkit-scrollbar-thumb {
+   background: rgba(94, 150, 0, 0.55);
+   border-radius: 999px;
+   border: 4px solid rgba(255,255,255,0.7);
+}
+.itin-results::-webkit-scrollbar-thumb:hover {
+   background: rgba(94, 150, 0, 0.8);
+}
+
+/* Empty state — make it match your UI scale */
+.itin-empty {
+   font-family: 'Poppins', sans-serif;
+   font-size: 3.2em;
+   font-weight: 800;
+   color: rgba(20,35,10,0.65);
+   padding: 18px 2px;
+}
+
+/* ============================================================
+   ITINERARY: RESULT ROW LAYOUT WITH FIXED IMAGE (INTEGRATED)
+============================================================ */
+
+/* The row itself: keep your existing "animal-result" styling, but enforce layout */
+.itin-results .animal-result {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 28px;
+}
+
+/* Wrap image + text together so they sit beside each other */
+.itin-animal-content {
+   display: flex;
+   align-items: center;
+   gap: 28px;
+
+   flex: 1 1 auto;
+   min-width: 0; /* important so the text can wrap instead of pushing layout */
+}
+
+/* Fixed thumbnail frame */
+.itin-animal-thumb {
+   width: 280px;
+   height: 220px;
+
+   border-radius: 22px;
+   overflow: hidden;
+
+   flex: 0 0 auto;
+   background: rgba(0,0,0,0.18);
+   box-shadow: inset 0 0 0 3px rgba(255,255,255,0.18);
+}
+
+/* Image always fills the frame */
+.itin-animal-thumb-img {
+   width: 100%;
+   height: 100%;
+   display: block;
+
+   object-fit: cover;
+   object-position: center;
+}
+
+/* Optional placeholder (if you add the class when the image fails) */
+.itin-animal-thumb.is-placeholder {
+   display: grid;
+   place-items: center;
+}
+.itin-animal-thumb.is-placeholder::before {
+   content: "🐾";
+   font-size: 5em;
+   opacity: 0.85;
+}
+
+/* Ensure your existing text block works in this horizontal layout */
+.itin-animal-content .animal-result-left {
+   flex: 1 1 auto;
+   min-width: 0;
+}
+
+/* Allow wrapping (so long species names don’t force weird stacking) */
+.itin-animal-content .animal-result-species,
+.itin-animal-content .animal-result-exhibit {
+   white-space: normal;
+   overflow: visible;
+   text-overflow: clip;
+   overflow-wrap: anywhere;
+   word-break: break-word;
+}
+
+/* ============================================================
+   ITINERARY: ADD (+ / −) BUTTON
+============================================================ */
+
+.itin-add-btn {
+   flex: 0 0 auto;
+
+   width: 90px;
+   height: 90px;
+
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   border-radius: 50%;
+   border: none;
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 3.4em;
+   font-weight: 900;
+   line-height: 1;
+
+   background: #77B800;
+   color: #ffffff;
+
+   cursor: pointer;
+
+   box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+   transition: transform 0.15s ease,
+               background-color 0.2s ease,
+               box-shadow 0.2s ease;
+}
+
+.itin-add-btn:hover {
+   background-color: #5e9600;
+   transform: translateY(-2px);
+   box-shadow: 0 14px 32px rgba(0,0,0,0.32);
+}
+
+/* Added state */
+.itin-add-btn.is-added {
+   background: rgba(255,255,255,0.15);
+   color: #ffffff;
+   border: 4px solid rgba(255,255,255,0.6);
+   box-shadow: none;
+}
+
+.itin-add-btn.is-added:hover {
+   background: rgba(255,255,255,0.25);
+   transform: none;
+}
+
+/* ============================================================
+   ITINERARY: ACTION BUTTONS (DUAL LAYOUT)
+============================================================ */
+
+.itin-card-actions-dual {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 0 64px 64px 64px;
+}
+
+/* Previous button */
+.itin-prev {
+   font-family: 'Poppins', sans-serif;
+   font-size: 3.8em;
+   font-weight: 950;
+
+   padding: 26px 58px;
+   border-radius: 18px;
+   border: 3px solid rgba(94,150,0,0.6);
+
+   background: rgba(255,255,255,0.85);
+   color: rgba(20,35,10,0.85);
+
+   cursor: pointer;
+   box-shadow: 0 18px 40px rgba(0,0,0,0.15);
+   transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.itin-prev:hover {
+   background: rgba(255,255,255,1);
+   transform: translateY(-2px);
+}
+
+/* Itinerary: make the "More Info" link match the subtitle size */
+.itin-animal-content .tooltip-link {
+   font-size: 2.8em;          /* same as .animal-result-exhibit */
+   font-weight: 600;          /* same as .animal-result-exhibit */
+   line-height: 1.2;
+   display: inline-block;
+   margin-top: 6px;
+   align-self: flex-start;
+}
+
+/* Meet the Guardians meta line (location + time) */
+.itin-talk-meta {
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.8em; /* same vibe as other subtitle rows */
+   font-weight: 650;
+   color: rgba(255,255,255,0.9);
+
+   white-space: normal;
+   overflow-wrap: anywhere;
+   word-break: break-word;
+}
+
+/* ============================================================
+   ITINERARY PANEL: DATE HEADER
+============================================================ */
+
+.itin-panel-date {
+   background: rgba(255,255,255,0.55);
+   border: 3px solid rgba(94, 150, 0, 0.18);
+   border-radius: 22px;
+
+   padding: 26px 26px;
+
+   box-shadow: 0 12px 28px rgba(0,0,0,0.10);
+
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+}
+
+.itin-panel-date-label {
+   font-size: 2.6em;
+   font-weight: 850;
+   color: rgba(20, 35, 10, 0.70);
+   letter-spacing: 0.02em;
+   text-transform: uppercase;
+}
+
+.itin-panel-date-value {
+   font-size: 3.6em;
+   font-weight: 950;
+   color: rgba(20, 35, 10, 0.92);
+   letter-spacing: 0.01em;
+
+   white-space: normal;
+   overflow-wrap: anywhere;
+   word-break: break-word;
+}
+
+/* ============================================================
+   ITINERARY PANEL (LEFT)
+============================================================ */
+
+.itinerary-empty {
+   font-size: 3.2em;
+   font-weight: 800;
+   color: rgba(20, 35, 10, 0.65);
+   padding: 18px 8px;
+}
+
+/* ============================================================
+   ACTION BUTTONS ROW (Build / Edit / Clear)
+============================================================ */
+
+.itin-panel-actions-wrap {
+   display: flex;
+   gap: 24px;
+   margin-bottom: 36px;
+}
+
+/* Let buttons share the row nicely */
+.itin-panel-actions-wrap > button {
+   flex: 1 1 0;
+   min-width: 0;
+}
+
+/* Shared button base */
+.itin-panel-build-btn,
+.itin-panel-edit-btn,
+.itin-panel-clear-btn {
+   width: 100%;
+
+   padding: 22px 26px;
+   border-radius: 18px;
+   border: none;
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 3.2em;
+   font-weight: 900;
+
+   cursor: pointer;
+   box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+   transition: transform 0.15s ease,
+               background-color 0.2s ease,
+               box-shadow 0.2s ease;
+}
+
+/* Primary (Build / Edit) */
+.itin-panel-build-btn,
+.itin-panel-edit-btn {
+   background-color: #77B800;
+   color: #ffffff;
+}
+
+.itin-panel-build-btn:hover,
+.itin-panel-edit-btn:hover {
+   background-color: #5e9600;
+   transform: translateY(-2px);
+   box-shadow: 0 14px 32px rgba(0,0,0,0.28);
+}
+
+/* Secondary (Clear) */
+.itin-panel-clear-btn {
+   background-color: rgba(255,255,255,0.90);
+   color: rgba(20,35,10,0.90);
+   border: 3px solid rgba(94,150,0,0.6);
+   box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+}
+
+.itin-panel-clear-btn:hover {
+   background-color: rgba(255,255,255,1);
+   transform: translateY(-2px);
+   box-shadow: 0 14px 32px rgba(0,0,0,0.20);
+}
+
+/* ============================================================
+   DATE HEADER WRAPPER
+============================================================ */
+
+.itin-panel-date {
+   background: rgba(255,255,255,0.65);
+   border: 3px solid rgba(94, 150, 0, 0.18);
+   border-radius: 22px;
+   padding: 22px 22px;
+   box-shadow: 0 12px 28px rgba(0,0,0,0.10);
+
+   display: flex;
+   flex-direction: column;
+   gap: 14px;
+}
+
+.itin-panel-date-label {
+   font-size: 2.4em;
+   font-weight: 900;
+   color: rgba(20, 35, 10, 0.65);
+   letter-spacing: 0.08em;
+   text-transform: uppercase;
+}
+
+.itin-panel-date-value {
+   font-size: 3.2em;
+   font-weight: 900;
+   color: rgba(20, 35, 10, 0.92);
+}
+
+/* ============================================================
+   SECTION SHELL
+============================================================ */
+
+.itin-panel-section {
+   background: rgba(255,255,255,0.55);
+   border: 3px solid rgba(94, 150, 0, 0.18);
+   border-radius: 22px;
+   overflow: hidden;
+   box-shadow: 0 12px 28px rgba(0,0,0,0.10);
+}
+
+/* Header row (clickable) */
+.itin-panel-section-header {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 24px;
+
+   padding: 26px 26px;
+
+   background: rgba(94, 150, 0, 0.18);
+   cursor: pointer;
+   user-select: none;
+}
+
+.itin-panel-section-title {
+   font-size: 3.8em;
+   font-weight: 900;
+   color: rgba(20, 35, 10, 0.92);
+   letter-spacing: 0.02em;
+
+   display: flex;
+   align-items: baseline;
+   gap: 16px;
+}
+
+.itin-panel-count {
+   font-size: 0.72em;
+   font-weight: 900;
+   opacity: 0.7;
+}
+
+/* Chevron button */
+.itin-panel-toggle {
+   border: none;
+   background: rgba(20, 35, 10, 0.08);
+   width: 72px;
+   height: 72px;
+   border-radius: 18px;
+   cursor: pointer;
+   display: grid;
+   place-items: center;
+   padding: 0;
+   flex: 0 0 auto;
+}
+
+.itin-panel-toggle:hover {
+   background: rgba(20, 35, 10, 0.14);
+}
+
+.itin-panel-toggle-icon {
+   width: 22px;
+   height: 22px;
+   display: inline-block;
+   position: relative;
+   transition: transform 0.18s ease;
+}
+
+.itin-panel-toggle-icon::before {
+   content: "";
+   position: absolute;
+   inset: 0;
+   margin: auto;
+
+   width: 16px;
+   height: 16px;
+
+   border-right: 5px solid rgba(20, 35, 10, 0.85);
+   border-bottom: 5px solid rgba(20, 35, 10, 0.85);
+
+   transform: rotate(45deg); /* expanded */
+}
+
+/* Body */
+.itin-panel-section-body {
+   padding: 22px 22px 26px 22px;
+   display: flex;
+   flex-direction: column;
+   gap: 22px;
+}
+
+/* Collapsed */
+.itin-panel-section.is-collapsed .itin-panel-section-body {
+   display: none;
+}
+.itin-panel-section.is-collapsed .itin-panel-toggle-icon::before {
+   transform: rotate(135deg);
+}
+
+/* ============================================================
+   ITEM ROWS
+============================================================ */
+
+.itin-panel-item {
+   background-color: rgba(94, 150, 0, 0.95);
+   border-radius: 18px;
+   padding: 22px 22px;
+
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 22px;
+
+   box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+}
+
+.itin-panel-item-left {
+   display: flex;
+   align-items: center;
+   gap: 22px;
+   flex: 1 1 auto;
+   min-width: 0;
+}
+
+.itin-panel-thumb {
+   width: 180px;
+   height: 140px;
+   border-radius: 18px;
+   overflow: hidden;
+   flex: 0 0 auto;
+
+   background: rgba(0,0,0,0.18);
+   box-shadow: inset 0 0 0 3px rgba(255,255,255,0.18);
+}
+
+.itin-panel-thumb img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   object-position: center;
+   display: block;
+}
+
+.itin-panel-text {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   min-width: 0;
+}
+
+.itin-panel-name {
+   font-size: 3.6em;
+   font-weight: 900;
+   color: #fff;
+
+   white-space: normal;
+   overflow-wrap: anywhere;
+   word-break: break-word;
+}
+
+.itin-panel-meta {
+   font-size: 2.6em;
+   font-weight: 650;
+   color: rgba(255,255,255,0.9);
+
+   white-space: normal;
+   overflow-wrap: anywhere;
+   word-break: break-word;
+}
+
+.itin-panel-link {
+   font-size: 2.6em;
+   font-weight: 750;
+   color: #fff;
+   text-decoration: underline;
+   cursor: pointer;
+   width: fit-content;
+}
+
+.itin-panel-link:hover {
+   color: #ffd54d;
 }

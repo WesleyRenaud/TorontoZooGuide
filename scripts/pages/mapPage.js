@@ -1,3 +1,4 @@
+// scripts/pages/mapPage.js
 import { CONFIG } from '../shared/config.js';
 import { createPanzoom } from '../map/panzoom.js';
 import { initMapControls } from '../map/controls.js';
@@ -27,7 +28,7 @@ export function initMapPage() {
    const includeSeasonalAttractionsCheckbox = document.getElementById('includeSeasonalAttractions');
    const zoomobileRouteTypeRadios = document.querySelectorAll?.('input[name="zoomobileRoute"]');
    const animalSearchInput = document.getElementById('animalSearch');
-   const legend = initMapLegend();
+   initMapLegend();
 
    const tooltipEl = document.getElementById('tooltip');
    const hoverTooltipEl = document.getElementById('hoverTooltip');
@@ -51,12 +52,12 @@ export function initMapPage() {
          if (!item || String(item.type || '') !== 'animal') return;
          speciesOverlay.openFromAnimal(item);
       },
-      offDisplayBanner: offDisplay   // ✅ THIS is what was missing
+      offDisplayBanner: offDisplay,
    });
 
    initLabelVisibilityToggle({
       checkboxEl: showMapLabelsCheckbox,
-      rootEl: document.body
+      rootEl: document.body,
    });
 
    const markers = createMarkerLayer({
@@ -87,7 +88,21 @@ export function initMapPage() {
       getSelectedTypes: () => initExploreTypeFilter.getSelectedTypes(),
    });
 
-   // Search (✅ keep this before we wire change handlers that call search.refresh)
+   // Explore multi-select (✅ must exist before search uses it)
+   const explore = initExploreTypeFilter({
+      onChange: () => {
+         updater.refetchWithCurrentControls(null);
+         search.refresh();
+      },
+      onAnimalsUnchecked: () => {
+         const resultsEl = document.getElementById('animalSearchResults');
+         if (resultsEl) resultsEl.innerHTML = '';
+      }
+   });
+
+   initExploreTypeFilter.getSelectedTypes = explore.getSelectedTypes;
+
+   // Search (✅ explore exists now)
    const search = initSearch({
       inputEl: animalSearchInput,
       getIncludeFlags: () => explore.buildSearchIncludeFlags(),
@@ -109,20 +124,6 @@ export function initMapPage() {
       },
    });
 
-   // Explore multi-select (✅ refresh search after refetch)
-   const explore = initExploreTypeFilter({
-      onChange: () => {
-         updater.refetchWithCurrentControls(null);
-         search.refresh();
-      },
-      onAnimalsUnchecked: () => {
-         const resultsEl = document.getElementById('animalSearchResults');
-         if (resultsEl) resultsEl.innerHTML = '';
-      }
-   });
-
-   initExploreTypeFilter.getSelectedTypes = explore.getSelectedTypes;
-
    // Deep link focus
    initFocusFromQuery({
       onFocus: (rowOrSpec) => {
@@ -130,5 +131,6 @@ export function initMapPage() {
       }
    });
 
+   // Kick initial map load
    mapPreset.dispatchEvent(new Event('change'));
 }

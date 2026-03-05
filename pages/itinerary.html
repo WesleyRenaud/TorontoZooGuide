@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" class="home-page">
+   <head>
+      <!-- Stylesheets -->
+      <link rel="stylesheet" href="../styles/styles.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+      <!-- jQuery -->
+      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+      <!-- Vendor libs -->
+      <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js" defer></script>
+
+      <!-- Itinerary entry module -->
+      <script type="module" src="../scripts/main-itinerary.js"></script>
+   </head>
+
+   <body>
+      <div class="home-page">
+
+         <!-- Top bar -->
+         <div class="top-bar">
+            <span class="top-bar-title">Toronto Zoo Guide</span>
+            <img
+               src="../images/logos/toronto-zoo-logo.png"
+               alt="Toronto Zoo Logo"
+               class="top-bar-logo"
+            >
+         </div>
+
+         <main class="map-layout itinerary-layout">
+
+            <!-- LEFT PANEL: Itinerary -->
+            <aside class="side-panel left itinerary-panel" aria-label="Itinerary panel">
+               <div class="side-panel-header">
+                  <h2 class="side-panel-title">Itinerary</h2>
+               </div>
+
+               <div class="side-panel-body" id="itineraryPanelBody">
+                  <div class="itinerary-empty">
+                     Build an itinerary to see it here.
+                  </div>
+               </div>
+            </aside>
+
+            <!-- MAP -->
+            <div class="map-container">
+               <div id="mapInner">
+                  <img id="zooMap" src="../images/map/zoo-map.png" alt="Toronto Zoo Map">
+                  <!-- markers injected here -->
+               </div>
+
+               <div id="tooltip" class="tooltip" style="display:none;"></div>
+               <div id="hoverTooltip" class="hover-tooltip" style="display:none;"></div>
+
+               <!-- Wizard UI mounts here -->
+               <div id="itineraryFlow" class="itinerary-flow"></div>
+            </div>
+
+         </main>
+
+         <!-- Bottom navigation -->
+         <nav>
+            <ul>
+               <li><a href="map.html">Map</a></li>
+               <li><a href="animals.html">Animals</a></li>
+               <li><a href="https://www.torontozoo.com/meettheguardians">Meet The Guardians</a></li>
+               <li><a href="https://www.torontozoo.com/wildencounters">Wild Encounters</a></li>
+               <li><a href="itinerary.html">Itinerary</a></li>
+            </ul>
+         </nav>
+
+      </div>
+   </body>
+</html>

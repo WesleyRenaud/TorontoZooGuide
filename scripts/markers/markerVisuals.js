@@ -118,7 +118,13 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
       return;
    }
 
-   if (type === 'wildEncounterMeetingSpot') {
+   if (type === 'meetTheGuardiansTalk') {
+      markerEl.classList.add('marker-meet-the-guardians-talk');
+      applyGenericIcon(markerEl, '/images/generic-icons/meet-the-guardians-talk.png', count);
+      return;
+   }
+
+   if (type === 'wildEncounterMeetingSpot' || type === 'wildEncounter') {
       markerEl.classList.add('marker-wild-encounter-meeting-spot');
       applyGenericIcon(markerEl, '/images/generic-icons/wild-encounter-meeting-spot.png', count);
       return;

@@ -224,6 +224,20 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-meet-the-guardians-talks':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         meet_the_guardians_talks = self.database.get_meet_the_guardians_talks()
+         
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"meet_the_guardians_talks": [meet_the_guardians_talk.to_dict() for meet_the_guardians_talk in meet_the_guardians_talks]}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/get-wild-encounter-meeting-spots':
          content_length = int( self.headers[ 'Content-Length'] )
          post_data = self.rfile.read( content_length )
@@ -252,6 +266,10 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_attractions = bool( data.get( 'includeAttractions' ) )
          include_zoomobile_stations = bool( data.get( 'includeZoomobileStations' ) )
          include_wild_encounter_meeting_spots = bool( data.get( 'includeWildEncounterMeetingSpots' ) )
+         include_wild_encounters = bool( data.get( 'includeWildEncounters' ) )
+         include_meet_the_guardians_talks = bool( data.get( 'includeMeetTheGuardiansTalks' ) )
+
+         day_of_week = data.get( 'dayOfWeek' )
 
          animals_json = []
          pavilions_json = []
@@ -261,62 +279,78 @@ class MyHandler( BaseHTTPRequestHandler ):
          attractions_json = []
          zoomobile_stations_json = []
          wild_encounter_meeting_spots_json = []
+         wild_encounters_json = []
+         meet_the_guardians_talks_json = []
 
-         if include_animals and query:
+         if include_animals:
             animals = self.database.get_animals_matching_query( query ) or []
             for animal in animals:
                   d = animal.to_dict()
                   d['type'] = d.get( 'type', 'animal' )
                   animals_json.append( d )
 
-         if include_pavilions and query:
+         if include_pavilions:
             pavilions = self.database.get_pavilions_matching_query( query ) or []
             for pavilion in pavilions:
                   d = pavilion.to_dict()
                   d['type'] = d.get( 'type', 'pavilion' )
                   pavilions_json.append( d )
 
-         if include_restaurants and query:
+         if include_restaurants:
             restaurants = self.database.get_restaurants_matching_query( query ) or []
             for restaurant in restaurants:
                   d = restaurant.to_dict()
                   d['type'] = d.get( 'type', 'restaurant' )
                   restaurants_json.append( d )
 
-         if include_restrooms and query:
+         if include_restrooms:
             restrooms = self.database.get_restrooms_matching_query( query ) or []
             for restroom in restrooms:
                   d = restroom.to_dict()
                   d['type'] = d.get( 'type', 'restroom' )
                   restrooms_json.append( d )
 
-         if include_gift_shops and query:
+         if include_gift_shops:
             gift_shops = self.database.get_gift_shops_matching_query( query ) or []
             for gift_shop in gift_shops:
                   d = gift_shop.to_dict()
                   d['type'] = d.get( 'type', 'giftShop' )
                   gift_shops_json.append( d )
 
-         if include_attractions and query:
+         if include_attractions:
             attractions = self.database.get_attractions_matching_query( query ) or []
             for attraction in attractions:
                   d = attraction.to_dict()
                   d['type'] = d.get( 'type', 'attraction' )
                   attractions_json.append( d )
 
-         if include_zoomobile_stations and query:
+         if include_zoomobile_stations:
             zoomobile_stations = self.database.get_zoomobile_stations_matching_query( query ) or []
             for zoomobile_station in zoomobile_stations:
                   d = zoomobile_station.to_dict()
                   d['type'] = d.get( 'type', 'zoomobileStation' )
                   zoomobile_stations_json.append( d )
 
-         if include_wild_encounter_meeting_spots and query:
+         if include_wild_encounter_meeting_spots:
             wild_encounter_meeting_spots = self.database.get_wild_encounter_meeting_spots_matching_query( query ) or []
             for wild_encounter_meeting_spot in wild_encounter_meeting_spots:
                   d = wild_encounter_meeting_spot.to_dict()
                   d['type'] = d.get( 'type', 'wildEncounterMeetingSpot' )
                   wild_encounter_meeting_spots_json.append( d )
+
+         if include_wild_encounters:
+            wild_encounters = self.database.get_wild_encounters_matching_query( query, day_of_week ) or []
+            for wild_encounter in wild_encounters:
+                  d = wild_encounter.to_dict()
+                  d['type'] = d.get( 'type', 'wildEncounter' )
+                  wild_encounters_json.append( d )
+
+         if include_meet_the_guardians_talks:
+            meet_the_guardians_talks = self.database.get_meet_the_guardians_talks_matching_query( query, day_of_week ) or []
+            for meet_the_guardians_talk in meet_the_guardians_talks:
+                  d = meet_the_guardians_talk.to_dict()
+                  d['type'] = d.get( 'type', 'meetTheGuardiansTalk' )
+                  meet_the_guardians_talks_json.append( d )
 
          response = {
             'animals': animals_json,
@@ -326,7 +360,76 @@ class MyHandler( BaseHTTPRequestHandler ):
             'gift_shops': gift_shops_json,
             'attractions': attractions_json,
             'zoomobile_stations': zoomobile_stations_json,
-            'wild_encounter_meeting_spots': wild_encounter_meeting_spots_json
+            'wild_encounter_meeting_spots': wild_encounter_meeting_spots_json,
+            'wild_encounters': wild_encounters_json,
+            'meet_the_guardians_talks': meet_the_guardians_talks_json
+         }
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+   
+      elif self.path == '/build-itinerary':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+         temp = data.get( 'temp' )
+         animals_to_include = data.get( 'animals' )
+         attractions_to_include = data.get( 'attractions' )
+         meet_the_guardians_talks_to_include = data.get( 'meetTheGuardiansTalks' )
+         wild_encounters_to_include = data.get( 'wildEncounters' )
+
+         animals_json = []
+         attractions_json = []
+         meet_the_guardians_talks_json = []
+         wild_encounters_json = []
+
+         if animals_to_include:
+            animals = self.database.get_animals_viewable_on_day( month=month,
+                                                                 day=day,
+                                                                 temp=temp,
+                                                                 species_to_include=animals_to_include,
+                                                                 itinerary_mode=True )
+            for animal in animals:
+               d = animal.to_dict()
+               d['type'] = d.get( 'type', 'animal' )
+               animals_json.append( d )
+
+         if attractions_to_include:
+            attractions = self.database.get_attractions( month=month,
+                                                         attractions_to_include=attractions_to_include,
+                                                         itinerary_mode=True )
+            for attraction in attractions:
+                  d = attraction.to_dict()
+                  d['type'] = d.get( 'type', 'attraction' )
+                  attractions_json.append( d )
+               
+         if meet_the_guardians_talks_to_include:
+            meet_the_guardians_talks = self.database.get_meet_the_guardians_talks_with_date_times( meet_the_guardians_talks_to_include=
+                                                                                                   meet_the_guardians_talks_to_include,
+                                                                                                   itinerary_mode=True )
+            for meet_the_guardians_talk in meet_the_guardians_talks:
+                  d = meet_the_guardians_talk.to_dict()
+                  d['type'] = d.get( 'type', 'meetTheGuardiansTalk' )
+                  meet_the_guardians_talks_json.append( d )
+
+         if wild_encounters_to_include:
+            wild_encounters = self.database.get_wild_encounter_meeting_spots_for_wild_encounters( wild_encounters_to_include=wild_encounters_to_include )
+            for wild_encounter in wild_encounters:
+                  d = wild_encounter.to_dict()
+                  d['type'] = d.get( 'type', 'wildEncounter' )
+                  wild_encounters_json.append( d )
+
+         response = {
+            'animals': animals_json,
+            'attractions': attractions_json,
+            'meet_the_guardians_talks': meet_the_guardians_talks_json,
+            'wild_encounters': wild_encounters_json
          }
 
          self.send_response( 200 )

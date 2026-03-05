@@ -140,12 +140,45 @@ cursor.execute( ''' CREATE TABLE ZoomobileRouteMarker
                      Y_COORD           FLOAT NOT NULL,
                      PRIMARY KEY (X_COORD, Y_COORD) ); ''' )
 
+cursor.execute( 'DROP TABLE IF EXISTS MeetTheGuardiansTalk;' )
+cursor.execute( ''' CREATE TABLE MeetTheGuardiansTalk
+                  (  NAME     VARCHAR(64) NOT NULL,
+                     LOCATION VARCHAR(64) NOT NULL,
+                     X_COORD  FLOAT       NOT NULL,
+                     Y_COORD  FLOAT       NOT NULL,    
+                     FOREIGN KEY (LOCATION)  REFERENCES Exhibit(NAME), 
+                     PRIMARY KEY (NAME, LOCATION) ); ''' )    
+
+cursor.execute( 'DROP TABLE IF EXISTS MeetTheGuardiansTalkDateTime;' )
+cursor.execute( ''' CREATE TABLE MeetTheGuardiansTalkDateTime
+                  (  NAME        VARCHAR(64) NOT NULL,
+                     DAY_OF_WEEK INTEGER     NOT NULL CHECK(DAY_OF_WEEK BETWEEN 1 AND 7),
+                     TIME_OF_DAY VARCHAR(8)  NOT NULL,
+                     FOREIGN KEY (NAME) REFERENCES MeetTheGuardiansTalkLocation(NAME)
+                     PRIMARY KEY (NAME, DAY_OF_WEEK, TIME_OF_DAY) ); ''' )       
+
 cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingSpot;' )
 cursor.execute( ''' CREATE TABLE WildEncounterMeetingSpot
                   (  NAME     TEXT  NOT NULL,
                      X_COORD  FLOAT NOT NULL,
                      Y_COORD  FLOAT NOT NULL,
                      PRIMARY KEY (NAME) ); ''' )
+
+cursor.execute( 'DROP TABLE IF EXISTS WildEncounter;' )
+cursor.execute( ''' CREATE TABLE WildEncounter
+                  (  NAME           TEXT  NOT NULL,
+                     MEETING_SPOT   TEXT  NOT NULL,
+                     LINK           TEXT  NOT NULL,           
+                     FOREIGN KEY (MEETING_SPOT) REFERENCES WildEncounterMeetingSpot(NAME),
+                     PRIMARY KEY (NAME) ); ''' )
+
+cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingTime;' )
+cursor.execute( ''' CREATE TABLE WildEncounterMeetingTime
+                  (  NAME        TEXT        NOT NULL,
+                     DAY_OF_WEEK INTEGER     NOT NULL CHECK(DAY_OF_WEEK BETWEEN 1 AND 7),
+                     TIME_OF_DAY VARCHAR(8)  NOT NULL,      
+                     FOREIGN KEY (NAME) REFERENCES WildEncounter(NAME),
+                     PRIMARY KEY (NAME, DAY_OF_WEEK, TIME_OF_DAY) ); ''' )  
 
 regions = [
    (
@@ -12304,6 +12337,243 @@ zoomobile_route_markers = [
    (1, 0, 56.248, 19.985),
 ]
 
+meet_the_guardians_talks = [
+   (
+      'Arctic Wolf',                   # Talk name
+      'Tundra Trek',                   # Location
+      54,                              # X coordinate on map
+      28                               # Y coordinate on map
+   ),
+   (
+      'Sumatran Tiger',                # Talk name
+      'Indo-Malaya Outdoor',           # Location
+      57,                              # X coordinate on map
+      74                               # Y coordinate on map
+   ),
+   (
+      'Komodo Dragon',                 # Talk name
+      'Australasia Pavilion',          # Location
+      61,                              # X coordinate on map
+      35.25                            # Y coordinate on map
+   ),
+   (
+      'Slender-Tailed Meerkat',        # Talk name
+      'African Rainforest Pavilion',   # Location
+      50,                              # X coordinate on map
+      78                               # Y coordinate on map
+   ),
+   (
+      'Highland Cattle',               # Talk name
+      'Eurasia Wilds',                 # Location
+      81,                              # X coordinate on map
+      34                               # Y coordinate on map
+   ),
+   (
+      'Domestic Goat',                 # Talk name
+      'Goat World',                    # Location
+      62,                              # X coordinate on map
+      48                               # Y coordinate on map
+   ),
+   (
+      'North American River Otter',    # Talk name
+      'Americas Pavilion',             # Location
+      48,                              # X coordinate on map
+      34                               # Y coordinate on map
+   ),
+   (
+      'Bactrian Camel',                # Talk name
+      'Eurasia Wilds',                 # Location
+      73.5,                            # X coordinate on map
+      26                               # Y coordinate on map
+   ),
+   (
+      'Nile Soft-Shelled Turtle',      # Talk name
+      'African Rainforest Pavilion',   # Location
+      50.75,                           # X coordinate on map
+      80.5                             # Y coordinate on map
+   ),
+   (
+      'Snow Leopard',                  # Talk name
+      'Eurasia Wilds',                 # Location
+      69.25,                           # X coordinate on map
+      16.5                             # Y coordinate on map
+   ),
+   (
+      'Spotted Hyena',                 # Talk name
+      'Africa Savanna',                # Location
+      40.5,                            # X coordinate on map
+      56.25                            # Y coordinate on map
+   ),
+   (
+      'Western Lowland Gorilla',       # Talk name
+      'African Rainforest Pavilion',   # Location
+      49.5,                            # X coordinate on map
+      73.25                            # Y coordinate on map
+   ),
+   (
+      'Amur Tiger',                    # Talk name
+      'Eurasia Wilds',                 # Location
+      66,                              # X coordinate on map
+      31.75                            # Y coordinate on map
+   ),
+   (
+      'Sumatran Orangutan',            # Talk name
+      'Indo-Malaya Pavilion',          # Location
+      56.5,                            # X coordinate on map
+      80                               # Y coordinate on map
+   ),
+   (
+      'New World Primates',            # Talk name
+      'Americas Pavilion',             # Location
+      49,                              # X coordinate on map
+      36.5                             # Y coordinate on map
+   ),
+   (
+      'White-Handed Gibbon',           # Talk name
+      'Indo-Malaya Pavilion',          # Location
+      56,                              # X coordinate on map
+      78.5                             # Y coordinate on map
+   ),
+   (
+      'North Bald Eagle',              # Talk name
+      'Tundra Talk',                   # Location
+      48.75,                           # X coordinate on map
+      23.75                            # Y coordinate on map
+   ),
+   (
+      'African Lion',                  # Talk name
+      'Africa Savanna',                # Location
+      38.5,                            # X coordinate on map
+      60.75                            # Y coordinate on map
+   )
+]
+
+meet_the_guardian_talks_date_times = [
+   # Monday talks
+   (
+      'Arctic Wolf',                # Name--species the talk is about
+      1,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                    # Time of day
+   ),
+   (
+      'Sumatran Tiger',             # Name--species the talk is about
+      1,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                     # Time of day
+   ),
+   (
+      'Komodo Dragon',              # Name--species the talk is about
+      1,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                     # Time of day
+   ),
+
+   # Tuesday talks
+   (
+      'Slender-Tailed Meerkat',     # Name--species the talk is about
+      2,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                    # Time of day
+   ),
+   (
+      'Highland Cattle',            # Name--species the talk is about
+      2,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                     # Time of day
+   ),
+   (
+      'Domestic Goat',              # Name--species the talk is about
+      2,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                     # Time of day
+   ),
+
+   # Wednesday talks
+   (
+      'North American River Otter', # Name--species the talk is about
+      3,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                    # Time of day
+   ),
+   (
+      'Bactrian Camel',             # Name--species the talk is about
+      3,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                     # Time of day
+   ),
+   (
+      'Nile Soft-Shelled Turtle',   # Name--species the talk is about
+      3,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                     # Time of day
+   ),
+
+   # Thursday talks
+   (
+      'Snow Leopard',               # Name--species the talk is about
+      4,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                    # Time of day
+   ),
+   (
+      'Spotted Hyena',              # Name--species the talk is about
+      4,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                     # Time of day
+   ),
+   (
+      'Western Lowland Gorilla',    # Name--species the talk is about
+      4,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                     # Time of day
+   ),
+
+   # Friday talks
+   (
+      'Amur Tiger',                 # Name--species the talk is about
+      5,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                    # Time of day
+   ),
+   (
+      'Sumatran Orangutan',         # Name--species the talk is about
+      5,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                     # Time of day
+   ),
+   (
+      'New World Primates',         # Name--species the talk is about
+      5,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                     # Time of day
+   ),
+
+   # Saturday talks
+   (
+      'North American River Otter', # Name--species the talk is about
+      6,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                    # Time of day
+   ),
+   (
+      'White-Handed Gibbon',        # Name--species the talk is about
+      6,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                     # Time of day
+   ),
+   (
+      'Northern Bald Eagle',        # Name--species the talk is about
+      6,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                     # Time of day
+   ),
+   (
+      'Snow Leopard',               # Name--species the talk is about
+      6,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:30 PM'                     # Time of day
+   ),
+
+   # Sunday talks
+   (
+      'Amur Tiger',                 # Name--species the talk is about
+      7,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                    # Time of day
+   ),
+   (
+      'African Lion',               # Name--species the talk is about
+      7,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                     # Time of day
+   ),
+   (
+      'Domestic Goat',              # Name--species the talk is about
+      7,                            # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                     # Time of day
+   )
+]
+
 wild_encounter_meeting_spots = [
    (
       '''Wild Encounter - Domain Hill Meeting Spot''',
@@ -12344,6 +12614,325 @@ wild_encounter_meeting_spots = [
       '''Wild Encounter - Mayan Temple Meeting Spot''',
       46,   # X coordinate on map
       21    # Y coordinate on map
+   ),
+   (
+      '''Wild Encounter - Eurasia Zoomobile Station Meeting Spot''',
+      72.5, # X coordinate on map
+      36.5  # Y coordinate on map
+   ),
+   (
+      '''Wild Encounter - Zoo Front Entrance Gates Meeting Spot''',
+      65,   # X coordinate on map
+      61    # Y coordinate on map
+   ),
+   (
+      '''Wild Encounter - First Nations Art Garden''',
+      51,   # X coordinate on map
+      35    # Y coordinate on map
+   )
+]
+
+wild_encounters = [
+   (
+      '''African Rainforest''',                                      # Name
+      '''Wild Encounter - Africa Meeting Spot''',                    # Meeting spot
+      '''https://www.torontozoo.com/tickets/weafricarainforest'''
+   ),
+   (
+      '''Ballin' with the Armadillos''',                             # Name
+      '''Wild Encounter - Discovery Zone Meeting Spot''',            # Meeting spot
+      '''https://www.torontozoo.com/tickets/wearmadillo'''
+   ),
+   (
+      '''Burrows & Caves''',                                         # Name
+      '''Wild Encounter - Africa Meeting Spot''',                    # Meeting spot
+      '''https://www.torontozoo.com/tickets/weburrows'''
+   ),
+   (
+      '''Highlang Cattle''',                                         # Name
+      '''Wild Encounter - Eurasia Zoomobile Meeting Spot''',         # Meeting spot
+      '''https://www.torontozoo.com/tickets/wecows'''
+   ),
+   (
+      '''From Howls to Honks''',                                     # Name
+      '''Wild Encounter - Mayan Temple Meeting Spot''',              # Meeting spot
+      '''https://www.torontozoo.com/tickets/wearctic'''
+   ),
+   (
+      '''Kangaroo''',                                                # Name
+      '''Wild Encounter - Eurasia Meeting Spot''',                   # Meeting spot
+      '''https://www.torontozoo.com/tickets/wekangaroo'''
+   ),
+   (
+      '''Scales & Tales of Americas''',                              # Name
+      '''Wild Encounter - First Nations Art Garden Meeting Spot''',  # Meeting spot
+      '''https://www.torontozoo.com/tickets/weamerica'''
+   ),
+   (
+      '''Sunrise in Sumatra''',                                      # Name
+      '''Wild Encounter - Zoo Front Entrance Gates Meeting Spot''',  # Meeting spot
+      '''https://www.torontozoo.com/tickets/wesumatra'''
+   ),
+   (
+      '''Animal Ambassadors: Keeper's Choice''',                     # Name
+      '''Wild Encounter - Discovery Zone Meeting Spot''',            # Meeting spot
+      '''https://www.torontozoo.com/tickets/weoutreach'''
+   ),
+   (
+      '''Guardians of Snow Leopards''',                              # Name
+      '''Wild Encounter - Eurasia Meeting Spot''',                   # Meeting spot
+      '''https://www.torontozoo.com/tickets/wesnowleopard'''
+   ),
+   (
+      '''Guardians of White Rhinos''',                               # Name
+      '''Wild Encounter - Penguin Meeting Spot''',                   # Meeting spot
+      '''https://www.torontozoo.com/tickets/wewhiterhino'''
+   )
+]
+
+wild_encounter_meeting_times = [
+   # Monday encounters
+   (
+      '''Sunrise in Sumatra''',                    # Name
+      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '8:45 AM'                                    # Time of day
+   ),
+   (
+      '''Keeper's Choice: Animal Ambassadors''',   # Name
+      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '10:00 AM'                                   # Time of day
+   ),
+   (
+      '''African Rainforest''',                    # Name
+      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:30 AM'                                   # Time of day
+   ),
+   (
+      '''Burrows & Caves''',                       # Name
+      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                                    # Time of day
+   ),
+   (
+      '''Kangaroo''',                              # Name
+      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:30 PM'                                    # Time of day
+   ),
+   (
+      '''Guardians of White Rhinos''',             # Name
+      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                                    # Time of day
+   ),
+   (
+      '''Guardians of Snow Leopards''',            # Name
+      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:30 PM'                                    # Time of day
+   ),
+
+   # Tuesday encounters
+   (
+      '''Sunrise in Sumatra''',                    # Name
+      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '8:45 AM'                                    # Time of day
+   ),
+   (
+      '''Highland Cattle''',                       # Name
+      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '10:00 AM'                                   # Time of day
+   ),
+   (
+      '''Scales & Tales of Americas''',            # Name
+      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                                   # Time of day
+   ),
+   (
+      '''Burrows & Caves''',                       # Name
+      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                                    # Time of day
+   ),
+   (
+      '''Guardians of White Rhinos''',             # Name
+      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                                    # Time of day
+   ),
+   (
+      '''From Howls to Honks''',                   # Name
+      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '3:00 PM'                                    # Time of day
+   ),
+
+   # Wednesday encounters
+   (
+      '''Sunrise in Sumatra''',                    # Name
+      3,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '8:45 AM'                                    # Time of day
+   ),
+   (
+      '''African Rainforest''',                    # Name
+      3,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:30 AM'                                   # Time of day
+   ),
+   (
+      '''Kangaroo''',                              # Name
+      3,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:30 PM'                                    # Time of day
+   ),
+   (
+      '''Guardians of Snow Leopards''',            # Name
+      3,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:30 PM'                                    # Time of day
+   ),
+
+   # Thursday encounters
+   (
+      '''Sunrise in Sumatra''',                    # Name
+      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '8:45 AM'                                    # Time of day
+   ),
+   (
+      '''Highland Cattle''',                       # Name
+      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '10:00 AM'                                   # Time of day
+   ),
+   (
+      '''Scales & Tales of Americas''',            # Name
+      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                                   # Time of day
+   ),
+   (
+      '''Burrows & Caves''',                       # Name
+      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                                    # Time of day
+   ),
+   (
+      '''Guardians of White Rhinos''',             # Name
+      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                                    # Time of day
+   ),
+   (
+      '''From Howls to Honks''',                   # Name
+      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '3:00 PM'                                    # Time of day
+   ),
+
+   # Friday encounters
+   (
+      '''Sunrise in Sumatra''',                    # Name
+      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '8:45 AM'                                    # Time of day
+   ),
+   (
+      '''Highland Cattle''',                       # Name
+      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '10:00 AM'                                   # Time of day
+   ),
+   (
+      '''Scales & Tales of Americas''',            # Name
+      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                                   # Time of day
+   ),
+   (
+      '''African Rainforest''',                    # Name
+      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:30 AM'                                   # Time of day
+   ),
+   (
+      '''Burrows & Caves''',                       # Name
+      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                                    # Time of day
+   ),
+   (
+      '''Kangaroo''',                              # Name
+      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:30 PM'                                    # Time of day
+   ),
+   (
+      '''Guardians of White Rhinos''',             # Name
+      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                                    # Time of day
+   ),
+   (
+      '''Guardians of Snow Leopards''',            # Name
+      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:30 PM'                                    # Time of day
+   ),
+
+   # Saturday encounters
+   (
+      '''Sunrise in Sumatra''',                    # Name
+      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '8:45 AM'                                    # Time of day
+   ),
+   (
+      '''Ballin' with the Armadillos''',           # Name
+      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '10:00 AM'                                   # Time of day
+   ),
+   (
+      '''Scales & Tales of Americas''',            # Name
+      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                                   # Time of day
+   ),
+   (
+      '''African Rainforest''',                    # Name
+      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:30 AM'                                   # Time of day
+   ),
+   (
+      '''Burrows & Caves''',                       # Name
+      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                                    # Time of day
+   ),
+   (
+      '''Kangaroo''',                              # Name
+      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:30 PM'                                    # Time of day
+   ),
+   (
+      '''Guardians of White Rhinos''',             # Name
+      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:00 PM'                                    # Time of day
+   ),
+   (
+      '''From Howls to Honks''',                   # Name
+      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '3:00 PM'                                    # Time of day
+   ),
+
+   # Sunday encounters
+   (
+      '''Sunrise in Sumatra''',                    # Name
+      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '8:45 AM'                                    # Time of day
+   ),
+   (
+      '''Highland Cattle''',                       # Name
+      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '10:00 AM'                                   # Time of day
+   ),
+   (
+      '''Scales & Tales of Americas''',            # Name
+      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:00 AM'                                   # Time of day
+   ),
+   (
+      '''African Rainforest''',                    # Name
+      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '11:30 AM'                                   # Time of day
+   ),
+   (
+      '''Burrows & Caves''',                       # Name
+      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:00 PM'                                    # Time of day
+   ),
+   (
+      '''Kangaroo''',                              # Name
+      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '1:30 PM'                                    # Time of day
+   ),
+   (
+      '''Guardians of Snow Leopards''',            # Name
+      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
+      '2:30 PM'                                    # Time of day
    )
 ]
 
@@ -12476,12 +13065,41 @@ cursor.executemany( ''' INSERT INTO ZoomobileRouteMarker (
                         ) 
                         VALUES (?, ?, ?, ?) ''', zoomobile_route_markers )
 
+cursor.executemany( ''' INSERT INTO MeetTheGuardiansTalk (
+                           NAME,                           
+                           LOCATION,
+                           X_COORD,
+                           Y_COORD
+                        ) 
+                        VALUES (?, ?, ?, ?) ''', meet_the_guardians_talks )
+
+cursor.executemany( ''' INSERT INTO MeetTheGuardiansTalkDateTime (
+                           NAME,
+                           DAY_OF_WEEK,
+                           TIME_OF_DAY
+                        ) 
+                        VALUES (?, ?, ?) ''', meet_the_guardian_talks_date_times )
+
 cursor.executemany( ''' INSERT INTO WildEncounterMeetingSpot (
                            NAME,
                            X_COORD,
                            Y_COORD
                         ) 
                         VALUES (?, ?, ?) ''', wild_encounter_meeting_spots )
+
+cursor.executemany( ''' INSERT INTO WildEncounter (
+                           NAME,
+                           MEETING_SPOT,
+                           LINK
+                        ) 
+                        VALUES (?, ?, ?) ''', wild_encounters )
+
+cursor.executemany( ''' INSERT INTO WildEncounterMeetingTime (
+                           NAME,
+                           DAY_OF_WEEK,
+                           TIME_OF_DAY
+                        ) 
+                        VALUES (?, ?, ?) ''', wild_encounter_meeting_times )
 
 conn.commit()
 conn.close()

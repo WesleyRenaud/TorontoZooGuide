@@ -1,3 +1,4 @@
+// scripts/map/sources.js
 import { ajaxPost } from '../utils/ajax.js';
 
 export function createDataSources(store) {
@@ -78,7 +79,7 @@ export function createDataSources(store) {
       // ✅ singular layer key
       restroom: {
          fetch: async () => {
-            const cache = store.cache.restroom ?? store.cache.restroom;
+            const cache = store.cache.restroom ?? store.cache.restrooms;
 
             if (!cache) {
                const res = await ajaxPost('/get-restrooms', {});
@@ -147,6 +148,41 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
+      // ✅ Meet the Guardians talks (itinerary + explore layer)
+      // Expects backend support similar to /search includeMeetTheGuardiansTalks.
+      meetTheGuardiansTalk: {
+         fetch: async (ctx) => {
+            const res = await ajaxPost('/get-meet-the-guardians-talks', {
+               dayOfWeek: ctx.dayOfWeek,
+               talksToInclude: ctx.talksToInclude,
+            });
+
+            const rows = res?.meet_the_guardians_talks ?? res?.talks ?? res?.results ?? res ?? [];
+            const normalized = (Array.isArray(rows) ? rows : []).map(t => ({ ...t, type: 'meetTheGuardiansTalk' }));
+
+            store.byType.meetTheGuardiansTalk = normalized;
+            return normalized;
+         },
+         cachePolicy: 'no-cache',
+      },
+
+      // ✅ Wild Encounters (itinerary + explore layer)
+      wildEncounter: {
+         fetch: async (ctx) => {
+            const res = await ajaxPost('/get-wild-encounters', {
+               dayOfWeek: ctx.dayOfWeek,
+               wildEncountersToInclude: ctx.wildEncountersToInclude,
+            });
+
+            const rows = res?.wild_encounters ?? res?.results ?? res ?? [];
+            const normalized = (Array.isArray(rows) ? rows : []).map(w => ({ ...w, type: 'wildEncounter' }));
+
+            store.byType.wildEncounter = normalized;
+            return normalized;
+         },
+         cachePolicy: 'no-cache',
+      },
+
       // ✅ singular layer key
       zoomobileRoute: {
          fetch: async (ctx) => {
@@ -175,10 +211,10 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
-      // ✅ singular layer key
+      // ✅ singular layer key (static points)
       wildEncounterMeetingSpot: {
          fetch: async () => {
-            const cache = store.cache.wildEncounterMeetingSpot ?? store.cache.wildEncounterMeetingSpot;
+            const cache = store.cache.wildEncounterMeetingSpot ?? store.cache.wildEncounterMeetingSpots;
 
             if (!cache) {
                const res = await ajaxPost('/get-wild-encounter-meeting-spots', {});
@@ -188,7 +224,7 @@ export function createDataSources(store) {
                return normalized;
             }
 
-            if (cache.loaded) return store.byType.wildEncounterMeetingSpot ?? store.byType.wildEncounterMeetingSpot ?? [];
+            if (cache.loaded) return store.byType.wildEncounterMeetingSpot ?? store.byType.wildEncounterMeetingSpots ?? [];
             if (cache.inFlight) return cache.inFlight;
 
             cache.inFlight = ajaxPost('/get-wild-encounter-meeting-spots', {})
@@ -209,6 +245,45 @@ export function createDataSources(store) {
             return cache.inFlight;
          },
          cachePolicy: 'static',
+      },
+
+      // ✅ Build itinerary (special endpoint)
+      buildItinerary: {
+         fetch: async (ctx) => {
+            const res = await ajaxPost('/build-itinerary', {
+               month: ctx.month,
+               day: ctx.day,
+               temp: ctx.temp,
+
+               // IMPORTANT: backend expects THESE keys:
+               animals: ctx.animals || [],
+               attractions: ctx.attractions || [],
+               meetTheGuardiansTalks: ctx.meetTheGuardiansTalks || [],
+               wildEncounters: ctx.wildEncounters || [],
+            });
+
+            console.log(res);
+
+            // Backend can return grouped or flat. Normalize to a flat marker list.
+            const animals = Array.isArray(res?.animals) ? res.animals.map(r => ({ ...r, type: 'animal' })) : [];
+            const attractions = Array.isArray(res?.attractions) ? res.attractions.map(r => ({ ...r, type: 'attraction' })) : [];
+            const talks = Array.isArray(res?.meet_the_guardians_talks)
+               ? res.meet_the_guardians_talks.map(r => ({ ...r, type: 'meetTheGuardiansTalk' }))
+               : Array.isArray(res?.meetTheGuardiansTalks)
+               ? res.meetTheGuardiansTalks.map(r => ({ ...r, type: 'meetTheGuardiansTalk' }))
+               : [];
+            const wild = Array.isArray(res?.wild_encounters)
+               ? res.wild_encounters.map(r => ({ ...r, type: 'wildEncounter' }))
+               : Array.isArray(res?.wildEncounters)
+               ? res.wild_encounters.map(r => ({ ...r, type: 'wildEncounter' }))
+               : [];
+
+            const flat = [...animals, ...attractions, ...talks, ...wild];
+
+            store.byType.buildItinerary = flat;
+            return flat;
+         },
+         cachePolicy: 'no-cache',
       },
    };
 }

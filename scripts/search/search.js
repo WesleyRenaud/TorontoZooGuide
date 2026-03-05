@@ -8,7 +8,7 @@ function debounce(fn, delay = 250) {
    };
 }
 
-function normalizeSearchRows(response) {
+export function normalizeSearchRows(response) {
    if (!response) return [];
    if (Array.isArray(response)) return response;
    if (Array.isArray(response.results)) return response.results;
@@ -21,22 +21,30 @@ function normalizeSearchRows(response) {
    if (Array.isArray(response.gift_shops)) out.push(...response.gift_shops.map(x => ({ ...x, type: x.type || 'giftShop' })));
    if (Array.isArray(response.attractions)) out.push(...response.attractions.map(x => ({ ...x, type: x.type || 'attraction' })));
    if (Array.isArray(response.zoomobile_stations)) out.push(...response.zoomobile_stations.map(x => ({ ...x, type: x.type || 'zoomobileStation' })));
+   if (Array.isArray(response.meet_the_guardians_talks)) out.push(...response.meet_the_guardians_talks.map(x => ({ ...x, type: x.type || 'meetTheGuardiansTalk' })));
    if (Array.isArray(response.wild_encounter_meeting_spots)) out.push(...response.wild_encounter_meeting_spots.map(x => ({ ...x, type: x.type || 'wildEncounterMeetingSpot' })));
    return out;
 }
 
-export function initSearch({ inputEl, getIncludeFlags, onFocusRow }) {
+export function initSearch({
+   inputEl,
+   getIncludeFlags,
+   onFocusRow,
+   resultsEl = null,
+   allowEmptyQuery = false,
+} = {}) {
    if (!inputEl) {
       return { refresh: () => {} };
    }
 
    async function run() {
       const query = (inputEl.value || '').trim();
-      const resultsEl = document.getElementById('animalSearchResults');
-      if (!resultsEl) return;
 
-      if (!query) {
-         resultsEl.innerHTML = '';
+      const target = resultsEl || document.getElementById('animalSearchResults');
+      if (!target) return;
+
+      if (!query && !allowEmptyQuery) {
+         target.innerHTML = '';
          return;
       }
 
@@ -44,7 +52,7 @@ export function initSearch({ inputEl, getIncludeFlags, onFocusRow }) {
 
       try {
          const response = await ajaxPost('/search', { query, ...flags });
-         renderSearchResults(resultsEl, normalizeSearchRows(response), onFocusRow);
+         renderSearchResults(target, normalizeSearchRows(response), onFocusRow);
       } catch {
          // ignore
       }
@@ -53,7 +61,6 @@ export function initSearch({ inputEl, getIncludeFlags, onFocusRow }) {
    const onChange = debounce(run, 250);
    inputEl.addEventListener('input', onChange);
 
-   // ✅ allow other parts of the app to re-run search when filters change
    function refresh() {
       run();
    }
@@ -66,73 +73,45 @@ function getRowType(row) {
 }
 
 function getRowTitle(row, type) {
-   if (type === 'wildEncounterMeetingSpot') {
-      return row.name ?? row.NAME ?? 'Wild Encounter Meeting Spot';
-   }
-
-   if (type === 'zoomobileStation') {
-      return row.name ?? row.NAME ?? 'Zoomobile Station';
-   }
-
-   if (type === 'attraction') {
-      return row.name ?? row.NAME ?? 'Attraction';
-   }
-
-   if (type === 'giftShop') {
-      return row.name ?? row.NAME ?? 'Gift Shop';
-   }
-
-   if (type === 'restroom') {
-      return row.title ?? row.TITLE ?? 'Restroom';
-   }
-
-   if (type === 'restaurant') {
-      return row.name ?? row.NAME ?? 'Restaurant';
-   }
-   
-   if (type === 'pavilion') {
-      return row.name ?? row.NAME ?? 'Pavilion';
-   }
-
+   if (type === 'wildEncounterMeetingSpot') return row.name ?? row.NAME ?? 'Wild Encounter Meeting Spot';
+   if (type === 'meetTheGuardiansTalk') return row.name ?? row.NAME ?? 'Meet The Guardians Talk';
+   if (type === 'zoomobileStation') return row.name ?? row.NAME ?? 'Zoomobile Station';
+   if (type === 'attraction') return row.name ?? row.NAME ?? 'Attraction';
+   if (type === 'giftShop') return row.name ?? row.NAME ?? 'Gift Shop';
+   if (type === 'restroom') return row.title ?? row.TITLE ?? 'Restroom';
+   if (type === 'restaurant') return row.name ?? row.NAME ?? 'Restaurant';
+   if (type === 'pavilion') return row.name ?? row.NAME ?? 'Pavilion';
    return row.SPECIES ?? row.species ?? 'Animal';
 }
 
 function getRowSubtitle(row, type) {
-   if (type === 'wildEncounterMeetingSpot') {
-      return null;
+   if (type === 'wildEncounterMeetingSpot') return null;
+
+   if (type === 'meetTheGuardiansTalk') {
+      return 'Meet The Guardians Talk';
    }
 
-   if (type === 'zoomobileStation') {
-      return null;
-   }
+   if (type === 'zoomobileStation') return null;
 
    if (type === 'attraction') {
       const parts = [];
-
       parts.push(row.free_with_admission ? 'Free With Admission' : 'Extra Charge');
-
       return parts.join(', ') || 'Attraction';
    }
 
    if (type === 'giftShop') {
       const parts = [];
-
       if (row.location) parts.push(`Location: ${row.location}`);
       if (row.sub_location) parts.push(row.sub_location);
-
       return parts.join(', ') || 'Gift Shop';
    }
 
-   if (type == 'restroom') {
-      return null;
-   }
+   if (type == 'restroom') return null;
 
    if (type === 'restaurant') {
       const parts = [];
-
       if (row.location) parts.push(`Location: ${row.location}`);
       if (row.sub_location) parts.push(row.sub_location);
-
       return parts.join(', ') || 'Restaurant';
    }
 

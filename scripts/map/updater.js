@@ -1,5 +1,11 @@
+// scripts/map/updater.js
 import { getMonth, getDay, isWithinNextNDays } from '../utils/dates.js';
 import { fetchForecastTemp } from './weather.js';
+import {
+   uniq,
+   isoDateToMonFirstDow,
+   parseItineraryIncludes,
+} from '../itinerary/itineraryHelpers.js';
 
 export function createMapUpdater({
    store,
@@ -16,7 +22,7 @@ export function createMapUpdater({
    let lastPreset = null;
    let lastDateStr = null;
 
-   // ✅ If focus is requested before the first updateMap runs, queue it here
+   // ✅ If focus/options are requested before the first updateMap runs, queue it here
    let pendingOptions = null;
 
    async function updateMap(preset, dateStr, options = null) {
@@ -47,23 +53,119 @@ export function createMapUpdater({
       return run({ preset, month, day, date: dateStr, temp: null }, options);
    }
 
+   function addType(selectedTypes, type) {
+      const t = String(type || '').trim();
+      if (!t) return selectedTypes;
+      return selectedTypes.includes(t) ? selectedTypes : [t, ...selectedTypes];
+   }
+
+   function focusIfRequested(options) {
+      if (!options?.focus?.row) return;
+      const row = options.focus.row;
+      const type = String(options.focus.type || row.type || '');
+      setTimeout(() => {
+         focus.focus({ row, type });
+      }, 0);
+   }
+
    async function run(dateCtx, options = null) {
       const includeOffDisplayAnimals = getIncludeOffDisplay();
       const includeSeasonalRestaurants = getIncludeSeasonalRestaurants();
       const includeSeasonalGiftShops = getIncludeSeasonalGiftShops();
       const includeSeasonalAttractions = getIncludeSeasonalAttractions();
 
-      let selectedTypes = (getSelectedTypes() || []).map(t => String(t));
+      const zoomobileRouteType = getZoomobileRouteType();
 
-      // If focusing from search/deeplink, ensure focused type is loaded
-      const focusType = String(options?.focus?.type || options?.focus?.row?.type || '');
-      const zoomobileRouteType = getZoomobileRouteType(); // you already compute this in run()
+      const itin = options?.itinerary || null;
+      const itineraryOnly = !!itin;
+
+      const dayOfWeek = dateCtx?.date ? isoDateToMonFirstDow(dateCtx.date) : 1;
+
+      // ------------------------------------------------------------
+      // ITINERARY MODE: only call /build-itinerary via sources.buildItinerary
+      // ------------------------------------------------------------
+      if (itineraryOnly) {
+         const inc = parseItineraryIncludes(itin);
+
+         const ctx = {
+            month: dateCtx.month,
+            day: dateCtx.day,
+            temp: dateCtx.temp ?? null,
+
+            // ✅ these keys should match what sources.buildItinerary sends
+            animals: inc.speciesToInclude,
+            attractions: inc.attractionsToInclude,
+            meetTheGuardiansTalks: inc.guardiansTalksToInclude,
+            wildEncounters: inc.wildEncountersToInclude,
+
+            // optional
+            dayOfWeek,
+            zoomobileRouteType,
+         };
+
+         try {
+            const src = sources?.buildItinerary;
+            if (!src?.fetch) {
+               console.warn('Missing sources.buildItinerary — add it to scripts/map/sources.js');
+               markers.render([]);
+               return;
+            }
+
+            const rows = await src.fetch(ctx);
+            markers.render(Array.isArray(rows) ? rows : []);
+            focusIfRequested(options);
+            return;
+         } catch (err) {
+            console.warn('/build-itinerary failed:', err);
+            markers.render([]);
+            return;
+         }
+      }
+
+      // ------------------------------------------------------------
+      // NORMAL MODE: existing behavior
+      // ------------------------------------------------------------
+      const focusRow = options?.focus?.row || null;
+      const focusType = String(options?.focus?.type || focusRow?.type || '').trim();
+
+      let speciesToInclude = [];
+      let restaurantsToInclude = [];
+      let giftShopsToInclude = [];
+      let attractionsToInclude = [];
+      let zoomobileStationsToInclude = [];
+
+      if (focusRow) {
+         if (focusType === 'animal') {
+            const s = String(focusRow.species ?? focusRow.SPECIES ?? '').trim();
+            if (s) speciesToInclude = uniq([s, ...speciesToInclude]);
+         }
+
+         if (focusType === 'restaurant') {
+            const r = focusRow.name ?? focusRow.NAME ?? null;
+            if (r != null) restaurantsToInclude = uniq([r, ...restaurantsToInclude]);
+         }
+
+         if (focusType === 'giftShop') {
+            const g = focusRow.name ?? focusRow.NAME ?? null;
+            if (g != null) giftShopsToInclude = uniq([g, ...giftShopsToInclude]);
+         }
+
+         if (focusType === 'attraction') {
+            const a = focusRow.name ?? focusRow.NAME ?? null;
+            if (a != null) attractionsToInclude = uniq([a, ...attractionsToInclude]);
+         }
+
+         if (focusType === 'zoomobileStation') {
+            const z = focusRow.name ?? focusRow.NAME ?? null;
+            if (z != null) zoomobileStationsToInclude = uniq([z, ...zoomobileStationsToInclude]);
+         }
+      }
+
+      let selectedTypes = (getSelectedTypes() || []).map(t => String(t).trim());
 
       const routeActive = zoomobileRouteType !== 'none';
       const focusIsZoomobileStation = focusType === 'zoomobileStation';
 
-      // If route is active, don't also add zoomobileStation layer on focus,
-      // because zoomobileRoute layer already contains those same stations.
       if (
          focusType &&
          !selectedTypes.includes(focusType) &&
@@ -72,79 +174,36 @@ export function createMapUpdater({
          selectedTypes = [focusType, ...selectedTypes];
       }
 
-      // If none selected, clear markers
+      selectedTypes = uniq(selectedTypes);
+
       if (selectedTypes.length === 0) {
          markers.render([]);
          return;
       }
 
-      // ✅ If focusing an object, force-include that object in the data fetch
-      let speciesToInclude = [];
-      let restaurantsToInclude = [];
-      let giftShopsToInclude = [];
-      let attractionsToInclude = [];
-      let zoomobileStationsToInclude = [];
-
-      const focusRow = options?.focus?.row || null;
-      const focusRowType = String(options?.focus?.type || focusRow?.type || '');
-
-      if (focusRow) {
-         if (focusRowType === 'animal') {
-            const s = String(focusRow.species ?? focusRow.SPECIES ?? '').trim();
-            if (s) speciesToInclude = [s];
-         }
-
-         if (focusRowType === 'restaurant') {
-            const r = focusRow.name ?? focusRow.NAME ?? null;
-            if (r != null) restaurantsToInclude = [r];
-         }
-
-         if (focusRowType === 'giftShop') {
-            const g = focusRow.name ?? focusRow.NAME ?? null;
-            if (g != null) giftShopsToInclude = [g];
-         }
-
-         if (focusRowType === 'attraction') {
-            const g = focusRow.name ?? focusRow.NAME ?? null;
-            if (g != null) attractionsToInclude = [g];
-         }
-
-         if (focusRowType === 'zoomobileStation') {
-            const g = focusRow.name ?? focusRow.NAME ?? null;
-            if (g != null) zoomobileStationsToInclude = [g];
-         }
-      }
-
       const ctx = {
          month: dateCtx.month,
          day: dateCtx.day,
+         dayOfWeek,
          temp: dateCtx.temp ?? null,
+
          includeOffDisplayAnimals,
          includeSeasonalRestaurants,
          includeSeasonalGiftShops,
          includeSeasonalAttractions,
+
          zoomobileRouteType,
+
          speciesToInclude,
          restaurantsToInclude,
          giftShopsToInclude,
          attractionsToInclude,
-         zoomobileStationsToInclude
+         zoomobileStationsToInclude,
       };
 
       await fetchAll(selectedTypes, ctx);
-
-      // render current selected layers
       markers.render(combine(selectedTypes));
-
-      // universal focus flow
-      if (options?.focus?.row) {
-         const row = options.focus.row;
-         const type = String(options.focus.type || row.type || '');
-
-         setTimeout(() => {
-            focus.focus({ row, type });
-         }, 0);
-      }
+      focusIfRequested(options);
    }
 
    async function fetchAll(selectedTypes, ctx) {
@@ -175,24 +234,19 @@ export function createMapUpdater({
    }
 
    function refetchWithCurrentControls(options) {
-      // ✅ Too early (e.g., deeplink runs before first updateMap) — queue it
       if (!lastPreset) {
          pendingOptions = options;
          return;
       }
-
       updateMap(lastPreset, lastDateStr, options);
    }
 
    function focusFromSearchRow(payload) {
       if (!payload) return;
 
-      // ✅ Unwrap { type, x, y, row: {...} } into a real row object
       const base = payload.row && typeof payload.row === 'object' ? payload.row : payload;
+      const type = String(payload.type || base.type || payload.TYPE || base.TYPE || '').trim();
 
-      const type = String(payload.type || base.type || payload.TYPE || base.TYPE || '');
-
-      // ✅ Ensure coords are on the row we pass down
       const row = {
          ...base,
          type,
@@ -206,7 +260,6 @@ export function createMapUpdater({
    function focusFromDeepLink(payload) {
       if (!payload) return;
 
-      // ✅ New style: { row, type }
       if (payload && typeof payload === 'object' && payload.row) {
          focus.focus({
             row: payload.row,
@@ -215,7 +268,6 @@ export function createMapUpdater({
          return;
       }
 
-      // Old style: { species, exhibit } -> convert to a focus row
       if (payload.species) {
          const row = {
             type: 'animal',
@@ -226,9 +278,8 @@ export function createMapUpdater({
          return;
       }
 
-      // (Redundant but harmless)
       if (payload.row) {
-         const type = String(payload.type || payload.row.type || '');
+         const type = String(payload.type || payload.row.type || '').trim();
          refetchWithCurrentControls({ focus: { type, row: payload.row } });
       }
    }
