@@ -2244,6 +2244,12 @@ html.home-page {
    gap: 22px;
 }
 
+/* Prevent empty sections from creating a bottom lip */
+.itin-panel-section-body:empty {
+   display: none;
+   padding: 0;
+}
+
 /* Collapsed */
 .itin-panel-section.is-collapsed .itin-panel-section-body {
    display: none;
