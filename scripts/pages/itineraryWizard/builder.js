@@ -1,9 +1,9 @@
 // scripts/pages/itineraryWizard/builder.js
-import { createItineraryDateSelectorController } from '../../itinerary/dateSelector.js';
-import { createItineraryAnimalSelectorController } from '../../itinerary/animalSelector.js';
-import { createItineraryAttractionSelectorController } from '../../itinerary/attractionSelector.js';
-import { createItineraryGuardiansTalkSelectorController } from '../../itinerary/guardiansTalkSelector.js';
-import { createItineraryWildEncounterSelectorController } from '../../itinerary/wildEncounterSelector.js';
+import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
+import { createItineraryAnimalSelectorController } from '../../itinerary/selectors/animalSelector.js';
+import { createItineraryAttractionSelectorController } from '../../itinerary/selectors/attractionSelector.js';
+import { createItineraryGuardiansTalkSelectorController } from '../../itinerary/selectors/guardiansTalkSelector.js';
+import { createItineraryWildEncounterSelectorController } from '../../itinerary/selectors/wildEncounterSelector.js';
 
 import { safeParseJSON } from './storage.js';
 import { ITIN_KEY } from './keys.js';

@@ -1,7 +1,7 @@
 // scripts/itinerary/attractionSelector.js
-import { normalizeParameter } from '../utils/normalize.js';
-import { createItinerarySelectorController } from './selectors/createSelectorController.js';
-import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
+import { normalizeParameter } from '../../utils/normalize.js';
+import { createItinerarySelectorController } from './createSelectorController.js';
+import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 
 const STORAGE_KEY = 'tzg.itineraryAttractions';
 const DATE_KEY = 'tzg.itineraryDateISO';

@@ -65,7 +65,9 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_off_display_animals = data.get( 'includeOffDisplayAnimals' )
          species_to_include = data.get( 'speciesToInclude' )
 
-         animals = self.database.get_animals_viewable_on_day( month, day, temp, include_off_display_animals, species_to_include )
+         animals = self.database.get_animals_viewable_on_day( month=month, day=day, temp=temp,
+                                                              include_off_display_animals=include_off_display_animals,
+                                                              species_to_include=species_to_include )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -274,6 +276,8 @@ class MyHandler( BaseHTTPRequestHandler ):
          temp = data.get( 'temp' )
          day_of_week = data.get( 'dayOfWeek' )
 
+         include_off_display_animals = bool( data.get( 'includeOffDisplayAnimals' ) )
+
          animals_json = []
          pavilions_json = []
          restaurants_json = []
@@ -286,7 +290,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          meet_the_guardians_talks_json = []
 
          if include_animals:
-            animals = self.database.get_animals_matching_query( query, month, day, temp ) or []
+            animals = self.database.get_animals_matching_query( query, month, day, temp, include_off_display_animals ) or []
             for animal in animals:
                   d = animal.to_dict()
                   d['type'] = d.get( 'type', 'animal' )

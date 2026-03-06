@@ -11,7 +11,7 @@ class Database():
 
 
    # Returns all animals which may be viewable in the given month with their likelihoods (probability from 0 to 1)
-   def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False, species_to_include=[],
+   def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False, threshold=0, species_to_include=[],
                                     itinerary_mode=False ):
       cur = self.conn.cursor()
 
@@ -86,7 +86,7 @@ class Database():
 
          likelihood = max( round( likelihood * 100 ), 0 )
 
-         if (not itinerary_mode and (likelihood > 0 or include_off_display_animals or species in species_to_include)) \
+         if (not itinerary_mode and (likelihood > threshold or include_off_display_animals or species in species_to_include)) \
             or (itinerary_mode and species in species_to_include):
             animals.append( zoo.Animal( species=species, latin_name=animal[1], general_viewing_tips=animal[4],
                                         seasonal_viewing_tips=animal[5], identification=animal[6], habitat_and_range=animal[7],
@@ -559,16 +559,35 @@ class Database():
       return wild_encounters
    
 
-   def get_animals_matching_query( self, query, month, day, temp ):
-      if not query:
-         return self.get_animals_viewable_on_day( month, day, temp )
+   def get_animals_matching_query( self, query, month, day, temp, include_off_display_animals ):
+      animals = self.get_animals_viewable_on_day( month=month, day=day, temp=temp,
+                                                  include_off_display_animals=include_off_display_animals, threshold=80 )
 
-      query_lower = query.lower()
+      if query:
+         query_lower = query.lower()
+         animals = [
+            a for a in animals
+            if a.species and query_lower in a.species.lower()
+         ]
 
-      return [
-         a for a in self.get_animals_viewable_on_day( month, day, temp )
-         if a.species and query_lower in a.species.lower()
-      ]
+      best_by_species = {}
+
+      for a in animals:
+
+         species = a.species
+         if not species:
+            continue
+
+         current = best_by_species.get( species )
+
+         if current is None or (a.likelihood or 0) > (current.likelihood or 0):
+            best_by_species[species] = a
+
+      unique_animals = list( best_by_species.values() )
+
+      unique_animals.sort( key=lambda a: a.species.lower() )
+
+      return unique_animals
    
 
    def get_pavilions_matching_query( self, query ):

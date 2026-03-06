@@ -2337,6 +2337,55 @@ html.home-page {
 }
 
 /* ============================================================
+   ITINERARY: ANIMAL LIKELIHOOD WARNING ICON
+============================================================ */
+
+/* Title row (species + warning icon) */
+.itin-animal-title-wrap {
+   display: flex;
+   align-items: center;
+   gap: 14px;
+}
+
+/* Keep the species text aligned nicely in the flex row */
+.itin-animal-title-wrap .animal-result-species {
+   display: inline-block;
+   margin: 0;
+}
+
+/* Warning icon wrapper */
+.itin-likelihood-warning {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex: 0 0 auto;
+   line-height: 1;
+}
+
+/* SVG icon */
+.itin-warning-icon {
+   width: 40px;
+   height: 40px;
+   flex-shrink: 0;
+   display: block;
+   filter: drop-shadow(0 3px 4px rgba(0,0,0,0.4));
+}
+
+/* Yellow warning: 40%–79% */
+.itin-likelihood-warning.medium .itin-warning-icon path {
+   fill: #ffd54d;
+   stroke: #000;
+   stroke-width: 1.5;
+}
+
+/* Red warning: below 40% */
+.itin-likelihood-warning.low .itin-warning-icon path {
+   fill: #ff5252;
+   stroke: #000;
+   stroke-width: 1.5;
+}
+
+/* ============================================================
    ITINERARY: EMPTY FINISH POPUP
 ============================================================ */
 
@@ -2372,4 +2421,30 @@ html.home-page {
 
    width: 100%;          /* fill full body width */
    max-width: none;      /* remove narrow constraint */
+}
+
+/* ============================================================
+   ITINERARY: SELECTOR TOGGLES
+============================================================ */
+
+.itin-selector-toggle-wrap {
+   margin-bottom: 32px;
+}
+
+.itin-selector-toggle-row {
+   display: flex;
+   align-items: center;
+   gap: 32px;
+   font-size: 3.2em;
+   font-weight: 600;
+   color: rgba(20, 35, 10, 0.9);
+   user-select: none;
+}
+
+.itin-selector-toggle-row input[type="checkbox"] {
+   width: 64px;
+   height: 64px;
+   accent-color: #5e9600;
+   cursor: pointer;
+   flex: 0 0 auto;
 }
