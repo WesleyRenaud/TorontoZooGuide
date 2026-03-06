@@ -347,6 +347,29 @@ class Database():
       cur.close()
 
       return attractions
+   
+
+   def get_zoomobile_stations( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  s.NAME,
+                  s.X_COORD,
+                  s.Y_COORD
+               FROM ZoomobileStation s;
+         """ )
+      
+      zoomobile_station_data = data.fetchall()
+
+      zoomobile_stations = []
+      for zoomobile_station in zoomobile_station_data: 
+         zoomobile_stations.append( zoo.ZoomobileStation( name=zoomobile_station[0], x_coord=zoomobile_station[1],
+                                                          y_coord=zoomobile_station[2] ) )
+
+      cur.close()
+
+      return zoomobile_stations
 
 
    def get_zoomobile_route( self, route_type, zoomobile_stations_to_include=[] ):
@@ -509,277 +532,166 @@ class Database():
       return wild_encounters
    
 
-   def get_animals_matching_query( self, query ):
+   def get_wild_encounters( self ):
       cur = self.conn.cursor()
 
-      pattern = f"%{query}%"
-      data = cur.execute(
-         """   SELECT
-                  a.SPECIES,
-                  e.EXHIBIT
-               FROM Animal a
-               JOIN Enclosure e
-                  ON a.SPECIES = e.SPECIES
-               WHERE a.SPECIES LIKE ? ESCAPE '\\';
-         """, (pattern, ) )
-      
-      animal_data = data.fetchall()
-
-      animals = []
-      for animal in animal_data: 
-         animals.append( zoo.Animal( species=animal[0], exhibit=animal[1] ) )
-
-      cur.close()
-
-      return animals
-   
-
-   def get_pavilions_matching_query( self, query ):
-      cur = self.conn.cursor()
-
-      pattern = f"%{query}%"
-      data = cur.execute(
-         """   SELECT
-                  p.NAME,
-                  p.REGION,
-                  p.X_COORD,
-                  p.Y_COORD
-               FROM Pavilion p
-               WHERE p.NAME LIKE ? ESCAPE '\\';
-         """, (pattern, ) )
-      
-      pavilion_data = data.fetchall()
-
-      pavilions = []
-      for pavilion in pavilion_data: 
-         pavilions.append( zoo.Pavilion( name=pavilion[0], region=pavilion[1], x_coord=pavilion[2], y_coord=pavilion[3] ) )
-
-      cur.close()
-
-      return pavilions
-   
-
-   def get_restaurants_matching_query( self, query ):
-      cur = self.conn.cursor()
-
-      pattern = f"%{query}%"
-      data = cur.execute(
-         """   SELECT
-                  r.NAME,
-                  r.LOCATION,
-                  r.SUB_LOCATION,
-                  r.X_COORD,
-                  y.Y_COORD
-               FROM Restaurant r
-               WHERE r.NAME LIKE ? ESCAPE '\\';
-         """, (pattern, ) )
-      
-      restaurant_data = data.fetchall()
-
-      restaurants = []
-      for restaurant in restaurant_data: 
-         restaurants.append( zoo.Restaurant( name=restaurant[0], location=restaurant[1], sub_location=restaurant[2],
-                                             x_coord=restaurant[3], y_coord=restaurant[4] ) )
-
-      cur.close()
-
-      return restaurants
-   
-
-   def get_restrooms_matching_query( self, query ):
-      cur = self.conn.cursor()
-
-      pattern = f"%{query}%"
-      data = cur.execute(
-         """   SELECT
-                  r.TITLE,
-                  r.X_COORD,
-                  r.Y_COORD
-               FROM Restroom r
-               WHERE r.TITLE LIKE ? ESCAPE '\\';
-         """, (pattern, ) )
-      
-      restroom_data = data.fetchall()
-
-      restrooms = []
-      for restroom in restroom_data: 
-         restrooms.append( zoo.Restroom( title=restroom[0], x_coord=restroom[1], y_coord=restroom[2] ) )
-
-      cur.close()
-
-      return restrooms
-   
-
-   def get_gift_shops_matching_query( self, query ):
-      cur = self.conn.cursor()
-
-      pattern = f"%{query}%"
-      data = cur.execute(
-         """   SELECT
-                  g.NAME,
-                  g.LOCATION,
-                  g.X_COORD,
-                  g.Y_COORD
-               FROM GiftShop g
-               WHERE g.NAME LIKE ? ESCAPE '\\';
-         """, (pattern, ) )
-      
-      gift_shop_data = data.fetchall()
-
-      gift_shops = []
-      for gift_shop in gift_shop_data: 
-         gift_shops.append( zoo.GiftShop( name=gift_shop[0], location=gift_shop[1], x_coord=gift_shop[2], y_coord=gift_shop[3] ) )
-
-      cur.close()
-
-      return gift_shops
-   
-
-   def get_attractions_matching_query( self, query ):
-      cur = self.conn.cursor()
-
-      pattern = f"%{query}%"
-      data = cur.execute(
-         """   SELECT
-                  a.NAME,
-                  a.FREE_WITH_ADMISSION,
-                  a.INFO_LINK,
-                  a.X_COORD,
-                  a.Y_COORD
-               FROM Attraction a
-               WHERE a.NAME LIKE ? ESCAPE '\\';
-         """, (pattern, ) )
-      
-      attraction_data = data.fetchall()
-
-      attractions = []
-      for attraction in attraction_data: 
-         attractions.append( zoo.Attraction( name=attraction[0], free_with_admission=attraction[1],info_link=attraction[2],
-                                             x_coord=attraction[2], y_coord=attraction[3] ) )
-
-      cur.close()
-
-      return attractions
-   
-
-   def get_zoomobile_stations_matching_query( self, query ):
-      cur = self.conn.cursor()
-
-      pattern = f"%{query}%"
-      data = cur.execute(
-         """   SELECT
-                  s.NAME,
-                  s.X_COORD,
-                  s.Y_COORD
-               FROM ZoomobileStation s
-               WHERE s.NAME LIKE ? ESCAPE '\\';
-         """, (pattern, ) )
-      
-      zoomobile_station_data = data.fetchall()
-
-      zoomobile_stations = []
-      for zoomobile_station in zoomobile_station_data: 
-         zoomobile_stations.append( zoo.ZoomobileStation( name=zoomobile_station[0], x_coord=zoomobile_station[1],
-                                                          y_coord=zoomobile_station[2] ) )
-
-      cur.close()
-
-      return zoomobile_stations
-   
-
-   def get_meet_the_guardians_talks_matching_query( self, query, day_of_week=None ):
-      cur = self.conn.cursor()
-
-      pattern = f"%{query}%"
-
-      if day_of_week:
-         data = cur.execute(
-            """   SELECT
-                     t.NAME,
-                     t.LOCATION,
-                     t.X_COORD,
-                     t.Y_COORD
-                  FROM MeetTheGuardiansTalk t
-                  JOIN MeetTheGuardiansTalkDateTime d
-                     ON t.NAME = d.NAME
-                  WHERE t.NAME LIKE ? ESCAPE '\\'
-                     AND d.DAY_OF_WEEK = ?;
-            """, (pattern, day_of_week ) )
-      else:
-         data = cur.execute(
-            """   SELECT
-                     t.NAME,
-                     t.LOCATION,
-                     t.X_COORD,
-                     t.Y_COORD
-                  FROM MeetTheGuardiansTalk t
-                  WHERE t.NAME LIKE ? ESCAPE '\\';
-            """, (pattern, ) )
-      
-      meet_the_guardians_talk_data = data.fetchall()
-
-      meet_the_guardians_talks = []
-      for meet_the_guardians_talk in meet_the_guardians_talk_data:
-         meet_the_guardians_talks.append( zoo.MeetTheGuardiansTalk( name=meet_the_guardians_talk[0], location=meet_the_guardians_talk[1],
-                                                                    day_of_week=day_of_week, x_coord=meet_the_guardians_talk[2],
-                                                                    y_coord=meet_the_guardians_talk[3] ) )
-
-      cur.close()
-
-      return meet_the_guardians_talks
-   
-
-   def get_wild_encounter_meeting_spots_matching_query( self, query ):
-      cur = self.conn.cursor()
-
-      pattern = f"%{query}%"
-      data = cur.execute(
-         """   SELECT
-                  w.NAME,
-                  w.X_COORD,
-                  w.Y_COORD
-               FROM WildEncounterMeetingSpot w
-               WHERE w.NAME LIKE ? ESCAPE '\\';
-         """, (pattern, ) )
-      
-      wild_encounter_meeting_spot_data = data.fetchall()
-
-      wild_encounter_meeting_spots = []
-      for wild_encounter_meeting_spot in wild_encounter_meeting_spot_data:
-         wild_encounter_meeting_spots.append( zoo.WildEncounterMeetingSpot( name=wild_encounter_meeting_spot[0],
-                                                                            x_coord=wild_encounter_meeting_spot[1],
-                                                                            y_coord=wild_encounter_meeting_spot[2] ) )
-
-      cur.close()
-
-      return wild_encounter_meeting_spots
-   
-
-   def get_wild_encounters_matching_query( self, query, day_of_week ):
-      cur = self.conn.cursor()
-
-      pattern = f"%{query}%"
       data = cur.execute(
          """   SELECT
                   w.NAME,
                   w.MEETING_SPOT,
                   w.LINK,
+                  m.DAY_OF_WEEK,
                   m.TIME_OF_DAY
                FROM WildEncounter w
                JOIN WildEncounterMeetingTime m
-                  ON w.NAME = m.NAME
-               WHERE w.NAME LIKE ? ESCAPE '\\'
-                  AND m.DAY_OF_WEEK = ?;
-         """, (pattern, day_of_week ) )
+                  ON w.NAME = m.NAME;
+         """ )
       
       wild_encounter_data = data.fetchall()
 
       wild_encounters = []
       for wild_encounter in wild_encounter_data:
          wild_encounters.append( zoo.WildEncounter( name=wild_encounter[0], meeting_spot=wild_encounter[1], link=wild_encounter[2],
-                                                    day_of_week=day_of_week, time_of_day=wild_encounter[3] ) )
+                                                    day_of_week=wild_encounter[3], time_of_day=wild_encounter[4] ) )
 
       cur.close()
 
       return wild_encounters
    
+
+   def get_animals_matching_query( self, query, month, day, temp ):
+      if not query:
+         return self.get_animals_viewable_on_day( month, day, temp )
+
+      query_lower = query.lower()
+
+      return [
+         a for a in self.get_animals_viewable_on_day( month, day, temp )
+         if a.species and query_lower in a.species.lower()
+      ]
+   
+
+   def get_pavilions_matching_query( self, query ):
+      if not query:
+         return self.get_pavilions()
+
+      query_lower = query.lower()
+
+      return [
+         p for p in self.get_pavilions()
+         if p.name and query_lower in p.name.lower()
+      ]
+   
+
+   def get_restaurants_matching_query( self, query, month ):
+      if not query:
+         return self.get_restaurants( month, include_seasonal_restaurants=True )
+
+      query_lower = query.lower()
+
+      return [
+         r for r in self.get_restaurants( month, include_seasonal_restaurants=True )
+         if r.name and query_lower in r.name.lower()
+      ]
+   
+
+   def get_restrooms_matching_query( self, query ):
+      if not query:
+         return self.get_restrooms()
+
+      query_lower = query.lower()
+
+      return [
+         r for r in self.get_restrooms()
+         if r.title and query_lower in r.title.lower()
+      ]
+   
+
+   def get_gift_shops_matching_query( self, query, month ):
+      if not query:
+         return self.get_gift_shops( month, include_seasonal_gift_shops=True )
+
+      query_lower = query.lower()
+
+      return [
+         g for g in self.get_gift_shops( month, include_seasonal_gift_shops=True )
+         if g.name and query_lower in g.name.lower()
+      ]
+   
+
+   def get_attractions_matching_query( self, query, month ):
+      if not query:
+         return self.get_attractions( month, include_seasonal_attractions=True )
+
+      query_lower = query.lower()
+
+      return [
+         a for a in self.get_attractions( month, include_seasonal_attractions=True )
+         if a.name and query_lower in a.name.lower()
+      ]
+   
+
+   def get_zoomobile_stations_matching_query( self, query ):
+      if not query:
+         return self.get_zoomobile_stations()
+
+      query_lower = query.lower()
+
+      return [
+         s for s in self.get_zoomobile_stations()
+         if s.name and query_lower in s.name.lower()
+      ]
+   
+
+   def get_meet_the_guardians_talks_with_date_times_matching_query( self, query, day_of_week=None ):
+      talks = self.get_meet_the_guardians_talks_with_date_times()
+
+      if not query:
+         return [
+            t for t in talks
+            if day_of_week is None or t.day_of_week == day_of_week
+         ]
+
+      query_lower = query.lower()
+
+      return [
+         t for t in talks
+         if (
+            t.name
+            and query_lower in t.name.lower()
+            and (day_of_week is None or t.day_of_week == day_of_week)
+         )
+      ]
+   
+
+   def get_wild_encounter_meeting_spots_matching_query( self, query ):
+      if not query:
+         return self.get_wild_encounter_meeting_spots()
+
+      query_lower = query.lower()
+
+      return [
+         m for m in self.get_wild_encounter_meeting_spots()
+         if m.name and query_lower in m.name.lower()
+      ]
+   
+
+   def get_wild_encounters_matching_query( self, query, day_of_week=None ):
+      encounters = self.get_wild_encounters()
+
+      if not query:
+         return [
+            w for w in encounters
+            if day_of_week is None or w.day_of_week == day_of_week
+         ]
+
+      query_lower = query.lower()
+
+      return [
+         w for w in encounters
+         if (
+            w.name
+            and query_lower in w.name.lower()
+            and (day_of_week is None or w.day_of_week == day_of_week)
+         )
+      ]

@@ -29,6 +29,7 @@ export function normalizeSearchRows(response) {
 export function initSearch({
    inputEl,
    getIncludeFlags,
+   getContext,
    onFocusRow,
    resultsEl = null,
    allowEmptyQuery = false,
@@ -49,9 +50,15 @@ export function initSearch({
       }
 
       const flags = getIncludeFlags?.() ?? {};
+      const ctx = (await getContext?.()) ?? {};
 
       try {
-         const response = await ajaxPost('/search', { query, ...flags });
+         const response = await ajaxPost('/search', {
+            query,
+            ...flags,
+            ...ctx,
+         });
+
          renderSearchResults(target, normalizeSearchRows(response), onFocusRow);
       } catch {
          // ignore
@@ -106,7 +113,7 @@ function getRowSubtitle(row, type) {
       return parts.join(', ') || 'Gift Shop';
    }
 
-   if (type == 'restroom') return null;
+   if (type === 'restroom') return null;
 
    if (type === 'restaurant') {
       const parts = [];

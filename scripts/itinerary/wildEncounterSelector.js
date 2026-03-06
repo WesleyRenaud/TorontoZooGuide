@@ -1,24 +1,9 @@
 // scripts/itinerary/wildEncounterSelector.js
 import { normalizeParameter } from '../utils/normalize.js';
 import { createItinerarySelectorController } from './selectors/createSelectorController.js';
+import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 
 const STORAGE_KEY = 'tzg.itineraryWildEncounters';
-const DATE_STORAGE_KEY = 'tzg.itineraryDateISO';
-
-/* -------------------------------------------------- */
-/* DATE HELPERS                                       */
-/* -------------------------------------------------- */
-
-function getSavedISODate() {
-   return localStorage.getItem(DATE_STORAGE_KEY) || '';
-}
-
-// Monday=1 ... Sunday=7
-function isoDateToMonFirstDow(iso) {
-   const d = iso ? new Date(`${iso}T12:00:00`) : new Date();
-   const js = d.getDay();
-   return js === 0 ? 7 : js;
-}
 
 /* -------------------------------------------------- */
 /* ROW FIELD HELPERS                                  */
@@ -109,10 +94,10 @@ export function createItineraryWildEncounterSelectorController({
 } = {}) {
    let dayOfWeek = 1;
 
-   function computeDayOfWeek() {
-      const iso = getSavedISODate();
-      dayOfWeek = isoDateToMonFirstDow(iso);
-      return dayOfWeek;
+   async function getContext() {
+      const ctx = await getItineraryDateSearchContext();
+      dayOfWeek = ctx.dayOfWeek ?? 1;
+      return ctx;
    }
 
    function makeSelection(row) {
@@ -138,7 +123,7 @@ export function createItineraryWildEncounterSelectorController({
    return createItinerarySelectorController({
       mountEl,
 
-      // Wild Encounters step only has Prev + Finish in your UI
+      // Wild Encounters step only has Prev + Finish
       onPrev,
       onFinish,
       hideNextButton: true,
@@ -146,22 +131,18 @@ export function createItineraryWildEncounterSelectorController({
       storageKey: STORAGE_KEY,
       migrateSelected: migrateIfNeeded,
 
-      /* ----------------------------- */
-      /* SEARCH CONFIG                 */
-      /* ----------------------------- */
+      // ✅ date-derived context belongs here
+      getContext,
 
       buildSearchPayload: (query) => ({
          query,
-         dayOfWeek: computeDayOfWeek(),
          includeWildEncounters: true,
       }),
 
       extractRows: (response) =>
-         Array.isArray(response?.wild_encounters) ? response.wild_encounters : [],
-
-      /* ----------------------------- */
-      /* ROW ID / DISPLAY              */
-      /* ----------------------------- */
+         Array.isArray(response?.wild_encounters)
+            ? response.wild_encounters
+            : [],
 
       getId: (row) => buildKey(row, dayOfWeek),
 
@@ -171,21 +152,14 @@ export function createItineraryWildEncounterSelectorController({
          const spot = getMeetingSpot(row);
          const time = getTimeOfDay(row);
 
-         return `${spot ? `Meeting Spot: ${spot}` : 'Meeting Spot: —'}${
-            time ? `  •  Time: ${time}` : ''
-         }`;
+         return `${spot ? `Meeting Spot: ${spot}` : 'Meeting Spot: —'}${time ? `  •  Time: ${time}` : ''}`;
       },
 
       getImageSrc: (row) => buildWildEncounterImageSrc(getName(row)),
 
-      // Optional "More Info" link under the subtitle
       getInfoLink: (row) => getLink(row),
 
       makeSelection,
-
-      /* ----------------------------- */
-      /* UI TEXT                       */
-      /* ----------------------------- */
 
       topTitle: 'Itinerary Builder',
       h1: 'Wild Encounters',

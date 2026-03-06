@@ -1,8 +1,10 @@
 // scripts/itinerary/attractionSelector.js
 import { normalizeParameter } from '../utils/normalize.js';
 import { createItinerarySelectorController } from './selectors/createSelectorController.js';
+import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 
 const STORAGE_KEY = 'tzg.itineraryAttractions';
+const DATE_KEY = 'tzg.itineraryDateISO';
 
 function getAttractionName(row) {
    return (
@@ -113,6 +115,13 @@ function makeSelection(row) {
    };
 }
 
+function getMonthDayContext() {
+   const iso = localStorage.getItem(DATE_KEY) || '';
+   if (!iso) return {};
+   const { month, day } = dateISOToMonthDay(iso);
+   return { month, day };
+}
+
 export function createItineraryAttractionSelectorController({ mountEl, onNext, onPrev, onFinish } = {}) {
    return createItinerarySelectorController({
       mountEl,
@@ -122,6 +131,9 @@ export function createItineraryAttractionSelectorController({ mountEl, onNext, o
 
       storageKey: STORAGE_KEY,
       migrateSelected: migrateIfNeeded,
+
+      // ✅ add month/day to /search payload
+      getContext: () => getItineraryDateSearchContext({ includeTemp: false }),
 
       buildSearchPayload: (query) => ({ query, includeAttractions: true }),
       extractRows: (response) =>
@@ -134,7 +146,7 @@ export function createItineraryAttractionSelectorController({ mountEl, onNext, o
       getTitle: (row) => getAttractionName(row) || 'Attraction',
       getSubtitle: (row) => getSubtitle(row),
       getImageSrc: (row) => buildAttractionImageSrc(row),
-      getInfoLink: (row) => getInfoLink(row), // ✅ controller renders the link
+      getInfoLink: (row) => getInfoLink(row),
 
       makeSelection,
 

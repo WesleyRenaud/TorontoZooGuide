@@ -27,23 +27,6 @@ function saveSelected(storageKey, selected) {
    localStorage.setItem(storageKey, JSON.stringify(selected));
 }
 
-function isScrollable(el) {
-   if (!el) return false;
-   const style = window.getComputedStyle(el);
-   const overflowY = style.overflowY;
-   if (overflowY !== 'auto' && overflowY !== 'scroll') return false;
-   return el.scrollHeight > el.clientHeight;
-}
-
-function findScrollableAncestor(startEl, stopEl) {
-   let el = startEl;
-   while (el && el !== stopEl && el !== document.body) {
-      if (isScrollable(el)) return el;
-      el = el.parentElement;
-   }
-   return null;
-}
-
 /**
  * Generic “search + toggle selection” itinerary wizard step.
  */
@@ -54,6 +37,7 @@ export function createItinerarySelectorController({
    onPrev,
    onNext,
    onFinish,
+   hideNextButton = false,
 
    // storage
    storageKey,
@@ -67,11 +51,15 @@ export function createItinerarySelectorController({
        Array.isArray(res) ? res :
        []),
 
+   // extra context to merge into payload (ex: month/day/temp/dayOfWeek)
+   getContext = null,
+
    // row identity + display
-   getId,                   // REQUIRED: unique key for selection toggling
+   getId,                   // REQUIRED
    getTitle = () => '',
    getSubtitle = () => '',
    getImageSrc = () => null,
+   getInfoLink = () => null,
 
    // selection shape stored in localStorage
    makeSelection = (row) => ({ id: getId(row) }),
@@ -83,7 +71,7 @@ export function createItinerarySelectorController({
    emptyText = 'No results found.',
 
    // optional: customize row rendering if needed
-   renderRowLeft, // (row) => HTMLElement, if not provided uses thumbnail+text layout
+   renderRowLeft,
 } = {}) {
    if (!storageKey) throw new Error('createItinerarySelectorController: storageKey is required');
    if (typeof getId !== 'function') throw new Error('createItinerarySelectorController: getId(row) is required');
@@ -104,7 +92,6 @@ export function createItinerarySelectorController({
       if (isSelected(id)) {
          selected = selected.filter(x => (x?.id ?? x?.species ?? x?.name) !== id);
       } else {
-         // Ensure stored selection always has a stable id
          const sel = makeSelection(row) || {};
          if (!sel.id) sel.id = id;
          selected = [...selected, sel];
@@ -117,6 +104,7 @@ export function createItinerarySelectorController({
       const title = getTitle(row);
       const sub = getSubtitle(row);
       const src = getImageSrc(row);
+      const infoLink = getInfoLink(row);
 
       const content = document.createElement('div');
       content.className = 'itin-animal-content';
@@ -154,6 +142,17 @@ export function createItinerarySelectorController({
          subEl.className = 'animal-result-exhibit';
          subEl.textContent = sub;
          left.appendChild(subEl);
+      }
+
+      if (infoLink) {
+         const linkEl = document.createElement('a');
+         linkEl.className = 'tooltip-link';
+         linkEl.href = infoLink;
+         linkEl.target = '_blank';
+         linkEl.rel = 'noopener noreferrer';
+         linkEl.textContent = 'More Info';
+         linkEl.addEventListener('click', (e) => e.stopPropagation());
+         left.appendChild(linkEl);
       }
 
       content.appendChild(thumbWrap);
@@ -208,7 +207,15 @@ export function createItinerarySelectorController({
       const query = (inputEl?.value ?? '').trim();
 
       try {
-         const payload = buildSearchPayload(query);
+         const ctx = typeof getContext === 'function'
+            ? await getContext()
+            : {};
+
+         const payload = {
+            ...buildSearchPayload(query),
+            ...ctx,
+         };
+
          const response = await ajaxPost(searchEndpoint, payload);
          const rows = extractRows(response) || [];
          render(Array.isArray(rows) ? rows : []);
@@ -237,7 +244,7 @@ export function createItinerarySelectorController({
             <div class="itin-card-actions-dual">
                <button class="itin-prev" type="button">Previous</button>
                <div class="itin-actions-right">
-                  <button class="itin-next" type="button">Next</button>
+                  ${hideNextButton ? '' : '<button class="itin-next" type="button">Next</button>'}
                   <button class="itin-finish" type="button">Finish</button>
                </div>
             </div>
@@ -258,7 +265,6 @@ export function createItinerarySelectorController({
       if (!mountEl) return;
       if (!root) build();
 
-      // reload on show (so if you edit elsewhere, it stays in sync)
       selected = loadSelected(storageKey, migrateSelected);
 
       mountEl.innerHTML = '';

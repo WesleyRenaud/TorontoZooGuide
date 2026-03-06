@@ -269,6 +269,9 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_wild_encounters = bool( data.get( 'includeWildEncounters' ) )
          include_meet_the_guardians_talks = bool( data.get( 'includeMeetTheGuardiansTalks' ) )
 
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+         temp = data.get( 'temp' )
          day_of_week = data.get( 'dayOfWeek' )
 
          animals_json = []
@@ -283,7 +286,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          meet_the_guardians_talks_json = []
 
          if include_animals:
-            animals = self.database.get_animals_matching_query( query ) or []
+            animals = self.database.get_animals_matching_query( query, month, day, temp ) or []
             for animal in animals:
                   d = animal.to_dict()
                   d['type'] = d.get( 'type', 'animal' )
@@ -297,7 +300,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   pavilions_json.append( d )
 
          if include_restaurants:
-            restaurants = self.database.get_restaurants_matching_query( query ) or []
+            restaurants = self.database.get_restaurants_matching_query( query, month ) or []
             for restaurant in restaurants:
                   d = restaurant.to_dict()
                   d['type'] = d.get( 'type', 'restaurant' )
@@ -311,14 +314,14 @@ class MyHandler( BaseHTTPRequestHandler ):
                   restrooms_json.append( d )
 
          if include_gift_shops:
-            gift_shops = self.database.get_gift_shops_matching_query( query ) or []
+            gift_shops = self.database.get_gift_shops_matching_query( query, month ) or []
             for gift_shop in gift_shops:
                   d = gift_shop.to_dict()
                   d['type'] = d.get( 'type', 'giftShop' )
                   gift_shops_json.append( d )
 
          if include_attractions:
-            attractions = self.database.get_attractions_matching_query( query ) or []
+            attractions = self.database.get_attractions_matching_query( query, month ) or []
             for attraction in attractions:
                   d = attraction.to_dict()
                   d['type'] = d.get( 'type', 'attraction' )
@@ -338,19 +341,19 @@ class MyHandler( BaseHTTPRequestHandler ):
                   d['type'] = d.get( 'type', 'wildEncounterMeetingSpot' )
                   wild_encounter_meeting_spots_json.append( d )
 
+         if include_meet_the_guardians_talks:
+            meet_the_guardians_talks = self.database.get_meet_the_guardians_talks_with_date_times_matching_query( query, day_of_week ) or []
+            for meet_the_guardians_talk in meet_the_guardians_talks:
+                  d = meet_the_guardians_talk.to_dict()
+                  d['type'] = d.get( 'type', 'meetTheGuardiansTalk' )
+                  meet_the_guardians_talks_json.append( d )
+
          if include_wild_encounters:
             wild_encounters = self.database.get_wild_encounters_matching_query( query, day_of_week ) or []
             for wild_encounter in wild_encounters:
                   d = wild_encounter.to_dict()
                   d['type'] = d.get( 'type', 'wildEncounter' )
                   wild_encounters_json.append( d )
-
-         if include_meet_the_guardians_talks:
-            meet_the_guardians_talks = self.database.get_meet_the_guardians_talks_matching_query( query, day_of_week ) or []
-            for meet_the_guardians_talk in meet_the_guardians_talks:
-                  d = meet_the_guardians_talk.to_dict()
-                  d['type'] = d.get( 'type', 'meetTheGuardiansTalk' )
-                  meet_the_guardians_talks_json.append( d )
 
          response = {
             'animals': animals_json,

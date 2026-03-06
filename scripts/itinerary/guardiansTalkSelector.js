@@ -1,7 +1,7 @@
 // scripts/itinerary/guardiansTalkSelector.js
 import { normalizeParameter } from '../utils/normalize.js';
 import { createItinerarySelectorController } from './selectors/createSelectorController.js';
-
+import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
 const DATE_STORAGE_KEY = 'tzg.itineraryDateISO';
 
@@ -101,13 +101,12 @@ export function createItineraryGuardiansTalkSelectorController({
    onPrev,
    onFinish,
 } = {}) {
-
    let dayOfWeek = 1;
 
-   function computeDayOfWeek() {
+   function getDayOfWeekContext() {
       const iso = getSavedISODate();
       dayOfWeek = isoDateToMonFirstDow(iso);
-      return dayOfWeek;
+      return { dayOfWeek };
    }
 
    function makeSelection(row) {
@@ -129,7 +128,6 @@ export function createItineraryGuardiansTalkSelectorController({
    }
 
    return createItinerarySelectorController({
-
       mountEl,
       onPrev,
       onNext,
@@ -138,24 +136,18 @@ export function createItineraryGuardiansTalkSelectorController({
       storageKey: STORAGE_KEY,
       migrateSelected: migrateIfNeeded,
 
-      /* ----------------------------- */
-      /* SEARCH CONFIG                 */
-      /* ----------------------------- */
+      // ✅ put date-derived context here
+      getContext: getItineraryDateSearchContext,
 
       buildSearchPayload: (query) => ({
          query,
          includeMeetTheGuardiansTalks: true,
-         dayOfWeek: computeDayOfWeek(),
       }),
 
       extractRows: (response) =>
          Array.isArray(response?.meet_the_guardians_talks)
             ? response.meet_the_guardians_talks
             : [],
-
-      /* ----------------------------- */
-      /* ROW ID / DISPLAY              */
-      /* ----------------------------- */
 
       getId: (row) => buildKey(row, dayOfWeek),
 
@@ -174,16 +166,9 @@ export function createItineraryGuardiansTalkSelectorController({
 
       makeSelection,
 
-      /* ----------------------------- */
-      /* UI TEXT                       */
-      /* ----------------------------- */
-
       topTitle: 'Itinerary Builder',
-
       h1: 'Meet the Guardians',
-
       subtitle: 'Search and add talks to your plan.',
-
       emptyText: 'No Meet the Guardians talks found for this day',
    });
 }

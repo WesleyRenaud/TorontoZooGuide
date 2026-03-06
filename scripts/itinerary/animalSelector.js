@@ -1,8 +1,10 @@
 // scripts/itinerary/animalSelector.js
 import { normalizeParameter } from '../utils/normalize.js';
 import { createItinerarySelectorController } from './selectors/createSelectorController.js';
+import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 
 const STORAGE_KEY = 'tzg.itineraryAnimals';
+const DATE_KEY = 'tzg.itineraryDateISO';
 
 function getSpecies(row) {
    return row.SPECIES ?? row.species ?? '';
@@ -56,6 +58,13 @@ function makeSelection(row) {
    return { id: species, species, exhibit, imageSrc };
 }
 
+function getMonthDayContext() {
+   const iso = localStorage.getItem(DATE_KEY) || '';
+   if (!iso) return {};
+   const { month, day } = dateISOToMonthDay(iso);
+   return { month, day };
+}
+
 export function createItineraryAnimalSelectorController({ mountEl, onNext, onPrev, onFinish } = {}) {
    return createItinerarySelectorController({
       mountEl,
@@ -65,6 +74,9 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
 
       storageKey: STORAGE_KEY,
       migrateSelected: migrateIfNeeded,
+
+      // ✅ adds month/day onto the payload for date-dependent animal queries
+      getContext: () => getItineraryDateSearchContext({ includeTemp: true }),
 
       buildSearchPayload: (query) => ({ query, includeAnimals: true }),
       extractRows: (response) =>

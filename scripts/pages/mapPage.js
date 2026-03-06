@@ -16,6 +16,7 @@ import { createOffDisplayBanner } from '../ui/offDisplayBanner.js';
 import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
 import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
 import { initMapLegend } from '../ui/mapLegend.js';
+import { buildDateSearchContext } from '../search/searchContext.js';
 
 export function initMapPage() {
    const mapInner = document.getElementById('mapInner');
@@ -106,6 +107,20 @@ export function initMapPage() {
    const search = initSearch({
       inputEl: animalSearchInput,
       getIncludeFlags: () => explore.buildSearchIncludeFlags(),
+      getContext: async () => {
+         const preset = mapPreset?.value || '';
+         const dateStr = mapDateInput?.value?.trim?.() || '';
+
+         if (preset === 'summer') {
+            return { month: 'JUL', day: 20, temp: null };
+         }
+
+         if (preset === 'winter') {
+            return { month: 'JAN', day: 30, temp: null };
+         }
+
+         return await buildDateSearchContext(dateStr);
+      },
       onFocusRow: (row) => updater.focusFromSearchRow(row),
    });
 
