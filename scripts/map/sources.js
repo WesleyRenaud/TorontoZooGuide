@@ -262,8 +262,6 @@ export function createDataSources(store) {
                wildEncounters: ctx.wildEncounters || [],
             });
 
-            console.log(res);
-
             // Backend can return grouped or flat. Normalize to a flat marker list.
             const animals = Array.isArray(res?.animals) ? res.animals.map(r => ({ ...r, type: 'animal' })) : [];
             const attractions = Array.isArray(res?.attractions) ? res.attractions.map(r => ({ ...r, type: 'attraction' })) : [];

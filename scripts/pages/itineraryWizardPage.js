@@ -32,6 +32,53 @@ function loadArray(key) {
    }
 }
 
+function isScrollable(el) {
+   if (!el) return false;
+   const style = window.getComputedStyle(el);
+   const overflowY = style.overflowY;
+
+   if (overflowY !== 'auto' && overflowY !== 'scroll') return false;
+
+   return el.scrollHeight > el.clientHeight;
+}
+
+function findScrollableAncestor(startEl, stopEl) {
+   let el = startEl;
+   while (el && el !== stopEl && el !== document.body) {
+      if (isScrollable(el)) return el;
+      el = el.parentElement;
+   }
+   return null;
+}
+
+function blockMapWheelWhileWizardOpen(mountEl) {
+   if (!mountEl) return;
+
+   mountEl.addEventListener(
+      'wheel',
+      (e) => {
+         const overlay = mountEl.querySelector('.itin-overlay');
+         if (!overlay) return;
+
+         // Only care about wheel events occurring inside the overlay UI
+         if (!overlay.contains(e.target)) return;
+
+         const scroller = findScrollableAncestor(e.target, overlay);
+
+         if (scroller) {
+            // ✅ Allow normal scrolling, but stop the map from seeing the wheel event
+            e.stopPropagation();
+            return;
+         }
+
+         // ✅ Not over a scrollable area: block it so the map can't zoom
+         e.preventDefault();
+         e.stopPropagation();
+      },
+      { capture: true, passive: false }
+   );
+}
+
 function safeParseJSON(raw, fallback) {
    try {
       return JSON.parse(raw);
@@ -49,6 +96,59 @@ function isItineraryEmpty(itin) {
    const wildEncounters = Array.isArray(itin.wildEncounters) ? itin.wildEncounters : [];
 
    return !animals.length && !attractions.length && !guardiansTalks.length && !wildEncounters.length;
+}
+
+function showItineraryPopup({ mountEl, title = 'Heads up', message = '', buttonText = 'OK' }) {
+   if (!mountEl) return;
+
+   // remove any existing popup
+   mountEl.querySelector('.tzg-popup')?.remove();
+
+   const wrap = document.createElement('div');
+   wrap.className = 'tzg-popup';
+
+   wrap.innerHTML = `
+      <div class="itin-overlay">
+         <section class="itin-card tzg-popup-card" role="dialog" aria-modal="true">
+            <div class="itin-card-topbar">
+               <div class="itin-top-title">${title}</div>
+            </div>
+
+            <div class="itin-card-body tzg-popup-body">
+               <div class="tzg-popup-message">${message}</div>
+            </div>
+
+            <div class="itin-card-actions">
+               <div class="itin-actions-right">
+                  <button type="button" class="itin-next tzg-popup-ok">${buttonText}</button>
+               </div>
+            </div>
+         </section>
+      </div>
+   `;
+
+   const close = () => wrap.remove();
+
+   // click backdrop closes (but not the card)
+   wrap.querySelector('.itin-overlay')?.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) close();
+   });
+
+   wrap.querySelector('.tzg-popup-ok')?.addEventListener('click', close);
+
+   // Esc closes
+   const onKey = (e) => {
+      if (e.key === 'Escape') {
+         close();
+         document.removeEventListener('keydown', onKey);
+      }
+   };
+   document.addEventListener('keydown', onKey);
+
+   mountEl.appendChild(wrap);
+
+   // focus OK button
+   setTimeout(() => wrap.querySelector('.tzg-popup-ok')?.focus?.(), 0);
 }
 
 function buildFinalItinerary({ dateISO, animals, attractions, guardiansTalks, wildEncounters }) {
@@ -78,6 +178,17 @@ async function finalizeItinerary(
       guardiansTalks: guardiansTalks ?? loadArray(TALKS_KEY),
       wildEncounters: wildEncounters ?? loadArray(WILD_KEY),
    });
+
+   // ✅ Block finishing if empty
+   if (isItineraryEmpty(finalItin)) {
+      showItineraryPopup({
+         mountEl,
+         title: 'No Items Selected',
+         message: 'Please add at least one Animal, Attraction, Meet the Guardians talk, or Wild Encounter before finishing.',
+         buttonText: 'OK'
+      });
+      return;
+   }
 
    const { month, day } = dateISOToMonthDay(dateISO);
 
@@ -111,7 +222,7 @@ async function finalizeItinerary(
    renderItineraryPanel();
 }
 
-function openItineraryBuilder({ mountEl } = {}) {
+function openItineraryBuilder({ mountEl, startAt = 'date' } = {}) {
    if (!mountEl) return;
 
    const existing = safeParseJSON(localStorage.getItem(ITIN_KEY) || '', null) || {};
@@ -125,15 +236,7 @@ function openItineraryBuilder({ mountEl } = {}) {
       onPrev: () => guardiansTalkSelector.show(),
       onFinish: (wildEncounters) => {
          selectedWildEncounters = Array.isArray(wildEncounters) ? wildEncounters : [];
-         finalizeItinerary(
-            {
-               animals: selectedAnimals,
-               attractions: selectedAttractions,
-               guardiansTalks: selectedGuardiansTalks,
-               wildEncounters: selectedWildEncounters,
-            },
-            mountEl
-         );
+         finalizeItinerary({ animals: selectedAnimals, attractions: selectedAttractions, guardiansTalks: selectedGuardiansTalks, wildEncounters: selectedWildEncounters }, mountEl);
       },
    });
 
@@ -146,15 +249,7 @@ function openItineraryBuilder({ mountEl } = {}) {
       },
       onFinish: (talks) => {
          selectedGuardiansTalks = Array.isArray(talks) ? talks : [];
-         finalizeItinerary(
-            {
-               animals: selectedAnimals,
-               attractions: selectedAttractions,
-               guardiansTalks: selectedGuardiansTalks,
-               wildEncounters: selectedWildEncounters,
-            },
-            mountEl
-         );
+         finalizeItinerary({ animals: selectedAnimals, attractions: selectedAttractions, guardiansTalks: selectedGuardiansTalks, wildEncounters: selectedWildEncounters }, mountEl);
       },
    });
 
@@ -167,15 +262,7 @@ function openItineraryBuilder({ mountEl } = {}) {
       },
       onFinish: (attractions) => {
          selectedAttractions = Array.isArray(attractions) ? attractions : [];
-         finalizeItinerary(
-            {
-               animals: selectedAnimals,
-               attractions: selectedAttractions,
-               guardiansTalks: selectedGuardiansTalks,
-               wildEncounters: selectedWildEncounters,
-            },
-            mountEl
-         );
+         finalizeItinerary({ animals: selectedAnimals, attractions: selectedAttractions, guardiansTalks: selectedGuardiansTalks, wildEncounters: selectedWildEncounters }, mountEl);
       },
    });
 
@@ -188,42 +275,43 @@ function openItineraryBuilder({ mountEl } = {}) {
       },
       onFinish: (animals) => {
          selectedAnimals = Array.isArray(animals) ? animals : [];
-         finalizeItinerary(
-            {
-               animals: selectedAnimals,
-               attractions: selectedAttractions,
-               guardiansTalks: selectedGuardiansTalks,
-               wildEncounters: selectedWildEncounters,
-            },
-            mountEl
-         );
+         finalizeItinerary({ animals: selectedAnimals, attractions: selectedAttractions, guardiansTalks: selectedGuardiansTalks, wildEncounters: selectedWildEncounters }, mountEl);
       },
    });
 
    const dateSelector = createItineraryDateSelectorController({
       mountEl,
-      onSave: () => {
-         animalSelector.show();
-      },
+      onSave: () => animalSelector.show(),
       onFinish: () => {
-         finalizeItinerary(
-            {
-               animals: selectedAnimals,
-               attractions: selectedAttractions,
-               guardiansTalks: selectedGuardiansTalks,
-               wildEncounters: selectedWildEncounters,
-            },
-            mountEl
-         );
+         finalizeItinerary({ animals: selectedAnimals, attractions: selectedAttractions, guardiansTalks: selectedGuardiansTalks, wildEncounters: selectedWildEncounters }, mountEl);
       },
    });
 
-   dateSelector.show();
+   // ✅ Start on the requested step
+   const showStart = () => {
+      switch (startAt) {
+         case 'animals': return animalSelector.show();
+         case 'attractions': return attractionSelector.show();
+         case 'guardiansTalks': return guardiansTalkSelector.show();
+         case 'wildEncounters': return wildEncounterSelector.show();
+         case 'date':
+         default: return dateSelector.show();
+      }
+   };
+
+   showStart();
 }
 
 export function initItineraryWizardPage() {
    const mountEl = document.getElementById('itineraryFlow');
    if (!mountEl) return;
+
+   window.addEventListener('tzg:editItinerarySection', (e) => {
+      const step = e?.detail?.step || 'date';
+      openItineraryBuilder({ mountEl, startAt: step });
+   });
+
+   blockMapWheelWhileWizardOpen(mountEl);
 
    if (document.getElementById('mapInner')) {
       try {

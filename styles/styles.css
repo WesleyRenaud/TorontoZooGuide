@@ -2128,6 +2128,34 @@ html.home-page {
    SECTION SHELL
 ============================================================ */
 
+.itin-panel-header-actions{
+   display: flex;
+   align-items: center;
+   gap: 16px;
+}
+
+/* Small “Edit” button in each dropdown header */
+.itin-panel-section-edit-btn{
+   border: none;
+   cursor: pointer;
+
+   padding: 14px 18px;
+   border-radius: 14px;
+
+   background: rgba(20, 35, 10, 0.10);
+   color: rgba(20, 35, 10, 0.90);
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.6em;
+   font-weight: 900;
+
+   box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.itin-panel-section-edit-btn:hover{
+   background: rgba(20, 35, 10, 0.16);
+}
+
 .itin-panel-section {
    background: rgba(255,255,255,0.55);
    border: 3px solid rgba(94, 150, 0, 0.18);
@@ -2306,4 +2334,42 @@ html.home-page {
 
 .itin-panel-link:hover {
    color: #ffd54d;
+}
+
+/* ============================================================
+   ITINERARY: EMPTY FINISH POPUP
+============================================================ */
+
+.tzg-popup {
+   position: absolute;
+   inset: 0;
+   z-index: 10000;
+   pointer-events: auto;
+}
+
+/* Center popup vertically */
+.tzg-popup .itin-overlay {
+   align-items: center;
+   padding-top: 0;
+   padding-bottom: 0;
+}
+
+/* Make popup body shorter and cleaner */
+.tzg-popup-body {
+   padding-top: 40px;
+   padding-bottom: 40px;
+
+   display: flex;
+   align-items: center;   /* vertical centering */
+}
+
+/* Message fills the full width */
+.tzg-popup-message {
+   font-size: 3em;
+   font-weight: 800;
+   color: rgba(20,35,10,0.75);
+   line-height: 1.25;
+
+   width: 100%;          /* fill full body width */
+   max-width: none;      /* remove narrow constraint */
 }
