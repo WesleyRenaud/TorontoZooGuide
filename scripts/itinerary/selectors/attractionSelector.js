@@ -122,12 +122,13 @@ function getMonthDayContext() {
    return { month, day };
 }
 
-export function createItineraryAttractionSelectorController({ mountEl, onNext, onPrev, onFinish } = {}) {
+export function createItineraryAttractionSelectorController({ mountEl, onNext, onPrev, onFinish, onClose } = {}) {
    return createItinerarySelectorController({
       mountEl,
       onNext,
       onPrev,
       onFinish,
+      onClose,
 
       storageKey: STORAGE_KEY,
       migrateSelected: migrateIfNeeded,

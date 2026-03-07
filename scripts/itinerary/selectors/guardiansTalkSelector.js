@@ -100,6 +100,7 @@ export function createItineraryGuardiansTalkSelectorController({
    onNext,
    onPrev,
    onFinish,
+   onClose,
 } = {}) {
    let dayOfWeek = 1;
 
@@ -132,6 +133,7 @@ export function createItineraryGuardiansTalkSelectorController({
       onPrev,
       onNext,
       onFinish,
+      onClose,
 
       storageKey: STORAGE_KEY,
       migrateSelected: migrateIfNeeded,

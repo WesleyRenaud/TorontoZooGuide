@@ -25,6 +25,7 @@ export function createItineraryDateSelectorController({
    onSave,
    onFinish,
    onCancel,
+   onClose,
 } = {}) {
    let root = null;
    let inputEl = null;
@@ -58,8 +59,9 @@ export function createItineraryDateSelectorController({
       root.className = 'itin-overlay';
       root.innerHTML = `
          <section class="itin-card" role="dialog" aria-modal="true" aria-label="Itinerary Builder">
-            <div class="itin-card-topbar">
+            <div class="itin-card-topbar itin-card-topbar-with-close">
                <div class="itin-top-title">Itinerary Builder</div>
+               <button class="itin-close" type="button" aria-label="Close itinerary builder">×</button>
             </div>
 
             <div class="itin-card-body">
@@ -91,6 +93,10 @@ export function createItineraryDateSelectorController({
          const saved = persistCurrentDate();
          if (!saved) return;
          onFinish?.(saved.iso, saved.dateObj);
+      });
+
+      root.querySelector('.itin-close')?.addEventListener('click', () => {
+         onClose?.();
       });
 
       fp = flatpickr(inputEl, {

@@ -2454,3 +2454,53 @@ html.home-page {
    cursor: pointer;
    flex: 0 0 auto;
 }
+
+/* ============================================================
+   ITINERARY: CLOSE BUTTON (X)
+============================================================ */
+
+.itin-card-topbar-with-close {
+   position: relative;
+}
+
+/* Close button */
+.itin-close {
+   position: absolute;
+   right: 32px;
+   top: 50%;
+   transform: translateY(-50%);
+
+   width: 96px;
+   height: 96px;
+
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   border: none;
+   border-radius: 22px;
+
+   background: rgba(20, 35, 10, 0.10);
+   color: rgba(20, 35, 10, 0.9);
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 3.6em;
+   font-weight: 900;
+   line-height: 1;
+
+   cursor: pointer;
+
+   box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+   transition: background 0.18s ease, transform 0.12s ease;
+}
+
+/* Hover */
+.itin-close:hover {
+   background: rgba(20, 35, 10, 0.16);
+   transform: translateY(-50%) scale(1.05);
+}
+
+/* Active */
+.itin-close:active {
+   transform: translateY(-50%) scale(0.96);
+}

@@ -80,7 +80,7 @@ function makeSelection(row) {
    return { id: species, species, exhibit, imageSrc };
 }
 
-export function createItineraryAnimalSelectorController({ mountEl, onNext, onPrev, onFinish } = {}) {
+export function createItineraryAnimalSelectorController({ mountEl, onNext, onPrev, onFinish, onClose } = {}) {
    let includeOffDisplayAnimals = false;
 
    function renderAnimalRowLeft(row) {
@@ -164,6 +164,7 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
       onNext,
       onPrev,
       onFinish,
+      onClose,
 
       storageKey: STORAGE_KEY,
       migrateSelected: migrateIfNeeded,

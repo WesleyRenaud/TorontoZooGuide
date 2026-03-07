@@ -91,6 +91,7 @@ export function createItineraryWildEncounterSelectorController({
    mountEl,
    onPrev,
    onFinish,
+   onClose,
 } = {}) {
    let dayOfWeek = 1;
 
@@ -126,6 +127,7 @@ export function createItineraryWildEncounterSelectorController({
       // Wild Encounters step only has Prev + Finish
       onPrev,
       onFinish,
+      onClose,
       hideNextButton: true,
 
       storageKey: STORAGE_KEY,

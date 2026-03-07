@@ -37,6 +37,7 @@ export function createItinerarySelectorController({
    onPrev,
    onNext,
    onFinish,
+   onClose,
    hideNextButton = false,
 
    storageKey,
@@ -67,9 +68,7 @@ export function createItinerarySelectorController({
    renderRowLeft,
    renderExtraControls = null,
 
-   // NEW: hook used by animal selector popup logic
    onBeforeToggleAdd = null,
-
 } = {}) {
 
    if (!storageKey) {
@@ -100,14 +99,13 @@ export function createItinerarySelectorController({
       } else {
          const sel = makeSelection(row) || {};
          if (!sel.id) sel.id = id;
-         selected = [...selected, sel];
+         selected = [ ...selected, sel ];
       }
 
       saveSelected(storageKey, selected);
    }
 
    function defaultRenderRowLeft(row) {
-
       const title = getTitle(row);
       const sub = getSubtitle(row);
       const src = getImageSrc(row);
@@ -120,7 +118,6 @@ export function createItinerarySelectorController({
       thumbWrap.className = 'itin-animal-thumb';
 
       if (src) {
-
          const img = document.createElement('img');
          img.className = 'itin-animal-thumb-img';
          img.loading = 'lazy';
@@ -133,11 +130,8 @@ export function createItinerarySelectorController({
          });
 
          thumbWrap.appendChild(img);
-
       } else {
-
          thumbWrap.classList.add('is-placeholder');
-
       }
 
       const left = document.createElement('div');
@@ -149,16 +143,13 @@ export function createItinerarySelectorController({
       left.appendChild(titleEl);
 
       if (sub) {
-
          const subEl = document.createElement('div');
          subEl.className = 'animal-result-exhibit';
          subEl.textContent = sub;
          left.appendChild(subEl);
-
       }
 
       if (infoLink) {
-
          const linkEl = document.createElement('a');
          linkEl.className = 'tooltip-link';
          linkEl.href = infoLink;
@@ -171,32 +162,26 @@ export function createItinerarySelectorController({
          });
 
          left.appendChild(linkEl);
-
       }
 
       content.appendChild(thumbWrap);
       content.appendChild(left);
 
       return content;
-
    }
 
    function render(rows) {
-
       resultsEl.innerHTML = '';
 
       if (!Array.isArray(rows) || rows.length === 0) {
-
          const empty = document.createElement('div');
          empty.className = 'itin-empty';
          empty.textContent = emptyText;
          resultsEl.appendChild(empty);
          return;
-
       }
 
       rows.forEach(row => {
-
          const id = getId(row);
 
          const item = document.createElement('div');
@@ -209,60 +194,47 @@ export function createItinerarySelectorController({
          btn.className = 'itin-add-btn';
 
          const updateBtn = () => {
-
             const added = id && isSelected(id);
             btn.textContent = added ? '−' : '+';
             btn.classList.toggle('is-added', !!added);
-
          };
 
          const proceed = () => {
-
             toggleRow(row);
             updateBtn();
-
          };
 
          updateBtn();
 
          btn.addEventListener('click', (e) => {
-
             e.stopPropagation();
 
             const added = id && isSelected(id);
 
             if (typeof onBeforeToggleAdd === 'function') {
-
                onBeforeToggleAdd({
                   row,
                   id,
                   isSelected: !!added,
-                  proceed
+                  proceed,
                });
-
                return;
-
             }
 
             proceed();
-
          });
 
          item.appendChild(leftNode);
          item.appendChild(btn);
 
          resultsEl.appendChild(item);
-
       });
-
    }
 
    async function runSearch() {
-
       const query = (inputEl?.value ?? '').trim();
 
       try {
-
          const ctx =
             typeof getContext === 'function'
                ? await getContext()
@@ -274,34 +246,25 @@ export function createItinerarySelectorController({
          };
 
          const response = await ajaxPost(searchEndpoint, payload);
-
          const rows = extractRows(response) || [];
-
          render(Array.isArray(rows) ? rows : []);
-
       } catch {
-
          render([]);
-
       }
-
    }
 
    function build() {
-
       root = document.createElement('div');
-
       root.className = 'itin-overlay';
 
       root.innerHTML = `
          <section class="itin-card itin-card-tall" role="dialog" aria-modal="true">
-
-            <div class="itin-card-topbar">
+            <div class="itin-card-topbar itin-card-topbar-with-close">
                <div class="itin-top-title">${topTitle}</div>
+               <button class="itin-close" type="button" aria-label="Close itinerary builder">×</button>
             </div>
 
             <div class="itin-card-body itin-card-body-tall">
-
                <h1 class="itin-h1">${h1}</h1>
                <p class="itin-subtitle">${subtitle}</p>
 
@@ -313,31 +276,16 @@ export function createItinerarySelectorController({
                />
 
                <div class="itin-results" aria-live="polite"></div>
-
             </div>
 
             <div class="itin-card-actions-dual">
-
-               <button class="itin-prev" type="button">
-                  Previous
-               </button>
+               <button class="itin-prev" type="button">Previous</button>
 
                <div class="itin-actions-right">
-
-                  ${
-                     hideNextButton
-                        ? ''
-                        : '<button class="itin-next" type="button">Next</button>'
-                  }
-
-                  <button class="itin-finish" type="button">
-                     Finish
-                  </button>
-
+                  ${hideNextButton ? '' : '<button class="itin-next" type="button">Next</button>'}
+                  <button class="itin-finish" type="button">Finish</button>
                </div>
-
             </div>
-
          </section>
       `;
 
@@ -346,7 +294,6 @@ export function createItinerarySelectorController({
       resultsEl = root.querySelector('.itin-results');
 
       if (typeof renderExtraControls === 'function') {
-
          renderExtraControls({
             rootEl: root,
             bodyEl,
@@ -354,13 +301,9 @@ export function createItinerarySelectorController({
             resultsEl,
             rerunSearch: runSearch,
          });
-
       }
 
-      inputEl.addEventListener(
-         'input',
-         debounce(runSearch, 250)
-      );
+      inputEl.addEventListener('input', debounce(runSearch, 250));
 
       root
          .querySelector('.itin-prev')
@@ -374,37 +317,34 @@ export function createItinerarySelectorController({
          .querySelector('.itin-finish')
          ?.addEventListener('click', () => onFinish?.(selected.slice()));
 
+      root
+         .querySelector('.itin-close')
+         ?.addEventListener('click', () => onClose?.());
    }
 
    function show() {
-
       if (!mountEl) return;
 
-      if (!root) build();
+      if (!root) {
+         build();
+      }
 
       selected = loadSelected(storageKey, migrateSelected);
 
       mountEl.innerHTML = '';
-
       mountEl.appendChild(root);
 
       inputEl.value = '';
-
       runSearch();
-
    }
 
    function hide() {
-
       if (!mountEl) return;
-
       mountEl.innerHTML = '';
-
    }
 
    return {
       show,
       hide,
    };
-
 }
