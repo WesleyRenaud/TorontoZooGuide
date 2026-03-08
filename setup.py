@@ -33,7 +33,7 @@ cursor.execute( ''' CREATE TABLE Animal
                   (  SPECIES                       VARCHAR(64) NOT NULL,
                      LATIN_NAME                    VARCHAR(64),
                      MIN_TEMPERATURE               INTEGER,
-                     SNOW_RESISTANCE               INTEGER     CHECK (SNOW_RESISTANCE BETWEEN 0 AND 5),
+                     SNOW_RESISTANCE               FLOAT       CHECK (SNOW_RESISTANCE BETWEEN 0.0 AND 1.0),
                      GENERAL_VIEWING_TIPS          TEXT,
                      SEASONAL_VIEWING_TIPS         TEXT,
                      IDENTIFICATION                TEXT,
@@ -624,7 +624,7 @@ animals = [
       'Demoiselle Crane',
       'Grus Virgo',
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      4,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.8,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The demoiselle cranes can be found in the outdoor aviary at the entrance to the Australasia Pavilion. The demoiselle cranes
          are generally more active earlier in the day, when they can often be seen wandering around their habitat, foraging for
          food. The cranes have no indoor public viewing.'''.replace( '\n', ' ' ),
@@ -863,7 +863,7 @@ animals = [
       'Kookaburra',
       'Dacelo Novaeguineae',
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The kookaburras can either be found in the outdoor aviary with the demoiselle cranes, or inside in the small aviary just
          past and to the right of the cockatoos, depending on the time of year.'''.replace( '\n', ' ' ),
       '''Kookaburras are warm weather birds, and thus are only comfortable outside during the warmer months of the year, roughly
@@ -1380,7 +1380,7 @@ animals = [
       'Southern Hairy-Nosed Wombat',
       'Lasiorhinus Latifrons',
       14,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The wombats can be viewed both inside and outside. To see their indoor habitat, head inside the Australasia Pavilion, and
          go to the left once you exist the aviary area. To spot them in their outdoor habitat, you may walk through the pavilion,
          and their enclosure will be on the left when you exit, or take a walk around the outside of the pavilion, towards the exit.
@@ -1599,8 +1599,8 @@ animals = [
    (
       'Western Grey Kangaroo',
       'Macropus Fuliginosus',
-      0,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      2,                                                             # Snow resistance (only for animals with outdoor viewing)
+      2,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Western kangaroo enclosure can be found by heading just past the Australasia Pavilion, sticking to the right. The
          kangaroos at the Toronto Zoo have a rather large habitat, meaning that sometimes the animals will be fairly far from the
          guest viewing. The kangaroos are the most active, and the most likely to be closer to the guest viewing early in the
@@ -1642,7 +1642,7 @@ animals = [
       'Amur Tiger',
       'Panthera Tigris Altaica',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Amur tiger habitat is located near the entrance to the Eurasia Wilds exhibit, towards the right near the kangaroo
          habitat. The Amur tigers at the zoo have several spaces which they can be in during any given day. From closest the
          kangaroos to furthur away, there is the main habitat with the pool and den, two indoor spaces, and the secondary outdoor
@@ -1683,7 +1683,7 @@ animals = [
       'Asian Wild Horse',
       'Equus Ferus Przewalskii',
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Asian wild horses can be spotted at two spots in the Eurasia Wilds region of the zoo. A pair of the zoo's older horses
          can be spotted in a habitat across from the West Caucasian turs across the river. The rest of the herd can be spotted
          up-close in the Eurasia Wilds drive-thru exhibit aboard the zoomobile. To go through the drive-through you must hop on
@@ -1717,7 +1717,7 @@ animals = [
       'Bactrian Camel',
       'Camelus Bactrianus',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Bactrian camels can be spotted in two habitats in the Eurasia Wilds section of the zoo. Both habitats can be spotted by
          taking the Eurasia loop. You will find them in between the snow leopards and the red pandas.'''.replace( '\n', ' ' ),
       '''Bactrian camels are adapted to thrive in a wide range of habitats, and can be seen being active in their habitats all
@@ -1749,7 +1749,7 @@ animals = [
       'Domestic Yak',
       'Bos Grunniens',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The domestic yak can only be seen aboard the zoomobile, in the Eurasia drive-thru section. To go through the drive-through
          you must hop on zoomobile before the Eurasia stop and stay on after the Tundra Trek stop.'''.replace( '\n', ' ' ),
       '''Yaks are very well suited to the extreme cold, and can be seen outside year-round in the drive-thru.''',
@@ -1779,7 +1779,7 @@ animals = [
       'Highland Cattle',
       'Bos Taurus',
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The highlang cattle can be seen by taking the Eurasia Wilds loop, and taking the offshoot path away from the red pandas.''',
       '''The highland cattle can be seen outside all year.''',
       '''Highland Cattle are a robust, long-haired breed of domestic bovine, easily recognised by their shaggy coat and long, curved
@@ -1807,7 +1807,7 @@ animals = [
       'Mouflon',
       'Ovis Orientalis',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The mouflon can be spotted at the mouth of the Eurasia Wilds loop, just past the sign with the bactrian camel and wild
          horse at the base.'''.replace( '\n', ' ' ),
       '''The mouflon can be seen in their habitat year-round.''',
@@ -1837,7 +1837,7 @@ animals = [
       'Red Panda',
       'Ailurus Fulgens',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       # '''You can get to the red panda habitat by taking the Eurasia Wilds loop from the side with the Amur tigers. The red panda
       #    enclosure will be the first one you encounter after the tigers. The red pandas will be in the second habitat, the one with
       #    the glass viewing. Red pandas are most active early and late in the day, so your best chance of seeing them active is to
@@ -1878,7 +1878,7 @@ animals = [
       'Snow Leopard',
       'Panthera Uncia',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The snow leopard habitat can be accessed by taking the Eurasia Wilds loop on the side to the left of the mouflon. You can
          find them across from the West Caucasian turs. The snow leopards are most active early in the day, especially during the
          summer months, so your best chance of seeing them active is to head to their exhibit first thing in your visit. The snow
@@ -1925,7 +1925,7 @@ animals = [
       'Steller\'s Sea Eagle',
       'Haliaeetus Pelagicus',
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Steller's sea eagles can be spotted by taking the Eurasia Wilds loop to the left of the mouflon. The eagles can be
          spotted just past the snow leopards, and across from the first camel habitat.'''.replace( '\n', ' ' ),
       '''The Steller's sea eagles are very well adapted to the cold, and can be seen outside year-round.''',
@@ -1957,7 +1957,7 @@ animals = [
       'West Caucasian Tur',
       'Capra Caucasica',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The West Caucasian turs can be spotted in two different habitats in the Eurasia Wilds section of the zoo. The female tur
          can be spotted in a habitat in the main Eurasia Wilds loop, which can be accessed by taking the loop to the left of the
          mouflon. The tur habitat will be the first one you see. The male turs can be found in the Eurasia Wilds drive-thru. To go
@@ -1992,7 +1992,7 @@ animals = [
       'Arctic Wolf',
       'Canis Lupus Arctos',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Arctic wolf enclosure is located in the center of the Tundra Trek exhibit. The arctic wolf enclosure at the is very
          large, and has many viewing points. To get the best view of the wolves, you can move 360° around the habitat, and  the
          Tundra Trek exhibit, and you should get a semi-close view. The wolves will generally be more active in the morning, and
@@ -2027,7 +2027,7 @@ animals = [
       'Caribou',
       'Rangifer Tarandus',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The caribou habitat can be accessed by taking the Tundra Trek path from either side, and stopping when you get to the
          entrance to the Americas Outdoor Mayan Temple Ruins exhibit. There is one viewing of the habitat here, and another if you
          enter the Mayan Temple Ruins and head towards the flamingo enclosure. The caribou habitat wraps around the temple up to the
@@ -2061,7 +2061,7 @@ animals = [
       'Lesser Snow Goose',
       'Anser Caerulescens',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The lesser snow goose habitat can be found by taking the Tundra Trek loop on the left, on the side close to the Caribou
          Cafe. You will see the snow goose enclosure past the first viewing of the Arctic wolves, on the left.'''.replace( '\n', ' ' ),
       '''Lesser snow geese are very well adapted to the snow and cold, and can be viewed in the Tundra Trek year-round.''',
@@ -2089,7 +2089,7 @@ animals = [
       'Northern Bald Eagle',
       'Haliaeetus Leucocephalus',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Northern bald eagle can be spotted in two different spots--one in the Tundra Trek, and another in the Canadian Domain.
          To see the eagle in the Tundra Trek, take the loop on the side with the polar bears and head towards the viewing for the
          larger polar bear grass habitat. The eagle enclosure will be on your left. To see the eagle in the domain, head to the
@@ -2124,7 +2124,7 @@ animals = [
       'Polar Bear',
       'Ursus Maritimus',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The polar bears can be spotted in several habitats in the Tundra Trek exhibit. Coming at the habitat from the side closer
          to Eurasia, you have the maternity yard, the main pool habitat, and the main grass habitat. In the warmer months the bears
          will likely avoid the grass habitat and either spend their time in the pool habitat and the maternity yard in the shade.
@@ -2166,7 +2166,7 @@ animals = [
       'American Flamingo',
       'Phoenicopterus Ruber',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The American flamingos are part of the Mayan Temple Ruins exhibit, which is accessed be walking through the Tundra Trek.
          Once you reach the waterfall, walk to the right and you will come upon the flamingos.'''.replace( '\n', ' ' ),
       '''American flamingos are a relatively hardy bird, tolerating temperatures as low as 5°C. They can be seen reliably from May
@@ -2203,7 +2203,7 @@ animals = [
       'Black-Handed Spider Monkey',
       'Ateles Geoffroyi',
       15,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The black-handed spider monkeys are part of the Mayan Temple Ruins exhibit, which is accessed be walking through the Tundra
          Trek. Once you reach the waterfall, walk to the right, and you will find the spider monkeys across from the flamingos. The
          spider monkeys often move through the indoor and outdoor habitats in a given day. Check all of their platforms, along the
@@ -2240,7 +2240,7 @@ animals = [
       'Capybara',
       'Hydrochoerus Hydrochaeris',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The capybara is part of the Mayan Temple Ruins exhibit, which is accessed be walking through the Tundra Trek. You should
          find the capybaras at the bottom of the waterfall.'''.replace( '\n', ' ' ),
       '''The capybara is a warm-weather animal, and is most reliably seen from May until October. The capybara has a viewing pattern
@@ -2892,7 +2892,7 @@ animals = [
       'Golden Lion Tamarin',
       'Leontopithecus Rosalia',
       18,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The golden lion tamarins have an indoor viewable habitat, and an outdoor viewable habitat. Theeir outdoor viewing is
          located right near the David C. Onley Boardwalk, which connects the Americas to Africa. If you don't see the monkeys in any
          of these enclosures, head inside the Americas Pavilion and you can spot them inside in the primate wing, just past the
@@ -2924,7 +2924,7 @@ animals = [
       'Great Horned Owl',
       'Bubo Virginianus',
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The great horned owl can be seen in the Americas, and in the Kids Zoo. In the Americas, the owl can be seen just outside
          the pavilion, to the right of the doors.'''.replace( '\n', ' ' ),
       '''The great horned owl is a cold-tolerant species, and can stay outside year-round. The owl in the Americas can be seen all
@@ -3266,7 +3266,7 @@ animals = [
       'North American River Otter',
       'Lontra Canadensis',
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The North American river otters can be seen from two main spots. You can see them from above, just past the entrance to the
          pavilion, or venture inside the pavilion, heading past the aquatic area to see them underwater, or inside. The North
          American river otters are a highly active species, and can be usually seen swimming around their water feature during the
@@ -3842,7 +3842,7 @@ animals = [
       'Two-Toed Sloth',
       'Choloepus Hoffmanni',
       20,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The two-toed sloths have an indoor viewable habitat, and an outdoor viewable habitat. Theeir outdoor viewing is located
          right near the David C. Onley Boardwalk, which connects the Americas to Africa. If you don't see the sloths in any of these
          enclosures, head inside the Americas Pavilion and you can spot them inside in the primate wing, just past the macaws.'''
@@ -3921,7 +3921,7 @@ animals = [
       'White-Faced Saki',
       'Pithecia Pithecia',
       18,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The white-faced sakis have an indoor viewable habitat, and an outdoor viewable habitat. Theeir outdoor viewing is located
          right near the David C. Onley Boardwalk, which connects the Americas to Africa. If you don't see them in any of these
          enclosures, head inside the Americas Pavilion and you can spot them inside in the primate wing, just past the macaws.'''
@@ -4026,7 +4026,7 @@ animals = [
       'Cougar',
       'Puma Concolor',
       -20,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      4,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.8,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The cougars can be spotted by heading partway down the hill of the Canadian domain exhibit. A bit more than halfway down
          the hill, and across from the male wood bison paddock you will find the cougars.'''.replace( '\n', ' ' ),
       '''Cougars are well-adapted to the cold and can stay outside all through the winter. If the domain is open then the cougars
@@ -4063,7 +4063,7 @@ animals = [
       'Grizzly Bear',
       'Ursus Arctos Horribilis',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The grizzly bear habitat is at the bottom of the Canadian domain hill. Once you reach the bottom of the hill, you can stick
          to the right to find the grizzly bear.'''.replace( '\n', ' ' ),
       '''The grizzly bear is viewable seasonably due to its hibernating patterns. Grizzly bears hibernate from sometime in November,
@@ -4108,7 +4108,7 @@ animals = [
       'Raccoon',
       'Procyon Lotor',
       -35,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The raccoons can be spotted on your way down the hill. The raccoon habitat will be the first one you see, up the stairs to
          your left.'''.replace( '\n', ' ' ),
       '''Raccoons can stay outside the extreme cold, and should be viewable when the domain is open.''',
@@ -4141,7 +4141,7 @@ animals = [
       'Wood Bison',
       'Bison Bison Athabascae',
       -40,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''There are two points in the domain where you can spot wood bison. Partway down the hill, across from the cougars, you will
          find the paddock with the male bison. At the bottom of the hill and heading all the way down the path, and not to the right
          you will find the female herd of bison'''.replace( '\n', ' ' ),
@@ -4178,7 +4178,7 @@ animals = [
       'African Lion',
       'Panthera Leo',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      3,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.6,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''You will find the African lions by taking the Africa Savanna loop. The lions are between the baboons and zebras, and eland
          and hyenas. There is a cave that has glass viewing into the lion habitat, as well as open-air viewings on either side of
          the cave. The lions can most often be seen from the open-air viewing across from the elands. The lions are one of the most 
@@ -4221,8 +4221,8 @@ animals = [
    (
       'African Penguin',
       'Spheniscus Demersus',
-      0,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      2,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The African penguin habitat can be found either at the end or the beginning of the Africa Savanna loop, depending on which
          direction you head in. You can access the penguin habitat across from the watusi cattle. Even on warmer days many of the
          penguins may choose to spend their time indoors. Many of the penguins also enjoy being in shade along the back of their
@@ -4263,7 +4263,7 @@ animals = [
       'Cheetah',
       'Acinonyx Jubatus',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      3,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.6,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The cheetahs can be seen on the Africa Savanna loop, between the white rhinos and baboons, and across from the zeberas.
          Most of the time, the cheetahs can be seen in the back right part of their enclosure. Look for a head just past the trees.
          Your best chance to see the cheetahs active is early in the day,'''.replace( '\n', ' ' ),
@@ -4302,7 +4302,7 @@ animals = [
       'Common Eland',
       'Taurotragus Oryx',
       2,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      2,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The eland habitat can be accessed in the Africa Savanna loop across from the white lion habitat.''',
       '''Elands are one of the most-cold resistant antelopes, and can be seen outside during most months of the year through April
          into November. They may also be viewable on warmer March days, or other winter days where there is little to no snow on the
@@ -4338,7 +4338,7 @@ animals = [
       'Greater Kudu',
       'Tragelaphus Strepsiceros',
       12,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The greater kudu habitat is located on the Africa Savanna loop. The habitat is large, and has three different viewing areas.
          The most prominent one is located across from the white rhinos. The second one is on a offshoot path between the rhinos and
          hippos, and the third is accessed from inside the Africa Rainforest Pavilion, just past the meerkats. The kudu share a
@@ -4376,7 +4376,7 @@ animals = [
       'Grevy\'s Zebra',
       'Equus Grevyi',
       0,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      2,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.4,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Grevy's zebra habitat is found on the Africa Savanna loop, across from the cheetahs. The zebra enclosure is very long
          and has a very different viewing points. The best spot to see them is usually across from the glass viewing area from which
          the cheetahs and baboons can both be seen. The zebras tend to move across their habitat quite a lot as they graze, so you
@@ -4418,7 +4418,7 @@ animals = [
       'Marabou Stork',
       'Leptoptilos Crumenifer',
       18,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''There are a couple different spots to spot the marabou storks in the Africa Savanna. They go on exhibit with the kudu and
          can be spotted in that habitat. You may see them from any of the three viewings, at the savanna overlook in the African 
          Rainforest Pavilion by the meerkats, on the offshoot between the hippos and rhinos, or at the main viewing across from the
@@ -4450,7 +4450,7 @@ animals = [
       'Masai Giraffe',
       'Giraffa Camelopardalis Tippelskirchi',
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Masai giraffe enclosure can be found near the start or end of the Africa Savanna loop, across from the entrance to the
          African Rainforest Pavilion near the lemurs. One of the viewings of the giraffes' outdoor habitat is located up the
          elevated pathway behind the hippo habitat.'''.replace( '\n', ' ' ),
@@ -4496,7 +4496,7 @@ animals = [
       'Olive Baboon',
       'Papio Anubis',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      4,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.8,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The olive baboons can be spotted on the Africa Savanna loop in between the cheetahs and lions, and across from the zebras.''',
       '''The olive baboons can generally be seen year-round. In the coldest months they may be given access to indoor spaces, but
          they can generally be seen outside, most often on their main structure in the center of their enclosure.'''
@@ -4535,8 +4535,8 @@ animals = [
    (
       'Ostrich',
       'Struthio Camelus',
-      5,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      1,                                                             # Snow resistance (only for animals with outdoor viewing)
+      6,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      0.2,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The ostrich habitat has two main vantage points in the Africa Savanna. One is between the lions and the baboons, while the
          other is across from the top of the hill that yields access to the Canadian domain. The ostrich moves across its enclosure
          quite regularly, and its enclosure is quite large, so you may struggle to get a close view at times.'''.replace( '\n', ' ' ),
@@ -4578,7 +4578,7 @@ animals = [
       'River Hippopotamus',
       'Hippopotamus Amphibius',
       14,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The river hippo habitat can be found on the Africa Savanna loop, in between the warthogs and giraffes, and white rhinos and
          kudus.'''.replace( '\n', ' ' ),
       '''River hippos are native to sub-Saharan African and have exposed skin, and are thus not very adapted to the cold. At the zoo,
@@ -4619,7 +4619,7 @@ animals = [
       'Southern Ground Hornbill',
       'Bucorvus Leadbeateri',
       18,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''Southern ground hornbills can be spotted in two habitats in the Africa Savanna. Some of the hornbills share a habitat with
          the kudus and other savanna birds. They can be viewed in this habitat from any of the three viewings: the savanna outlook
          in the African Rainforest Pavilion near the meerkats, on the offshoot path between the rhinos and hippos, or in the main
@@ -4659,7 +4659,7 @@ animals = [
       'Southern White Rhinoceros',
       'Ceratotherium Simum Simum',
       10,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Southern white rhinos can be found in the Africa Savanna loop, across from the kudu, and between the zebra and hippos.''',
       '''Southern white rhinoceroses are warm-weather animals and have exposed skin, and are only viewable outside during the warmer
          months of the year. They can be reliably seen from May through October, and on other warm spring or fall days.'''
@@ -4698,7 +4698,7 @@ animals = [
       'Spotted Hyena',
       'Crocuta Crocuta',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      3,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.6,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The spotted hyena habitat can be found in the Africa Savanna, close to where the Canadian Domain is accessed, and across
          from the watusi.'''.replace( '\n', ' ' ),
       '''The spotted hyenas can generally be seen year-round, but during the coldest months they may be given indoor spaces, and
@@ -4737,7 +4737,7 @@ animals = [
       'Warthog',
       'Phacochoerus Africanus',
       16,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The warthog habitat can be found in the Africa Savanna loop, in between the giraffes and hippos. The warthog is one of the
          more difficult species to see at the zoo--timing is everything. They can be most often be seen by looking directly down
          from their viewing. One of the warthogs at the zoo likes to rest right near the close fence of the enclosure. You have a
@@ -4773,7 +4773,7 @@ animals = [
       'Watusi Cattle',
       'Bos Taurus',
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      2,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.4,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The watusi cattle habitat can be found near the part of the Africa Savanna where you access the Canadian Domain, across
          from the spotted heynas.'''.replace( '\n', ' ' ),
       '''The watusi cattle can generally be seen outside year-round, as they have been bred to have a very high tolerance against
@@ -4811,7 +4811,7 @@ animals = [
       'White-Breasted Cormorant',
       'Phalacrocorax Lucidus',
       2,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The white-breasted cormorant lives in the Africa Savanna in the African penguin habitat, across from the watusi cattle.''',
       '''The white-breasted cormorant can handle temperate environments, and can thus be outside for most of the year, but cannot
          handle snow or ice. During the coldest months, from December through most of March, these birds are only visible indoors.
@@ -4842,7 +4842,7 @@ animals = [
       'White-Headed Vulture',
       'Trigonoceps Occipitalis',
       18,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The zoo is home to one white-headed vulture, Lloyd, and he is one of the more reclusive residents. He resides in the
          enclosure with the kudu and other savanna birds. He may be spotted from any of the three viewing areas for this exhibit:
          the savanna outlook in the African Rainforest Pavilion near the meerkats, on the offshoot path between the hippos and
@@ -4942,7 +4942,7 @@ animals = [
       'Aldabra Tortoise',
       'Aldabrachelys Gigantea',
       20,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The outdoor Aldabra tortoise habitat, where the tortoises can be found on very warm summer days, can be found near the
          entrance to the pavilion by the gorillas and the Africa restaurant. The habitat is on the other side of the entrance from
          the outdoor gorilla habitat. When indoors, the tortoises share a habitat with the ring-tailed lemurs and crowned cranes,
@@ -5453,8 +5453,8 @@ animals = [
    (
       'Red River Hog',
       'Potamochoerus Porcus',
-      5,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      0.5,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The red river hog habitat can be found around the outside of the African Rainforest Pavilion. From the entrance near the
          giraffes, when facing tha pavilion turn to the right and they will be on the left just past the entrance to the giraffe
          house. From the entrance near the gorillas, go to the left and you will find the hogs just pace the Multi-faith prayer
@@ -5956,7 +5956,7 @@ animals = [
       'Western Lowland Gorilla',
       'Gorilla Gorilla Gorilla',
       12,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Toronto Zoo houses two groups of gorillas which go on display separately--the family troop, containing the females, and
          the bachelor troop containing the adult males. When it is warm enough, you can find one of the groups, usually the females
          outside, and the other group, usually the males, inside. If it is too cold for the gorillas to be outside, then you will
@@ -6899,7 +6899,7 @@ animals = [
       'Sumatran Orangutan',
       'Pongo Abelii',
       12,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Sumatran orangutans have an indoor and outdoor habitat in the Indo-Malaya Pavilion. Their indoor habitat can be viewed
          from three different vantage points. The first is the elevated viewing point, accessed by sticking to the right once you
          enter the pavilion. The other two viewing points can be reached by walking around the pavilion, and accessing the back half.
@@ -7140,8 +7140,8 @@ animals = [
    (
       'Babirusa',
       'Babyrousa Babyrussa',
-      10,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      8,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The babirusa has an outdoor and indoor habitat. The outdoor habitat can be found outside the greater one-horned rhinoceros
          building and on the left. If you don't see the babirusa outside, check inside the Indian rhino building. The babirusa
          shares this space with the rhino, and is sometimes viewable inside.'''.replace( '\n', ' ' ),
@@ -7218,7 +7218,7 @@ animals = [
       'Indian Peafowl',
       'Pavo Cristatus',
       -15,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      4,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.8,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Indian peafowl can be spotted in the long barn across from the Indian rhino house.''',
       '''The Indian peafowl are very well adapted to stay in the cold, but they also have access to indoor spaces in the winter, so
          they may choose to go inside on colder days.'''.replace( '\n', ' ' ),
@@ -7253,7 +7253,7 @@ animals = [
       'Sumatran Tiger',
       'Panthera Tigris Sumatrae',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      4,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.8,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Sumatran tigers can be viewed just outside the Indo-Malaya Pavilion, from the boardwalk connecting Indo-Malaya to
          Africa and the Americas. There is one habitat on either side of the boardwalk, which each holds one tiger. You can also
          view the habitat built off of the pavilion from inside the pavilion, just before you exit. Like most cat species, the
@@ -7522,7 +7522,7 @@ animals = [
       'Domestic Goat',
       'Capra Hircus',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      4,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.8,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The domestic goats can be seen across from the Discovery Zone.''',
       '''Goats can stand very cold temperatures, and are viewable outside year-round.''',
       '''The domestic goat is a small-to-medium herbivore, typically weighing 45–90 kg, depending on breed and sex. Males (bucks)
@@ -7556,7 +7556,7 @@ animals = [
       'Abyssinian Ground Hornbill',
       'Bucorvus Abyssinicus',
       18,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Abyssinian ground hornbill can be found in the Kidz Zoo.''',
       '''Abyssinian ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.'''
          .replace( '\n', ' ' ),
@@ -7587,7 +7587,7 @@ animals = [
       'Common Raven',
       'Corvus Corax',
       -30,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The common raven can be found in the Kidz Zoo.''',
       '''The common raven is adapted to handle extremely cold temperatures and can be seen whenever the Kids Zoo is open.''',
       '''The Common Raven is a large passerine bird, measuring 54–67 cm in length with a wingspan of 115–150 cm. Its plumage is
@@ -7617,7 +7617,7 @@ animals = [
       'Eurasian Eagle Owl',
       'Bubo Bubo',
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      5,                                                             # Snow resistance (only for animals with outdoor viewing)
+      1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Eurasian eagle owl can be found in the Kidz Zoo.''',
       '''The Eurasian eagle owl is adapted to handle very cold temperatures and can be seen whenever the Kids Zoo is open.''',
       '''The Eurasian Eagle Owl is one of the largest owl species in the world, with a wingspan of 160–188 cm and a body length of
@@ -7676,7 +7676,7 @@ animals = [
       'Harris\'s Hawk',
       'Parabuteo Unicinctus',
       5,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      1,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.2,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The Harris's hawk can be found in the Kidz Zoo.''',
       '''The Harris's hawk can handle moderate temperatures, and should be visible when the Kids Zoo is open.''',
       '''Harris’s hawks are medium-large raptors, measuring 46–76 cm in length with a wingspan of 1.1–1.2 m and weighing 0.9–1.5 kg.
@@ -7705,7 +7705,7 @@ animals = [
       'Rabbit',
       'Oryctolagus Cuniculus',
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      2,                                                             # Snow resistance (only for animals with outdoor viewing)
+      0.4,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The rabbits can be found in the Kidz Zoo.''',
       '''Rabbits can handle colder temperatures, and should be visible when the Kids Zoo is open.''',
       '''Rabbits are small mammals, typically weighing 1–2.5 kg, with body lengths of 30–50 cm. They have long ears, large eyes on

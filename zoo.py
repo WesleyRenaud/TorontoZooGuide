@@ -249,7 +249,7 @@ class WildEncounter:
       }
    
 
-class Zoo_Util:
+class Zoo_Util:   
    def get_average_temperature( self, month, day ):
       # Convert month/day to day-of-year
       month = self.get_month_int( month )
@@ -292,12 +292,11 @@ class Zoo_Util:
       return round( temp, 1 )
 
 
-   # Returns probability (0.0 – 1.0) that snow is on the ground in Toronto on the given month & day
    def get_snow_likelihood( self, month, day ):
       month = self.get_month_int( month )
 
       MONTH_SNOW_BASE = {
-         1: 0.90,   # January
+         1: 0.90,
          2: 0.85,
          3: 0.50,
          4: 0.10,
@@ -310,29 +309,28 @@ class Zoo_Util:
          11: 0.20,
          12: 0.70
       }
-      
+
       base = MONTH_SNOW_BASE.get( month, 0.0 )
 
       days_in_month = calendar.monthrange( 2024, month )[1]
-      progress = (day - 1) / days_in_month   # 0 → 1 through the month
+      progress = (day - 1) / (days_in_month - 1)
 
-      # December: snow builds
       if month == 12:
          base *= 0.6 + 0.4 * progress
 
-      # March: snow melts
       elif month == 3:
-         base *= 1.0 - 0.7 * progress
+         # Snow usually persists through early March,
+         # then melts quickly in the second half.
+         melt_progress = max( 0, (progress - 0.35) / 0.65 )
+         base *= 1.0 - 0.6 * melt_progress
 
-      # November: snow builds
       elif month == 11:
          base *= 0.3 + 0.7 * progress
 
-      # April: snow melts quickly
       elif month == 4:
          base *= 1.0 - progress
 
-      return round( max( 0.0, min( 1.0, base ) ), 2 )
+      return max( 0.0, min( 1.0, round( base, 2 ) ) )
 
 
    def get_month_int( self, month ):

@@ -67,15 +67,11 @@ class Database():
          enclosure_type = animal[17]
 
          if enclosure_type == 'Outdoor':
-            # The initial likelihood to see the animal is calculating via a probability that the temperature is warm enough for the animal
-            # to be on display, which is retrieved via a normal distribution
-            likelihood = self.zoo_util.get_temperature_probability( temp, sigma, min_temperature )
-            
-            # We also adjust (decrease) the likelihood based on the probability of snow, and the animal's resistance to snow. The animal's
-            # snow resistance is between 0 and 5. For every point below five, the animal's likelihood decreases by the 10% of the
-            # probability of snow on that day. For example, if the animal's snow resistance is 3, and there is an 80% chance of snow, then
-            # their likelihood decreases by .16.
-            likelihood = likelihood - (5 - snow_resistance) / 10 * snow_likelihood
+            avg_temp = self.zoo_util.get_average_temperature( month, day )
+            effective_temp = avg_temp + 0.5 * ( temp - avg_temp )
+
+            likelihood = self.zoo_util.get_temperature_probability( effective_temp, sigma, min_temperature )
+            likelihood = likelihood - (1.0 - snow_resistance) * snow_likelihood
          else:
             likelihood = 1
 
@@ -109,7 +105,7 @@ class Database():
 
       days_in_month = self.zoo_util.get_number_of_days_in_month( month )
       
-      return month_likelihood + (next_month_likelihood - month_likelihood)/days_in_month * day
+      return month_likelihood + (next_month_likelihood - month_likelihood) / (days_in_month - 1) * (day - 1)
       
 
    def get_exhibit_month_likelihood( self, exhibit, month ):
