@@ -277,6 +277,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day_of_week = data.get( 'dayOfWeek' )
 
          include_off_display_animals = bool( data.get( 'includeOffDisplayAnimals' ) )
+         include_season_attractions = bool( data.get( 'includeSeasonalAttractions' ) )
 
          animals_json = []
          pavilions_json = []
@@ -325,7 +326,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   gift_shops_json.append( d )
 
          if include_attractions:
-            attractions = self.database.get_attractions_matching_query( query, month ) or []
+            attractions = self.database.get_attractions_matching_query( query, month, include_season_attractions ) or []
             for attraction in attractions:
                   d = attraction.to_dict()
                   d['type'] = d.get( 'type', 'attraction' )

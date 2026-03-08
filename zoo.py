@@ -134,7 +134,7 @@ class GiftShop:
 
 class Attraction:
    def __init__( self, name, free_with_admission, seasonal_schedule=None, description=None, info_link=None, hyperlink_text=None,
-                 x_coord=None, y_coord=None ):
+                 x_coord=None, y_coord=None, is_closed=False ):
       self.name = name
       self.free_with_admission = free_with_admission
       self.seasonal_schedule = seasonal_schedule
@@ -143,6 +143,7 @@ class Attraction:
       self.hyperlink_text = hyperlink_text
       self.x_coord = x_coord
       self.y_coord = y_coord
+      self.is_closed = is_closed
 
 
    def to_dict( self ):
@@ -154,7 +155,8 @@ class Attraction:
          'info_link': self.info_link,
          'hyperlink_text': self.hyperlink_text,
          'x_coord': self.x_coord,
-         'y_coord': self.y_coord
+         'y_coord': self.y_coord,
+         'is_closed': self.is_closed
       }
    
 

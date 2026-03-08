@@ -336,9 +336,10 @@ class Database():
          if ((not itinerary_mode) and (is_peak_season_month or include_seasonal_attractions or (not open_seasonally) \
             or (name in attractions_to_include))) \
             or (itinerary_mode and (name in attractions_to_include)):
+            is_closed = open_seasonally and not is_peak_season_month
             attractions.append( zoo.Attraction( name=name, free_with_admission=attraction[2], seasonal_schedule=attraction[3],
                                                 description=attraction[4], info_link=attraction[5], hyperlink_text=attraction[6],
-                                                x_coord=attraction[7], y_coord=attraction[8] ) )
+                                                x_coord=attraction[7], y_coord=attraction[8], is_closed=is_closed ) )
 
       cur.close()
 
@@ -634,14 +635,14 @@ class Database():
       ]
    
 
-   def get_attractions_matching_query( self, query, month ):
+   def get_attractions_matching_query( self, query, month, include_season_attractions ):
       if not query:
-         return self.get_attractions( month, include_seasonal_attractions=True )
+         return self.get_attractions( month, include_seasonal_attractions=include_season_attractions )
 
       query_lower = query.lower()
 
       return [
-         a for a in self.get_attractions( month, include_seasonal_attractions=True )
+         a for a in self.get_attractions( month, include_seasonal_attractions=include_season_attractions )
          if a.name and query_lower in a.name.lower()
       ]
    

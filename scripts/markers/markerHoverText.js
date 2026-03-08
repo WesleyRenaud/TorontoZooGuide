@@ -86,7 +86,6 @@ export function buildHoverText(itemsAtPoint) {
 
    // Wild Encounters ✅
    if (type === 'wildEncounter') {
-      console.log(itemsAtPoint);
       if (itemsAtPoint.length === 1) {
          return `Wild Encounter • ${itemsAtPoint[0].name} - Meeting Spot` || 'Wild Encounter Meeting Spot';
       }
