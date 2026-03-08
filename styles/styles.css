@@ -730,7 +730,7 @@ html.home-page {
    border-bottom: 5px solid rgba(20, 35, 10, 0.85);
 
    /* expanded: point LEFT (matches your “rotate(180deg)” intent) */
-   transform: rotate(90deg);
+   transform: rotate(45deg);
 }
 
 /* Collapsed state */
@@ -744,7 +744,7 @@ html.home-page {
 
 /* collapsed: point RIGHT */
 .map-legend.is-collapsed .map-legend-toggle-icon::before {
-   transform: rotate(-45deg);
+   transform: rotate(-135deg);
 }
 
 /* Optional: shrink padding when collapsed so it becomes a neat badge */
