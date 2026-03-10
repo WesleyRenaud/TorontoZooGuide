@@ -20,10 +20,9 @@ class Database():
          sigma = 3
       else:
          sigma = 2
+
       snow_likelihood = self.zoo_util.get_snow_likelihood( month, day )
-   
-      # We need to know whether the animal is viewable indoors and/or outdoors. If they are viewable in both, then we need to calculate
-      # whether they are viewable outside or not in this case.
+
       data = cur.execute(
          """   SELECT
                   a.SPECIES,
@@ -46,13 +45,18 @@ class Database():
                   v.ENCLOSURE_TYPE,
                   v.SEASONALLY_OFF_DISPLAY_MESSAGE,
                   v.X_COORD,
-                  v.Y_COORD
+                  v.Y_COORD,
+                  s.IS_OFF_DISPLAY,
+                  s.OFF_DISPLAY_MESSAGE
                FROM Animal a
                JOIN Enclosure e
                   ON a.SPECIES = e.SPECIES
                JOIN EnclosureViewing v
                   ON e.SPECIES = v.SPECIES
-                  AND e.EXHIBIT = v.EXHIBIT;
+                  AND e.EXHIBIT = v.EXHIBIT
+               LEFT JOIN AnimalStatus s
+                  ON e.SPECIES = s.SPECIES
+                  AND e.EXHIBIT = s.EXHIBIT;
          """ )
 
       animal_data = data.fetchall()
@@ -65,37 +69,50 @@ class Database():
          snow_resistance = animal[3]
          part_of_seasonal_exhibit = animal[14]
          enclosure_type = animal[17]
+         is_off_display = bool( animal[21] ) if animal[21] != None else False
+         off_display_message = animal[22]
 
-         if enclosure_type == 'Outdoor':
-            avg_temp = self.zoo_util.get_average_temperature( month, day )
-            effective_temp = avg_temp + 0.5 * ( temp - avg_temp )
-
-            likelihood = self.zoo_util.get_temperature_probability( effective_temp, sigma, min_temperature )
-            likelihood = likelihood - (1.0 - snow_resistance) * snow_likelihood
+         if is_off_display:
+            likelihood = 0
          else:
-            likelihood = 1
+            if enclosure_type == 'Outdoor':
+               avg_temp = self.zoo_util.get_average_temperature( month, day )
+               effective_temp = avg_temp + 0.5 * ( temp - avg_temp )
 
-         # We need to consider if the animal is a part of a seasonal exhibit, and whether that exhibit will be open on the specific day
-         if part_of_seasonal_exhibit:
-            # Get the probability that the exhibit is open, and scale the likelihood to that
-            likelihood = likelihood * self.get_exhibit_likelihood( exhibit, month, day )
+               likelihood = self.zoo_util.get_temperature_probability( effective_temp, sigma, min_temperature )
+               likelihood = likelihood - (1.0 - snow_resistance) * snow_likelihood
+            else:
+               likelihood = 1
 
-         likelihood = max( round( likelihood * 100 ), 0 )
+            if part_of_seasonal_exhibit:
+               likelihood = likelihood * self.get_exhibit_likelihood( exhibit, month, day )
 
-         if (not itinerary_mode and (likelihood > threshold or include_off_display_animals or species in species_to_include)) \
-            or (itinerary_mode and species in species_to_include):
+            likelihood = max( round( likelihood * 100 ), 0 )
+
+         should_include = False
+
+         if not itinerary_mode:
+            should_include = (
+               ( likelihood > threshold )
+               or ( include_off_display_animals and is_off_display )
+               or species in species_to_include
+            )
+         else:
+            should_include = species in species_to_include
+
+         if should_include:
             animals.append( zoo.Animal( species=species, latin_name=animal[1], general_viewing_tips=animal[4],
                                         seasonal_viewing_tips=animal[5], identification=animal[6], habitat_and_range=animal[7],
                                         diet_and_feeding=animal[8], behaviour_and_life_cycle=animal[9], adaptations=animal[10],
                                         reproduction_and_life_cycle=animal[11], animals_at_the_zoo=animal[12], exhibit=exhibit,
                                         seasonal_viewing_summary=animal[15], seasonal_viewing_information=animal[16],
-                                        seasonally_off_display_message=animal[18], enclosure_type=enclosure_type, x_coord=animal[19],
-                                        y_coord=animal[20], likelihood=likelihood ) )
+                                        off_display_message=off_display_message if is_off_display else animal[18],
+                                        enclosure_type=enclosure_type, x_coord=animal[19], y_coord=animal[20], likelihood=likelihood ) )
 
       cur.close()
 
       return animals
-   
+      
 
    def get_exhibit_likelihood( self, exhibit, month, day ):
       next_month = self.zoo_util.get_next_month( month )
@@ -711,3 +728,83 @@ class Database():
             and (day_of_week is None or w.day_of_week == day_of_week)
          )
       ]
+   
+
+   def get_species( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         f"""  SELECT
+                  a.SPECIES
+               FROM Animal a;
+         """ )
+      
+      species = [row[0] for row in data.fetchall()]
+      cur.close()
+
+      return species
+   
+
+   def get_exhibits( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         f"""  SELECT
+                  e.NAME
+               FROM Exhibit e;
+         """ )
+      
+      exhibits = [row[0] for row in data.fetchall()]
+      cur.close()
+
+      return exhibits
+   
+
+   def set_animal_as_off_display( self, species, exhibit, message ):
+      if not message:
+         message = f'The {species} is temporarily off-display.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO AnimalStatus (
+                  SPECIES,
+                  EXHIBIT,
+                  IS_OFF_DISPLAY,
+                  OFF_DISPLAY_MESSAGE
+               )
+               VALUES (?, ?, 1, ?)
+               ON CONFLICT(SPECIES, EXHIBIT) DO UPDATE SET
+                  IS_OFF_DISPLAY = 1,
+                  OFF_DISPLAY_MESSAGE = excluded.OFF_DISPLAY_MESSAGE;
+         """, (species, exhibit, message ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def set_animal_as_on_display( self, species, exhibit ):
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO AnimalStatus (
+                  SPECIES,
+                  EXHIBIT,
+                  IS_OFF_DISPLAY,
+                  OFF_DISPLAY_MESSAGE
+               )
+               VALUES (?, ?, 0, NULL)
+               ON CONFLICT(SPECIES, EXHIBIT) DO UPDATE SET
+                  IS_OFF_DISPLAY = 0,
+                  OFF_DISPLAY_MESSAGE = NULL;
+         """, (species, exhibit, ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   

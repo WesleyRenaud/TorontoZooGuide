@@ -40,6 +40,8 @@ class MyHandler( BaseHTTPRequestHandler ):
          return self._send_file( "./pages/animals.html", "text/html" )
       if path == "/itinerary.html":
          return self._send_file( "./pages/itinerary.html", "text/html" )
+      if path == "/console-operations.html":
+         return self._send_file( "./pages/console-operations.html", "text/html" )
 
       # Static folders (serve anything inside)
       if path.startswith( "/styles/" ):
@@ -443,6 +445,88 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      if self.path == '/get-species':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         species = self.database.get_species()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"species": species}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      if self.path == '/get-exhibits':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         exhibits = self.database.get_exhibits()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"exhibits": exhibits}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-animal-off-display':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         species = data.get( 'species' )
+         exhibit = data.get( 'exhibit' )
+         message = data.get( 'message' )
+
+         success = self.database.set_animal_as_off_display( species, exhibit, message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'species': species,
+            'exhibit': exhibit,
+            'message': message,
+         }
+
+         if not success:
+            response[ 'error' ] = f'No animal found with species "{species}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-animal-on-display':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         species = data.get( 'species' )
+         exhibit = data.get( 'exhibit' )
+
+         success = self.database.set_animal_as_on_display( species, exhibit )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'species': species,
+            'exhibit': exhibit,
+         }
+
+         if not success:
+            response['error'] = f'No off-display entry found for "{species}" in "{exhibit}".'
+
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 

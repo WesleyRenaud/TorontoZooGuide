@@ -283,5 +283,40 @@ export function createDataSources(store) {
          },
          cachePolicy: 'no-cache',
       },
+
+      exhibit: {
+         fetch: async () => {
+            const cache = store.cache.exhibit ?? store.cache.exhibits;
+
+            if (!cache) {
+               const res = await ajaxPost('/get-exhibits', {});
+               const rows = res?.exhibits ?? res?.results ?? res ?? [];
+               const normalized = rows.map(e => ({ ...e, type: 'exhibit' }));
+               store.byType.exhibit = normalized;
+               return normalized;
+            }
+
+            if (cache.loaded) return store.byType.exhibit ?? store.byType.exhibits ?? [];
+            if (cache.inFlight) return cache.inFlight;
+
+            cache.inFlight = ajaxPost('/get-exhibits', {})
+               .then(res => {
+                  const rows = res?.exhibits ?? res?.results ?? res ?? [];
+                  const normalized = rows.map(e => ({ ...e, type: 'exhibit' }));
+
+                  store.byType.exhibit = normalized;
+                  cache.loaded = true;
+                  cache.inFlight = null;
+                  return normalized;
+               })
+               .catch(err => {
+                  cache.inFlight = null;
+                  throw err;
+               });
+
+            return cache.inFlight;
+         },
+         cachePolicy: 'static',
+      },
    };
 }

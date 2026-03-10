@@ -4,6 +4,8 @@ conn = sqlite3.connect( 'animals.db' )
 
 cursor = conn.cursor()
 
+# Static tables
+
 cursor.execute( 'DROP TABLE IF EXISTS Region;' )
 cursor.execute( ''' CREATE TABLE Region
                   (  NAME  VARCHAR(64) NOT NULL,
@@ -178,7 +180,18 @@ cursor.execute( ''' CREATE TABLE WildEncounterMeetingTime
                      DAY_OF_WEEK INTEGER     NOT NULL CHECK(DAY_OF_WEEK BETWEEN 1 AND 7),
                      TIME_OF_DAY VARCHAR(8)  NOT NULL,      
                      FOREIGN KEY (NAME) REFERENCES WildEncounter(NAME),
-                     PRIMARY KEY (NAME, DAY_OF_WEEK, TIME_OF_DAY) ); ''' )  
+                     PRIMARY KEY (NAME, DAY_OF_WEEK, TIME_OF_DAY) ); ''' )
+
+# Dynamic tables
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS AnimalStatus
+                  (  SPECIES              VARCHAR(64) NOT NULL,
+                     EXHIBIT              VARCHAR(64) NOT NULL,     
+                     IS_OFF_DISPLAY       BOOL        NOT NULL DEFAULT 0,
+                     OFF_DISPLAY_MESSAGE  TEXT,
+                     PRIMARY KEY (SPECIES, EXHIBIT),
+                     FOREIGN KEY (SPECIES) REFERENCES Animal(SPECIES),
+                     FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(NAME) ); ''' )
 
 regions = [
    (
@@ -4773,7 +4786,7 @@ animals = [
       'Watusi Cattle',
       'Bos Taurus',
       -5,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      0.4,                                                           # Snow resistance (only for animals with outdoor viewing)
+      0.7,                                                           # Snow resistance (only for animals with outdoor viewing)
       '''The watusi cattle habitat can be found near the part of the Africa Savanna where you access the Canadian Domain, across
          from the spotted heynas.'''.replace( '\n', ' ' ),
       '''The watusi cattle can generally be seen outside year-round, as they have been bred to have a very high tolerance against
@@ -7135,6 +7148,39 @@ animals = [
          complex forest environments.'''.replace( '\n', ' ' ),
       '''The Toronto Zoo is home to a family of three white-handed gibbons--father Mel, mother Manju, and daugther Mileena.''',
    ),
+   (
+      'Wrinkled Hornbill',
+      'Rhabdotorrhinus Corrugatus',
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      None,                                                          # Snow resistance (only for animals with outdoor viewing)
+      '''The wrinkled hornbill can be found just beside the elevated orangutan viewing area. When you enter the pavilion head to the
+         left and up the stairs. The hornbill can be found just past the orangutan viewing and on the right.'''.replace( '\n', ' ' ),
+      None,                                                          # Seasonal viewing tips
+      '''The wrinkled hornbill is a large, tropical bird, measuring 90–100 cm in length with a wingspan of 120–150 cm. It has
+         predominantly black plumage, a white belly, and a striking curved bill topped with a prominent casque, which is ridged and
+         brightly coloured in adults. The face around the eyes is yellow or reddish, and the eyes are surrounded by bare skin. Males
+         and females are similar, though males usually have larger casques.'''.replace( '\n', ' ' ),
+      '''Wrinkled hornbills are native to lowland and montane tropical forests in Southeast Asia, including Malaysia, Borneo, and
+         Sumatra. They inhabit dense, old-growth forests and are often associated with fruiting trees and river valleys. They are
+         arboreal and highly mobile, moving across forest canopies in search of food.'''.replace( '\n', ' ' ),
+      '''Wrinkled hornbills are primarily frugivorous, feeding on figs, fruit, and berries, though they will occasionally eat
+         insects, small reptiles, and bird eggs. They play a vital role as seed dispersers, helping maintain forest regeneration.
+         Using their large, curved bills, they pluck and manipulate fruits efficiently while perched or flying between trees.'''
+         .replace( '\n', ' ' ),
+      '''Wrinkled hornbills are social birds, typically seen in pairs or small family groups. They are diurnal, spending most of the
+         day foraging. During breeding, females seal themselves inside tree cavities to lay eggs, leaving a small opening through
+         which the male passes food. This remarkable nesting strategy protects eggs and chicks from predators. Males exhibit strong
+         parental care, feeding the female and chicks throughout the nesting period.'''.replace( '\n', ' ' ),
+      '''The wrinkled hornbill has several adaptations for arboreal life and frugivory. Its large bill and casque allow efficient
+         fruit handling and may aid in vocal resonance. Strong feet and zygodactyl toes provide excellent grip on branches, while
+         powerful wings allow agile flight through dense canopy. Nesting in tree cavities with a sealed entrance minimizes
+         predation, and its bright bill and casque play roles in species recognition and sexual signaling.'''.replace( '\n', ' ' ),
+      '''Breeding occurs during periods of fruit abundance. Females lay 1–2 eggs in tree cavities, sealing themselves inside with a
+         mud and feces barrier. The male provides all food until chicks are large enough for the female to break free and join him.
+         Juveniles fledge after 10–12 weeks, remaining dependent on parents for several more weeks. Lifespan in the wild can reach
+         30–35 years, with some individuals living longer in managed care.'''.replace( '\n', ' ' ),
+      None                                                           # Animals at the zoo
+   ),
 
    # Indo-Malaya Outdoor
    (
@@ -7482,38 +7528,6 @@ animals = [
       '''Breeding occurs seasonally in suitable climates, with females laying 6–15 eggs in hidden, humid spots. Eggs incubate for
          6–10 weeks, depending on temperature and humidity. Hatchlings are independent from birth. Lifespan in the wild is typically
          10–15 years, with slightly longer lifespans in managed care.'''.replace( '\n', ' ' ),
-      None                                                           # Animals at the zoo
-   ),
-   (
-      'Wrinkled Hornbill',
-      'Rhabdotorrhinus Corrugatus',
-      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
-      None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      '''The wrinkled hornbill can be found towards the beginning of the pavilion, past the gourami and in the aviary on the left.''',
-      None,                                                          # Seasonal viewing tips
-      '''The wrinkled hornbill is a large, tropical bird, measuring 90–100 cm in length with a wingspan of 120–150 cm. It has
-         predominantly black plumage, a white belly, and a striking curved bill topped with a prominent casque, which is ridged and
-         brightly coloured in adults. The face around the eyes is yellow or reddish, and the eyes are surrounded by bare skin. Males
-         and females are similar, though males usually have larger casques.'''.replace( '\n', ' ' ),
-      '''Wrinkled hornbills are native to lowland and montane tropical forests in Southeast Asia, including Malaysia, Borneo, and
-         Sumatra. They inhabit dense, old-growth forests and are often associated with fruiting trees and river valleys. They are
-         arboreal and highly mobile, moving across forest canopies in search of food.'''.replace( '\n', ' ' ),
-      '''Wrinkled hornbills are primarily frugivorous, feeding on figs, fruit, and berries, though they will occasionally eat
-         insects, small reptiles, and bird eggs. They play a vital role as seed dispersers, helping maintain forest regeneration.
-         Using their large, curved bills, they pluck and manipulate fruits efficiently while perched or flying between trees.'''
-         .replace( '\n', ' ' ),
-      '''Wrinkled hornbills are social birds, typically seen in pairs or small family groups. They are diurnal, spending most of the
-         day foraging. During breeding, females seal themselves inside tree cavities to lay eggs, leaving a small opening through
-         which the male passes food. This remarkable nesting strategy protects eggs and chicks from predators. Males exhibit strong
-         parental care, feeding the female and chicks throughout the nesting period.'''.replace( '\n', ' ' ),
-      '''The wrinkled hornbill has several adaptations for arboreal life and frugivory. Its large bill and casque allow efficient
-         fruit handling and may aid in vocal resonance. Strong feet and zygodactyl toes provide excellent grip on branches, while
-         powerful wings allow agile flight through dense canopy. Nesting in tree cavities with a sealed entrance minimizes
-         predation, and its bright bill and casque play roles in species recognition and sexual signaling.'''.replace( '\n', ' ' ),
-      '''Breeding occurs during periods of fruit abundance. Females lay 1–2 eggs in tree cavities, sealing themselves inside with a
-         mud and feces barrier. The male provides all food until chicks are large enough for the female to break free and join him.
-         Juveniles fledge after 10–12 weeks, remaining dependent on parents for several more weeks. Lifespan in the wild can reach
-         30–35 years, with some individuals living longer in managed care.'''.replace( '\n', ' ' ),
       None                                                           # Animals at the zoo
    ),
 
@@ -9210,6 +9224,13 @@ enclosures =\
       'Year-round',                                # Seasonal viewing summary
       None                                         # Seasonal viewing information (for seasonal exhibits)
    ),
+   (
+      'Wrinkled Hornbill',
+      'Indo-Malaya Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
 
    # Indo-Malaya Outdoor
    (
@@ -9286,13 +9307,6 @@ enclosures =\
    ),
    (
       'Red-Tailed Green Ratsnake',
-      'Malayan Woods Pavilion',
-      0,                                           # Part of seasonal exhibit
-      'Year-round',                                # Seasonal viewing summary
-      None                                         # Seasonal viewing information (for seasonal exhibits)
-   ),
-   (
-      'Wrinkled Hornbill',
       'Malayan Woods Pavilion',
       0,                                           # Part of seasonal exhibit
       'Year-round',                                # Seasonal viewing summary
@@ -11253,6 +11267,14 @@ enclosureViewings =\
       78.5                    # Y coordinate on map
    ),
    (
+      'Wrinkled Hornbill',
+      'Indo-Malaya Pavilion',
+      'Indoor',
+      None,                   # Seasonally off-display message
+      57,                     # X coordinate on map
+      78.5                    # Y coordinate on map
+   ),
+   (
       'Sumatran Orangutan',
       'Indo-Malaya Pavilion',
       'Outdoor',
@@ -11294,14 +11316,6 @@ enclosureViewings =\
       61,                     # X coordinate on map
       70.25                   # Y coordinate on map
    ),
-   # (
-   #    'Sumatran Tiger',
-   #    'Indo-Malaya Outdoor',
-   #    'Outdoor',
-   #    '''The Sumatran tigers are likely off-display today due to particularly harsh conditions.''',
-   #    60.625,                 # X coordinate on map
-   #    79.5                    # Y coordinate on map
-   # ),
    (
       'Sumatran Tiger',
       'Indo-Malaya Outdoor',
@@ -11362,14 +11376,6 @@ enclosureViewings =\
    ),
    (
       'Red-Tailed Green Ratsnake',
-      'Malayan Woods Pavilion',
-      'Indoor',
-      None,                   # Seasonally off-display message
-      62.25,                  # X coordinate on map
-      74.5                    # Y coordinate on map
-   ),
-   (
-      'Wrinkled Hornbill',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message

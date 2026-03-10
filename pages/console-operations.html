@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" class="console-operations-page">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Toronto Zoo Operations Console</title>
+
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link
+         href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap"
+         rel="stylesheet"
+      >
+
+      <link rel="stylesheet" href="../styles/styles.css">
+
+      <script type="module" src="../scripts/consoleOperations.js"></script>
+   </head>
+
+   <body>
+      <div class="console-operations-page">
+
+         <div class="top-bar">
+            <span class="top-bar-title">Toronto Zoo Operations Console</span>
+            <img
+               src="../images/logos/toronto-zoo-logo.png"
+               alt="Toronto Zoo Logo"
+               class="top-bar-logo"
+            >
+         </div>
+
+         <main>
+
+            <aside class="side-panel left" aria-label="Operations menu">
+
+               <div class="side-panel-header">
+                  <h2 class="side-panel-title">Operations</h2>
+               </div>
+
+               <div class="side-panel-body">
+
+                  <p class="console-operations-side-panel-text">
+                     Choose an operation to update animal display status.
+                  </p>
+
+                  <section class="console-operations-menu">
+
+                     <button
+                        type="button"
+                        id="showOffDisplayForm"
+                        class="console-operations-menu-btn"
+                        data-panel-target="offDisplayPanel"
+                     >
+                        <span class="console-operations-menu-btn-number">1</span>
+                        <span class="console-operations-menu-btn-label">
+                           Set animal as off display
+                        </span>
+                     </button>
+
+                     <button
+                        type="button"
+                        id="showOnDisplayForm"
+                        class="console-operations-menu-btn"
+                        data-panel-target="onDisplayPanel"
+                     >
+                        <span class="console-operations-menu-btn-number">2</span>
+                        <span class="console-operations-menu-btn-label">
+                           Set animal as on display
+                        </span>
+                     </button>
+
+                  </section>
+
+               </div>
+
+            </aside>
+
+            <div class="map-container console-operations-workspace">
+
+               <section
+                  id="offDisplayPanel"
+                  class="console-operations-panel"
+               >
+
+                  <div class="console-operations-panel-header">
+                     <h2 class="console-operations-panel-title">
+                        Set animal as off display
+                     </h2>
+                  </div>
+
+                  <div class="console-operations-panel-body">
+
+                     <div class="console-operations-field">
+                        <label
+                           class="console-operations-label"
+                           for="offDisplaySpecies"
+                        >
+                           Species
+                        </label>
+
+                        <input
+                           id="offDisplaySpecies"
+                           type="text"
+                           class="console-operations-input"
+                           autocomplete="off"
+                           placeholder="Search for a species"
+                        >
+
+                        <div
+                           id="offDisplaySpeciesResults"
+                           class="console-operations-autocomplete"
+                        ></div>
+                     </div>
+
+                     <div class="console-operations-field">
+                        <label
+                           class="console-operations-label"
+                           for="offDisplayExhibit"
+                        >
+                           Exhibit
+                        </label>
+
+                        <select
+                           id="offDisplayExhibit"
+                           class="console-operations-input console-operations-select"
+                        >
+                           <option value="">Select an exhibit</option>
+                        </select>
+                     </div>
+
+                     <div class="console-operations-field">
+                        <label
+                           class="console-operations-label"
+                           for="offDisplayMessage"
+                        >
+                           Reason
+                        </label>
+
+                        <textarea
+                           id="offDisplayMessage"
+                           class="console-operations-textarea"
+                           placeholder="Enter the reason this animal is off display"
+                        ></textarea>
+                     </div>
+
+                     <div class="console-operations-actions">
+                        <button
+                           id="submitOffDisplay"
+                           type="button"
+                           class="console-operations-primary-btn"
+                        >
+                           Save
+                        </button>
+                     </div>
+
+                     <div
+                        id="offDisplayStatus"
+                        class="console-operations-status"
+                        aria-live="polite"
+                     ></div>
+
+                  </div>
+
+               </section>
+
+               <section
+                  id="onDisplayPanel"
+                  class="console-operations-panel"
+               >
+
+                  <div class="console-operations-panel-header">
+                     <h2 class="console-operations-panel-title">
+                        Set animal as on display
+                     </h2>
+                  </div>
+
+                  <div class="console-operations-panel-body">
+
+                     <div class="console-operations-field">
+                        <label
+                           class="console-operations-label"
+                           for="onDisplaySpecies"
+                        >
+                           Species
+                        </label>
+
+                        <input
+                           id="onDisplaySpecies"
+                           type="text"
+                           class="console-operations-input"
+                           autocomplete="off"
+                           placeholder="Search for a species"
+                        >
+
+                        <div
+                           id="onDisplaySpeciesResults"
+                           class="console-operations-autocomplete"
+                        ></div>
+                     </div>
+
+                     <div class="console-operations-field">
+                        <label
+                           class="console-operations-label"
+                           for="onDisplayExhibit"
+                        >
+                           Exhibit
+                        </label>
+
+                        <select
+                           id="onDisplayExhibit"
+                           class="console-operations-input console-operations-select"
+                        >
+                           <option value="">Select an exhibit</option>
+                        </select>
+                     </div>
+
+                     <div class="console-operations-actions">
+                        <button
+                           id="submitOnDisplay"
+                           type="button"
+                           class="console-operations-primary-btn"
+                        >
+                           Save
+                        </button>
+                     </div>
+
+                     <div
+                        id="onDisplayStatus"
+                        class="console-operations-status"
+                        aria-live="polite"
+                     ></div>
+
+                  </div>
+
+               </section>
+
+            </div>
+
+            <img
+               class="side-image right"
+               src="../images/map/right-side.png"
+               alt="Right decoration"
+            >
+
+         </main>
+
+      </div>
+   </body>
+</html>

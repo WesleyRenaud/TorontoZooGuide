@@ -31,7 +31,7 @@ export function createOffDisplayBanner() {
 
    function sync(animal) {
       // animals only
-      if (!animal?.seasonally_off_display_message) {
+      if (!animal?.off_display_message) {
          hide();
          return;
       }
@@ -41,7 +41,7 @@ export function createOffDisplayBanner() {
       }
 
       const banner = ensure();
-      banner.querySelector('.off-display-text').innerHTML = animal.seasonally_off_display_message;
+      banner.querySelector('.off-display-text').innerHTML = animal.off_display_message;
       banner.style.display = 'flex';
    }
 
