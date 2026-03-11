@@ -13,7 +13,9 @@
       >
 
       <link rel="stylesheet" href="../styles/styles.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
+      <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
       <script type="module" src="../scripts/consoleOperations.js"></script>
    </head>
 
@@ -32,19 +34,16 @@
          <main>
 
             <aside class="side-panel left" aria-label="Operations menu">
-
                <div class="side-panel-header">
                   <h2 class="side-panel-title">Operations</h2>
                </div>
 
                <div class="side-panel-body">
-
                   <p class="console-operations-side-panel-text">
                      Choose an operation to update animal display status.
                   </p>
 
                   <section class="console-operations-menu">
-
                      <button
                         type="button"
                         id="showOffDisplayForm"
@@ -69,172 +68,25 @@
                         </span>
                      </button>
 
+                     <button
+                        type="button"
+                        id="showVisibilityScheduleForm"
+                        class="console-operations-menu-btn"
+                        data-panel-target="visibilitySchedulePanel"
+                     >
+                        <span class="console-operations-menu-btn-number">3</span>
+                        <span class="console-operations-menu-btn-label">
+                           Set animal visibility schedule
+                        </span>
+                     </button>
                   </section>
-
                </div>
-
             </aside>
 
-            <div class="map-container console-operations-workspace">
-
-               <section
-                  id="offDisplayPanel"
-                  class="console-operations-panel"
-               >
-
-                  <div class="console-operations-panel-header">
-                     <h2 class="console-operations-panel-title">
-                        Set animal as off display
-                     </h2>
-                  </div>
-
-                  <div class="console-operations-panel-body">
-
-                     <div class="console-operations-field">
-                        <label
-                           class="console-operations-label"
-                           for="offDisplaySpecies"
-                        >
-                           Species
-                        </label>
-
-                        <input
-                           id="offDisplaySpecies"
-                           type="text"
-                           class="console-operations-input"
-                           autocomplete="off"
-                           placeholder="Search for a species"
-                        >
-
-                        <div
-                           id="offDisplaySpeciesResults"
-                           class="console-operations-autocomplete"
-                        ></div>
-                     </div>
-
-                     <div class="console-operations-field">
-                        <label
-                           class="console-operations-label"
-                           for="offDisplayExhibit"
-                        >
-                           Exhibit
-                        </label>
-
-                        <select
-                           id="offDisplayExhibit"
-                           class="console-operations-input console-operations-select"
-                        >
-                           <option value="">Select an exhibit</option>
-                        </select>
-                     </div>
-
-                     <div class="console-operations-field">
-                        <label
-                           class="console-operations-label"
-                           for="offDisplayMessage"
-                        >
-                           Reason
-                        </label>
-
-                        <textarea
-                           id="offDisplayMessage"
-                           class="console-operations-textarea"
-                           placeholder="Enter the reason this animal is off display"
-                        ></textarea>
-                     </div>
-
-                     <div class="console-operations-actions">
-                        <button
-                           id="submitOffDisplay"
-                           type="button"
-                           class="console-operations-primary-btn"
-                        >
-                           Save
-                        </button>
-                     </div>
-
-                     <div
-                        id="offDisplayStatus"
-                        class="console-operations-status"
-                        aria-live="polite"
-                     ></div>
-
-                  </div>
-
-               </section>
-
-               <section
-                  id="onDisplayPanel"
-                  class="console-operations-panel"
-               >
-
-                  <div class="console-operations-panel-header">
-                     <h2 class="console-operations-panel-title">
-                        Set animal as on display
-                     </h2>
-                  </div>
-
-                  <div class="console-operations-panel-body">
-
-                     <div class="console-operations-field">
-                        <label
-                           class="console-operations-label"
-                           for="onDisplaySpecies"
-                        >
-                           Species
-                        </label>
-
-                        <input
-                           id="onDisplaySpecies"
-                           type="text"
-                           class="console-operations-input"
-                           autocomplete="off"
-                           placeholder="Search for a species"
-                        >
-
-                        <div
-                           id="onDisplaySpeciesResults"
-                           class="console-operations-autocomplete"
-                        ></div>
-                     </div>
-
-                     <div class="console-operations-field">
-                        <label
-                           class="console-operations-label"
-                           for="onDisplayExhibit"
-                        >
-                           Exhibit
-                        </label>
-
-                        <select
-                           id="onDisplayExhibit"
-                           class="console-operations-input console-operations-select"
-                        >
-                           <option value="">Select an exhibit</option>
-                        </select>
-                     </div>
-
-                     <div class="console-operations-actions">
-                        <button
-                           id="submitOnDisplay"
-                           type="button"
-                           class="console-operations-primary-btn"
-                        >
-                           Save
-                        </button>
-                     </div>
-
-                     <div
-                        id="onDisplayStatus"
-                        class="console-operations-status"
-                        aria-live="polite"
-                     ></div>
-
-                  </div>
-
-               </section>
-
-            </div>
+            <div
+               id="consoleOperationsWorkspace"
+               class="map-container console-operations-workspace"
+            ></div>
 
             <img
                class="side-image right"

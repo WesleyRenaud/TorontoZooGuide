@@ -2,9 +2,9 @@ export function createOffDisplayBanner() {
    let el = null;
 
    function ensure() {
-      if (el) return el;
+      if ( el ) return el;
 
-      el = document.createElement('div');
+      el = document.createElement( 'div' );
       el.className = 'off-display-banner';
       el.style.display = 'none';
 
@@ -14,34 +14,39 @@ export function createOffDisplayBanner() {
          <button class="off-display-close" type="button" aria-label="Close">×</button>
       `;
 
-      el.addEventListener('click', (e) => e.stopPropagation());
-      el.querySelector('.off-display-close').addEventListener('click', (e) => {
+      el.addEventListener( 'click', ( e ) => e.stopPropagation() );
+      el.querySelector( '.off-display-close' ).addEventListener( 'click', ( e ) => {
          e.stopPropagation();
          hide();
-      });
+      } );
 
-      document.body.appendChild(el);
+      document.body.appendChild( el );
       return el;
    }
 
    function hide() {
-      if (!el) return;
+      if ( !el ) return;
       el.style.display = 'none';
    }
 
-   function sync(animal) {
-      // animals only
-      if (!animal?.off_display_message) {
-         hide();
-         return;
+   function sync( animal ) {
+      const messages = [];
+
+      if ( animal?.off_display_message ) {
+         messages.push( animal.off_display_message );
       }
-      if (Number(animal.likelihood) !== 0) {
+
+      if ( animal?.limited_viewing_message ) {
+         messages.push( animal.limited_viewing_message );
+      }
+
+      if ( messages.length === 0 ) {
          hide();
          return;
       }
 
       const banner = ensure();
-      banner.querySelector('.off-display-text').innerHTML = animal.off_display_message;
+      banner.querySelector( '.off-display-text' ).innerHTML = messages.join( '<br><br>' );
       banner.style.display = 'flex';
    }
 

@@ -881,6 +881,12 @@ nav ul li a:hover {
    border: none;
 }
 
+.marker.marker-has-limited-viewing {
+   box-shadow:
+      0 0 0 4px rgba(255,255,255,0.98),
+      0 0 0 11px rgba(255,221,0,0.98);
+}
+
 /* ============================================================
    HOVER TOOLTIP
 ============================================================ */
@@ -2708,6 +2714,81 @@ nav ul li a:hover {
 }
 
 /* ============================================================
+   CONSOLE OPERATIONS: DATE/TIME PICKERS
+============================================================ */
+
+.console-operations-datetime {
+   width: 100%;
+   box-sizing: border-box;
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 3em;
+   font-weight: 700;
+   color: rgba(20,35,10,0.95);
+
+   padding: 24px 28px;
+   border-radius: 22px;
+
+   background: rgba(255,255,255,0.94);
+   border: 5px solid rgba(94,150,0,0.32);
+
+   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+   outline: none;
+}
+
+.console-operations-datetime:focus {
+   border-color: rgba(94,150,0,0.95);
+   box-shadow: 0 14px 34px rgba(0,0,0,0.16);
+}
+
+/* ============================================================
+   CONSOLE OPERATIONS: TIME ROW SPACING
+============================================================ */
+
+/* Keep the time section compact */
+.console-operations-page .flatpickr-time {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   gap: 6px;
+}
+
+/* Stop Flatpickr from stretching the inputs */
+.console-operations-page .flatpickr-time .numInputWrapper {
+   flex: 0 0 auto;
+   width: 42px;
+}
+
+/* Hours and minutes */
+.console-operations-page .flatpickr-time input {
+   text-align: center;
+   padding: 0;
+   font-size: 14px;
+   font-weight: 700;
+}
+
+/* Colon */
+.console-operations-page .flatpickr-time .flatpickr-time-separator {
+   margin: 0 2px;
+   font-weight: 800;
+}
+
+/* AM/PM toggle */
+.console-operations-page .flatpickr-am-pm {
+   margin-left: 8px;
+   padding: 0 8px;
+   border-radius: 6px;
+   font-size: 13px;
+   font-weight: 700;
+   background: rgba(94,150,0,0.08);
+   cursor: pointer;
+}
+
+.console-operations-page .flatpickr-am-pm:hover {
+   background: rgba(94,150,0,0.16);
+}
+
+/* ============================================================
    ACTIONS
 ============================================================ */
 
@@ -2814,7 +2895,8 @@ nav ul li a:hover {
    cursor: pointer;
 }
 
-.console-operations-autocomplete-item:hover {
+.console-operations-autocomplete-item:hover,
+.console-operations-autocomplete-item.is-highlighted {
    background: rgba(119,184,0,0.18);
 }
 
@@ -2848,5 +2930,10 @@ nav ul li a:hover {
 
    .console-operations-panel {
       width: 100%;
+   }
+
+   .console-operations-page .flatpickr-calendar {
+      transform: scale(1.5);
+      transform-origin: top left;
    }
 }

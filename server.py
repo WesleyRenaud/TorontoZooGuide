@@ -483,9 +483,11 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          species = data.get( 'species' )
          exhibit = data.get( 'exhibit' )
+         start_time = data.get( 'startTime' )
+         end_time = data.get( 'endTime' )
          message = data.get( 'message' )
 
-         success = self.database.set_animal_as_off_display( species, exhibit, message )
+         success = self.database.set_animal_as_off_display( species, exhibit, start_time, end_time, message )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -495,11 +497,13 @@ class MyHandler( BaseHTTPRequestHandler ):
             'success': success,
             'species': species,
             'exhibit': exhibit,
+            'startTime': start_time,
+            'endTime': end_time,
             'message': message,
          }
 
          if not success:
-            response[ 'error' ] = f'No animal found with species "{species}".'
+            response['error'] = f'No animal found with species "{species}".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -526,6 +530,43 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response['error'] = f'No off-display entry found for "{species}" in "{exhibit}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-animal-visibility-schedule':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         species = data.get( 'species' )
+         exhibit = data.get( 'exhibit' )
+         schedule_start_date = data.get( 'scheduleStartDate' )
+         schedule_end_date = data.get( 'scheduleEndDate' )
+         daily_start_time = data.get( 'dailyStartTime' )
+         daily_end_time = data.get( 'dailyEndTime' )
+         message = data.get( 'message' )
+
+         success = self.database.set_animal_limited_viewing_schedule( species, exhibit, schedule_start_date, schedule_end_date,
+                                                                      daily_start_time, daily_end_time, message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'species': species,
+            'exhibit': exhibit,
+            'scheduleStartDate': schedule_start_date,
+            'scheduleEndDate': schedule_end_date,
+            'dailyStartTime': daily_start_time,
+            'dailyEndTime': daily_end_time,
+            'message': message,
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not set limited viewing schedule for "{species}" in "{exhibit}".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

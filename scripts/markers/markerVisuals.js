@@ -1,22 +1,22 @@
 import { likelihoodToColor, getAnimalIconUrl } from '../utils/icons.js';
 import { normalizeParameter } from '../utils/normalize.js';
 
-function resetMarkerVisual(markerEl) {
-   // Clear anything from prior renders
+function resetMarkerVisual( markerEl ) {
    markerEl.textContent = '';
    markerEl.style.backgroundImage = 'none';
    markerEl.style.backgroundColor = 'transparent';
    markerEl.style.backgroundRepeat = 'no-repeat';
    markerEl.style.backgroundPosition = 'center';
    markerEl.style.backgroundSize = 'cover';
+
+   markerEl.classList.remove( 'marker-has-limited-viewing' );
 }
 
-function applyGenericIcon(markerEl, iconUrl, count) {
-   // If multiple items of this same type share the coordinate, show a count badge
-   if (count > 1) {
+function applyGenericIcon( markerEl, iconUrl, count ) {
+   if ( count > 1 ) {
       markerEl.style.backgroundColor = 'rgba(94,150,0,0.95)';
       markerEl.style.backgroundImage = 'none';
-      markerEl.textContent = String(count);
+      markerEl.textContent = String( count );
       return;
    }
 
@@ -28,25 +28,32 @@ function applyGenericIcon(markerEl, iconUrl, count) {
    markerEl.textContent = '';
 }
 
-export function applyMarkerVisual(markerEl, itemsAtPoint) {
-   if (!markerEl) return;
+function shouldShowLimitedViewingIndicator( animal ) {
+   return Boolean(
+      animal?.has_limited_viewing_schedule
+      && animal?.limited_viewing_message
+      && !animal?.off_display_message
+   );
+}
 
-   resetMarkerVisual(markerEl);
+export function applyMarkerVisual( markerEl, itemsAtPoint ) {
+   if ( !markerEl ) return;
 
-   const items = Array.isArray(itemsAtPoint) ? itemsAtPoint : [];
-   if (items.length === 0) return;
+   resetMarkerVisual( markerEl );
 
-   // ✅ Markers are single-type, so just read the first item
-   const type = String(items[0]?.type || '');
+   const items = Array.isArray( itemsAtPoint ) ? itemsAtPoint : [];
+   if ( items.length === 0 ) return;
+
+   const type = String( items[0]?.type || '' );
    const count = items.length;
 
-   if (type === 'animal') {
+   if ( type === 'animal' ) {
       const a = items[0];
 
-      const colour = likelihoodToColor(a.likelihood);
-      const colourForUrl = String(colour || '').replace('#', '');
+      const colour = likelihoodToColor( a.likelihood );
+      const colourForUrl = String( colour || '' ).replace( '#', '' );
 
-      if (count === 1) {
+      if ( count === 1 ) {
          markerEl.style.backgroundColor = colour;
          markerEl.style.backgroundImage = getAnimalIconUrl(
             a.exhibit,
@@ -58,90 +65,92 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
       } else {
          markerEl.style.backgroundImage = 'none';
          markerEl.style.backgroundColor = colour;
-         markerEl.textContent = String(count);
+         markerEl.textContent = String( count );
       }
+
+      if ( shouldShowLimitedViewingIndicator( a ) ) {
+         markerEl.classList.add( 'marker-has-limited-viewing' );
+      }
+
       return;
    }
 
-   if (type === 'pavilion') {
-      applyGenericIcon(markerEl, '/images/generic-icons/pavilion.png', count);
+   if ( type === 'pavilion' ) {
+      applyGenericIcon( markerEl, '/images/generic-icons/pavilion.png', count );
       return;
    }
 
-   if (type === 'restaurant') {
-      markerEl.classList.add('marker-restaurant');
-      applyGenericIcon(markerEl, '/images/generic-icons/restaurant.png', count);
+   if ( type === 'restaurant' ) {
+      markerEl.classList.add( 'marker-restaurant' );
+      applyGenericIcon( markerEl, '/images/generic-icons/restaurant.png', count );
       return;
    }
 
-   if (type === 'restroom') {
-      markerEl.classList.add('marker-restroom');
-      applyGenericIcon(markerEl, '/images/generic-icons/restroom.png', count);
+   if ( type === 'restroom' ) {
+      markerEl.classList.add( 'marker-restroom' );
+      applyGenericIcon( markerEl, '/images/generic-icons/restroom.png', count );
       return;
    }
 
-   if (type === 'giftShop') {
-      markerEl.classList.add('marker-gift-shop');
-      applyGenericIcon(markerEl, '/images/generic-icons/gift-shop.png', count);
+   if ( type === 'giftShop' ) {
+      markerEl.classList.add( 'marker-gift-shop' );
+      applyGenericIcon( markerEl, '/images/generic-icons/gift-shop.png', count );
       return;
    }
 
-   if (type === 'attraction') {
-      markerEl.classList.add('marker-attraction');
+   if ( type === 'attraction' ) {
+      markerEl.classList.add( 'marker-attraction' );
 
-      const attraction = items[0]; // first item at marker
-      const slug = normalizeParameter(attraction.name); 
+      const attraction = items[0];
+      const slug = normalizeParameter( attraction.name );
       const iconPath = `/images/attraction-icons/${slug}.png`;
 
-      applyGenericIcon(markerEl, iconPath, count);
-
+      applyGenericIcon( markerEl, iconPath, count );
       return;
    }
 
-   if (type === 'zoomobileStation') {
-      markerEl.classList.add('marker-zoomobile-station');
-      applyGenericIcon(markerEl, '/images/generic-icons/zoomobile-station.png', count);
+   if ( type === 'zoomobileStation' ) {
+      markerEl.classList.add( 'marker-zoomobile-station' );
+      applyGenericIcon( markerEl, '/images/generic-icons/zoomobile-station.png', count );
       return;
    }
 
-   if (type === 'zoomobileRouteMarker') {
+   if ( type === 'zoomobileRouteMarker' ) {
       const routeType = items[0].route_type;
 
-      if (routeType == 'winter') {
+      if ( routeType == 'winter' ) {
          markerEl.style.backgroundColor = '#003366';
-      }
-      else {
+      } else {
          markerEl.style.backgroundColor = '#556B2F';
       }
-      
-      markerEl.classList.add('marker-zoomobile-route-marker');
+
+      markerEl.classList.add( 'marker-zoomobile-route-marker' );
       return;
    }
 
-   if (type === 'meetTheGuardiansTalk') {
-      markerEl.classList.add('marker-meet-the-guardians-talk');
-      applyGenericIcon(markerEl, '/images/generic-icons/meet-the-guardians-talk.png', count);
+   if ( type === 'meetTheGuardiansTalk' ) {
+      markerEl.classList.add( 'marker-meet-the-guardians-talk' );
+      applyGenericIcon( markerEl, '/images/generic-icons/meet-the-guardians-talk.png', count );
       return;
    }
 
-   if (type === 'wildEncounterMeetingSpot' || type === 'wildEncounter') {
-      markerEl.classList.add('marker-wild-encounter-meeting-spot');
-      applyGenericIcon(markerEl, '/images/generic-icons/wild-encounter-meeting-spot.png', count);
+   if ( type === 'wildEncounterMeetingSpot' || type === 'wildEncounter' ) {
+      markerEl.classList.add( 'marker-wild-encounter-meeting-spot' );
+      applyGenericIcon( markerEl, '/images/generic-icons/wild-encounter-meeting-spot.png', count );
       return;
    }
 
-   // Fallback for future types
    markerEl.style.backgroundColor = 'rgba(94,150,0,0.95)';
-   markerEl.textContent = String(count);
+   markerEl.textContent = String( count );
 }
 
-export function setMarkerToAnimalIcon(markerEl, animal) {
-   if (!markerEl || !animal) return;
+export function setMarkerToAnimalIcon( markerEl, animal ) {
+   if ( !markerEl || !animal ) return;
 
-   resetMarkerVisual(markerEl);
+   resetMarkerVisual( markerEl );
 
-   const colour = likelihoodToColor(animal.likelihood);
-   const colourForUrl = String(colour || '').replace('#', '');
+   const colour = likelihoodToColor( animal.likelihood );
+   const colourForUrl = String( colour || '' ).replace( '#', '' );
 
    markerEl.style.backgroundColor = colour;
    markerEl.style.backgroundImage = getAnimalIconUrl(
@@ -153,4 +162,8 @@ export function setMarkerToAnimalIcon(markerEl, animal) {
    markerEl.style.backgroundPosition = 'center';
    markerEl.style.backgroundSize = 'cover';
    markerEl.textContent = '';
+
+   if ( shouldShowLimitedViewingIndicator( animal ) ) {
+      markerEl.classList.add( 'marker-has-limited-viewing' );
+   }
 }

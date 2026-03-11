@@ -1,5 +1,6 @@
 import sqlite3
 import zoo
+from datetime import date, datetime
 
 
 ################################################################################
@@ -22,6 +23,8 @@ class Database():
          sigma = 2
 
       snow_likelihood = self.zoo_util.get_snow_likelihood( month, day )
+
+      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), day = int( day ) )
 
       data = cur.execute(
          """   SELECT
@@ -47,7 +50,14 @@ class Database():
                   v.X_COORD,
                   v.Y_COORD,
                   s.IS_OFF_DISPLAY,
-                  s.OFF_DISPLAY_MESSAGE
+                  s.OFF_DISPLAY_MESSAGE,
+                  s.OFF_DISPLAY_START,
+                  s.OFF_DISPLAY_END,
+                  vs.SCHEDULE_START_DATE,
+                  vs.SCHEDULE_END_DATE,
+                  vs.DAILY_START_TIME,
+                  vs.DAILY_END_TIME,
+                  vs.VIEWING_MESSAGE
                FROM Animal a
                JOIN Enclosure e
                   ON a.SPECIES = e.SPECIES
@@ -56,31 +66,84 @@ class Database():
                   AND e.EXHIBIT = v.EXHIBIT
                LEFT JOIN AnimalStatus s
                   ON e.SPECIES = s.SPECIES
-                  AND e.EXHIBIT = s.EXHIBIT;
+                  AND e.EXHIBIT = s.EXHIBIT
+               LEFT JOIN AnimalVisibilitySchedule vs
+                  ON e.SPECIES = vs.SPECIES
+                  AND e.EXHIBIT = vs.EXHIBIT;
          """ )
 
       animal_data = data.fetchall()
       animals = []
 
       for animal in animal_data:
+
          species = animal[0]
          exhibit = animal[13]
+
          min_temperature = animal[2]
          snow_resistance = animal[3]
          part_of_seasonal_exhibit = animal[14]
          enclosure_type = animal[17]
-         is_off_display = bool( animal[21] ) if animal[21] != None else False
+
+         stored_is_off_display = bool( animal[21] ) if animal[21] != None else False
          off_display_message = animal[22]
+         off_display_start = animal[23]
+         off_display_end = animal[24]
+
+         schedule_start_date = animal[25]
+         schedule_end_date = animal[26]
+         daily_start_time = animal[27]
+         daily_end_time = animal[28]
+         viewing_message = animal[29]
+
+         is_off_display = False
+
+         if stored_is_off_display:
+
+            start_ok = True
+            end_ok = True
+
+            if off_display_start != None:
+               start_dt = datetime.fromisoformat( off_display_start )
+               start_ok = target_date >= start_dt.date()
+
+            if off_display_end != None:
+               end_dt = datetime.fromisoformat( off_display_end )
+               end_ok = target_date < end_dt.date()
+
+            is_off_display = start_ok and end_ok
+
+         has_limited_viewing_schedule = False
+         limited_viewing_message = None
+
+         if daily_start_time != None and daily_end_time != None:
+
+            schedule_active = True
+
+            if schedule_start_date != None:
+               start_date = date.fromisoformat( schedule_start_date )
+               schedule_active = schedule_active and ( target_date >= start_date )
+
+            if schedule_end_date != None:
+               end_date = date.fromisoformat( schedule_end_date )
+               schedule_active = schedule_active and ( target_date <= end_date )
+
+            if schedule_active:
+               has_limited_viewing_schedule = True
+               limited_viewing_message = viewing_message
 
          if is_off_display:
             likelihood = 0
          else:
+
             if enclosure_type == 'Outdoor':
+
                avg_temp = self.zoo_util.get_average_temperature( month, day )
                effective_temp = avg_temp + 0.5 * ( temp - avg_temp )
 
                likelihood = self.zoo_util.get_temperature_probability( effective_temp, sigma, min_temperature )
-               likelihood = likelihood - (1.0 - snow_resistance) * snow_likelihood
+               likelihood = likelihood - ( 1.0 - snow_resistance ) * snow_likelihood
+
             else:
                likelihood = 1
 
@@ -92,22 +155,43 @@ class Database():
          should_include = False
 
          if not itinerary_mode:
+
             should_include = (
                ( likelihood > threshold )
                or ( include_off_display_animals and is_off_display )
                or species in species_to_include
             )
+
          else:
             should_include = species in species_to_include
 
          if should_include:
-            animals.append( zoo.Animal( species=species, latin_name=animal[1], general_viewing_tips=animal[4],
-                                        seasonal_viewing_tips=animal[5], identification=animal[6], habitat_and_range=animal[7],
-                                        diet_and_feeding=animal[8], behaviour_and_life_cycle=animal[9], adaptations=animal[10],
-                                        reproduction_and_life_cycle=animal[11], animals_at_the_zoo=animal[12], exhibit=exhibit,
-                                        seasonal_viewing_summary=animal[15], seasonal_viewing_information=animal[16],
-                                        off_display_message=off_display_message if is_off_display else animal[18],
-                                        enclosure_type=enclosure_type, x_coord=animal[19], y_coord=animal[20], likelihood=likelihood ) )
+
+            animals.append(
+               zoo.Animal(
+                  species=species,
+                  latin_name=animal[1],
+                  general_viewing_tips=animal[4],
+                  seasonal_viewing_tips=animal[5],
+                  identification=animal[6],
+                  habitat_and_range=animal[7],
+                  diet_and_feeding=animal[8],
+                  behaviour_and_life_cycle=animal[9],
+                  adaptations=animal[10],
+                  reproduction_and_life_cycle=animal[11],
+                  animals_at_the_zoo=animal[12],
+                  exhibit=exhibit,
+                  seasonal_viewing_summary=animal[15],
+                  seasonal_viewing_information=animal[16],
+                  off_display_message=off_display_message if is_off_display else None,
+                  enclosure_type=enclosure_type,
+                  x_coord=animal[19],
+                  y_coord=animal[20],
+                  likelihood=likelihood,
+                  has_limited_viewing_schedule=has_limited_viewing_schedule,
+                  limited_viewing_message=limited_viewing_message
+               )
+            )
 
       cur.close()
 
@@ -760,9 +844,15 @@ class Database():
       return exhibits
    
 
-   def set_animal_as_off_display( self, species, exhibit, message ):
+   def set_animal_as_off_display( self, species, exhibit, start_time, end_time, message ):
       if not message:
          message = f'The {species} is temporarily off-display.'
+
+      if not start_time:
+         start_time = datetime.now().isoformat( sep=' ', timespec='seconds' )
+
+      if not end_time:
+         end_time = None
 
       cur = self.conn.cursor()
 
@@ -771,20 +861,24 @@ class Database():
                   SPECIES,
                   EXHIBIT,
                   IS_OFF_DISPLAY,
+                  OFF_DISPLAY_START,
+                  OFF_DISPLAY_END,
                   OFF_DISPLAY_MESSAGE
                )
-               VALUES (?, ?, 1, ?)
+               VALUES (?, ?, 1, ?, ?, ?)
                ON CONFLICT(SPECIES, EXHIBIT) DO UPDATE SET
                   IS_OFF_DISPLAY = 1,
+                  OFF_DISPLAY_START = excluded.OFF_DISPLAY_START,
+                  OFF_DISPLAY_END = excluded.OFF_DISPLAY_END,
                   OFF_DISPLAY_MESSAGE = excluded.OFF_DISPLAY_MESSAGE;
-         """, (species, exhibit, message ) )
+         """, ( species, exhibit, start_time, end_time, message ) )
 
       self.conn.commit()
       updated = cur.rowcount
       cur.close()
 
       return updated > 0
-   
+      
 
    def set_animal_as_on_display( self, species, exhibit ):
       cur = self.conn.cursor()
@@ -801,6 +895,64 @@ class Database():
                   IS_OFF_DISPLAY = 0,
                   OFF_DISPLAY_MESSAGE = NULL;
          """, (species, exhibit, ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def set_animal_limited_viewing_schedule( self, species, exhibit, schedule_start_date, schedule_end_date, daily_start_time,
+                                            daily_end_time, message ):
+      if not schedule_start_date:
+         schedule_start_date = datetime.now().date().isoformat()
+
+      if not schedule_end_date:
+         schedule_end_date = None
+
+      if not daily_start_time or not daily_end_time:
+         return False
+
+      if not message:
+
+         formatted_daily_start_time = datetime.strptime( daily_start_time, '%H:%M' ).strftime( '%I:%M %p' ).lstrip( '0' )
+         formatted_daily_end_time = datetime.strptime( daily_end_time, '%H:%M' ).strftime( '%I:%M %p' ).lstrip( '0' )
+
+         if schedule_end_date != None:
+
+            formatted_schedule_end_date = datetime.strptime( schedule_end_date, '%Y-%m-%d' ).strftime( '%A, %B %d, %Y' )
+
+            message = (
+               f'The {species} is viewable daily only from {formatted_daily_start_time} to {formatted_daily_end_time} '
+               f'until {formatted_schedule_end_date}.'
+            )
+
+         else:
+            message = (
+               f'The {species} is viewable daily only from {formatted_daily_start_time} to {formatted_daily_end_time}.'
+            )
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO AnimalVisibilitySchedule (
+                  SPECIES,
+                  EXHIBIT,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  DAILY_START_TIME,
+                  DAILY_END_TIME,
+                  VIEWING_MESSAGE
+               )
+               VALUES (?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(SPECIES, EXHIBIT) DO UPDATE SET
+                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
+                  DAILY_START_TIME = excluded.DAILY_START_TIME,
+                  DAILY_END_TIME = excluded.DAILY_END_TIME,
+                  VIEWING_MESSAGE = excluded.VIEWING_MESSAGE;
+         """, ( species, exhibit, schedule_start_date, schedule_end_date, daily_start_time, daily_end_time, message ) )
 
       self.conn.commit()
       updated = cur.rowcount

@@ -1,3 +1,5 @@
+import { initFlatpickr } from '../ui/flatpickr.js';
+
 export function initMapControls
    ({
       mapPreset,
@@ -10,33 +12,19 @@ export function initMapControls
       onUpdate
    }) {
 
-   if (!mapPreset || !mapDateInput || !onUpdate) {
-      console.warn('[controls] missing elements:', { mapPreset, mapDateInput, onUpdate });
+   if ( !mapPreset || !mapDateInput || !onUpdate ) {
+      console.warn( '[controls] missing elements:', { mapPreset, mapDateInput, onUpdate } );
       return;
    }
 
-   // Try to init flatpickr, but never let it break controls
-   let fp = null;
-   try {
-      const fpFn = window.flatpickr; // important: read from window
-      if (typeof fpFn === 'function') {
-         fp = fpFn(mapDateInput, {
-            defaultDate: new Date(),
-            dateFormat: 'Y-m-d',
-            allowInput: true,
-            clickOpens: true,
-            minDate: 'today',
-            monthSelectorType: 'static',
-            onChange: (_, dateStr) => {
-               if (mapPreset.value === 'specific-day') onUpdate('specific-day', dateStr);
-            },
-         });
-      } else {
-         console.warn('[controls] window.flatpickr not available; using plain input');
+   const fp = initFlatpickr( mapDateInput, {
+      defaultDate: new Date(),
+      dateFormat: 'Y-m-d',
+      minDate: 'today',
+      onChange: ( _, dateStr ) => {
+         if ( mapPreset.value === 'specific-day' ) onUpdate( 'specific-day', dateStr );
       }
-   } catch (err) {
-      console.error('[controls] flatpickr init failed; using plain input', err);
-   }
+   } );
 
    function currentDateStr() {
       return mapDateInput.value || fp?.input?.value || '';
@@ -45,66 +33,65 @@ export function initMapControls
    function refetch() {
       const preset = mapPreset.value;
 
-      if (!preset) return;
+      if ( !preset ) return;
 
-      if (preset === 'specific-day') {
+      if ( preset === 'specific-day' ) {
          const dateStr = currentDateStr();
-         if (!dateStr) return;
-         onUpdate('specific-day', dateStr);
+         if ( !dateStr ) return;
+         onUpdate( 'specific-day', dateStr );
       } else {
-         onUpdate(preset, null);
+         onUpdate( preset, null );
       }
    }
 
-   mapPreset.addEventListener('change', () => {
+   mapPreset.addEventListener( 'change', () => {
       const preset = mapPreset.value;
 
-      if (!preset) {
+      if ( !preset ) {
          mapDateInput.style.display = 'none';
          return;
       }
 
-      if (preset === 'specific-day') {
+      if ( preset === 'specific-day' ) {
          mapDateInput.style.display = 'inline-block';
-         onUpdate('specific-day', currentDateStr());
+         onUpdate( 'specific-day', currentDateStr() );
       } else {
          mapDateInput.style.display = 'none';
-         onUpdate(preset, null);
+         onUpdate( preset, null );
       }
-   });
+   } );
 
-   // If you don't have flatpickr, this still updates on manual typing/choosing a date
-   mapDateInput.addEventListener('change', () => {
-      if (mapPreset.value === 'specific-day') onUpdate('specific-day', currentDateStr());
-   });
+   mapDateInput.addEventListener( 'change', () => {
+      if ( mapPreset.value === 'specific-day' ) onUpdate( 'specific-day', currentDateStr() );
+   } );
 
-   if (includeOffDisplayCheckbox) {
-      includeOffDisplayCheckbox.addEventListener('change', () => {
+   if ( includeOffDisplayCheckbox ) {
+      includeOffDisplayCheckbox.addEventListener( 'change', () => {
          refetch();
-      });
+      } );
    }
 
-   if (includeSeasonalRestaurantsCheckbox) {
-      includeSeasonalRestaurantsCheckbox.addEventListener('change', () => {
+   if ( includeSeasonalRestaurantsCheckbox ) {
+      includeSeasonalRestaurantsCheckbox.addEventListener( 'change', () => {
          refetch();
-      });
+      } );
    }
 
-   if (includeSeasonalGiftShopsCheckbox) {
-      includeSeasonalGiftShopsCheckbox.addEventListener('change', () => {
+   if ( includeSeasonalGiftShopsCheckbox ) {
+      includeSeasonalGiftShopsCheckbox.addEventListener( 'change', () => {
          refetch();
-      });
+      } );
    }
 
-   if (includeSeasonalAttractionsCheckbox) {
-      includeSeasonalAttractionsCheckbox.addEventListener('change', () => {
+   if ( includeSeasonalAttractionsCheckbox ) {
+      includeSeasonalAttractionsCheckbox.addEventListener( 'change', () => {
          refetch();
-      });
+      } );
    }
 
-   if (zoomobileRouteTypeRadios) {
-      Array.from(zoomobileRouteTypeRadios || []).forEach(r => r.addEventListener('change', () => {
-         refetch()
-      }));
+   if ( zoomobileRouteTypeRadios ) {
+      Array.from( zoomobileRouteTypeRadios || [] ).forEach( r => r.addEventListener( 'change', () => {
+         refetch();
+      } ) );
    }
 }

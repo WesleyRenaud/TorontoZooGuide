@@ -186,12 +186,81 @@ cursor.execute( ''' CREATE TABLE WildEncounterMeetingTime
 
 cursor.execute( ''' CREATE TABLE IF NOT EXISTS AnimalStatus
                   (  SPECIES              VARCHAR(64) NOT NULL,
-                     EXHIBIT              VARCHAR(64) NOT NULL,     
+                     EXHIBIT              VARCHAR(64) NOT NULL,
                      IS_OFF_DISPLAY       BOOL        NOT NULL DEFAULT 0,
                      OFF_DISPLAY_MESSAGE  TEXT,
+                     OFF_DISPLAY_START    DATETIME,
+                     OFF_DISPLAY_END      DATETIME,
                      PRIMARY KEY (SPECIES, EXHIBIT),
                      FOREIGN KEY (SPECIES) REFERENCES Animal(SPECIES),
                      FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(NAME) ); ''' )
+
+animal_status_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( AnimalStatus );' ).fetchall()
+}
+
+if 'IS_OFF_DISPLAY' not in animal_status_columns:
+   cursor.execute(
+      'ALTER TABLE AnimalStatus ADD COLUMN IS_OFF_DISPLAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'OFF_DISPLAY_MESSAGE' not in animal_status_columns:
+   cursor.execute(
+      'ALTER TABLE AnimalStatus ADD COLUMN OFF_DISPLAY_MESSAGE TEXT;'
+   )
+
+if 'OFF_DISPLAY_START' not in animal_status_columns:
+   cursor.execute(
+      'ALTER TABLE AnimalStatus ADD COLUMN OFF_DISPLAY_START DATETIME;'
+   )
+
+if 'OFF_DISPLAY_END' not in animal_status_columns:
+   cursor.execute(
+      'ALTER TABLE AnimalStatus ADD COLUMN OFF_DISPLAY_END DATETIME;'
+   )
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS AnimalVisibilitySchedule
+                  (  SPECIES               VARCHAR(64) NOT NULL,
+                     EXHIBIT               VARCHAR(64) NOT NULL,
+                     SCHEDULE_START_DATE   DATE,
+                     SCHEDULE_END_DATE     DATE,
+                     DAILY_START_TIME      VARCHAR(8) NOT NULL,
+                     DAILY_END_TIME        VARCHAR(8) NOT NULL,
+                     VIEWING_MESSAGE       TEXT,
+                     PRIMARY KEY (SPECIES, EXHIBIT),
+                     FOREIGN KEY (SPECIES) REFERENCES Animal(SPECIES),
+                     FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(NAME) ); ''' )
+
+animal_visibility_schedule_columns = {
+   row[1] for row in cursor.execute(
+      'PRAGMA table_info( AnimalVisibilitySchedule );'
+   ).fetchall()
+}
+
+if 'SCHEDULE_START_DATE' not in animal_visibility_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AnimalVisibilitySchedule ADD COLUMN SCHEDULE_START_DATE DATE;'
+   )
+
+if 'SCHEDULE_END_DATE' not in animal_visibility_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AnimalVisibilitySchedule ADD COLUMN SCHEDULE_END_DATE DATE;'
+   )
+
+if 'DAILY_START_TIME' not in animal_visibility_schedule_columns:
+   cursor.execute(
+      "ALTER TABLE AnimalVisibilitySchedule ADD COLUMN DAILY_START_TIME VARCHAR(8) NOT NULL DEFAULT '09:00';"
+   )
+
+if 'DAILY_END_TIME' not in animal_visibility_schedule_columns:
+   cursor.execute(
+      "ALTER TABLE AnimalVisibilitySchedule ADD COLUMN DAILY_END_TIME VARCHAR(8) NOT NULL DEFAULT '17:00';"
+   )
+
+if 'VIEWING_MESSAGE' not in animal_visibility_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AnimalVisibilitySchedule ADD COLUMN VIEWING_MESSAGE TEXT;'
+   )
 
 regions = [
    (
