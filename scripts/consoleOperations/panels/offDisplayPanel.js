@@ -54,16 +54,16 @@ export function createOffDisplayPanelHtml() {
             <div class="console-operations-field">
                <label
                   class="console-operations-label"
-                  for="offDisplayStartTime"
+                  for="offDisplayStartDate"
                >
-                  Start time
+                  Start date
                </label>
 
                <input
-                  id="offDisplayStartTime"
+                  id="offDisplayStartDate"
                   type="text"
                   class="console-operations-input console-operations-datetime"
-                  placeholder="Select a start time"
+                  placeholder="Select a start date"
                   autocomplete="off"
                >
 
@@ -75,16 +75,16 @@ export function createOffDisplayPanelHtml() {
             <div class="console-operations-field">
                <label
                   class="console-operations-label"
-                  for="offDisplayEndTime"
+                  for="offDisplayEndDate"
                >
-                  End time
+                  End date
                </label>
 
                <input
-                  id="offDisplayEndTime"
+                  id="offDisplayEndDate"
                   type="text"
                   class="console-operations-input console-operations-datetime"
-                  placeholder="Select an end time"
+                  placeholder="Select an end date"
                   autocomplete="off"
                >
 

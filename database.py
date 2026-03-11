@@ -8,15 +8,17 @@ from datetime import date, datetime
 class Database():
    def __init__( self ):
       self.conn = sqlite3.connect( 'animals.db' )
+      self.conn.row_factory = sqlite3.Row
       self.zoo_util = zoo.Zoo_Util()
 
 
    # Returns all animals which may be viewable in the given month with their likelihoods (probability from 0 to 1)
    def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False, threshold=0, species_to_include=[],
                                     itinerary_mode=False ):
+
       cur = self.conn.cursor()
 
-      if temp == None:
+      if temp is None:
          temp = self.zoo_util.get_average_temperature( month, day )
          sigma = 3
       else:
@@ -24,7 +26,7 @@ class Database():
 
       snow_likelihood = self.zoo_util.get_snow_likelihood( month, day )
 
-      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), day = int( day ) )
+      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), int( day ) )
 
       data = cur.execute(
          """   SELECT
@@ -77,24 +79,24 @@ class Database():
 
       for animal in animal_data:
 
-         species = animal[0]
-         exhibit = animal[13]
+         species = animal[ 'SPECIES' ]
+         exhibit = animal[ 'EXHIBIT' ]
 
-         min_temperature = animal[2]
-         snow_resistance = animal[3]
-         part_of_seasonal_exhibit = animal[14]
-         enclosure_type = animal[17]
+         min_temperature = animal[ 'MIN_TEMPERATURE' ]
+         snow_resistance = animal[ 'SNOW_RESISTANCE' ]
+         part_of_seasonal_exhibit = animal[ 'PART_OF_SEASONAL_EXHIBIT' ]
+         enclosure_type = animal[ 'ENCLOSURE_TYPE' ]
 
-         stored_is_off_display = bool( animal[21] ) if animal[21] != None else False
-         off_display_message = animal[22]
-         off_display_start = animal[23]
-         off_display_end = animal[24]
+         stored_is_off_display = bool( animal[ 'IS_OFF_DISPLAY' ] ) if animal[ 'IS_OFF_DISPLAY' ] != None else False
+         off_display_message = animal[ 'OFF_DISPLAY_MESSAGE' ]
+         off_display_start = animal[ 'OFF_DISPLAY_START' ]
+         off_display_end = animal[ 'OFF_DISPLAY_END' ]
 
-         schedule_start_date = animal[25]
-         schedule_end_date = animal[26]
-         daily_start_time = animal[27]
-         daily_end_time = animal[28]
-         viewing_message = animal[29]
+         schedule_start_date = animal[ 'SCHEDULE_START_DATE' ]
+         schedule_end_date = animal[ 'SCHEDULE_END_DATE' ]
+         daily_start_time = animal[ 'DAILY_START_TIME' ]
+         daily_end_time = animal[ 'DAILY_END_TIME' ]
+         viewing_message = animal[ 'VIEWING_MESSAGE' ]
 
          is_off_display = False
 
@@ -104,12 +106,12 @@ class Database():
             end_ok = True
 
             if off_display_start != None:
-               start_dt = datetime.fromisoformat( off_display_start )
-               start_ok = target_date >= start_dt.date()
+               start_date = self.parse_date_value( off_display_start )
+               start_ok = target_date >= start_date
 
             if off_display_end != None:
-               end_dt = datetime.fromisoformat( off_display_end )
-               end_ok = target_date < end_dt.date()
+               end_date = self.parse_date_value( off_display_end )
+               end_ok = target_date <= end_date
 
             is_off_display = start_ok and end_ok
 
@@ -158,7 +160,7 @@ class Database():
 
             should_include = (
                ( likelihood > threshold )
-               or ( include_off_display_animals and is_off_display )
+               or ( include_off_display_animals and likelihood == 0 )
                or species in species_to_include
             )
 
@@ -170,23 +172,23 @@ class Database():
             animals.append(
                zoo.Animal(
                   species=species,
-                  latin_name=animal[1],
-                  general_viewing_tips=animal[4],
-                  seasonal_viewing_tips=animal[5],
-                  identification=animal[6],
-                  habitat_and_range=animal[7],
-                  diet_and_feeding=animal[8],
-                  behaviour_and_life_cycle=animal[9],
-                  adaptations=animal[10],
-                  reproduction_and_life_cycle=animal[11],
-                  animals_at_the_zoo=animal[12],
+                  latin_name=animal[ 'LATIN_NAME' ],
+                  general_viewing_tips=animal[ 'GENERAL_VIEWING_TIPS' ],
+                  seasonal_viewing_tips=animal[ 'SEASONAL_VIEWING_TIPS' ],
+                  identification=animal[ 'IDENTIFICATION' ],
+                  habitat_and_range=animal[ 'HABITAT_AND_RANGE' ],
+                  diet_and_feeding=animal[ 'DIET_AND_FEEDING' ],
+                  behaviour_and_life_cycle=animal[ 'BEHAVIOUR_AND_SOCIAL_LIFE' ],
+                  adaptations=animal[ 'ADAPTATIONS' ],
+                  reproduction_and_life_cycle=animal[ 'REPRODUCTION_AND_LIFE_CYCLE' ],
+                  animals_at_the_zoo=animal[ 'ANIMALS_AT_THE_ZOO' ],
                   exhibit=exhibit,
-                  seasonal_viewing_summary=animal[15],
-                  seasonal_viewing_information=animal[16],
+                  seasonal_viewing_summary=animal[ 'SEASONAL_VIEWING_SUMMARY' ],
+                  seasonal_viewing_information=animal[ 'SEASONAL_VIEWING_INFORMATION' ],
                   off_display_message=off_display_message if is_off_display else None,
                   enclosure_type=enclosure_type,
-                  x_coord=animal[19],
-                  y_coord=animal[20],
+                  x_coord=animal[ 'X_COORD' ],
+                  y_coord=animal[ 'Y_COORD' ],
                   likelihood=likelihood,
                   has_limited_viewing_schedule=has_limited_viewing_schedule,
                   limited_viewing_message=limited_viewing_message
@@ -196,7 +198,52 @@ class Database():
       cur.close()
 
       return animals
-      
+
+
+   def parse_datetime_value( self, value ):
+      if value == None:
+         return None
+
+      for fmt in (
+         '%Y-%m-%d %I:%M %p',
+         '%Y-%m-%d %H:%M:%S',
+         '%Y-%m-%d %H:%M'
+      ):
+
+         try:
+            return datetime.strptime( value, fmt )
+         except ValueError:
+            pass
+
+      raise ValueError( f'Unsupported datetime format: {value}' )
+   
+
+   def parse_date_value( self, value ):
+      if value == None:
+         return None
+
+      if isinstance( value, date ) and not isinstance( value, datetime ):
+         return value
+
+      if isinstance( value, datetime ):
+         return value.date()
+
+      value = str( value ).strip()
+
+      try:
+         return date.fromisoformat( value )
+      except ValueError:
+         pass
+
+      date_part = value.split( ' ' )[0]
+
+      try:
+         return date.fromisoformat( date_part )
+      except ValueError:
+         pass
+
+      raise ValueError( f'Unsupported date format: {value}' )
+
 
    def get_exhibit_likelihood( self, exhibit, month, day ):
       next_month = self.zoo_util.get_next_month( month )
@@ -844,15 +891,15 @@ class Database():
       return exhibits
    
 
-   def set_animal_as_off_display( self, species, exhibit, start_time, end_time, message ):
+   def set_animal_as_off_display( self, species, exhibit, start_date, end_date, message ):
       if not message:
          message = f'The {species} is temporarily off-display.'
 
-      if not start_time:
-         start_time = datetime.now().isoformat( sep=' ', timespec='seconds' )
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
 
-      if not end_time:
-         end_time = None
+      if end_date == '':
+         end_date = None
 
       cur = self.conn.cursor()
 
@@ -871,7 +918,9 @@ class Database():
                   OFF_DISPLAY_START = excluded.OFF_DISPLAY_START,
                   OFF_DISPLAY_END = excluded.OFF_DISPLAY_END,
                   OFF_DISPLAY_MESSAGE = excluded.OFF_DISPLAY_MESSAGE;
-         """, ( species, exhibit, start_time, end_time, message ) )
+         """,
+         ( species, exhibit, start_date, end_date, message )
+      )
 
       self.conn.commit()
       updated = cur.rowcount
@@ -959,4 +1008,22 @@ class Database():
       cur.close()
 
       return updated > 0
+   
+
+   def remove_animal_visibility_schedule( self, species, exhibit ):
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """ DELETE FROM AnimalVisibilitySchedule
+            WHERE SPECIES = ?
+               AND EXHIBIT = ?;
+         """,
+         ( species, exhibit )
+      )
+
+      self.conn.commit()
+      deleted = cur.rowcount
+      cur.close()
+
+      return deleted > 0
    

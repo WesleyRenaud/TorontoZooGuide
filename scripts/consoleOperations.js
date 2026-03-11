@@ -1,11 +1,17 @@
-import { initFlatpickr } from './ui/flatpickr.js';
+import {
+   initOffDisplayDatePickers,
+   initVisibilityScheduleDateTimePickers
+} from './ui/consoleDatePickers.js';
+
 import { createAnimalOffDisplayController } from './consoleOperations/animalOffDisplay.js';
 import { createAnimalOnDisplayController } from './consoleOperations/animalOnDisplay.js';
 import { createAnimalVisibilityScheduleController } from './consoleOperations/animalVisibilitySchedule.js';
+import { createRemoveVisibilityScheduleController } from './consoleOperations/removeVisibilitySchedule.js';
 import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animalSpeciesAutocomplete.js';
 import { createOffDisplayPanelHtml } from './consoleOperations/panels/offDisplayPanel.js';
 import { createOnDisplayPanelHtml } from './consoleOperations/panels/onDisplayPanel.js';
 import { createVisibilitySchedulePanelHtml } from './consoleOperations/panels/visibilitySchedulePanel.js';
+import { createRemoveVisibilitySchedulePanelHtml } from './consoleOperations/panels/removeVisibilitySchedulePanel.js';
 
 document.addEventListener( 'DOMContentLoaded', () => {
 
@@ -20,26 +26,31 @@ document.addEventListener( 'DOMContentLoaded', () => {
       ${createOffDisplayPanelHtml()}
       ${createOnDisplayPanelHtml()}
       ${createVisibilitySchedulePanelHtml()}
+      ${createRemoveVisibilitySchedulePanelHtml()}
    `;
 
    const offDisplayPanel = document.getElementById( 'offDisplayPanel' );
    const onDisplayPanel = document.getElementById( 'onDisplayPanel' );
    const visibilitySchedulePanel = document.getElementById( 'visibilitySchedulePanel' );
+   const removeVisibilitySchedulePanel = document.getElementById( 'removeVisibilitySchedulePanel' );
 
    const offDisplaySpeciesEl = document.getElementById( 'offDisplaySpecies' );
    const onDisplaySpeciesEl = document.getElementById( 'onDisplaySpecies' );
    const visibilityScheduleSpeciesEl = document.getElementById( 'visibilityScheduleSpecies' );
+   const removeVisibilityScheduleSpeciesEl = document.getElementById( 'removeVisibilityScheduleSpecies' );
 
    const offDisplaySpeciesResults = document.getElementById( 'offDisplaySpeciesResults' );
    const onDisplaySpeciesResults = document.getElementById( 'onDisplaySpeciesResults' );
    const visibilityScheduleSpeciesResults = document.getElementById( 'visibilityScheduleSpeciesResults' );
+   const removeVisibilityScheduleSpeciesResults = document.getElementById( 'removeVisibilityScheduleSpeciesResults' );
 
    const offDisplayExhibitEl = document.getElementById( 'offDisplayExhibit' );
    const onDisplayExhibitEl = document.getElementById( 'onDisplayExhibit' );
    const visibilityScheduleExhibitEl = document.getElementById( 'visibilityScheduleExhibit' );
+   const removeVisibilityScheduleExhibitEl = document.getElementById( 'removeVisibilityScheduleExhibit' );
 
-   const offDisplayStartTimeEl = document.getElementById( 'offDisplayStartTime' );
-   const offDisplayEndTimeEl = document.getElementById( 'offDisplayEndTime' );
+   const offDisplayStartDateEl = document.getElementById( 'offDisplayStartDate' );
+   const offDisplayEndDateEl = document.getElementById( 'offDisplayEndDate' );
 
    const visibilityScheduleStartDateEl = document.getElementById( 'visibilityScheduleStartDate' );
    const visibilityScheduleEndDateEl = document.getElementById( 'visibilityScheduleEndDate' );
@@ -73,126 +84,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
          .forEach( button => button.classList.remove( 'active' ) );
    }
 
-   function initOffDisplayDateTimePickers() {
-      function applyFutureConstraint( picker ) {
-         if ( !picker ) return;
-
-         const now = new Date();
-         const selectedDate = picker.selectedDates?.[0] ?? null;
-
-         if ( selectedDate ) {
-            const isToday =
-               selectedDate.getFullYear() === now.getFullYear()
-               && selectedDate.getMonth() === now.getMonth()
-               && selectedDate.getDate() === now.getDate();
-
-            if ( isToday ) {
-               picker.set( 'minTime', now );
-            } else {
-               picker.set( 'minTime', null );
-            }
-         } else {
-            picker.set( 'minTime', now );
-         }
-      }
-
-      const startPicker = initFlatpickr( offDisplayStartTimeEl, {
-         enableTime: true,
-         dateFormat: 'Y-m-d h:i K',
-         time_24hr: false,
-         minDate: 'today',
-         defaultHour: new Date().getHours(),
-         defaultMinute: new Date().getMinutes(),
-         onOpen: [ ( _, __, fp ) => applyFutureConstraint( fp ) ],
-         onChange: [ ( _, __, fp ) => applyFutureConstraint( fp ) ]
-      } );
-
-      const endPicker = initFlatpickr( offDisplayEndTimeEl, {
-         enableTime: true,
-         dateFormat: 'Y-m-d h:i K',
-         time_24hr: false,
-         minDate: 'today',
-         defaultHour: new Date().getHours(),
-         defaultMinute: new Date().getMinutes(),
-         onOpen: [ ( _, __, fp ) => applyFutureConstraint( fp ) ],
-         onChange: [ ( _, __, fp ) => applyFutureConstraint( fp ) ]
-      } );
-
-      if ( offDisplayStartTimeEl && endPicker ) {
-         offDisplayStartTimeEl.addEventListener( 'change', () => {
-            const startValue = offDisplayStartTimeEl.value?.trim();
-
-            if ( startValue ) {
-               endPicker.set( 'minDate', startValue );
-
-               const startDate = new Date( startValue );
-               const now = new Date();
-
-               const sameDayAsToday =
-                  startDate.getFullYear() === now.getFullYear()
-                  && startDate.getMonth() === now.getMonth()
-                  && startDate.getDate() === now.getDate();
-
-               if ( sameDayAsToday ) {
-                  endPicker.set( 'minTime', now );
-               } else {
-                  endPicker.set( 'minTime', null );
-               }
-            } else {
-               endPicker.set( 'minDate', 'today' );
-               endPicker.set( 'minTime', new Date() );
-            }
-         } );
-      }
-
-      return { startPicker, endPicker };
-   }
-
-   function initVisibilityScheduleDateTimePickers() {
-      const startDatePicker = initFlatpickr( visibilityScheduleStartDateEl, {
-         enableTime: false,
-         dateFormat: 'Y-m-d'
-      } );
-
-      const endDatePicker = initFlatpickr( visibilityScheduleEndDateEl, {
-         enableTime: false,
-         dateFormat: 'Y-m-d'
-      } );
-
-      const dailyStartTimePicker = initFlatpickr( visibilityScheduleDailyStartTimeEl, {
-         enableTime: true,
-         noCalendar: true,
-         dateFormat: 'h:i K',
-         time_24hr: false
-      } );
-
-      const dailyEndTimePicker = initFlatpickr( visibilityScheduleDailyEndTimeEl, {
-         enableTime: true,
-         noCalendar: true,
-         dateFormat: 'h:i K',
-         time_24hr: false
-      } );
-
-      if ( visibilityScheduleStartDateEl && endDatePicker ) {
-         visibilityScheduleStartDateEl.addEventListener( 'change', () => {
-            const startValue = visibilityScheduleStartDateEl.value?.trim();
-
-            if ( startValue ) {
-               endDatePicker.set( 'minDate', startValue );
-            } else {
-               endDatePicker.set( 'minDate', null );
-            }
-         } );
-      }
-
-      return {
-         startDatePicker,
-         endDatePicker,
-         dailyStartTimePicker,
-         dailyEndTimePicker
-      };
-   }
-
    createAnimalSpeciesAutocompleteController( {
       inputEl: offDisplaySpeciesEl,
       resultsEl: offDisplaySpeciesResults,
@@ -211,6 +102,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
       exhibitEl: visibilityScheduleExhibitEl,
    } );
 
+   createAnimalSpeciesAutocompleteController( {
+      inputEl: removeVisibilityScheduleSpeciesEl,
+      resultsEl: removeVisibilityScheduleSpeciesResults,
+      exhibitEl: removeVisibilityScheduleExhibitEl,
+   } );
+
    createAnimalOffDisplayController( {
       showButtonEl: document.getElementById( 'showOffDisplayForm' ),
       panelEl: offDisplayPanel,
@@ -219,8 +116,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
       statusEl: document.getElementById( 'offDisplayStatus' ),
       speciesEl: offDisplaySpeciesEl,
       exhibitEl: offDisplayExhibitEl,
-      startTimeEl: offDisplayStartTimeEl,
-      endTimeEl: offDisplayEndTimeEl,
+      startDateEl: offDisplayStartDateEl,
+      endDateEl: offDisplayEndDateEl,
       messageEl: document.getElementById( 'offDisplayMessage' ),
       activatePanel,
       hidePanels,
@@ -255,7 +152,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
       hidePanels,
    } );
 
-   initOffDisplayDateTimePickers();
-   initVisibilityScheduleDateTimePickers();
+   createRemoveVisibilityScheduleController( {
+      showButtonEl: document.getElementById( 'showRemoveVisibilityScheduleForm' ),
+      panelEl: removeVisibilitySchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById( 'submitRemoveVisibilitySchedule' ),
+      statusEl: document.getElementById( 'removeVisibilityScheduleStatus' ),
+      speciesEl: removeVisibilityScheduleSpeciesEl,
+      exhibitEl: removeVisibilityScheduleExhibitEl,
+      activatePanel,
+      hidePanels,
+   } );
+
+   initOffDisplayDatePickers(
+      offDisplayStartDateEl,
+      offDisplayEndDateEl
+   );
+
+   initVisibilityScheduleDateTimePickers(
+      visibilityScheduleStartDateEl,
+      visibilityScheduleEndDateEl,
+      visibilityScheduleDailyStartTimeEl,
+      visibilityScheduleDailyEndTimeEl
+   );
 
 } );

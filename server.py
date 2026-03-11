@@ -483,11 +483,11 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          species = data.get( 'species' )
          exhibit = data.get( 'exhibit' )
-         start_time = data.get( 'startTime' )
-         end_time = data.get( 'endTime' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_animal_as_off_display( species, exhibit, start_time, end_time, message )
+         success = self.database.set_animal_as_off_display( species, exhibit, start_date, end_date, message )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -497,13 +497,13 @@ class MyHandler( BaseHTTPRequestHandler ):
             'success': success,
             'species': species,
             'exhibit': exhibit,
-            'startTime': start_time,
-            'endTime': end_time,
+            'startDate': start_date,
+            'endDate': end_date,
             'message': message,
          }
 
          if not success:
-            response['error'] = f'No animal found with species "{species}".'
+            response[ 'error' ] = f'No animal found with species "{species}".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -567,6 +567,32 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not set limited viewing schedule for "{species}" in "{exhibit}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+   
+      elif self.path == '/remove-animal-visibility-schedule':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         species = data.get( 'species' )
+         exhibit = data.get( 'exhibit' )
+
+         success = self.database.remove_animal_visibility_schedule( species, exhibit )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'species': species,
+            'exhibit': exhibit,
+         }
+
+         if not success:
+            response['error'] = f'Could not remove visibility schedule for "{species}" in "{exhibit}".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

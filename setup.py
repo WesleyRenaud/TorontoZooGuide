@@ -189,8 +189,8 @@ cursor.execute( ''' CREATE TABLE IF NOT EXISTS AnimalStatus
                      EXHIBIT              VARCHAR(64) NOT NULL,
                      IS_OFF_DISPLAY       BOOL        NOT NULL DEFAULT 0,
                      OFF_DISPLAY_MESSAGE  TEXT,
-                     OFF_DISPLAY_START    DATETIME,
-                     OFF_DISPLAY_END      DATETIME,
+                     OFF_DISPLAY_START    DATE,
+                     OFF_DISPLAY_END      DATE,
                      PRIMARY KEY (SPECIES, EXHIBIT),
                      FOREIGN KEY (SPECIES) REFERENCES Animal(SPECIES),
                      FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(NAME) ); ''' )
@@ -211,12 +211,12 @@ if 'OFF_DISPLAY_MESSAGE' not in animal_status_columns:
 
 if 'OFF_DISPLAY_START' not in animal_status_columns:
    cursor.execute(
-      'ALTER TABLE AnimalStatus ADD COLUMN OFF_DISPLAY_START DATETIME;'
+      'ALTER TABLE AnimalStatus ADD COLUMN OFF_DISPLAY_START DATE;'
    )
 
 if 'OFF_DISPLAY_END' not in animal_status_columns:
    cursor.execute(
-      'ALTER TABLE AnimalStatus ADD COLUMN OFF_DISPLAY_END DATETIME;'
+      'ALTER TABLE AnimalStatus ADD COLUMN OFF_DISPLAY_END DATE;'
    )
 
 cursor.execute( ''' CREATE TABLE IF NOT EXISTS AnimalVisibilitySchedule
