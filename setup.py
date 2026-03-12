@@ -291,6 +291,39 @@ if 'ALERT_END_DATE' not in animal_viewing_alert_columns:
       'ALTER TABLE AnimalViewingAlert ADD COLUMN ALERT_END_DATE DATE;'
    )
 
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS ExhibitStatus
+                  (  EXHIBIT           VARCHAR(64) NOT NULL,
+                     IS_CLOSED         BOOL        NOT NULL DEFAULT 0,
+                     CLOSED_MESSAGE    TEXT,
+                     CLOSED_START      DATE,
+                     CLOSED_END        DATE,
+                     PRIMARY KEY (EXHIBIT),
+                     FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(NAME) ); ''' )
+
+exhibit_status_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( ExhibitStatus );' ).fetchall()
+}
+
+if 'IS_CLOSED' not in exhibit_status_columns:
+   cursor.execute(
+      'ALTER TABLE ExhibitStatus ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'CLOSED_MESSAGE' not in exhibit_status_columns:
+   cursor.execute(
+      'ALTER TABLE ExhibitStatus ADD COLUMN CLOSED_MESSAGE TEXT;'
+   )
+
+if 'CLOSED_START' not in exhibit_status_columns:
+   cursor.execute(
+      'ALTER TABLE ExhibitStatus ADD COLUMN CLOSED_START DATE;'
+   )
+
+if 'CLOSED_END' not in exhibit_status_columns:
+   cursor.execute(
+      'ALTER TABLE ExhibitStatus ADD COLUMN CLOSED_END DATE;'
+   )
+
 regions = [
    (
       'Austrailasia',

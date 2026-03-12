@@ -13,28 +13,28 @@ export function createRemoveViewingAlertController({
 } = {}) {
 
    function resetForm() {
-      if ( speciesEl ) speciesEl.value = '';
-      if ( exhibitEl ) exhibitEl.value = '';
+      if (speciesEl) speciesEl.value = '';
+      if (exhibitEl) exhibitEl.value = '';
    }
 
    function hide() {
-      panelEl?.classList.remove( 'active' );
-      setStatus( statusEl, '' );
+      panelEl?.classList.remove('active');
+      setStatus(statusEl, '');
    }
 
    async function onShowClick() {
 
-      setStatus( statusEl, '' );
+      setStatus(statusEl, '');
 
       try {
          const exhibits = await loadExhibits();
-         populateExhibitDropdown( exhibitEl, exhibits );
+         populateExhibitDropdown(exhibitEl, exhibits);
          resetForm();
-         activatePanel?.( panelEl );
+         activatePanel?.(panelEl);
       }
-      catch ( err ) {
-         setStatus( statusEl, 'Failed to load exhibits.', 'is-error' );
-         activatePanel?.( panelEl );
+      catch (err) {
+         setStatus(statusEl, 'Failed to load exhibits.', 'is-error');
+         activatePanel?.(panelEl);
       }
 
    }
@@ -44,26 +44,26 @@ export function createRemoveViewingAlertController({
       const species = speciesEl?.value.trim() ?? '';
       const exhibit = exhibitEl?.value.trim() ?? '';
 
-      setStatus( statusEl, '' );
+      setStatus(statusEl, '');
 
-      if ( !species ) {
-         setStatus( statusEl, 'Species name is required.', 'is-error' );
+      if (!species) {
+         setStatus(statusEl, 'Species name is required.', 'is-error');
          return;
       }
 
-      if ( !exhibit ) {
-         setStatus( statusEl, 'Exhibit is required.', 'is-error' );
+      if (!exhibit) {
+         setStatus(statusEl, 'Exhibit is required.', 'is-error');
          return;
       }
 
       try {
 
-         const result = await postJson( '/remove-animal-viewing-alert', {
+         const result = await postJson('/remove-animal-viewing-alert', {
             species,
             exhibit
-         } );
+         });
 
-         if ( result.success ) {
+         if (result.success) {
 
             setStatus(
                statusEl,
@@ -75,23 +75,23 @@ export function createRemoveViewingAlertController({
 
          }
          else {
-            setStatus( statusEl, result.error || 'Failed.', 'is-error' );
+            setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
 
       }
-      catch ( err ) {
-         setStatus( statusEl, 'Request failed.', 'is-error' );
+      catch (err) {
+         setStatus(statusEl, 'Request failed.', 'is-error');
       }
 
    }
 
-   exhibitEl?.addEventListener( 'change', () => {
-      if ( speciesEl ) speciesEl.value = '';
-   } );
+   exhibitEl?.addEventListener('change', () => {
+      if (speciesEl) speciesEl.value = '';
+   });
 
-   showButtonEl?.addEventListener( 'click', onShowClick );
-   cancelButtonEl?.addEventListener( 'click', hide );
-   submitButtonEl?.addEventListener( 'click', onSubmitClick );
+   showButtonEl?.addEventListener('click', onShowClick);
+   cancelButtonEl?.addEventListener('click', hide);
+   submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
       hide

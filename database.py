@@ -62,7 +62,11 @@ class Database():
                   vs.VIEWING_MESSAGE,
                   va.ALERT_MESSAGE,
                   va.ALERT_START_DATE,
-                  va.ALERT_END_DATE
+                  va.ALERT_END_DATE,
+                  es.IS_CLOSED,
+                  es.CLOSED_MESSAGE,
+                  es.CLOSED_START,
+                  es.CLOSED_END
                FROM Animal a
                JOIN Enclosure e
                   ON a.SPECIES = e.SPECIES
@@ -77,7 +81,9 @@ class Database():
                   AND e.EXHIBIT = vs.EXHIBIT
                LEFT JOIN AnimalViewingAlert va
                   ON e.SPECIES = va.SPECIES
-                  AND e.EXHIBIT = va.EXHIBIT;
+                  AND e.EXHIBIT = va.EXHIBIT
+               LEFT JOIN ExhibitStatus es
+                  ON e.EXHIBIT = es.EXHIBIT;
          """ )
 
       animal_data = data.fetchall()
@@ -93,95 +99,29 @@ class Database():
          part_of_seasonal_exhibit = animal[ 'PART_OF_SEASONAL_EXHIBIT' ]
          enclosure_type = animal[ 'ENCLOSURE_TYPE' ]
 
-         stored_is_off_display = bool( animal[ 'IS_OFF_DISPLAY' ] ) if animal[ 'IS_OFF_DISPLAY' ] != None else False
-         off_display_message = animal[ 'OFF_DISPLAY_MESSAGE' ]
-         off_display_start = animal[ 'OFF_DISPLAY_START' ]
-         off_display_end = animal[ 'OFF_DISPLAY_END' ]
+         is_off_display, off_display_message = self.get_active_off_display_status( animal, target_date )
 
-         schedule_start_date = animal[ 'SCHEDULE_START_DATE' ]
-         schedule_end_date = animal[ 'SCHEDULE_END_DATE' ]
-         daily_start_time = animal[ 'DAILY_START_TIME' ]
-         daily_end_time = animal[ 'DAILY_END_TIME' ]
-         viewing_message = animal[ 'VIEWING_MESSAGE' ]
+         has_limited_viewing_schedule, limited_viewing_message = self.get_active_limited_viewing_status( animal, target_date )
 
-         alert_message = animal[ 'ALERT_MESSAGE' ]
-         alert_start_date = animal[ 'ALERT_START_DATE' ]
-         alert_end_date = animal[ 'ALERT_END_DATE' ]
+         has_viewing_alert, viewing_alert_message = self.get_active_viewing_alert_status( animal, target_date )
 
-         is_off_display = False
+         is_exhibit_closed, exhibit_closed_message = self.get_active_exhibit_closed_status( animal, target_date )
 
-         if stored_is_off_display:
-
-            start_ok = True
-            end_ok = True
-
-            if off_display_start != None:
-               start_date = self.parse_date_value( off_display_start )
-               start_ok = target_date >= start_date
-
-            if off_display_end != None:
-               end_date = self.parse_date_value( off_display_end )
-               end_ok = target_date <= end_date
-
-            is_off_display = start_ok and end_ok
-
-         has_limited_viewing_schedule = False
-         limited_viewing_message = None
-
-         if daily_start_time != None and daily_end_time != None:
-
-            schedule_active = True
-
-            if schedule_start_date != None:
-               start_date = date.fromisoformat( schedule_start_date )
-               schedule_active = schedule_active and ( target_date >= start_date )
-
-            if schedule_end_date != None:
-               end_date = date.fromisoformat( schedule_end_date )
-               schedule_active = schedule_active and ( target_date <= end_date )
-
-            if schedule_active:
-               has_limited_viewing_schedule = True
-               limited_viewing_message = viewing_message
-
-         has_viewing_alert = False
-         viewing_alert_message = None
-
-         if alert_message != None:
-
-            alert_active = True
-
-            if alert_start_date != None:
-               start_date = date.fromisoformat( alert_start_date )
-               alert_active = alert_active and ( target_date >= start_date )
-
-            if alert_end_date != None:
-               end_date = date.fromisoformat( alert_end_date )
-               alert_active = alert_active and ( target_date <= end_date )
-
-            if alert_active:
-               has_viewing_alert = True
-               viewing_alert_message = alert_message
-
-         if is_off_display:
+         if is_off_display or is_exhibit_closed:
             likelihood = 0
          else:
-
-            if enclosure_type == 'Outdoor':
-
-               avg_temp = self.zoo_util.get_average_temperature( month, day )
-               effective_temp = avg_temp + 0.5 * ( temp - avg_temp )
-
-               likelihood = self.zoo_util.get_temperature_probability( effective_temp, sigma, min_temperature )
-               likelihood = likelihood - ( 1.0 - snow_resistance ) * snow_likelihood
-
-            else:
-               likelihood = 1
-
-            if part_of_seasonal_exhibit:
-               likelihood = likelihood * self.get_exhibit_likelihood( exhibit, month, day )
-
-            likelihood = max( round( likelihood * 100 ), 0 )
+            likelihood = self.calculate_animal_likelihood(
+               month,
+               day,
+               temp,
+               sigma,
+               snow_likelihood,
+               min_temperature,
+               snow_resistance,
+               enclosure_type,
+               part_of_seasonal_exhibit,
+               exhibit
+            )
 
          should_include = False
 
@@ -214,7 +154,7 @@ class Database():
                   exhibit=exhibit,
                   seasonal_viewing_summary=animal[ 'SEASONAL_VIEWING_SUMMARY' ],
                   seasonal_viewing_information=animal[ 'SEASONAL_VIEWING_INFORMATION' ],
-                  off_display_message=off_display_message if is_off_display else None,
+                  off_display_message=off_display_message if is_off_display else exhibit_closed_message,
                   enclosure_type=enclosure_type,
                   x_coord=animal[ 'X_COORD' ],
                   y_coord=animal[ 'Y_COORD' ],
@@ -229,6 +169,116 @@ class Database():
       cur.close()
 
       return animals
+
+
+   def get_active_off_display_status( self, animal, target_date ):
+
+      stored_is_off_display = bool( animal[ 'IS_OFF_DISPLAY' ] ) if animal[ 'IS_OFF_DISPLAY' ] != None else False
+
+      if not stored_is_off_display:
+         return False, None
+
+      off_display_message = animal[ 'OFF_DISPLAY_MESSAGE' ]
+      off_display_start = animal[ 'OFF_DISPLAY_START' ]
+      off_display_end = animal[ 'OFF_DISPLAY_END' ]
+
+      is_off_display = self.is_date_in_range( target_date, off_display_start, off_display_end )
+
+      if is_off_display:
+         return True, off_display_message
+
+      return False, None
+
+
+   def get_active_limited_viewing_status( self, animal, target_date ):
+
+      schedule_start_date = animal[ 'SCHEDULE_START_DATE' ]
+      schedule_end_date = animal[ 'SCHEDULE_END_DATE' ]
+      daily_start_time = animal[ 'DAILY_START_TIME' ]
+      daily_end_time = animal[ 'DAILY_END_TIME' ]
+      viewing_message = animal[ 'VIEWING_MESSAGE' ]
+
+      if daily_start_time == None or daily_end_time == None:
+         return False, None
+
+      is_active = self.is_date_in_range( target_date, schedule_start_date, schedule_end_date )
+
+      if is_active:
+         return True, viewing_message
+
+      return False, None
+
+
+   def get_active_viewing_alert_status( self, animal, target_date ):
+
+      alert_message = animal[ 'ALERT_MESSAGE' ]
+      alert_start_date = animal[ 'ALERT_START_DATE' ]
+      alert_end_date = animal[ 'ALERT_END_DATE' ]
+
+      if alert_message == None:
+         return False, None
+
+      is_active = self.is_date_in_range( target_date, alert_start_date, alert_end_date )
+
+      if is_active:
+         return True, alert_message
+
+      return False, None
+
+
+   def get_active_exhibit_closed_status( self, animal, target_date ):
+
+      stored_is_closed = bool( animal[ 'IS_CLOSED' ] ) if animal[ 'IS_CLOSED' ] != None else False
+
+      if not stored_is_closed:
+         return False, None
+
+      closed_message = animal[ 'CLOSED_MESSAGE' ]
+      closed_start = animal[ 'CLOSED_START' ]
+      closed_end = animal[ 'CLOSED_END' ]
+
+      is_closed = self.is_date_in_range( target_date, closed_start, closed_end )
+
+      if is_closed:
+         return True, closed_message
+
+      return False, None
+
+
+   def calculate_animal_likelihood( self, month, day, temp, sigma, snow_likelihood, min_temperature, snow_resistance,
+                                    enclosure_type, part_of_seasonal_exhibit, exhibit ):
+
+      if enclosure_type == 'Outdoor':
+
+         avg_temp = self.zoo_util.get_average_temperature( month, day )
+         effective_temp = avg_temp + 0.5 * ( temp - avg_temp )
+
+         likelihood = self.zoo_util.get_temperature_probability( effective_temp, sigma, min_temperature )
+         likelihood = likelihood - ( 1.0 - snow_resistance ) * snow_likelihood
+
+      else:
+         likelihood = 1
+
+      if part_of_seasonal_exhibit:
+         likelihood = likelihood * self.get_exhibit_likelihood( exhibit, month, day )
+
+      return max( round( likelihood * 100 ), 0 )
+
+
+   def is_date_in_range( self, target_date, start_date_value, end_date_value ):
+
+      start_ok = True
+      end_ok = True
+
+      if start_date_value != None:
+         start_date = self.parse_date_value( start_date_value )
+         start_ok = target_date >= start_date
+
+      if end_date_value != None:
+         end_date = self.parse_date_value( end_date_value )
+         end_ok = target_date <= end_date
+
+      return start_ok and end_ok
 
 
    def parse_datetime_value( self, value ):
@@ -1109,4 +1159,62 @@ class Database():
       cur.close()
 
       return removed > 0
+   
+
+   def set_exhibit_as_closed( self, exhibit, start_date, end_date, message ):
+      if not exhibit:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      if not message:
+         message = f'The {exhibit} is temporarily closed.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO ExhibitStatus (
+                  EXHIBIT,
+                  IS_CLOSED,
+                  CLOSED_MESSAGE,
+                  CLOSED_START,
+                  CLOSED_END
+               )
+               VALUES (?, 1, ?, ?, ?)
+               ON CONFLICT(EXHIBIT) DO UPDATE SET
+                  IS_CLOSED = 1,
+                  CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
+                  CLOSED_START = excluded.CLOSED_START,
+                  CLOSED_END = excluded.CLOSED_END;
+         """, ( exhibit, message, start_date, end_date )
+      )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def set_exhibit_as_open( self, exhibit ):
+      if not exhibit:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """ DELETE FROM ExhibitStatus
+            WHERE EXHIBIT = ?;
+         """, ( exhibit, )
+      )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
    

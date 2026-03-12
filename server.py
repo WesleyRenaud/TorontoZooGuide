@@ -661,6 +661,60 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/set-exhibit-closed':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         exhibit = data.get( 'exhibit' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+         message = data.get( 'message' )
+
+         success = self.database.set_exhibit_as_closed( exhibit, start_date, end_date, message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'exhibit': exhibit,
+            'startDate': start_date,
+            'endDate': end_date,
+            'message': message
+         }
+
+         if not success:
+            response['error'] = f'Could not set "{exhibit}" as closed.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-exhibit-open':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         exhibit = data.get( 'exhibit' )
+
+         success = self.database.set_exhibit_as_open( exhibit )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'exhibit': exhibit
+         }
+
+         if not success:
+            response['error'] = f'Could not set "{exhibit}" as open.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
 if __name__ == '__main__':
    httpd = HTTPServer( ( 'localhost', int( sys.argv[1] ) ), MyHandler )
    print( 'Server listing in port:  ', int( sys.argv[1] ) )

@@ -1,19 +1,17 @@
 import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from './utils.js';
 
-export function createRemoveVisibilityScheduleController({
+export function createExhibitOpenController({
    showButtonEl,
    panelEl,
    cancelButtonEl,
    submitButtonEl,
    statusEl,
-   speciesEl,
    exhibitEl,
    activatePanel,
    hidePanels,
 } = {}) {
 
    function resetForm() {
-      if (speciesEl) speciesEl.value = '';
       if (exhibitEl) exhibitEl.value = '';
    }
 
@@ -44,15 +42,9 @@ export function createRemoveVisibilityScheduleController({
    }
 
    async function onSubmitClick() {
-      const species = speciesEl?.value.trim() ?? '';
       const exhibit = exhibitEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
-
-      if (!species) {
-         setStatus(statusEl, 'Species name is required.', 'is-error');
-         return;
-      }
 
       if (!exhibit) {
          setStatus(statusEl, 'Exhibit is required.', 'is-error');
@@ -60,15 +52,14 @@ export function createRemoveVisibilityScheduleController({
       }
 
       try {
-         const result = await postJson('/remove-animal-visibility-schedule', {
-            species,
+         const result = await postJson('/set-exhibit-open', {
             exhibit
          });
 
          if (result.success) {
             setStatus(
                statusEl,
-               `${result.species} in ${result.exhibit} no longer has a visibility schedule.`,
+               `${result.exhibit} was set as open.`,
                'is-success'
             );
             resetForm();
@@ -81,12 +72,6 @@ export function createRemoveVisibilityScheduleController({
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
    }
-
-   exhibitEl?.addEventListener('change', () => {
-      if (speciesEl) {
-         speciesEl.value = '';
-      }
-   });
 
    showButtonEl?.addEventListener('click', onShowClick);
    cancelButtonEl?.addEventListener('click', hide);

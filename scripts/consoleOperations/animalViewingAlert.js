@@ -13,7 +13,7 @@ export function createAnimalViewingAlertController( {
    messageEl,
    activatePanel,
    hidePanels,
-} = {} ) {
+} = {}) {
 
    function resetForm() {
       if ( speciesEl ) speciesEl.value = '';

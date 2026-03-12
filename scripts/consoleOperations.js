@@ -9,6 +9,8 @@ import { createAnimalVisibilityScheduleController } from './consoleOperations/an
 import { createRemoveVisibilityScheduleController } from './consoleOperations/removeVisibilitySchedule.js';
 import { createAnimalViewingAlertController } from './consoleOperations/animalViewingAlert.js';
 import { createRemoveViewingAlertController } from './consoleOperations/removeViewingAlert.js';
+import { createExhibitClosedController } from './consoleOperations/exhibitClosed.js';
+import { createExhibitOpenController } from './consoleOperations/exhibitOpen.js';
 import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animalSpeciesAutocomplete.js';
 import { createOffDisplayPanelHtml } from './consoleOperations/panels/offDisplayPanel.js';
 import { createOnDisplayPanelHtml } from './consoleOperations/panels/onDisplayPanel.js';
@@ -16,13 +18,15 @@ import { createVisibilitySchedulePanelHtml } from './consoleOperations/panels/vi
 import { createRemoveVisibilitySchedulePanelHtml } from './consoleOperations/panels/removeVisibilitySchedulePanel.js';
 import { createViewingAlertPanelHtml } from './consoleOperations/panels/viewingAlertPanel.js';
 import { createRemoveViewingAlertPanelHtml } from './consoleOperations/panels/removeViewingAlertPanel.js';
+import { createExhibitClosedPanelHtml } from './consoleOperations/panels/exhibitClosedPanel.js';
+import { createExhibitOpenPanelHtml } from './consoleOperations/panels/exhibitOpenPanel.js';
 
-document.addEventListener( 'DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
 
-   const workspaceEl = document.getElementById( 'consoleOperationsWorkspace' );
+   const workspaceEl = document.getElementById('consoleOperationsWorkspace');
 
-   if ( !workspaceEl ) {
-      console.warn( '[consoleOperations] missing #consoleOperationsWorkspace' );
+   if (!workspaceEl) {
+      console.warn('[consoleOperations] missing #consoleOperationsWorkspace');
       return;
    }
 
@@ -33,72 +37,81 @@ document.addEventListener( 'DOMContentLoaded', () => {
       ${createRemoveVisibilitySchedulePanelHtml()}
       ${createViewingAlertPanelHtml()}
       ${createRemoveViewingAlertPanelHtml()}
+      ${createExhibitClosedPanelHtml()}
+      ${createExhibitOpenPanelHtml()}
    `;
 
-   const offDisplayPanel = document.getElementById( 'offDisplayPanel' );
-   const onDisplayPanel = document.getElementById( 'onDisplayPanel' );
-   const visibilitySchedulePanel = document.getElementById( 'visibilitySchedulePanel' );
-   const removeVisibilitySchedulePanel = document.getElementById( 'removeVisibilitySchedulePanel' );
-   const viewingAlertPanel = document.getElementById( 'viewingAlertPanel' );
-   const removeViewingAlertPanel = document.getElementById( 'removeViewingAlertPanel' );
+   const offDisplayPanel = document.getElementById('offDisplayPanel');
+   const onDisplayPanel = document.getElementById('onDisplayPanel');
+   const visibilitySchedulePanel = document.getElementById('visibilitySchedulePanel');
+   const removeVisibilitySchedulePanel = document.getElementById('removeVisibilitySchedulePanel');
+   const viewingAlertPanel = document.getElementById('viewingAlertPanel');
+   const removeViewingAlertPanel = document.getElementById('removeViewingAlertPanel');
+   const exhibitClosedPanel = document.getElementById('exhibitClosedPanel');
+   const exhibitOpenPanel = document.getElementById('exhibitOpenPanel');
 
-   const offDisplaySpeciesEl = document.getElementById( 'offDisplaySpecies' );
-   const onDisplaySpeciesEl = document.getElementById( 'onDisplaySpecies' );
-   const visibilityScheduleSpeciesEl = document.getElementById( 'visibilityScheduleSpecies' );
-   const removeVisibilityScheduleSpeciesEl = document.getElementById( 'removeVisibilityScheduleSpecies' );
-   const viewingAlertSpeciesEl = document.getElementById( 'viewingAlertSpecies' );
-   const removeViewingAlertSpeciesEl = document.getElementById( 'removeViewingAlertSpecies' );
+   const offDisplaySpeciesEl = document.getElementById('offDisplaySpecies');
+   const onDisplaySpeciesEl = document.getElementById('onDisplaySpecies');
+   const visibilityScheduleSpeciesEl = document.getElementById('visibilityScheduleSpecies');
+   const removeVisibilityScheduleSpeciesEl = document.getElementById('removeVisibilityScheduleSpecies');
+   const viewingAlertSpeciesEl = document.getElementById('viewingAlertSpecies');
+   const removeViewingAlertSpeciesEl = document.getElementById('removeViewingAlertSpecies');
 
-   const offDisplaySpeciesResults = document.getElementById( 'offDisplaySpeciesResults' );
-   const onDisplaySpeciesResults = document.getElementById( 'onDisplaySpeciesResults' );
-   const visibilityScheduleSpeciesResults = document.getElementById( 'visibilityScheduleSpeciesResults' );
-   const removeVisibilityScheduleSpeciesResults = document.getElementById( 'removeVisibilityScheduleSpeciesResults' );
-   const viewingAlertSpeciesResults = document.getElementById( 'viewingAlertSpeciesResults' );
-   const removeViewingAlertSpeciesResults = document.getElementById( 'removeViewingAlertSpeciesResults' );
+   const offDisplaySpeciesResults = document.getElementById('offDisplaySpeciesResults');
+   const onDisplaySpeciesResults = document.getElementById('onDisplaySpeciesResults');
+   const visibilityScheduleSpeciesResults = document.getElementById('visibilityScheduleSpeciesResults');
+   const removeVisibilityScheduleSpeciesResults = document.getElementById('removeVisibilityScheduleSpeciesResults');
+   const viewingAlertSpeciesResults = document.getElementById('viewingAlertSpeciesResults');
+   const removeViewingAlertSpeciesResults = document.getElementById('removeViewingAlertSpeciesResults');
 
-   const offDisplayExhibitEl = document.getElementById( 'offDisplayExhibit' );
-   const onDisplayExhibitEl = document.getElementById( 'onDisplayExhibit' );
-   const visibilityScheduleExhibitEl = document.getElementById( 'visibilityScheduleExhibit' );
-   const removeVisibilityScheduleExhibitEl = document.getElementById( 'removeVisibilityScheduleExhibit' );
-   const viewingAlertExhibitEl = document.getElementById( 'viewingAlertExhibit' );
-   const removeViewingAlertExhibitEl = document.getElementById( 'removeViewingAlertExhibit' );
+   const offDisplayExhibitEl = document.getElementById('offDisplayExhibit');
+   const onDisplayExhibitEl = document.getElementById('onDisplayExhibit');
+   const visibilityScheduleExhibitEl = document.getElementById('visibilityScheduleExhibit');
+   const removeVisibilityScheduleExhibitEl = document.getElementById('removeVisibilityScheduleExhibit');
+   const viewingAlertExhibitEl = document.getElementById('viewingAlertExhibit');
+   const removeViewingAlertExhibitEl = document.getElementById('removeViewingAlertExhibit');
+   const exhibitClosedExhibitEl = document.getElementById('exhibitClosedExhibit');
+   const exhibitOpenExhibitEl = document.getElementById('exhibitOpenExhibit');
 
-   const offDisplayStartDateEl = document.getElementById( 'offDisplayStartDate' );
-   const offDisplayEndDateEl = document.getElementById( 'offDisplayEndDate' );
+   const offDisplayStartDateEl = document.getElementById('offDisplayStartDate');
+   const offDisplayEndDateEl = document.getElementById('offDisplayEndDate');
 
-   const visibilityScheduleStartDateEl = document.getElementById( 'visibilityScheduleStartDate' );
-   const visibilityScheduleEndDateEl = document.getElementById( 'visibilityScheduleEndDate' );
-   const visibilityScheduleDailyStartTimeEl = document.getElementById( 'visibilityScheduleDailyStartTime' );
-   const visibilityScheduleDailyEndTimeEl = document.getElementById( 'visibilityScheduleDailyEndTime' );
+   const visibilityScheduleStartDateEl = document.getElementById('visibilityScheduleStartDate');
+   const visibilityScheduleEndDateEl = document.getElementById('visibilityScheduleEndDate');
+   const visibilityScheduleDailyStartTimeEl = document.getElementById('visibilityScheduleDailyStartTime');
+   const visibilityScheduleDailyEndTimeEl = document.getElementById('visibilityScheduleDailyEndTime');
 
-   const viewingAlertStartDateEl = document.getElementById( 'viewingAlertStartDate' );
-   const viewingAlertEndDateEl = document.getElementById( 'viewingAlertEndDate' );
+   const viewingAlertStartDateEl = document.getElementById('viewingAlertStartDate');
+   const viewingAlertEndDateEl = document.getElementById('viewingAlertEndDate');
 
-   function activatePanel( panelEl ) {
+   const exhibitClosedStartDateEl = document.getElementById('exhibitClosedStartDate');
+   const exhibitClosedEndDateEl = document.getElementById('exhibitClosedEndDate');
+
+   function activatePanel(panelEl) {
       document
-         .querySelectorAll( '.console-operations-panel' )
-         .forEach( panel => panel.classList.remove( 'active' ) );
+         .querySelectorAll('.console-operations-panel')
+         .forEach(panel => panel.classList.remove('active'));
 
-      panelEl?.classList.add( 'active' );
+      panelEl?.classList.add('active');
 
       document
-         .querySelectorAll( '.console-operations-menu-btn' )
-         .forEach( ( button ) => {
+         .querySelectorAll('.console-operations-menu-btn')
+         .forEach(button => {
             button.classList.toggle(
                'active',
                button.dataset.panelTarget === panelEl?.id
             );
-         } );
+         });
    }
 
    function hidePanels() {
       document
-         .querySelectorAll( '.console-operations-panel' )
-         .forEach( panel => panel.classList.remove( 'active' ) );
+         .querySelectorAll('.console-operations-panel')
+         .forEach(panel => panel.classList.remove('active'));
 
       document
-         .querySelectorAll( '.console-operations-menu-btn' )
-         .forEach( button => button.classList.remove( 'active' ) );
+         .querySelectorAll('.console-operations-menu-btn')
+         .forEach(button => button.classList.remove('active'));
    }
 
    createAnimalSpeciesAutocompleteController( {
@@ -138,26 +151,26 @@ document.addEventListener( 'DOMContentLoaded', () => {
    } );
 
    createAnimalOffDisplayController( {
-      showButtonEl: document.getElementById( 'showOffDisplayForm' ),
+      showButtonEl: document.getElementById('showOffDisplayForm'),
       panelEl: offDisplayPanel,
       cancelButtonEl: null,
-      submitButtonEl: document.getElementById( 'submitOffDisplay' ),
-      statusEl: document.getElementById( 'offDisplayStatus' ),
+      submitButtonEl: document.getElementById('submitOffDisplay'),
+      statusEl: document.getElementById('offDisplayStatus'),
       speciesEl: offDisplaySpeciesEl,
       exhibitEl: offDisplayExhibitEl,
       startDateEl: offDisplayStartDateEl,
       endDateEl: offDisplayEndDateEl,
-      messageEl: document.getElementById( 'offDisplayMessage' ),
+      messageEl: document.getElementById('offDisplayMessage'),
       activatePanel,
       hidePanels,
    } );
 
    createAnimalOnDisplayController( {
-      showButtonEl: document.getElementById( 'showOnDisplayForm' ),
+      showButtonEl: document.getElementById('showOnDisplayForm'),
       panelEl: onDisplayPanel,
       cancelButtonEl: null,
-      submitButtonEl: document.getElementById( 'submitOnDisplay' ),
-      statusEl: document.getElementById( 'onDisplayStatus' ),
+      submitButtonEl: document.getElementById('submitOnDisplay'),
+      statusEl: document.getElementById('onDisplayStatus'),
       speciesEl: onDisplaySpeciesEl,
       exhibitEl: onDisplayExhibitEl,
       activatePanel,
@@ -165,28 +178,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
    } );
 
    createAnimalVisibilityScheduleController( {
-      showButtonEl: document.getElementById( 'showVisibilityScheduleForm' ),
+      showButtonEl: document.getElementById('showVisibilityScheduleForm'),
       panelEl: visibilitySchedulePanel,
       cancelButtonEl: null,
-      submitButtonEl: document.getElementById( 'submitVisibilitySchedule' ),
-      statusEl: document.getElementById( 'visibilityScheduleStatus' ),
+      submitButtonEl: document.getElementById('submitVisibilitySchedule'),
+      statusEl: document.getElementById('visibilityScheduleStatus'),
       speciesEl: visibilityScheduleSpeciesEl,
       exhibitEl: visibilityScheduleExhibitEl,
       startDateEl: visibilityScheduleStartDateEl,
       endDateEl: visibilityScheduleEndDateEl,
       dailyStartTimeEl: visibilityScheduleDailyStartTimeEl,
       dailyEndTimeEl: visibilityScheduleDailyEndTimeEl,
-      messageEl: document.getElementById( 'visibilityScheduleMessage' ),
+      messageEl: document.getElementById('visibilityScheduleMessage'),
       activatePanel,
       hidePanels,
    } );
 
    createRemoveVisibilityScheduleController( {
-      showButtonEl: document.getElementById( 'showRemoveVisibilityScheduleForm' ),
+      showButtonEl: document.getElementById('showRemoveVisibilityScheduleForm'),
       panelEl: removeVisibilitySchedulePanel,
       cancelButtonEl: null,
-      submitButtonEl: document.getElementById( 'submitRemoveVisibilitySchedule' ),
-      statusEl: document.getElementById( 'removeVisibilityScheduleStatus' ),
+      submitButtonEl: document.getElementById('submitRemoveVisibilitySchedule'),
+      statusEl: document.getElementById('removeVisibilityScheduleStatus'),
       speciesEl: removeVisibilityScheduleSpeciesEl,
       exhibitEl: removeVisibilityScheduleExhibitEl,
       activatePanel,
@@ -194,28 +207,53 @@ document.addEventListener( 'DOMContentLoaded', () => {
    } );
 
    createAnimalViewingAlertController( {
-      showButtonEl: document.getElementById( 'showViewingAlertForm' ),
+      showButtonEl: document.getElementById('showViewingAlertForm'),
       panelEl: viewingAlertPanel,
       cancelButtonEl: null,
-      submitButtonEl: document.getElementById( 'submitViewingAlert' ),
-      statusEl: document.getElementById( 'viewingAlertStatus' ),
+      submitButtonEl: document.getElementById('submitViewingAlert'),
+      statusEl: document.getElementById('viewingAlertStatus'),
       speciesEl: viewingAlertSpeciesEl,
       exhibitEl: viewingAlertExhibitEl,
       startDateEl: viewingAlertStartDateEl,
       endDateEl: viewingAlertEndDateEl,
-      messageEl: document.getElementById( 'viewingAlertMessage' ),
+      messageEl: document.getElementById('viewingAlertMessage'),
       activatePanel,
       hidePanels,
    } );
 
    createRemoveViewingAlertController( {
-      showButtonEl: document.getElementById( 'showRemoveViewingAlertForm' ),
+      showButtonEl: document.getElementById('showRemoveViewingAlertForm'),
       panelEl: removeViewingAlertPanel,
       cancelButtonEl: null,
-      submitButtonEl: document.getElementById( 'submitRemoveViewingAlert' ),
-      statusEl: document.getElementById( 'removeViewingAlertStatus' ),
+      submitButtonEl: document.getElementById('submitRemoveViewingAlert'),
+      statusEl: document.getElementById('removeViewingAlertStatus'),
       speciesEl: removeViewingAlertSpeciesEl,
       exhibitEl: removeViewingAlertExhibitEl,
+      activatePanel,
+      hidePanels,
+   } );
+
+   createExhibitClosedController( {
+      showButtonEl: document.getElementById('showExhibitClosedForm'),
+      panelEl: exhibitClosedPanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitExhibitClosed'),
+      statusEl: document.getElementById('exhibitClosedStatus'),
+      exhibitEl: exhibitClosedExhibitEl,
+      startDateEl: exhibitClosedStartDateEl,
+      endDateEl: exhibitClosedEndDateEl,
+      messageEl: document.getElementById('exhibitClosedMessage'),
+      activatePanel,
+      hidePanels,
+   } );
+
+   createExhibitOpenController( {
+      showButtonEl: document.getElementById('showExhibitOpenForm'),
+      panelEl: exhibitOpenPanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitExhibitOpen'),
+      statusEl: document.getElementById('exhibitOpenStatus'),
+      exhibitEl: exhibitOpenExhibitEl,
       activatePanel,
       hidePanels,
    } );
@@ -237,4 +275,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
       viewingAlertEndDateEl
    );
 
-} );
+   initOffDisplayDatePickers(
+      exhibitClosedStartDateEl,
+      exhibitClosedEndDateEl
+   );
+
+});
