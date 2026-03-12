@@ -5,7 +5,8 @@ class Animal:
                  habitat_and_range=None, diet_and_feeding=None, behaviour_and_life_cycle=None, adaptations=None,
                  reproduction_and_life_cycle=None, animals_at_the_zoo=None, exhibit=None, seasonal_viewing_summary=None,
                  seasonal_viewing_information=None, off_display_message=None, enclosure_type=None, x_coord=None,y_coord=None,
-                 likelihood=None, has_limited_viewing_schedule=None, limited_viewing_message=None ):
+                 likelihood=None, has_limited_viewing_schedule=None, limited_viewing_message=None, has_viewing_alert=None,
+                 viewing_alert_message=None ):
       self.species = species
       self.latin_name = latin_name
       self.general_viewing_tips = general_viewing_tips
@@ -27,6 +28,8 @@ class Animal:
       self.likelihood = likelihood
       self.has_limited_viewing_schedule = has_limited_viewing_schedule
       self.limited_viewing_message = limited_viewing_message
+      self.has_viewing_alert = has_viewing_alert
+      self.viewing_alert_message = viewing_alert_message
 
 
    def to_dict( self ):
@@ -51,7 +54,9 @@ class Animal:
          'y_coord': self.y_coord,
          'likelihood': self.likelihood,
          'has_limited_viewing_schedule': self.has_limited_viewing_schedule,
-         'limited_viewing_message': self.limited_viewing_message
+         'limited_viewing_message': self.limited_viewing_message,
+         'has_viewing_alert': self.has_viewing_alert,
+         'viewing_alert_message': self.viewing_alert_message
       }
    
 

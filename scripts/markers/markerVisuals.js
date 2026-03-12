@@ -30,9 +30,11 @@ function applyGenericIcon( markerEl, iconUrl, count ) {
 
 function shouldShowLimitedViewingIndicator( animal ) {
    return Boolean(
-      animal?.has_limited_viewing_schedule
-      && animal?.limited_viewing_message
-      && !animal?.off_display_message
+      !animal?.off_display_message
+      && (
+         ( animal?.has_limited_viewing_schedule && animal?.limited_viewing_message )
+         || ( animal?.has_viewing_alert && animal?.viewing_alert_message )
+      )
    );
 }
 

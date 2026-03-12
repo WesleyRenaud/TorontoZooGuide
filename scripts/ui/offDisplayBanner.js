@@ -40,13 +40,19 @@ export function createOffDisplayBanner() {
          messages.push( animal.limited_viewing_message );
       }
 
+      if ( animal?.viewing_alert_message ) {
+         messages.push( animal.viewing_alert_message );
+      }
+
       if ( messages.length === 0 ) {
          hide();
          return;
       }
 
+      const uniqueMessages = [ ...new Set( messages ) ];
+
       const banner = ensure();
-      banner.querySelector( '.off-display-text' ).innerHTML = messages.join( '<br><br>' );
+      banner.querySelector( '.off-display-text' ).innerHTML = uniqueMessages.join( '<br><br>' );
       banner.style.display = 'flex';
    }
 

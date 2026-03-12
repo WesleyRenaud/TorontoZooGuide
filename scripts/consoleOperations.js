@@ -7,11 +7,15 @@ import { createAnimalOffDisplayController } from './consoleOperations/animalOffD
 import { createAnimalOnDisplayController } from './consoleOperations/animalOnDisplay.js';
 import { createAnimalVisibilityScheduleController } from './consoleOperations/animalVisibilitySchedule.js';
 import { createRemoveVisibilityScheduleController } from './consoleOperations/removeVisibilitySchedule.js';
+import { createAnimalViewingAlertController } from './consoleOperations/animalViewingAlert.js';
+import { createRemoveViewingAlertController } from './consoleOperations/removeViewingAlert.js';
 import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animalSpeciesAutocomplete.js';
 import { createOffDisplayPanelHtml } from './consoleOperations/panels/offDisplayPanel.js';
 import { createOnDisplayPanelHtml } from './consoleOperations/panels/onDisplayPanel.js';
 import { createVisibilitySchedulePanelHtml } from './consoleOperations/panels/visibilitySchedulePanel.js';
 import { createRemoveVisibilitySchedulePanelHtml } from './consoleOperations/panels/removeVisibilitySchedulePanel.js';
+import { createViewingAlertPanelHtml } from './consoleOperations/panels/viewingAlertPanel.js';
+import { createRemoveViewingAlertPanelHtml } from './consoleOperations/panels/removeViewingAlertPanel.js';
 
 document.addEventListener( 'DOMContentLoaded', () => {
 
@@ -27,27 +31,37 @@ document.addEventListener( 'DOMContentLoaded', () => {
       ${createOnDisplayPanelHtml()}
       ${createVisibilitySchedulePanelHtml()}
       ${createRemoveVisibilitySchedulePanelHtml()}
+      ${createViewingAlertPanelHtml()}
+      ${createRemoveViewingAlertPanelHtml()}
    `;
 
    const offDisplayPanel = document.getElementById( 'offDisplayPanel' );
    const onDisplayPanel = document.getElementById( 'onDisplayPanel' );
    const visibilitySchedulePanel = document.getElementById( 'visibilitySchedulePanel' );
    const removeVisibilitySchedulePanel = document.getElementById( 'removeVisibilitySchedulePanel' );
+   const viewingAlertPanel = document.getElementById( 'viewingAlertPanel' );
+   const removeViewingAlertPanel = document.getElementById( 'removeViewingAlertPanel' );
 
    const offDisplaySpeciesEl = document.getElementById( 'offDisplaySpecies' );
    const onDisplaySpeciesEl = document.getElementById( 'onDisplaySpecies' );
    const visibilityScheduleSpeciesEl = document.getElementById( 'visibilityScheduleSpecies' );
    const removeVisibilityScheduleSpeciesEl = document.getElementById( 'removeVisibilityScheduleSpecies' );
+   const viewingAlertSpeciesEl = document.getElementById( 'viewingAlertSpecies' );
+   const removeViewingAlertSpeciesEl = document.getElementById( 'removeViewingAlertSpecies' );
 
    const offDisplaySpeciesResults = document.getElementById( 'offDisplaySpeciesResults' );
    const onDisplaySpeciesResults = document.getElementById( 'onDisplaySpeciesResults' );
    const visibilityScheduleSpeciesResults = document.getElementById( 'visibilityScheduleSpeciesResults' );
    const removeVisibilityScheduleSpeciesResults = document.getElementById( 'removeVisibilityScheduleSpeciesResults' );
+   const viewingAlertSpeciesResults = document.getElementById( 'viewingAlertSpeciesResults' );
+   const removeViewingAlertSpeciesResults = document.getElementById( 'removeViewingAlertSpeciesResults' );
 
    const offDisplayExhibitEl = document.getElementById( 'offDisplayExhibit' );
    const onDisplayExhibitEl = document.getElementById( 'onDisplayExhibit' );
    const visibilityScheduleExhibitEl = document.getElementById( 'visibilityScheduleExhibit' );
    const removeVisibilityScheduleExhibitEl = document.getElementById( 'removeVisibilityScheduleExhibit' );
+   const viewingAlertExhibitEl = document.getElementById( 'viewingAlertExhibit' );
+   const removeViewingAlertExhibitEl = document.getElementById( 'removeViewingAlertExhibit' );
 
    const offDisplayStartDateEl = document.getElementById( 'offDisplayStartDate' );
    const offDisplayEndDateEl = document.getElementById( 'offDisplayEndDate' );
@@ -56,6 +70,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
    const visibilityScheduleEndDateEl = document.getElementById( 'visibilityScheduleEndDate' );
    const visibilityScheduleDailyStartTimeEl = document.getElementById( 'visibilityScheduleDailyStartTime' );
    const visibilityScheduleDailyEndTimeEl = document.getElementById( 'visibilityScheduleDailyEndTime' );
+
+   const viewingAlertStartDateEl = document.getElementById( 'viewingAlertStartDate' );
+   const viewingAlertEndDateEl = document.getElementById( 'viewingAlertEndDate' );
 
    function activatePanel( panelEl ) {
       document
@@ -106,6 +123,18 @@ document.addEventListener( 'DOMContentLoaded', () => {
       inputEl: removeVisibilityScheduleSpeciesEl,
       resultsEl: removeVisibilityScheduleSpeciesResults,
       exhibitEl: removeVisibilityScheduleExhibitEl,
+   } );
+
+   createAnimalSpeciesAutocompleteController( {
+      inputEl: viewingAlertSpeciesEl,
+      resultsEl: viewingAlertSpeciesResults,
+      exhibitEl: viewingAlertExhibitEl,
+   } );
+
+   createAnimalSpeciesAutocompleteController( {
+      inputEl: removeViewingAlertSpeciesEl,
+      resultsEl: removeViewingAlertSpeciesResults,
+      exhibitEl: removeViewingAlertExhibitEl,
    } );
 
    createAnimalOffDisplayController( {
@@ -164,6 +193,33 @@ document.addEventListener( 'DOMContentLoaded', () => {
       hidePanels,
    } );
 
+   createAnimalViewingAlertController( {
+      showButtonEl: document.getElementById( 'showViewingAlertForm' ),
+      panelEl: viewingAlertPanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById( 'submitViewingAlert' ),
+      statusEl: document.getElementById( 'viewingAlertStatus' ),
+      speciesEl: viewingAlertSpeciesEl,
+      exhibitEl: viewingAlertExhibitEl,
+      startDateEl: viewingAlertStartDateEl,
+      endDateEl: viewingAlertEndDateEl,
+      messageEl: document.getElementById( 'viewingAlertMessage' ),
+      activatePanel,
+      hidePanels,
+   } );
+
+   createRemoveViewingAlertController( {
+      showButtonEl: document.getElementById( 'showRemoveViewingAlertForm' ),
+      panelEl: removeViewingAlertPanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById( 'submitRemoveViewingAlert' ),
+      statusEl: document.getElementById( 'removeViewingAlertStatus' ),
+      speciesEl: removeViewingAlertSpeciesEl,
+      exhibitEl: removeViewingAlertExhibitEl,
+      activatePanel,
+      hidePanels,
+   } );
+
    initOffDisplayDatePickers(
       offDisplayStartDateEl,
       offDisplayEndDateEl
@@ -174,6 +230,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
       visibilityScheduleEndDateEl,
       visibilityScheduleDailyStartTimeEl,
       visibilityScheduleDailyEndTimeEl
+   );
+
+   initOffDisplayDatePickers(
+      viewingAlertStartDateEl,
+      viewingAlertEndDateEl
    );
 
 } );

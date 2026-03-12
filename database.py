@@ -59,7 +59,10 @@ class Database():
                   vs.SCHEDULE_END_DATE,
                   vs.DAILY_START_TIME,
                   vs.DAILY_END_TIME,
-                  vs.VIEWING_MESSAGE
+                  vs.VIEWING_MESSAGE,
+                  va.ALERT_MESSAGE,
+                  va.ALERT_START_DATE,
+                  va.ALERT_END_DATE
                FROM Animal a
                JOIN Enclosure e
                   ON a.SPECIES = e.SPECIES
@@ -71,7 +74,10 @@ class Database():
                   AND e.EXHIBIT = s.EXHIBIT
                LEFT JOIN AnimalVisibilitySchedule vs
                   ON e.SPECIES = vs.SPECIES
-                  AND e.EXHIBIT = vs.EXHIBIT;
+                  AND e.EXHIBIT = vs.EXHIBIT
+               LEFT JOIN AnimalViewingAlert va
+                  ON e.SPECIES = va.SPECIES
+                  AND e.EXHIBIT = va.EXHIBIT;
          """ )
 
       animal_data = data.fetchall()
@@ -97,6 +103,10 @@ class Database():
          daily_start_time = animal[ 'DAILY_START_TIME' ]
          daily_end_time = animal[ 'DAILY_END_TIME' ]
          viewing_message = animal[ 'VIEWING_MESSAGE' ]
+
+         alert_message = animal[ 'ALERT_MESSAGE' ]
+         alert_start_date = animal[ 'ALERT_START_DATE' ]
+         alert_end_date = animal[ 'ALERT_END_DATE' ]
 
          is_off_display = False
 
@@ -133,6 +143,25 @@ class Database():
             if schedule_active:
                has_limited_viewing_schedule = True
                limited_viewing_message = viewing_message
+
+         has_viewing_alert = False
+         viewing_alert_message = None
+
+         if alert_message != None:
+
+            alert_active = True
+
+            if alert_start_date != None:
+               start_date = date.fromisoformat( alert_start_date )
+               alert_active = alert_active and ( target_date >= start_date )
+
+            if alert_end_date != None:
+               end_date = date.fromisoformat( alert_end_date )
+               alert_active = alert_active and ( target_date <= end_date )
+
+            if alert_active:
+               has_viewing_alert = True
+               viewing_alert_message = alert_message
 
          if is_off_display:
             likelihood = 0
@@ -191,7 +220,9 @@ class Database():
                   y_coord=animal[ 'Y_COORD' ],
                   likelihood=likelihood,
                   has_limited_viewing_schedule=has_limited_viewing_schedule,
-                  limited_viewing_message=limited_viewing_message
+                  limited_viewing_message=limited_viewing_message,
+                  has_viewing_alert=has_viewing_alert,
+                  viewing_alert_message=viewing_alert_message
                )
             )
 
@@ -1026,4 +1057,56 @@ class Database():
       cur.close()
 
       return deleted > 0
+   
+
+   def set_animal_viewing_alert( self, species, exhibit, alert_start_date, alert_end_date, message ):
+      if not alert_start_date:
+         alert_start_date = datetime.now().date().isoformat()
+
+      if not alert_end_date:
+         alert_end_date = None
+
+      if not message:
+         message = f'The {species} may be less visible than usual at this time.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO AnimalViewingAlert (
+                  SPECIES,
+                  EXHIBIT,
+                  ALERT_MESSAGE,
+                  ALERT_START_DATE,
+                  ALERT_END_DATE
+               )
+               VALUES (?, ?, ?, ?, ?)
+               ON CONFLICT(SPECIES, EXHIBIT) DO UPDATE SET
+                  ALERT_MESSAGE = excluded.ALERT_MESSAGE,
+                  ALERT_START_DATE = excluded.ALERT_START_DATE,
+                  ALERT_END_DATE = excluded.ALERT_END_DATE;
+         """, ( species, exhibit, message, alert_start_date, alert_end_date ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+      
+
+   def remove_animal_viewing_alert( self, species, exhibit ):
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """ DELETE FROM AnimalViewingAlert
+            WHERE SPECIES = ?
+            AND EXHIBIT = ?;
+         """,
+         ( species, exhibit )
+      )
+
+      self.conn.commit()
+      removed = cur.rowcount
+      cur.close()
+
+      return removed > 0
    

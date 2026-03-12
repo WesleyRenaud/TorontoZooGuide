@@ -262,6 +262,35 @@ if 'VIEWING_MESSAGE' not in animal_visibility_schedule_columns:
       'ALTER TABLE AnimalVisibilitySchedule ADD COLUMN VIEWING_MESSAGE TEXT;'
    )
 
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS AnimalViewingAlert
+                  (  SPECIES             VARCHAR(64) NOT NULL,
+                     EXHIBIT             VARCHAR(64) NOT NULL,
+                     ALERT_MESSAGE       TEXT        NOT NULL,
+                     ALERT_START_DATE    DATE,
+                     ALERT_END_DATE      DATE,
+                     PRIMARY KEY (SPECIES, EXHIBIT),
+                     FOREIGN KEY (SPECIES) REFERENCES Animal(SPECIES),
+                     FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(NAME) ); ''' )
+
+animal_viewing_alert_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( AnimalViewingAlert );' ).fetchall()
+}
+
+if 'ALERT_MESSAGE' not in animal_viewing_alert_columns:
+   cursor.execute(
+      'ALTER TABLE AnimalViewingAlert ADD COLUMN ALERT_MESSAGE TEXT;'
+   )
+
+if 'ALERT_START_DATE' not in animal_viewing_alert_columns:
+   cursor.execute(
+      'ALTER TABLE AnimalViewingAlert ADD COLUMN ALERT_START_DATE DATE;'
+   )
+
+if 'ALERT_END_DATE' not in animal_viewing_alert_columns:
+   cursor.execute(
+      'ALTER TABLE AnimalViewingAlert ADD COLUMN ALERT_END_DATE DATE;'
+   )
+
 regions = [
    (
       'Austrailasia',
