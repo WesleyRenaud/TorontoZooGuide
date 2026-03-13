@@ -15,7 +15,6 @@ class Database():
    # Returns all animals which may be viewable in the given month with their likelihoods (probability from 0 to 1)
    def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False, threshold=0, species_to_include=[],
                                     itinerary_mode=False ):
-
       cur = self.conn.cursor()
 
       if temp is None:
@@ -97,6 +96,7 @@ class Database():
          snow_resistance = animal['SNOW_RESISTANCE']
          part_of_seasonal_exhibit = animal['PART_OF_SEASONAL_EXHIBIT']
          enclosure_type = animal['ENCLOSURE_TYPE']
+         seasonally_off_display_message = animal['SEASONALLY_OFF_DISPLAY_MESSAGE']
 
          is_off_display, off_display_message = self.get_active_off_display_status( animal, target_date )
 
@@ -143,7 +143,10 @@ class Database():
             elif is_exhibit_closed:
                display_message = exhibit_closed_message
             elif likelihood == 0:
-               display_message = f'The {species} is off display due to cold weather.'
+               if seasonally_off_display_message:
+                  display_message = seasonally_off_display_message
+               else:
+                  display_message = f'The {species} is off display due to cold weather.'
 
             animals.append(
                zoo.Animal(
@@ -596,6 +599,7 @@ class Database():
       cur = self.conn.cursor()
 
       target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), int( day ) )
+      weekday = target_date.weekday()
 
       data = cur.execute(
          """   SELECT
@@ -622,24 +626,14 @@ class Database():
       for attraction in attraction_data:
          name = attraction['NAME']
 
-         stored_is_closed = bool( attraction['IS_CLOSED'] ) if attraction['IS_CLOSED'] != None else False
+         is_closed = self.is_attraction_manually_closed( attraction, target_date )
+         closed_message = attraction['CLOSED_MESSAGE'] if is_closed else None
 
-         is_closed = False
+         if not is_closed:
+            is_closed, schedule_message = self.is_attraction_closed_by_schedule( name, target_date, weekday )
 
-         if stored_is_closed:
-
-            start_ok = True
-            end_ok = True
-
-            if attraction['CLOSED_START'] != None:
-               start_date = self.parse_date_value( attraction['CLOSED_START'] )
-               start_ok = target_date >= start_date
-
-            if attraction['CLOSED_END'] != None:
-               end_date = self.parse_date_value( attraction['CLOSED_END'] )
-               end_ok = target_date <= end_date
-
-            is_closed = start_ok and end_ok
+            if is_closed:
+               closed_message = schedule_message
 
          should_include = False
 
@@ -665,13 +659,112 @@ class Database():
                x_coord=attraction['X_COORD'],
                y_coord=attraction['Y_COORD'],
                is_closed=is_closed,
-               closed_message=attraction['CLOSED_MESSAGE'] if is_closed else None
+               closed_message=closed_message
             )
          )
 
       cur.close()
 
       return attractions
+
+
+   def is_attraction_manually_closed( self, attraction, target_date ):
+      stored_is_closed = bool( attraction['IS_CLOSED'] ) if attraction['IS_CLOSED'] != None else False
+
+      if not stored_is_closed:
+         return False
+
+      start_ok = True
+      end_ok = True
+
+      if attraction['CLOSED_START'] != None:
+         start_date = self.parse_date_value( attraction['CLOSED_START'] )
+         start_ok = target_date >= start_date
+
+      if attraction['CLOSED_END'] != None:
+         end_date = self.parse_date_value( attraction['CLOSED_END'] )
+         end_ok = target_date <= end_date
+
+      return start_ok and end_ok
+
+
+   def is_attraction_closed_by_schedule( self, attraction_name, target_date, weekday ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  s.SCHEDULE_START_DATE,
+                  s.SCHEDULE_END_DATE,
+                  s.MONDAY,
+                  s.TUESDAY,
+                  s.WEDNESDAY,
+                  s.THURSDAY,
+                  s.FRIDAY,
+                  s.SATURDAY,
+                  s.SUNDAY,
+                  s.HOLIDAYS_ONLY,
+                  s.SCHEDULE_MESSAGE
+               FROM AttractionOpeningSchedule s
+               WHERE s.ATTRACTION = ?;
+         """, ( attraction_name, )
+      )
+
+      schedule_rows = data.fetchall()
+      cur.close()
+
+      if len( schedule_rows ) == 0:
+         return False, None
+
+      for schedule in schedule_rows:
+         start_ok = True
+         end_ok = True
+
+         if schedule['SCHEDULE_START_DATE'] != None:
+            start_date = self.parse_date_value( schedule['SCHEDULE_START_DATE'] )
+            start_ok = target_date >= start_date
+
+         if schedule['SCHEDULE_END_DATE'] != None:
+            end_date = self.parse_date_value( schedule['SCHEDULE_END_DATE'] )
+            end_ok = target_date <= end_date
+
+         if not ( start_ok and end_ok ):
+            continue
+
+         is_holiday = self.zoo_util.is_holiday( target_date ) if hasattr( self.zoo_util, 'is_holiday' ) else False
+
+         open_on_day = False
+
+         if weekday == 0 and schedule['MONDAY']:
+            open_on_day = True
+         elif weekday == 1 and schedule['TUESDAY']:
+            open_on_day = True
+         elif weekday == 2 and schedule['WEDNESDAY']:
+            open_on_day = True
+         elif weekday == 3 and schedule['THURSDAY']:
+            open_on_day = True
+         elif weekday == 4 and schedule['FRIDAY']:
+            open_on_day = True
+         elif weekday == 5 and schedule['SATURDAY']:
+            open_on_day = True
+         elif weekday == 6 and schedule['SUNDAY']:
+            open_on_day = True
+         elif schedule['HOLIDAYS_ONLY'] and is_holiday:
+            open_on_day = True
+
+         if open_on_day:
+            return False, None
+
+         message = schedule['SCHEDULE_MESSAGE']
+
+         if not message:
+            if schedule['SATURDAY'] and schedule['SUNDAY'] and schedule['HOLIDAYS_ONLY']:
+               message = f'The {attraction_name} is open on weekends and holidays only.'
+            else:
+               message = f'The {attraction_name} is not scheduled to be open today.'
+
+         return True, message
+
+      return False, None
    
 
    def get_zoomobile_stations( self ):
@@ -1444,4 +1537,91 @@ class Database():
       cur.close()
 
       return updated > 0
+   
+
+   def set_attraction_opening_schedule( self, attraction, start_date, end_date, monday, tuesday, wednesday, thursday, friday, saturday,
+                                        sunday, holidays_only, message ):
+      if not attraction:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      if not message:
+         message = f'The {attraction} is not scheduled to be open today.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO AttractionOpeningSchedule (
+                  ATTRACTION,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  HOLIDAYS_ONLY,
+                  SCHEDULE_MESSAGE
+               )
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(ATTRACTION) DO UPDATE SET
+                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
+                  MONDAY = excluded.MONDAY,
+                  TUESDAY = excluded.TUESDAY,
+                  WEDNESDAY = excluded.WEDNESDAY,
+                  THURSDAY = excluded.THURSDAY,
+                  FRIDAY = excluded.FRIDAY,
+                  SATURDAY = excluded.SATURDAY,
+                  SUNDAY = excluded.SUNDAY,
+                  HOLIDAYS_ONLY = excluded.HOLIDAYS_ONLY,
+                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
+         """,
+         (
+            attraction,
+            start_date,
+            end_date,
+            int( bool( monday ) ),
+            int( bool( tuesday ) ),
+            int( bool( wednesday ) ),
+            int( bool( thursday ) ),
+            int( bool( friday ) ),
+            int( bool( saturday ) ),
+            int( bool( sunday ) ),
+            int( bool( holidays_only ) ),
+            message
+         )
+      )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def remove_attraction_opening_schedule( self, attraction ):
+      if not attraction:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   DELETE FROM AttractionOpeningSchedule
+               WHERE ATTRACTION = ?;
+         """, ( attraction, )
+      )
+
+      self.conn.commit()
+      removed = cur.rowcount
+      cur.close()
+
+      return removed > 0
    

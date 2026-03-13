@@ -2714,6 +2714,37 @@ nav ul li a:hover {
 }
 
 /* ============================================================
+   CONSOLE OPERATIONS: CHECKBOX GRID
+============================================================ */
+
+.console-operations-checkbox-grid {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 16px 28px;
+   align-items: center;
+}
+
+.console-operations-checkbox-option {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+
+   font-size: 2.3em;
+   font-weight: 700;
+   color: rgba(20,35,10,0.85);
+
+   cursor: pointer;
+   user-select: none;
+}
+
+.console-operations-checkbox-option input[type="checkbox"] {
+   width: 24px;
+   height: 24px;
+   accent-color: #5e9600;
+   cursor: pointer;
+}
+
+/* ============================================================
    CONSOLE OPERATIONS: DATE/TIME PICKERS
 ============================================================ */
 

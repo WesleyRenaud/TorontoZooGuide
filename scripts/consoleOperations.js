@@ -13,6 +13,8 @@ import { createExhibitClosedController } from './consoleOperations/exhibitClosed
 import { createExhibitOpenController } from './consoleOperations/exhibitOpen.js';
 import { createAttractionClosedController } from './consoleOperations/attractionClosed.js';
 import { createAttractionOpenController } from './consoleOperations/attractionOpen.js';
+import { createAttractionOpeningScheduleController } from './consoleOperations/attractionOpeningSchedule.js';
+import { createRemoveAttractionOpeningScheduleController } from './consoleOperations/removeAttractionOpeningSchedule.js';
 import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animalSpeciesAutocomplete.js';
 import { createOffDisplayPanelHtml } from './consoleOperations/panels/offDisplayPanel.js';
 import { createOnDisplayPanelHtml } from './consoleOperations/panels/onDisplayPanel.js';
@@ -24,6 +26,8 @@ import { createExhibitClosedPanelHtml } from './consoleOperations/panels/exhibit
 import { createExhibitOpenPanelHtml } from './consoleOperations/panels/exhibitOpenPanel.js';
 import { createAttractionClosedPanelHtml } from './consoleOperations/panels/attractionClosedPanel.js';
 import { createAttractionOpenPanelHtml } from './consoleOperations/panels/attractionOpenPanel.js';
+import { createAttractionOpeningSchedulePanelHtml } from './consoleOperations/panels/attractionOpeningSchedulePanel.js';
+import { createRemoveAttractionOpeningSchedulePanelHtml } from './consoleOperations/panels/removeAttractionOpeningSchedulePanel.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -45,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createExhibitOpenPanelHtml()}
       ${createAttractionClosedPanelHtml()}
       ${createAttractionOpenPanelHtml()}
+      ${createAttractionOpeningSchedulePanelHtml()}
+      ${createRemoveAttractionOpeningSchedulePanelHtml()}
    `;
 
    const offDisplayPanel = document.getElementById('offDisplayPanel');
@@ -57,6 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
    const exhibitOpenPanel = document.getElementById('exhibitOpenPanel');
    const attractionClosedPanel = document.getElementById('attractionClosedPanel');
    const attractionOpenPanel = document.getElementById('attractionOpenPanel');
+   const attractionOpeningSchedulePanel = document.getElementById('attractionOpeningSchedulePanel');
+   const removeAttractionOpeningSchedulePanel = document.getElementById('removeAttractionOpeningSchedulePanel');
 
    const offDisplaySpeciesEl = document.getElementById('offDisplaySpecies');
    const onDisplaySpeciesEl = document.getElementById('onDisplaySpecies');
@@ -82,6 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
    const exhibitOpenExhibitEl = document.getElementById('exhibitOpenExhibit');
    const attractionClosedAttractionEl = document.getElementById('attractionClosedAttraction');
    const attractionOpenAttractionEl = document.getElementById('attractionOpenAttraction');
+   const attractionOpeningScheduleAttractionEl = document.getElementById('attractionOpeningScheduleAttraction');
+   const removeAttractionOpeningScheduleAttractionEl = document.getElementById('removeAttractionOpeningScheduleAttraction');
 
    const offDisplayStartDateEl = document.getElementById('offDisplayStartDate');
    const offDisplayEndDateEl = document.getElementById('offDisplayEndDate');
@@ -99,6 +109,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
    const attractionClosedStartDateEl = document.getElementById('attractionClosedStartDate');
    const attractionClosedEndDateEl = document.getElementById('attractionClosedEndDate');
+
+   const attractionOpeningSchedulePresetEl = document.getElementById('attractionOpeningSchedulePreset');
+   const attractionOpeningScheduleStartDateEl = document.getElementById('attractionOpeningScheduleStartDate');
+   const attractionOpeningScheduleEndDateEl = document.getElementById('attractionOpeningScheduleEndDate');
+   const attractionOpeningScheduleMondayEl = document.getElementById('attractionOpeningScheduleMonday');
+   const attractionOpeningScheduleTuesdayEl = document.getElementById('attractionOpeningScheduleTuesday');
+   const attractionOpeningScheduleWednesdayEl = document.getElementById('attractionOpeningScheduleWednesday');
+   const attractionOpeningScheduleThursdayEl = document.getElementById('attractionOpeningScheduleThursday');
+   const attractionOpeningScheduleFridayEl = document.getElementById('attractionOpeningScheduleFriday');
+   const attractionOpeningScheduleSaturdayEl = document.getElementById('attractionOpeningScheduleSaturday');
+   const attractionOpeningScheduleSundayEl = document.getElementById('attractionOpeningScheduleSunday');
+   const attractionOpeningScheduleHolidaysOnlyEl = document.getElementById('attractionOpeningScheduleHolidaysOnly');
 
    function activatePanel(panelEl) {
       document
@@ -127,43 +149,43 @@ document.addEventListener('DOMContentLoaded', () => {
          .forEach(button => button.classList.remove('active'));
    }
 
-   createAnimalSpeciesAutocompleteController( {
+   createAnimalSpeciesAutocompleteController({
       inputEl: offDisplaySpeciesEl,
       resultsEl: offDisplaySpeciesResults,
       exhibitEl: offDisplayExhibitEl,
-   } );
+   });
 
-   createAnimalSpeciesAutocompleteController( {
+   createAnimalSpeciesAutocompleteController({
       inputEl: onDisplaySpeciesEl,
       resultsEl: onDisplaySpeciesResults,
       exhibitEl: onDisplayExhibitEl,
-   } );
+   });
 
-   createAnimalSpeciesAutocompleteController( {
+   createAnimalSpeciesAutocompleteController({
       inputEl: visibilityScheduleSpeciesEl,
       resultsEl: visibilityScheduleSpeciesResults,
       exhibitEl: visibilityScheduleExhibitEl,
-   } );
+   });
 
-   createAnimalSpeciesAutocompleteController( {
+   createAnimalSpeciesAutocompleteController({
       inputEl: removeVisibilityScheduleSpeciesEl,
       resultsEl: removeVisibilityScheduleSpeciesResults,
       exhibitEl: removeVisibilityScheduleExhibitEl,
-   } );
+   });
 
-   createAnimalSpeciesAutocompleteController( {
+   createAnimalSpeciesAutocompleteController({
       inputEl: viewingAlertSpeciesEl,
       resultsEl: viewingAlertSpeciesResults,
       exhibitEl: viewingAlertExhibitEl,
-   } );
+   });
 
-   createAnimalSpeciesAutocompleteController( {
+   createAnimalSpeciesAutocompleteController({
       inputEl: removeViewingAlertSpeciesEl,
       resultsEl: removeViewingAlertSpeciesResults,
       exhibitEl: removeViewingAlertExhibitEl,
-   } );
+   });
 
-   createAnimalOffDisplayController( {
+   createAnimalOffDisplayController({
       showButtonEl: document.getElementById('showOffDisplayForm'),
       panelEl: offDisplayPanel,
       cancelButtonEl: null,
@@ -176,9 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
       messageEl: document.getElementById('offDisplayMessage'),
       activatePanel,
       hidePanels,
-   } );
+   });
 
-   createAnimalOnDisplayController( {
+   createAnimalOnDisplayController({
       showButtonEl: document.getElementById('showOnDisplayForm'),
       panelEl: onDisplayPanel,
       cancelButtonEl: null,
@@ -188,9 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
       exhibitEl: onDisplayExhibitEl,
       activatePanel,
       hidePanels,
-   } );
+   });
 
-   createAnimalVisibilityScheduleController( {
+   createAnimalVisibilityScheduleController({
       showButtonEl: document.getElementById('showVisibilityScheduleForm'),
       panelEl: visibilitySchedulePanel,
       cancelButtonEl: null,
@@ -205,9 +227,9 @@ document.addEventListener('DOMContentLoaded', () => {
       messageEl: document.getElementById('visibilityScheduleMessage'),
       activatePanel,
       hidePanels,
-   } );
+   });
 
-   createRemoveVisibilityScheduleController( {
+   createRemoveVisibilityScheduleController({
       showButtonEl: document.getElementById('showRemoveVisibilityScheduleForm'),
       panelEl: removeVisibilitySchedulePanel,
       cancelButtonEl: null,
@@ -217,9 +239,9 @@ document.addEventListener('DOMContentLoaded', () => {
       exhibitEl: removeVisibilityScheduleExhibitEl,
       activatePanel,
       hidePanels,
-   } );
+   });
 
-   createAnimalViewingAlertController( {
+   createAnimalViewingAlertController({
       showButtonEl: document.getElementById('showViewingAlertForm'),
       panelEl: viewingAlertPanel,
       cancelButtonEl: null,
@@ -232,9 +254,9 @@ document.addEventListener('DOMContentLoaded', () => {
       messageEl: document.getElementById('viewingAlertMessage'),
       activatePanel,
       hidePanels,
-   } );
+   });
 
-   createRemoveViewingAlertController( {
+   createRemoveViewingAlertController({
       showButtonEl: document.getElementById('showRemoveViewingAlertForm'),
       panelEl: removeViewingAlertPanel,
       cancelButtonEl: null,
@@ -244,9 +266,9 @@ document.addEventListener('DOMContentLoaded', () => {
       exhibitEl: removeViewingAlertExhibitEl,
       activatePanel,
       hidePanels,
-   } );
+   });
 
-   createExhibitClosedController( {
+   createExhibitClosedController({
       showButtonEl: document.getElementById('showExhibitClosedForm'),
       panelEl: exhibitClosedPanel,
       cancelButtonEl: null,
@@ -258,9 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
       messageEl: document.getElementById('exhibitClosedMessage'),
       activatePanel,
       hidePanels,
-   } );
+   });
 
-   createExhibitOpenController( {
+   createExhibitOpenController({
       showButtonEl: document.getElementById('showExhibitOpenForm'),
       panelEl: exhibitOpenPanel,
       cancelButtonEl: null,
@@ -269,9 +291,9 @@ document.addEventListener('DOMContentLoaded', () => {
       exhibitEl: exhibitOpenExhibitEl,
       activatePanel,
       hidePanels,
-   } );
+   });
 
-   createAttractionClosedController( {
+   createAttractionClosedController({
       showButtonEl: document.getElementById('showAttractionClosedForm'),
       panelEl: attractionClosedPanel,
       cancelButtonEl: null,
@@ -283,9 +305,9 @@ document.addEventListener('DOMContentLoaded', () => {
       messageEl: document.getElementById('attractionClosedMessage'),
       activatePanel,
       hidePanels,
-   } );
+   });
 
-   createAttractionOpenController( {
+   createAttractionOpenController({
       showButtonEl: document.getElementById('showAttractionOpenForm'),
       panelEl: attractionOpenPanel,
       cancelButtonEl: null,
@@ -294,7 +316,41 @@ document.addEventListener('DOMContentLoaded', () => {
       attractionEl: attractionOpenAttractionEl,
       activatePanel,
       hidePanels,
-   } );
+   });
+
+   createAttractionOpeningScheduleController({
+      showButtonEl: document.getElementById('showAttractionOpeningScheduleForm'),
+      panelEl: attractionOpeningSchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitAttractionOpeningSchedule'),
+      statusEl: document.getElementById('attractionOpeningScheduleStatus'),
+      attractionEl: attractionOpeningScheduleAttractionEl,
+      presetEl: attractionOpeningSchedulePresetEl,
+      startDateEl: attractionOpeningScheduleStartDateEl,
+      endDateEl: attractionOpeningScheduleEndDateEl,
+      mondayEl: attractionOpeningScheduleMondayEl,
+      tuesdayEl: attractionOpeningScheduleTuesdayEl,
+      wednesdayEl: attractionOpeningScheduleWednesdayEl,
+      thursdayEl: attractionOpeningScheduleThursdayEl,
+      fridayEl: attractionOpeningScheduleFridayEl,
+      saturdayEl: attractionOpeningScheduleSaturdayEl,
+      sundayEl: attractionOpeningScheduleSundayEl,
+      holidaysOnlyEl: attractionOpeningScheduleHolidaysOnlyEl,
+      messageEl: document.getElementById('attractionOpeningScheduleMessage'),
+      activatePanel,
+      hidePanels,
+   });
+
+   createRemoveAttractionOpeningScheduleController({
+      showButtonEl: document.getElementById('showRemoveAttractionOpeningScheduleForm'),
+      panelEl: removeAttractionOpeningSchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitRemoveAttractionOpeningSchedule'),
+      statusEl: document.getElementById('removeAttractionOpeningScheduleStatus'),
+      attractionEl: removeAttractionOpeningScheduleAttractionEl,
+      activatePanel,
+      hidePanels,
+   });
 
    initOffDisplayDatePickers(
       offDisplayStartDateEl,
@@ -321,6 +377,11 @@ document.addEventListener('DOMContentLoaded', () => {
    initOffDisplayDatePickers(
       attractionClosedStartDateEl,
       attractionClosedEndDateEl
+   );
+
+   initOffDisplayDatePickers(
+      attractionOpeningScheduleStartDateEl,
+      attractionOpeningScheduleEndDateEl
    );
 
 } );

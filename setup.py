@@ -355,6 +355,81 @@ if 'CLOSED_END' not in attraction_status_columns:
       'ALTER TABLE AttractionStatus ADD COLUMN CLOSED_END DATE;'
    )
 
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS AttractionOpeningSchedule
+                  (  ATTRACTION            VARCHAR(64) NOT NULL,
+                     SCHEDULE_START_DATE   DATE        NOT NULL,
+                     SCHEDULE_END_DATE     DATE,
+                     MONDAY                BOOL        NOT NULL DEFAULT 0,
+                     TUESDAY               BOOL        NOT NULL DEFAULT 0,
+                     WEDNESDAY             BOOL        NOT NULL DEFAULT 0,
+                     THURSDAY              BOOL        NOT NULL DEFAULT 0,
+                     FRIDAY                BOOL        NOT NULL DEFAULT 0,
+                     SATURDAY              BOOL        NOT NULL DEFAULT 0,
+                     SUNDAY                BOOL        NOT NULL DEFAULT 0,
+                     HOLIDAYS_ONLY         BOOL        NOT NULL DEFAULT 0,
+                     SCHEDULE_MESSAGE      TEXT,
+                     PRIMARY KEY (ATTRACTION),
+                     FOREIGN KEY (ATTRACTION) REFERENCES Attraction(NAME) ); ''' )
+
+attraction_schedule_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( AttractionOpeningSchedule );' ).fetchall()
+}
+
+if 'SCHEDULE_START_DATE' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN SCHEDULE_START_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+   )
+
+if 'SCHEDULE_END_DATE' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN SCHEDULE_END_DATE DATE;'
+   )
+
+if 'MONDAY' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN MONDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'TUESDAY' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN TUESDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'WEDNESDAY' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN WEDNESDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'THURSDAY' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN THURSDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'FRIDAY' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN FRIDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SATURDAY' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN SATURDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SUNDAY' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN SUNDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'HOLIDAYS_ONLY' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN HOLIDAYS_ONLY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SCHEDULE_MESSAGE' not in attraction_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
+   )
+
 regions = [
    (
       'Austrailasia',
@@ -9867,7 +9942,7 @@ enclosureViewings =\
       'Demoiselle Crane',
       'Australasia Pavilion',
       'Outdoor',
-      '''The demoiselle cranes are off-display for the season. They can be seen outside again in the spring.''',
+      '''The demoiselle cranes are likely to be inside and off display on this day due to cold weather.''',
       59,                     # X coordinate on map
       33,                     # Y coordinate on map
    ),
@@ -9875,7 +9950,7 @@ enclosureViewings =\
       'Kookaburra',
       'Australasia Pavilion',
       'Outdoor',
-      '''The kookaburras can be found inside for the season. They can be seen outside again in the summer.''',
+      '''The kookaburras can most likely be seen inside on this day due to cooler weather.''',
       59,                     # X coordinate on map
       33,                     # Y coordinate on map
    ),
@@ -9883,7 +9958,7 @@ enclosureViewings =\
       'Southern Hairy-Nosed Wombat',
       'Australasia Pavilion',
       'Outdoor',
-      '''The wombats are inside for the season. They can be seen outside again in the spring.''',
+      '''The wombats can most likely be seen inside on this day due to cooler weather.''',
       61,                     # X coordinate on map
       32.75,                  # Y coordinate on map
    ),
@@ -9893,7 +9968,7 @@ enclosureViewings =\
       'Western Grey Kangaroo',
       'Australasia Outdoor',
       'Outdoor',
-      '''The kangaroos cranes are off-display for the season. They can be seen outside again in the spring.''',
+      '''The kangaroos are likely to be inside and off display on this day due to cold weather.''',
       62.5,                   # X coordinate on map
       34,                     # Y coordinate on map
    ),
@@ -9967,7 +10042,7 @@ enclosureViewings =\
       'Red Panda',
       'Africa Savanna',
       'Outdoor',
-      '''The red pandas are likely off-display today due to particularly harsh conditions.''',
+      '''The red pandas are likely to be inside and off-display on this day due to particularly harsh conditions.''',
       # 76,
       # 35.25
       39,                     # X coordinate on map
@@ -10053,7 +10128,7 @@ enclosureViewings =\
       'American Flamingo',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
-      '''The American flamingos are off-display for the season. They can be seen outside again in the spring.''',
+      '''The American flamingos are likely to be inside and off display on this day due to cold weather.''',
       44,                     # X coordinate on map
       16.75                   # Y coordinate on map
    ),
@@ -10061,7 +10136,7 @@ enclosureViewings =\
       'Black-Handed Spider Monkey',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
-      '''The black-handed spider monkeys are off-display for the season. They can be seen outside again in the spring.''',
+      '''The black-handed spider monkeys are likely to be inside and off display on this day due to colder weather.''',
       42.25,                  # X coordinate on map
       17.25                   # Y coordinate on map
    ),
@@ -10069,7 +10144,7 @@ enclosureViewings =\
       'Capybara',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
-      '''The capybaras are off-display for the season. They can be seen outside again in the spring.''',
+      '''The capybaras are likely to be inside and off display on this day due to cold weather.''',
       44.5,                   # X coordinate on map
       21                      # Y coordinate on map
    ),
@@ -10551,7 +10626,7 @@ enclosureViewings =\
       'Golden Lion Tamarin',
       'Americas Pavilion',
       'Outdoor',
-      '''The golden lion tamarins are inside for the season. They can be seen outside again in the spring.''',
+      '''The golden lion tamarins can most likely be seen inside on this day due to cooler weather.''',
       50,                     # X coordinate on map
       36.5                    # Y coordinate on map
    ),
@@ -10559,7 +10634,7 @@ enclosureViewings =\
       'Two-Toed Sloth',
       'Americas Pavilion',
       'Outdoor',
-      '''The sloths are inside for the season. They can be seen outside again in the spring.''',
+      '''The sloths can most likely be seen inside on this day due to cooler weather.''',
       50,                     # X coordinate on map
       36.5                    # Y coordinate on map
    ),
@@ -10567,7 +10642,7 @@ enclosureViewings =\
       'White-Faced Saki',
       'Americas Pavilion',
       'Outdoor',
-      '''The white-faced sakis are inside for the season. They can be seen outside again in the spring.''',
+      '''The white-faced sakis can most likely be seen inside on this day due to cooler weather.''',
       50,                     # X coordinate on map
       36.5                    # Y coordinate on map
    ),
@@ -10585,7 +10660,7 @@ enclosureViewings =\
       'Cougar',
       'Canadian Domain',
       'Outdoor',
-      '''The cougars are off-display for the season. They can be seen outside again when the Canadian Domain opens in the spring.''',
+      None,
       11.25,                  # X coordinate on map
       57.75                   # Y coordinate on map
    ),
@@ -10593,7 +10668,7 @@ enclosureViewings =\
       'Grizzly Bear',
       'Canadian Domain',
       'Outdoor',
-      '''The grizzly bears are off-display for the season. They can be seen outside again in the spring.''',
+      '''The grizzly bears are likely to be off display on this day due to cooler weather and hibernation patterns.''',
       7.5,                    # X coordinate on map
       59.5                    # Y coordinate on map
    ),
@@ -10601,7 +10676,7 @@ enclosureViewings =\
       'Northern Bald Eagle',
       'Canadian Domain',
       'Outdoor',
-      '''The bald eagles are off-display for the season. They can be seen outside again when the Canadian Domain opens in the spring.''',
+      None,
       9.75,                   # X coordinate on map
       70                      # Y coordinate on map
    ),
@@ -10609,7 +10684,7 @@ enclosureViewings =\
       'Raccoon',
       'Canadian Domain',
       'Outdoor',
-      '''The raccoons are off-display for the season. They can be seen outside again when the Canadian Domain opens in the spring.''',
+      None,
       17,                     # X coordinate on map
       64                      # Y coordinate on map
    ),
@@ -10617,7 +10692,7 @@ enclosureViewings =\
       'Wood Bison',
       'Canadian Domain',
       'Outdoor',
-      '''The bison are off-display for the season. They can be seen outside again when the Canadian Domain opens in the spring.''',
+      None,
       12,                     # X coordinate on map      
       55.5                    # Y coordinate on map
    ),
@@ -10625,7 +10700,7 @@ enclosureViewings =\
       'Wood Bison',
       'Canadian Domain',
       'Outdoor',
-      '''The bison are off-display for the season. They can be seen outside again when the Canadian Domain opens in the spring.''',
+      None,
       10.5,                   # X coordinate on map
       76                      # Y coordinate on map
    ),
@@ -10635,7 +10710,7 @@ enclosureViewings =\
       'African Lion',
       'Africa Savanna',
       'Outdoor',
-      '''The African lions are likely off-display today due to particularly harsh conditions.''',
+      '''The African lions are most likely inside and off-display on this day due to particularly harsh conditions.''',
       37.625,                 # X coordinate on map
       60.75                   # Y coordinate on map
    ),
@@ -10643,7 +10718,7 @@ enclosureViewings =\
       'African Penguin',
       'Africa Savanna',
       'Outdoor',
-      '''The African penguins are inside for the season. They can be seen outside again in the spring.''',
+      '''The penguins can most likely be seen inside on this day due to cold weather.''',
       43.75,                  # X coordinate on map
       64                      # Y coordinate on map
    ),
@@ -10651,7 +10726,7 @@ enclosureViewings =\
       'White-Breasted Cormorant',
       'Africa Savanna',
       'Outdoor',
-      '''The cormorants are inside for the season. They can be seen outside again in the spring.''',
+      '''The cormorants can most likely be seen inside on this day due to cold weather.''',
       43.75,                  # X coordinate on map
       64                      # Y coordinate on map
    ),
@@ -10675,7 +10750,7 @@ enclosureViewings =\
       'Cheetah',
       'Africa Savanna',
       'Outdoor',
-      '''The cheetahs are likely off-display today due to particularly harsh conditions.''',
+      '''The cheetahs are most likely inside and off-display on this day due to particularly harsh conditions.''',
       35.25,                  # X coordinate on map
       75.5                    # Y coordinate on map
    ),
@@ -10683,7 +10758,7 @@ enclosureViewings =\
       'Common Eland',
       'Africa Savanna',
       'Outdoor',
-      '''The common eland are off-display for the season. They can be seen outside again in the spring.''',
+      '''The elands are most likely inside and off-display on this day due to cold weather.''',
       40,                     # X coordinate on map
       63.5                    # Y coordinate on map
    ),
@@ -10691,7 +10766,7 @@ enclosureViewings =\
       'Greater Kudu',
       'Africa Savanna',
       'Outdoor',
-      '''The greater kudu are off-display for the season. They can be seen outside again in the spring.''',
+      '''The greater kudus are most likely inside and off-display on this day due to cold weather.''',
       44,                     # X coordinate on map
       79.25                   # Y coordinate on map
    ),
@@ -10699,7 +10774,7 @@ enclosureViewings =\
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
-      '''The marabou storks are off-display for the season. They can be seen outside again in the summer.''',
+      '''The marabou storks are most likely inside and off-display on this day due to cooler weather.''',
       44,                     # X coordinate on map
       79.25                   # Y coordinate on map
    ),
@@ -10707,7 +10782,7 @@ enclosureViewings =\
       'Southern Ground Hornbill',
       'Africa Savanna',
       'Outdoor',
-      '''The southern ground hornbills are off-display for the season. They can be seen outside again in the summer.''',
+      '''The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.''',
       44,                     # X coordinate on map
       79.25                   # Y coordinate on map
    ),
@@ -10715,7 +10790,7 @@ enclosureViewings =\
       'White-Headed Vulture',
       'Africa Savanna',
       'Outdoor',
-      '''The white-headed vultures are off-display for the season. They can be seen outside again in the summer.''',
+      '''The white-headed vultures are most likely inside and off-display on this day due to cooler weather.''',
       44,                     # X coordinate on map
       79.25                   # Y coordinate on map
    ),
@@ -10723,7 +10798,7 @@ enclosureViewings =\
       'Greater Kudu',
       'Africa Savanna',
       'Outdoor',
-      '''The greater kudu are off-display for the season. They can be seen outside again in the spring.''',
+      '''The greater kudus are most likely inside and off-display on this day due to cold weather.''',
       45.5,                   # X coordinate on map
       83.25                   # Y coordinate on map
    ),
@@ -10731,7 +10806,7 @@ enclosureViewings =\
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
-      '''The marabou storks are off-display for the season. They can be seen outside again in the summer.''',
+      '''The marabou storks are most likely inside and off-display on this day due to cooler weather.''',
       45.5,                   # X coordinate on map
       83.25                   # Y coordinate on map
    ),
@@ -10747,7 +10822,7 @@ enclosureViewings =\
       'White-Headed Vulture',
       'Africa Savanna',
       'Outdoor',
-      '''The white-headed vultures are off-display for the season. They can be seen outside again in the summer.''',
+      '''The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.''',
       45.5,                   # X coordinate on map
       83.25                   # Y coordinate on map
    ),
@@ -10755,7 +10830,7 @@ enclosureViewings =\
       'Greater Kudu',
       'Africa Savanna',
       'Outdoor',
-      '''The greater kudu are off-display for the season. They can be seen outside again in the spring.''',
+      '''The greater kudus are most likely inside and off-display on this day due to cold weather.''',
       49,                     # X coordinate on map
       81                      # Y coordinate on map
    ),
@@ -10763,7 +10838,7 @@ enclosureViewings =\
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
-      '''The marabou storks are off-display for the season. They can be seen outside again in the summer.''',
+      '''The marabou storks are most likely inside and off-display on this day due to cooler weather.''',
       49,                     # X coordinate on map
       81                      # Y coordinate on map
    ),
@@ -10771,7 +10846,7 @@ enclosureViewings =\
       'Southern Ground Hornbill',
       'Africa Savanna',
       'Outdoor',
-      '''The marabou storks are off-display for the season. They can be seen outside again in the summer.''',
+      '''The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.''',
       49,                     # X coordinate on map
       81                      # Y coordinate on map
    ),
@@ -10779,7 +10854,7 @@ enclosureViewings =\
       'White-Headed Vulture',
       'Africa Savanna',
       'Outdoor',
-      '''The white-headed vultures are off-display for the season. They can be seen outside again in the summer.''',
+      '''The white-headed vultures are most likely inside and off-display on this day due to cooler weather.''',
       49,                     # X coordinate on map
       81                      # Y coordinate on map
    ),
@@ -10787,7 +10862,7 @@ enclosureViewings =\
       'Grevy\'s Zebra',
       'Africa Savanna',
       'Outdoor',
-      '''The zebras are off-display for the season. They can be seen outside again in the spring.''',
+      '''The zebras are most likely inside and off-display on this day due to cold weather.''',
       37.25,                  # X coordinate on map
       69                      # Y coordinate on map
    ),
@@ -10795,7 +10870,7 @@ enclosureViewings =\
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
-      '''The marabou storks are off-display for the season. They can be seen outside again in the summer.''',
+      '''The marabou storks are most likely inside and off-display on this day due to cooler weather.''',
       37.25,                  # X coordinate on map
       73.5                    # Y coordinate on map
    ),
@@ -10803,7 +10878,7 @@ enclosureViewings =\
       'Masai Giraffe',
       'Africa Savanna',
       'Outdoor',
-      '''The giraffes are inside for the season. They can be seen outside again in the spring.''',
+      '''The giraffes can most likely be seen inside on this day due to cold weather.''',
       52,                     # X coordinate on map
       88.25                   # Y coordinate on map
    ),
@@ -10819,7 +10894,7 @@ enclosureViewings =\
       'Olive Baboon',
       'Africa Savanna',
       'Outdoor',
-      '''The baboons are likely off-display today due to particularly harsh conditions.''',
+      '''The baboons are most likely inside and off-display on this day due to particularly harsh conditions.''',
       35,                     # X coordinate on map
       66.5                    # Y coordinate on map
    ),
@@ -10827,7 +10902,7 @@ enclosureViewings =\
       'Ostrich',
       'Africa Savanna',
       'Outdoor',
-      '''The ostriches are off-display for the season. They can be seen outside again in the spring.''',
+      '''The ostriches are most likely inside and off-display on this day due to cold weather.''',
       31.5,                   # X coordinate on map
       60.5                    # Y coordinate on map
    ),
@@ -10835,7 +10910,7 @@ enclosureViewings =\
       'Ostrich',
       'Africa Savanna',
       'Outdoor',
-      '''The ostriches are off-display for the season. They can be seen outside again in the spring.''',
+      '''The ostriches are most likely inside and off-display on this day due to cold weather.''',
       34.75,                  # X coordinate on map
       64.25                   # Y coordinate on map
    ),
@@ -10843,7 +10918,7 @@ enclosureViewings =\
       'River Hippopotamus',
       'Africa Savanna',
       'Outdoor',
-      '''The hippos are off-display for the season. They can be seen outside again in the spring.''',
+      '''The hippopotamuses are most likely inside and off-display on this day due to cooler weather.''',
       49.75,                  # X coordinate on map
       89.625                  # Y coordinate on map
    ),
@@ -10851,7 +10926,7 @@ enclosureViewings =\
    #    'Southern Ground Hornbill',
    #    'Africa Savanna',
    #    'Outdoor',
-   #    '''The southern ground hornbills are off-display for the season. They can be seen outside again in the summer.''',
+   #    '''The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.''',
    #    41,                     # X coordinate on map
    #    65                      # Y coordinate on map
    # ),
@@ -10859,7 +10934,7 @@ enclosureViewings =\
       'Southern White Rhinoceros',
       'Africa Savanna',
       'Outdoor',
-      '''The white rhinos are off-display for the season. They can be seen outside again in the spring.''',
+      '''The white rhinos are most likely inside and off-display on this day due to cold weather.''',
       41.25,                  # X coordinate on map
       79.5                    # Y coordinate on map
    ),
@@ -10867,7 +10942,7 @@ enclosureViewings =\
       'Spotted Hyena',
       'Africa Savanna',
       'Outdoor',
-      '''The hyenas are likely off-display today due to particularly harsh conditions.''',
+      '''The hyenas are most likely inside and off-display on this day due to particularly harsh conditions.''',
       40,                     # X coordinate on map
       57.25                   # Y coordinate on map
    ),
@@ -10875,7 +10950,7 @@ enclosureViewings =\
       'Warthog',
       'Africa Savanna',
       'Outdoor',
-      '''The warthogs are off-display for the season. They can be seen outside again in the spring.''',
+      '''The warthogs are most likely inside and off-display on this day due to cooler weather.''',
       49.25,                  # X coordinate on map
       83.75                   # Y coordinate on map
    ),
@@ -10883,7 +10958,7 @@ enclosureViewings =\
       'Watusi Cattle',
       'Africa Savanna',
       'Outdoor',
-      '''The watusi cattle are likely off-display today due to particularly harsh conditions.''',
+      '''The watusi cattle are most likely inside and off-display on this day due to particularly harsh conditions.''',
       42.25,                  # X coordinate on map
       55                      # Y coordinate on map
    ),
@@ -11077,7 +11152,7 @@ enclosureViewings =\
       'Aldabra Tortoise',
       'African Rainforest Pavilion',
       'Outdoor',
-      '''The aldabra tortoises are inside for the season. They can be seen outside again in the spring.''',
+      '''The Aldabra tortoises can amost likely be seen inside on this day due to cooler weather.''',
       52,                     # X coordinate on map
       73.75                   # Y coordinate on map
    ),
@@ -11141,7 +11216,7 @@ enclosureViewings =\
       'Red River Hog',
       'African Rainforest Pavilion',
       'Outdoor',
-      '''The red river hogs are off-display for the season. They can be seen outside again in the spring.''',
+      '''The red river hogs are most likely inside and off-display on this day due to cold weather.''',
       52.5,                   # X coordinate on map
       79.25                   # Y coordinate on map
    ),
@@ -11157,7 +11232,7 @@ enclosureViewings =\
       'Western Lowland Gorilla',
       'African Rainforest Pavilion',
       'Outdoor',
-      '''The gorillas are inside for the season. They can be seen outside again in the spring.''',
+      '''The gorillas can most likely only be seen inside on this day due to cold weather.''',
       49.25,                  # X coordinate on map
       69.5                    # Y coordinate on map
    ),
@@ -11440,7 +11515,7 @@ enclosureViewings =\
       'Sumatran Orangutan',
       'Indo-Malaya Pavilion',
       'Outdoor',
-      '''The orangutans are inside for the season. They can be seen outside again in the spring.''',
+      '''The orangutans can most only likely be seen inside on this day due to cold weather.''',
       58.25,                  # X coordinate on map
       86.75                   # Y coordinate on map
    ),
@@ -11450,7 +11525,7 @@ enclosureViewings =\
       'Babirusa',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      '''The babirusas are inside for the season. They can be seen outside again in the spring.''',
+      '''The babirusas can most likely be seen inside on this day due to cold weather.''',
       64.25,                  # X coordinate on map
       68.25                   # Y coordinate on map
    ),
@@ -11482,7 +11557,7 @@ enclosureViewings =\
       'Sumatran Tiger',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      '''The Sumatran tigers are likely off-display today due to particularly harsh conditions.''',
+      '''The Sumatran tigers are most likely inside and off-display on this day due to particularly harsh conditions.''',
       56.25,                  # X coordinate on map
       73.                     # Y coordinate on mpa
    ),
@@ -11560,7 +11635,7 @@ enclosureViewings =\
       'Abyssinian Ground Hornbill',
       'Kids Zoo',
       'Outdoor',
-      '''The Abyssinian ground hornbills are off-display for the season. They can be seen outside again in the summer.''',
+      '''The Abyssinian ground hornbills are most likely inside and off-display on this day due to cooler weather.''',
       65.5,                   # X coordinate on map
       48.5                    # Y coordinate on map
    ),
@@ -11568,7 +11643,7 @@ enclosureViewings =\
       'Common Raven',
       'Kids Zoo',
       'Outdoor',
-      '''The ravens are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
+      None,
       65.5,                   # X coordinate on map
       48.5                    # Y coordinate on map
    ),
@@ -11576,7 +11651,7 @@ enclosureViewings =\
       'Eurasian Eagle Owl',
       'Kids Zoo',
       'Outdoor',
-      '''The Eurasian eagle owls are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
+      None,
       65.5,                   # X coordinate on map
       48.5                    # Y coordinate on map
    ),
@@ -11584,7 +11659,7 @@ enclosureViewings =\
       'Great Horned Owl',
       'Kids Zoo',
       'Outdoor',
-      '''The great-horned owls are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
+      None,
       65.5,                   # X coordinate on map
       48.5                    # Y coordinate on map
    ),
@@ -11592,7 +11667,7 @@ enclosureViewings =\
       'Guinea Pig',
       'Kids Zoo',
       'Indoor',
-      '''The guinea pigs are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
+      None,
       65.5,                   # X coordinate on map
       48.5                    # Y coordinate on map
    ),
@@ -11600,7 +11675,7 @@ enclosureViewings =\
       'Harris\'s Hawk',
       'Kids Zoo',
       'Outdoor',
-      '''The Harris's hawks are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
+      '''The Harris' hawks can most likely be seen inside on this day due to cold weather.''',
       65.5,                   # X coordinate on map
       48.5                    # Y coordinate on map
    ),
@@ -11608,7 +11683,7 @@ enclosureViewings =\
       'Marabou Stork',
       'Kids Zoo',
       'Outdoor',
-      '''The marabou storks ground hornbills are off-display for the season. They can be seen outside again in the summer.''',
+      '''The marabou storks are most likely inside and off-display on this day due to cooler weather.''',
       65.5,                   # X coordinate on map
       48.5                    # Y coordinate on map
    ),
@@ -11616,7 +11691,7 @@ enclosureViewings =\
       'Rabbit',
       'Kids Zoo',
       'Outdoor',
-      '''The rabbits are off-display for the season. They can be seen outside again when the Kids Zoo opens in the spring.''',
+      '''The rabbits are most likely inside and off-display on this day due to particularly harsh conditions.''',
       65.5,                   # X coordinate on map
       48.5                    # Y coordinate on map
    )
