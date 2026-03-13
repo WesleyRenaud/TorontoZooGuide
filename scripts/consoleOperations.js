@@ -12,6 +12,7 @@ import { createRemoveViewingAlertController } from './consoleOperations/removeVi
 import { createExhibitClosedController } from './consoleOperations/exhibitClosed.js';
 import { createExhibitOpenController } from './consoleOperations/exhibitOpen.js';
 import { createAttractionClosedController } from './consoleOperations/attractionClosed.js';
+import { createAttractionOpenController } from './consoleOperations/attractionOpen.js';
 import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animalSpeciesAutocomplete.js';
 import { createOffDisplayPanelHtml } from './consoleOperations/panels/offDisplayPanel.js';
 import { createOnDisplayPanelHtml } from './consoleOperations/panels/onDisplayPanel.js';
@@ -22,6 +23,7 @@ import { createRemoveViewingAlertPanelHtml } from './consoleOperations/panels/re
 import { createExhibitClosedPanelHtml } from './consoleOperations/panels/exhibitClosedPanel.js';
 import { createExhibitOpenPanelHtml } from './consoleOperations/panels/exhibitOpenPanel.js';
 import { createAttractionClosedPanelHtml } from './consoleOperations/panels/attractionClosedPanel.js';
+import { createAttractionOpenPanelHtml } from './consoleOperations/panels/attractionOpenPanel.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -42,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createExhibitClosedPanelHtml()}
       ${createExhibitOpenPanelHtml()}
       ${createAttractionClosedPanelHtml()}
+      ${createAttractionOpenPanelHtml()}
    `;
 
    const offDisplayPanel = document.getElementById('offDisplayPanel');
@@ -53,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
    const exhibitClosedPanel = document.getElementById('exhibitClosedPanel');
    const exhibitOpenPanel = document.getElementById('exhibitOpenPanel');
    const attractionClosedPanel = document.getElementById('attractionClosedPanel');
+   const attractionOpenPanel = document.getElementById('attractionOpenPanel');
 
    const offDisplaySpeciesEl = document.getElementById('offDisplaySpecies');
    const onDisplaySpeciesEl = document.getElementById('onDisplaySpecies');
@@ -77,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
    const exhibitClosedExhibitEl = document.getElementById('exhibitClosedExhibit');
    const exhibitOpenExhibitEl = document.getElementById('exhibitOpenExhibit');
    const attractionClosedAttractionEl = document.getElementById('attractionClosedAttraction');
+   const attractionOpenAttractionEl = document.getElementById('attractionOpenAttraction');
 
    const offDisplayStartDateEl = document.getElementById('offDisplayStartDate');
    const offDisplayEndDateEl = document.getElementById('offDisplayEndDate');
@@ -276,6 +281,17 @@ document.addEventListener('DOMContentLoaded', () => {
       startDateEl: attractionClosedStartDateEl,
       endDateEl: attractionClosedEndDateEl,
       messageEl: document.getElementById('attractionClosedMessage'),
+      activatePanel,
+      hidePanels,
+   } );
+
+   createAttractionOpenController( {
+      showButtonEl: document.getElementById('showAttractionOpenForm'),
+      panelEl: attractionOpenPanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitAttractionOpen'),
+      statusEl: document.getElementById('attractionOpenStatus'),
+      attractionEl: attractionOpenAttractionEl,
       activatePanel,
       hidePanels,
    } );

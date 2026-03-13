@@ -1426,3 +1426,22 @@ class Database():
 
       return updated > 0
    
+
+   def set_attraction_as_open( self, attraction ):
+      if not attraction:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   DELETE FROM AttractionStatus
+               WHERE ATTRACTION = ?;
+         """, ( attraction, )
+      )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
