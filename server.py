@@ -11,6 +11,7 @@ import database
 class MyHandler( BaseHTTPRequestHandler ):
    database = database.Database()
 
+
    def _send_file( self, filepath, content_type=None ):
       if not os.path.isfile( filepath ):
          self.send_error( 404, "Not Found" )
@@ -28,6 +29,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                if not chunk:
                   break
                self.wfile.write( chunk )
+
 
    def do_GET( self ):
       parsed = urlparse( self.path )
@@ -196,10 +198,16 @@ class MyHandler( BaseHTTPRequestHandler ):
          data = json.loads( post_data.decode( 'utf-8' ) )
 
          month = data.get( 'month' )
-         include_seasonal_attractions = data.get( 'includeSeasonalAttractions' )
+         day = data.get( 'day' )
+         include_closed_attractions = data.get( 'includeClosedAttractions' )
          attractions_to_include = data.get( 'attractionsToInclude' )
 
-         attractions = self.database.get_attractions( month, include_seasonal_attractions, attractions_to_include )
+         attractions = self.database.get_attractions(
+            month=month,
+            day=day,
+            include_closed_attractions=include_closed_attractions,
+            attractions_to_include=attractions_to_include
+         )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -279,7 +287,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day_of_week = data.get( 'dayOfWeek' )
 
          include_off_display_animals = bool( data.get( 'includeOffDisplayAnimals' ) )
-         include_season_attractions = bool( data.get( 'includeSeasonalAttractions' ) )
+         include_closed_attractions = bool( data.get( 'includeClosedAttractions' ) )
 
          animals_json = []
          pavilions_json = []
@@ -328,7 +336,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   gift_shops_json.append( d )
 
          if include_attractions:
-            attractions = self.database.get_attractions_matching_query( query, month, include_season_attractions ) or []
+            attractions = self.database.get_attractions_matching_query( query, month, include_closed_attractions ) or []
             for attraction in attractions:
                   d = attraction.to_dict()
                   d['type'] = d.get( 'type', 'attraction' )
@@ -460,6 +468,20 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.end_headers()
          response = {"species": species}
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+      
+      if self.path == '/get-attraction-names':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         attractions = self.database.get_attraction_names()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"attractions": attractions}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )          
 
 
       if self.path == '/get-exhibits':
@@ -711,6 +733,36 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response['error'] = f'Could not set "{exhibit}" as open.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-attraction-closed':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         attraction = data.get( 'attraction' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+         message = data.get( 'message' )
+
+         success = self.database.set_attraction_as_closed( attraction, start_date, end_date, message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'attraction': attraction,
+            'startDate': start_date,
+            'endDate': end_date,
+            'message': message
+         }
+
+         if not success:
+            response['error'] = f'Could not set "{attraction}" as closed.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

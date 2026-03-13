@@ -1421,7 +1421,7 @@ nav ul li a:hover {
    OFF-DISPLAY ALERT
 ============================================================ */
 
-.off-display-banner {
+.off-display-banner, .attraction-closed-banner {
    position: fixed;
    top: 50%;
    left: 50%;
@@ -1448,7 +1448,7 @@ nav ul li a:hover {
    animation: massiveFade 0.35s ease;
 }
 
-.off-display-icon {
+.off-display-icon, .attraction-closed-icon {
    width: 200px;
    height: 150px;
    display: grid;
@@ -1464,12 +1464,12 @@ nav ul li a:hover {
    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-.off-display-text strong {
+.off-display-text strong, .attraction-closed-text strong {
    font-weight: 1000;
    text-decoration: underline;
 }
 
-.off-display-close {
+.off-display-close, .attraction-closed-close {
    margin-left: auto;
 
    width: 160px;
@@ -1490,7 +1490,7 @@ nav ul li a:hover {
    transition: background 0.2s ease, transform 0.15s ease;
 }
 
-.off-display-close:hover {
+.off-display-close:hover, .attraction-closed-close:hover {
    background: rgba(255,255,255,0.3);
    transform: scale(1.08);
 }

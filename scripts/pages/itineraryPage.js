@@ -9,6 +9,7 @@ import { createHoverTooltip } from '../markers/hoverTooltip.js';
 import { createTooltipController } from '../tooltips/tooltipController.js';
 import { createFocusController } from '../focus/focusController.js';
 import { createOffDisplayBanner } from '../ui/offDisplayBanner.js';
+import { createAttractionClosedBanner } from '../ui/attractionClosedBanner.js';
 import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
 import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
 
@@ -49,6 +50,7 @@ export function initItineraryPage() {
    const hover = hoverTooltipEl ? createHoverTooltip(hoverTooltipEl) : null;
 
    const offDisplay = createOffDisplayBanner();
+   const attractionClosed = createAttractionClosedBanner();
    const speciesOverlay = initSpeciesOverlay();
 
    const tooltip = createTooltipController({
@@ -58,6 +60,7 @@ export function initItineraryPage() {
          speciesOverlay.openFromAnimal(item);
       },
       offDisplayBanner: offDisplay,
+      attractionClosedBanner: attractionClosed,
    });
 
    initLabelVisibilityToggle({
@@ -88,7 +91,7 @@ export function initItineraryPage() {
       getIncludeOffDisplay: () => false,
       getIncludeSeasonalRestaurants: () => false,
       getIncludeSeasonalGiftShops: () => false,
-      getIncludeSeasonalAttractions: () => false,
+      getIncludeClosedAttractions: () => false,
       getZoomobileRouteType: () => 'none',
       getSelectedTypes: () => [],
    });

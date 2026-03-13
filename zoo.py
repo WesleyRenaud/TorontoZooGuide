@@ -142,30 +142,30 @@ class GiftShop:
    
 
 class Attraction:
-   def __init__( self, name, free_with_admission, seasonal_schedule=None, description=None, info_link=None, hyperlink_text=None,
-                 x_coord=None, y_coord=None, is_closed=False ):
+   def __init__( self, name, free_with_admission, description=None, info_link=None, hyperlink_text=None, x_coord=None, y_coord=None,
+                 is_closed=False, closed_message=None ):
       self.name = name
       self.free_with_admission = free_with_admission
-      self.seasonal_schedule = seasonal_schedule
       self.description = description
       self.info_link = info_link
       self.hyperlink_text = hyperlink_text
       self.x_coord = x_coord
       self.y_coord = y_coord
       self.is_closed = is_closed
+      self.closed_message = closed_message
 
 
    def to_dict( self ):
       return {
          'name': self.name,
          'free_with_admission': self.free_with_admission,
-         'seasonal_schedule': self.seasonal_schedule,
          'description': self.description,
          'info_link': self.info_link,
          'hyperlink_text': self.hyperlink_text,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'is_closed': self.is_closed
+         'is_closed': self.is_closed,
+         'closed_message': self.closed_message
       }
    
 

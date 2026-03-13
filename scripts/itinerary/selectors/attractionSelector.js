@@ -189,7 +189,7 @@ export function createItineraryAttractionSelectorController({
    onClose,
 } = {}) {
 
-   let includeSeasonalAttractions = false;
+   let includeClosedAttractions = false;
 
    return createItinerarySelectorController({
       mountEl,
@@ -206,7 +206,7 @@ export function createItineraryAttractionSelectorController({
       buildSearchPayload: (query) => ({
          query,
          includeAttractions: true,
-         includeSeasonalAttractions,
+         includeClosedAttractions,
       }),
 
       extractRows: (response) =>
@@ -235,7 +235,7 @@ export function createItineraryAttractionSelectorController({
             return;
          }
 
-         if (!includeSeasonalAttractions) {
+         if (!includeClosedAttractions) {
             proceed();
             return;
          }
@@ -257,7 +257,7 @@ export function createItineraryAttractionSelectorController({
       },
 
       renderExtraControls: ({ bodyEl, rerunSearch }) => {
-         includeSeasonalAttractions = false;
+         includeClosedAttractions = false;
 
          const toggleWrap = document.createElement('div');
          toggleWrap.className = 'itin-selector-toggle-wrap';
@@ -273,7 +273,7 @@ export function createItineraryAttractionSelectorController({
          text.textContent = 'Include seasonal attractions';
 
          checkbox.addEventListener('change', () => {
-            includeSeasonalAttractions = checkbox.checked;
+            includeClosedAttractions = checkbox.checked;
             rerunSearch?.();
          });
 

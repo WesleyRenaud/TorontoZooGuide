@@ -115,9 +115,7 @@ cursor.execute( ''' CREATE TABLE GiftShop
 cursor.execute( 'DROP TABLE IF EXISTS Attraction;' )
 cursor.execute( ''' CREATE TABLE Attraction
                   (  NAME                 VARCHAR(64) NOT NULL,
-                     OPEN_SEASONALLY      BOOL        NOT NULL,
                      FREE_WITH_ADMISSION  BOOL        NOT NULL,
-                     SEASONAL_SCHEDULE    TEXT        NOT NULL,
                      DESCRIPTION          TEXT        NOT NULL,
                      INFO_LINK            TEXT        NOT NULL,
                      HYPERLINK_TEXT       TEXT        NOT NULL,
@@ -322,6 +320,39 @@ if 'CLOSED_START' not in exhibit_status_columns:
 if 'CLOSED_END' not in exhibit_status_columns:
    cursor.execute(
       'ALTER TABLE ExhibitStatus ADD COLUMN CLOSED_END DATE;'
+   )
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS AttractionStatus
+                  (  ATTRACTION        VARCHAR(64) NOT NULL,
+                     IS_CLOSED         BOOL        NOT NULL DEFAULT 0,
+                     CLOSED_MESSAGE    TEXT,
+                     CLOSED_START      DATE,
+                     CLOSED_END        DATE,
+                     PRIMARY KEY (ATTRACTION),
+                     FOREIGN KEY (ATTRACTION) REFERENCES Attraction(NAME) ); ''' )
+
+attraction_status_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( AttractionStatus );' ).fetchall()
+}
+
+if 'IS_CLOSED' not in attraction_status_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionStatus ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'CLOSED_MESSAGE' not in attraction_status_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionStatus ADD COLUMN CLOSED_MESSAGE TEXT;'
+   )
+
+if 'CLOSED_START' not in attraction_status_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionStatus ADD COLUMN CLOSED_START DATE;'
+   )
+
+if 'CLOSED_END' not in attraction_status_columns:
+   cursor.execute(
+      'ALTER TABLE AttractionStatus ADD COLUMN CLOSED_END DATE;'
    )
 
 regions = [
@@ -11942,9 +11973,7 @@ gift_shops = [
 attractions = [
    (
       'Zoomobile',
-      0,                                                                      # Open seasonally
       0,                                                                      # Free with admission
-      'Off-Season: Open Weekends • Peak Season: Daily (Weather Permitting)',  # Seasonal schedule
       '''All Aboard for a Wild Ride! Climb aboard the Zoomobile for a fun ride through your Toronto Zoo!''',
       '''https://www.torontozoo.com/tickets/zoomobile''',                     # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
@@ -11953,9 +11982,7 @@ attractions = [
    ),
    (
       'Conservation Carousel',
-      0,                                                                      # Open seasonally           
       0,                                                                      # Free with admission
-      'Off-Season: Open Weekends • Peak Season: Daily (Weather Permitting)',  # Seasonal schedule
       '''Carousels are timeless and fun for all ages! Hop on and choose a unique animal seat.''',
       '''https://www.torontozoo.com/tickets/carousel''',                      # Info link
       '''TICKETS & DETAILS''',                                                # Hyperlink text
@@ -11964,9 +11991,7 @@ attractions = [
    ),
    (
       'Greenhouse',
-      0,                                                                      # Open seasonally                                     
       1,                                                                      # Free with admission
-      'Open Daily Year-Round',                                                # Seasonal schedule
       '''Take a self-guided tour of our Greenhouse, full of plants from around the world.''',
       '''https://www.torontozoo.com/tz/greenhouse''',                         # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
@@ -11975,9 +12000,7 @@ attractions = [
    ),
    (
       'Wildlife Health & Science Centre',
-      0,                                                                      # Open seasonally
       1,                                                                      # Free with admission
-      'Open Daily Year-Round',                                                # Seasonal schedule
       '''Step inside one of the most advanced wildlife health and science facilities in Canada.''',
       '''https://www.torontozoo.com/whsc''',                                  # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
@@ -11986,9 +12009,7 @@ attractions = [
    ),
    (
       'Kangaroo Walk-Thru',
-      1,                                                                      # Open seasonally
       1,                                                                      # Free with admission
-      'Open Peak Season Only, 11:00 AM to 3:00 PM, (Weather Permitting),',    # Seasonal schedule
       '''Walk among the kangaroos!''',                                        
       '''https://www.torontozoo.com/tz/kangaroo''',                           # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
@@ -11997,9 +12018,7 @@ attractions = [
    ),
    (
       'Virtual Reality (VR) Theatre!',
-      1,                                                                      # Open seasonally
       0,                                                                      # Free with admission
-      'Open Peak Season Only (Weather Permitting)',                           # Seasonal schedule
       '''An interactive adventure! This fully immersive technology will transport you from Scarborough to various locations around
          the world. Three Shows to Choose From!'''.replace( '\n', ' ' ),
       '''https://www.torontozoo.com/tickets/wildexplorer''',                  # Info link
@@ -12009,9 +12028,7 @@ attractions = [
    ),
    (
       'TundraAir Ride',
-      1,                                                                      # Open seasonally
       0,                                                                      # Free with admission
-      'Open Peak Season Only (Weather Permitting)',                           # Seasonal schedule
       '''Soar through the air at speeds of 48km/hr over the Tundra Trek on the TundraAir Ride.''',
       '''https://www.torontozoo.com/tz/tundraair''',                          # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
@@ -12020,9 +12037,7 @@ attractions = [
    ),
    (
       'Gorilla Climb Ropes Course',
-      1,                                                                      # Open seasonally
       0,                                                                      # Free with admission
-      'Open Peak Season Only (Weather Permitting)',                           # Seasonal schedule   
       '''Hang out like the gorilla troop do! Swing, crawl and balance on 26 elements almost 33 feet high!''',
       '''https://www.torontozoo.com/tz/gorillaclimb''',                       # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
@@ -12031,9 +12046,7 @@ attractions = [
    ),
    (
       'Splash Island',
-      1,                                                                      # Open seasonally
       1,                                                                      # Free with admission
-      'Open Peak Season Only (Weather Permitting)',                           # Seasonal schedule   
       '''Cool off at our 2-acre splash pad, filled with water-spouting animals.''',
       '''https://www.torontozoo.com/tz/splash''',                             # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
@@ -12042,9 +12055,7 @@ attractions = [
    ),
    (
       'Face Painting, Caricatures and Henna!',
-      1,                                                                      # Open seasonally
       0,                                                                      # Free with admission
-      'Open Peak Season Only (Weather Permitting)',                           # Seasonal schedule   
       '''Transform into your favorite animal with our talented face painters and caricature artists!''',
       '''https://www.torontozoo.com/tz/facepainting''',                       # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
@@ -13174,16 +13185,14 @@ cursor.executemany( ''' INSERT INTO GiftShop (
 
 cursor.executemany( ''' INSERT INTO Attraction (
                            NAME,
-                           OPEN_SEASONALLY,
                            FREE_WITH_ADMISSION,
-                           SEASONAL_SCHEDULE,
                            DESCRIPTION,
                            INFO_LINK,
                            HYPERLINK_TEXT,
                            X_COORD,
                            Y_COORD
                         ) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ''', attractions )
+                        VALUES (?, ?, ?, ?, ?, ?, ?) ''', attractions )
 
 cursor.executemany( ''' INSERT INTO ZoomobileStation (
                            NAME,

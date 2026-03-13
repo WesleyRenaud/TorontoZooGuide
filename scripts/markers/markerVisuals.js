@@ -100,14 +100,16 @@ export function applyMarkerVisual( markerEl, itemsAtPoint ) {
       return;
    }
 
-   if ( type === 'attraction' ) {
-      markerEl.classList.add( 'marker-attraction' );
+   if (type === 'attraction') {
+      markerEl.classList.add('marker-attraction');
 
       const attraction = items[0];
-      const slug = normalizeParameter( attraction.name );
-      const iconPath = `/images/attraction-icons/${slug}.png`;
+      const slug = normalizeParameter(attraction.name);
 
-      applyGenericIcon( markerEl, iconPath, count );
+      const state = attraction.is_closed ? 'closed' : 'open';
+      const iconPath = `/images/attraction-icons/${slug}-${state}.png`;
+
+      applyGenericIcon(markerEl, iconPath, count);
       return;
    }
 

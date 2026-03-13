@@ -11,6 +11,7 @@ import { createAnimalViewingAlertController } from './consoleOperations/animalVi
 import { createRemoveViewingAlertController } from './consoleOperations/removeViewingAlert.js';
 import { createExhibitClosedController } from './consoleOperations/exhibitClosed.js';
 import { createExhibitOpenController } from './consoleOperations/exhibitOpen.js';
+import { createAttractionClosedController } from './consoleOperations/attractionClosed.js';
 import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animalSpeciesAutocomplete.js';
 import { createOffDisplayPanelHtml } from './consoleOperations/panels/offDisplayPanel.js';
 import { createOnDisplayPanelHtml } from './consoleOperations/panels/onDisplayPanel.js';
@@ -20,6 +21,7 @@ import { createViewingAlertPanelHtml } from './consoleOperations/panels/viewingA
 import { createRemoveViewingAlertPanelHtml } from './consoleOperations/panels/removeViewingAlertPanel.js';
 import { createExhibitClosedPanelHtml } from './consoleOperations/panels/exhibitClosedPanel.js';
 import { createExhibitOpenPanelHtml } from './consoleOperations/panels/exhibitOpenPanel.js';
+import { createAttractionClosedPanelHtml } from './consoleOperations/panels/attractionClosedPanel.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -39,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createRemoveViewingAlertPanelHtml()}
       ${createExhibitClosedPanelHtml()}
       ${createExhibitOpenPanelHtml()}
+      ${createAttractionClosedPanelHtml()}
    `;
 
    const offDisplayPanel = document.getElementById('offDisplayPanel');
@@ -49,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
    const removeViewingAlertPanel = document.getElementById('removeViewingAlertPanel');
    const exhibitClosedPanel = document.getElementById('exhibitClosedPanel');
    const exhibitOpenPanel = document.getElementById('exhibitOpenPanel');
+   const attractionClosedPanel = document.getElementById('attractionClosedPanel');
 
    const offDisplaySpeciesEl = document.getElementById('offDisplaySpecies');
    const onDisplaySpeciesEl = document.getElementById('onDisplaySpecies');
@@ -72,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
    const removeViewingAlertExhibitEl = document.getElementById('removeViewingAlertExhibit');
    const exhibitClosedExhibitEl = document.getElementById('exhibitClosedExhibit');
    const exhibitOpenExhibitEl = document.getElementById('exhibitOpenExhibit');
+   const attractionClosedAttractionEl = document.getElementById('attractionClosedAttraction');
 
    const offDisplayStartDateEl = document.getElementById('offDisplayStartDate');
    const offDisplayEndDateEl = document.getElementById('offDisplayEndDate');
@@ -86,6 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
    const exhibitClosedStartDateEl = document.getElementById('exhibitClosedStartDate');
    const exhibitClosedEndDateEl = document.getElementById('exhibitClosedEndDate');
+
+   const attractionClosedStartDateEl = document.getElementById('attractionClosedStartDate');
+   const attractionClosedEndDateEl = document.getElementById('attractionClosedEndDate');
 
    function activatePanel(panelEl) {
       document
@@ -258,6 +266,20 @@ document.addEventListener('DOMContentLoaded', () => {
       hidePanels,
    } );
 
+   createAttractionClosedController( {
+      showButtonEl: document.getElementById('showAttractionClosedForm'),
+      panelEl: attractionClosedPanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitAttractionClosed'),
+      statusEl: document.getElementById('attractionClosedStatus'),
+      attractionEl: attractionClosedAttractionEl,
+      startDateEl: attractionClosedStartDateEl,
+      endDateEl: attractionClosedEndDateEl,
+      messageEl: document.getElementById('attractionClosedMessage'),
+      activatePanel,
+      hidePanels,
+   } );
+
    initOffDisplayDatePickers(
       offDisplayStartDateEl,
       offDisplayEndDateEl
@@ -280,4 +302,9 @@ document.addEventListener('DOMContentLoaded', () => {
       exhibitClosedEndDateEl
    );
 
-});
+   initOffDisplayDatePickers(
+      attractionClosedStartDateEl,
+      attractionClosedEndDateEl
+   );
+
+} );

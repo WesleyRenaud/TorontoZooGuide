@@ -15,7 +15,7 @@ export function createMapUpdater({
    getIncludeOffDisplay,
    getIncludeSeasonalRestaurants,
    getIncludeSeasonalGiftShops,
-   getIncludeSeasonalAttractions,
+   getIncludeClosedAttractions,
    getZoomobileRouteType,
    getSelectedTypes,
 }) {
@@ -72,7 +72,7 @@ export function createMapUpdater({
       const includeOffDisplayAnimals = getIncludeOffDisplay();
       const includeSeasonalRestaurants = getIncludeSeasonalRestaurants();
       const includeSeasonalGiftShops = getIncludeSeasonalGiftShops();
-      const includeSeasonalAttractions = getIncludeSeasonalAttractions();
+      const includeClosedAttractions = getIncludeClosedAttractions();
 
       const zoomobileRouteType = getZoomobileRouteType();
 
@@ -190,7 +190,7 @@ export function createMapUpdater({
          includeOffDisplayAnimals,
          includeSeasonalRestaurants,
          includeSeasonalGiftShops,
-         includeSeasonalAttractions,
+         includeClosedAttractions,
 
          zoomobileRouteType,
 

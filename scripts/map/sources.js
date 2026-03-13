@@ -135,7 +135,8 @@ export function createDataSources(store) {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-attractions', {
                month: ctx.month,
-               includeSeasonalAttractions: ctx.includeSeasonalAttractions,
+               day: ctx.day,
+               includeClosedAttractions: ctx.includeClosedAttractions,
                attractionsToInclude: ctx.attractionsToInclude,
             });
 

@@ -7,24 +7,24 @@ export function initMapControls
       includeOffDisplayCheckbox,
       includeSeasonalRestaurantsCheckbox,
       includeSeasonalGiftShopsCheckbox,
-      includeSeasonalAttractionsCheckbox,
+      includeClosedAttractionsCheckbox,
       zoomobileRouteTypeRadios,
       onUpdate
    }) {
 
-   if ( !mapPreset || !mapDateInput || !onUpdate ) {
-      console.warn( '[controls] missing elements:', { mapPreset, mapDateInput, onUpdate } );
+   if (!mapPreset || !mapDateInput || !onUpdate) {
+      console.warn('[controls] missing elements:', { mapPreset, mapDateInput, onUpdate });
       return;
    }
 
-   const fp = initFlatpickr( mapDateInput, {
+   const fp = initFlatpickr(mapDateInput, {
       defaultDate: new Date(),
       dateFormat: 'Y-m-d',
       minDate: 'today',
-      onChange: ( _, dateStr ) => {
-         if ( mapPreset.value === 'specific-day' ) onUpdate( 'specific-day', dateStr );
+      onChange: (_, dateStr) => {
+         if (mapPreset.value === 'specific-day') onUpdate('specific-day', dateStr);
       }
-   } );
+   });
 
    function currentDateStr() {
       return mapDateInput.value || fp?.input?.value || '';
@@ -33,65 +33,65 @@ export function initMapControls
    function refetch() {
       const preset = mapPreset.value;
 
-      if ( !preset ) return;
+      if (!preset) return;
 
-      if ( preset === 'specific-day' ) {
+      if (preset === 'specific-day') {
          const dateStr = currentDateStr();
-         if ( !dateStr ) return;
-         onUpdate( 'specific-day', dateStr );
+         if (!dateStr) return;
+         onUpdate('specific-day', dateStr);
       } else {
-         onUpdate( preset, null );
+         onUpdate(preset, null);
       }
    }
 
-   mapPreset.addEventListener( 'change', () => {
+   mapPreset.addEventListener('change', () => {
       const preset = mapPreset.value;
 
-      if ( !preset ) {
+      if (!preset) {
          mapDateInput.style.display = 'none';
          return;
       }
 
-      if ( preset === 'specific-day' ) {
+      if (preset === 'specific-day') {
          mapDateInput.style.display = 'inline-block';
-         onUpdate( 'specific-day', currentDateStr() );
+         onUpdate('specific-day', currentDateStr());
       } else {
          mapDateInput.style.display = 'none';
-         onUpdate( preset, null );
+         onUpdate(preset, null);
       }
-   } );
+   });
 
-   mapDateInput.addEventListener( 'change', () => {
-      if ( mapPreset.value === 'specific-day' ) onUpdate( 'specific-day', currentDateStr() );
-   } );
+   mapDateInput.addEventListener('change', () => {
+      if (mapPreset.value === 'specific-day') onUpdate('specific-day', currentDateStr());
+   });
 
-   if ( includeOffDisplayCheckbox ) {
-      includeOffDisplayCheckbox.addEventListener( 'change', () => {
+   if (includeOffDisplayCheckbox) {
+      includeOffDisplayCheckbox.addEventListener('change', () => {
          refetch();
-      } );
+      });
    }
 
-   if ( includeSeasonalRestaurantsCheckbox ) {
-      includeSeasonalRestaurantsCheckbox.addEventListener( 'change', () => {
+   if (includeSeasonalRestaurantsCheckbox) {
+      includeSeasonalRestaurantsCheckbox.addEventListener('change', () => {
          refetch();
-      } );
+      });
    }
 
-   if ( includeSeasonalGiftShopsCheckbox ) {
-      includeSeasonalGiftShopsCheckbox.addEventListener( 'change', () => {
+   if (includeSeasonalGiftShopsCheckbox) {
+      includeSeasonalGiftShopsCheckbox.addEventListener('change', () => {
          refetch();
-      } );
+      });
    }
 
-   if ( includeSeasonalAttractionsCheckbox ) {
-      includeSeasonalAttractionsCheckbox.addEventListener( 'change', () => {
+   if (includeClosedAttractionsCheckbox) {
+      includeClosedAttractionsCheckbox.addEventListener('change', () => {
          refetch();
-      } );
+      });
    }
 
    if ( zoomobileRouteTypeRadios ) {
-      Array.from( zoomobileRouteTypeRadios || [] ).forEach( r => r.addEventListener( 'change', () => {
+      Array.from(zoomobileRouteTypeRadios || []).forEach(r => r.addEventListener('change', () => {
          refetch();
-      } ) );
+      }));
    }
 }

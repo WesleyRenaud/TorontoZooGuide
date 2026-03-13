@@ -2,7 +2,7 @@ import { getRendererForItem } from './tooltipRenderers.js';
 import { positionTooltip } from '../utils/dom.js';
 import { setMarkerToAnimalIcon, applyMarkerVisual } from '../markers/markerVisuals.js';
 
-export function createTooltipController({ tooltipEl, onAnimalCardClick, offDisplayBanner }) {
+export function createTooltipController({ tooltipEl, onAnimalCardClick, offDisplayBanner, attractionClosedBanner }) {
    let openMarker = null;
    let itemsForOpen = [];
    let carouselEl = null;
@@ -64,6 +64,7 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
       if (!tooltipEl || !isOpen()) return;
 
       offDisplayBanner?.hide?.();
+      attractionClosedBanner?.hide?.();
 
       if (openMarker) {
          applyMarkerVisual(openMarker, itemsForOpen || openMarker.__items || []);
@@ -154,7 +155,7 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
       carouselEl.dataset.index = String(safeIndex);
 
       syncMarkerToIndex(safeIndex);
-      syncOffDisplayToIndex(safeIndex);
+      syncStatusBannersToIndex(safeIndex);
    }
 
    function syncMarkerToIndex(index) {
@@ -169,12 +170,24 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
       setMarkerToAnimalIcon(openMarker, item);
    }
 
-   function syncOffDisplayToIndex(index) {
+   function syncStatusBannersToIndex(index) {
       const item = itemsForOpen[index] || null;
       const type = String(item?.type || '');
 
-      if (type === 'animal') offDisplayBanner?.sync?.(item);
-      else offDisplayBanner?.hide?.();
+      if (type === 'animal') {
+         offDisplayBanner?.sync?.(item);
+         attractionClosedBanner?.hide?.();
+         return;
+      }
+
+      if (type === 'attraction') {
+         attractionClosedBanner?.sync?.(item);
+         offDisplayBanner?.hide?.();
+         return;
+      }
+
+      offDisplayBanner?.hide?.();
+      attractionClosedBanner?.hide?.();
    }
 
    function step(delta) {

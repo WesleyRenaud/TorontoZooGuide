@@ -13,6 +13,7 @@ import { createTooltipController } from '../tooltips/tooltipController.js';
 import { createFocusController } from '../focus/focusController.js';
 import { initFocusFromQuery } from '../focus/focusFromQuery.js';
 import { createOffDisplayBanner } from '../ui/offDisplayBanner.js';
+import { createAttractionClosedBanner } from '../ui/attractionClosedBanner.js';
 import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
 import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
 import { initMapLegend } from '../ui/mapLegend.js';
@@ -26,7 +27,7 @@ export function initMapPage() {
    const includeOffDisplayCheckbox = document.getElementById('includeOffDisplayAnimals');
    const includeSeasonalRestaurantsCheckbox = document.getElementById('includeSeasonalRestaurants');
    const includeSeasonalGiftShopsCheckbox = document.getElementById('includeSeasonalGiftShops');
-   const includeSeasonalAttractionsCheckbox = document.getElementById('includeSeasonalAttractions');
+   const includeClosedAttractionsCheckbox = document.getElementById('includeClosedAttractions');
    const zoomobileRouteTypeRadios = document.querySelectorAll?.('input[name="zoomobileRoute"]');
    const animalSearchInput = document.getElementById('animalSearch');
    initMapLegend();
@@ -35,7 +36,7 @@ export function initMapPage() {
    const hoverTooltipEl = document.getElementById('hoverTooltip');
    const viewportEl = mapInner?.parentElement;
 
-   if (!mapInner || !mapPreset || !mapDateInput || !tooltipEl || !viewportEl) return;
+   if(!mapInner || !mapPreset || !mapDateInput || !tooltipEl || !viewportEl) return;
 
    const panzoom = createPanzoom(mapInner, { contain: CONFIG.DEFAULT_CONTAIN });
 
@@ -45,15 +46,17 @@ export function initMapPage() {
    const hover = createHoverTooltip(hoverTooltipEl);
 
    const offDisplay = createOffDisplayBanner();
+   const attractionClosed = createAttractionClosedBanner();
    const speciesOverlay = initSpeciesOverlay();
 
    const tooltip = createTooltipController({
       tooltipEl,
       onAnimalCardClick: (item) => {
-         if (!item || String(item.type || '') !== 'animal') return;
+         if(!item || String(item.type || '') !== 'animal') return;
          speciesOverlay.openFromAnimal(item);
       },
       offDisplayBanner: offDisplay,
+      attractionClosedBanner: attractionClosed,
    });
 
    initLabelVisibilityToggle({
@@ -84,7 +87,7 @@ export function initMapPage() {
       getIncludeOffDisplay: () => includeOffDisplayCheckbox?.checked ?? false,
       getIncludeSeasonalRestaurants: () => includeSeasonalRestaurantsCheckbox?.checked ?? false,
       getIncludeSeasonalGiftShops: () => includeSeasonalGiftShopsCheckbox?.checked ?? false,
-      getIncludeSeasonalAttractions: () => includeSeasonalAttractionsCheckbox?.checked ?? false,
+      getIncludeClosedAttractions: () => includeClosedAttractionsCheckbox?.checked ?? false,
       getZoomobileRouteType: () => Array.from(zoomobileRouteTypeRadios).find(r => r.checked)?.value ?? 'none',
       getSelectedTypes: () => initExploreTypeFilter.getSelectedTypes(),
    });
@@ -97,7 +100,7 @@ export function initMapPage() {
       },
       onAnimalsUnchecked: () => {
          const resultsEl = document.getElementById('animalSearchResults');
-         if (resultsEl) resultsEl.innerHTML = '';
+         if(resultsEl) resultsEl.innerHTML = '';
       }
    });
 
@@ -111,11 +114,11 @@ export function initMapPage() {
          const preset = mapPreset?.value || '';
          const dateStr = mapDateInput?.value?.trim?.() || '';
 
-         if (preset === 'summer') {
+         if(preset === 'summer') {
             return { month: 'JUL', day: 20, temp: null };
          }
 
-         if (preset === 'winter') {
+         if(preset === 'winter') {
             return { month: 'JAN', day: 30, temp: null };
          }
 
@@ -131,7 +134,7 @@ export function initMapPage() {
       includeOffDisplayCheckbox,
       includeSeasonalRestaurantsCheckbox,
       includeSeasonalGiftShopsCheckbox,
-      includeSeasonalAttractionsCheckbox,
+      includeClosedAttractionsCheckbox,
       zoomobileRouteTypeRadios,
       onUpdate: (preset, dateStr) => {
          updater.updateMap(preset, dateStr, null);
