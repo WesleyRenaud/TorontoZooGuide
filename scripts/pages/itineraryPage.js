@@ -9,6 +9,7 @@ import { createHoverTooltip } from '../markers/hoverTooltip.js';
 import { createTooltipController } from '../tooltips/tooltipController.js';
 import { createFocusController } from '../focus/focusController.js';
 import { createOffDisplayBanner } from '../ui/offDisplayBanner.js';
+import { createRestaurantClosedBanner } from '../ui/restaurantClosedBanner.js';
 import { createAttractionClosedBanner } from '../ui/attractionClosedBanner.js';
 import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
 import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
@@ -50,6 +51,7 @@ export function initItineraryPage() {
    const hover = hoverTooltipEl ? createHoverTooltip(hoverTooltipEl) : null;
 
    const offDisplay = createOffDisplayBanner();
+   const restaurantClosed = createRestaurantClosedBanner();
    const attractionClosed = createAttractionClosedBanner();
    const speciesOverlay = initSpeciesOverlay();
 
@@ -60,6 +62,7 @@ export function initItineraryPage() {
          speciesOverlay.openFromAnimal(item);
       },
       offDisplayBanner: offDisplay,
+      restaurantClosedBanner: restaurantClosed,
       attractionClosedBanner: attractionClosed,
    });
 

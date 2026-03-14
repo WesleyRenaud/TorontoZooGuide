@@ -498,7 +498,7 @@ class Database():
    def get_restaurants( self, month, day, include_closed_restaurants, restaurants_to_include=[] ):
       cur = self.conn.cursor()
 
-      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), int( day ) )
+      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month=month ), int( day ) )
 
       data = cur.execute(
          """   SELECT
@@ -512,10 +512,23 @@ class Database():
                   s.IS_CLOSED,
                   s.CLOSED_MESSAGE,
                   s.CLOSED_START,
-                  s.CLOSED_END
+                  s.CLOSED_END,
+                  os.SCHEDULE_START_DATE,
+                  os.SCHEDULE_END_DATE,
+                  os.MONDAY,
+                  os.TUESDAY,
+                  os.WEDNESDAY,
+                  os.THURSDAY,
+                  os.FRIDAY,
+                  os.SATURDAY,
+                  os.SUNDAY,
+                  os.HOLIDAYS_ONLY,
+                  os.SCHEDULE_MESSAGE
                FROM Restaurant r
                LEFT JOIN RestaurantStatus s
-                  ON r.NAME = s.RESTAURANT;
+                  ON r.NAME = s.RESTAURANT
+               LEFT JOIN RestaurantOpeningSchedule os
+                  ON r.NAME = os.RESTAURANT;
          """ )
 
       restaurant_data = data.fetchall()
@@ -523,11 +536,12 @@ class Database():
       restaurants = []
 
       for restaurant in restaurant_data:
-         name = restaurant[ 'NAME' ]
+         name = restaurant['NAME']
 
          stored_is_closed = bool( restaurant['IS_CLOSED'] ) if restaurant['IS_CLOSED'] != None else False
 
          is_closed = False
+         closed_message = None
 
          if stored_is_closed:
             start_ok = True
@@ -537,11 +551,53 @@ class Database():
                start_date = self.parse_date_value( value=restaurant['CLOSED_START'] )
                start_ok = target_date >= start_date
 
-            if restaurant['CLOSED_END'] != None:
+            if restaurant[ 'CLOSED_END' ] != None:
                end_date = self.parse_date_value( value=restaurant['CLOSED_END'] )
                end_ok = target_date <= end_date
 
-            is_closed = start_ok and end_ok
+            if start_ok and end_ok:
+               is_closed = True
+               closed_message = restaurant['CLOSED_MESSAGE']
+
+         if not is_closed and restaurant['SCHEDULE_START_DATE'] != None:
+            schedule_start_ok = True
+            schedule_end_ok = True
+
+            if restaurant['SCHEDULE_START_DATE'] != None:
+               schedule_start_date = self.parse_date_value( value=restaurant['SCHEDULE_START_DATE'] )
+               schedule_start_ok = target_date >= schedule_start_date
+
+            if restaurant['SCHEDULE_END_DATE'] != None:
+               schedule_end_date = self.parse_date_value( value=restaurant['SCHEDULE_END_DATE'] )
+               schedule_end_ok = target_date <= schedule_end_date
+
+            if schedule_start_ok and schedule_end_ok:
+               is_open_today = False
+
+               if self.zoo_util.is_holiday( d=target_date ):
+                  is_open_today = bool( restaurant['HOLIDAYS_ONLY'] )
+
+               if not is_open_today:
+                  day_of_week = target_date.weekday()
+
+                  if day_of_week == 0:
+                     is_open_today = bool( restaurant['MONDAY'] )
+                  elif day_of_week == 1:
+                     is_open_today = bool( restaurant['TUESDAY'] )
+                  elif day_of_week == 2:
+                     is_open_today = bool( restaurant['WEDNESDAY'] )
+                  elif day_of_week == 3:
+                     is_open_today = bool( restaurant['THURSDAY'] )
+                  elif day_of_week == 4:
+                     is_open_today = bool( restaurant['FRIDAY'] )
+                  elif day_of_week == 5:
+                     is_open_today = bool( restaurant['SATURDAY'] )
+                  elif day_of_week == 6:
+                     is_open_today = bool( restaurant['SUNDAY'] )
+
+               if not is_open_today:
+                  is_closed = True
+                  closed_message = restaurant['SCHEDULE_MESSAGE']
 
          if include_closed_restaurants or not is_closed or name in restaurants_to_include:
             restaurants.append(
@@ -554,7 +610,7 @@ class Database():
                   x_coord=restaurant['X_COORD'],
                   y_coord=restaurant['Y_COORD'],
                   is_closed=is_closed,
-                  closed_message=restaurant['CLOSED_MESSAGE'] if is_closed else None ) )
+                  closed_message=closed_message ) )
 
       cur.close()
 
@@ -1560,6 +1616,103 @@ class Database():
       cur.close()
 
       return updated > 0
+   
+
+   def set_restaurant_opening_schedule(
+         self,
+         restaurant,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message ):
+      if not restaurant:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      if not message:
+         message = f'The {restaurant} is not scheduled to be open today.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO RestaurantOpeningSchedule (
+                  RESTAURANT,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  HOLIDAYS_ONLY,
+                  SCHEDULE_MESSAGE
+               )
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(RESTAURANT) DO UPDATE SET
+                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
+                  MONDAY = excluded.MONDAY,
+                  TUESDAY = excluded.TUESDAY,
+                  WEDNESDAY = excluded.WEDNESDAY,
+                  THURSDAY = excluded.THURSDAY,
+                  FRIDAY = excluded.FRIDAY,
+                  SATURDAY = excluded.SATURDAY,
+                  SUNDAY = excluded.SUNDAY,
+                  HOLIDAYS_ONLY = excluded.HOLIDAYS_ONLY,
+                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
+         """,
+         (
+            restaurant,
+            start_date,
+            end_date,
+            int( bool( monday ) ),
+            int( bool( tuesday ) ),
+            int( bool( wednesday ) ),
+            int( bool( thursday ) ),
+            int( bool( friday ) ),
+            int( bool( saturday ) ),
+            int( bool( sunday ) ),
+            int( bool( holidays_only ) ),
+            message
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def remove_restaurant_opening_schedule( self, restaurant ):
+      if not restaurant:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   DELETE FROM RestaurantOpeningSchedule
+               WHERE RESTAURANT = ?;
+         """, ( restaurant, ) )
+
+      self.conn.commit()
+      removed = cur.rowcount
+      cur.close()
+
+      return removed > 0
    
 
    def set_attraction_as_closed( self, attraction, start_date, end_date, message ):

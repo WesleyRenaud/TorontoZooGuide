@@ -353,6 +353,81 @@ if 'CLOSED_END' not in restaurant_status_columns:
       'ALTER TABLE RestaurantStatus ADD COLUMN CLOSED_END DATE;'
    )
 
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS RestaurantOpeningSchedule
+                  (  RESTAURANT            VARCHAR(64) NOT NULL,
+                     SCHEDULE_START_DATE   DATE        NOT NULL,
+                     SCHEDULE_END_DATE     DATE,
+                     MONDAY                BOOL        NOT NULL DEFAULT 0,
+                     TUESDAY               BOOL        NOT NULL DEFAULT 0,
+                     WEDNESDAY             BOOL        NOT NULL DEFAULT 0,
+                     THURSDAY              BOOL        NOT NULL DEFAULT 0,
+                     FRIDAY                BOOL        NOT NULL DEFAULT 0,
+                     SATURDAY              BOOL        NOT NULL DEFAULT 0,
+                     SUNDAY                BOOL        NOT NULL DEFAULT 0,
+                     HOLIDAYS_ONLY         BOOL        NOT NULL DEFAULT 0,
+                     SCHEDULE_MESSAGE      TEXT,
+                     PRIMARY KEY (RESTAURANT),
+                     FOREIGN KEY (RESTAURANT) REFERENCES Restaurant(NAME) ); ''' )
+
+restaurant_schedule_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( RestaurantOpeningSchedule );' ).fetchall()
+}
+
+if 'SCHEDULE_START_DATE' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN SCHEDULE_START_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+   )
+
+if 'SCHEDULE_END_DATE' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN SCHEDULE_END_DATE DATE;'
+   )
+
+if 'MONDAY' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN MONDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'TUESDAY' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN TUESDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'WEDNESDAY' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN WEDNESDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'THURSDAY' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN THURSDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'FRIDAY' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN FRIDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SATURDAY' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN SATURDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SUNDAY' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN SUNDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'HOLIDAYS_ONLY' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN HOLIDAYS_ONLY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SCHEDULE_MESSAGE' not in restaurant_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
+   )
+
 cursor.execute( ''' CREATE TABLE IF NOT EXISTS AttractionStatus
                   (  ATTRACTION        VARCHAR(64) NOT NULL,
                      IS_CLOSED         BOOL        NOT NULL DEFAULT 0,

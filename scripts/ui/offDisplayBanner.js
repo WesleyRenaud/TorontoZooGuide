@@ -5,17 +5,17 @@ export function createOffDisplayBanner() {
       if (el) return el;
 
       el = document.createElement('div');
-      el.className = 'off-display-banner';
+      el.className = 'off-display-closed-banner';
       el.style.display = 'none';
 
       el.innerHTML = `
-         <div class="off-display-icon">⚠</div>
-         <div class="off-display-text"></div>
-         <button class="off-display-close" type="button" aria-label="Close">×</button>
+         <div class="off-display-closed-icon">⚠</div>
+         <div class="off-display-closed-text"></div>
+         <button class="off-display-closed-close" type="button" aria-label="Close">×</button>
       `;
 
       el.addEventListener('click', (e) => e.stopPropagation());
-      el.querySelector('.off-display-close').addEventListener('click', (e) => {
+      el.querySelector('.off-display-closed-close').addEventListener('click', (e) => {
          e.stopPropagation();
          hide();
       });
@@ -52,7 +52,7 @@ export function createOffDisplayBanner() {
       const uniqueMessages = [ ...new Set(messages) ];
 
       const banner = ensure();
-      banner.querySelector('.off-display-text').innerHTML = uniqueMessages.join('<br><br>');
+      banner.querySelector('.off-display-closed-text').innerHTML = uniqueMessages.join('<br><br>');
       banner.style.display = 'flex';
    }
 

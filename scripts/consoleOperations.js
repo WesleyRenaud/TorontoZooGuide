@@ -13,6 +13,8 @@ import { createExhibitClosedController } from './consoleOperations/exhibitClosed
 import { createExhibitOpenController } from './consoleOperations/exhibitOpen.js';
 import { createRestaurantClosedController } from './consoleOperations/restaurantClosed.js';
 import { createRestaurantOpenController } from './consoleOperations/restaurantOpen.js';
+import { createRestaurantOpeningScheduleController } from './consoleOperations/restaurantOpeningSchedule.js';
+import { createRemoveRestaurantOpeningScheduleController } from './consoleOperations/removeRestaurantOpeningSchedule.js';
 import { createAttractionClosedController } from './consoleOperations/attractionClosed.js';
 import { createAttractionOpenController } from './consoleOperations/attractionOpen.js';
 import { createAttractionOpeningScheduleController } from './consoleOperations/attractionOpeningSchedule.js';
@@ -28,6 +30,8 @@ import { createExhibitClosedPanelHtml } from './consoleOperations/panels/exhibit
 import { createExhibitOpenPanelHtml } from './consoleOperations/panels/exhibitOpenPanel.js';
 import { createRestaurantClosedPanelHtml } from './consoleOperations/panels/restaurantClosedPanel.js';
 import { createRestaurantOpenPanelHtml } from './consoleOperations/panels/restaurantOpenPanel.js';
+import { createRestaurantOpeningSchedulePanelHtml } from './consoleOperations/panels/restaurantOpeningSchedulePanel.js';
+import { createRemoveRestaurantOpeningSchedulePanelHtml } from './consoleOperations/panels/removeRestaurantOpeningSchedulePanel.js';
 import { createAttractionClosedPanelHtml } from './consoleOperations/panels/attractionClosedPanel.js';
 import { createAttractionOpenPanelHtml } from './consoleOperations/panels/attractionOpenPanel.js';
 import { createAttractionOpeningSchedulePanelHtml } from './consoleOperations/panels/attractionOpeningSchedulePanel.js';
@@ -53,6 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createExhibitOpenPanelHtml()}
       ${createRestaurantClosedPanelHtml()}
       ${createRestaurantOpenPanelHtml()}
+      ${createRestaurantOpeningSchedulePanelHtml()}
+      ${createRemoveRestaurantOpeningSchedulePanelHtml()}
       ${createAttractionClosedPanelHtml()}
       ${createAttractionOpenPanelHtml()}
       ${createAttractionOpeningSchedulePanelHtml()}
@@ -69,6 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
    const exhibitOpenPanel = document.getElementById('exhibitOpenPanel');
    const restaurantClosedPanel = document.getElementById('restaurantClosedPanel');
    const restaurantOpenPanel = document.getElementById('restaurantOpenPanel');
+   const restaurantOpeningSchedulePanel = document.getElementById('restaurantOpeningSchedulePanel');
+   const removeRestaurantOpeningSchedulePanel = document.getElementById('removeRestaurantOpeningSchedulePanel');
    const attractionClosedPanel = document.getElementById('attractionClosedPanel');
    const attractionOpenPanel = document.getElementById('attractionOpenPanel');
    const attractionOpeningSchedulePanel = document.getElementById('attractionOpeningSchedulePanel');
@@ -98,6 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
    const exhibitOpenExhibitEl = document.getElementById('exhibitOpenExhibit');
    const restaurantClosedRestaurantEl = document.getElementById('restaurantClosedRestaurant');
    const restaurantOpenRestaurantEl = document.getElementById('restaurantOpenRestaurant');
+   const restaurantOpeningScheduleRestaurantEl = document.getElementById('restaurantOpeningScheduleRestaurant');
+   const removeRestaurantOpeningScheduleRestaurantEl = document.getElementById('removeRestaurantOpeningScheduleRestaurant');
    const attractionClosedAttractionEl = document.getElementById('attractionClosedAttraction');
    const attractionOpenAttractionEl = document.getElementById('attractionOpenAttraction');
    const attractionOpeningScheduleAttractionEl = document.getElementById('attractionOpeningScheduleAttraction');
@@ -119,6 +129,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
    const restaurantClosedStartDateEl = document.getElementById('restaurantClosedStartDate');
    const restaurantClosedEndDateEl = document.getElementById('restaurantClosedEndDate');
+
+   const restaurantOpeningSchedulePresetEl = document.getElementById('restaurantOpeningSchedulePreset');
+   const restaurantOpeningScheduleStartDateEl = document.getElementById('restaurantOpeningScheduleStartDate');
+   const restaurantOpeningScheduleEndDateEl = document.getElementById('restaurantOpeningScheduleEndDate');
+   const restaurantOpeningScheduleMondayEl = document.getElementById('restaurantOpeningScheduleMonday');
+   const restaurantOpeningScheduleTuesdayEl = document.getElementById('restaurantOpeningScheduleTuesday');
+   const restaurantOpeningScheduleWednesdayEl = document.getElementById('restaurantOpeningScheduleWednesday');
+   const restaurantOpeningScheduleThursdayEl = document.getElementById('restaurantOpeningScheduleThursday');
+   const restaurantOpeningScheduleFridayEl = document.getElementById('restaurantOpeningScheduleFriday');
+   const restaurantOpeningScheduleSaturdayEl = document.getElementById('restaurantOpeningScheduleSaturday');
+   const restaurantOpeningScheduleSundayEl = document.getElementById('restaurantOpeningScheduleSunday');
+   const restaurantOpeningScheduleHolidaysOnlyEl = document.getElementById('restaurantOpeningScheduleHolidaysOnly');
 
    const attractionClosedStartDateEl = document.getElementById('attractionClosedStartDate');
    const attractionClosedEndDateEl = document.getElementById('attractionClosedEndDate');
@@ -331,6 +353,40 @@ document.addEventListener('DOMContentLoaded', () => {
       hidePanels,
    });
 
+   createRestaurantOpeningScheduleController({
+      showButtonEl: document.getElementById('showRestaurantOpeningScheduleForm'),
+      panelEl: restaurantOpeningSchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitRestaurantOpeningSchedule'),
+      statusEl: document.getElementById('restaurantOpeningScheduleStatus'),
+      restaurantEl: restaurantOpeningScheduleRestaurantEl,
+      presetEl: restaurantOpeningSchedulePresetEl,
+      startDateEl: restaurantOpeningScheduleStartDateEl,
+      endDateEl: restaurantOpeningScheduleEndDateEl,
+      mondayEl: restaurantOpeningScheduleMondayEl,
+      tuesdayEl: restaurantOpeningScheduleTuesdayEl,
+      wednesdayEl: restaurantOpeningScheduleWednesdayEl,
+      thursdayEl: restaurantOpeningScheduleThursdayEl,
+      fridayEl: restaurantOpeningScheduleFridayEl,
+      saturdayEl: restaurantOpeningScheduleSaturdayEl,
+      sundayEl: restaurantOpeningScheduleSundayEl,
+      holidaysOnlyEl: restaurantOpeningScheduleHolidaysOnlyEl,
+      messageEl: document.getElementById('restaurantOpeningScheduleMessage'),
+      activatePanel,
+      hidePanels,
+   });
+
+   createRemoveRestaurantOpeningScheduleController({
+      showButtonEl: document.getElementById('showRemoveRestaurantOpeningScheduleForm'),
+      panelEl: removeRestaurantOpeningSchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitRemoveRestaurantOpeningSchedule'),
+      statusEl: document.getElementById('removeRestaurantOpeningScheduleStatus'),
+      restaurantEl: removeRestaurantOpeningScheduleRestaurantEl,
+      activatePanel,
+      hidePanels,
+   });
+
    createAttractionClosedController({
       showButtonEl: document.getElementById('showAttractionClosedForm'),
       panelEl: attractionClosedPanel,
@@ -415,6 +471,11 @@ document.addEventListener('DOMContentLoaded', () => {
    initOffDisplayDatePickers(
       restaurantClosedStartDateEl,
       restaurantClosedEndDateEl
+   );
+
+   initOffDisplayDatePickers(
+      restaurantOpeningScheduleStartDateEl,
+      restaurantOpeningScheduleEndDateEl
    );
 
    initOffDisplayDatePickers(

@@ -849,6 +849,90 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/set-restaurant-opening-schedule':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restaurant = data.get( 'restaurant' )
+         schedule_start_date = data.get( 'scheduleStartDate' )
+         schedule_end_date = data.get( 'scheduleEndDate' )
+
+         monday = data.get( 'monday' )
+         tuesday = data.get( 'tuesday' )
+         wednesday = data.get( 'wednesday' )
+         thursday = data.get( 'thursday' )
+         friday = data.get( 'friday' )
+         saturday = data.get( 'saturday' )
+         sunday = data.get( 'sunday' )
+         holidays_only = data.get( 'holidaysOnly' )
+
+         message = data.get( 'message' )
+
+         success = self.database.set_restaurant_opening_schedule(
+            restaurant=restaurant,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            holidays_only=holidays_only,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restaurant': restaurant,
+            'scheduleStartDate': schedule_start_date,
+            'scheduleEndDate': schedule_end_date,
+            'monday': monday,
+            'tuesday': tuesday,
+            'wednesday': wednesday,
+            'thursday': thursday,
+            'friday': friday,
+            'saturday': saturday,
+            'sunday': sunday,
+            'holidaysOnly': holidays_only,
+            'message': message
+         }
+
+         if not success:
+            response['error'] = f'Could not set opening schedule for "{restaurant}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/remove-restaurant-opening-schedule':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restaurant = data.get( 'restaurant' )
+
+         success = self.database.remove_restaurant_opening_schedule( restaurant=restaurant )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restaurant': restaurant
+         }
+
+         if not success:
+            response['error'] = f'Could not remove schedule for "{restaurant}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/set-attraction-closed':
          content_length = int( self.headers['Content-Length'] )
          post_data = self.rfile.read( content_length )

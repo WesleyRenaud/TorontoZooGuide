@@ -2,7 +2,7 @@ import { getRendererForItem } from './tooltipRenderers.js';
 import { positionTooltip } from '../utils/dom.js';
 import { setMarkerToAnimalIcon, applyMarkerVisual } from '../markers/markerVisuals.js';
 
-export function createTooltipController({ tooltipEl, onAnimalCardClick, offDisplayBanner, attractionClosedBanner }) {
+export function createTooltipController({ tooltipEl, onAnimalCardClick, offDisplayBanner, restaurantClosedBanner, attractionClosedBanner }) {
    let openMarker = null;
    let itemsForOpen = [];
    let carouselEl = null;
@@ -64,6 +64,7 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
       if (!tooltipEl || !isOpen()) return;
 
       offDisplayBanner?.hide?.();
+      restaurantClosedBanner?.hide?.();
       attractionClosedBanner?.hide?.();
 
       if (openMarker) {
@@ -176,6 +177,14 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
 
       if (type === 'animal') {
          offDisplayBanner?.sync?.(item);
+         restaurantClosedBanner?.hide?.();
+         attractionClosedBanner?.hide?.();
+         return;
+      }
+
+      if (type === 'restaurant') {
+         restaurantClosedBanner?.sync?.(item);
+         offDisplayBanner?.hide?.();
          attractionClosedBanner?.hide?.();
          return;
       }
@@ -183,10 +192,12 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
       if (type === 'attraction') {
          attractionClosedBanner?.sync?.(item);
          offDisplayBanner?.hide?.();
+         restaurantClosedBanner?.hide?.();
          return;
       }
 
       offDisplayBanner?.hide?.();
+      restaurantClosedBanner?.hide?.();
       attractionClosedBanner?.hide?.();
    }
 

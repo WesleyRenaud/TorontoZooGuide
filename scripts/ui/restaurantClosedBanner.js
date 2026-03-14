@@ -1,4 +1,4 @@
-export function createAttractionClosedBanner() {
+export function createRestaurantClosedBanner() {
    let el = null;
 
    function ensure() {
@@ -29,8 +29,8 @@ export function createAttractionClosedBanner() {
       el.style.display = 'none';
    }
 
-   function sync(attraction) {
-      const message = attraction?.closed_message;
+   function sync(restaurant) {
+      const message = restaurant?.closed_message;
 
       if(!message) {
          hide();
