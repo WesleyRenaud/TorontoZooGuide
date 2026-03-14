@@ -15,6 +15,10 @@ import { createRestaurantClosedController } from './consoleOperations/restaurant
 import { createRestaurantOpenController } from './consoleOperations/restaurantOpen.js';
 import { createRestaurantOpeningScheduleController } from './consoleOperations/restaurantOpeningSchedule.js';
 import { createRemoveRestaurantOpeningScheduleController } from './consoleOperations/removeRestaurantOpeningSchedule.js';
+import { createGiftShopClosedController } from './consoleOperations/giftShopClosed.js';
+import { createGiftShopOpenController } from './consoleOperations/giftShopOpen.js';
+import { createGiftShopOpeningScheduleController } from './consoleOperations/giftShopOpeningSchedule.js';
+import { createRemoveGiftShopOpeningScheduleController } from './consoleOperations/removeGiftShopOpeningSchedule.js';
 import { createAttractionClosedController } from './consoleOperations/attractionClosed.js';
 import { createAttractionOpenController } from './consoleOperations/attractionOpen.js';
 import { createAttractionOpeningScheduleController } from './consoleOperations/attractionOpeningSchedule.js';
@@ -32,6 +36,10 @@ import { createRestaurantClosedPanelHtml } from './consoleOperations/panels/rest
 import { createRestaurantOpenPanelHtml } from './consoleOperations/panels/restaurantOpenPanel.js';
 import { createRestaurantOpeningSchedulePanelHtml } from './consoleOperations/panels/restaurantOpeningSchedulePanel.js';
 import { createRemoveRestaurantOpeningSchedulePanelHtml } from './consoleOperations/panels/removeRestaurantOpeningSchedulePanel.js';
+import { createGiftShopClosedPanelHtml } from './consoleOperations/panels/giftShopClosedPanel.js';
+import { createGiftShopOpenPanelHtml } from './consoleOperations/panels/giftShopOpenPanel.js';
+import { createGiftShopOpeningSchedulePanelHtml } from './consoleOperations/panels/giftShopOpeningSchedulePanel.js';
+import { createRemoveGiftShopOpeningSchedulePanelHtml } from './consoleOperations/panels/removeGiftShopOpeningSchedulePanel.js';
 import { createAttractionClosedPanelHtml } from './consoleOperations/panels/attractionClosedPanel.js';
 import { createAttractionOpenPanelHtml } from './consoleOperations/panels/attractionOpenPanel.js';
 import { createAttractionOpeningSchedulePanelHtml } from './consoleOperations/panels/attractionOpeningSchedulePanel.js';
@@ -59,6 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createRestaurantOpenPanelHtml()}
       ${createRestaurantOpeningSchedulePanelHtml()}
       ${createRemoveRestaurantOpeningSchedulePanelHtml()}
+      ${createGiftShopClosedPanelHtml()}
+      ${createGiftShopOpenPanelHtml()}
+      ${createGiftShopOpeningSchedulePanelHtml()}
+      ${createRemoveGiftShopOpeningSchedulePanelHtml()}
       ${createAttractionClosedPanelHtml()}
       ${createAttractionOpenPanelHtml()}
       ${createAttractionOpeningSchedulePanelHtml()}
@@ -77,6 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
    const restaurantOpenPanel = document.getElementById('restaurantOpenPanel');
    const restaurantOpeningSchedulePanel = document.getElementById('restaurantOpeningSchedulePanel');
    const removeRestaurantOpeningSchedulePanel = document.getElementById('removeRestaurantOpeningSchedulePanel');
+   const giftShopClosedPanel = document.getElementById('giftShopClosedPanel');
+   const giftShopOpenPanel = document.getElementById('giftShopOpenPanel');
+   const giftShopOpeningSchedulePanel = document.getElementById('giftShopOpeningSchedulePanel');
+   const removeGiftShopOpeningSchedulePanel = document.getElementById('removeGiftShopOpeningSchedulePanel');
    const attractionClosedPanel = document.getElementById('attractionClosedPanel');
    const attractionOpenPanel = document.getElementById('attractionOpenPanel');
    const attractionOpeningSchedulePanel = document.getElementById('attractionOpeningSchedulePanel');
@@ -108,6 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
    const restaurantOpenRestaurantEl = document.getElementById('restaurantOpenRestaurant');
    const restaurantOpeningScheduleRestaurantEl = document.getElementById('restaurantOpeningScheduleRestaurant');
    const removeRestaurantOpeningScheduleRestaurantEl = document.getElementById('removeRestaurantOpeningScheduleRestaurant');
+   const giftShopClosedGiftShopEl = document.getElementById('giftShopClosedGiftShop');
+   const giftShopOpenGiftShopEl = document.getElementById('giftShopOpenGiftShop');
+   const giftShopOpeningScheduleGiftShopEl = document.getElementById('giftShopOpeningScheduleGiftShop');
+   const removeGiftShopOpeningScheduleGiftShopEl = document.getElementById('removeGiftShopOpeningScheduleGiftShop');
    const attractionClosedAttractionEl = document.getElementById('attractionClosedAttraction');
    const attractionOpenAttractionEl = document.getElementById('attractionOpenAttraction');
    const attractionOpeningScheduleAttractionEl = document.getElementById('attractionOpeningScheduleAttraction');
@@ -141,6 +161,21 @@ document.addEventListener('DOMContentLoaded', () => {
    const restaurantOpeningScheduleSaturdayEl = document.getElementById('restaurantOpeningScheduleSaturday');
    const restaurantOpeningScheduleSundayEl = document.getElementById('restaurantOpeningScheduleSunday');
    const restaurantOpeningScheduleHolidaysOnlyEl = document.getElementById('restaurantOpeningScheduleHolidaysOnly');
+
+   const giftShopClosedStartDateEl = document.getElementById('giftShopClosedStartDate');
+   const giftShopClosedEndDateEl = document.getElementById('giftShopClosedEndDate');
+
+   const giftShopOpeningSchedulePresetEl = document.getElementById('giftShopOpeningSchedulePreset');
+   const giftShopOpeningScheduleStartDateEl = document.getElementById('giftShopOpeningScheduleStartDate');
+   const giftShopOpeningScheduleEndDateEl = document.getElementById('giftShopOpeningScheduleEndDate');
+   const giftShopOpeningScheduleMondayEl = document.getElementById('giftShopOpeningScheduleMonday');
+   const giftShopOpeningScheduleTuesdayEl = document.getElementById('giftShopOpeningScheduleTuesday');
+   const giftShopOpeningScheduleWednesdayEl = document.getElementById('giftShopOpeningScheduleWednesday');
+   const giftShopOpeningScheduleThursdayEl = document.getElementById('giftShopOpeningScheduleThursday');
+   const giftShopOpeningScheduleFridayEl = document.getElementById('giftShopOpeningScheduleFriday');
+   const giftShopOpeningScheduleSaturdayEl = document.getElementById('giftShopOpeningScheduleSaturday');
+   const giftShopOpeningScheduleSundayEl = document.getElementById('giftShopOpeningScheduleSunday');
+   const giftShopOpeningScheduleHolidaysOnlyEl = document.getElementById('giftShopOpeningScheduleHolidaysOnly');
 
    const attractionClosedStartDateEl = document.getElementById('attractionClosedStartDate');
    const attractionClosedEndDateEl = document.getElementById('attractionClosedEndDate');
@@ -387,6 +422,65 @@ document.addEventListener('DOMContentLoaded', () => {
       hidePanels,
    });
 
+   createGiftShopClosedController({
+      showButtonEl: document.getElementById('showGiftShopClosedForm'),
+      panelEl: giftShopClosedPanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitGiftShopClosed'),
+      statusEl: document.getElementById('giftShopClosedStatus'),
+      giftShopEl: giftShopClosedGiftShopEl,
+      startDateEl: giftShopClosedStartDateEl,
+      endDateEl: giftShopClosedEndDateEl,
+      messageEl: document.getElementById('giftShopClosedMessage'),
+      activatePanel,
+      hidePanels,
+   });
+
+   createGiftShopOpenController({
+      showButtonEl: document.getElementById('showGiftShopOpenForm'),
+      panelEl: giftShopOpenPanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitGiftShopOpen'),
+      statusEl: document.getElementById('giftShopOpenStatus'),
+      giftShopEl: giftShopOpenGiftShopEl,
+      activatePanel,
+      hidePanels,
+   });
+
+   createGiftShopOpeningScheduleController({
+      showButtonEl: document.getElementById('showGiftShopOpeningScheduleForm'),
+      panelEl: giftShopOpeningSchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitGiftShopOpeningSchedule'),
+      statusEl: document.getElementById('giftShopOpeningScheduleStatus'),
+      giftShopEl: giftShopOpeningScheduleGiftShopEl,
+      presetEl: giftShopOpeningSchedulePresetEl,
+      startDateEl: giftShopOpeningScheduleStartDateEl,
+      endDateEl: giftShopOpeningScheduleEndDateEl,
+      mondayEl: giftShopOpeningScheduleMondayEl,
+      tuesdayEl: giftShopOpeningScheduleTuesdayEl,
+      wednesdayEl: giftShopOpeningScheduleWednesdayEl,
+      thursdayEl: giftShopOpeningScheduleThursdayEl,
+      fridayEl: giftShopOpeningScheduleFridayEl,
+      saturdayEl: giftShopOpeningScheduleSaturdayEl,
+      sundayEl: giftShopOpeningScheduleSundayEl,
+      holidaysOnlyEl: giftShopOpeningScheduleHolidaysOnlyEl,
+      messageEl: document.getElementById('giftShopOpeningScheduleMessage'),
+      activatePanel,
+      hidePanels,
+   });
+
+   createRemoveGiftShopOpeningScheduleController({
+      showButtonEl: document.getElementById('showRemoveGiftShopOpeningScheduleForm'),
+      panelEl: removeGiftShopOpeningSchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitRemoveGiftShopOpeningSchedule'),
+      statusEl: document.getElementById('removeGiftShopOpeningScheduleStatus'),
+      giftShopEl: removeGiftShopOpeningScheduleGiftShopEl,
+      activatePanel,
+      hidePanels,
+   });
+
    createAttractionClosedController({
       showButtonEl: document.getElementById('showAttractionClosedForm'),
       panelEl: attractionClosedPanel,
@@ -476,6 +570,16 @@ document.addEventListener('DOMContentLoaded', () => {
    initOffDisplayDatePickers(
       restaurantOpeningScheduleStartDateEl,
       restaurantOpeningScheduleEndDateEl
+   );
+
+   initOffDisplayDatePickers(
+      giftShopClosedStartDateEl,
+      giftShopClosedEndDateEl
+   );
+
+   initOffDisplayDatePickers(
+      giftShopOpeningScheduleStartDateEl,
+      giftShopOpeningScheduleEndDateEl
    );
 
    initOffDisplayDatePickers(

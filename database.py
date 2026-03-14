@@ -213,7 +213,7 @@ class Database():
    def get_active_limited_viewing_status( self, animal, target_date ):
       schedule_start_date = animal['SCHEDULE_START_DATE']
       schedule_end_date = animal['SCHEDULE_END_DATE']
-      daily_start_time = animal['DAILY_START_TIME' ]
+      daily_start_time = animal['DAILY_START_TIME']
       daily_end_time = animal['DAILY_END_TIME']
       viewing_message = animal['VIEWING_MESSAGE']
 
@@ -551,7 +551,7 @@ class Database():
                start_date = self.parse_date_value( value=restaurant['CLOSED_START'] )
                start_ok = target_date >= start_date
 
-            if restaurant[ 'CLOSED_END' ] != None:
+            if restaurant['CLOSED_END'] != None:
                end_date = self.parse_date_value( value=restaurant['CLOSED_END'] )
                end_ok = target_date <= end_date
 
@@ -644,21 +644,38 @@ class Database():
       return restrooms
    
 
-   def get_gift_shops( self, month, include_seasonal_gift_shops, gift_shops_to_include=[] ):
+   def get_gift_shops( self, month, day, include_closed_gift_shops, gift_shops_to_include=[] ):
       cur = self.conn.cursor()
 
-      is_peak_season_month = self.zoo_util.is_peak_season_month( month=month )
+      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), int( day ) )
 
       data = cur.execute(
          """   SELECT
                   g.NAME,
                   g.LOCATION,
-                  g.OPEN_SEASONALLY,
-                  g.SEASONAL_SCHEDULE,
                   g.DESCRIPTION,
                   g.X_COORD,
-                  g.Y_COORD
-               FROM GiftShop g;
+                  g.Y_COORD,
+                  s.IS_CLOSED,
+                  s.CLOSED_MESSAGE,
+                  s.CLOSED_START,
+                  s.CLOSED_END,
+                  os.SCHEDULE_START_DATE,
+                  os.SCHEDULE_END_DATE,
+                  os.MONDAY,
+                  os.TUESDAY,
+                  os.WEDNESDAY,
+                  os.THURSDAY,
+                  os.FRIDAY,
+                  os.SATURDAY,
+                  os.SUNDAY,
+                  os.HOLIDAYS_ONLY,
+                  os.SCHEDULE_MESSAGE
+               FROM GiftShop g
+               LEFT JOIN GiftShopStatus s
+                  ON g.NAME = s.GIFT_SHOP
+               LEFT JOIN GiftShopOpeningSchedule os
+                  ON g.NAME = os.GIFT_SHOP;
          """ )
 
       gift_shop_data = data.fetchall()
@@ -667,17 +684,78 @@ class Database():
 
       for gift_shop in gift_shop_data:
          name = gift_shop['NAME']
-         open_seasonally = gift_shop['OPEN_SEASONALLY']
 
-         if is_peak_season_month or include_seasonal_gift_shops or not open_seasonally or name in gift_shops_to_include:
+         stored_is_closed = bool( gift_shop['IS_CLOSED'] ) if gift_shop['IS_CLOSED'] != None else False
+
+         is_closed = False
+         closed_message = None
+
+         if stored_is_closed:
+            start_ok = True
+            end_ok = True
+
+            if gift_shop['CLOSED_START'] != None:
+               start_date = self.parse_date_value( value=gift_shop['CLOSED_START'] )
+               start_ok = target_date >= start_date
+
+            if gift_shop['CLOSED_END'] != None:
+               end_date = self.parse_date_value( value=gift_shop['CLOSED_END'] )
+               end_ok = target_date <= end_date
+
+            if start_ok and end_ok:
+               is_closed = True
+               closed_message = gift_shop['CLOSED_MESSAGE']
+
+         if not is_closed and gift_shop['SCHEDULE_START_DATE'] != None:
+            schedule_start_ok = True
+            schedule_end_ok = True
+
+            if gift_shop['SCHEDULE_START_DATE'] != None:
+               schedule_start_date = self.parse_date_value( value=gift_shop['SCHEDULE_START_DATE'] )
+               schedule_start_ok = target_date >= schedule_start_date
+
+            if gift_shop['SCHEDULE_END_DATE'] != None:
+               schedule_end_date = self.parse_date_value( value=gift_shop['SCHEDULE_END_DATE'] )
+               schedule_end_ok = target_date <= schedule_end_date
+
+            if schedule_start_ok and schedule_end_ok:
+               is_open_today = False
+
+               if self.zoo_util.is_holiday( target_date ):
+                  is_open_today = bool( gift_shop['HOLIDAYS_ONLY'] )
+
+               if not is_open_today:
+                  day_of_week = target_date.weekday()
+
+                  if day_of_week == 0:
+                     is_open_today = bool( gift_shop['MONDAY'] )
+                  elif day_of_week == 1:
+                     is_open_today = bool( gift_shop['TUESDAY'] )
+                  elif day_of_week == 2:
+                     is_open_today = bool( gift_shop['WEDNESDAY'] )
+                  elif day_of_week == 3:
+                     is_open_today = bool( gift_shop['THURSDAY'] )
+                  elif day_of_week == 4:
+                     is_open_today = bool( gift_shop['FRIDAY'] )
+                  elif day_of_week == 5:
+                     is_open_today = bool( gift_shop['SATURDAY'] )
+                  elif day_of_week == 6:
+                     is_open_today = bool( gift_shop['SUNDAY'] )
+
+               if not is_open_today:
+                  is_closed = True
+                  closed_message = gift_shop['SCHEDULE_MESSAGE']
+
+         if include_closed_gift_shops or not is_closed or name in gift_shops_to_include:
             gift_shops.append(
                zoo.GiftShop(
                   name=name,
                   location=gift_shop['LOCATION'],
-                  seasonal_schedule=gift_shop['SEASONAL_SCHEDULE'],
                   description=gift_shop['DESCRIPTION'],
                   x_coord=gift_shop['X_COORD'],
-                  y_coord=gift_shop['Y_COORD'] ) )
+                  y_coord=gift_shop['Y_COORD'],
+                  is_closed=is_closed,
+                  closed_message=closed_message ) )
 
       cur.close()
 
@@ -1305,6 +1383,21 @@ class Database():
       return restaurants
    
 
+   def get_gift_shop_names( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         f"""  SELECT
+                  g.NAME
+               FROm GiftShop g;
+         """ )
+
+      gift_shops = [row[0] for row in data.fetchall()]
+      cur.close()
+
+      return gift_shops
+   
+
    def get_attraction_names( self ):
       cur = self.conn.cursor()
 
@@ -1707,6 +1800,159 @@ class Database():
          """   DELETE FROM RestaurantOpeningSchedule
                WHERE RESTAURANT = ?;
          """, ( restaurant, ) )
+
+      self.conn.commit()
+      removed = cur.rowcount
+      cur.close()
+
+      return removed > 0
+
+
+   def set_gift_shop_as_closed( self, gift_shop, start_date, end_date, message ):
+      if not gift_shop:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      if not message:
+         message = f'The {gift_shop} is temporarily closed.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO GiftShopStatus (
+                  GIFT_SHOP,
+                  IS_CLOSED,
+                  CLOSED_MESSAGE,
+                  CLOSED_START,
+                  CLOSED_END
+               )
+               VALUES (?, 1, ?, ?, ?)
+               ON CONFLICT(GIFT_SHOP) DO UPDATE SET
+                  IS_CLOSED = 1,
+                  CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
+                  CLOSED_START = excluded.CLOSED_START,
+                  CLOSED_END = excluded.CLOSED_END;
+         """, ( gift_shop, message, start_date, end_date ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def set_gift_shop_as_open( self, gift_shop ):
+      if not gift_shop:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   DELETE FROM GiftShopStatus
+               WHERE RESTAURANT = ?;
+         """, ( gift_shop, ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def set_gift_shop_opening_schedule(
+         self,
+         gift_shop,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message ):
+      if not gift_shop:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      if not message:
+         message = f'The {gift_shop} is not scheduled to be open today.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO GiftShopOpeningSchedule (
+                  GIFT_SHOP,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  HOLIDAYS_ONLY,
+                  SCHEDULE_MESSAGE
+               )
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(GIFT_SHOP) DO UPDATE SET
+                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
+                  MONDAY = excluded.MONDAY,
+                  TUESDAY = excluded.TUESDAY,
+                  WEDNESDAY = excluded.WEDNESDAY,
+                  THURSDAY = excluded.THURSDAY,
+                  FRIDAY = excluded.FRIDAY,
+                  SATURDAY = excluded.SATURDAY,
+                  SUNDAY = excluded.SUNDAY,
+                  HOLIDAYS_ONLY = excluded.HOLIDAYS_ONLY,
+                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
+         """,
+         (
+            gift_shop,
+            start_date,
+            end_date,
+            int( bool( monday ) ),
+            int( bool( tuesday ) ),
+            int( bool( wednesday ) ),
+            int( bool( thursday ) ),
+            int( bool( friday ) ),
+            int( bool( saturday ) ),
+            int( bool( sunday ) ),
+            int( bool( holidays_only ) ),
+            message
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def remove_gift_shop_opening_schedule( self, gift_shop ):
+      if not gift_shop:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   DELETE FROM GiftShopOpeningSchedule
+               WHERE RESTAURANT = ?;
+         """, ( gift_shop, ) )
 
       self.conn.commit()
       removed = cur.rowcount

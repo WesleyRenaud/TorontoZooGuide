@@ -188,12 +188,14 @@ class MyHandler( BaseHTTPRequestHandler ):
          data = json.loads( post_data.decode( 'utf-8' ) )
 
          month = data.get( 'month' )
-         include_seasonal_gift_shops = data.get( 'includeSeasonalGiftShops' )
+         day = data.get( 'day' )
+         include_closed_gift_shops = data.get( 'includeClosedGiftShops' )
          gift_shops_to_include = data.get( 'giftShopsToInclude' )
 
          gift_shops = self.database.get_gift_shops(
             month=month,
-            include_seasonal_gift_shops=include_seasonal_gift_shops,
+            day=day,
+            include_closed_gift_shops=include_closed_gift_shops,
             gift_shops_to_include=gift_shops_to_include )
          
          self.send_response( 200 )
@@ -509,6 +511,20 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
          response = {"restaurants": restaurants}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )   
+
+
+      if self.path == '/get-gift-shop-names':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         gift_shops = self.database.get_gift_shop_names()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"gift_shops": gift_shops}
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )   
 
 
@@ -929,6 +945,148 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response['error'] = f'Could not remove schedule for "{restaurant}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-gift-shop-closed':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         gift_shop = data.get( 'giftShop' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+         message = data.get( 'message' )
+
+         success = self.database.set_gift_shop_as_closed(
+            gift_shop=gift_shop,
+            start_date=start_date,
+            end_date=end_date,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'gift_shop': gift_shop,
+            'startDate': start_date,
+            'endDate': end_date,
+            'message': message
+         }
+
+         if not success:
+            response['error'] = f'Could not set "{gift_shop}" as closed.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-gift-shop-open':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         gift_shop = data.get( 'GiftShop' )
+
+         success = self.database.set_gift_shop_as_open( gift_shop=gift_shop )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'gift_shop': gift_shop
+         }
+
+         if not success:
+            response['error'] = f'Could not set "{gift_shop}" as open.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-gift-shop-opening-schedule':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         gift_shop = data.get( 'giftShop' )
+         schedule_start_date = data.get( 'scheduleStartDate' )
+         schedule_end_date = data.get( 'scheduleEndDate' )
+
+         monday = data.get( 'monday' )
+         tuesday = data.get( 'tuesday' )
+         wednesday = data.get( 'wednesday' )
+         thursday = data.get( 'thursday' )
+         friday = data.get( 'friday' )
+         saturday = data.get( 'saturday' )
+         sunday = data.get( 'sunday' )
+         holidays_only = data.get( 'holidaysOnly' )
+
+         message = data.get( 'message' )
+
+         success = self.database.set_gift_shop_opening_schedule(
+            gift_shop=gift_shop,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            holidays_only=holidays_only,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'gift_shop': gift_shop,
+            'scheduleStartDate': schedule_start_date,
+            'scheduleEndDate': schedule_end_date,
+            'monday': monday,
+            'tuesday': tuesday,
+            'wednesday': wednesday,
+            'thursday': thursday,
+            'friday': friday,
+            'saturday': saturday,
+            'sunday': sunday,
+            'holidaysOnly': holidays_only,
+            'message': message
+         }
+
+         if not success:
+            response['error'] = f'Could not set opening schedule for "{gift_shop}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/remove-gift-shop-opening-schedule':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         gift_shop = data.get( 'giftShop' )
+
+         success = self.database.remove_gift_shop_opening_schedule( gift_shop=gift_shop )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'gift_shop': gift_shop
+         }
+
+         if not success:
+            response['error'] = f'Could not remove schedule for "{gift_shop}".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

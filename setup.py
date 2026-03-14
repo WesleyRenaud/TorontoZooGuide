@@ -103,8 +103,6 @@ cursor.execute( 'DROP TABLE IF EXISTS GiftShop;' )
 cursor.execute( ''' CREATE TABLE GiftShop
                   (  NAME              VARCHAR(64) NOT NULL,
                      LOCATION          VARCHAR(64) NOT NULL,
-                     OPEN_SEASONALLY   BOOL        NOT NULL,
-                     SEASONAL_SCHEDULE TEXT        NOT NULL,
                      DESCRIPTION       TEXT        NOT NULL,
                      X_COORD           FLOAT       NOT NULL,
                      Y_COORD           FLOAT       NOT NULL,
@@ -426,6 +424,114 @@ if 'HOLIDAYS_ONLY' not in restaurant_schedule_columns:
 if 'SCHEDULE_MESSAGE' not in restaurant_schedule_columns:
    cursor.execute(
       'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
+   )
+
+cursor.execute(''' CREATE TABLE IF NOT EXISTS GiftShopStatus
+                  (  GIFT_SHOP           VARCHAR(64) NOT NULL,
+                     IS_CLOSED           BOOL        NOT NULL DEFAULT 0,
+                     CLOSED_MESSAGE      TEXT,
+                     CLOSED_START        DATE,
+                     CLOSED_END          DATE,
+                     PRIMARY KEY (GIFT_SHOP),
+                     FOREIGN KEY (GIFT_SHOP) REFERENCES GiftShop(NAME) ); ''' )
+
+gift_shops_status_columns = {
+   row[1] for row in cursor.execute('PRAGMA table_info( GiftShopStatus );').fetchall()
+}
+
+if 'IS_CLOSED' not in gift_shops_status_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopStatus ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'CLOSED_MESSAGE' not in gift_shops_status_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopStatus ADD COLUMN CLOSED_MESSAGE TEXT;'
+   )
+
+if 'CLOSED_START' not in gift_shops_status_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopStatus ADD COLUMN CLOSED_START DATE;'
+   )
+
+if 'CLOSED_END' not in gift_shops_status_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopStatus ADD COLUMN CLOSED_END DATE;'
+   )
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS GiftShopOpeningSchedule
+                  (  GIFT_SHOP             VARCHAR(64) NOT NULL,
+                     SCHEDULE_START_DATE   DATE        NOT NULL,
+                     SCHEDULE_END_DATE     DATE,
+                     MONDAY                BOOL        NOT NULL DEFAULT 0,
+                     TUESDAY               BOOL        NOT NULL DEFAULT 0,
+                     WEDNESDAY             BOOL        NOT NULL DEFAULT 0,
+                     THURSDAY              BOOL        NOT NULL DEFAULT 0,
+                     FRIDAY                BOOL        NOT NULL DEFAULT 0,
+                     SATURDAY              BOOL        NOT NULL DEFAULT 0,
+                     SUNDAY                BOOL        NOT NULL DEFAULT 0,
+                     HOLIDAYS_ONLY         BOOL        NOT NULL DEFAULT 0,
+                     SCHEDULE_MESSAGE      TEXT,
+                     PRIMARY KEY (GIFT_SHOP),
+                     FOREIGN KEY (GIFT_SHOP) REFERENCES GiftShop(NAME) ); ''' )
+
+gift_shop_schedule_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( GiftShopOpeningSchedule );' ).fetchall()
+}
+
+if 'SCHEDULE_START_DATE' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN SCHEDULE_START_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+   )
+
+if 'SCHEDULE_END_DATE' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN SCHEDULE_END_DATE DATE;'
+   )
+
+if 'MONDAY' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN MONDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'TUESDAY' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN TUESDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'WEDNESDAY' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN WEDNESDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'THURSDAY' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN THURSDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'FRIDAY' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN FRIDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SATURDAY' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN SATURDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SUNDAY' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN SUNDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'HOLIDAYS_ONLY' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN HOLIDAYS_ONLY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SCHEDULE_MESSAGE' not in gift_shop_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
    )
 
 cursor.execute( ''' CREATE TABLE IF NOT EXISTS AttractionStatus
@@ -12045,8 +12151,6 @@ gift_shops = [
    (
       'Zootique',
       'Learning & Engagement Centre',
-      0,       # Open seasonally
-      '''Open Daily Year-Round''',
       '''Our largest main boutique with the widest variety of souvenirs, toys, plush, apparel, books, jewelry, and more! Something
          for everyone, from every region of the Zoo.'''.replace( '\n', ' ' ),
       60.5,    # X coordinate on map
@@ -12055,9 +12159,6 @@ gift_shops = [
    (
       'Courtyard Kiosk',
       'Front Courtyard',
-      1,       # Open seasonally
-      '''Open Peak-Season Only *
-         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       '''This green pod is a quick stop shop in the main front courtyard for all your Zoo necessities! *
          Located beside our Conservation Carousel.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       61.25,   # X coordinate on map
@@ -12066,9 +12167,6 @@ gift_shops = [
    (
       'Eurasia Wilds Outpost',
       'Eurasia Wilds',
-      1,       # Open seasonally
-      '''Open Peak-Season Only *
-         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       '''Located by our endangered Amur Tiger exhibit, this indoor shop offers a variety of tiger themed souvenirs and gifts, as
          well as your other favourite Eurasian species!'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       63.75,   # X coordinate on map
@@ -12077,9 +12175,6 @@ gift_shops = [
    (
       'Savanna Shop',
       'Africa Savanna',
-      1,       # Open seasonally
-      '''Open Peak-Season Only *
-         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       '''An indoor gift shop located by the Africa Zoomobile station. Souvenirs, toys, plush, apparel, and exclusive African gifts
          to remember some of your favourite species found in the African Savanna.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       39.25,   # X coordinate on map
@@ -12088,9 +12183,6 @@ gift_shops = [
    (
       'Twiga Market',
       'Africa Savanna',
-      1,       # Open seasonally
-      '''Open Peak-Season Only *
-         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       '''A breezy outdoor market located directly in front of our Giraffe exhibit. Specializing in Giraffe, Hippo, and Gorilla
          themed souvenirs and gifts.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       52,      # X coordinate on map
@@ -12099,9 +12191,6 @@ gift_shops = [
    (
       'Discovery Zone',
       'Next to Splash Island',
-      1,       # Open seasonally
-      '''Open Peak-Season Only *
-         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       '''An aquatic-themed outdoor kiosk that has you covered for summer. Towels, apparel, sunscreen, toys, and more! Located by the
          entrance of Splash Island.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       64,      # X coordinate on map
@@ -12110,9 +12199,6 @@ gift_shops = [
    (
       'Tundra Trading Post',
       'Tundra Trek',
-      1,       # Open seasonally
-      '''Open Peak-Season Only *
-         (weather and staffing dependent hours subject to change)'''.replace( '\n', ' ' ).replace( '*', '\n' ),
       '''This arctic-themed outdoor kiosk has you covered for summer adventures! Find apparel, sunscreen, toys, and other essentials
          perfect for your day at the Zoo. Conveniently located beside BeaverTails and the polar bear habitat near the Tundra Trek
          Loop.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
@@ -13324,13 +13410,11 @@ cursor.executemany( ''' INSERT INTO Restroom (
 cursor.executemany( ''' INSERT INTO GiftShop (
                            NAME,
                            LOCATION,
-                           OPEN_SEASONALLY,
-                           SEASONAL_SCHEDULE,
                            DESCRIPTION,
                            X_COORD,
                            Y_COORD
                         ) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?) ''', gift_shops )
+                        VALUES (?, ?, ?, ?, ?) ''', gift_shops )
 
 cursor.executemany( ''' INSERT INTO Attraction (
                            NAME,

@@ -24,7 +24,6 @@ export const giftShopRenderer = {
          </div>
 
          <strong>${name}</strong>
-         ${g.seasonal_schedule ? `<span>Seasonal Schedule: ${g.seasonal_schedule}</span>` : ''}
          ${g.description ? `<span>Description: ${g.description}</span>` : ''}       
       `;
       return card;

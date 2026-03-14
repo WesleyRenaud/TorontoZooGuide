@@ -1,7 +1,8 @@
 let cachedSpecies = null;
 let cachedExhibits = null;
-let cachedAttractions = null;
 let cachedRestaurants = null;
+let cachedGiftShops = null;
+let cachedAttractions = null;
 
 export async function postJson(url, data) {
    const response = await fetch(url, {
@@ -66,46 +67,6 @@ export function populateExhibitDropdown(selectEl, exhibits) {
       });
 }
 
-export function populateAttractionDropdown(selectEl, attractions) {
-   if(!selectEl) return;
-
-   selectEl.innerHTML = '';
-
-   const placeholder = document.createElement('option');
-   placeholder.value = '';
-   placeholder.textContent = 'Select an attraction';
-   selectEl.appendChild(placeholder);
-
-   attractions
-      .slice()
-      .sort((a, b) => {
-         const aName =
-            typeof a === 'string'
-               ? a
-               : String(a.name ?? a.NAME ?? '');
-
-         const bName =
-            typeof b === 'string'
-               ? b
-               : String(b.name ?? b.NAME ?? '');
-
-         return aName.localeCompare(bName);
-      })
-      .forEach(attraction => {
-         const name =
-            typeof attraction === 'string'
-               ? attraction
-               : attraction.name ?? attraction.NAME ?? '';
-
-         if(!name) return;
-
-         const option = document.createElement('option');
-         option.value = name;
-         option.textContent = name;
-         selectEl.appendChild(option);
-      });
-}
-
 export function populateRestaurantDropdown(selectEl, restaurants) {
    if(!selectEl) return;
 
@@ -136,6 +97,86 @@ export function populateRestaurantDropdown(selectEl, restaurants) {
             typeof restaurant === 'string'
                ? restaurant
                : restaurant.name ?? restaurant.NAME ?? '';
+
+         if(!name) return;
+
+         const option = document.createElement('option');
+         option.value = name;
+         option.textContent = name;
+         selectEl.appendChild(option);
+      });
+}
+
+export function populateGiftShopDropdown(selectEl, giftShops) {
+   if(!selectEl) return;
+
+   selectEl.innerHTML = '';
+
+   const placeholder = document.createElement('option');
+   placeholder.value = '';
+   placeholder.textContent = 'Select a gift shop';
+   selectEl.appendChild(placeholder);
+
+   giftShops
+      .slice()
+      .sort((a, b) => {
+         const aName =
+            typeof a === 'string'
+               ? a
+               : String(a.name ?? a.NAME ?? '');
+
+         const bName =
+            typeof b === 'string'
+               ? b
+               : String(b.name ?? b.NAME ?? '');
+
+         return aName.localeCompare(bName);
+      })
+      .forEach(giftShop => {
+         const name =
+            typeof giftShop === 'string'
+               ? giftShop
+               : giftShop.name ?? giftShop.NAME ?? '';
+
+         if(!name) return;
+
+         const option = document.createElement('option');
+         option.value = name;
+         option.textContent = name;
+         selectEl.appendChild(option);
+      });
+}
+
+export function populateAttractionDropdown(selectEl, attractions) {
+   if(!selectEl) return;
+
+   selectEl.innerHTML = '';
+
+   const placeholder = document.createElement('option');
+   placeholder.value = '';
+   placeholder.textContent = 'Select an attraction';
+   selectEl.appendChild(placeholder);
+
+   attractions
+      .slice()
+      .sort((a, b) => {
+         const aName =
+            typeof a === 'string'
+               ? a
+               : String(a.name ?? a.NAME ?? '');
+
+         const bName =
+            typeof b === 'string'
+               ? b
+               : String(b.name ?? b.NAME ?? '');
+
+         return aName.localeCompare(bName);
+      })
+      .forEach(attraction => {
+         const name =
+            typeof attraction === 'string'
+               ? attraction
+               : attraction.name ?? attraction.NAME ?? '';
 
          if(!name) return;
 
@@ -190,33 +231,6 @@ export async function loadExhibits() {
    return cachedExhibits;
 }
 
-export async function loadAttractions() {
-   if(cachedAttractions) {
-      return cachedAttractions;
-   }
-
-   const result = await postJson('/get-attraction-names', {});
-   const attractions = result?.attractions ?? [];
-
-   cachedAttractions = attractions
-      .slice()
-      .sort((a, b) => {
-         const aName =
-            typeof a === 'string'
-               ? a
-               : String(a.name ?? a.NAME ?? '');
-
-         const bName =
-            typeof b === 'string'
-               ? b
-               : String(b.name ?? b.NAME ?? '');
-
-         return aName.localeCompare(bName);
-      });
-
-   return cachedAttractions;
-}
-
 export async function loadRestaurants() {
    if(cachedRestaurants) {
       return cachedRestaurants;
@@ -242,4 +256,58 @@ export async function loadRestaurants() {
       });
 
    return cachedRestaurants;
+}
+
+export async function loadGiftShops() {
+   if(cachedGiftShops) {
+      return cachedGiftShops;
+   }
+
+   const result = await postJson('/get-gift-shop-names', {});
+   const giftShops = result?.gift_shops ?? [];
+
+   cachedGiftShops = giftShops
+      .slice()
+      .sort((a, b) => {
+         const aName =
+            typeof a === 'string'
+               ? a
+               : String(a.name ?? a.NAME ?? '');
+
+         const bName =
+            typeof b === 'string'
+               ? b
+               : String(b.name ?? b.NAME ?? '');
+
+         return aName.localeCompare(bName);
+      });
+
+   return cachedGiftShops;
+}
+
+export async function loadAttractions() {
+   if(cachedAttractions) {
+      return cachedAttractions;
+   }
+
+   const result = await postJson('/get-attraction-names', {});
+   const attractions = result?.attractions ?? [];
+
+   cachedAttractions = attractions
+      .slice()
+      .sort((a, b) => {
+         const aName =
+            typeof a === 'string'
+               ? a
+               : String(a.name ?? a.NAME ?? '');
+
+         const bName =
+            typeof b === 'string'
+               ? b
+               : String(b.name ?? b.NAME ?? '');
+
+         return aName.localeCompare(bName);
+      });
+
+   return cachedAttractions;
 }

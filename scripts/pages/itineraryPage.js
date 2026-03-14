@@ -10,6 +10,7 @@ import { createTooltipController } from '../tooltips/tooltipController.js';
 import { createFocusController } from '../focus/focusController.js';
 import { createOffDisplayBanner } from '../ui/offDisplayBanner.js';
 import { createRestaurantClosedBanner } from '../ui/restaurantClosedBanner.js';
+import { createGiftShopClosedBanner } from '../ui/giftShopClosedBanner.js';
 import { createAttractionClosedBanner } from '../ui/attractionClosedBanner.js';
 import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
 import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
@@ -52,6 +53,7 @@ export function initItineraryPage() {
 
    const offDisplay = createOffDisplayBanner();
    const restaurantClosed = createRestaurantClosedBanner();
+   const giftShopClosed = createGiftShopClosedBanner();
    const attractionClosed = createAttractionClosedBanner();
    const speciesOverlay = initSpeciesOverlay();
 
@@ -63,6 +65,7 @@ export function initItineraryPage() {
       },
       offDisplayBanner: offDisplay,
       restaurantClosedBanner: restaurantClosed,
+      giftShopClosedBanner: giftShopClosed,
       attractionClosedBanner: attractionClosed,
    });
 
@@ -93,7 +96,7 @@ export function initItineraryPage() {
       focus,
       getIncludeOffDisplay: () => false,
       getIncludeClosedRestaurants: () => false,
-      getIncludeSeasonalGiftShops: () => false,
+      getIncludeClosedGiftShops: () => false,
       getIncludeClosedAttractions: () => false,
       getZoomobileRouteType: () => 'none',
       getSelectedTypes: () => [],

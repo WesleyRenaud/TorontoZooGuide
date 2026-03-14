@@ -101,7 +101,12 @@ export function applyMarkerVisual( markerEl, itemsAtPoint ) {
 
    if ( type === 'giftShop' ) {
       markerEl.classList.add( 'marker-gift-shop' );
-      applyGenericIcon( markerEl, '/images/generic-icons/gift-shop.png', count );
+
+      const giftShop = items[0];
+      const state = giftShop.is_closed ? 'closed' : 'open';
+      const iconPath = `/images/generic-icons/gift-shop-${state}.png`;
+
+      applyGenericIcon( markerEl, iconPath, count );
       return;
    }
 

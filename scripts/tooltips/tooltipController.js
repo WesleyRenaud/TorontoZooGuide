@@ -2,8 +2,15 @@ import { getRendererForItem } from './tooltipRenderers.js';
 import { positionTooltip } from '../utils/dom.js';
 import { setMarkerToAnimalIcon, applyMarkerVisual } from '../markers/markerVisuals.js';
 
-export function createTooltipController({ tooltipEl, onAnimalCardClick, offDisplayBanner, restaurantClosedBanner, attractionClosedBanner }) {
-   let openMarker = null;
+export function createTooltipController({
+   tooltipEl,
+   onAnimalCardClick,
+   offDisplayBanner,
+   restaurantClosedBanner,
+   giftShopClosedBanner,
+   attractionClosedBanner }) {
+   
+      let openMarker = null;
    let itemsForOpen = [];
    let carouselEl = null;
    let listenersInstalled = false;
@@ -65,6 +72,7 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
 
       offDisplayBanner?.hide?.();
       restaurantClosedBanner?.hide?.();
+      giftShopClosedBanner?.hide?.();
       attractionClosedBanner?.hide?.();
 
       if (openMarker) {
@@ -178,6 +186,7 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
       if (type === 'animal') {
          offDisplayBanner?.sync?.(item);
          restaurantClosedBanner?.hide?.();
+         giftShopClosedBanner?.hide?.();
          attractionClosedBanner?.hide?.();
          return;
       }
@@ -185,6 +194,15 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
       if (type === 'restaurant') {
          restaurantClosedBanner?.sync?.(item);
          offDisplayBanner?.hide?.();
+         giftShopClosedBanner?.hide?.();
+         attractionClosedBanner?.hide?.();
+         return;
+      }
+
+      if (type === 'giftShop') {
+         giftShopClosedBanner?.sync?.(item);
+         offDisplayBanner?.hide?.();
+         restaurantClosedBanner?.hide?.();
          attractionClosedBanner?.hide?.();
          return;
       }
@@ -193,11 +211,13 @@ export function createTooltipController({ tooltipEl, onAnimalCardClick, offDispl
          attractionClosedBanner?.sync?.(item);
          offDisplayBanner?.hide?.();
          restaurantClosedBanner?.hide?.();
+         giftShopClosedBanner?.hide?.();
          return;
       }
 
       offDisplayBanner?.hide?.();
       restaurantClosedBanner?.hide?.();
+      giftShopClosedBanner?.hide?.();
       attractionClosedBanner?.hide?.();
    }
 
