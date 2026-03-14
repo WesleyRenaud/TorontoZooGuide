@@ -46,19 +46,27 @@ export function createAttractionOpeningScheduleController({
       if (holidaysOnlyEl) holidaysOnlyEl.checked = false;
    }
 
+   function enableDayCheckboxes() {
+      const dayCheckboxes = getDayCheckboxes();
+
+      dayCheckboxes.forEach(checkbox => {
+         if (checkbox) checkbox.disabled = false;
+      });
+
+      if (holidaysOnlyEl) holidaysOnlyEl.disabled = false;
+   }
+
    function applyPreset() {
       const preset = presetEl?.value ?? 'custom';
 
       resetDays();
+      enableDayCheckboxes();
 
-      const dayCheckboxes = getDayCheckboxes();
-
-      if (preset === 'weekendsAndHolidays') {
+      if (preset === 'weekendsOnly') {
          if (saturdayEl) saturdayEl.checked = true;
          if (sundayEl) sundayEl.checked = true;
-         if (holidaysOnlyEl) holidaysOnlyEl.checked = true;
 
-         dayCheckboxes.forEach(checkbox => {
+         getDayCheckboxes().forEach(checkbox => {
             if (checkbox) checkbox.disabled = true;
          });
 
@@ -66,11 +74,17 @@ export function createAttractionOpeningScheduleController({
          return;
       }
 
-      dayCheckboxes.forEach(checkbox => {
-         if (checkbox) checkbox.disabled = false;
-      });
+      if (preset === 'weekendsAndHolidays') {
+         if (saturdayEl) saturdayEl.checked = true;
+         if (sundayEl) sundayEl.checked = true;
+         if (holidaysOnlyEl) holidaysOnlyEl.checked = true;
 
-      if (holidaysOnlyEl) holidaysOnlyEl.disabled = false;
+         getDayCheckboxes().forEach(checkbox => {
+            if (checkbox) checkbox.disabled = true;
+         });
+
+         if (holidaysOnlyEl) holidaysOnlyEl.disabled = true;
+      }
    }
 
    function resetForm() {

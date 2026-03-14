@@ -27,10 +27,23 @@ export function createRemoveAttractionOpeningSchedulePanelHtml() {
                >
                   <option value="">Select an attraction</option>
                </select>
+            </div>
 
-               <div class="console-operations-help">
-                  This will remove the recurring opening schedule for the selected attraction.
-               </div>
+            <div class="console-operations-field">
+               <label
+                  class="console-operations-label"
+                  for="removeAttractionOpeningScheduleStartDate"
+               >
+                  Schedule start date
+               </label>
+
+               <input
+                  id="removeAttractionOpeningScheduleStartDate"
+                  type="text"
+                  class="console-operations-input console-operations-datetime"
+                  placeholder="Select the schedule start date"
+                  autocomplete="off"
+               >
             </div>
 
             <div class="console-operations-actions">
@@ -39,7 +52,7 @@ export function createRemoveAttractionOpeningSchedulePanelHtml() {
                   type="button"
                   class="console-operations-primary-btn"
                >
-                  Remove schedule
+                  Remove
                </button>
             </div>
 

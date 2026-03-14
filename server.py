@@ -69,9 +69,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_off_display_animals = data.get( 'includeOffDisplayAnimals' )
          species_to_include = data.get( 'speciesToInclude' )
 
-         animals = self.database.get_animals_viewable_on_day( month=month, day=day, temp=temp,
-                                                              include_off_display_animals=include_off_display_animals,
-                                                              species_to_include=species_to_include )
+         animals = self.database.get_animals_viewable_on_day(
+            month=month,
+            day=day,
+            temp=temp,
+            include_off_display_animals=include_off_display_animals,
+            species_to_include=species_to_include )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -87,7 +90,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          region = data.get( 'region' )
 
-         exhibits = self.database.get_exhibits_in_region( region )
+         exhibits = self.database.get_exhibits_in_region( region=region )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -103,7 +106,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          exhibit = data.get( 'exhibit' )
 
-         animals = self.database.get_animals_in_exhibit( exhibit )
+         animals = self.database.get_animals_in_exhibit( exhibit=exhibit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -119,7 +122,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          species = data.get( 'species' )
 
-         animal_info = self.database.get_animal_information( species )
+         animal_info = self.database.get_animal_information( species=species )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -148,10 +151,15 @@ class MyHandler( BaseHTTPRequestHandler ):
          data = json.loads( post_data.decode( 'utf-8' ) )
 
          month = data.get( 'month' )
-         include_seasonal_restaurants = data.get( 'includeSeasonalRestaurants' )
+         day = data.get( 'day' )
+         include_closed_restaurants = data.get( 'includeClosedRestaurants' )
          restaurants_to_include = data.get( 'restaurantsToInclude' )
 
-         restaurants = self.database.get_restaurants( month, include_seasonal_restaurants, restaurants_to_include )
+         restaurants = self.database.get_restaurants(
+            month=month,
+            day=day,
+            include_closed_restaurants=include_closed_restaurants,
+            restaurants_to_include=restaurants_to_include )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -183,7 +191,10 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_seasonal_gift_shops = data.get( 'includeSeasonalGiftShops' )
          gift_shops_to_include = data.get( 'giftShopsToInclude' )
 
-         gift_shops = self.database.get_gift_shops( month, include_seasonal_gift_shops, gift_shops_to_include )
+         gift_shops = self.database.get_gift_shops(
+            month=month,
+            include_seasonal_gift_shops=include_seasonal_gift_shops,
+            gift_shops_to_include=gift_shops_to_include )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -206,8 +217,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             month=month,
             day=day,
             include_closed_attractions=include_closed_attractions,
-            attractions_to_include=attractions_to_include
-         )
+            attractions_to_include=attractions_to_include )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -224,7 +234,9 @@ class MyHandler( BaseHTTPRequestHandler ):
          route_type = data.get( 'zoomobileRouteType' )
          zoomobile_stations_to_include = data.get( 'zoomobileStationsToInclude' )
 
-         zoomobile_route = self.database.get_zoomobile_route( route_type, zoomobile_stations_to_include )
+         zoomobile_route = self.database.get_zoomobile_route(
+            route_type=route_type,
+            zoomobile_stations_to_include=zoomobile_stations_to_include )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -287,6 +299,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day_of_week = data.get( 'dayOfWeek' )
 
          include_off_display_animals = bool( data.get( 'includeOffDisplayAnimals' ) )
+         include_closed_restaurants = bool( data.get( 'includeClosedRestaurants' ) )
          include_closed_attractions = bool( data.get( 'includeClosedAttractions' ) )
 
          animals_json = []
@@ -301,70 +314,85 @@ class MyHandler( BaseHTTPRequestHandler ):
          meet_the_guardians_talks_json = []
 
          if include_animals:
-            animals = self.database.get_animals_matching_query( query, month, day, temp, include_off_display_animals ) or []
+            animals = self.database.get_animals_matching_query(
+               query=query,
+               month=month,
+               day=day,
+               temp=temp,
+               include_off_display_animals=include_off_display_animals ) or []
             for animal in animals:
                   d = animal.to_dict()
                   d['type'] = d.get( 'type', 'animal' )
                   animals_json.append( d )
 
          if include_pavilions:
-            pavilions = self.database.get_pavilions_matching_query( query ) or []
+            pavilions = self.database.get_pavilions_matching_query( query=query ) or []
             for pavilion in pavilions:
                   d = pavilion.to_dict()
                   d['type'] = d.get( 'type', 'pavilion' )
                   pavilions_json.append( d )
 
          if include_restaurants:
-            restaurants = self.database.get_restaurants_matching_query( query, month ) or []
+            restaurants = self.database.get_restaurants_matching_query(
+               query=query,
+               month=month,
+               day=day,
+               include_closed_restaurants=include_closed_restaurants ) or []
             for restaurant in restaurants:
                   d = restaurant.to_dict()
                   d['type'] = d.get( 'type', 'restaurant' )
                   restaurants_json.append( d )
 
          if include_restrooms:
-            restrooms = self.database.get_restrooms_matching_query( query ) or []
+            restrooms = self.database.get_restrooms_matching_query( query=query ) or []
             for restroom in restrooms:
                   d = restroom.to_dict()
                   d['type'] = d.get( 'type', 'restroom' )
                   restrooms_json.append( d )
 
          if include_gift_shops:
-            gift_shops = self.database.get_gift_shops_matching_query( query, month ) or []
+            gift_shops = self.database.get_gift_shops_matching_query( query=query, month=month ) or []
             for gift_shop in gift_shops:
                   d = gift_shop.to_dict()
                   d['type'] = d.get( 'type', 'giftShop' )
                   gift_shops_json.append( d )
 
          if include_attractions:
-            attractions = self.database.get_attractions_matching_query( query, month, include_closed_attractions ) or []
+            attractions = self.database.get_attractions_matching_query(
+               query=query,
+               month=month,
+               day=day,
+               include_closed_attractions=include_closed_attractions ) or []
             for attraction in attractions:
                   d = attraction.to_dict()
                   d['type'] = d.get( 'type', 'attraction' )
                   attractions_json.append( d )
 
          if include_zoomobile_stations:
-            zoomobile_stations = self.database.get_zoomobile_stations_matching_query( query ) or []
+            zoomobile_stations = self.database.get_zoomobile_stations_matching_query( query=query ) or []
             for zoomobile_station in zoomobile_stations:
                   d = zoomobile_station.to_dict()
                   d['type'] = d.get( 'type', 'zoomobileStation' )
                   zoomobile_stations_json.append( d )
 
          if include_wild_encounter_meeting_spots:
-            wild_encounter_meeting_spots = self.database.get_wild_encounter_meeting_spots_matching_query( query ) or []
+            wild_encounter_meeting_spots = self.database.get_wild_encounter_meeting_spots_matching_query( query=query ) or []
             for wild_encounter_meeting_spot in wild_encounter_meeting_spots:
                   d = wild_encounter_meeting_spot.to_dict()
                   d['type'] = d.get( 'type', 'wildEncounterMeetingSpot' )
                   wild_encounter_meeting_spots_json.append( d )
 
          if include_meet_the_guardians_talks:
-            meet_the_guardians_talks = self.database.get_meet_the_guardians_talks_with_date_times_matching_query( query, day_of_week ) or []
+            meet_the_guardians_talks = self.database.get_meet_the_guardians_talks_with_date_times_matching_query(
+               query=query,
+               day_of_week=day_of_week ) or []
             for meet_the_guardians_talk in meet_the_guardians_talks:
                   d = meet_the_guardians_talk.to_dict()
                   d['type'] = d.get( 'type', 'meetTheGuardiansTalk' )
                   meet_the_guardians_talks_json.append( d )
 
          if include_wild_encounters:
-            wild_encounters = self.database.get_wild_encounters_matching_query( query, day_of_week ) or []
+            wild_encounters = self.database.get_wild_encounters_matching_query( query=query, day_of_week=day_of_week ) or []
             for wild_encounter in wild_encounters:
                   d = wild_encounter.to_dict()
                   d['type'] = d.get( 'type', 'wildEncounter' )
@@ -408,36 +436,36 @@ class MyHandler( BaseHTTPRequestHandler ):
          wild_encounters_json = []
 
          if animals_to_include:
-            animals = self.database.get_animals_viewable_on_day( month=month,
-                                                                 day=day,
-                                                                 temp=temp,
-                                                                 species_to_include=animals_to_include,
-                                                                 itinerary_mode=True )
+            animals = self.database.get_animals_viewable_on_day(
+               month=month,
+               day=day,
+               temp=temp,
+               species_to_include=animals_to_include,
+               itinerary_mode=True )
             for animal in animals:
                d = animal.to_dict()
                d['type'] = d.get( 'type', 'animal' )
                animals_json.append( d )
 
          if attractions_to_include:
-            attractions = self.database.get_attractions( month=month,
-                                                         attractions_to_include=attractions_to_include,
-                                                         itinerary_mode=True )
+            attractions = self.database.get_attractions( month=month, attractions_to_include=attractions_to_include, itinerary_mode=True )
             for attraction in attractions:
                   d = attraction.to_dict()
                   d['type'] = d.get( 'type', 'attraction' )
                   attractions_json.append( d )
                
          if meet_the_guardians_talks_to_include:
-            meet_the_guardians_talks = self.database.get_meet_the_guardians_talks_with_date_times( meet_the_guardians_talks_to_include=
-                                                                                                   meet_the_guardians_talks_to_include,
-                                                                                                   itinerary_mode=True )
+            meet_the_guardians_talks = self.database.get_meet_the_guardians_talks_with_date_times(
+               meet_the_guardians_talks_to_include=meet_the_guardians_talks_to_include,
+               itinerary_mode=True )
             for meet_the_guardians_talk in meet_the_guardians_talks:
                   d = meet_the_guardians_talk.to_dict()
                   d['type'] = d.get( 'type', 'meetTheGuardiansTalk' )
                   meet_the_guardians_talks_json.append( d )
 
          if wild_encounters_to_include:
-            wild_encounters = self.database.get_wild_encounter_meeting_spots_for_wild_encounters( wild_encounters_to_include=wild_encounters_to_include )
+            wild_encounters = self.database.get_wild_encounter_meeting_spots_for_wild_encounters(
+               wild_encounters_to_include=wild_encounters_to_include )
             for wild_encounter in wild_encounters:
                   d = wild_encounter.to_dict()
                   d['type'] = d.get( 'type', 'wildEncounter' )
@@ -469,7 +497,21 @@ class MyHandler( BaseHTTPRequestHandler ):
          response = {"species": species}
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
-      
+
+      if self.path == '/get-restaurant-names':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restaurants = self.database.get_restaurant_names()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"restaurants": restaurants}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )   
+
+
       if self.path == '/get-attraction-names':
          content_length = int( self.headers['Content-Length'] )
          post_data = self.rfile.read( content_length )
@@ -509,7 +551,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_animal_as_off_display( species, exhibit, start_date, end_date, message )
+         success = self.database.set_animal_as_off_display(
+            species=species,
+            exhibit=exhibit,
+            start_date=start_date,
+            end_date=end_date,
+            message=message )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -538,7 +585,9 @@ class MyHandler( BaseHTTPRequestHandler ):
          species = data.get( 'species' )
          exhibit = data.get( 'exhibit' )
 
-         success = self.database.set_animal_as_on_display( species, exhibit )
+         success = self.database.set_animal_as_on_display(
+            species=species,
+            exhibit=exhibit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -569,8 +618,14 @@ class MyHandler( BaseHTTPRequestHandler ):
          daily_end_time = data.get( 'dailyEndTime' )
          message = data.get( 'message' )
 
-         success = self.database.set_animal_limited_viewing_schedule( species, exhibit, schedule_start_date, schedule_end_date,
-                                                                      daily_start_time, daily_end_time, message )
+         success = self.database.set_animal_limited_viewing_schedule(
+            species=species,
+            exhibit=exhibit,
+            schedule_start_date=schedule_start_date,
+            schedule_end_date=schedule_end_date,
+            daily_start_time=daily_start_time,
+            daily_end_time=daily_end_time,
+            message=message )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -601,7 +656,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          species = data.get( 'species' )
          exhibit = data.get( 'exhibit' )
 
-         success = self.database.remove_animal_visibility_schedule( species, exhibit )
+         success = self.database.remove_animal_visibility_schedule( species=species, exhibit=exhibit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -631,12 +686,11 @@ class MyHandler( BaseHTTPRequestHandler ):
          message = data.get( 'message' )
 
          success = self.database.set_animal_viewing_alert(
-            species,
-            exhibit,
-            alert_start_date,
-            alert_end_date,
-            message
-         )
+            species=species,
+            exhibit=exhibit,
+            alert_start_date=alert_start_date,
+            alert_end_date=alert_end_date,
+            message=message )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -665,7 +719,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          species = data.get( 'species' )
          exhibit = data.get( 'exhibit' )
 
-         success = self.database.remove_animal_viewing_alert( species, exhibit )
+         success = self.database.remove_animal_viewing_alert( species=species, exhibit=exhibit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -693,7 +747,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_exhibit_as_closed( exhibit, start_date, end_date, message )
+         success = self.database.set_exhibit_as_closed( exhibit=exhibit, start_date=start_date, end_date=end_date, message=message )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -720,7 +774,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          exhibit = data.get( 'exhibit' )
 
-         success = self.database.set_exhibit_as_open( exhibit )
+         success = self.database.set_exhibit_as_open( exhibit=exhibit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -737,6 +791,64 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/set-restaurant-closed':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restaurant = data.get( 'restaurant' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+         message = data.get( 'message' )
+
+         success = self.database.set_restaurant_as_closed(
+            restaurant=restaurant,
+            start_date=start_date,
+            end_date=end_date,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restaurant': restaurant,
+            'startDate': start_date,
+            'endDate': end_date,
+            'message': message
+         }
+
+         if not success:
+            response['error'] = f'Could not set "{restaurant}" as closed.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-restaurant-open':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restaurant = data.get( 'restaurant' )
+
+         success = self.database.set_restaurant_as_open( restaurant=restaurant )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restaurant': restaurant
+         }
+
+         if not success:
+            response['error'] = f'Could not set "{restaurant}" as open.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/set-attraction-closed':
          content_length = int( self.headers['Content-Length'] )
          post_data = self.rfile.read( content_length )
@@ -747,7 +859,11 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_attraction_as_closed( attraction, start_date, end_date, message )
+         success = self.database.set_attraction_as_closed(
+            attraction=attraction,
+            start_date=start_date,
+            end_date=end_date,
+            message=message )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -774,7 +890,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          attraction = data.get( 'attraction' )
 
-         success = self.database.set_attraction_as_open( attraction )
+         success = self.database.set_attraction_as_open( attraction=attraction )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -812,19 +928,18 @@ class MyHandler( BaseHTTPRequestHandler ):
          message = data.get( 'message' )
 
          success = self.database.set_attraction_opening_schedule(
-            attraction,
-            schedule_start_date,
-            schedule_end_date,
-            monday,
-            tuesday,
-            wednesday,
-            thursday,
-            friday,
-            saturday,
-            sunday,
-            holidays_only,
-            message
-         )
+            attraction=attraction,
+            schedule_start_date=schedule_start_date,
+            schedule_end_date=schedule_end_date,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            holidays_only=holidays_only,
+            message=message )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -859,7 +974,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          attraction = data.get( 'attraction' )
 
-         success = self.database.remove_attraction_opening_schedule( attraction )
+         success = self.database.remove_attraction_opening_schedule( attraction=attraction )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )

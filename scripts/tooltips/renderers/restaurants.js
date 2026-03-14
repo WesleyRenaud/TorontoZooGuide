@@ -25,7 +25,6 @@ export const restaurantRenderer = {
 
          <strong>${name}</strong>
          ${r.sub_location ? `<span>Location: ${r.sub_location}</span>` : r.location ? `<span>Location: ${r.location}</span>` : ''}
-         ${r.seasonal_schedule ? `<span>Seasonal Schedule: ${r.seasonal_schedule}</span>` : ''}
          ${r.description ? `<span>Description: ${r.description}</span>` : ''}       
          ${r.menu_link ? `<span>
                   <a 

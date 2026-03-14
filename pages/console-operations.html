@@ -40,7 +40,7 @@
 
                <div class="side-panel-body">
                   <p class="console-operations-side-panel-text">
-                     Choose an operation to update animal, exhibit, or attraction status.
+                     Choose an operation to update animal, exhibit, restaurant, or attraction status.
                   </p>
 
                   <section class="console-operations-menu">
@@ -142,11 +142,59 @@
 
                      <button
                         type="button"
+                        id="showRestaurantClosedForm"
+                        class="console-operations-menu-btn"
+                        data-panel-target="restaurantClosedPanel"
+                     >
+                        <span class="console-operations-menu-btn-number">9</span>
+                        <span class="console-operations-menu-btn-label">
+                           Set restaurant as closed
+                        </span>
+                     </button>
+
+                     <button
+                        type="button"
+                        id="showRestaurantOpenForm"
+                        class="console-operations-menu-btn"
+                        data-panel-target="restaurantOpenPanel"
+                     >
+                        <span class="console-operations-menu-btn-number">10</span>
+                        <span class="console-operations-menu-btn-label">
+                           Set restaurant as open
+                        </span>
+                     </button>
+
+                     <button
+                        type="button"
+                        id="showRestaurantOpeningScheduleForm"
+                        class="console-operations-menu-btn"
+                        data-panel-target="restaurantOpeningSchedulePanel"
+                     >
+                        <span class="console-operations-menu-btn-number">11</span>
+                        <span class="console-operations-menu-btn-label">
+                           Set restaurant opening schedule
+                        </span>
+                     </button>
+
+                     <button
+                        type="button"
+                        id="showRemoveRestaurantOpeningScheduleForm"
+                        class="console-operations-menu-btn"
+                        data-panel-target="removeRestaurantOpeningSchedulePanel"
+                     >
+                        <span class="console-operations-menu-btn-number">12</span>
+                        <span class="console-operations-menu-btn-label">
+                           Remove restaurant opening schedule
+                        </span>
+                     </button>
+
+                     <button
+                        type="button"
                         id="showAttractionClosedForm"
                         class="console-operations-menu-btn"
                         data-panel-target="attractionClosedPanel"
                      >
-                        <span class="console-operations-menu-btn-number">9</span>
+                        <span class="console-operations-menu-btn-number">13</span>
                         <span class="console-operations-menu-btn-label">
                            Set attraction as closed
                         </span>
@@ -158,7 +206,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="attractionOpenPanel"
                      >
-                        <span class="console-operations-menu-btn-number">10</span>
+                        <span class="console-operations-menu-btn-number">14</span>
                         <span class="console-operations-menu-btn-label">
                            Set attraction as open
                         </span>
@@ -170,7 +218,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="attractionOpeningSchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">11</span>
+                        <span class="console-operations-menu-btn-number">15</span>
                         <span class="console-operations-menu-btn-label">
                            Set attraction opening schedule
                         </span>
@@ -182,7 +230,7 @@
                         class="console-operations-menu-btn"
                         data-panel-target="removeAttractionOpeningSchedulePanel"
                      >
-                        <span class="console-operations-menu-btn-number">12</span>
+                        <span class="console-operations-menu-btn-number">16</span>
                         <span class="console-operations-menu-btn-label">
                            Remove attraction opening schedule
                         </span>

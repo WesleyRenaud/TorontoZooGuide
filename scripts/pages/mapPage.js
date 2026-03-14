@@ -25,7 +25,7 @@ export function initMapPage() {
    const mapDateInput = document.getElementById('mapDate');
    const showMapLabelsCheckbox = document.getElementById('showMapLabels');
    const includeOffDisplayCheckbox = document.getElementById('includeOffDisplayAnimals');
-   const includeSeasonalRestaurantsCheckbox = document.getElementById('includeSeasonalRestaurants');
+   const includeClosedRestaurantsCheckbox = document.getElementById('includeClosedRestaurants');
    const includeSeasonalGiftShopsCheckbox = document.getElementById('includeSeasonalGiftShops');
    const includeClosedAttractionsCheckbox = document.getElementById('includeClosedAttractions');
    const zoomobileRouteTypeRadios = document.querySelectorAll?.('input[name="zoomobileRoute"]');
@@ -85,7 +85,7 @@ export function initMapPage() {
       markers,
       focus,
       getIncludeOffDisplay: () => includeOffDisplayCheckbox?.checked ?? false,
-      getIncludeSeasonalRestaurants: () => includeSeasonalRestaurantsCheckbox?.checked ?? false,
+      getIncludeClosedRestaurants: () => includeClosedRestaurantsCheckbox?.checked ?? false,
       getIncludeSeasonalGiftShops: () => includeSeasonalGiftShopsCheckbox?.checked ?? false,
       getIncludeClosedAttractions: () => includeClosedAttractionsCheckbox?.checked ?? false,
       getZoomobileRouteType: () => Array.from(zoomobileRouteTypeRadios).find(r => r.checked)?.value ?? 'none',
@@ -132,7 +132,7 @@ export function initMapPage() {
       mapPreset,
       mapDateInput,
       includeOffDisplayCheckbox,
-      includeSeasonalRestaurantsCheckbox,
+      includeClosedRestaurantsCheckbox,
       includeSeasonalGiftShopsCheckbox,
       includeClosedAttractionsCheckbox,
       zoomobileRouteTypeRadios,

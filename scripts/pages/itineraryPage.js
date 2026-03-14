@@ -89,7 +89,7 @@ export function initItineraryPage() {
       markers,
       focus,
       getIncludeOffDisplay: () => false,
-      getIncludeSeasonalRestaurants: () => false,
+      getIncludeClosedRestaurants: () => false,
       getIncludeSeasonalGiftShops: () => false,
       getIncludeClosedAttractions: () => false,
       getZoomobileRouteType: () => 'none',

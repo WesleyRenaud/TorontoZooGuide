@@ -84,7 +84,12 @@ export function applyMarkerVisual( markerEl, itemsAtPoint ) {
 
    if ( type === 'restaurant' ) {
       markerEl.classList.add( 'marker-restaurant' );
-      applyGenericIcon( markerEl, '/images/generic-icons/restaurant.png', count );
+
+      const restaurant = items[0];
+      const state = restaurant.is_closed ? 'closed' : 'open';
+      const iconPath = `/images/generic-icons/restaurant-${state}.png`;
+
+      applyGenericIcon( markerEl, iconPath, count );
       return;
    }
 
@@ -100,16 +105,16 @@ export function applyMarkerVisual( markerEl, itemsAtPoint ) {
       return;
    }
 
-   if (type === 'attraction') {
-      markerEl.classList.add('marker-attraction');
+   if ( type === 'attraction' ) {
+      markerEl.classList.add( 'marker-attraction' );
 
       const attraction = items[0];
-      const slug = normalizeParameter(attraction.name);
+      const slug = normalizeParameter( attraction.name );
 
       const state = attraction.is_closed ? 'closed' : 'open';
       const iconPath = `/images/attraction-icons/${slug}-${state}.png`;
 
-      applyGenericIcon(markerEl, iconPath, count);
+      applyGenericIcon( markerEl, iconPath, count );
       return;
    }
 

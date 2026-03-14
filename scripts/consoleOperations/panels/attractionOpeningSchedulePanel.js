@@ -42,6 +42,7 @@ export function createAttractionOpeningSchedulePanelHtml() {
                   class="console-operations-input console-operations-select"
                >
                   <option value="custom">Custom</option>
+                  <option value="weekendsOnly">Weekends only</option>
                   <option value="weekendsAndHolidays">Weekends + holidays only</option>
                </select>
             </div>

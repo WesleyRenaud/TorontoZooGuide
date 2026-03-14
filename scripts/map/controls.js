@@ -5,7 +5,7 @@ export function initMapControls
       mapPreset,
       mapDateInput,
       includeOffDisplayCheckbox,
-      includeSeasonalRestaurantsCheckbox,
+      includeClosedRestaurantsCheckbox,
       includeSeasonalGiftShopsCheckbox,
       includeClosedAttractionsCheckbox,
       zoomobileRouteTypeRadios,
@@ -71,8 +71,8 @@ export function initMapControls
       });
    }
 
-   if (includeSeasonalRestaurantsCheckbox) {
-      includeSeasonalRestaurantsCheckbox.addEventListener('change', () => {
+   if (includeClosedRestaurantsCheckbox) {
+      includeClosedRestaurantsCheckbox.addEventListener('change', () => {
          refetch();
       });
    }

@@ -13,19 +13,26 @@ class Database():
 
 
    # Returns all animals which may be viewable in the given month with their likelihoods (probability from 0 to 1)
-   def get_animals_viewable_on_day( self, month, day, temp=None, include_off_display_animals=False, threshold=0, species_to_include=[],
-                                    itinerary_mode=False ):
+   def get_animals_viewable_on_day(
+         self,
+         month,
+         day,
+         temp=None,
+         include_off_display_animals=False,
+         threshold=0,
+         species_to_include=[],
+         itinerary_mode=False ):
       cur = self.conn.cursor()
 
       if temp is None:
-         temp = self.zoo_util.get_average_temperature( month, day )
+         temp = self.zoo_util.get_average_temperature( month=month, day=day )
          sigma = 3
       else:
          sigma = 2
 
-      snow_likelihood = self.zoo_util.get_snow_likelihood( month, day )
+      snow_likelihood = self.zoo_util.get_snow_likelihood( month=month, day=day )
 
-      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), int( day ) )
+      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month=month ), int( day ) )
 
       data = cur.execute(
          """   SELECT
@@ -98,37 +105,40 @@ class Database():
          enclosure_type = animal['ENCLOSURE_TYPE']
          seasonally_off_display_message = animal['SEASONALLY_OFF_DISPLAY_MESSAGE']
 
-         is_off_display, off_display_message = self.get_active_off_display_status( animal, target_date )
+         is_off_display, off_display_message = self.get_active_off_display_status( animal=animal, target_date=target_date )
 
-         has_limited_viewing_schedule, limited_viewing_message = self.get_active_limited_viewing_status( animal, target_date )
+         has_limited_viewing_schedule, limited_viewing_message = self.get_active_limited_viewing_status(
+            animal=animal,
+            target_date=target_date )
 
-         has_viewing_alert, viewing_alert_message = self.get_active_viewing_alert_status( animal, target_date )
+         has_viewing_alert, viewing_alert_message = self.get_active_viewing_alert_status(
+            animal=animal,
+            target_date=target_date )
 
-         is_exhibit_closed, exhibit_closed_message = self.get_active_exhibit_closed_status( animal, target_date )
+         is_exhibit_closed, exhibit_closed_message = self.get_active_exhibit_closed_status( animal=animal, target_date=target_date )
 
          if is_off_display or is_exhibit_closed:
             likelihood = 0
          else:
             likelihood = self.calculate_animal_likelihood(
-               month,
-               day,
-               temp,
-               sigma,
-               snow_likelihood,
-               min_temperature,
-               snow_resistance,
-               enclosure_type,
-               part_of_seasonal_exhibit,
-               exhibit
-            )
+               month=month,
+               day=day,
+               temp=temp,
+               sigma=sigma,
+               snow_likelihood=snow_likelihood,
+               min_temperature=min_temperature,
+               snow_resistance=snow_resistance,
+               enclosure_type=enclosure_type,
+               part_of_seasonal_exhibit=part_of_seasonal_exhibit,
+               exhibit=exhibit )
 
          should_include = False
 
          if not itinerary_mode:
 
             should_include = (
-               ( likelihood > threshold )
-               or ( include_off_display_animals and likelihood == 0 )
+               (likelihood > threshold)
+               or (include_off_display_animals and likelihood == 0)
                or species in species_to_include
             )
 
@@ -172,9 +182,7 @@ class Database():
                   has_limited_viewing_schedule=has_limited_viewing_schedule,
                   limited_viewing_message=limited_viewing_message,
                   has_viewing_alert=has_viewing_alert,
-                  viewing_alert_message=viewing_alert_message
-               )
-            )
+                  viewing_alert_message=viewing_alert_message ) )
             
       cur.close()
 
@@ -191,7 +199,10 @@ class Database():
       off_display_start = animal['OFF_DISPLAY_START']
       off_display_end = animal['OFF_DISPLAY_END']
 
-      is_off_display = self.is_date_in_range( target_date, off_display_start, off_display_end )
+      is_off_display = self.is_date_in_range(
+         target_date=target_date,
+         start_date_value=off_display_start,
+         end_date_value=off_display_end )
 
       if is_off_display:
          return True, off_display_message
@@ -209,7 +220,7 @@ class Database():
       if daily_start_time == None or daily_end_time == None:
          return False, None
 
-      is_active = self.is_date_in_range( target_date, schedule_start_date, schedule_end_date )
+      is_active = self.is_date_in_range( target_date=target_date, start_date_value=schedule_start_date, end_date_value=schedule_end_date )
 
       if is_active:
          return True, viewing_message
@@ -225,7 +236,7 @@ class Database():
       if alert_message == None:
          return False, None
 
-      is_active = self.is_date_in_range( target_date, alert_start_date, alert_end_date )
+      is_active = self.is_date_in_range( target_date=target_date, start_date_value=alert_start_date, end_date_value=alert_end_date )
 
       if is_active:
          return True, alert_message
@@ -243,7 +254,7 @@ class Database():
       closed_start = animal['CLOSED_START']
       closed_end = animal['CLOSED_END']
 
-      is_closed = self.is_date_in_range( target_date, closed_start, closed_end )
+      is_closed = self.is_date_in_range( target_date=target_date, start_date_value=closed_start, end_date_value=closed_end )
 
       if is_closed:
          return True, closed_message
@@ -251,21 +262,31 @@ class Database():
       return False, None
 
 
-   def calculate_animal_likelihood( self, month, day, temp, sigma, snow_likelihood, min_temperature, snow_resistance,
-                                    enclosure_type, part_of_seasonal_exhibit, exhibit ):
+   def calculate_animal_likelihood(
+         self,
+         month,
+         day,
+         temp,
+         sigma,
+         snow_likelihood,
+         min_temperature,
+         snow_resistance,
+         enclosure_type,
+         part_of_seasonal_exhibit,
+         exhibit ):
       if enclosure_type == 'Outdoor':
 
-         avg_temp = self.zoo_util.get_average_temperature( month, day )
+         avg_temp = self.zoo_util.get_average_temperature( month=month, day=day )
          effective_temp = avg_temp + 0.5 * (temp - avg_temp)
 
-         likelihood = self.zoo_util.get_temperature_probability( effective_temp, sigma, min_temperature )
+         likelihood = self.zoo_util.get_temperature_probability( mu=effective_temp, sigma=sigma, min_temperature=min_temperature )
          likelihood = likelihood - (1.0 - snow_resistance) * snow_likelihood
 
       else:
          likelihood = 1
 
       if part_of_seasonal_exhibit:
-         likelihood = likelihood * self.get_exhibit_likelihood( exhibit, month, day )
+         likelihood = likelihood * self.get_exhibit_likelihood( exhibit=exhibit, month=month, day=day )
 
       return max( round( likelihood * 100 ), 0 )
 
@@ -275,11 +296,11 @@ class Database():
       end_ok = True
 
       if start_date_value != None:
-         start_date = self.parse_date_value( start_date_value )
+         start_date = self.parse_date_value( value=start_date_value )
          start_ok = target_date >= start_date
 
       if end_date_value != None:
-         end_date = self.parse_date_value( end_date_value )
+         end_date = self.parse_date_value( value=end_date_value )
          end_ok = target_date <= end_date
 
       return start_ok and end_ok
@@ -331,12 +352,12 @@ class Database():
 
 
    def get_exhibit_likelihood( self, exhibit, month, day ):
-      next_month = self.zoo_util.get_next_month( month )
+      next_month = self.zoo_util.get_next_month( month=month )
 
-      month_likelihood = self.get_exhibit_month_likelihood( exhibit, month )
-      next_month_likelihood = self.get_exhibit_month_likelihood( exhibit, next_month )
+      month_likelihood = self.get_exhibit_month_likelihood( exhibit=exhibit, month=month )
+      next_month_likelihood = self.get_exhibit_month_likelihood( exhibit=exhibit, month=next_month )
 
-      days_in_month = self.zoo_util.get_number_of_days_in_month( month )
+      days_in_month = self.zoo_util.get_number_of_days_in_month( month=month )
       
       return month_likelihood + (next_month_likelihood - month_likelihood) / (days_in_month - 1) * (day - 1)
       
@@ -415,8 +436,7 @@ class Database():
                   ON a.SPECIES = e.SPECIES
                WHERE a.SPECIES = ?;
          """,
-         ( species, )
-      )
+         ( species, ) )
 
       animal = data.fetchone()
 
@@ -437,8 +457,7 @@ class Database():
          animals_at_the_zoo = animal['ANIMALS_AT_THE_ZOO'],
          exhibit = animal['EXHIBIT'],
          seasonal_viewing_summary = animal['SEASONAL_VIEWING_SUMMARY'],
-         seasonal_viewing_information = animal['SEASONAL_VIEWING_INFORMATION']
-      )
+         seasonal_viewing_information = animal['SEASONAL_VIEWING_INFORMATION'] )
 
       cur.close()
 
@@ -469,55 +488,73 @@ class Database():
                region=pavilion['REGION'],
                description=pavilion['DESCRIPTION'],
                x_coord=pavilion['X_COORD'],
-               y_coord=pavilion['Y_COORD']
-            )
-         )
+               y_coord=pavilion['Y_COORD'] ) )
 
       cur.close()
 
       return pavilions
    
 
-   def get_restaurants( self, month, include_seasonal_restaurants, restaurants_to_include=[] ):
+   def get_restaurants( self, month, day, include_closed_restaurants, restaurants_to_include=[] ):
       cur = self.conn.cursor()
 
-      is_peak_season_month = self.zoo_util.is_peak_season_month( month )
+      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), int( day ) )
 
       data = cur.execute(
          """   SELECT
                   r.NAME,
                   r.LOCATION,
                   r.SUB_LOCATION,
-                  r.SEASONAL_SCHEDULE,
-                  r.OPEN_SEASONALLY,
                   r.DESCRIPTION,
                   r.MENU_LINK,
                   r.X_COORD,
-                  r.Y_COORD
-               FROM Restaurant r;
+                  r.Y_COORD,
+                  s.IS_CLOSED,
+                  s.CLOSED_MESSAGE,
+                  s.CLOSED_START,
+                  s.CLOSED_END
+               FROM Restaurant r
+               LEFT JOIN RestaurantStatus s
+                  ON r.NAME = s.RESTAURANT;
          """ )
-      
+
       restaurant_data = data.fetchall()
 
       restaurants = []
 
       for restaurant in restaurant_data:
-         name = restaurant['NAME']
-         open_seasonally = restaurant['OPEN_SEASONALLY']
+         name = restaurant[ 'NAME' ]
 
-         if is_peak_season_month or include_seasonal_restaurants or not open_seasonally or name in restaurants_to_include:
+         stored_is_closed = bool( restaurant['IS_CLOSED'] ) if restaurant['IS_CLOSED'] != None else False
+
+         is_closed = False
+
+         if stored_is_closed:
+            start_ok = True
+            end_ok = True
+
+            if restaurant['CLOSED_START'] != None:
+               start_date = self.parse_date_value( value=restaurant['CLOSED_START'] )
+               start_ok = target_date >= start_date
+
+            if restaurant['CLOSED_END'] != None:
+               end_date = self.parse_date_value( value=restaurant['CLOSED_END'] )
+               end_ok = target_date <= end_date
+
+            is_closed = start_ok and end_ok
+
+         if include_closed_restaurants or not is_closed or name in restaurants_to_include:
             restaurants.append(
                zoo.Restaurant(
                   name=name,
                   location=restaurant['LOCATION'],
                   sub_location=restaurant['SUB_LOCATION'],
-                  seasonal_schedule=restaurant['SEASONAL_SCHEDULE'],
                   description=restaurant['DESCRIPTION'],
                   menu_link=restaurant['MENU_LINK'],
                   x_coord=restaurant['X_COORD'],
-                  y_coord=restaurant['Y_COORD']
-               )
-            )
+                  y_coord=restaurant['Y_COORD'],
+                  is_closed=is_closed,
+                  closed_message=restaurant['CLOSED_MESSAGE'] if is_closed else None ) )
 
       cur.close()
 
@@ -544,9 +581,7 @@ class Database():
             zoo.Restroom(
                title=restroom['TITLE'],
                x_coord=restroom['X_COORD'],
-               y_coord=restroom['Y_COORD']
-            )
-         )
+               y_coord=restroom['Y_COORD'] ) )
 
       cur.close()
 
@@ -556,7 +591,7 @@ class Database():
    def get_gift_shops( self, month, include_seasonal_gift_shops, gift_shops_to_include=[] ):
       cur = self.conn.cursor()
 
-      is_peak_season_month = self.zoo_util.is_peak_season_month( month )
+      is_peak_season_month = self.zoo_util.is_peak_season_month( month=month )
 
       data = cur.execute(
          """   SELECT
@@ -586,9 +621,7 @@ class Database():
                   seasonal_schedule=gift_shop['SEASONAL_SCHEDULE'],
                   description=gift_shop['DESCRIPTION'],
                   x_coord=gift_shop['X_COORD'],
-                  y_coord=gift_shop['Y_COORD']
-               )
-            )
+                  y_coord=gift_shop['Y_COORD'] ) )
 
       cur.close()
 
@@ -626,11 +659,14 @@ class Database():
       for attraction in attraction_data:
          name = attraction['NAME']
 
-         is_closed = self.is_attraction_manually_closed( attraction, target_date )
+         is_closed = self.is_attraction_manually_closed( attraction=attraction, target_date=target_date )
          closed_message = attraction['CLOSED_MESSAGE'] if is_closed else None
 
          if not is_closed:
-            is_closed, schedule_message = self.is_attraction_closed_by_schedule( name, target_date, weekday )
+            is_closed, schedule_message = self.is_attraction_closed_by_schedule(
+               attraction_name=name,
+               target_date=target_date,
+               weekday=weekday )
 
             if is_closed:
                closed_message = schedule_message
@@ -639,7 +675,7 @@ class Database():
 
          if not itinerary_mode:
             should_include = (
-               ( not is_closed )
+               (not is_closed)
                or include_closed_attractions
                or name in attractions_to_include
             )
@@ -659,9 +695,7 @@ class Database():
                x_coord=attraction['X_COORD'],
                y_coord=attraction['Y_COORD'],
                is_closed=is_closed,
-               closed_message=closed_message
-            )
-         )
+               closed_message=closed_message ) )
 
       cur.close()
 
@@ -678,11 +712,11 @@ class Database():
       end_ok = True
 
       if attraction['CLOSED_START'] != None:
-         start_date = self.parse_date_value( attraction['CLOSED_START'] )
+         start_date = self.parse_date_value( value=attraction['CLOSED_START'] )
          start_ok = target_date >= start_date
 
       if attraction['CLOSED_END'] != None:
-         end_date = self.parse_date_value( attraction['CLOSED_END'] )
+         end_date = self.parse_date_value( value=attraction['CLOSED_END'] )
          end_ok = target_date <= end_date
 
       return start_ok and end_ok
@@ -706,8 +740,7 @@ class Database():
                   s.SCHEDULE_MESSAGE
                FROM AttractionOpeningSchedule s
                WHERE s.ATTRACTION = ?;
-         """, ( attraction_name, )
-      )
+         """, ( attraction_name, ) )
 
       schedule_rows = data.fetchall()
       cur.close()
@@ -720,17 +753,17 @@ class Database():
          end_ok = True
 
          if schedule['SCHEDULE_START_DATE'] != None:
-            start_date = self.parse_date_value( schedule['SCHEDULE_START_DATE'] )
+            start_date = self.parse_date_value( value=schedule['SCHEDULE_START_DATE'] )
             start_ok = target_date >= start_date
 
          if schedule['SCHEDULE_END_DATE'] != None:
-            end_date = self.parse_date_value( schedule['SCHEDULE_END_DATE'] )
+            end_date = self.parse_date_value( value=schedule['SCHEDULE_END_DATE'] )
             end_ok = target_date <= end_date
 
          if not ( start_ok and end_ok ):
             continue
 
-         is_holiday = self.zoo_util.is_holiday( target_date ) if hasattr( self.zoo_util, 'is_holiday' ) else False
+         is_holiday = self.zoo_util.is_holiday( d=target_date ) if hasattr( self.zoo_util, 'is_holiday' ) else False
 
          open_on_day = False
 
@@ -787,9 +820,7 @@ class Database():
             zoo.ZoomobileStation(
                name=zoomobile_station['NAME'],
                x_coord=zoomobile_station['X_COORD'],
-               y_coord=zoomobile_station['Y_COORD']
-            )
-         )
+               y_coord=zoomobile_station['Y_COORD'] ) )
 
       cur.close()
 
@@ -824,9 +855,7 @@ class Database():
                   name=name,
                   description=zoomobile_station['DESCRIPTION'],
                   x_coord=zoomobile_station['X_COORD'],
-                  y_coord=zoomobile_station['Y_COORD']
-               )
-            )
+                  y_coord=zoomobile_station['Y_COORD'] ) )
 
       # Zoomobile route markers
       data = cur.execute(
@@ -846,14 +875,12 @@ class Database():
          on_winter_route = zoomobile_route_marker['ON_WINTER_ROUTE']
          on_summer_route = zoomobile_route_marker['ON_SUMMER_ROUTE']
 
-         if ( route_type == 'winter' and on_winter_route ) or ( route_type == 'summer' and on_summer_route ):
+         if (route_type == 'winter' and on_winter_route) or (route_type == 'summer' and on_summer_route):
             zoomobile_route_markers.append(
                zoo.ZoomobileRouteMarker(
                   route_type=route_type,
                   x_coord=zoomobile_route_marker['X_COORD'],
-                  y_coord=zoomobile_route_marker['Y_COORD']
-               )
-            )
+                  y_coord=zoomobile_route_marker['Y_COORD'] ) )
 
       cur.close()
 
@@ -882,9 +909,7 @@ class Database():
                name=meet_the_guardians_talk['NAME'],
                location=meet_the_guardians_talk['LOCATION'],
                x_coord=meet_the_guardians_talk['X_COORD'],
-               y_coord=meet_the_guardians_talk['Y_COORD']
-            )
-         )
+               y_coord=meet_the_guardians_talk['Y_COORD'] ) )
 
       cur.close()
 
@@ -914,7 +939,7 @@ class Database():
       for meet_the_guardians_talk in meet_the_guardians_talk_data:
          name = meet_the_guardians_talk['NAME']
 
-         if ( not itinerary_mode ) or ( name in meet_the_guardians_talks_to_include ):
+         if not itinerary_mode or name in meet_the_guardians_talks_to_include:
             meet_the_guardians_talks.append(
                zoo.MeetTheGuardiansTalk(
                   name=name,
@@ -922,9 +947,7 @@ class Database():
                   x_coord=meet_the_guardians_talk['X_COORD'],
                   y_coord=meet_the_guardians_talk['Y_COORD'],
                   day_of_week=meet_the_guardians_talk['DAY_OF_WEEK'],
-                  time_of_day=meet_the_guardians_talk['TIME_OF_DAY']
-               )
-            )
+                  time_of_day=meet_the_guardians_talk['TIME_OF_DAY'] ) )
 
       cur.close()
 
@@ -951,9 +974,7 @@ class Database():
             zoo.WildEncounterMeetingSpot(
                name=wild_encounter_meeting_spot['NAME'],
                x_coord=wild_encounter_meeting_spot['X_COORD'],
-               y_coord=wild_encounter_meeting_spot['Y_COORD']
-            )
-         )
+               y_coord=wild_encounter_meeting_spot['Y_COORD'] ) )
 
       cur.close()
 
@@ -977,8 +998,7 @@ class Database():
                      ON m.NAME = w.MEETING_SPOT
                   WHERE w.NAME = ?;
             """,
-            ( wild_encounter, )
-         )
+            ( wild_encounter, ) )
 
          wild_encounter_data = cur.fetchone()
 
@@ -988,9 +1008,7 @@ class Database():
                meeting_spot=wild_encounter_data['NAME'],
                x_coord=wild_encounter_data['X_COORD'],
                y_coord=wild_encounter_data['Y_COORD'],
-               link=wild_encounter_data['LINK']
-            )
-         )
+               link=wild_encounter_data['LINK'] ) )
 
       cur.close()
 
@@ -1023,9 +1041,7 @@ class Database():
                meeting_spot=wild_encounter['MEETING_SPOT'],
                link=wild_encounter['LINK'],
                day_of_week=wild_encounter['DAY_OF_WEEK'],
-               time_of_day=wild_encounter['TIME_OF_DAY']
-            )
-         )
+               time_of_day=wild_encounter['TIME_OF_DAY'] ) )
 
       cur.close()
 
@@ -1033,8 +1049,7 @@ class Database():
    
 
    def get_animals_matching_query( self, query, month, day, temp, include_off_display_animals ):
-      animals = self.get_animals_viewable_on_day( month=month, day=day, temp=temp,
-                                                  include_off_display_animals=include_off_display_animals, threshold=80 )
+      animals = self.get_animals_viewable_on_day( month=month, day=day, temp=temp, include_off_display_animals=include_off_display_animals )
 
       if query:
          query_lower = query.lower()
@@ -1075,14 +1090,14 @@ class Database():
       ]
    
 
-   def get_restaurants_matching_query( self, query, month ):
+   def get_restaurants_matching_query( self, query, month, day, include_closed_restaurants ):
       if not query:
-         return self.get_restaurants( month, include_seasonal_restaurants=True )
+         return self.get_restaurants( month=month, day=day, include_closed_restaurants=include_closed_restaurants )
 
       query_lower = query.lower()
 
       return [
-         r for r in self.get_restaurants( month, include_seasonal_restaurants=True )
+         r for r in self.get_restaurants( month=month, day=day, include_closed_restaurants=include_closed_restaurants )
          if r.name and query_lower in r.name.lower()
       ]
    
@@ -1219,6 +1234,21 @@ class Database():
       return exhibits
    
 
+   def get_restaurant_names( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         f"""  SELECT
+                  r.NAME
+               FROm Restaurant r;
+         """ )
+
+      restaurants = [row[0] for row in data.fetchall()]
+      cur.close()
+
+      return restaurants
+   
+
    def get_attraction_names( self ):
       cur = self.conn.cursor()
 
@@ -1262,8 +1292,7 @@ class Database():
                   OFF_DISPLAY_END = excluded.OFF_DISPLAY_END,
                   OFF_DISPLAY_MESSAGE = excluded.OFF_DISPLAY_MESSAGE;
          """,
-         ( species, exhibit, start_date, end_date, message )
-      )
+         ( species, exhibit, start_date, end_date, message ) )
 
       self.conn.commit()
       updated = cur.rowcount
@@ -1361,8 +1390,7 @@ class Database():
             WHERE SPECIES = ?
                AND EXHIBIT = ?;
          """,
-         ( species, exhibit )
-      )
+         ( species, exhibit ) )
 
       self.conn.commit()
       deleted = cur.rowcount
@@ -1413,8 +1441,7 @@ class Database():
             WHERE SPECIES = ?
             AND EXHIBIT = ?;
          """,
-         ( species, exhibit )
-      )
+         ( species, exhibit ) )
 
       self.conn.commit()
       removed = cur.rowcount
@@ -1452,8 +1479,7 @@ class Database():
                   CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
                   CLOSED_START = excluded.CLOSED_START,
                   CLOSED_END = excluded.CLOSED_END;
-         """, ( exhibit, message, start_date, end_date )
-      )
+         """, ( exhibit, message, start_date, end_date ) )
 
       self.conn.commit()
       updated = cur.rowcount
@@ -1471,8 +1497,63 @@ class Database():
       cur.execute(
          """ DELETE FROM ExhibitStatus
             WHERE EXHIBIT = ?;
-         """, ( exhibit, )
-      )
+         """, ( exhibit, ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def set_restaurant_as_closed( self, restaurant, start_date, end_date, message ):
+      if not restaurant:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      if not message:
+         message = f'The {restaurant} is temporarily closed.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO RestaurantStatus (
+                  RESTAURANT,
+                  IS_CLOSED,
+                  CLOSED_MESSAGE,
+                  CLOSED_START,
+                  CLOSED_END
+               )
+               VALUES (?, 1, ?, ?, ?)
+               ON CONFLICT(RESTAURANT) DO UPDATE SET
+                  IS_CLOSED = 1,
+                  CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
+                  CLOSED_START = excluded.CLOSED_START,
+                  CLOSED_END = excluded.CLOSED_END;
+         """, ( restaurant, message, start_date, end_date ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def set_restaurant_as_open( self, restaurant ):
+      if not restaurant:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   DELETE FROM RestaurantStatus
+               WHERE RESTAURANT = ?;
+         """, ( restaurant, ) )
 
       self.conn.commit()
       updated = cur.rowcount
@@ -1510,8 +1591,7 @@ class Database():
                   CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
                   CLOSED_START = excluded.CLOSED_START,
                   CLOSED_END = excluded.CLOSED_END;
-         """, ( attraction, message, start_date, end_date )
-      )
+         """, ( attraction, message, start_date, end_date ) )
 
       self.conn.commit()
       updated = cur.rowcount
@@ -1529,8 +1609,7 @@ class Database():
       cur.execute(
          """   DELETE FROM AttractionStatus
                WHERE ATTRACTION = ?;
-         """, ( attraction, )
-      )
+         """, ( attraction, ) )
 
       self.conn.commit()
       updated = cur.rowcount
@@ -1539,8 +1618,20 @@ class Database():
       return updated > 0
    
 
-   def set_attraction_opening_schedule( self, attraction, start_date, end_date, monday, tuesday, wednesday, thursday, friday, saturday,
-                                        sunday, holidays_only, message ):
+   def set_attraction_opening_schedule(
+         self,
+         attraction,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message ):
       if not attraction:
          return False
 
@@ -1597,8 +1688,7 @@ class Database():
             int( bool( sunday ) ),
             int( bool( holidays_only ) ),
             message
-         )
-      )
+         ) )
 
       self.conn.commit()
       updated = cur.rowcount
@@ -1616,8 +1706,7 @@ class Database():
       cur.execute(
          """   DELETE FROM AttractionOpeningSchedule
                WHERE ATTRACTION = ?;
-         """, ( attraction, )
-      )
+         """, ( attraction, ) )
 
       self.conn.commit()
       removed = cur.rowcount
