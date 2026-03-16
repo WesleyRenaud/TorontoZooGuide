@@ -98,7 +98,7 @@ export function initItineraryPage() {
       getIncludeClosedRestaurants: () => false,
       getIncludeClosedGiftShops: () => false,
       getIncludeClosedAttractions: () => false,
-      getZoomobileRouteType: () => 'none',
+      getZoomobileRoute: () => 'none',
       getSelectedTypes: () => [],
    });
 

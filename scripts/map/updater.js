@@ -16,7 +16,7 @@ export function createMapUpdater({
    getIncludeClosedRestaurants,
    getIncludeClosedGiftShops,
    getIncludeClosedAttractions,
-   getZoomobileRouteType,
+   getZoomobileRoute,
    getSelectedTypes,
 }) {
    let lastPreset = null;
@@ -74,7 +74,7 @@ export function createMapUpdater({
       const includeClosedGiftShops = getIncludeClosedGiftShops();
       const includeClosedAttractions = getIncludeClosedAttractions();
 
-      const zoomobileRouteType = getZoomobileRouteType();
+      const zoomobileRoute = getZoomobileRoute();
 
       const itin = options?.itinerary || null;
       const itineraryOnly = !!itin;
@@ -100,7 +100,7 @@ export function createMapUpdater({
 
             // optional
             dayOfWeek,
-            zoomobileRouteType,
+            zoomobileRoute,
          };
 
          try {
@@ -163,7 +163,7 @@ export function createMapUpdater({
 
       let selectedTypes = (getSelectedTypes() || []).map(t => String(t).trim());
 
-      const routeActive = zoomobileRouteType !== 'none';
+      const routeActive = zoomobileRoute !== 'none';
       const focusIsZoomobileStation = focusType === 'zoomobileStation';
 
       if (
@@ -192,7 +192,7 @@ export function createMapUpdater({
          includeClosedGiftShops,
          includeClosedAttractions,
 
-         zoomobileRouteType,
+         zoomobileRoute,
 
          speciesToInclude,
          restaurantsToInclude,

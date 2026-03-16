@@ -233,11 +233,11 @@ class MyHandler( BaseHTTPRequestHandler ):
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
-         route_type = data.get( 'zoomobileRouteType' )
+         route = data.get( 'zoomobileRoute' )
          zoomobile_stations_to_include = data.get( 'zoomobileStationsToInclude' )
 
          zoomobile_route = self.database.get_zoomobile_route(
-            route_type=route_type,
+            route=route,
             zoomobile_stations_to_include=zoomobile_stations_to_include )
          
          self.send_response( 200 )
@@ -1231,7 +1231,34 @@ class MyHandler( BaseHTTPRequestHandler ):
             response['error'] = f'Could not remove schedule for "{attraction}".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-         
+
+
+      elif self.path == '/set-current-zoomobile-route':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         route = data.get( 'route' )
+
+         success = False
+
+         if route in ( 'summer', 'winter' ):
+            success = self.database.set_current_zoomobile_route( route=route )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'route': route
+         }
+
+         if not success:
+            response['error'] = f'Could not set Zoomobile route to "{route}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+            
 
 if __name__ == '__main__':
    httpd = HTTPServer( ( 'localhost', int( sys.argv[1] ) ), MyHandler )

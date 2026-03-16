@@ -8,7 +8,7 @@ export function initMapControls
       includeClosedRestaurantsCheckbox,
       includeClosedGiftShopsCheckbox,
       includeClosedAttractionsCheckbox,
-      zoomobileRouteTypeRadios,
+      zoomobileRouteRadios,
       onUpdate
    }) {
 
@@ -89,8 +89,8 @@ export function initMapControls
       });
    }
 
-   if ( zoomobileRouteTypeRadios ) {
-      Array.from(zoomobileRouteTypeRadios || []).forEach(r => r.addEventListener('change', () => {
+   if (zoomobileRouteRadios) {
+      Array.from(zoomobileRouteRadios || []).forEach(r => r.addEventListener('change', () => {
          refetch();
       }));
    }

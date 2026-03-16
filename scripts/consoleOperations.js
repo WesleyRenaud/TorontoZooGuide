@@ -23,6 +23,7 @@ import { createAttractionClosedController } from './consoleOperations/attraction
 import { createAttractionOpenController } from './consoleOperations/attractionOpen.js';
 import { createAttractionOpeningScheduleController } from './consoleOperations/attractionOpeningSchedule.js';
 import { createRemoveAttractionOpeningScheduleController } from './consoleOperations/removeAttractionOpeningSchedule.js';
+import { createZoomobileRouteController } from './consoleOperations/zoomobileRoute.js';
 import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animalSpeciesAutocomplete.js';
 import { createOffDisplayPanelHtml } from './consoleOperations/panels/offDisplayPanel.js';
 import { createOnDisplayPanelHtml } from './consoleOperations/panels/onDisplayPanel.js';
@@ -44,6 +45,7 @@ import { createAttractionClosedPanelHtml } from './consoleOperations/panels/attr
 import { createAttractionOpenPanelHtml } from './consoleOperations/panels/attractionOpenPanel.js';
 import { createAttractionOpeningSchedulePanelHtml } from './consoleOperations/panels/attractionOpeningSchedulePanel.js';
 import { createRemoveAttractionOpeningSchedulePanelHtml } from './consoleOperations/panels/removeAttractionOpeningSchedulePanel.js';
+import { createZoomobileRoutePanelHtml } from './consoleOperations/panels/zoomobileRoutePanel.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -75,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createAttractionOpenPanelHtml()}
       ${createAttractionOpeningSchedulePanelHtml()}
       ${createRemoveAttractionOpeningSchedulePanelHtml()}
+      ${createZoomobileRoutePanelHtml()}
    `;
 
    const offDisplayPanel = document.getElementById('offDisplayPanel');
@@ -97,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
    const attractionOpenPanel = document.getElementById('attractionOpenPanel');
    const attractionOpeningSchedulePanel = document.getElementById('attractionOpeningSchedulePanel');
    const removeAttractionOpeningSchedulePanel = document.getElementById('removeAttractionOpeningSchedulePanel');
+   const zoomobileRoutePanel = document.getElementById('zoomobileRoutePanel');
 
    const offDisplaySpeciesEl = document.getElementById('offDisplaySpecies');
    const onDisplaySpeciesEl = document.getElementById('onDisplaySpecies');
@@ -132,6 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
    const attractionOpenAttractionEl = document.getElementById('attractionOpenAttraction');
    const attractionOpeningScheduleAttractionEl = document.getElementById('attractionOpeningScheduleAttraction');
    const removeAttractionOpeningScheduleAttractionEl = document.getElementById('removeAttractionOpeningScheduleAttraction');
+   const zoomobileRouteSummerEl = document.getElementById('zoomobileRouteSummer');
+   const zoomobileRouteWinterEl = document.getElementById('zoomobileRouteWinter');
 
    const offDisplayStartDateEl = document.getElementById('offDisplayStartDate');
    const offDisplayEndDateEl = document.getElementById('offDisplayEndDate');
@@ -536,6 +542,18 @@ document.addEventListener('DOMContentLoaded', () => {
       submitButtonEl: document.getElementById('submitRemoveAttractionOpeningSchedule'),
       statusEl: document.getElementById('removeAttractionOpeningScheduleStatus'),
       attractionEl: removeAttractionOpeningScheduleAttractionEl,
+      activatePanel,
+      hidePanels,
+   });
+
+   createZoomobileRouteController({
+      showButtonEl: document.getElementById('showZoomobileRouteForm'),
+      panelEl: zoomobileRoutePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitZoomobileRoute'),
+      statusEl: document.getElementById('zoomobileRouteStatus'),
+      summerRouteEl: zoomobileRouteSummerEl,
+      winterRouteEl: zoomobileRouteWinterEl,
       activatePanel,
       hidePanels,
    });

@@ -190,7 +190,7 @@ export function createDataSources(store) {
       zoomobileRoute: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-zoomobile-route', {
-               zoomobileRouteType: ctx.zoomobileRouteType,
+               zoomobileRoute: ctx.zoomobileRoute,
                zoomobileStationsToInclude: ctx.zoomobileStationsToInclude,
             });
 

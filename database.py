@@ -961,8 +961,31 @@ class Database():
       return zoomobile_stations
 
 
-   def get_zoomobile_route( self, route_type, zoomobile_stations_to_include=[] ):
+   def get_zoomobile_route( self, route, zoomobile_stations_to_include=[] ):
       cur = self.conn.cursor()
+
+      if route == 'current':
+         data = cur.execute(
+            """   SELECT
+                     a.SETTING_VALUE
+                  FROM AppSetting a
+                  WHERE a.SETTING_KEY = 'zoomobile_route';
+            """ )
+
+         current_route_data = data.fetchone()
+
+         if current_route_data != None:
+            stored_route = current_route_data[ 'SETTING_VALUE' ]
+
+            if stored_route in [ 'summer', 'winter' ]:
+               route = stored_route
+            else:
+               route = 'summer'
+         else:
+            route = 'summer'
+
+      if route not in [ 'summer', 'winter' ]:
+         route = 'summer'
 
       # Zoomobile stations
       data = cur.execute(
@@ -980,16 +1003,16 @@ class Database():
       zoomobile_stations = []
 
       for zoomobile_station in zoomobile_station_data:
-         name = zoomobile_station['NAME']
-         on_winter_route = zoomobile_station['ON_WINTER_ROUTE']
+         name = zoomobile_station[ 'NAME' ]
+         on_winter_route = zoomobile_station[ 'ON_WINTER_ROUTE' ]
 
-         if route_type == 'summer' or on_winter_route or name in zoomobile_stations_to_include:
+         if route == 'summer' or on_winter_route or name in zoomobile_stations_to_include:
             zoomobile_stations.append(
                zoo.ZoomobileStation(
                   name=name,
-                  description=zoomobile_station['DESCRIPTION'],
-                  x_coord=zoomobile_station['X_COORD'],
-                  y_coord=zoomobile_station['Y_COORD'] ) )
+                  description=zoomobile_station[ 'DESCRIPTION' ],
+                  x_coord=zoomobile_station[ 'X_COORD' ],
+                  y_coord=zoomobile_station[ 'Y_COORD' ] ) )
 
       # Zoomobile route markers
       data = cur.execute(
@@ -1006,15 +1029,15 @@ class Database():
       zoomobile_route_markers = []
 
       for zoomobile_route_marker in zoomobile_route_marker_data:
-         on_winter_route = zoomobile_route_marker['ON_WINTER_ROUTE']
-         on_summer_route = zoomobile_route_marker['ON_SUMMER_ROUTE']
+         on_winter_route = zoomobile_route_marker[ 'ON_WINTER_ROUTE' ]
+         on_summer_route = zoomobile_route_marker[ 'ON_SUMMER_ROUTE' ]
 
-         if (route_type == 'winter' and on_winter_route) or (route_type == 'summer' and on_summer_route):
+         if ( route == 'winter' and on_winter_route ) or ( route == 'summer' and on_summer_route ):
             zoomobile_route_markers.append(
                zoo.ZoomobileRouteMarker(
-                  route_type=route_type,
-                  x_coord=zoomobile_route_marker['X_COORD'],
-                  y_coord=zoomobile_route_marker['Y_COORD'] ) )
+                  route_type=route,
+                  x_coord=zoomobile_route_marker[ 'X_COORD' ],
+                  y_coord=zoomobile_route_marker[ 'Y_COORD' ] ) )
 
       cur.close()
 
@@ -2113,3 +2136,26 @@ class Database():
 
       return removed > 0
    
+
+   def set_current_zoomobile_route( self, route ):
+      if route not in ( 'summer', 'winter' ):
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO AppSetting (
+                  SETTING_KEY,
+                  SETTING_VALUE
+               )
+               VALUES ( 'zoomobile_route', ? )
+               ON CONFLICT(SETTING_KEY) DO UPDATE SET
+                  SETTING_VALUE = excluded.SETTING_VALUE;
+         """, ( route, ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+      

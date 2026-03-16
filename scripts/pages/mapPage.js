@@ -30,7 +30,7 @@ export function initMapPage() {
    const includeClosedRestaurantsCheckbox = document.getElementById('includeClosedRestaurants');
    const includeClosedGiftShopsCheckbox = document.getElementById('includeClosedGiftShops');
    const includeClosedAttractionsCheckbox = document.getElementById('includeClosedAttractions');
-   const zoomobileRouteTypeRadios = document.querySelectorAll?.('input[name="zoomobileRoute"]');
+   const zoomobileRouteRadios = document.querySelectorAll?.('input[name="zoomobileRoute"]');
    const animalSearchInput = document.getElementById('animalSearch');
    initMapLegend();
 
@@ -94,7 +94,7 @@ export function initMapPage() {
       getIncludeClosedRestaurants: () => includeClosedRestaurantsCheckbox?.checked ?? false,
       getIncludeClosedGiftShops: () => includeClosedGiftShopsCheckbox?.checked ?? false,
       getIncludeClosedAttractions: () => includeClosedAttractionsCheckbox?.checked ?? false,
-      getZoomobileRouteType: () => Array.from(zoomobileRouteTypeRadios).find(r => r.checked)?.value ?? 'none',
+      getZoomobileRoute: () => Array.from(zoomobileRouteRadios).find(r => r.checked)?.value ?? 'none',
       getSelectedTypes: () => initExploreTypeFilter.getSelectedTypes(),
    });
 
@@ -141,7 +141,7 @@ export function initMapPage() {
       includeClosedRestaurantsCheckbox,
       includeClosedGiftShopsCheckbox,
       includeClosedAttractionsCheckbox,
-      zoomobileRouteTypeRadios,
+      zoomobileRouteRadios,
       onUpdate: (preset, dateStr) => {
          updater.updateMap(preset, dateStr, null);
          search.refresh();

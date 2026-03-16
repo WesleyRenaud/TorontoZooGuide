@@ -567,6 +567,25 @@ if 'CLOSED_END' not in attraction_status_columns:
       'ALTER TABLE AttractionStatus ADD COLUMN CLOSED_END DATE;'
    )
 
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS AppSetting
+                  (  SETTING_KEY     VARCHAR(64) NOT NULL,
+                     SETTING_VALUE   VARCHAR(64) NOT NULL,
+                     PRIMARY KEY (SETTING_KEY) ); ''' )
+
+app_setting_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( AppSetting );' ).fetchall()
+}
+
+if 'SETTING_KEY' not in app_setting_columns:
+   cursor.execute(
+      'ALTER TABLE AppSetting ADD COLUMN SETTING_KEY VARCHAR(64) NOT NULL;'
+   )
+
+if 'SETTING_VALUE' not in app_setting_columns:
+   cursor.execute(
+      'ALTER TABLE AppSetting ADD COLUMN SETTING_VALUE VARCHAR(64) NOT NULL DEFAULT "";'
+   )
+
 cursor.execute( ''' CREATE TABLE IF NOT EXISTS AttractionOpeningSchedule
                   (  ATTRACTION            VARCHAR(64) NOT NULL,
                      SCHEDULE_START_DATE   DATE        NOT NULL,
