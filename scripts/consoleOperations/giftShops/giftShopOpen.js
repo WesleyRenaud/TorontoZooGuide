@@ -1,23 +1,18 @@
-import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from './utils.js';
+import { loadGiftShops, postJson, setStatus, populateGiftShopDropdown } from '../utils.js';
 
-export function createAttractionOpenController( {
+export function createGiftShopOpenController({
    showButtonEl,
    panelEl,
    cancelButtonEl,
    submitButtonEl,
    statusEl,
-   attractionEl,
+   giftShopEl,
    activatePanel,
    hidePanels,
-} = {} ) {
+} = {}) {
 
    function resetForm() {
-      if(attractionEl) attractionEl.value = '';
-   }
-
-   function show() {
-      setStatus(statusEl, '');
-      activatePanel?.(panelEl);
+      if(giftShopEl) giftShopEl.value = '';
    }
 
    function hide() {
@@ -26,51 +21,59 @@ export function createAttractionOpenController( {
    }
 
    async function onShowClick() {
+
       setStatus(statusEl, '');
 
       try {
-         const attractions = await loadAttractions();
-         populateAttractionDropdown(attractionEl, attractions);
+         const giftShops = await loadGiftShops();
+         populateGiftShopDropdown(giftShopEl, giftShops);
          resetForm();
-         setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
       catch(err) {
-         setStatus(statusEl, 'Failed to load attractions.', 'is-error');
+         setStatus(statusEl, 'Failed to load gift shops.', 'is-error');
          activatePanel?.(panelEl);
       }
+
    }
 
    async function onSubmitClick() {
-      const attraction = attractionEl?.value.trim() ?? '';
+
+      const giftShop = giftShopEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
-      if(!attraction) {
-         setStatus(statusEl, 'Attraction is required.', 'is-error');
+      if(!giftShop) {
+         setStatus(statusEl, 'Gift shop is required.', 'is-error');
          return;
       }
 
       try {
-         const result = await postJson('/set-attraction-open', {
-            attraction
+
+         const result = await postJson('/set-gift-shop-open', {
+            giftShop
          });
 
          if(result.success) {
+
             setStatus(
                statusEl,
-               `${result.attraction} was set as open.`,
+               `${result.giftShop} was set as open.`,
                'is-success'
             );
+
             resetForm();
+
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
+
       }
       catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
+
    }
 
    showButtonEl?.addEventListener('click', onShowClick);
@@ -78,7 +81,7 @@ export function createAttractionOpenController( {
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
-      show,
-      hide,
+      hide
    };
+
 }

@@ -1,4 +1,4 @@
-import { loadGiftShops, postJson, setStatus, populateGiftShopDropdown } from './utils.js';
+import { loadGiftShops, postJson, setStatus, populateGiftShopDropdown } from '../utils.js';
 
 export function createGiftShopClosedController({
    showButtonEl,

@@ -1,6 +1,6 @@
-import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from './utils.js';
+import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from '../utils.js';
 
-export function createRemoveViewingAlertController({
+export function createRemoveVisibilityScheduleController({
    showButtonEl,
    panelEl,
    cancelButtonEl,
@@ -17,30 +17,33 @@ export function createRemoveViewingAlertController({
       if (exhibitEl) exhibitEl.value = '';
    }
 
+   function show() {
+      setStatus(statusEl, '');
+      activatePanel?.(panelEl);
+   }
+
    function hide() {
       panelEl?.classList.remove('active');
       setStatus(statusEl, '');
    }
 
    async function onShowClick() {
-
       setStatus(statusEl, '');
 
       try {
          const exhibits = await loadExhibits();
          populateExhibitDropdown(exhibitEl, exhibits);
          resetForm();
+         setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
       catch (err) {
          setStatus(statusEl, 'Failed to load exhibits.', 'is-error');
          activatePanel?.(panelEl);
       }
-
    }
 
    async function onSubmitClick() {
-
       const species = speciesEl?.value.trim() ?? '';
       const exhibit = exhibitEl?.value.trim() ?? '';
 
@@ -57,36 +60,32 @@ export function createRemoveViewingAlertController({
       }
 
       try {
-
-         const result = await postJson('/remove-animal-viewing-alert', {
+         const result = await postJson('/remove-animal-visibility-schedule', {
             species,
             exhibit
          });
 
          if (result.success) {
-
             setStatus(
                statusEl,
-               `Viewing alert removed for ${result.species} in ${result.exhibit}.`,
+               `${result.species} in ${result.exhibit} no longer has a visibility schedule.`,
                'is-success'
             );
-
             resetForm();
-
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
-
       }
       catch (err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
-
    }
 
    exhibitEl?.addEventListener('change', () => {
-      if (speciesEl) speciesEl.value = '';
+      if (speciesEl) {
+         speciesEl.value = '';
+      }
    });
 
    showButtonEl?.addEventListener('click', onShowClick);
@@ -94,7 +93,7 @@ export function createRemoveViewingAlertController({
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
-      hide
+      show,
+      hide,
    };
-
 }

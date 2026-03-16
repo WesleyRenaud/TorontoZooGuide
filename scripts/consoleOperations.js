@@ -3,49 +3,61 @@ import {
    initVisibilityScheduleDateTimePickers
 } from './ui/consoleDatePickers.js';
 
-import { createAnimalOffDisplayController } from './consoleOperations/animalOffDisplay.js';
-import { createAnimalOnDisplayController } from './consoleOperations/animalOnDisplay.js';
-import { createAnimalVisibilityScheduleController } from './consoleOperations/animalVisibilitySchedule.js';
-import { createRemoveVisibilityScheduleController } from './consoleOperations/removeVisibilitySchedule.js';
-import { createAnimalViewingAlertController } from './consoleOperations/animalViewingAlert.js';
-import { createRemoveViewingAlertController } from './consoleOperations/removeViewingAlert.js';
-import { createExhibitClosedController } from './consoleOperations/exhibitClosed.js';
-import { createExhibitOpenController } from './consoleOperations/exhibitOpen.js';
-import { createRestaurantClosedController } from './consoleOperations/restaurantClosed.js';
-import { createRestaurantOpenController } from './consoleOperations/restaurantOpen.js';
-import { createRestaurantOpeningScheduleController } from './consoleOperations/restaurantOpeningSchedule.js';
-import { createRemoveRestaurantOpeningScheduleController } from './consoleOperations/removeRestaurantOpeningSchedule.js';
-import { createGiftShopClosedController } from './consoleOperations/giftShopClosed.js';
-import { createGiftShopOpenController } from './consoleOperations/giftShopOpen.js';
-import { createGiftShopOpeningScheduleController } from './consoleOperations/giftShopOpeningSchedule.js';
-import { createRemoveGiftShopOpeningScheduleController } from './consoleOperations/removeGiftShopOpeningSchedule.js';
-import { createAttractionClosedController } from './consoleOperations/attractionClosed.js';
-import { createAttractionOpenController } from './consoleOperations/attractionOpen.js';
-import { createAttractionOpeningScheduleController } from './consoleOperations/attractionOpeningSchedule.js';
-import { createRemoveAttractionOpeningScheduleController } from './consoleOperations/removeAttractionOpeningSchedule.js';
-import { createZoomobileRouteController } from './consoleOperations/zoomobileRoute.js';
-import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animalSpeciesAutocomplete.js';
-import { createOffDisplayPanelHtml } from './consoleOperations/panels/offDisplayPanel.js';
-import { createOnDisplayPanelHtml } from './consoleOperations/panels/onDisplayPanel.js';
-import { createVisibilitySchedulePanelHtml } from './consoleOperations/panels/visibilitySchedulePanel.js';
-import { createRemoveVisibilitySchedulePanelHtml } from './consoleOperations/panels/removeVisibilitySchedulePanel.js';
-import { createViewingAlertPanelHtml } from './consoleOperations/panels/viewingAlertPanel.js';
-import { createRemoveViewingAlertPanelHtml } from './consoleOperations/panels/removeViewingAlertPanel.js';
-import { createExhibitClosedPanelHtml } from './consoleOperations/panels/exhibitClosedPanel.js';
-import { createExhibitOpenPanelHtml } from './consoleOperations/panels/exhibitOpenPanel.js';
-import { createRestaurantClosedPanelHtml } from './consoleOperations/panels/restaurantClosedPanel.js';
-import { createRestaurantOpenPanelHtml } from './consoleOperations/panels/restaurantOpenPanel.js';
-import { createRestaurantOpeningSchedulePanelHtml } from './consoleOperations/panels/restaurantOpeningSchedulePanel.js';
-import { createRemoveRestaurantOpeningSchedulePanelHtml } from './consoleOperations/panels/removeRestaurantOpeningSchedulePanel.js';
-import { createGiftShopClosedPanelHtml } from './consoleOperations/panels/giftShopClosedPanel.js';
-import { createGiftShopOpenPanelHtml } from './consoleOperations/panels/giftShopOpenPanel.js';
-import { createGiftShopOpeningSchedulePanelHtml } from './consoleOperations/panels/giftShopOpeningSchedulePanel.js';
-import { createRemoveGiftShopOpeningSchedulePanelHtml } from './consoleOperations/panels/removeGiftShopOpeningSchedulePanel.js';
-import { createAttractionClosedPanelHtml } from './consoleOperations/panels/attractionClosedPanel.js';
-import { createAttractionOpenPanelHtml } from './consoleOperations/panels/attractionOpenPanel.js';
-import { createAttractionOpeningSchedulePanelHtml } from './consoleOperations/panels/attractionOpeningSchedulePanel.js';
-import { createRemoveAttractionOpeningSchedulePanelHtml } from './consoleOperations/panels/removeAttractionOpeningSchedulePanel.js';
-import { createZoomobileRoutePanelHtml } from './consoleOperations/panels/zoomobileRoutePanel.js';
+import { createAnimalOffDisplayController } from './consoleOperations/animals/animalOffDisplay.js';
+import { createAnimalOnDisplayController } from './consoleOperations/animals/animalOnDisplay.js';
+import { createAnimalVisibilityScheduleController } from './consoleOperations/animals/animalVisibilitySchedule.js';
+import { createRemoveVisibilityScheduleController } from './consoleOperations/animals/removeVisibilitySchedule.js';
+import { createAnimalViewingAlertController } from './consoleOperations/animals/animalViewingAlert.js';
+import { createRemoveViewingAlertController } from './consoleOperations/animals/removeViewingAlert.js';
+
+import { createExhibitClosedController } from './consoleOperations/exhibits/exhibitClosed.js';
+import { createExhibitOpenController } from './consoleOperations/exhibits/exhibitOpen.js';
+
+import { createRestaurantClosedController } from './consoleOperations/restaurants/restaurantClosed.js';
+import { createRestaurantOpenController } from './consoleOperations/restaurants/restaurantOpen.js';
+import { createRestaurantOpeningScheduleController } from './consoleOperations/restaurants/restaurantOpeningSchedule.js';
+import { createRemoveRestaurantOpeningScheduleController } from './consoleOperations/restaurants/removeRestaurantOpeningSchedule.js';
+
+import { createGiftShopClosedController } from './consoleOperations/giftShops/giftShopClosed.js';
+import { createGiftShopOpenController } from './consoleOperations/giftShops/giftShopOpen.js';
+import { createGiftShopOpeningScheduleController } from './consoleOperations/giftShops/giftShopOpeningSchedule.js';
+import { createRemoveGiftShopOpeningScheduleController } from './consoleOperations/giftShops/removeGiftShopOpeningSchedule.js';
+
+import { createAttractionClosedController } from './consoleOperations/attractions/attractionClosed.js';
+import { createAttractionOpenController } from './consoleOperations/attractions/attractionOpen.js';
+import { createAttractionOpeningScheduleController } from './consoleOperations/attractions/attractionOpeningSchedule.js';
+import { createRemoveAttractionOpeningScheduleController } from './consoleOperations/attractions/removeAttractionOpeningSchedule.js';
+
+import { createZoomobileRouteController } from './consoleOperations/zoomobile/zoomobileRoute.js';
+
+import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animals/animalSpeciesAutocomplete.js';
+
+import { createOffDisplayPanelHtml } from './consoleOperations/animals/panels/offDisplayPanel.js';
+import { createOnDisplayPanelHtml } from './consoleOperations/animals/panels/onDisplayPanel.js';
+import { createVisibilitySchedulePanelHtml } from './consoleOperations/animals/panels/visibilitySchedulePanel.js';
+import { createRemoveVisibilitySchedulePanelHtml } from './consoleOperations/animals/panels/removeVisibilitySchedulePanel.js';
+import { createViewingAlertPanelHtml } from './consoleOperations/animals/panels/viewingAlertPanel.js';
+import { createRemoveViewingAlertPanelHtml } from './consoleOperations/animals/panels/removeViewingAlertPanel.js';
+
+import { createExhibitClosedPanelHtml } from './consoleOperations/exhibits/panels/exhibitClosedPanel.js';
+import { createExhibitOpenPanelHtml } from './consoleOperations/exhibits/panels/exhibitOpenPanel.js';
+
+import { createRestaurantClosedPanelHtml } from './consoleOperations/restaurants/panels/restaurantClosedPanel.js';
+import { createRestaurantOpenPanelHtml } from './consoleOperations/restaurants/panels/restaurantOpenPanel.js';
+import { createRestaurantOpeningSchedulePanelHtml } from './consoleOperations/restaurants/panels/restaurantOpeningSchedulePanel.js';
+import { createRemoveRestaurantOpeningSchedulePanelHtml } from './consoleOperations/restaurants/panels/removeRestaurantOpeningSchedulePanel.js';
+
+import { createGiftShopClosedPanelHtml } from './consoleOperations/giftShops/panels/giftShopClosedPanel.js';
+import { createGiftShopOpenPanelHtml } from './consoleOperations/giftShops/panels/giftShopOpenPanel.js';
+import { createGiftShopOpeningSchedulePanelHtml } from './consoleOperations/giftShops/panels/giftShopOpeningSchedulePanel.js';
+import { createRemoveGiftShopOpeningSchedulePanelHtml } from './consoleOperations/giftShops/panels/removeGiftShopOpeningSchedulePanel.js';
+
+import { createAttractionClosedPanelHtml } from './consoleOperations/attractions/panels/attractionClosedPanel.js';
+import { createAttractionOpenPanelHtml } from './consoleOperations/attractions/panels/attractionOpenPanel.js';
+import { createAttractionOpeningSchedulePanelHtml } from './consoleOperations/attractions/panels/attractionOpeningSchedulePanel.js';
+import { createRemoveAttractionOpeningSchedulePanelHtml } from './consoleOperations/attractions/panels/removeAttractionOpeningSchedulePanel.js';
+
+import { createZoomobileRoutePanelHtml } from './consoleOperations/zoomobile/panels/zoomobileRoutePanel.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 

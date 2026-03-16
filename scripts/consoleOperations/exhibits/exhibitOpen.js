@@ -1,18 +1,23 @@
-import { loadRestaurants, postJson, setStatus, populateRestaurantDropdown } from './utils.js';
+import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from '../utils.js';
 
-export function createRestaurantOpenController({
+export function createExhibitOpenController({
    showButtonEl,
    panelEl,
    cancelButtonEl,
    submitButtonEl,
    statusEl,
-   restaurantEl,
+   exhibitEl,
    activatePanel,
    hidePanels,
 } = {}) {
 
    function resetForm() {
-      if(restaurantEl) restaurantEl.value = '';
+      if (exhibitEl) exhibitEl.value = '';
+   }
+
+   function show() {
+      setStatus(statusEl, '');
+      activatePanel?.(panelEl);
    }
 
    function hide() {
@@ -21,59 +26,51 @@ export function createRestaurantOpenController({
    }
 
    async function onShowClick() {
-
       setStatus(statusEl, '');
 
       try {
-         const restaurants = await loadRestaurants();
-         populateRestaurantDropdown(restaurantEl, restaurants);
+         const exhibits = await loadExhibits();
+         populateExhibitDropdown(exhibitEl, exhibits);
          resetForm();
+         setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
-      catch(err) {
-         setStatus(statusEl, 'Failed to load restaurants.', 'is-error');
+      catch (err) {
+         setStatus(statusEl, 'Failed to load exhibits.', 'is-error');
          activatePanel?.(panelEl);
       }
-
    }
 
    async function onSubmitClick() {
-
-      const restaurant = restaurantEl?.value.trim() ?? '';
+      const exhibit = exhibitEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
-      if(!restaurant) {
-         setStatus(statusEl, 'Restaurant is required.', 'is-error');
+      if (!exhibit) {
+         setStatus(statusEl, 'Exhibit is required.', 'is-error');
          return;
       }
 
       try {
-
-         const result = await postJson('/set-restaurant-open', {
-            restaurant
+         const result = await postJson('/set-exhibit-open', {
+            exhibit
          });
 
-         if(result.success) {
-
+         if (result.success) {
             setStatus(
                statusEl,
-               `${result.restaurant} was set as open.`,
+               `${result.exhibit} was set as open.`,
                'is-success'
             );
-
             resetForm();
-
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
-
       }
-      catch(err) {
+      catch (err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
-
    }
 
    showButtonEl?.addEventListener('click', onShowClick);
@@ -81,7 +78,7 @@ export function createRestaurantOpenController({
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
-      hide
+      show,
+      hide,
    };
-
 }

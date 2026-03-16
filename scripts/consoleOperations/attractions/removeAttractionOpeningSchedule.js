@@ -1,4 +1,4 @@
-import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from './utils.js';
+import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from '../utils.js';
 
 export function createRemoveAttractionOpeningScheduleController({
    showButtonEl,

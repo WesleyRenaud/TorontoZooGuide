@@ -1,4 +1,4 @@
-import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from './utils.js';
+import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from '../utils.js';
 
 export function createAnimalOffDisplayController({
    showButtonEl,

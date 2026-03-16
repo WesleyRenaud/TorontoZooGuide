@@ -1,4 +1,4 @@
-import { loadSpecies, postJson } from './utils.js';
+import { loadSpecies, postJson } from '../utils.js';
 
 function debounce(fn, delay = 200) {
    let timer = null;

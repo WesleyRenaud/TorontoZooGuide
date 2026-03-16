@@ -1,18 +1,17 @@
-import { loadGiftShops, postJson, setStatus, populateGiftShopDropdown } from './utils.js';
+import { loadGiftShops, postJson, setStatus, populateGiftShopDropdown } from '../utils.js';
 
-export function createGiftShopOpenController({
+export function createRemoveGiftShopOpeningScheduleController({
    showButtonEl,
    panelEl,
-   cancelButtonEl,
    submitButtonEl,
    statusEl,
    giftShopEl,
    activatePanel,
-   hidePanels,
+   hidePanels
 } = {}) {
 
    function resetForm() {
-      if(giftShopEl) giftShopEl.value = '';
+      if (giftShopEl) giftShopEl.value = '';
    }
 
    function hide() {
@@ -21,7 +20,6 @@ export function createGiftShopOpenController({
    }
 
    async function onShowClick() {
-
       setStatus(statusEl, '');
 
       try {
@@ -34,7 +32,6 @@ export function createGiftShopOpenController({
          setStatus(statusEl, 'Failed to load gift shops.', 'is-error');
          activatePanel?.(panelEl);
       }
-
    }
 
    async function onSubmitClick() {
@@ -50,7 +47,7 @@ export function createGiftShopOpenController({
 
       try {
 
-         const result = await postJson('/set-gift-shop-open', {
+         const result = await postJson('/remove-gift-shop-opening-schedule', {
             giftShop
          });
 
@@ -58,12 +55,11 @@ export function createGiftShopOpenController({
 
             setStatus(
                statusEl,
-               `${result.giftShop} was set as open.`,
+               `${result.giftShop} opening schedule was removed.`,
                'is-success'
             );
 
             resetForm();
-
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
@@ -73,11 +69,9 @@ export function createGiftShopOpenController({
       catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
-
    }
 
    showButtonEl?.addEventListener('click', onShowClick);
-   cancelButtonEl?.addEventListener('click', hide);
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
