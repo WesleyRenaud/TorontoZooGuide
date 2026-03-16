@@ -143,15 +143,7 @@ cursor.execute( ''' CREATE TABLE MeetTheGuardiansTalk
                      X_COORD  FLOAT       NOT NULL,
                      Y_COORD  FLOAT       NOT NULL,    
                      FOREIGN KEY (LOCATION)  REFERENCES Exhibit(NAME), 
-                     PRIMARY KEY (NAME, LOCATION) ); ''' )    
-
-cursor.execute( 'DROP TABLE IF EXISTS MeetTheGuardiansTalkDateTime;' )
-cursor.execute( ''' CREATE TABLE MeetTheGuardiansTalkDateTime
-                  (  NAME        VARCHAR(64) NOT NULL,
-                     DAY_OF_WEEK INTEGER     NOT NULL CHECK(DAY_OF_WEEK BETWEEN 1 AND 7),
-                     TIME_OF_DAY VARCHAR(8)  NOT NULL,
-                     FOREIGN KEY (NAME) REFERENCES MeetTheGuardiansTalkLocation(NAME)
-                     PRIMARY KEY (NAME, DAY_OF_WEEK, TIME_OF_DAY) ); ''' )       
+                     PRIMARY KEY (NAME, LOCATION) ); ''' )        
 
 cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingSpot;' )
 cursor.execute( ''' CREATE TABLE WildEncounterMeetingSpot
@@ -12852,132 +12844,6 @@ meet_the_guardians_talks = [
    )
 ]
 
-meet_the_guardian_talks_date_times = [
-   # Monday talks
-   (
-      'Arctic Wolf',                # Name--species the talk is about
-      1,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                    # Time of day
-   ),
-   (
-      'Sumatran Tiger',             # Name--species the talk is about
-      1,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                     # Time of day
-   ),
-   (
-      'Komodo Dragon',              # Name--species the talk is about
-      1,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                     # Time of day
-   ),
-
-   # Tuesday talks
-   (
-      'Slender-Tailed Meerkat',     # Name--species the talk is about
-      2,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                    # Time of day
-   ),
-   (
-      'Highland Cattle',            # Name--species the talk is about
-      2,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                     # Time of day
-   ),
-   (
-      'Domestic Goat',              # Name--species the talk is about
-      2,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                     # Time of day
-   ),
-
-   # Wednesday talks
-   (
-      'North American River Otter', # Name--species the talk is about
-      3,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                    # Time of day
-   ),
-   (
-      'Bactrian Camel',             # Name--species the talk is about
-      3,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                     # Time of day
-   ),
-   (
-      'Nile Soft-Shelled Turtle',   # Name--species the talk is about
-      3,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                     # Time of day
-   ),
-
-   # Thursday talks
-   (
-      'Snow Leopard',               # Name--species the talk is about
-      4,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                    # Time of day
-   ),
-   (
-      'Spotted Hyena',              # Name--species the talk is about
-      4,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                     # Time of day
-   ),
-   (
-      'Western Lowland Gorilla',    # Name--species the talk is about
-      4,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                     # Time of day
-   ),
-
-   # Friday talks
-   (
-      'Amur Tiger',                 # Name--species the talk is about
-      5,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                    # Time of day
-   ),
-   (
-      'Sumatran Orangutan',         # Name--species the talk is about
-      5,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                     # Time of day
-   ),
-   (
-      'New World Primates',         # Name--species the talk is about
-      5,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                     # Time of day
-   ),
-
-   # Saturday talks
-   (
-      'North American River Otter', # Name--species the talk is about
-      6,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                    # Time of day
-   ),
-   (
-      'White-Handed Gibbon',        # Name--species the talk is about
-      6,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                     # Time of day
-   ),
-   (
-      'Northern Bald Eagle',        # Name--species the talk is about
-      6,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                     # Time of day
-   ),
-   (
-      'Snow Leopard',               # Name--species the talk is about
-      6,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:30 PM'                     # Time of day
-   ),
-
-   # Sunday talks
-   (
-      'Amur Tiger',                 # Name--species the talk is about
-      7,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                    # Time of day
-   ),
-   (
-      'African Lion',               # Name--species the talk is about
-      7,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                     # Time of day
-   ),
-   (
-      'Domestic Goat',              # Name--species the talk is about
-      7,                            # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                     # Time of day
-   )
-]
-
 wild_encounter_meeting_spots = [
    (
       '''Wild Encounter - Domain Hill Meeting Spot''',
@@ -13470,13 +13336,6 @@ cursor.executemany( ''' INSERT INTO MeetTheGuardiansTalk (
                            Y_COORD
                         ) 
                         VALUES (?, ?, ?, ?) ''', meet_the_guardians_talks )
-
-cursor.executemany( ''' INSERT INTO MeetTheGuardiansTalkDateTime (
-                           NAME,
-                           DAY_OF_WEEK,
-                           TIME_OF_DAY
-                        ) 
-                        VALUES (?, ?, ?) ''', meet_the_guardian_talks_date_times )
 
 cursor.executemany( ''' INSERT INTO WildEncounterMeetingSpot (
                            NAME,
