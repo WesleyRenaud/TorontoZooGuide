@@ -255,7 +255,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
-
          month = data.get( 'month' )
          day = data.get( 'day' )
          guardians_talks_to_include = data.get( 'guardiansTalksToInclude' )
@@ -268,21 +267,28 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"guardians_talks": [guardians_talks.to_dict() for guardians_talks in guardians_talks]}
+         response = {"guardians_talks": [guardians_talk.to_dict() for guardians_talk in guardians_talks]}
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
-      elif self.path == '/get-wild-encounter-meeting-spots':
+      elif self.path == '/get-wild-encounters':
          content_length = int( self.headers[ 'Content-Length'] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
-         wild_encounter_meeting_spots = self.database.get_wild_encounter_meeting_spots()
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+         wild_encounters_to_include = data.get( 'wildEncountersToInclude' )
+
+         wild_encounters = self.database.get_wild_encounters(
+            month=month,
+            day=day,
+            wild_encounters_to_include=wild_encounters_to_include )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"wild_encounter_meeting_spots": [wild_encounter_meeting_spot.to_dict() for wild_encounter_meeting_spot in wild_encounter_meeting_spots]}
+         response = {"wild_encounters": [wild_encounter.to_dict() for wild_encounter in wild_encounters]}
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
@@ -300,13 +306,11 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_attractions = bool( data.get( 'includeAttractions' ) )
          include_zoomobile_stations = bool( data.get( 'includeZoomobileStations' ) )
          include_guardians_talks = bool( data.get( 'includeGuardiansTalks' ) )
-         include_wild_encounter_meeting_spots = bool( data.get( 'includeWildEncounterMeetingSpots' ) )
          include_wild_encounters = bool( data.get( 'includeWildEncounters' ) )
 
          month = data.get( 'month' )
          day = data.get( 'day' )
          temp = data.get( 'temp' )
-         day_of_week = data.get( 'dayOfWeek' )
 
          include_off_display_animals = bool( data.get( 'includeOffDisplayAnimals' ) )
          include_closed_restaurants = bool( data.get( 'includeClosedRestaurants' ) )
@@ -319,7 +323,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          gift_shops_json = []
          attractions_json = []
          zoomobile_stations_json = []
-         wild_encounter_meeting_spots_json = []
          wild_encounters_json = []
          guardians_talks_json = []
 
@@ -392,15 +395,8 @@ class MyHandler( BaseHTTPRequestHandler ):
                   d['type'] = d.get( 'type', 'guardiansTalk' )
                   guardians_talks_json.append( d )
 
-         if include_wild_encounter_meeting_spots:
-            wild_encounter_meeting_spots = self.database.get_wild_encounter_meeting_spots_matching_query( query=query ) or []
-            for wild_encounter_meeting_spot in wild_encounter_meeting_spots:
-                  d = wild_encounter_meeting_spot.to_dict()
-                  d['type'] = d.get( 'type', 'wildEncounterMeetingSpot' )
-                  wild_encounter_meeting_spots_json.append( d )
-
          if include_wild_encounters:
-            wild_encounters = self.database.get_wild_encounters_matching_query( query=query, day_of_week=day_of_week ) or []
+            wild_encounters = self.database.get_wild_encounters_matching_query( query=query, month=month, day=day ) or []
             for wild_encounter in wild_encounters:
                   d = wild_encounter.to_dict()
                   d['type'] = d.get( 'type', 'wildEncounter' )
@@ -414,7 +410,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             'gift_shops': gift_shops_json,
             'attractions': attractions_json,
             'zoomobile_stations': zoomobile_stations_json,
-            'wild_encounter_meeting_spots': wild_encounter_meeting_spots_json,
             'wild_encounters': wild_encounters_json,
             'guardians_talks': guardians_talks_json
          }
@@ -478,8 +473,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   guardians_talks_json.append( d )
 
          if wild_encounters_to_include:
-            wild_encounters = self.database.get_wild_encounter_meeting_spots_for_wild_encounters(
-               wild_encounters_to_include=wild_encounters_to_include )
+            wild_encounters = self.database.get_wild_encounters( wild_encounters_to_include=wild_encounters_to_include )
             for wild_encounter in wild_encounters:
                   d = wild_encounter.to_dict()
                   d['type'] = d.get( 'type', 'wildEncounter' )
@@ -616,6 +610,41 @@ class MyHandler( BaseHTTPRequestHandler ):
             'occurrences': occurrences,
             'talk': talk,
             'location': location
+         }
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      if self.path == '/get-wild-encounter-names':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         wild_encounters = self.database.get_wild_encounter_names()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"wild_encounters": wild_encounters}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-wild-encounter-occurrences':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         wild_encounter = data.get( 'wildEncounter' )
+
+         occurrences = self.database.get_wild_encounter_occurrences( wild_encounter=wild_encounter )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'occurrences': occurrences,
+            'wildEncounter': wild_encounter
          }
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
@@ -1432,6 +1461,125 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response['error'] = f'Could not cancel "{talk}" at "{location}" on {date} at {time}.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-wild-encounter-schedule':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         wild_encounter = data.get( 'wildEncounter' )
+         schedule_start_date = data.get( 'startDate' )
+         schedule_end_date = data.get( 'endDate' )
+         encounter_time = data.get( 'time' )
+
+         monday = data.get( 'monday' )
+         tuesday = data.get( 'tuesday' )
+         wednesday = data.get( 'wednesday' )
+         thursday = data.get( 'thursday' )
+         friday = data.get( 'friday' )
+         saturday = data.get( 'saturday' )
+         sunday = data.get( 'sunday' )
+
+         message = data.get( 'message' )
+
+         success = self.database.set_wild_encounter_schedule(
+            wild_encounter=wild_encounter,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
+            encounter_time=encounter_time,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'wildEncounter': wild_encounter,
+            'startDate': schedule_start_date,
+            'endDate': schedule_end_date,
+            'time': encounter_time,
+            'monday': monday,
+            'tuesday': tuesday,
+            'wednesday': wednesday,
+            'thursday': thursday,
+            'friday': friday,
+            'saturday': saturday,
+            'sunday': sunday,
+            'message': message
+         }
+
+         if not success:
+            response['error'] = f'Could not set schedule for "{wild_encounter}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/end-wild-encounter-schedule':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         wild_encounter = data.get( 'wildEncounter' )
+         schedule_end_date = data.get( 'endDate' )
+
+         success = self.database.end_wild_encounter_schedule(
+            wild_encounter=wild_encounter,
+            schedule_end_date=schedule_end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'wildEncounter': wild_encounter,
+            'endDate': schedule_end_date
+         }
+
+         if not success:
+            response['error'] = f'Could not end schedule for "{wild_encounter}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/cancel-wild-encounter-occurrence':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         wild_encounter = data.get( 'wildEncounter' )
+         date = data.get( 'date' )
+         time = data.get( 'time' )
+
+         success = self.database.cancel_wild_encounter_occurrence(
+            wild_encounter=wild_encounter,
+            date=date,
+            time=time )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'wildEncounter': wild_encounter,
+            'date': date,
+            'time': time
+         }
+
+         if not success:
+            response['error'] = f'Could not cancel "{wild_encounter}" on {date} at {time}.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
          

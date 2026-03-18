@@ -35,6 +35,11 @@ import { createEndGuardiansTalkScheduleController } from './consoleOperations/gu
 import { createCancelGuardiansTalkOccurrenceController } from './consoleOperations/guardiansTalks/controllers/cancelGuardiansTalkOccurrence.js';
 import { createGuardiansTalkLocationFilterController } from './consoleOperations/guardiansTalks/controllers/guardiansTalkLocationFilter.js';
 
+import { createWildEncounterScheduleController } from './consoleOperations/wildEncounters/controllers/wildEncounterSchedule.js';
+import { createEndWildEncounterScheduleController } from './consoleOperations/wildEncounters/controllers/endWildEncounterSchedule.js';
+import { createCancelWildEncounterOccurrenceController } from './consoleOperations/wildEncounters/controllers/cancelWildEncounterOccurrence.js';
+import { createWildEncounterOccurrenceFilterController } from './consoleOperations/wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
+
 import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animals/controllers/animalSpeciesAutocomplete.js';
 
 import { createOffDisplayPanelHtml } from './consoleOperations/animals/panels/offDisplayPanel.js';
@@ -67,6 +72,10 @@ import { createZoomobileRoutePanelHtml } from './consoleOperations/zoomobile/pan
 import { createGuardiansTalkSchedulePanelHtml } from './consoleOperations/guardiansTalks/panels/guardiansTalkSchedulePanel.js';
 import { createEndGuardiansTalkSchedulePanelHtml } from './consoleOperations/guardiansTalks/panels/endGuardiansTalkSchedulePanel.js';
 import { createCancelGuardiansTalkOccurrencePanelHtml } from './consoleOperations/guardiansTalks/panels/cancelGuardiansTalkOccurrencePanel.js';
+
+import { createWildEncounterSchedulePanelHtml } from './consoleOperations/wildEncounters/panels/wildEncounterSchedulePanel.js';
+import { createEndWildEncounterSchedulePanelHtml } from './consoleOperations/wildEncounters/panels/endWildEncounterSchedulePanel.js';
+import { createCancelWildEncounterOccurrencePanelHtml } from './consoleOperations/wildEncounters/panels/cancelWildEncounterOccurrencePanel.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -102,6 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createGuardiansTalkSchedulePanelHtml()}
       ${createEndGuardiansTalkSchedulePanelHtml()}
       ${createCancelGuardiansTalkOccurrencePanelHtml()}
+      ${createWildEncounterSchedulePanelHtml()}
+      ${createEndWildEncounterSchedulePanelHtml()}
+      ${createCancelWildEncounterOccurrencePanelHtml()}
    `;
 
    const offDisplayPanel = document.getElementById('offDisplayPanel');
@@ -128,6 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
    const guardiansTalkSchedulePanel = document.getElementById('guardiansTalkSchedulePanel');
    const endGuardiansTalkSchedulePanel = document.getElementById('endGuardiansTalkSchedulePanel');
    const cancelGuardiansTalkOccurrencePanel = document.getElementById('cancelGuardiansTalkOccurrencePanel');
+   const wildEncounterSchedulePanel = document.getElementById('wildEncounterSchedulePanel');
+   const endWildEncounterSchedulePanel = document.getElementById('endWildEncounterSchedulePanel');
+   const cancelWildEncounterOccurrencePanel = document.getElementById('cancelWildEncounterOccurrencePanel');
 
    const offDisplaySpeciesEl = document.getElementById('offDisplaySpecies');
    const onDisplaySpeciesEl = document.getElementById('onDisplaySpecies');
@@ -171,6 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
    const endGuardiansTalkScheduleTalkNameEl = document.getElementById('endGuardiansTalkScheduleTalkName');
    const cancelGuardiansTalkOccurrenceLocationEl = document.getElementById('cancelGuardiansTalkOccurrenceLocation');
    const cancelGuardiansTalkOccurrenceTalkNameEl = document.getElementById('cancelGuardiansTalkOccurrenceTalkName');
+   const wildEncounterScheduleNameEl = document.getElementById('wildEncounterScheduleName');
+   const endWildEncounterScheduleNameEl = document.getElementById('endWildEncounterScheduleName');
+   const cancelWildEncounterOccurrenceNameEl = document.getElementById('cancelWildEncounterOccurrenceName');
 
    const offDisplayStartDateEl = document.getElementById('offDisplayStartDate');
    const offDisplayEndDateEl = document.getElementById('offDisplayEndDate');
@@ -247,6 +265,22 @@ document.addEventListener('DOMContentLoaded', () => {
    const cancelGuardiansTalkOccurrenceDateEl = document.getElementById('cancelGuardiansTalkOccurrenceDate');
    const cancelGuardiansTalkOccurrenceTimeEl = document.getElementById('cancelGuardiansTalkOccurrenceTime');
 
+   const wildEncounterScheduleStartDateEl = document.getElementById('wildEncounterScheduleStartDate');
+   const wildEncounterScheduleEndDateEl = document.getElementById('wildEncounterScheduleEndDate');
+   const wildEncounterScheduleTimeEl = document.getElementById('wildEncounterScheduleTime');
+   const wildEncounterScheduleMondayEl = document.getElementById('wildEncounterScheduleMonday');
+   const wildEncounterScheduleTuesdayEl = document.getElementById('wildEncounterScheduleTuesday');
+   const wildEncounterScheduleWednesdayEl = document.getElementById('wildEncounterScheduleWednesday');
+   const wildEncounterScheduleThursdayEl = document.getElementById('wildEncounterScheduleThursday');
+   const wildEncounterScheduleFridayEl = document.getElementById('wildEncounterScheduleFriday');
+   const wildEncounterScheduleSaturdayEl = document.getElementById('wildEncounterScheduleSaturday');
+   const wildEncounterScheduleSundayEl = document.getElementById('wildEncounterScheduleSunday');
+
+   const endWildEncounterScheduleDateEl = document.getElementById('endWildEncounterScheduleDate');
+
+   const cancelWildEncounterOccurrenceDateEl = document.getElementById('cancelWildEncounterOccurrenceDate');
+   const cancelWildEncounterOccurrenceTimeEl = document.getElementById('cancelWildEncounterOccurrenceTime');
+
    const guardiansTalkScheduleLocationFilterController =
       createGuardiansTalkLocationFilterController({
          locationEl: guardiansTalkScheduleLocationEl,
@@ -263,6 +297,13 @@ document.addEventListener('DOMContentLoaded', () => {
       createGuardiansTalkLocationFilterController({
          locationEl: cancelGuardiansTalkOccurrenceLocationEl,
          talkNameEl: cancelGuardiansTalkOccurrenceTalkNameEl,
+      });
+
+   const wildEncounterOccurrenceFilterController =
+      createWildEncounterOccurrenceFilterController({
+         wildEncounterEl: cancelWildEncounterOccurrenceNameEl,
+         dateEl: cancelWildEncounterOccurrenceDateEl,
+         timeEl: cancelWildEncounterOccurrenceTimeEl,
       });
 
    function activatePanel(panelEl) {
@@ -678,6 +719,54 @@ document.addEventListener('DOMContentLoaded', () => {
       talkLocationFilterController: cancelGuardiansTalkOccurrenceLocationFilterController,
    });
 
+   createWildEncounterScheduleController({
+      showButtonEl: document.getElementById('showWildEncounterScheduleForm'),
+      panelEl: wildEncounterSchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitWildEncounterSchedule'),
+      statusEl: document.getElementById('wildEncounterScheduleStatus'),
+      wildEncounterEl: wildEncounterScheduleNameEl,
+      startDateEl: wildEncounterScheduleStartDateEl,
+      endDateEl: wildEncounterScheduleEndDateEl,
+      timeEl: wildEncounterScheduleTimeEl,
+      mondayEl: wildEncounterScheduleMondayEl,
+      tuesdayEl: wildEncounterScheduleTuesdayEl,
+      wednesdayEl: wildEncounterScheduleWednesdayEl,
+      thursdayEl: wildEncounterScheduleThursdayEl,
+      fridayEl: wildEncounterScheduleFridayEl,
+      saturdayEl: wildEncounterScheduleSaturdayEl,
+      sundayEl: wildEncounterScheduleSundayEl,
+      messageEl: document.getElementById('wildEncounterScheduleMessage'),
+      activatePanel,
+      hidePanels,
+   });
+
+   createEndWildEncounterScheduleController({
+      showButtonEl: document.getElementById('showEndWildEncounterScheduleForm'),
+      panelEl: endWildEncounterSchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitEndWildEncounterSchedule'),
+      statusEl: document.getElementById('endWildEncounterScheduleStatus'),
+      wildEncounterEl: endWildEncounterScheduleNameEl,
+      endDateEl: endWildEncounterScheduleDateEl,
+      activatePanel,
+      hidePanels,
+   });
+
+   createCancelWildEncounterOccurrenceController({
+      showButtonEl: document.getElementById('showCancelWildEncounterOccurrenceForm'),
+      panelEl: cancelWildEncounterOccurrencePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitCancelWildEncounterOccurrence'),
+      statusEl: document.getElementById('cancelWildEncounterOccurrenceStatus'),
+      wildEncounterEl: cancelWildEncounterOccurrenceNameEl,
+      dateEl: cancelWildEncounterOccurrenceDateEl,
+      timeEl: cancelWildEncounterOccurrenceTimeEl,
+      activatePanel,
+      hidePanels,
+      occurrenceFilterController: wildEncounterOccurrenceFilterController,
+   });
+
    initOffDisplayDatePickers(
       offDisplayStartDateEl,
       offDisplayEndDateEl
@@ -740,11 +829,6 @@ document.addEventListener('DOMContentLoaded', () => {
       null
    );
 
-   initOffDisplayDatePickers(
-      cancelGuardiansTalkOccurrenceDateEl,
-      null
-   );
-
    initVisibilityScheduleDateTimePickers(
       guardiansTalkScheduleStartDateEl,
       guardiansTalkScheduleEndDateEl,
@@ -752,10 +836,20 @@ document.addEventListener('DOMContentLoaded', () => {
       null
    );
 
+   initOffDisplayDatePickers(
+      wildEncounterScheduleStartDateEl,
+      wildEncounterScheduleEndDateEl
+   );
+
+   initOffDisplayDatePickers(
+      endWildEncounterScheduleDateEl,
+      null
+   );
+
    initVisibilityScheduleDateTimePickers(
-      cancelGuardiansTalkOccurrenceDateEl,
-      null,
-      cancelGuardiansTalkOccurrenceTimeEl,
+      wildEncounterScheduleStartDateEl,
+      wildEncounterScheduleEndDateEl,
+      wildEncounterScheduleTimeEl,
       null
    );
 

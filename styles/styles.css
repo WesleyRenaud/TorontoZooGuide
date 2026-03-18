@@ -880,7 +880,12 @@ nav ul li a:hover {
    display: none;
 }
 
-.marker.marker-attraction, .marker.marker-zoomobile-station, .marker-wild-encounter-meeting-spot {
+.marker-wild-encounter {
+   width: 48px;
+   height: 48px;
+}
+
+.marker.marker-attraction, .marker.marker-zoomobile-station {
    width: 32px;
    height: 32px;   
 }

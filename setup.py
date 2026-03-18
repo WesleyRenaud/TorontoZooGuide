@@ -160,14 +160,6 @@ cursor.execute( ''' CREATE TABLE WildEncounter
                      FOREIGN KEY (MEETING_SPOT) REFERENCES WildEncounterMeetingSpot(NAME),
                      PRIMARY KEY (NAME) ); ''' )
 
-cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingTime;' )
-cursor.execute( ''' CREATE TABLE WildEncounterMeetingTime
-                  (  NAME        TEXT        NOT NULL,
-                     DAY_OF_WEEK INTEGER     NOT NULL CHECK(DAY_OF_WEEK BETWEEN 1 AND 7),
-                     TIME_OF_DAY VARCHAR(8)  NOT NULL,      
-                     FOREIGN KEY (NAME) REFERENCES WildEncounter(NAME),
-                     PRIMARY KEY (NAME, DAY_OF_WEEK, TIME_OF_DAY) ); ''' )
-
 # Dynamic tables
 
 cursor.execute( ''' CREATE TABLE IF NOT EXISTS AnimalStatus
@@ -751,9 +743,107 @@ if 'TALK_TIME' not in guardians_talk_cancellation_columns:
       'ALTER TABLE GuardiansTalkCancellation ADD COLUMN TALK_TIME TEXT NOT NULL DEFAULT "";'
    )
 
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS WildEncounterSchedule
+                  (  WILD_ENCOUNTER         VARCHAR(64) NOT NULL,
+                     SCHEDULE_START_DATE    DATE        NOT NULL,
+                     SCHEDULE_END_DATE      DATE,
+                     MONDAY                 BOOL        NOT NULL DEFAULT 0,
+                     TUESDAY                BOOL        NOT NULL DEFAULT 0,
+                     WEDNESDAY              BOOL        NOT NULL DEFAULT 0,
+                     THURSDAY               BOOL        NOT NULL DEFAULT 0,
+                     FRIDAY                 BOOL        NOT NULL DEFAULT 0,
+                     SATURDAY               BOOL        NOT NULL DEFAULT 0,
+                     SUNDAY                 BOOL        NOT NULL DEFAULT 0,
+                     ENCOUNTER_TIME         TEXT        NOT NULL,
+                     SCHEDULE_MESSAGE       TEXT,
+                     PRIMARY KEY (WILD_ENCOUNTER),
+                     FOREIGN KEY (WILD_ENCOUNTER) REFERENCES WildEncounter(NAME) ); ''' )
+
+wild_encounter_schedule_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( WildEncounterSchedule );' ).fetchall()
+}
+
+if 'SCHEDULE_START_DATE' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN SCHEDULE_START_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+   )
+
+if 'SCHEDULE_END_DATE' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN SCHEDULE_END_DATE DATE;'
+   )
+
+if 'MONDAY' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN MONDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'TUESDAY' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN TUESDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'WEDNESDAY' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN WEDNESDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'THURSDAY' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN THURSDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'FRIDAY' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN FRIDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SATURDAY' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN SATURDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SUNDAY' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN SUNDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'ENCOUNTER_TIME' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN ENCOUNTER_TIME TEXT NOT NULL DEFAULT "";'
+   )
+
+if 'SCHEDULE_MESSAGE' not in wild_encounter_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
+   )
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS WildEncounterCancellation
+                  (  WILD_ENCOUNTER        VARCHAR(64) NOT NULL,
+                     CANCELLATION_DATE     DATE        NOT NULL,
+                     ENCOUNTER_TIME        TEXT        NOT NULL,
+                     PRIMARY KEY (WILD_ENCOUNTER, CANCELLATION_DATE, ENCOUNTER_TIME),
+                     FOREIGN KEY (WILD_ENCOUNTER) REFERENCES WildEncounter(NAME) ); ''' )
+
+wild_encounter_cancellation_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( WildEncounterCancellation );' ).fetchall()
+}
+
+if 'CANCELLATION_DATE' not in wild_encounter_cancellation_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterCancellation ADD COLUMN CANCELLATION_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+   )
+
+if 'ENCOUNTER_TIME' not in wild_encounter_cancellation_columns:
+   cursor.execute(
+      'ALTER TABLE WildEncounterCancellation ADD COLUMN ENCOUNTER_TIME TEXT NOT NULL DEFAULT "";'
+   )
+
 # Old tables
 
 cursor.execute( 'DROP TABLE IF EXISTS MeetTheGuardiansTalkDateTime;' )
+
+cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingTime;' )
 
 regions = [
    (
@@ -2355,7 +2445,7 @@ animals = [
       'Bos Taurus',
       -25,                                                           # Minimum temperature (only for animals with outdoor viewing)
       1.0,                                                           # Snow resistance (only for animals with outdoor viewing)
-      '''The highlang cattle can be seen by taking the Eurasia Wilds loop, and taking the offshoot path away from the red pandas.''',
+      '''The highland cattle can be seen by taking the Eurasia Wilds loop, and taking the offshoot path away from the red pandas.''',
       '''The highland cattle can be seen outside all year.''',
       '''Highland Cattle are a robust, long-haired breed of domestic bovine, easily recognised by their shaggy coat and long, curved
          horns. Their dense hair, ranging from ginger to black, grey, or dun, protects them against harsh weather. They have a broad
@@ -12913,7 +13003,7 @@ wild_encounter_meeting_spots = [
       63    # Y coordinate on map
    ),
    (
-      '''Wild Encounter - Penguin Entrance Meeting Spot''',
+      '''Wild Encounter - Penguin Meeting Spot''',
       43.5, # X coordinate on map
       57.5  # Y coordinate on map
    ),
@@ -12958,7 +13048,7 @@ wild_encounter_meeting_spots = [
       61    # Y coordinate on map
    ),
    (
-      '''Wild Encounter - First Nations Art Garden''',
+      '''Wild Encounter - First Nations Art Garden Meeting Spot''',
       51,   # X coordinate on map
       35    # Y coordinate on map
    )
@@ -12981,7 +13071,7 @@ wild_encounters = [
       '''https://www.torontozoo.com/tickets/weburrows'''
    ),
    (
-      '''Highlang Cattle''',                                         # Name
+      '''Highland Cattle''',                                         # Name
       '''Wild Encounter - Eurasia Zoomobile Meeting Spot''',         # Meeting spot
       '''https://www.torontozoo.com/tickets/wecows'''
    ),
@@ -13019,252 +13109,11 @@ wild_encounters = [
       '''Guardians of White Rhinos''',                               # Name
       '''Wild Encounter - Penguin Meeting Spot''',                   # Meeting spot
       '''https://www.torontozoo.com/tickets/wewhiterhino'''
-   )
-]
-
-wild_encounter_meeting_times = [
-   # Monday encounters
-   (
-      '''Sunrise in Sumatra''',                    # Name
-      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '8:45 AM'                                    # Time of day
    ),
    (
-      '''Keeper's Choice: Animal Ambassadors''',   # Name
-      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '10:00 AM'                                   # Time of day
-   ),
-   (
-      '''African Rainforest''',                    # Name
-      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:30 AM'                                   # Time of day
-   ),
-   (
-      '''Burrows & Caves''',                       # Name
-      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                                    # Time of day
-   ),
-   (
-      '''Kangaroo''',                              # Name
-      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:30 PM'                                    # Time of day
-   ),
-   (
-      '''Guardians of White Rhinos''',             # Name
-      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                                    # Time of day
-   ),
-   (
-      '''Guardians of Snow Leopards''',            # Name
-      1,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:30 PM'                                    # Time of day
-   ),
-
-   # Tuesday encounters
-   (
-      '''Sunrise in Sumatra''',                    # Name
-      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '8:45 AM'                                    # Time of day
-   ),
-   (
-      '''Highland Cattle''',                       # Name
-      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '10:00 AM'                                   # Time of day
-   ),
-   (
-      '''Scales & Tales of Americas''',            # Name
-      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                                   # Time of day
-   ),
-   (
-      '''Burrows & Caves''',                       # Name
-      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                                    # Time of day
-   ),
-   (
-      '''Guardians of White Rhinos''',             # Name
-      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                                    # Time of day
-   ),
-   (
-      '''From Howls to Honks''',                   # Name
-      2,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '3:00 PM'                                    # Time of day
-   ),
-
-   # Wednesday encounters
-   (
-      '''Sunrise in Sumatra''',                    # Name
-      3,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '8:45 AM'                                    # Time of day
-   ),
-   (
-      '''African Rainforest''',                    # Name
-      3,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:30 AM'                                   # Time of day
-   ),
-   (
-      '''Kangaroo''',                              # Name
-      3,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:30 PM'                                    # Time of day
-   ),
-   (
-      '''Guardians of Snow Leopards''',            # Name
-      3,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:30 PM'                                    # Time of day
-   ),
-
-   # Thursday encounters
-   (
-      '''Sunrise in Sumatra''',                    # Name
-      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '8:45 AM'                                    # Time of day
-   ),
-   (
-      '''Highland Cattle''',                       # Name
-      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '10:00 AM'                                   # Time of day
-   ),
-   (
-      '''Scales & Tales of Americas''',            # Name
-      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                                   # Time of day
-   ),
-   (
-      '''Burrows & Caves''',                       # Name
-      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                                    # Time of day
-   ),
-   (
-      '''Guardians of White Rhinos''',             # Name
-      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                                    # Time of day
-   ),
-   (
-      '''From Howls to Honks''',                   # Name
-      4,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '3:00 PM'                                    # Time of day
-   ),
-
-   # Friday encounters
-   (
-      '''Sunrise in Sumatra''',                    # Name
-      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '8:45 AM'                                    # Time of day
-   ),
-   (
-      '''Highland Cattle''',                       # Name
-      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '10:00 AM'                                   # Time of day
-   ),
-   (
-      '''Scales & Tales of Americas''',            # Name
-      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                                   # Time of day
-   ),
-   (
-      '''African Rainforest''',                    # Name
-      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:30 AM'                                   # Time of day
-   ),
-   (
-      '''Burrows & Caves''',                       # Name
-      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                                    # Time of day
-   ),
-   (
-      '''Kangaroo''',                              # Name
-      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:30 PM'                                    # Time of day
-   ),
-   (
-      '''Guardians of White Rhinos''',             # Name
-      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                                    # Time of day
-   ),
-   (
-      '''Guardians of Snow Leopards''',            # Name
-      5,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:30 PM'                                    # Time of day
-   ),
-
-   # Saturday encounters
-   (
-      '''Sunrise in Sumatra''',                    # Name
-      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '8:45 AM'                                    # Time of day
-   ),
-   (
-      '''Ballin' with the Armadillos''',           # Name
-      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '10:00 AM'                                   # Time of day
-   ),
-   (
-      '''Scales & Tales of Americas''',            # Name
-      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                                   # Time of day
-   ),
-   (
-      '''African Rainforest''',                    # Name
-      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:30 AM'                                   # Time of day
-   ),
-   (
-      '''Burrows & Caves''',                       # Name
-      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                                    # Time of day
-   ),
-   (
-      '''Kangaroo''',                              # Name
-      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:30 PM'                                    # Time of day
-   ),
-   (
-      '''Guardians of White Rhinos''',             # Name
-      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:00 PM'                                    # Time of day
-   ),
-   (
-      '''From Howls to Honks''',                   # Name
-      6,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '3:00 PM'                                    # Time of day
-   ),
-
-   # Sunday encounters
-   (
-      '''Sunrise in Sumatra''',                    # Name
-      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '8:45 AM'                                    # Time of day
-   ),
-   (
-      '''Highland Cattle''',                       # Name
-      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '10:00 AM'                                   # Time of day
-   ),
-   (
-      '''Scales & Tales of Americas''',            # Name
-      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:00 AM'                                   # Time of day
-   ),
-   (
-      '''African Rainforest''',                    # Name
-      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '11:30 AM'                                   # Time of day
-   ),
-   (
-      '''Burrows & Caves''',                       # Name
-      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:00 PM'                                    # Time of day
-   ),
-   (
-      '''Kangaroo''',                              # Name
-      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '1:30 PM'                                    # Time of day
-   ),
-   (
-      '''Guardians of Snow Leopards''',            # Name
-      7,                                           # Day of the week (Mon = 1, Tue = 2, ...)
-      '2:30 PM'                                    # Time of day
+      '''The Tiny Tour''',                                           # Name
+      '''Wild Encounter - Discovery Zone Meeting Spot''',            # Meeting spot
+      '''https://www.torontozoo.com/tickets/wetiny'''
    )
 ]
 
@@ -13412,13 +13261,6 @@ cursor.executemany( ''' INSERT INTO WildEncounter (
                            LINK
                         ) 
                         VALUES (?, ?, ?) ''', wild_encounters )
-
-cursor.executemany( ''' INSERT INTO WildEncounterMeetingTime (
-                           NAME,
-                           DAY_OF_WEEK,
-                           TIME_OF_DAY
-                        ) 
-                        VALUES (?, ?, ?) ''', wild_encounter_meeting_times )
 
 conn.commit()
 conn.close()

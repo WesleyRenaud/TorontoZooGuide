@@ -49,7 +49,7 @@ export function createMarkerLayer({ mapInner, tooltip, hover }) {
 
          // ✅ IMPORTANT: determine type from THIS marker's items
          const type = String(itemsAtPoint[0]?.type || '');
-         const clickable = type !== 'restroom' && type !== 'wildEncounterMeetingSpot';
+         const clickable = type !== 'restroom';
 
          // ✅ IMPORTANT: attach with THIS marker's items
          tooltip.attachToMarker(el, itemsAtPoint, hover, { clickable });

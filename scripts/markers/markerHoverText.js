@@ -75,21 +75,12 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
-   // Wild Encounter Meeting Spots ✅
-   if (type === 'wildEncounterMeetingSpot') {
-      if (itemsAtPoint.length === 1) {
-         return itemsAtPoint[0].name || 'Wild Encounter Meeting Spot';
-      }
-      const first = itemsAtPoint[0].name || 'Wild Encounter Meeting Spot';
-      return `${first} + ${itemsAtPoint.length - 1}`;
-   }
-
    // Wild Encounters ✅
    if (type === 'wildEncounter') {
       if (itemsAtPoint.length === 1) {
          return `Wild Encounter • ${itemsAtPoint[0].name} - Meeting Spot` || 'Wild Encounter Meeting Spot';
       }
       const first = itemsAtPoint[0].name || 'Wild Encounter Meeting Spot';
-      return `${first} + ${itemsAtPoint.length - 1}`;
+      return `Wild Encounter • ${first} + ${itemsAtPoint.length - 1} more - Meeting Spot`;
    }
 }

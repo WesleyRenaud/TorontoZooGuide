@@ -1144,80 +1144,35 @@ class Database():
       return guardians_talks
    
 
-   def get_wild_encounter_meeting_spots( self ):
+   def get_wild_encounters( self, month, day, wild_encounters_to_include=[], itinerary_mode=False ):
       cur = self.conn.cursor()
 
-      data = cur.execute(
-         """   SELECT
-                  w.NAME,
-                  w.X_COORD,
-                  w.Y_COORD
-               FROM WildEncounterMeetingSpot w;
-         """ )
-      
-      wild_encounter_meeting_spot_data = data.fetchall()
-
-      wild_encounter_meeting_spots = []
-
-      for wild_encounter_meeting_spot in wild_encounter_meeting_spot_data:
-         wild_encounter_meeting_spots.append(
-            zoo.WildEncounterMeetingSpot(
-               name=wild_encounter_meeting_spot['NAME'],
-               x_coord=wild_encounter_meeting_spot['X_COORD'],
-               y_coord=wild_encounter_meeting_spot['Y_COORD'] ) )
-
-      cur.close()
-
-      return wild_encounter_meeting_spots
-   
-
-   def get_wild_encounter_meeting_spots_for_wild_encounters( self, wild_encounters_to_include ):
-      cur = self.conn.cursor()
-
-      wild_encounters = []
-
-      for wild_encounter in wild_encounters_to_include:
-         cur.execute(
-            """   SELECT
-                     m.NAME,
-                     m.X_COORD,
-                     m.Y_COORD,
-                     w.LINK
-                  FROM WildEncounterMeetingSpot m
-                  JOIN WildEncounter w
-                     ON m.NAME = w.MEETING_SPOT
-                  WHERE w.NAME = ?;
-            """,
-            ( wild_encounter, ) )
-
-         wild_encounter_data = cur.fetchone()
-
-         wild_encounters.append(
-            zoo.WildEncounter(
-               name=wild_encounter,
-               meeting_spot=wild_encounter_data['NAME'],
-               x_coord=wild_encounter_data['X_COORD'],
-               y_coord=wild_encounter_data['Y_COORD'],
-               link=wild_encounter_data['LINK'] ) )
-
-      cur.close()
-
-      return wild_encounters
-   
-
-   def get_wild_encounters( self ):
-      cur = self.conn.cursor()
+      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month=month ), int( day ) )
+      target_weekday = target_date.weekday()
+      target_date_str = target_date.isoformat()
 
       data = cur.execute(
          """   SELECT
                   w.NAME,
                   w.MEETING_SPOT,
                   w.LINK,
-                  m.DAY_OF_WEEK,
-                  m.TIME_OF_DAY
+                  m.X_COORD,
+                  m.Y_COORD,
+                  s.SCHEDULE_START_DATE,
+                  s.SCHEDULE_END_DATE,
+                  s.MONDAY,
+                  s.TUESDAY,
+                  s.WEDNESDAY,
+                  s.THURSDAY,
+                  s.FRIDAY,
+                  s.SATURDAY,
+                  s.SUNDAY,
+                  s.ENCOUNTER_TIME
                FROM WildEncounter w
-               JOIN WildEncounterMeetingTime m
-                  ON w.NAME = m.NAME;
+               JOIN WildEncounterMeetingSpot m
+                  ON w.MEETING_SPOT = m.NAME
+               JOIN WildEncounterSchedule s
+                  ON w.NAME = s.WILD_ENCOUNTER;
          """ )
 
       wild_encounter_data = data.fetchall()
@@ -1225,12 +1180,62 @@ class Database():
       wild_encounters = []
 
       for wild_encounter in wild_encounter_data:
-         wild_encounters.append(
-            zoo.WildEncounter(
-               name=wild_encounter['NAME'],
-               meeting_spot=wild_encounter['MEETING_SPOT'],
-               link=wild_encounter['LINK'],
-               time_of_day=wild_encounter['TIME_OF_DAY'] ) )
+         name = wild_encounter['NAME']
+         encounter_time = wild_encounter['ENCOUNTER_TIME']
+
+         start_ok = True
+         end_ok = True
+
+         if wild_encounter['SCHEDULE_START_DATE'] != None:
+            schedule_start_date = self.parse_date_value( value=wild_encounter['SCHEDULE_START_DATE'] )
+            start_ok = target_date >= schedule_start_date
+
+         if wild_encounter['SCHEDULE_END_DATE'] != None:
+            schedule_end_date = self.parse_date_value( value=wild_encounter['SCHEDULE_END_DATE'] )
+            end_ok = target_date <= schedule_end_date
+
+         weekday_ok = False
+
+         if target_weekday == 0:
+            weekday_ok = bool( wild_encounter['MONDAY'] )
+         elif target_weekday == 1:
+            weekday_ok = bool( wild_encounter['TUESDAY'] )
+         elif target_weekday == 2:
+            weekday_ok = bool( wild_encounter['WEDNESDAY'] )
+         elif target_weekday == 3:
+            weekday_ok = bool( wild_encounter['THURSDAY'] )
+         elif target_weekday == 4:
+            weekday_ok = bool( wild_encounter['FRIDAY'] )
+         elif target_weekday == 5:
+            weekday_ok = bool( wild_encounter['SATURDAY'] )
+         elif target_weekday == 6:
+            weekday_ok = bool( wild_encounter['SUNDAY'] )
+
+         cancellation_data = cur.execute(
+            """   SELECT 1
+                  FROM WildEncounterCancellation
+                  WHERE WILD_ENCOUNTER = ?
+                  AND CANCELLATION_DATE = ?
+                  AND ENCOUNTER_TIME = ?;
+            """,
+            (
+               name,
+               target_date_str,
+               encounter_time
+            ) )
+
+         is_cancelled = cancellation_data.fetchone() != None
+
+         if start_ok and end_ok and weekday_ok and not is_cancelled:
+            if not itinerary_mode or name in wild_encounters_to_include:
+               wild_encounters.append(
+                  zoo.WildEncounter(
+                     name=name,
+                     meeting_spot=wild_encounter['MEETING_SPOT'],
+                     link=wild_encounter['LINK'],
+                     time_of_day=encounter_time,
+                     x_coord=wild_encounter['X_COORD'],
+                     y_coord=wild_encounter['Y_COORD'] ) )
 
       cur.close()
 
@@ -1356,36 +1361,17 @@ class Database():
       ]
    
 
-   def get_wild_encounter_meeting_spots_matching_query( self, query ):
+   def get_wild_encounters_matching_query( self, query, month, day ):
+      wild_encounters = self.get_wild_encounters( month=month, day=day )
+
       if not query:
-         return self.get_wild_encounter_meeting_spots()
+         return wild_encounters
 
       query_lower = query.lower()
 
       return [
-         m for m in self.get_wild_encounter_meeting_spots()
-         if m.name and query_lower in m.name.lower()
-      ]
-   
-
-   def get_wild_encounters_matching_query( self, query, day_of_week=None ):
-      encounters = self.get_wild_encounters()
-
-      if not query:
-         return [
-            w for w in encounters
-            if day_of_week is None or w.day_of_week == day_of_week
-         ]
-
-      query_lower = query.lower()
-
-      return [
-         w for w in encounters
-         if (
-            w.name
-            and query_lower in w.name.lower()
-            and (day_of_week is None or w.day_of_week == day_of_week)
-         )
+         w for w in wild_encounters
+         if w.name and query_lower in w.name.lower()
       ]
    
 
@@ -1627,6 +1613,129 @@ class Database():
       cur.close()
 
       return guardians_talk_occurrences
+   
+
+   def get_wild_encounter_names( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         f"""  SELECT
+                  w.NAME
+               FROM WildEncounter w;
+         """ )
+
+      wild_encounters = [row[0] for row in data.fetchall()]
+      cur.close()
+
+      return wild_encounters
+   
+
+   def get_wild_encounter_occurrences( self, wild_encounter, days_ahead=60 ):
+      if not wild_encounter:
+         return []
+
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  ENCOUNTER_TIME
+               FROM WildEncounterSchedule
+               WHERE WILD_ENCOUNTER = ?;
+         """,
+         ( wild_encounter, ) )
+
+      wild_encounter_schedule = data.fetchone()
+
+      if wild_encounter_schedule == None:
+         cur.close()
+         return []
+
+      today = datetime.now().date()
+
+      schedule_start_date = today
+      schedule_end_date = today + timedelta( days=days_ahead )
+
+      if wild_encounter_schedule['SCHEDULE_START_DATE'] != None:
+         parsed_start_date = self.parse_date_value(
+            value=wild_encounter_schedule['SCHEDULE_START_DATE'] )
+         if parsed_start_date > schedule_start_date:
+            schedule_start_date = parsed_start_date
+
+      if wild_encounter_schedule['SCHEDULE_END_DATE'] != None:
+         parsed_end_date = self.parse_date_value(
+            value=wild_encounter_schedule['SCHEDULE_END_DATE'] )
+         if parsed_end_date < schedule_end_date:
+            schedule_end_date = parsed_end_date
+
+      if schedule_end_date < schedule_start_date:
+         cur.close()
+         return []
+
+      encounter_time = wild_encounter_schedule['ENCOUNTER_TIME']
+
+      cancellation_data = cur.execute(
+         """   SELECT
+                  CANCELLATION_DATE,
+                  ENCOUNTER_TIME
+               FROM WildEncounterCancellation
+               WHERE WILD_ENCOUNTER = ?;
+         """,
+         ( wild_encounter, ) )
+
+      cancelled_occurrence_keys = {
+         (
+            row['CANCELLATION_DATE'],
+            row['ENCOUNTER_TIME']
+         )
+         for row in cancellation_data.fetchall()
+      }
+
+      wild_encounter_occurrences = []
+
+      current_date = schedule_start_date
+
+      while current_date <= schedule_end_date:
+         weekday_ok = False
+         target_weekday = current_date.weekday()
+
+         if target_weekday == 0:
+            weekday_ok = bool( wild_encounter_schedule['MONDAY'] )
+         elif target_weekday == 1:
+            weekday_ok = bool( wild_encounter_schedule['TUESDAY'] )
+         elif target_weekday == 2:
+            weekday_ok = bool( wild_encounter_schedule['WEDNESDAY'] )
+         elif target_weekday == 3:
+            weekday_ok = bool( wild_encounter_schedule['THURSDAY'] )
+         elif target_weekday == 4:
+            weekday_ok = bool( wild_encounter_schedule['FRIDAY'] )
+         elif target_weekday == 5:
+            weekday_ok = bool( wild_encounter_schedule['SATURDAY'] )
+         elif target_weekday == 6:
+            weekday_ok = bool( wild_encounter_schedule['SUNDAY'] )
+
+         current_date_str = current_date.isoformat()
+
+         if weekday_ok and ( current_date_str, encounter_time ) not in cancelled_occurrence_keys:
+            wild_encounter_occurrences.append(
+               {
+                  'date': current_date_str,
+                  'time': encounter_time
+               } )
+
+         current_date += timedelta( days=1 )
+
+      cur.close()
+
+      return wild_encounter_occurrences
    
 
    def set_animal_as_off_display( self, species, exhibit, start_date, end_date, message ):
@@ -2483,6 +2592,140 @@ class Database():
          (
             talk,
             location,
+            date,
+            time
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def set_wild_encounter_schedule(
+         self,
+         wild_encounter,
+         start_date,
+         end_date,
+         encounter_time,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         message ):
+      if not wild_encounter:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      if not message:
+         message = f'The {wild_encounter} is not scheduled today.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO WildEncounterSchedule (
+                  WILD_ENCOUNTER,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  ENCOUNTER_TIME,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  SCHEDULE_MESSAGE
+               )
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(WILD_ENCOUNTER) DO UPDATE SET
+                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
+                  ENCOUNTER_TIME = excluded.ENCOUNTER_TIME,
+                  MONDAY = excluded.MONDAY,
+                  TUESDAY = excluded.TUESDAY,
+                  WEDNESDAY = excluded.WEDNESDAY,
+                  THURSDAY = excluded.THURSDAY,
+                  FRIDAY = excluded.FRIDAY,
+                  SATURDAY = excluded.SATURDAY,
+                  SUNDAY = excluded.SUNDAY,
+                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
+         """,
+         (
+            wild_encounter,
+            start_date,
+            end_date,
+            encounter_time,
+            int( bool( monday ) ),
+            int( bool( tuesday ) ),
+            int( bool( wednesday ) ),
+            int( bool( thursday ) ),
+            int( bool( friday ) ),
+            int( bool( saturday ) ),
+            int( bool( sunday ) ),
+            message
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def end_wild_encounter_schedule( self, wild_encounter, schedule_end_date ):
+      if not wild_encounter:
+         return False
+
+      if not schedule_end_date:
+         schedule_end_date = datetime.now().date().isoformat()
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   UPDATE WildEncounterSchedule
+               SET SCHEDULE_END_DATE = ?
+               WHERE WILD_ENCOUNTER = ?;
+         """,
+         (
+            schedule_end_date,
+            wild_encounter
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def cancel_wild_encounter_occurrence( self, wild_encounter, date, time ):
+      if not wild_encounter or not date or not time:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO WildEncounterCancellation (
+                  WILD_ENCOUNTER,
+                  CANCELLATION_DATE,
+                  ENCOUNTER_TIME
+               )
+               VALUES (?, ?, ?)
+               ON CONFLICT(WILD_ENCOUNTER, CANCELLATION_DATE, ENCOUNTER_TIME)
+               DO NOTHING;
+         """,
+         (
+            wild_encounter,
             date,
             time
          ) )

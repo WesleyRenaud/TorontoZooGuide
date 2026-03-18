@@ -198,48 +198,12 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
-      // ✅ singular layer key (static points)
-      wildEncounterMeetingSpot: {
-         fetch: async () => {
-            const cache = store.cache.wildEncounterMeetingSpot ?? store.cache.wildEncounterMeetingSpots;
-
-            if (!cache) {
-               const res = await ajaxPost('/get-wild-encounter-meeting-spots', {});
-               const rows = res?.wild_encounter_meeting_spots ?? res?.results ?? res ?? [];
-               const normalized = rows.map(p => ({ ...p, type: 'wildEncounterMeetingSpot' }));
-               store.byType.wildEncounterMeetingSpot = normalized;
-               return normalized;
-            }
-
-            if (cache.loaded) return store.byType.wildEncounterMeetingSpot ?? store.byType.wildEncounterMeetingSpots ?? [];
-            if (cache.inFlight) return cache.inFlight;
-
-            cache.inFlight = ajaxPost('/get-wild-encounter-meeting-spots', {})
-               .then(res => {
-                  const rows = res?.wild_encounter_meeting_spots ?? res?.results ?? res ?? [];
-                  const normalized = rows.map(p => ({ ...p, type: 'wildEncounterMeetingSpot' }));
-
-                  store.byType.wildEncounterMeetingSpot = normalized;
-                  cache.loaded = true;
-                  cache.inFlight = null;
-                  return normalized;
-               })
-               .catch(err => {
-                  cache.inFlight = null;
-                  throw err;
-               });
-
-            return cache.inFlight;
-         },
-         cachePolicy: 'static',
-      },
-
-
       // ✅ Wild Encounters (itinerary + explore layer)
       wildEncounter: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-wild-encounters', {
-               dayOfWeek: ctx.dayOfWeek,
+               month: ctx.month,
+               day: ctx.day,
                wildEncountersToInclude: ctx.wildEncountersToInclude,
             });
 

@@ -22,7 +22,7 @@ export function normalizeSearchRows(response) {
    if (Array.isArray(response.attractions)) out.push(...response.attractions.map(x => ({ ...x, type: x.type || 'attraction' })));
    if (Array.isArray(response.zoomobile_stations)) out.push(...response.zoomobile_stations.map(x => ({ ...x, type: x.type || 'zoomobileStation' })));
    if (Array.isArray(response.guardians_talks)) out.push(...response.guardians_talks.map(x => ({ ...x, type: x.type || 'guardiansTalk' })));
-   if (Array.isArray(response.wild_encounter_meeting_spots)) out.push(...response.wild_encounter_meeting_spots.map(x => ({ ...x, type: x.type || 'wildEncounterMeetingSpot' })));
+   if (Array.isArray(response.wild_encounters)) out.push(...response.wild_encounters.map(x => ({ ...x, type: x.type || 'wildEncounter' })));
    return out;
 }
 
@@ -80,7 +80,7 @@ function getRowType(row) {
 }
 
 function getRowTitle(row, type) {
-   if (type === 'wildEncounterMeetingSpot') return row.name ?? row.NAME ?? 'Wild Encounter Meeting Spot';
+   if (type == 'wildEncounter') return row.name ?? row.NAME ?? 'Wild Encounter';
    if (type === 'guardiansTalk') return row.name ?? row.NAME ?? 'Meet The Guardians Talk';
    if (type === 'zoomobileStation') return row.name ?? row.NAME ?? 'Zoomobile Station';
    if (type === 'attraction') return row.name ?? row.NAME ?? 'Attraction';
@@ -92,7 +92,21 @@ function getRowTitle(row, type) {
 }
 
 function getRowSubtitle(row, type) {
-   if (type === 'wildEncounterMeetingSpot') return null;
+   if (type === 'wildEncounter') {
+      const timeOfDay = row.time_of_day ?? row.TIME_OF_DAY;
+      const location = row.location ?? row.LOCATION;
+
+      const details = [];
+
+      if (location) details.push(location);
+      if (timeOfDay) details.push(timeOfDay);
+
+      if (details.length) {
+         return `Wild Encounter\n${details.join(' | ')}`;
+      }
+
+      return 'Wild Encounter';
+   }
 
    if (type === 'guardiansTalk') {
       const timeOfDay = row.time_of_day ?? row.TIME_OF_DAY;

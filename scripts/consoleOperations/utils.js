@@ -4,6 +4,7 @@ let cachedRestaurants = null;
 let cachedGiftShops = null;
 let cachedAttractions = null;
 let cachedGuardiansTalks = null;
+let cachedWildEncounters = null;
 
 export async function postJson(url, data) {
    const response = await fetch(url, {
@@ -228,6 +229,46 @@ export function populateGuardiansTalkDropdown(selectEl, guardiansTalks) {
       });
 }
 
+export function populateWildEncounterDropdown(selectEl, wildEncounters) {
+   if(!selectEl) return;
+
+   selectEl.innerHTML = '';
+
+   const placeholder = document.createElement('option');
+   placeholder.value = '';
+   placeholder.textContent = 'Select a Wild Encounter';
+   selectEl.appendChild(placeholder);
+
+   wildEncounters
+      .slice()
+      .sort((a, b) => {
+         const aName =
+            typeof a === 'string'
+               ? a
+               : String(a.name ?? a.NAME ?? '');
+
+         const bName =
+            typeof b === 'string'
+               ? b
+               : String(b.name ?? b.NAME ?? '');
+
+         return aName.localeCompare(bName);
+      })
+      .forEach(wildEncounter => {
+         const name =
+            typeof wildEncounter === 'string'
+               ? wildEncounter
+               : wildEncounter.name ?? wildEncounter.NAME ?? '';
+
+         if(!name) return;
+
+         const option = document.createElement('option');
+         option.value = name;
+         option.textContent = name;
+         selectEl.appendChild(option);
+      });
+}
+
 export async function loadSpecies() {
 
    if(cachedSpecies) {
@@ -378,4 +419,31 @@ export async function loadGuardiansTalks() {
       });
 
    return cachedGuardiansTalks;
+}
+
+export async function loadWildEncounters() {
+   if(cachedWildEncounters) {
+      return cachedWildEncounters;
+   }
+
+   const result = await postJson('/get-wild-encounter-names', {});
+   const wildEncounters = result?.wild_encounters ?? [];
+
+   cachedWildEncounters = wildEncounters
+      .slice()
+      .sort((a, b) => {
+         const aName =
+            typeof a === 'string'
+               ? a
+               : String(a.name ?? a.NAME ?? '');
+
+         const bName =
+            typeof b === 'string'
+               ? b
+               : String(b.name ?? b.NAME ?? '');
+
+         return aName.localeCompare(bName);
+      });
+
+   return cachedWildEncounters;
 }
