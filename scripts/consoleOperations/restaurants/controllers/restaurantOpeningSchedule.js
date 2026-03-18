@@ -1,12 +1,12 @@
-import { loadGiftShops, postJson, setStatus, populateGiftShopDropdown } from '../utils.js';
+import { loadRestaurants, postJson, setStatus, populateRestaurantDropdown } from '../../utils.js';
 
-export function createGiftShopOpeningScheduleController({
+export function createRestaurantOpeningScheduleController({
    showButtonEl,
    panelEl,
    cancelButtonEl,
    submitButtonEl,
    statusEl,
-   giftShopEl,
+   restaurantEl,
    presetEl,
    startDateEl,
    endDateEl,
@@ -88,7 +88,7 @@ export function createGiftShopOpeningScheduleController({
    }
 
    function resetForm() {
-      if (giftShopEl) giftShopEl.value = '';
+      if (restaurantEl) restaurantEl.value = '';
       if (presetEl) presetEl.value = 'custom';
       if (startDateEl) startDateEl.value = '';
       if (endDateEl) endDateEl.value = '';
@@ -125,27 +125,27 @@ export function createGiftShopOpeningScheduleController({
       setStatus(statusEl, '');
 
       try {
-         const giftShops = await loadGiftShops();
-         populateGiftShopDropdown(giftShopEl, giftShops);
+         const restaurants = await loadRestaurants();
+         populateRestaurantDropdown(restaurantEl, restaurants);
          resetForm();
          activatePanel?.(panelEl);
       }
       catch (err) {
-         setStatus(statusEl, 'Failed to load gift shops.', 'is-error');
+         setStatus(statusEl, 'Failed to load restaurants.', 'is-error');
          activatePanel?.(panelEl);
       }
    }
 
    async function onSubmitClick() {
-      const giftShop = giftShopEl?.value.trim() ?? '';
+      const restaurant = restaurantEl?.value.trim() ?? '';
       const startDate = startDateEl?.value.trim() ?? '';
       const endDate = endDateEl?.value.trim() ?? '';
       const message = messageEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
-      if (!giftShop) {
-         setStatus(statusEl, 'Gift shop is required.', 'is-error');
+      if (!restaurant) {
+         setStatus(statusEl, 'Restaurant is required.', 'is-error');
          return;
       }
 
@@ -172,8 +172,8 @@ export function createGiftShopOpeningScheduleController({
       }
 
       try {
-         const result = await postJson('/set-gift-shop-opening-schedule', {
-            giftShop,
+         const result = await postJson('/set-restaurant-opening-schedule', {
+            restaurant,
             scheduleStartDate: startDate || null,
             scheduleEndDate: endDate || null,
             monday: Boolean(mondayEl?.checked),
@@ -190,7 +190,7 @@ export function createGiftShopOpeningScheduleController({
          if (result.success) {
             setStatus(
                statusEl,
-               `${result.giftShop} opening schedule was saved.`,
+               `${result.restaurant} opening schedule was saved.`,
                'is-success'
             );
             resetForm();

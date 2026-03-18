@@ -1,4 +1,4 @@
-import { loadRestaurants, postJson, setStatus, populateRestaurantDropdown } from '../utils.js';
+import { loadRestaurants, postJson, setStatus, populateRestaurantDropdown } from '../../utils.js';
 
 export function createRestaurantClosedController({
    showButtonEl,

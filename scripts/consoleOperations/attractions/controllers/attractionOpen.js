@@ -1,17 +1,23 @@
-import { loadGiftShops, postJson, setStatus, populateGiftShopDropdown } from '../utils.js';
+import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from '../../utils.js';
 
-export function createRemoveGiftShopOpeningScheduleController({
+export function createAttractionOpenController( {
    showButtonEl,
    panelEl,
+   cancelButtonEl,
    submitButtonEl,
    statusEl,
-   giftShopEl,
+   attractionEl,
    activatePanel,
-   hidePanels
-} = {}) {
+   hidePanels,
+} = {} ) {
 
    function resetForm() {
-      if (giftShopEl) giftShopEl.value = '';
+      if(attractionEl) attractionEl.value = '';
+   }
+
+   function show() {
+      setStatus(statusEl, '');
+      activatePanel?.(panelEl);
    }
 
    function hide() {
@@ -23,48 +29,44 @@ export function createRemoveGiftShopOpeningScheduleController({
       setStatus(statusEl, '');
 
       try {
-         const giftShops = await loadGiftShops();
-         populateGiftShopDropdown(giftShopEl, giftShops);
+         const attractions = await loadAttractions();
+         populateAttractionDropdown(attractionEl, attractions);
          resetForm();
+         setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
       catch(err) {
-         setStatus(statusEl, 'Failed to load gift shops.', 'is-error');
+         setStatus(statusEl, 'Failed to load attractions.', 'is-error');
          activatePanel?.(panelEl);
       }
    }
 
    async function onSubmitClick() {
-
-      const giftShop = giftShopEl?.value.trim() ?? '';
+      const attraction = attractionEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
-      if(!giftShop) {
-         setStatus(statusEl, 'Gift shop is required.', 'is-error');
+      if(!attraction) {
+         setStatus(statusEl, 'Attraction is required.', 'is-error');
          return;
       }
 
       try {
-
-         const result = await postJson('/remove-gift-shop-opening-schedule', {
-            giftShop
+         const result = await postJson('/set-attraction-open', {
+            attraction
          });
 
          if(result.success) {
-
             setStatus(
                statusEl,
-               `${result.giftShop} opening schedule was removed.`,
+               `${result.attraction} was set as open.`,
                'is-success'
             );
-
             resetForm();
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
-
       }
       catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
@@ -72,10 +74,11 @@ export function createRemoveGiftShopOpeningScheduleController({
    }
 
    showButtonEl?.addEventListener('click', onShowClick);
+   cancelButtonEl?.addEventListener('click', hide);
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
-      hide
+      show,
+      hide,
    };
-
 }

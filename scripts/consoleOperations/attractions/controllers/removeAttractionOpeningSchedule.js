@@ -1,23 +1,17 @@
-import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from '../utils.js';
+import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from '../../utils.js';
 
-export function createAttractionOpenController( {
+export function createRemoveAttractionOpeningScheduleController({
    showButtonEl,
    panelEl,
-   cancelButtonEl,
    submitButtonEl,
    statusEl,
    attractionEl,
    activatePanel,
-   hidePanels,
-} = {} ) {
+   hidePanels
+} = {}) {
 
    function resetForm() {
-      if(attractionEl) attractionEl.value = '';
-   }
-
-   function show() {
-      setStatus(statusEl, '');
-      activatePanel?.(panelEl);
+      if (attractionEl) attractionEl.value = '';
    }
 
    function hide() {
@@ -26,13 +20,13 @@ export function createAttractionOpenController( {
    }
 
    async function onShowClick() {
+
       setStatus(statusEl, '');
 
       try {
          const attractions = await loadAttractions();
          populateAttractionDropdown(attractionEl, attractions);
          resetForm();
-         setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
       catch(err) {
@@ -42,6 +36,7 @@ export function createAttractionOpenController( {
    }
 
    async function onSubmitClick() {
+
       const attraction = attractionEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
@@ -52,21 +47,25 @@ export function createAttractionOpenController( {
       }
 
       try {
-         const result = await postJson('/set-attraction-open', {
+
+         const result = await postJson('/remove-attraction-opening-schedule', {
             attraction
          });
 
          if(result.success) {
+
             setStatus(
                statusEl,
-               `${result.attraction} was set as open.`,
+               `${result.attraction} opening schedule was removed.`,
                'is-success'
             );
+
             resetForm();
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
+
       }
       catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
@@ -74,11 +73,10 @@ export function createAttractionOpenController( {
    }
 
    showButtonEl?.addEventListener('click', onShowClick);
-   cancelButtonEl?.addEventListener('click', hide);
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
-      show,
-      hide,
+      hide
    };
+
 }

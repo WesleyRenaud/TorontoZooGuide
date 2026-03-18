@@ -62,7 +62,7 @@ export async function finalizeItinerary(
       temp: null,
       animals: inc.speciesToInclude,
       attractions: inc.attractionsToInclude,
-      meetTheGuardiansTalks: inc.guardiansTalksToInclude,
+      guardiansTalks: inc.guardiansTalksToInclude,
       wildEncounters: inc.wildEncountersToInclude,
    };
 

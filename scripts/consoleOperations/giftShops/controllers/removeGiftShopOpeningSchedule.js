@@ -1,19 +1,17 @@
-import { postJson, setStatus } from '../utils.js';
+import { loadGiftShops, postJson, setStatus, populateGiftShopDropdown } from '../../utils.js';
 
-export function createZoomobileRouteController({
+export function createRemoveGiftShopOpeningScheduleController({
    showButtonEl,
    panelEl,
    submitButtonEl,
    statusEl,
-   summerRouteEl,
-   winterRouteEl,
+   giftShopEl,
    activatePanel,
    hidePanels
 } = {}) {
 
    function resetForm() {
-      if(summerRouteEl) summerRouteEl.checked = true;
-      if(winterRouteEl) winterRouteEl.checked = false;
+      if (giftShopEl) giftShopEl.value = '';
    }
 
    function hide() {
@@ -23,40 +21,45 @@ export function createZoomobileRouteController({
 
    async function onShowClick() {
       setStatus(statusEl, '');
-      resetForm();
-      activatePanel?.(panelEl);
+
+      try {
+         const giftShops = await loadGiftShops();
+         populateGiftShopDropdown(giftShopEl, giftShops);
+         resetForm();
+         activatePanel?.(panelEl);
+      }
+      catch(err) {
+         setStatus(statusEl, 'Failed to load gift shops.', 'is-error');
+         activatePanel?.(panelEl);
+      }
    }
 
    async function onSubmitClick() {
-      let route = '';
 
-      if(summerRouteEl?.checked) {
-         route = 'summer';
-      }
-      else if(winterRouteEl?.checked) {
-         route = 'winter';
-      }
+      const giftShop = giftShopEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
-      if(!route) {
-         setStatus(statusEl, 'Zoomobile route is required.', 'is-error');
+      if(!giftShop) {
+         setStatus(statusEl, 'Gift shop is required.', 'is-error');
          return;
       }
 
       try {
 
-         const result = await postJson('/set-current-zoomobile-route', {
-            route
+         const result = await postJson('/remove-gift-shop-opening-schedule', {
+            giftShop
          });
 
          if(result.success) {
 
             setStatus(
                statusEl,
-               `Zoomobile route was set to ${result.route}.`,
+               `${result.giftShop} opening schedule was removed.`,
                'is-success'
             );
+
+            resetForm();
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
@@ -72,8 +75,7 @@ export function createZoomobileRouteController({
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
-      hide,
-      resetForm
+      hide
    };
 
 }

@@ -1,17 +1,18 @@
-import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from '../utils.js';
+import { loadRestaurants, postJson, setStatus, populateRestaurantDropdown } from '../../utils.js';
 
-export function createRemoveAttractionOpeningScheduleController({
+export function createRestaurantOpenController({
    showButtonEl,
    panelEl,
+   cancelButtonEl,
    submitButtonEl,
    statusEl,
-   attractionEl,
+   restaurantEl,
    activatePanel,
-   hidePanels
+   hidePanels,
 } = {}) {
 
    function resetForm() {
-      if (attractionEl) attractionEl.value = '';
+      if(restaurantEl) restaurantEl.value = '';
    }
 
    function hide() {
@@ -24,43 +25,45 @@ export function createRemoveAttractionOpeningScheduleController({
       setStatus(statusEl, '');
 
       try {
-         const attractions = await loadAttractions();
-         populateAttractionDropdown(attractionEl, attractions);
+         const restaurants = await loadRestaurants();
+         populateRestaurantDropdown(restaurantEl, restaurants);
          resetForm();
          activatePanel?.(panelEl);
       }
       catch(err) {
-         setStatus(statusEl, 'Failed to load attractions.', 'is-error');
+         setStatus(statusEl, 'Failed to load restaurants.', 'is-error');
          activatePanel?.(panelEl);
       }
+
    }
 
    async function onSubmitClick() {
 
-      const attraction = attractionEl?.value.trim() ?? '';
+      const restaurant = restaurantEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
-      if(!attraction) {
-         setStatus(statusEl, 'Attraction is required.', 'is-error');
+      if(!restaurant) {
+         setStatus(statusEl, 'Restaurant is required.', 'is-error');
          return;
       }
 
       try {
 
-         const result = await postJson('/remove-attraction-opening-schedule', {
-            attraction
+         const result = await postJson('/set-restaurant-open', {
+            restaurant
          });
 
          if(result.success) {
 
             setStatus(
                statusEl,
-               `${result.attraction} opening schedule was removed.`,
+               `${result.restaurant} was set as open.`,
                'is-success'
             );
 
             resetForm();
+
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
@@ -70,9 +73,11 @@ export function createRemoveAttractionOpeningScheduleController({
       catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
+
    }
 
    showButtonEl?.addEventListener('click', onShowClick);
+   cancelButtonEl?.addEventListener('click', hide);
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {

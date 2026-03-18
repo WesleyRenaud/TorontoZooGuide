@@ -58,7 +58,7 @@ function buildTalkImageSrc(name) {
    const file = normalizeParameter(name || '');
    if (!file) return null;
 
-   return `../images/meet-the-guardians-talks/${file}.png`;
+   return `../images/guardians-talks/${file}.png`;
 }
 
 /* -------------------------------------------------- */
@@ -143,12 +143,12 @@ export function createItineraryGuardiansTalkSelectorController({
 
       buildSearchPayload: (query) => ({
          query,
-         includeMeetTheGuardiansTalks: true,
+         includeGuardiansTalks: true,
       }),
 
       extractRows: (response) =>
-         Array.isArray(response?.meet_the_guardians_talks)
-            ? response.meet_the_guardians_talks
+         Array.isArray(response?.guardians_talks)
+            ? response.guardians_talks
             : [],
 
       getId: (row) => buildKey(row, dayOfWeek),

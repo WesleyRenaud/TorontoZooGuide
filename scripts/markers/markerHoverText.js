@@ -67,7 +67,7 @@ export function buildHoverText(itemsAtPoint) {
    }
 
    // Meet The Guardians Talks ✅
-   if (type === 'meetTheGuardiansTalk') {
+   if (type === 'guardiansTalk') {
       if (itemsAtPoint.length === 1) {
          return `${itemsAtPoint[0].name} Meet The Guardians Talk` || 'Meet The Guardians Talk';
       }

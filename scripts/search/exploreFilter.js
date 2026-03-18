@@ -12,7 +12,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
                includeGiftShops: false,
                includeAttractions: false,
                includeZoomobileStations: false,
-               includeMeetTheGuardiansTalks: false,
+               includeGuardiansTalks: false,
                includeWildEncounterMeetingSpots: false,
             }),
                   
@@ -97,7 +97,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
          includeGiftShops: selected.includes('giftShop'),
          includeAttractions: selected.includes('attraction'),
          includeZoomobileStations: zoomobileRoute !== 'none',
-         includeMeetTheGuardiansTalks: selected.includes('meetTheGuardiansTalk'),
+         includeGuardiansTalks: selected.includes('guardiansTalk'),
          includeWildEncounterMeetingSpots: selected.includes('wildEncounterMeetingSpot'),
       };
    }

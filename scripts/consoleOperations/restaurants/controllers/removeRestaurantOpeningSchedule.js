@@ -1,23 +1,17 @@
-import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from '../utils.js';
+import { loadRestaurants, postJson, setStatus, populateRestaurantDropdown } from '../../utils.js';
 
-export function createExhibitOpenController({
+export function createRemoveRestaurantOpeningScheduleController({
    showButtonEl,
    panelEl,
-   cancelButtonEl,
    submitButtonEl,
    statusEl,
-   exhibitEl,
+   restaurantEl,
    activatePanel,
-   hidePanels,
+   hidePanels
 } = {}) {
 
    function resetForm() {
-      if (exhibitEl) exhibitEl.value = '';
-   }
-
-   function show() {
-      setStatus(statusEl, '');
-      activatePanel?.(panelEl);
+      if (restaurantEl) restaurantEl.value = '';
    }
 
    function hide() {
@@ -26,59 +20,63 @@ export function createExhibitOpenController({
    }
 
    async function onShowClick() {
+
       setStatus(statusEl, '');
 
       try {
-         const exhibits = await loadExhibits();
-         populateExhibitDropdown(exhibitEl, exhibits);
+         const restaurants = await loadRestaurants();
+         populateRestaurantDropdown(restaurantEl, restaurants);
          resetForm();
-         setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
-      catch (err) {
-         setStatus(statusEl, 'Failed to load exhibits.', 'is-error');
+      catch(err) {
+         setStatus(statusEl, 'Failed to load restaurants.', 'is-error');
          activatePanel?.(panelEl);
       }
    }
 
    async function onSubmitClick() {
-      const exhibit = exhibitEl?.value.trim() ?? '';
+
+      const restaurant = restaurantEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
-      if (!exhibit) {
-         setStatus(statusEl, 'Exhibit is required.', 'is-error');
+      if(!restaurant) {
+         setStatus(statusEl, 'Restaurant is required.', 'is-error');
          return;
       }
 
       try {
-         const result = await postJson('/set-exhibit-open', {
-            exhibit
+
+         const result = await postJson('/remove-restaurant-opening-schedule', {
+            restaurant
          });
 
-         if (result.success) {
+         if(result.success) {
+
             setStatus(
                statusEl,
-               `${result.exhibit} was set as open.`,
+               `${result.restaurant} opening schedule was removed.`,
                'is-success'
             );
+
             resetForm();
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
+
       }
-      catch (err) {
+      catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
    }
 
    showButtonEl?.addEventListener('click', onShowClick);
-   cancelButtonEl?.addEventListener('click', hide);
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
-      show,
-      hide,
+      hide
    };
+
 }

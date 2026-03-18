@@ -95,7 +95,7 @@ export function createMapUpdater({
             // ✅ these keys should match what sources.buildItinerary sends
             animals: inc.speciesToInclude,
             attractions: inc.attractionsToInclude,
-            meetTheGuardiansTalks: inc.guardiansTalksToInclude,
+            guardiansTalks: inc.guardiansTalksToInclude,
             wildEncounters: inc.wildEncountersToInclude,
 
             // optional

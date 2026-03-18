@@ -1,12 +1,12 @@
-import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from '../utils.js';
+import { loadGiftShops, postJson, setStatus, populateGiftShopDropdown } from '../../utils.js';
 
-export function createAttractionOpeningScheduleController({
+export function createGiftShopOpeningScheduleController({
    showButtonEl,
    panelEl,
    cancelButtonEl,
    submitButtonEl,
    statusEl,
-   attractionEl,
+   giftShopEl,
    presetEl,
    startDateEl,
    endDateEl,
@@ -88,7 +88,7 @@ export function createAttractionOpeningScheduleController({
    }
 
    function resetForm() {
-      if (attractionEl) attractionEl.value = '';
+      if (giftShopEl) giftShopEl.value = '';
       if (presetEl) presetEl.value = 'custom';
       if (startDateEl) startDateEl.value = '';
       if (endDateEl) endDateEl.value = '';
@@ -125,28 +125,27 @@ export function createAttractionOpeningScheduleController({
       setStatus(statusEl, '');
 
       try {
-         const attractions = await loadAttractions();
-         populateAttractionDropdown(attractionEl, attractions);
+         const giftShops = await loadGiftShops();
+         populateGiftShopDropdown(giftShopEl, giftShops);
          resetForm();
-         setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
       catch (err) {
-         setStatus(statusEl, 'Failed to load attractions.', 'is-error');
+         setStatus(statusEl, 'Failed to load gift shops.', 'is-error');
          activatePanel?.(panelEl);
       }
    }
 
    async function onSubmitClick() {
-      const attraction = attractionEl?.value.trim() ?? '';
+      const giftShop = giftShopEl?.value.trim() ?? '';
       const startDate = startDateEl?.value.trim() ?? '';
       const endDate = endDateEl?.value.trim() ?? '';
       const message = messageEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
-      if (!attraction) {
-         setStatus(statusEl, 'Attraction is required.', 'is-error');
+      if (!giftShop) {
+         setStatus(statusEl, 'Gift shop is required.', 'is-error');
          return;
       }
 
@@ -173,8 +172,8 @@ export function createAttractionOpeningScheduleController({
       }
 
       try {
-         const result = await postJson('/set-attraction-opening-schedule', {
-            attraction,
+         const result = await postJson('/set-gift-shop-opening-schedule', {
+            giftShop,
             scheduleStartDate: startDate || null,
             scheduleEndDate: endDate || null,
             monday: Boolean(mondayEl?.checked),
@@ -191,7 +190,7 @@ export function createAttractionOpeningScheduleController({
          if (result.success) {
             setStatus(
                statusEl,
-               `${result.attraction} opening schedule was saved.`,
+               `${result.giftShop} opening schedule was saved.`,
                'is-success'
             );
             resetForm();

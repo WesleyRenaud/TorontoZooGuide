@@ -65,7 +65,7 @@ export function buildGuardiansRows(guardiansTalks = []) {
       const imageSrc =
          t.imageSrc ??
          t.image_src ??
-         (name ? `../images/meet-the-guardians-talks/${name}.png` : null);
+         (name ? `../images/guardians-talks/${name}.png` : null);
 
       return makeItemRow({
          name,

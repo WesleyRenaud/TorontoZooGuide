@@ -3,6 +3,7 @@ let cachedExhibits = null;
 let cachedRestaurants = null;
 let cachedGiftShops = null;
 let cachedAttractions = null;
+let cachedGuardiansTalks = null;
 
 export async function postJson(url, data) {
    const response = await fetch(url, {
@@ -187,6 +188,46 @@ export function populateAttractionDropdown(selectEl, attractions) {
       });
 }
 
+export function populateGuardiansTalkDropdown(selectEl, guardiansTalks) {
+   if(!selectEl) return;
+
+   selectEl.innerHTML = '';
+
+   const placeholder = document.createElement('option');
+   placeholder.value = '';
+   placeholder.textContent = 'Select a talk';
+   selectEl.appendChild(placeholder);
+
+   guardiansTalks
+      .slice()
+      .sort((a, b) => {
+         const aName =
+            typeof a === 'string'
+               ? a
+               : String(a.name ?? a.NAME ?? '');
+
+         const bName =
+            typeof b === 'string'
+               ? b
+               : String(b.name ?? b.NAME ?? '');
+
+         return aName.localeCompare(bName);
+      })
+      .forEach(guardiansTalk => {
+         const name =
+            typeof guardiansTalk === 'string'
+               ? guardiansTalk
+               : guardiansTalk.name ?? guardiansTalk.NAME ?? '';
+
+         if(!name) return;
+
+         const option = document.createElement('option');
+         option.value = name;
+         option.textContent = name;
+         selectEl.appendChild(option);
+      });
+}
+
 export async function loadSpecies() {
 
    if(cachedSpecies) {
@@ -310,4 +351,31 @@ export async function loadAttractions() {
       });
 
    return cachedAttractions;
+}
+
+export async function loadGuardiansTalks() {
+   if(cachedGuardiansTalks) {
+      return cachedGuardiansTalks;
+   }
+
+   const result = await postJson('/get-guardians-talk-names', {});
+   const guardiansTalks = result?.guardians_talks ?? [];
+
+   cachedGuardiansTalks = guardiansTalks
+      .slice()
+      .sort((a, b) => {
+         const aName =
+            typeof a === 'string'
+               ? a
+               : String(a.name ?? a.NAME ?? '');
+
+         const bName =
+            typeof b === 'string'
+               ? b
+               : String(b.name ?? b.NAME ?? '');
+
+         return aName.localeCompare(bName);
+      });
+
+   return cachedGuardiansTalks;
 }

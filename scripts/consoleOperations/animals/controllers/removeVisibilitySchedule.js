@@ -1,6 +1,6 @@
-import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from '../utils.js';
+import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from '../../utils.js';
 
-export function createAnimalOffDisplayController({
+export function createRemoveVisibilityScheduleController({
    showButtonEl,
    panelEl,
    cancelButtonEl,
@@ -8,9 +8,6 @@ export function createAnimalOffDisplayController({
    statusEl,
    speciesEl,
    exhibitEl,
-   startDateEl,
-   endDateEl,
-   messageEl,
    activatePanel,
    hidePanels,
 } = {}) {
@@ -18,9 +15,6 @@ export function createAnimalOffDisplayController({
    function resetForm() {
       if (speciesEl) speciesEl.value = '';
       if (exhibitEl) exhibitEl.value = '';
-      if (startDateEl) startDateEl.value = '';
-      if (endDateEl) endDateEl.value = '';
-      if (messageEl) messageEl.value = '';
    }
 
    function show() {
@@ -52,9 +46,6 @@ export function createAnimalOffDisplayController({
    async function onSubmitClick() {
       const species = speciesEl?.value.trim() ?? '';
       const exhibit = exhibitEl?.value.trim() ?? '';
-      const startDate = startDateEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-      const message = messageEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
@@ -68,36 +59,16 @@ export function createAnimalOffDisplayController({
          return;
       }
 
-      const effectiveStart = startDate || new Date().toISOString().split('T')[0];
-
-      if (endDate) {
-         const startMs = new Date(effectiveStart).getTime();
-         const endMs = new Date(endDate).getTime();
-
-         if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
-            setStatus(statusEl, 'Invalid start or end date.', 'is-error');
-            return;
-         }
-
-         if (endMs < startMs) {
-            setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
-            return;
-         }
-      }
-
       try {
-         const result = await postJson('/set-animal-off-display', {
+         const result = await postJson('/remove-animal-visibility-schedule', {
             species,
-            exhibit,
-            startDate: startDate || null,
-            endDate: endDate || null,
-            message
+            exhibit
          });
 
          if (result.success) {
             setStatus(
                statusEl,
-               `${result.species} in ${result.exhibit} was set as off display.`,
+               `${result.species} in ${result.exhibit} no longer has a visibility schedule.`,
                'is-success'
             );
             resetForm();
@@ -105,7 +76,6 @@ export function createAnimalOffDisplayController({
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
-
       }
       catch (err) {
          setStatus(statusEl, 'Request failed.', 'is-error');

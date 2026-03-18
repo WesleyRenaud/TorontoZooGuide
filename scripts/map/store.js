@@ -8,7 +8,7 @@ export function createMapStore() {
          giftShop: [],
          attraction: [],
          zoomobileStation: [],
-         meetTheGuardiansTalk: [],
+         guardiansTalk: [],
          wildEncounterMeetingSpot: [],
       },
       cache: {

@@ -142,9 +142,9 @@ export function applyMarkerVisual( markerEl, itemsAtPoint ) {
       return;
    }
 
-   if ( type === 'meetTheGuardiansTalk' ) {
-      markerEl.classList.add( 'marker-meet-the-guardians-talk' );
-      applyGenericIcon( markerEl, '/images/generic-icons/meet-the-guardians-talk.png', count );
+   if ( type === 'guardiansTalk' ) {
+      markerEl.classList.add( 'marker-guardians-talk' );
+      applyGenericIcon( markerEl, '/images/generic-icons/guardians-talk.png', count );
       return;
    }
 

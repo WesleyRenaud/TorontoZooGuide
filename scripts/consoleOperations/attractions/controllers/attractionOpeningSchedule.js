@@ -1,12 +1,12 @@
-import { loadRestaurants, postJson, setStatus, populateRestaurantDropdown } from '../utils.js';
+import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from '../../utils.js';
 
-export function createRestaurantOpeningScheduleController({
+export function createAttractionOpeningScheduleController({
    showButtonEl,
    panelEl,
    cancelButtonEl,
    submitButtonEl,
    statusEl,
-   restaurantEl,
+   attractionEl,
    presetEl,
    startDateEl,
    endDateEl,
@@ -88,7 +88,7 @@ export function createRestaurantOpeningScheduleController({
    }
 
    function resetForm() {
-      if (restaurantEl) restaurantEl.value = '';
+      if (attractionEl) attractionEl.value = '';
       if (presetEl) presetEl.value = 'custom';
       if (startDateEl) startDateEl.value = '';
       if (endDateEl) endDateEl.value = '';
@@ -125,27 +125,28 @@ export function createRestaurantOpeningScheduleController({
       setStatus(statusEl, '');
 
       try {
-         const restaurants = await loadRestaurants();
-         populateRestaurantDropdown(restaurantEl, restaurants);
+         const attractions = await loadAttractions();
+         populateAttractionDropdown(attractionEl, attractions);
          resetForm();
+         setStatus(statusEl, '');
          activatePanel?.(panelEl);
       }
       catch (err) {
-         setStatus(statusEl, 'Failed to load restaurants.', 'is-error');
+         setStatus(statusEl, 'Failed to load attractions.', 'is-error');
          activatePanel?.(panelEl);
       }
    }
 
    async function onSubmitClick() {
-      const restaurant = restaurantEl?.value.trim() ?? '';
+      const attraction = attractionEl?.value.trim() ?? '';
       const startDate = startDateEl?.value.trim() ?? '';
       const endDate = endDateEl?.value.trim() ?? '';
       const message = messageEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
-      if (!restaurant) {
-         setStatus(statusEl, 'Restaurant is required.', 'is-error');
+      if (!attraction) {
+         setStatus(statusEl, 'Attraction is required.', 'is-error');
          return;
       }
 
@@ -172,8 +173,8 @@ export function createRestaurantOpeningScheduleController({
       }
 
       try {
-         const result = await postJson('/set-restaurant-opening-schedule', {
-            restaurant,
+         const result = await postJson('/set-attraction-opening-schedule', {
+            attraction,
             scheduleStartDate: startDate || null,
             scheduleEndDate: endDate || null,
             monday: Boolean(mondayEl?.checked),
@@ -190,7 +191,7 @@ export function createRestaurantOpeningScheduleController({
          if (result.success) {
             setStatus(
                statusEl,
-               `${result.restaurant} opening schedule was saved.`,
+               `${result.attraction} opening schedule was saved.`,
                'is-success'
             );
             resetForm();

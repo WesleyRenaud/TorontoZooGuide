@@ -1,0 +1,192 @@
+import {
+   postJson,
+   setStatus,
+   populateGuardiansTalkDropdown
+} from '../../utils.js';
+
+export function createGuardiansTalkScheduleController({
+   showButtonEl,
+   panelEl,
+   cancelButtonEl,
+   submitButtonEl,
+   statusEl,
+   talkNameEl,
+   locationEl,
+   startDateEl,
+   endDateEl,
+   timeEl,
+   mondayEl,
+   tuesdayEl,
+   wednesdayEl,
+   thursdayEl,
+   fridayEl,
+   saturdayEl,
+   sundayEl,
+   messageEl,
+   activatePanel,
+   hidePanels,
+   talkLocationFilterController = null,
+} = {}) {
+
+   function resetTalkDropdown() {
+      if(talkLocationFilterController?.clear) {
+         talkLocationFilterController.clear();
+         return;
+      }
+
+      if(talkNameEl?.tagName === 'SELECT') {
+         populateGuardiansTalkDropdown(talkNameEl, []);
+      }
+      else if(talkNameEl) {
+         talkNameEl.value = '';
+      }
+   }
+
+   function resetForm() {
+      if(locationEl) locationEl.value = '';
+      if(startDateEl) startDateEl.value = '';
+      if(endDateEl) endDateEl.value = '';
+      if(timeEl) timeEl.value = '';
+      if(messageEl) messageEl.value = '';
+
+      if(mondayEl) mondayEl.checked = false;
+      if(tuesdayEl) tuesdayEl.checked = false;
+      if(wednesdayEl) wednesdayEl.checked = false;
+      if(thursdayEl) thursdayEl.checked = false;
+      if(fridayEl) fridayEl.checked = false;
+      if(saturdayEl) saturdayEl.checked = false;
+      if(sundayEl) sundayEl.checked = false;
+
+      resetTalkDropdown();
+   }
+
+   function show() {
+      setStatus(statusEl, '');
+      activatePanel?.(panelEl);
+   }
+
+   function hide() {
+      panelEl?.classList.remove('active');
+      setStatus(statusEl, '');
+   }
+
+   function hasAtLeastOneDaySelected() {
+      return Boolean(
+         mondayEl?.checked
+         || tuesdayEl?.checked
+         || wednesdayEl?.checked
+         || thursdayEl?.checked
+         || fridayEl?.checked
+         || saturdayEl?.checked
+         || sundayEl?.checked
+      );
+   }
+
+   async function onShowClick() {
+      setStatus(statusEl, '');
+
+      try {
+         resetForm();
+
+         if(talkLocationFilterController?.refreshLocations) {
+            await talkLocationFilterController.refreshLocations();
+         }
+
+         activatePanel?.(panelEl);
+      }
+      catch(err) {
+         setStatus(statusEl, 'Failed to load locations.', 'is-error');
+         activatePanel?.(panelEl);
+      }
+   }
+
+   async function onSubmitClick() {
+      const talk = talkNameEl?.value.trim() ?? '';
+      const location = locationEl?.value.trim() ?? '';
+      const startDate = startDateEl?.value.trim() ?? '';
+      const endDate = endDateEl?.value.trim() ?? '';
+      const time = timeEl?.value.trim() ?? '';
+      const message = messageEl?.value.trim() ?? '';
+
+      setStatus(statusEl, '');
+
+      if(!location) {
+         setStatus(statusEl, 'Location is required.', 'is-error');
+         return;
+      }
+
+      if(!talk) {
+         setStatus(statusEl, 'Talk name is required.', 'is-error');
+         return;
+      }
+
+      if(!time) {
+         setStatus(statusEl, 'Talk time is required.', 'is-error');
+         return;
+      }
+
+      if(!hasAtLeastOneDaySelected()) {
+         setStatus(statusEl, 'At least one day must be selected.', 'is-error');
+         return;
+      }
+
+      const effectiveStart = startDate || new Date().toISOString().split('T')[0];
+
+      if(endDate) {
+         const startMs = new Date(effectiveStart).getTime();
+         const endMs = new Date(endDate).getTime();
+
+         if(Number.isNaN(startMs) || Number.isNaN(endMs)) {
+            setStatus(statusEl, 'Invalid start or end date.', 'is-error');
+            return;
+         }
+
+         if(endMs < startMs) {
+            setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
+            return;
+         }
+      }
+
+      try {
+         const result = await postJson('/set-guardians-talk-schedule', {
+            talk,
+            location,
+            startDate: startDate || null,
+            endDate: endDate || null,
+            time,
+            monday: Boolean(mondayEl?.checked),
+            tuesday: Boolean(tuesdayEl?.checked),
+            wednesday: Boolean(wednesdayEl?.checked),
+            thursday: Boolean(thursdayEl?.checked),
+            friday: Boolean(fridayEl?.checked),
+            saturday: Boolean(saturdayEl?.checked),
+            sunday: Boolean(sundayEl?.checked),
+            message
+         });
+
+         if(result.success) {
+            setStatus(
+               statusEl,
+               `${result.talk} in ${result.location} schedule was saved.`,
+               'is-success'
+            );
+            resetForm();
+         }
+         else {
+            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+         }
+      }
+      catch(err) {
+         setStatus(statusEl, 'Request failed.', 'is-error');
+      }
+   }
+
+   showButtonEl?.addEventListener('click', onShowClick);
+   cancelButtonEl?.addEventListener('click', hide);
+   submitButtonEl?.addEventListener('click', onSubmitClick);
+
+   return {
+      show,
+      hide,
+   };
+}

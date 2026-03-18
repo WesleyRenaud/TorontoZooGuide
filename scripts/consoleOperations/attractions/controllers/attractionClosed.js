@@ -1,23 +1,21 @@
-import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from '../utils.js';
+import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from '../../utils.js';
 
-export function createAnimalViewingAlertController( {
+export function createAttractionClosedController( {
    showButtonEl,
    panelEl,
    cancelButtonEl,
    submitButtonEl,
    statusEl,
-   speciesEl,
-   exhibitEl,
+   attractionEl,
    startDateEl,
    endDateEl,
    messageEl,
    activatePanel,
    hidePanels,
-} = {}) {
+} = {} ) {
 
    function resetForm() {
-      if ( speciesEl ) speciesEl.value = '';
-      if ( exhibitEl ) exhibitEl.value = '';
+      if ( attractionEl ) attractionEl.value = '';
       if ( startDateEl ) startDateEl.value = '';
       if ( endDateEl ) endDateEl.value = '';
       if ( messageEl ) messageEl.value = '';
@@ -34,48 +32,45 @@ export function createAnimalViewingAlertController( {
    }
 
    async function onShowClick() {
+
       setStatus( statusEl, '' );
 
       try {
-         const exhibits = await loadExhibits();
-         populateExhibitDropdown( exhibitEl, exhibits );
+
+         const attractions = await loadAttractions();
+         populateAttractionDropdown( attractionEl, attractions );
+
          resetForm();
-         setStatus( statusEl, '' );
          activatePanel?.( panelEl );
+
       }
       catch ( err ) {
-         setStatus( statusEl, 'Failed to load exhibits.', 'is-error' );
+
+         setStatus( statusEl, 'Failed to load attractions.', 'is-error' );
          activatePanel?.( panelEl );
+
       }
+
    }
 
    async function onSubmitClick() {
-      const species = speciesEl?.value.trim() ?? '';
-      const exhibit = exhibitEl?.value.trim() ?? '';
+
+      const attraction = attractionEl?.value.trim() ?? '';
       const startDate = startDateEl?.value.trim() ?? '';
       const endDate = endDateEl?.value.trim() ?? '';
       const message = messageEl?.value.trim() ?? '';
 
       setStatus( statusEl, '' );
 
-      if ( !species ) {
-         setStatus( statusEl, 'Species name is required.', 'is-error' );
+      if ( !attraction ) {
+         setStatus( statusEl, 'Attraction is required.', 'is-error' );
          return;
       }
 
-      if ( !exhibit ) {
-         setStatus( statusEl, 'Exhibit is required.', 'is-error' );
-         return;
-      }
-
-      if ( !message ) {
-         setStatus( statusEl, 'Alert message is required.', 'is-error' );
-         return;
-      }
-
-      const effectiveStart = startDate || new Date().toISOString().split( 'T' )[ 0 ];
+      const effectiveStart = startDate || new Date().toISOString().split( 'T' )[0];
 
       if ( endDate ) {
+
          const startMs = new Date( effectiveStart ).getTime();
          const endMs = new Date( endDate ).getTime();
 
@@ -88,39 +83,39 @@ export function createAnimalViewingAlertController( {
             setStatus( statusEl, 'End date cannot be before the start date.', 'is-error' );
             return;
          }
+
       }
 
       try {
-         const result = await postJson( '/set-animal-viewing-alert', {
-            species,
-            exhibit,
-            alertStartDate: startDate || null,
-            alertEndDate: endDate || null,
+
+         const result = await postJson( '/set-attraction-closed', {
+            attraction,
+            startDate: startDate || null,
+            endDate: endDate || null,
             message
          } );
 
          if ( result.success ) {
+
             setStatus(
                statusEl,
-               `${result.species} in ${result.exhibit} was given a viewing alert.`,
+               `${result.attraction} was set as closed.`,
                'is-success'
             );
+
             resetForm();
+
          }
          else {
             setStatus( statusEl, result.error || 'Failed.', 'is-error' );
          }
+
       }
       catch ( err ) {
          setStatus( statusEl, 'Request failed.', 'is-error' );
       }
-   }
 
-   exhibitEl?.addEventListener( 'change', () => {
-      if ( speciesEl ) {
-         speciesEl.value = '';
-      }
-   } );
+   }
 
    showButtonEl?.addEventListener( 'click', onShowClick );
    cancelButtonEl?.addEventListener( 'click', hide );
@@ -130,4 +125,5 @@ export function createAnimalViewingAlertController( {
       show,
       hide,
    };
+
 }

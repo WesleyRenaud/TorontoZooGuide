@@ -1,6 +1,6 @@
 import sqlite3
 import zoo
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 
 ################################################################################
@@ -1044,37 +1044,12 @@ class Database():
       return [ zoomobile_stations, zoomobile_route_markers ]
 
 
-   def get_meet_the_guardians_talks( self ):
+   def get_guardians_talks( self, month, day, guardians_talks_to_include=[], itinerary_mode=False ):
       cur = self.conn.cursor()
 
-      data = cur.execute(
-         """   SELECT
-                  t.NAME,
-                  t.LOCATION,
-                  t.X_COORD,
-                  t.Y_COORD
-               FROM MeetTheGuardiansTalk t;
-         """ )
-
-      meet_the_guardians_talk_data = data.fetchall()
-
-      meet_the_guardians_talks = []
-
-      for meet_the_guardians_talk in meet_the_guardians_talk_data:
-         meet_the_guardians_talks.append(
-            zoo.MeetTheGuardiansTalk(
-               name=meet_the_guardians_talk['NAME'],
-               location=meet_the_guardians_talk['LOCATION'],
-               x_coord=meet_the_guardians_talk['X_COORD'],
-               y_coord=meet_the_guardians_talk['Y_COORD'] ) )
-
-      cur.close()
-
-      return meet_the_guardians_talks
-
-
-   def get_meet_the_guardians_talks_with_date_times( self, meet_the_guardians_talks_to_include=[], itinerary_mode=False ):
-      cur = self.conn.cursor()
+      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), int( day ) )
+      target_weekday = target_date.weekday()
+      target_date_str = target_date.isoformat()
 
       data = cur.execute(
          """   SELECT
@@ -1082,33 +1057,91 @@ class Database():
                   t.LOCATION,
                   t.X_COORD,
                   t.Y_COORD,
-                  d.DAY_OF_WEEK,
-                  d.TIME_OF_DAY
+                  s.SCHEDULE_START_DATE,
+                  s.SCHEDULE_END_DATE,
+                  s.MONDAY,
+                  s.TUESDAY,
+                  s.WEDNESDAY,
+                  s.THURSDAY,
+                  s.FRIDAY,
+                  s.SATURDAY,
+                  s.SUNDAY,
+                  s.TALK_TIME
                FROM MeetTheGuardiansTalk t
-               JOIN MeetTheGuardiansTalkDateTime d
-                  ON t.NAME = d.NAME;
+               JOIN GuardiansTalkSchedule s
+                  ON t.NAME = s.TALK_NAME
+                  AND t.LOCATION = s.LOCATION;
          """ )
       
-      meet_the_guardians_talk_data = data.fetchall()
+      guardians_talk_data = data.fetchall()
 
-      meet_the_guardians_talks = []
+      guardians_talks = []
 
-      for meet_the_guardians_talk in meet_the_guardians_talk_data:
-         name = meet_the_guardians_talk['NAME']
+      for guardians_talk in guardians_talk_data:
+         name = guardians_talk['NAME']
+         location = guardians_talk['LOCATION']
+         talk_time = guardians_talk['TALK_TIME']
 
-         if not itinerary_mode or name in meet_the_guardians_talks_to_include:
-            meet_the_guardians_talks.append(
-               zoo.MeetTheGuardiansTalk(
-                  name=name,
-                  location=meet_the_guardians_talk['LOCATION'],
-                  x_coord=meet_the_guardians_talk['X_COORD'],
-                  y_coord=meet_the_guardians_talk['Y_COORD'],
-                  day_of_week=meet_the_guardians_talk['DAY_OF_WEEK'],
-                  time_of_day=meet_the_guardians_talk['TIME_OF_DAY'] ) )
+         start_ok = True
+         end_ok = True
+
+         if guardians_talk['SCHEDULE_START_DATE'] != None:
+            schedule_start_date = self.parse_date_value(
+               value=guardians_talk['SCHEDULE_START_DATE'] )
+            start_ok = target_date >= schedule_start_date
+
+         if guardians_talk['SCHEDULE_END_DATE'] != None:
+            schedule_end_date = self.parse_date_value(
+               value=guardians_talk['SCHEDULE_END_DATE'] )
+            end_ok = target_date <= schedule_end_date
+
+         weekday_ok = False
+
+         if target_weekday == 0:
+            weekday_ok = bool( guardians_talk['MONDAY'] )
+         elif target_weekday == 1:
+            weekday_ok = bool( guardians_talk['TUESDAY'] )
+         elif target_weekday == 2:
+            weekday_ok = bool( guardians_talk['WEDNESDAY'] )
+         elif target_weekday == 3:
+            weekday_ok = bool( guardians_talk['THURSDAY'] )
+         elif target_weekday == 4:
+            weekday_ok = bool( guardians_talk['FRIDAY'] )
+         elif target_weekday == 5:
+            weekday_ok = bool( guardians_talk['SATURDAY'] )
+         elif target_weekday == 6:
+            weekday_ok = bool( guardians_talk['SUNDAY'] )
+
+         cancellation_data = cur.execute(
+            """   SELECT 1
+                  FROM GuardiansTalkCancellation
+                  WHERE TALK_NAME = ?
+                  AND LOCATION = ?
+                  AND CANCELLATION_DATE = ?
+                  AND TALK_TIME = ?;
+            """,
+            (
+               name,
+               location,
+               target_date_str,
+               talk_time
+            ) )
+
+         is_cancelled = cancellation_data.fetchone() != None
+
+         if start_ok and end_ok and weekday_ok and not is_cancelled:
+            if not itinerary_mode or name in guardians_talks_to_include:
+               guardians_talks.append(
+                  zoo.GuardiansTalk(
+                     name=name,
+                     location=location,
+                     x_coord=guardians_talk['X_COORD'],
+                     y_coord=guardians_talk['Y_COORD'],
+                     time_of_day=talk_time ) )
 
       cur.close()
 
-      return meet_the_guardians_talks
+      return guardians_talks
    
 
    def get_wild_encounter_meeting_spots( self ):
@@ -1197,7 +1230,6 @@ class Database():
                name=wild_encounter['NAME'],
                meeting_spot=wild_encounter['MEETING_SPOT'],
                link=wild_encounter['LINK'],
-               day_of_week=wild_encounter['DAY_OF_WEEK'],
                time_of_day=wild_encounter['TIME_OF_DAY'] ) )
 
       cur.close()
@@ -1271,26 +1303,26 @@ class Database():
       ]
    
 
-   def get_gift_shops_matching_query( self, query, month ):
+   def get_gift_shops_matching_query( self, query, month, day ):
       if not query:
-         return self.get_gift_shops( month, include_seasonal_gift_shops=True )
+         return self.get_gift_shops( month=month, day=day, include_seasonal_gift_shops=True )
 
       query_lower = query.lower()
 
       return [
-         g for g in self.get_gift_shops( month, include_seasonal_gift_shops=True )
+         g for g in self.get_gift_shops( month=month, day=day, include_seasonal_gift_shops=True )
          if g.name and query_lower in g.name.lower()
       ]
    
 
-   def get_attractions_matching_query( self, query, month, include_closed_attractions ):
+   def get_attractions_matching_query( self, query, month, day, include_closed_attractions ):
       if not query:
-         return self.get_attractions( month, include_closed_attractions=include_closed_attractions )
+         return self.get_attractions( month=month, day=day, include_closed_attractions=include_closed_attractions )
 
       query_lower = query.lower()
 
       return [
-         a for a in self.get_attractions( month, include_closed_attractions=include_closed_attractions )
+         a for a in self.get_attractions( month=month, day=day, include_closed_attractions=include_closed_attractions )
          if a.name and query_lower in a.name.lower()
       ]
    
@@ -1307,14 +1339,11 @@ class Database():
       ]
    
 
-   def get_meet_the_guardians_talks_with_date_times_matching_query( self, query, day_of_week=None ):
-      talks = self.get_meet_the_guardians_talks_with_date_times()
+   def get_guardians_talks_matching_query( self, query, month, day ):
+      talks = self.get_guardians_talks( month=month, day=day )
 
       if not query:
-         return [
-            t for t in talks
-            if day_of_week is None or t.day_of_week == day_of_week
-         ]
+         return talks
 
       query_lower = query.lower()
 
@@ -1323,7 +1352,6 @@ class Database():
          if (
             t.name
             and query_lower in t.name.lower()
-            and (day_of_week is None or t.day_of_week == day_of_week)
          )
       ]
    
@@ -1397,7 +1425,7 @@ class Database():
       data = cur.execute(
          f"""  SELECT
                   r.NAME
-               FROm Restaurant r;
+               FROM Restaurant r;
          """ )
 
       restaurants = [row[0] for row in data.fetchall()]
@@ -1412,7 +1440,7 @@ class Database():
       data = cur.execute(
          f"""  SELECT
                   g.NAME
-               FROm GiftShop g;
+               FROM GiftShop g;
          """ )
 
       gift_shops = [row[0] for row in data.fetchall()]
@@ -1427,13 +1455,178 @@ class Database():
       data = cur.execute(
          f"""  SELECT
                   a.NAME
-               FROm Attraction a;
+               FROM Attraction a;
          """ )
 
       attractions = [row[0] for row in data.fetchall()]
       cur.close()
 
       return attractions
+   
+
+   def get_guardians_talk_locations( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT DISTINCT
+                  t.LOCATION
+               FROM MeetTheGuardiansTalk t
+               WHERE t.LOCATION IS NOT NULL
+               ORDER BY t.LOCATION;
+         """ )
+
+      guardians_talk_locations = [row[0] for row in data.fetchall()]
+      cur.close()
+
+      return guardians_talk_locations
+   
+
+   def get_guardians_talk_names( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         f"""  SELECT
+                  t.NAME
+               FROM MeetTheGuardiansTalk t;
+         """ )
+
+      guardians_talks = [row[0] for row in data.fetchall()]
+      cur.close()
+
+      return guardians_talks
+   
+
+   def get_guardians_talk_names_at_location( self, location ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """  SELECT
+                  t.NAME
+              FROM MeetTheGuardiansTalk t
+              WHERE t.LOCATION = ?;
+         """,
+         ( location, ) )
+
+      guardians_talks = [ row[0] for row in data.fetchall() ]
+      cur.close()
+
+      return guardians_talks
+
+
+   def get_guardians_talk_occurrences( self, talk, location, days_ahead=60 ):
+      if not talk or not location:
+         return []
+
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  TALK_TIME
+               FROM GuardiansTalkSchedule
+               WHERE TALK_NAME = ?
+               AND LOCATION = ?;
+         """,
+         (
+            talk,
+            location
+         ) )
+
+      guardians_talk_schedule = data.fetchone()
+
+      if guardians_talk_schedule == None:
+         cur.close()
+         return []
+
+      today = datetime.now().date()
+
+      schedule_start_date = today
+      schedule_end_date = today + timedelta( days=days_ahead )
+
+      if guardians_talk_schedule['SCHEDULE_START_DATE'] != None:
+         parsed_start_date = self.parse_date_value(
+            value=guardians_talk_schedule['SCHEDULE_START_DATE'] )
+         if parsed_start_date > schedule_start_date:
+            schedule_start_date = parsed_start_date
+
+      if guardians_talk_schedule['SCHEDULE_END_DATE'] != None:
+         parsed_end_date = self.parse_date_value(
+            value=guardians_talk_schedule['SCHEDULE_END_DATE'] )
+         if parsed_end_date < schedule_end_date:
+            schedule_end_date = parsed_end_date
+
+      if schedule_end_date < schedule_start_date:
+         cur.close()
+         return []
+
+      talk_time = guardians_talk_schedule['TALK_TIME']
+
+      cancellation_data = cur.execute(
+         """   SELECT
+                  CANCELLATION_DATE,
+                  TALK_TIME
+               FROM GuardiansTalkCancellation
+               WHERE TALK_NAME = ?
+               AND LOCATION = ?;
+         """,
+         (
+            talk,
+            location
+         ) )
+
+      cancelled_occurrence_keys = {
+         (
+            row['CANCELLATION_DATE'],
+            row['TALK_TIME']
+         )
+         for row in cancellation_data.fetchall()
+      }
+
+      guardians_talk_occurrences = []
+
+      current_date = schedule_start_date
+
+      while current_date <= schedule_end_date:
+         weekday_ok = False
+         target_weekday = current_date.weekday()
+
+         if target_weekday == 0:
+            weekday_ok = bool( guardians_talk_schedule['MONDAY'] )
+         elif target_weekday == 1:
+            weekday_ok = bool( guardians_talk_schedule['TUESDAY'] )
+         elif target_weekday == 2:
+            weekday_ok = bool( guardians_talk_schedule['WEDNESDAY'] )
+         elif target_weekday == 3:
+            weekday_ok = bool( guardians_talk_schedule['THURSDAY'] )
+         elif target_weekday == 4:
+            weekday_ok = bool( guardians_talk_schedule['FRIDAY'] )
+         elif target_weekday == 5:
+            weekday_ok = bool( guardians_talk_schedule['SATURDAY'] )
+         elif target_weekday == 6:
+            weekday_ok = bool( guardians_talk_schedule['SUNDAY'] )
+
+         current_date_str = current_date.isoformat()
+
+         if weekday_ok and ( current_date_str, talk_time ) not in cancelled_occurrence_keys:
+            guardians_talk_occurrences.append(
+               {
+                  'date': current_date_str,
+                  'time': talk_time
+               } )
+
+         current_date += timedelta( days=1 )
+
+      cur.close()
+
+      return guardians_talk_occurrences
    
 
    def set_animal_as_off_display( self, species, exhibit, start_date, end_date, message ):
@@ -2159,3 +2352,143 @@ class Database():
 
       return updated > 0
       
+
+   def set_guardians_talk_schedule(
+         self,
+         talk,
+         location,
+         start_date,
+         end_date,
+         talk_time,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         message ):
+      if not talk or not location:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      if not message:
+         message = f'The {talk} at {location} is not scheduled today.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO GuardiansTalkSchedule (
+                  TALK_NAME,
+                  LOCATION,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  TALK_TIME,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  SCHEDULE_MESSAGE
+               )
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(TALK_NAME, LOCATION) DO UPDATE SET
+                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
+                  TALK_TIME = excluded.TALK_TIME,
+                  MONDAY = excluded.MONDAY,
+                  TUESDAY = excluded.TUESDAY,
+                  WEDNESDAY = excluded.WEDNESDAY,
+                  THURSDAY = excluded.THURSDAY,
+                  FRIDAY = excluded.FRIDAY,
+                  SATURDAY = excluded.SATURDAY,
+                  SUNDAY = excluded.SUNDAY,
+                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
+         """,
+         (
+            talk,
+            location,
+            start_date,
+            end_date,
+            talk_time,
+            int( bool( monday ) ),
+            int( bool( tuesday ) ),
+            int( bool( wednesday ) ),
+            int( bool( thursday ) ),
+            int( bool( friday ) ),
+            int( bool( saturday ) ),
+            int( bool( sunday ) ),
+            message
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def end_guardians_talk_schedule( self, talk, location, schedule_end_date ):
+      if not talk or not location:
+         return False
+
+      if not schedule_end_date:
+         schedule_end_date = datetime.now().date().isoformat()
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   UPDATE GuardiansTalkSchedule
+               SET SCHEDULE_END_DATE = ?
+               WHERE TALK_NAME = ?
+               AND LOCATION = ?;
+         """,
+         (
+            schedule_end_date,
+            talk,
+            location
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def cancel_guardians_talk_occurrence( self, talk, location, date, time ):
+      if not talk or not location or not date or not time:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO GuardiansTalkCancellation (
+                  TALK_NAME,
+                  LOCATION,
+                  CANCELLATION_DATE,
+                  TALK_TIME
+               )
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(TALK_NAME, LOCATION, CANCELLATION_DATE, TALK_TIME)
+               DO NOTHING;
+         """,
+         (
+            talk,
+            location,
+            date,
+            time
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0

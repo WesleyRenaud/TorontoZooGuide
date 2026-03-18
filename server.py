@@ -250,17 +250,25 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
-      elif self.path == '/get-meet-the-guardians-talks':
+      elif self.path == '/get-guardians-talks':
          content_length = int( self.headers[ 'Content-Length'] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
-         meet_the_guardians_talks = self.database.get_meet_the_guardians_talks()
+
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+         guardians_talks_to_include = data.get( 'guardiansTalksToInclude' )
+
+         guardians_talks = self.database.get_guardians_talks(
+            month=month,
+            day=day,
+            guardians_talks_to_include=guardians_talks_to_include )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"meet_the_guardians_talks": [meet_the_guardians_talk.to_dict() for meet_the_guardians_talk in meet_the_guardians_talks]}
+         response = {"guardians_talks": [guardians_talks.to_dict() for guardians_talks in guardians_talks]}
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
@@ -291,9 +299,9 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_gift_shops = bool( data.get( 'includeGiftShops' ) )
          include_attractions = bool( data.get( 'includeAttractions' ) )
          include_zoomobile_stations = bool( data.get( 'includeZoomobileStations' ) )
+         include_guardians_talks = bool( data.get( 'includeGuardiansTalks' ) )
          include_wild_encounter_meeting_spots = bool( data.get( 'includeWildEncounterMeetingSpots' ) )
          include_wild_encounters = bool( data.get( 'includeWildEncounters' ) )
-         include_meet_the_guardians_talks = bool( data.get( 'includeMeetTheGuardiansTalks' ) )
 
          month = data.get( 'month' )
          day = data.get( 'day' )
@@ -313,7 +321,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          zoomobile_stations_json = []
          wild_encounter_meeting_spots_json = []
          wild_encounters_json = []
-         meet_the_guardians_talks_json = []
+         guardians_talks_json = []
 
          if include_animals:
             animals = self.database.get_animals_matching_query(
@@ -353,7 +361,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   restrooms_json.append( d )
 
          if include_gift_shops:
-            gift_shops = self.database.get_gift_shops_matching_query( query=query, month=month ) or []
+            gift_shops = self.database.get_gift_shops_matching_query( query=query, month=month, day=day ) or []
             for gift_shop in gift_shops:
                   d = gift_shop.to_dict()
                   d['type'] = d.get( 'type', 'giftShop' )
@@ -377,21 +385,19 @@ class MyHandler( BaseHTTPRequestHandler ):
                   d['type'] = d.get( 'type', 'zoomobileStation' )
                   zoomobile_stations_json.append( d )
 
+         if include_guardians_talks:
+            guardians_talks = self.database.get_guardians_talks_matching_query( query=query, month=month, day=day ) or []
+            for guardians_talk in guardians_talks:
+                  d = guardians_talk.to_dict()
+                  d['type'] = d.get( 'type', 'guardiansTalk' )
+                  guardians_talks_json.append( d )
+
          if include_wild_encounter_meeting_spots:
             wild_encounter_meeting_spots = self.database.get_wild_encounter_meeting_spots_matching_query( query=query ) or []
             for wild_encounter_meeting_spot in wild_encounter_meeting_spots:
                   d = wild_encounter_meeting_spot.to_dict()
                   d['type'] = d.get( 'type', 'wildEncounterMeetingSpot' )
                   wild_encounter_meeting_spots_json.append( d )
-
-         if include_meet_the_guardians_talks:
-            meet_the_guardians_talks = self.database.get_meet_the_guardians_talks_with_date_times_matching_query(
-               query=query,
-               day_of_week=day_of_week ) or []
-            for meet_the_guardians_talk in meet_the_guardians_talks:
-                  d = meet_the_guardians_talk.to_dict()
-                  d['type'] = d.get( 'type', 'meetTheGuardiansTalk' )
-                  meet_the_guardians_talks_json.append( d )
 
          if include_wild_encounters:
             wild_encounters = self.database.get_wild_encounters_matching_query( query=query, day_of_week=day_of_week ) or []
@@ -410,7 +416,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             'zoomobile_stations': zoomobile_stations_json,
             'wild_encounter_meeting_spots': wild_encounter_meeting_spots_json,
             'wild_encounters': wild_encounters_json,
-            'meet_the_guardians_talks': meet_the_guardians_talks_json
+            'guardians_talks': guardians_talks_json
          }
 
          self.send_response( 200 )
@@ -429,12 +435,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          temp = data.get( 'temp' )
          animals_to_include = data.get( 'animals' )
          attractions_to_include = data.get( 'attractions' )
-         meet_the_guardians_talks_to_include = data.get( 'meetTheGuardiansTalks' )
+         guardians_talks_to_include = data.get( 'guardiansTalks' )
          wild_encounters_to_include = data.get( 'wildEncounters' )
 
          animals_json = []
          attractions_json = []
-         meet_the_guardians_talks_json = []
+         guardians_talks_json = []
          wild_encounters_json = []
 
          if animals_to_include:
@@ -450,20 +456,26 @@ class MyHandler( BaseHTTPRequestHandler ):
                animals_json.append( d )
 
          if attractions_to_include:
-            attractions = self.database.get_attractions( month=month, attractions_to_include=attractions_to_include, itinerary_mode=True )
+            attractions = self.database.get_attractions(
+               month=month,
+               day=day,
+               attractions_to_include=attractions_to_include,
+               itinerary_mode=True )
             for attraction in attractions:
                   d = attraction.to_dict()
                   d['type'] = d.get( 'type', 'attraction' )
                   attractions_json.append( d )
                
-         if meet_the_guardians_talks_to_include:
-            meet_the_guardians_talks = self.database.get_meet_the_guardians_talks_with_date_times(
-               meet_the_guardians_talks_to_include=meet_the_guardians_talks_to_include,
+         if guardians_talks_to_include:
+            guardians_talks = self.database.get_guardians_talks(
+               month=month,
+               day=day,
+               guardians_talks_to_include=guardians_talks_to_include,
                itinerary_mode=True )
-            for meet_the_guardians_talk in meet_the_guardians_talks:
-                  d = meet_the_guardians_talk.to_dict()
-                  d['type'] = d.get( 'type', 'meetTheGuardiansTalk' )
-                  meet_the_guardians_talks_json.append( d )
+            for guardians_talk in guardians_talks:
+                  d = guardians_talk.to_dict()
+                  d['type'] = d.get( 'type', 'guardiansTalk' )
+                  guardians_talks_json.append( d )
 
          if wild_encounters_to_include:
             wild_encounters = self.database.get_wild_encounter_meeting_spots_for_wild_encounters(
@@ -476,7 +488,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          response = {
             'animals': animals_json,
             'attractions': attractions_json,
-            'meet_the_guardians_talks': meet_the_guardians_talks_json,
+            'guardians_talks': guardians_talks_json,
             'wild_encounters': wild_encounters_json
          }
 
@@ -539,7 +551,74 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
          response = {"attractions": attractions}
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )          
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      if self.path == '/get-guardians-talk-locations':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         guardians_talk_locations = self.database.get_guardians_talk_locations()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"guardians_talk_locations": guardians_talk_locations}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      if self.path == '/get-guardians-talk-names':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         guardians_talks = self.database.get_guardians_talk_names()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"guardians_talks": guardians_talks}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-guardians-talk-names-at-location':
+         content_length = int( self.headers[ 'Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         location = data.get( 'location' )
+
+         guardians_talks = self.database.get_guardians_talk_names_at_location( location=location )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {"guardians_talks": guardians_talks}
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-guardians-talk-occurrences':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         talk = data.get( 'talk' )
+         location = data.get( 'location' )
+
+         occurrences = self.database.get_guardians_talk_occurrences( talk=talk, location=location )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'occurrences': occurrences,
+            'talk': talk,
+            'location': location
+         }
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       if self.path == '/get-exhibits':
@@ -1258,7 +1337,104 @@ class MyHandler( BaseHTTPRequestHandler ):
             response['error'] = f'Could not set Zoomobile route to "{route}".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-guardians-talk-schedule':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         talk = data.get( 'talk' )
+         location = data.get( 'location' )
+         schedule_start_date = data.get( 'startDate' )
+         schedule_end_date = data.get( 'endDate' )
+         talk_time = data.get( 'time' )
+
+         monday = data.get( 'monday' )
+         tuesday = data.get( 'tuesday' )
+         wednesday = data.get( 'wednesday' )
+         thursday = data.get( 'thursday' )
+         friday = data.get( 'friday' )
+         saturday = data.get( 'saturday' )
+         sunday = data.get( 'sunday' )
+
+         message = data.get( 'message' )
+
+         success = self.database.set_guardians_talk_schedule(
+            talk=talk,
+            location=location,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
+            talk_time=talk_time,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'talk': talk,
+            'location': location,
+            'startDate': schedule_start_date,
+            'endDate': schedule_end_date,
+            'time': talk_time,
+            'monday': monday,
+            'tuesday': tuesday,
+            'wednesday': wednesday,
+            'thursday': thursday,
+            'friday': friday,
+            'saturday': saturday,
+            'sunday': sunday,
+            'message': message
+         }
+
+         if not success:
+            response['error'] = f'Could not set schedule for "{talk}" at "{location}".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
             
+
+      elif self.path == '/cancel-guardians-talk-occurrence':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         talk = data.get( 'talk' )
+         location = data.get( 'location' )
+         date = data.get( 'date' )
+         time = data.get( 'time' )
+
+         success = self.database.cancel_guardians_talk_occurrence(
+            talk=talk,
+            location=location,
+            date=date,
+            time=time )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'talk': talk,
+            'location': location,
+            'date': date,
+            'time': time
+         }
+
+         if not success:
+            response['error'] = f'Could not cancel "{talk}" at "{location}" on {date} at {time}.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+         
 
 if __name__ == '__main__':
    httpd = HTTPServer( ( 'localhost', int( sys.argv[1] ) ), MyHandler )

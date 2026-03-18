@@ -885,7 +885,7 @@ nav ul li a:hover {
    height: 32px;   
 }
 
-.marker.marker-restaurant, .marker.marker-restroom, .marker.marker-gift-shop, .marker.marker-meet-the-guardians-talk {
+.marker.marker-restaurant, .marker.marker-restroom, .marker.marker-gift-shop, .marker.marker-guardians-talk {
    width: 24px;
    height: 24px;
 }

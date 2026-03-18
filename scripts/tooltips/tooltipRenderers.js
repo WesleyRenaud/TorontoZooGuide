@@ -4,6 +4,7 @@ import { restaurantRenderer } from './renderers/restaurants.js';
 import { giftShopRenderer } from './renderers/giftShops.js';
 import { attractionRenderer } from './renderers/attractions.js';
 import { zoomobileStationRenderer } from './renderers/zoomobileStations.js';
+import { guardiansTalkRenderer } from './renderers/guardiansTalks.js';
 
 export const TYPE_REGISTRY = {
    animal: animalRenderer,
@@ -12,6 +13,7 @@ export const TYPE_REGISTRY = {
    giftShop: giftShopRenderer,
    attraction: attractionRenderer,
    zoomobileStation: zoomobileStationRenderer,
+   guardiansTalk: guardiansTalkRenderer,
 };
 
 export function getRendererForItem(item) {

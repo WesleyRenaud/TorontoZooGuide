@@ -3,34 +3,39 @@ import {
    initVisibilityScheduleDateTimePickers
 } from './ui/consoleDatePickers.js';
 
-import { createAnimalOffDisplayController } from './consoleOperations/animals/animalOffDisplay.js';
-import { createAnimalOnDisplayController } from './consoleOperations/animals/animalOnDisplay.js';
-import { createAnimalVisibilityScheduleController } from './consoleOperations/animals/animalVisibilitySchedule.js';
-import { createRemoveVisibilityScheduleController } from './consoleOperations/animals/removeVisibilitySchedule.js';
-import { createAnimalViewingAlertController } from './consoleOperations/animals/animalViewingAlert.js';
-import { createRemoveViewingAlertController } from './consoleOperations/animals/removeViewingAlert.js';
+import { createAnimalOffDisplayController } from './consoleOperations/animals/controllers/animalOffDisplay.js';
+import { createAnimalOnDisplayController } from './consoleOperations/animals/controllers/animalOnDisplay.js';
+import { createAnimalVisibilityScheduleController } from './consoleOperations/animals/controllers/animalVisibilitySchedule.js';
+import { createRemoveVisibilityScheduleController } from './consoleOperations/animals/controllers/removeVisibilitySchedule.js';
+import { createAnimalViewingAlertController } from './consoleOperations/animals/controllers/animalViewingAlert.js';
+import { createRemoveViewingAlertController } from './consoleOperations/animals/controllers/removeViewingAlert.js';
 
-import { createExhibitClosedController } from './consoleOperations/exhibits/exhibitClosed.js';
-import { createExhibitOpenController } from './consoleOperations/exhibits/exhibitOpen.js';
+import { createExhibitClosedController } from './consoleOperations/exhibits/controllers/exhibitClosed.js';
+import { createExhibitOpenController } from './consoleOperations/exhibits/controllers/exhibitOpen.js';
 
-import { createRestaurantClosedController } from './consoleOperations/restaurants/restaurantClosed.js';
-import { createRestaurantOpenController } from './consoleOperations/restaurants/restaurantOpen.js';
-import { createRestaurantOpeningScheduleController } from './consoleOperations/restaurants/restaurantOpeningSchedule.js';
-import { createRemoveRestaurantOpeningScheduleController } from './consoleOperations/restaurants/removeRestaurantOpeningSchedule.js';
+import { createRestaurantClosedController } from './consoleOperations/restaurants/controllers/restaurantClosed.js';
+import { createRestaurantOpenController } from './consoleOperations/restaurants/controllers/restaurantOpen.js';
+import { createRestaurantOpeningScheduleController } from './consoleOperations/restaurants/controllers/restaurantOpeningSchedule.js';
+import { createRemoveRestaurantOpeningScheduleController } from './consoleOperations/restaurants/controllers/removeRestaurantOpeningSchedule.js';
 
-import { createGiftShopClosedController } from './consoleOperations/giftShops/giftShopClosed.js';
-import { createGiftShopOpenController } from './consoleOperations/giftShops/giftShopOpen.js';
-import { createGiftShopOpeningScheduleController } from './consoleOperations/giftShops/giftShopOpeningSchedule.js';
-import { createRemoveGiftShopOpeningScheduleController } from './consoleOperations/giftShops/removeGiftShopOpeningSchedule.js';
+import { createGiftShopClosedController } from './consoleOperations/giftShops/controllers/giftShopClosed.js';
+import { createGiftShopOpenController } from './consoleOperations/giftShops/controllers/giftShopOpen.js';
+import { createGiftShopOpeningScheduleController } from './consoleOperations/giftShops/controllers/giftShopOpeningSchedule.js';
+import { createRemoveGiftShopOpeningScheduleController } from './consoleOperations/giftShops/controllers/removeGiftShopOpeningSchedule.js';
 
-import { createAttractionClosedController } from './consoleOperations/attractions/attractionClosed.js';
-import { createAttractionOpenController } from './consoleOperations/attractions/attractionOpen.js';
-import { createAttractionOpeningScheduleController } from './consoleOperations/attractions/attractionOpeningSchedule.js';
-import { createRemoveAttractionOpeningScheduleController } from './consoleOperations/attractions/removeAttractionOpeningSchedule.js';
+import { createAttractionClosedController } from './consoleOperations/attractions/controllers/attractionClosed.js';
+import { createAttractionOpenController } from './consoleOperations/attractions/controllers/attractionOpen.js';
+import { createAttractionOpeningScheduleController } from './consoleOperations/attractions/controllers/attractionOpeningSchedule.js';
+import { createRemoveAttractionOpeningScheduleController } from './consoleOperations/attractions/controllers/removeAttractionOpeningSchedule.js';
 
-import { createZoomobileRouteController } from './consoleOperations/zoomobile/zoomobileRoute.js';
+import { createZoomobileRouteController } from './consoleOperations/zoomobile/controllers/zoomobileRoute.js';
 
-import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animals/animalSpeciesAutocomplete.js';
+import { createGuardiansTalkScheduleController } from './consoleOperations/guardiansTalks/controllers/guardiansTalkSchedule.js';
+import { createEndGuardiansTalkScheduleController } from './consoleOperations/guardiansTalks/controllers/endGuardiansTalkSchedule.js';
+import { createCancelGuardiansTalkOccurrenceController } from './consoleOperations/guardiansTalks/controllers/cancelGuardiansTalkOccurrence.js';
+import { createGuardiansTalkLocationFilterController } from './consoleOperations/guardiansTalks/controllers/guardiansTalkLocationFilter.js';
+
+import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animals/controllers/animalSpeciesAutocomplete.js';
 
 import { createOffDisplayPanelHtml } from './consoleOperations/animals/panels/offDisplayPanel.js';
 import { createOnDisplayPanelHtml } from './consoleOperations/animals/panels/onDisplayPanel.js';
@@ -59,11 +64,15 @@ import { createRemoveAttractionOpeningSchedulePanelHtml } from './consoleOperati
 
 import { createZoomobileRoutePanelHtml } from './consoleOperations/zoomobile/panels/zoomobileRoutePanel.js';
 
+import { createGuardiansTalkSchedulePanelHtml } from './consoleOperations/guardiansTalks/panels/guardiansTalkSchedulePanel.js';
+import { createEndGuardiansTalkSchedulePanelHtml } from './consoleOperations/guardiansTalks/panels/endGuardiansTalkSchedulePanel.js';
+import { createCancelGuardiansTalkOccurrencePanelHtml } from './consoleOperations/guardiansTalks/panels/cancelGuardiansTalkOccurrencePanel.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
    const workspaceEl = document.getElementById('consoleOperationsWorkspace');
 
-   if (!workspaceEl) {
+   if(!workspaceEl) {
       console.warn('[consoleOperations] missing #consoleOperationsWorkspace');
       return;
    }
@@ -90,6 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createAttractionOpeningSchedulePanelHtml()}
       ${createRemoveAttractionOpeningSchedulePanelHtml()}
       ${createZoomobileRoutePanelHtml()}
+      ${createGuardiansTalkSchedulePanelHtml()}
+      ${createEndGuardiansTalkSchedulePanelHtml()}
+      ${createCancelGuardiansTalkOccurrencePanelHtml()}
    `;
 
    const offDisplayPanel = document.getElementById('offDisplayPanel');
@@ -113,6 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
    const attractionOpeningSchedulePanel = document.getElementById('attractionOpeningSchedulePanel');
    const removeAttractionOpeningSchedulePanel = document.getElementById('removeAttractionOpeningSchedulePanel');
    const zoomobileRoutePanel = document.getElementById('zoomobileRoutePanel');
+   const guardiansTalkSchedulePanel = document.getElementById('guardiansTalkSchedulePanel');
+   const endGuardiansTalkSchedulePanel = document.getElementById('endGuardiansTalkSchedulePanel');
+   const cancelGuardiansTalkOccurrencePanel = document.getElementById('cancelGuardiansTalkOccurrencePanel');
 
    const offDisplaySpeciesEl = document.getElementById('offDisplaySpecies');
    const onDisplaySpeciesEl = document.getElementById('onDisplaySpecies');
@@ -150,6 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
    const removeAttractionOpeningScheduleAttractionEl = document.getElementById('removeAttractionOpeningScheduleAttraction');
    const zoomobileRouteSummerEl = document.getElementById('zoomobileRouteSummer');
    const zoomobileRouteWinterEl = document.getElementById('zoomobileRouteWinter');
+   const guardiansTalkScheduleLocationEl = document.getElementById('guardiansTalkScheduleLocation');
+   const guardiansTalkScheduleTalkNameEl = document.getElementById('guardiansTalkScheduleTalkName');
+   const endGuardiansTalkScheduleLocationEl = document.getElementById('endGuardiansTalkScheduleLocation');
+   const endGuardiansTalkScheduleTalkNameEl = document.getElementById('endGuardiansTalkScheduleTalkName');
+   const cancelGuardiansTalkOccurrenceLocationEl = document.getElementById('cancelGuardiansTalkOccurrenceLocation');
+   const cancelGuardiansTalkOccurrenceTalkNameEl = document.getElementById('cancelGuardiansTalkOccurrenceTalkName');
 
    const offDisplayStartDateEl = document.getElementById('offDisplayStartDate');
    const offDisplayEndDateEl = document.getElementById('offDisplayEndDate');
@@ -209,6 +230,40 @@ document.addEventListener('DOMContentLoaded', () => {
    const attractionOpeningScheduleSaturdayEl = document.getElementById('attractionOpeningScheduleSaturday');
    const attractionOpeningScheduleSundayEl = document.getElementById('attractionOpeningScheduleSunday');
    const attractionOpeningScheduleHolidaysOnlyEl = document.getElementById('attractionOpeningScheduleHolidaysOnly');
+
+   const guardiansTalkScheduleStartDateEl = document.getElementById('guardiansTalkScheduleStartDate');
+   const guardiansTalkScheduleEndDateEl = document.getElementById('guardiansTalkScheduleEndDate');
+   const guardiansTalkScheduleTimeEl = document.getElementById('guardiansTalkScheduleTime');
+   const guardiansTalkScheduleMondayEl = document.getElementById('guardiansTalkScheduleMonday');
+   const guardiansTalkScheduleTuesdayEl = document.getElementById('guardiansTalkScheduleTuesday');
+   const guardiansTalkScheduleWednesdayEl = document.getElementById('guardiansTalkScheduleWednesday');
+   const guardiansTalkScheduleThursdayEl = document.getElementById('guardiansTalkScheduleThursday');
+   const guardiansTalkScheduleFridayEl = document.getElementById('guardiansTalkScheduleFriday');
+   const guardiansTalkScheduleSaturdayEl = document.getElementById('guardiansTalkScheduleSaturday');
+   const guardiansTalkScheduleSundayEl = document.getElementById('guardiansTalkScheduleSunday');
+
+   const endGuardiansTalkScheduleEndDateEl = document.getElementById('endGuardiansTalkScheduleEndDate');
+
+   const cancelGuardiansTalkOccurrenceDateEl = document.getElementById('cancelGuardiansTalkOccurrenceDate');
+   const cancelGuardiansTalkOccurrenceTimeEl = document.getElementById('cancelGuardiansTalkOccurrenceTime');
+
+   const guardiansTalkScheduleLocationFilterController =
+      createGuardiansTalkLocationFilterController({
+         locationEl: guardiansTalkScheduleLocationEl,
+         talkNameEl: guardiansTalkScheduleTalkNameEl,
+      });
+
+   const endGuardiansTalkScheduleLocationFilterController =
+      createGuardiansTalkLocationFilterController({
+         locationEl: endGuardiansTalkScheduleLocationEl,
+         talkNameEl: endGuardiansTalkScheduleTalkNameEl,
+      });
+
+   const cancelGuardiansTalkOccurrenceLocationFilterController =
+      createGuardiansTalkLocationFilterController({
+         locationEl: cancelGuardiansTalkOccurrenceLocationEl,
+         talkNameEl: cancelGuardiansTalkOccurrenceTalkNameEl,
+      });
 
    function activatePanel(panelEl) {
       document
@@ -570,6 +625,59 @@ document.addEventListener('DOMContentLoaded', () => {
       hidePanels,
    });
 
+   createGuardiansTalkScheduleController({
+      showButtonEl: document.getElementById('showGuardiansTalkScheduleForm'),
+      panelEl: guardiansTalkSchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitGuardiansTalkSchedule'),
+      statusEl: document.getElementById('guardiansTalkScheduleStatus'),
+      talkNameEl: guardiansTalkScheduleTalkNameEl,
+      locationEl: guardiansTalkScheduleLocationEl,
+      startDateEl: guardiansTalkScheduleStartDateEl,
+      endDateEl: guardiansTalkScheduleEndDateEl,
+      timeEl: guardiansTalkScheduleTimeEl,
+      mondayEl: guardiansTalkScheduleMondayEl,
+      tuesdayEl: guardiansTalkScheduleTuesdayEl,
+      wednesdayEl: guardiansTalkScheduleWednesdayEl,
+      thursdayEl: guardiansTalkScheduleThursdayEl,
+      fridayEl: guardiansTalkScheduleFridayEl,
+      saturdayEl: guardiansTalkScheduleSaturdayEl,
+      sundayEl: guardiansTalkScheduleSundayEl,
+      messageEl: document.getElementById('guardiansTalkScheduleMessage'),
+      activatePanel,
+      hidePanels,
+      talkLocationFilterController: guardiansTalkScheduleLocationFilterController,
+   });
+
+   createEndGuardiansTalkScheduleController({
+      showButtonEl: document.getElementById('showEndGuardiansTalkScheduleForm'),
+      panelEl: endGuardiansTalkSchedulePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitEndGuardiansTalkSchedule'),
+      statusEl: document.getElementById('endGuardiansTalkScheduleStatus'),
+      talkNameEl: endGuardiansTalkScheduleTalkNameEl,
+      locationEl: endGuardiansTalkScheduleLocationEl,
+      endDateEl: endGuardiansTalkScheduleEndDateEl,
+      activatePanel,
+      hidePanels,
+      talkLocationFilterController: endGuardiansTalkScheduleLocationFilterController,
+   });
+
+   createCancelGuardiansTalkOccurrenceController({
+      showButtonEl: document.getElementById('showCancelGuardiansTalkOccurrenceForm'),
+      panelEl: cancelGuardiansTalkOccurrencePanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitCancelGuardiansTalkOccurrence'),
+      statusEl: document.getElementById('cancelGuardiansTalkOccurrenceStatus'),
+      talkNameEl: cancelGuardiansTalkOccurrenceTalkNameEl,
+      locationEl: cancelGuardiansTalkOccurrenceLocationEl,
+      dateEl: cancelGuardiansTalkOccurrenceDateEl,
+      timeEl: cancelGuardiansTalkOccurrenceTimeEl,
+      activatePanel,
+      hidePanels,
+      talkLocationFilterController: cancelGuardiansTalkOccurrenceLocationFilterController,
+   });
+
    initOffDisplayDatePickers(
       offDisplayStartDateEl,
       offDisplayEndDateEl
@@ -622,4 +730,33 @@ document.addEventListener('DOMContentLoaded', () => {
       attractionOpeningScheduleEndDateEl
    );
 
-} );
+   initOffDisplayDatePickers(
+      guardiansTalkScheduleStartDateEl,
+      guardiansTalkScheduleEndDateEl
+   );
+
+   initOffDisplayDatePickers(
+      endGuardiansTalkScheduleEndDateEl,
+      null
+   );
+
+   initOffDisplayDatePickers(
+      cancelGuardiansTalkOccurrenceDateEl,
+      null
+   );
+
+   initVisibilityScheduleDateTimePickers(
+      guardiansTalkScheduleStartDateEl,
+      guardiansTalkScheduleEndDateEl,
+      guardiansTalkScheduleTimeEl,
+      null
+   );
+
+   initVisibilityScheduleDateTimePickers(
+      cancelGuardiansTalkOccurrenceDateEl,
+      null,
+      cancelGuardiansTalkOccurrenceTimeEl,
+      null
+   );
+
+});

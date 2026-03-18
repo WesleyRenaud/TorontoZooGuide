@@ -206,13 +206,12 @@ class ZoomobileRouteMarker:
       }
    
    
-class MeetTheGuardiansTalk:
-   def __init__( self, name, location, x_coord, y_coord, day_of_week=None, time_of_day=None ):
+class GuardiansTalk:
+   def __init__( self, name, location, x_coord, y_coord, time_of_day=None ):
       self.name = name
       self.location = location
       self.x_coord = x_coord
       self.y_coord = y_coord
-      self.day_of_week = day_of_week
       self.time_of_day = time_of_day
 
 
@@ -222,7 +221,6 @@ class MeetTheGuardiansTalk:
          'location': self.location,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'day_of_week': self.day_of_week,
          'time_of_day': self.time_of_day
       }
 

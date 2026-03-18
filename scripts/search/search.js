@@ -21,7 +21,7 @@ export function normalizeSearchRows(response) {
    if (Array.isArray(response.gift_shops)) out.push(...response.gift_shops.map(x => ({ ...x, type: x.type || 'giftShop' })));
    if (Array.isArray(response.attractions)) out.push(...response.attractions.map(x => ({ ...x, type: x.type || 'attraction' })));
    if (Array.isArray(response.zoomobile_stations)) out.push(...response.zoomobile_stations.map(x => ({ ...x, type: x.type || 'zoomobileStation' })));
-   if (Array.isArray(response.meet_the_guardians_talks)) out.push(...response.meet_the_guardians_talks.map(x => ({ ...x, type: x.type || 'meetTheGuardiansTalk' })));
+   if (Array.isArray(response.guardians_talks)) out.push(...response.guardians_talks.map(x => ({ ...x, type: x.type || 'guardiansTalk' })));
    if (Array.isArray(response.wild_encounter_meeting_spots)) out.push(...response.wild_encounter_meeting_spots.map(x => ({ ...x, type: x.type || 'wildEncounterMeetingSpot' })));
    return out;
 }
@@ -81,7 +81,7 @@ function getRowType(row) {
 
 function getRowTitle(row, type) {
    if (type === 'wildEncounterMeetingSpot') return row.name ?? row.NAME ?? 'Wild Encounter Meeting Spot';
-   if (type === 'meetTheGuardiansTalk') return row.name ?? row.NAME ?? 'Meet The Guardians Talk';
+   if (type === 'guardiansTalk') return row.name ?? row.NAME ?? 'Meet The Guardians Talk';
    if (type === 'zoomobileStation') return row.name ?? row.NAME ?? 'Zoomobile Station';
    if (type === 'attraction') return row.name ?? row.NAME ?? 'Attraction';
    if (type === 'giftShop') return row.name ?? row.NAME ?? 'Gift Shop';
@@ -94,7 +94,19 @@ function getRowTitle(row, type) {
 function getRowSubtitle(row, type) {
    if (type === 'wildEncounterMeetingSpot') return null;
 
-   if (type === 'meetTheGuardiansTalk') {
+   if (type === 'guardiansTalk') {
+      const timeOfDay = row.time_of_day ?? row.TIME_OF_DAY;
+      const location = row.location ?? row.LOCATION;
+
+      const details = [];
+
+      if (location) details.push(location);
+      if (timeOfDay) details.push(timeOfDay);
+
+      if (details.length) {
+         return `Meet The Guardians Talk\n${details.join(' | ')}`;
+      }
+
       return 'Meet The Guardians Talk';
    }
 

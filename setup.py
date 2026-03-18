@@ -653,6 +653,108 @@ if 'SCHEDULE_MESSAGE' not in attraction_schedule_columns:
       'ALTER TABLE AttractionOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
    )
 
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS GuardiansTalkSchedule
+                  (  TALK_NAME              VARCHAR(64) NOT NULL,
+                     LOCATION               VARCHAR(64) NOT NULL,
+                     SCHEDULE_START_DATE    DATE        NOT NULL,
+                     SCHEDULE_END_DATE      DATE,
+                     MONDAY                 BOOL        NOT NULL DEFAULT 0,
+                     TUESDAY                BOOL        NOT NULL DEFAULT 0,
+                     WEDNESDAY              BOOL        NOT NULL DEFAULT 0,
+                     THURSDAY               BOOL        NOT NULL DEFAULT 0,
+                     FRIDAY                 BOOL        NOT NULL DEFAULT 0,
+                     SATURDAY               BOOL        NOT NULL DEFAULT 0,
+                     SUNDAY                 BOOL        NOT NULL DEFAULT 0,
+                     TALK_TIME              TEXT        NOT NULL,
+                     SCHEDULE_MESSAGE       TEXT,
+                     PRIMARY KEY (TALK_NAME, LOCATION),
+                     FOREIGN KEY (TALK_NAME, LOCATION) REFERENCES MeetTheGuardiansTalk(NAME, LOCATION) ); ''' )
+
+guardians_talk_schedule_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( GuardiansTalkSchedule );' ).fetchall()
+}
+
+if 'SCHEDULE_START_DATE' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN SCHEDULE_START_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+   )
+
+if 'SCHEDULE_END_DATE' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN SCHEDULE_END_DATE DATE;'
+   )
+
+if 'MONDAY' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN MONDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'TUESDAY' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN TUESDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'WEDNESDAY' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN WEDNESDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'THURSDAY' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN THURSDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'FRIDAY' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN FRIDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SATURDAY' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN SATURDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'SUNDAY' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN SUNDAY BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'TALK_TIME' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN TALK_TIME TEXT NOT NULL DEFAULT "";'
+   )
+
+if 'SCHEDULE_MESSAGE' not in guardians_talk_schedule_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
+   )
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS GuardiansTalkCancellation
+                  (  TALK_NAME             VARCHAR(64) NOT NULL,
+                     LOCATION              VARCHAR(64) NOT NULL,
+                     CANCELLATION_DATE     DATE        NOT NULL,
+                     TALK_TIME             TEXT        NOT NULL,
+                     PRIMARY KEY (TALK_NAME, LOCATION, CANCELLATION_DATE, TALK_TIME),
+                     FOREIGN KEY (TALK_NAME, LOCATION) REFERENCES MeetTheGuardiansTalk(NAME, LOCATION) ); ''' )
+
+guardians_talk_cancellation_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( GuardiansTalkCancellation );' ).fetchall()
+}
+
+if 'CANCELLATION_DATE' not in guardians_talk_cancellation_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkCancellation ADD COLUMN CANCELLATION_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+   )
+
+if 'TALK_TIME' not in guardians_talk_cancellation_columns:
+   cursor.execute(
+      'ALTER TABLE GuardiansTalkCancellation ADD COLUMN TALK_TIME TEXT NOT NULL DEFAULT "";'
+   )
+
+# Old tables
+
+cursor.execute( 'DROP TABLE IF EXISTS MeetTheGuardiansTalkDateTime;' )
+
 regions = [
    (
       'Austrailasia',
@@ -7931,37 +8033,6 @@ animals = [
       None                                                           # Animals at the zoo
    ),
    (
-      'Malaysian Stick Insect Jungle Wood Nymph',
-      'Heteropteryx Dilatata',
-      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
-      None,                                                          # Snow resistance (only for animals with outdoor viewing)
-      '''The Malaysian stick insect jungle wood nymph can be found in the bugs are of the Malayan Woods Pavilion, just before the
-         clouded leopards.'''.replace( '\n', ' ' ),
-      None,                                                          # Seasonal viewing tips
-      '''The Malaysian Stick Insect Jungle Wood Nymph is a juvenile stage of a large stick insect, measuring 5–10 cm depending on
-         age. Its body is slender, dark brown to green, resembling twigs or small branches. Legs and antennae are long and thin,
-         aiding in climbing and blending with foliage. Juveniles have more pronounced spines and small projections along the body
-         compared to adults, which helps with camouflage and predator deterrence.'''.replace( '\n', ' ' ),
-      '''This nymph is native to tropical forests in Malaysia and nearby Southeast Asian regions, living among trees, shrubs, and
-         leaf litter. It prefers dense vegetation where it can hide from predators and move safely as it grows. Like adults, nymphs
-         rely on undisturbed forest habitat for survival.'''.replace( '\n', ' ' ),
-      '''The nymph is herbivorous, feeding primarily on young leaves, shoots, and tender plant material. Its small size and careful
-         movement help it consume foliage without drawing attention from predators. Leaf feeding also contributes to natural pruning
-         and plant health in its habitat.'''.replace( '\n', ' ' ),
-      '''Malaysian Stick Insect nymphs are solitary and highly cryptic, staying motionless for long periods to avoid detection. They
-         are mostly nocturnal feeders, hiding during daylight among branches and leaves. When threatened, they may freeze or sway
-         slowly, imitating surrounding twigs to evade predators.'''.replace( '\n', ' ' ),
-      '''The nymph’s body shape, colour, and subtle spines provide camouflage in the rainforest understory. Long, jointed legs allow
-         secure climbing and grip on branches, while fine sensory hairs detect nearby movement. Its nocturnal activity minimizes
-         exposure to predators, and its slow, deliberate movements enhance its disguise. These adaptations make it a highly
-         effective ambush herbivore and prey species in the forest ecosystem.'''.replace( '\n', ' ' ),
-      '''As a nymph, it represents an early stage of development, gradually molting and growing into the adult form over several
-         months. Stick insects undergo incomplete metamorphosis, with nymphs resembling miniature adults. Lifespan from nymph to
-         adult can range from 6 months to 2 years, depending on species and conditions. Adults eventually reproduce, with females
-         laying eggs that resemble seeds, continuing the cycle.'''.replace( '\n', ' ' ),
-      None                                                           # Animals at the zoo
-   ),
-   (
       'Red-Tailed Green Ratsnake',
       'Gonyosoma Oxycephalum',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
@@ -9753,13 +9824,6 @@ enclosures =\
    ),
    (
       'Malayan Walking Stick',
-      'Malayan Woods Pavilion',
-      0,                                           # Part of seasonal exhibit
-      'Year-round',                                # Seasonal viewing summary
-      None                                         # Seasonal viewing information (for seasonal exhibits)
-   ),
-   (
-      'Malaysian Stick Insect Jungle Wood Nymph',
       'Malayan Woods Pavilion',
       0,                                           # Part of seasonal exhibit
       'Year-round',                                # Seasonal viewing summary
@@ -11827,14 +11891,6 @@ enclosureViewings =\
       74.5                    # Y coordinate on map
    ),
    (
-      'Malaysian Stick Insect Jungle Wood Nymph',
-      'Malayan Woods Pavilion',
-      'Indoor',
-      None,                   # Seasonally off-display message
-      62.25,                  # X coordinate on map
-      74.5                    # Y coordinate on map
-   ),
-   (
       'Red-Tailed Green Ratsnake',
       'Malayan Woods Pavilion',
       'Indoor',
@@ -12733,7 +12789,7 @@ zoomobile_route_markers = [
    (1, 0, 56.248, 19.985),
 ]
 
-meet_the_guardians_talks = [
+guardians_talks = [
    (
       'Arctic Wolf',                   # Talk name
       'Tundra Trek',                   # Location
@@ -12831,8 +12887,8 @@ meet_the_guardians_talks = [
       78.5                             # Y coordinate on map
    ),
    (
-      'North Bald Eagle',              # Talk name
-      'Tundra Talk',                   # Location
+      'Northern Bald Eagle',           # Talk name
+      'Tundra Trek',                   # Location
       48.75,                           # X coordinate on map
       23.75                            # Y coordinate on map
    ),
@@ -12841,6 +12897,12 @@ meet_the_guardians_talks = [
       'Africa Savanna',                # Location
       38.5,                            # X coordinate on map
       60.75                            # Y coordinate on map
+   ),
+   (
+      'Guardians of Plants Talk',      # Talk name
+      'Greenhouse',                    # Location
+      56,                              # X coordinate on map
+      15                               # Y coordinate on map
    )
 ]
 
@@ -13335,7 +13397,7 @@ cursor.executemany( ''' INSERT INTO MeetTheGuardiansTalk (
                            X_COORD,
                            Y_COORD
                         ) 
-                        VALUES (?, ?, ?, ?) ''', meet_the_guardians_talks )
+                        VALUES (?, ?, ?, ?) ''', guardians_talks )
 
 cursor.executemany( ''' INSERT INTO WildEncounterMeetingSpot (
                            NAME,

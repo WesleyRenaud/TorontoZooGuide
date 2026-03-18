@@ -1,6 +1,6 @@
-import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from '../utils.js';
+import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from '../../utils.js';
 
-export function createAnimalVisibilityScheduleController({
+export function createRemoveViewingAlertController({
    showButtonEl,
    panelEl,
    cancelButtonEl,
@@ -8,11 +8,6 @@ export function createAnimalVisibilityScheduleController({
    statusEl,
    speciesEl,
    exhibitEl,
-   startDateEl,
-   endDateEl,
-   dailyStartTimeEl,
-   dailyEndTimeEl,
-   messageEl,
    activatePanel,
    hidePanels,
 } = {}) {
@@ -20,16 +15,6 @@ export function createAnimalVisibilityScheduleController({
    function resetForm() {
       if (speciesEl) speciesEl.value = '';
       if (exhibitEl) exhibitEl.value = '';
-      if (startDateEl) startDateEl.value = '';
-      if (endDateEl) endDateEl.value = '';
-      if (dailyStartTimeEl) dailyStartTimeEl.value = '';
-      if (dailyEndTimeEl) dailyEndTimeEl.value = '';
-      if (messageEl) messageEl.value = '';
-   }
-
-   function show() {
-      setStatus(statusEl, '');
-      activatePanel?.(panelEl);
    }
 
    function hide() {
@@ -38,29 +23,26 @@ export function createAnimalVisibilityScheduleController({
    }
 
    async function onShowClick() {
+
       setStatus(statusEl, '');
 
       try {
          const exhibits = await loadExhibits();
          populateExhibitDropdown(exhibitEl, exhibits);
-
          resetForm();
          activatePanel?.(panelEl);
-      } catch (err) {
+      }
+      catch (err) {
          setStatus(statusEl, 'Failed to load exhibits.', 'is-error');
          activatePanel?.(panelEl);
       }
+
    }
 
    async function onSubmitClick() {
 
       const species = speciesEl?.value.trim() ?? '';
       const exhibit = exhibitEl?.value.trim() ?? '';
-      const startDate = startDateEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-      const dailyStartTime = dailyStartTimeEl?.value.trim() ?? '';
-      const dailyEndTime = dailyEndTimeEl?.value.trim() ?? '';
-      const message = messageEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
@@ -74,50 +56,37 @@ export function createAnimalVisibilityScheduleController({
          return;
       }
 
-      if (!dailyStartTime || !dailyEndTime) {
-         setStatus(statusEl, 'Daily viewing start and end times are required.', 'is-error');
-         return;
-      }
-
       try {
 
-         const result = await postJson('/set-animal-visibility-schedule', {
+         const result = await postJson('/remove-animal-viewing-alert', {
             species,
-            exhibit,
-            startDate: startDate || null,
-            endDate: endDate || null,
-            dailyStartTime,
-            dailyEndTime,
-            message
+            exhibit
          });
 
          if (result.success) {
 
             setStatus(
                statusEl,
-               `${result.species} in ${result.exhibit} viewing schedule updated.`,
+               `Viewing alert removed for ${result.species} in ${result.exhibit}.`,
                'is-success'
             );
 
             resetForm();
 
-         } else {
-
+         }
+         else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
-
          }
 
-      } catch (err) {
-
-         setStatus(statusEl, 'Request failed.', 'is-error');
-
       }
+      catch (err) {
+         setStatus(statusEl, 'Request failed.', 'is-error');
+      }
+
    }
 
    exhibitEl?.addEventListener('change', () => {
-      if (speciesEl) {
-         speciesEl.value = '';
-      }
+      if (speciesEl) speciesEl.value = '';
    });
 
    showButtonEl?.addEventListener('click', onShowClick);
@@ -125,7 +94,7 @@ export function createAnimalVisibilityScheduleController({
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
-      show,
-      hide,
+      hide
    };
+
 }
