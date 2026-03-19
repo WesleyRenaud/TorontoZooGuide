@@ -1,4 +1,3 @@
-// scripts/pages/itineraryPage.js
 import { CONFIG } from '../shared/config.js';
 import { createPanzoom } from '../map/panzoom.js';
 import { createMapStore } from '../map/store.js';
@@ -29,7 +28,6 @@ function todayISO() {
    return `${y}-${m}-${day}`;
 }
 
-// ✅ idempotent init
 let _didInit = false;
 
 export function initItineraryPage() {
@@ -43,7 +41,6 @@ export function initItineraryPage() {
 
    if (!mapInner || !tooltipEl || !viewportEl) return;
 
-   // ✅ match mapPage.js behavior
    const panzoom = createPanzoom(mapInner, { contain: CONFIG.DEFAULT_CONTAIN });
 
    const store = createMapStore();
@@ -88,7 +85,6 @@ export function initItineraryPage() {
       getAllMarkers: () => markers.getAllMarkers(),
    });
 
-   // ✅ No explore filter on itinerary page.
    const updater = createMapUpdater({
       store,
       sources,
@@ -106,18 +102,14 @@ export function initItineraryPage() {
       if (typeof tooltip?.reposition === 'function') tooltip.reposition();
       if (typeof hover?.reposition === 'function') hover.reposition();
 
-      // Some implementations compute layout before transforms fully apply.
-      // This second pass helps keep the anchor correct.
       requestAnimationFrame(() => {
          if (typeof tooltip?.reposition === 'function') tooltip.reposition();
          if (typeof hover?.reposition === 'function') hover.reposition();
       });
    }
 
-   // ✅ Keep tooltips anchored while pan/zoom changes the map transform
    mapInner.addEventListener('panzoomchange', repositionTooltips);
 
-   // ✅ Also reposition on viewport changes
    window.addEventListener('resize', repositionTooltips);
 
    function applyItineraryToMap() {
@@ -130,14 +122,11 @@ export function initItineraryPage() {
 
       const dateStr = String(itin.dateISO || todayISO());
 
-      // ✅ ensures updater uses itinerary mode path (/build-itinerary)
       updater.updateMap('custom', dateStr, { itinerary: itin });
    }
 
-   // initial
    applyItineraryToMap();
 
-   // re-apply on save/edit/clear
    window.addEventListener('tzg:itineraryUpdated', applyItineraryToMap);
    window.addEventListener('storage', (e) => {
       if (e.key === ITIN_KEY) applyItineraryToMap();

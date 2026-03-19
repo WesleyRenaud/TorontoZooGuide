@@ -1,4 +1,3 @@
-// scripts/itinerary/panel/components/dateCard.js
 import { el } from '../dom.js';
 import { DATE_KEY } from '../storage.js';
 import { formatISODateLong } from '../format.js';

@@ -1,4 +1,3 @@
-// scripts/pages/itineraryWizard/wheelBlocker.js
 function isScrollable(el) {
    if (!el) return false;
    const style = window.getComputedStyle(el);

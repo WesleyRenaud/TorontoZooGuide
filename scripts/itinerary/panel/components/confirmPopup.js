@@ -1,13 +1,3 @@
-// scripts/itinerary/panel/components/confirmPopup.js
-
-/**
- * ✅ TZG-style confirm popup (matches itinerary wizard popup structure)
- * Usage:
- *   showItineraryConfirmPopup({
- *     title, message, confirmText, cancelText,
- *     onConfirm, onCancel
- *   })
- */
 export function showItineraryConfirmPopup({
    title = 'Heads up',
    message = '',
@@ -16,7 +6,6 @@ export function showItineraryConfirmPopup({
    onConfirm,
    onCancel,
 } = {}) {
-   // Remove any existing confirm popup
    document.querySelector('.tzg-popup.tzg-confirm')?.remove();
 
    const wrap = document.createElement('div');
@@ -55,7 +44,6 @@ export function showItineraryConfirmPopup({
       close();
    };
 
-   // Click backdrop cancels (but not the card)
    wrap.querySelector('.itin-overlay')?.addEventListener('click', (e) => {
       if (e.target === e.currentTarget) cancel();
    });
@@ -63,7 +51,6 @@ export function showItineraryConfirmPopup({
    wrap.querySelector('.tzg-popup-cancel')?.addEventListener('click', cancel);
    wrap.querySelector('.tzg-popup-confirm')?.addEventListener('click', confirm);
 
-   // Esc cancels
    const onKey = (e) => {
       if (e.key === 'Escape') {
          cancel();
@@ -74,6 +61,5 @@ export function showItineraryConfirmPopup({
 
    document.body.appendChild(wrap);
 
-   // Focus confirm by default (easy “Enter”)
    setTimeout(() => wrap.querySelector('.tzg-popup-confirm')?.focus?.(), 0);
 }

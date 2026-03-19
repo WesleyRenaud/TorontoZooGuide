@@ -12,7 +12,6 @@ export function createMapLegendController({ rootEl }) {
 
       toggleBtn = el.querySelector('.map-legend-toggle');
 
-      // Restore saved state
       const collapsed = localStorage.getItem(STORAGE_KEY) === '1';
       setCollapsed(collapsed, { persist: false });
 
@@ -58,7 +57,6 @@ export function createMapLegendController({ rootEl }) {
    };
 }
 
-// Convenience init (matches your “initX” style)
 export function initMapLegend(rootEl = null) {
    const ctrl = createMapLegendController({ rootEl });
    ctrl.ensure();

@@ -26,7 +26,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
 
    function getZoomobileRoute() {
       const checked = document.querySelector('input[name="zoomobileRoute"]:checked');
-      return checked?.value ?? 'none'; // 'none' | 'summer' | 'winter'
+      return checked?.value ?? 'none';
    }
 
    function getSelectedTypes() {
@@ -105,5 +105,4 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
    return { getSelectedTypes, buildSearchIncludeFlags };
 }
 
-// small static slot used by mapPage to inject a getter into updater
 initExploreTypeFilter.getSelectedTypes = () => ['animal'];

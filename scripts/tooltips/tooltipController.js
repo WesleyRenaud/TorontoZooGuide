@@ -20,7 +20,7 @@ export function createTooltipController({
    }
 
    function attachToMarker(markerEl, items, hover, opts = {}) {
-      const clickable = opts.clickable !== false; // default true
+      const clickable = opts.clickable !== false;
 
       if (clickable) {
          markerEl.addEventListener('click', (e) => {
@@ -49,7 +49,6 @@ export function createTooltipController({
 
       render(itemsForOpen);
 
-      // ✅ If nothing was rendered (e.g. restroom), do NOT open the tooltip
       if (!carouselEl || carouselEl.children.length === 0) {
          openMarker = null;
          itemsForOpen = [];
@@ -63,7 +62,6 @@ export function createTooltipController({
 
       installGlobalListeners();
 
-      // ✅ ensure marker matches whatever card is showing
       showIndex(Number(carouselEl.dataset.index || 0) || 0);
    }
 
@@ -90,7 +88,6 @@ export function createTooltipController({
    function render(items) {
       tooltipEl.innerHTML = '';
 
-      // ✅ If the first item has no renderer (restroom), bail
       const first = items?.[0] || null;
       const firstRenderer = first ? getRendererForItem(first) : null;
       if (!firstRenderer) {
@@ -107,7 +104,6 @@ export function createTooltipController({
 
       items.forEach((item, i) => {
          const renderer = getRendererForItem(item);
-         // renderer should exist for all items if markers are single-type
          if (!renderer) return;
          carouselEl.appendChild(renderer.createCard(item, i));
       });

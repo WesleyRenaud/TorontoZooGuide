@@ -3,7 +3,6 @@ export function buildHoverText(itemsAtPoint) {
 
    const type = String(itemsAtPoint[0].type || '');
 
-   // Animals
    if (type === 'animal') {
       if (itemsAtPoint.length === 1) {
          return itemsAtPoint[0].species ?? itemsAtPoint[0].SPECIES ?? 'Animal';
@@ -12,7 +11,6 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
-   // Pavilions
    if (type === 'pavilion') {
       if (itemsAtPoint.length === 1) {
          return itemsAtPoint[0].name || 'Pavilion';
@@ -21,7 +19,6 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
-   // Restaurants ✅
    if (type === 'restaurant') {
       if (itemsAtPoint.length === 1) {
          return itemsAtPoint[0].name || 'Restaurant';
@@ -30,7 +27,6 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
-   // Restrooms ✅
    if (type === 'restroom') {
       if (itemsAtPoint.length === 1) {
          return itemsAtPoint[0].title || 'Restroom';
@@ -39,7 +35,6 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
-   // Gift Shops ✅
    if (type === 'giftShop') {
       if (itemsAtPoint.length === 1) {
          return itemsAtPoint[0].name || 'Gift Shop';
@@ -48,7 +43,6 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
-   // Attractions ✅
    if (type === 'attraction') {
       if (itemsAtPoint.length === 1) {
          return itemsAtPoint[0].name || 'Attraction';
@@ -57,7 +51,6 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
-   // Zoomobile Stations ✅
    if (type === 'zoomobileStation') {
       if (itemsAtPoint.length === 1) {
          return itemsAtPoint[0].name || 'Zoomobile Station';
@@ -66,7 +59,6 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
-   // Meet The Guardians Talks ✅
    if (type === 'guardiansTalk') {
       if (itemsAtPoint.length === 1) {
          return `${itemsAtPoint[0].name} Meet The Guardians Talk` || 'Meet The Guardians Talk';
@@ -75,7 +67,6 @@ export function buildHoverText(itemsAtPoint) {
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
-   // Wild Encounters ✅
    if (type === 'wildEncounter') {
       if (itemsAtPoint.length === 1) {
          return `Wild Encounter • ${itemsAtPoint[0].name} - Meeting Spot` || 'Wild Encounter Meeting Spot';

@@ -1,4 +1,3 @@
-// scripts/pages/itineraryWizard/storage.js
 export function safeParseJSON(raw, fallback) {
    try {
       return JSON.parse(raw);

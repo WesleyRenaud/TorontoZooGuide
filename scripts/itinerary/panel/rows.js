@@ -1,4 +1,3 @@
-// scripts/itinerary/panel/rows.js
 import {
    normalizeAnimal,
    normalizeAttraction,

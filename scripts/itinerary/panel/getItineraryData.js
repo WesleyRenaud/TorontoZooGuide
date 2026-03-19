@@ -1,7 +1,12 @@
-// scripts/itinerary/panel/getItineraryData.js
-import { ITIN_KEY, safeParseJSON } from './storage.js';
+import {
+   ITIN_KEY,
+   safeParseJSON,
+   clearStaleItineraryStorage
+} from './storage.js';
 
 export function getItineraryData() {
+   clearStaleItineraryStorage();
+
    const raw = localStorage.getItem(ITIN_KEY);
    if (!raw) return null;
 

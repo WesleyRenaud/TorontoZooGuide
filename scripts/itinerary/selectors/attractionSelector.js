@@ -1,4 +1,3 @@
-// scripts/itinerary/attractionSelector.js
 import { normalizeParameter } from '../../utils/normalize.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';

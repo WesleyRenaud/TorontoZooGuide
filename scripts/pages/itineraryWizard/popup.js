@@ -1,4 +1,3 @@
-// scripts/pages/itineraryWizard/popup.js
 export function showItineraryPopup({
    mountEl,
    title = 'Heads up',

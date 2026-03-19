@@ -1,4 +1,3 @@
-// scripts/itinerary/panel/components/buildOnly.js
 import { el } from '../dom.js';
 
 export function renderBuildOnly(body) {

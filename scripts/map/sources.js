@@ -1,10 +1,8 @@
-// scripts/map/sources.js
 import { ajaxPost } from '../utils/ajax.js';
 
 export function createDataSources(store) {
    return {
-      // ✅ singular layer key
-      animal: {
+\      animal: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-visible-animals', {
                month: ctx.month,
@@ -22,7 +20,6 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
-      // ✅ singular layer key
       pavilion: {
          fetch: async () => {
             const cache = store.cache.pavilion ?? store.cache.pavilions;
@@ -58,7 +55,6 @@ export function createDataSources(store) {
          cachePolicy: 'static',
       },
 
-      // ✅ singular layer key
       restaurant: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-restaurants', {
@@ -77,7 +73,6 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
-      // ✅ singular layer key
       restroom: {
          fetch: async () => {
             const cache = store.cache.restroom ?? store.cache.restrooms;
@@ -113,7 +108,6 @@ export function createDataSources(store) {
          cachePolicy: 'static',
       },
 
-      // ✅ singular layer key
       giftShop: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-gift-shops', {
@@ -132,7 +126,6 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
-      // ✅ singular layer key
       attraction: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-attractions', {
@@ -151,8 +144,6 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
-      // ✅ Meet the Guardians talks (itinerary + explore layer)
-      // Expects backend support similar to /search includeGuardiansTalks.
       guardiansTalk: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-guardians-talks', {
@@ -170,7 +161,6 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
-      // ✅ singular layer key
       zoomobileRoute: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-zoomobile-route', {
@@ -188,17 +178,14 @@ export function createDataSources(store) {
                type: 'zoomobileRouteMarker',
             }));
 
-            // 🔥 Store separately so combine() can merge correctly
             store.byType.zoomobileStation = stations;
             store.byType.zoomobileRouteMarker = routeMarkers;
 
-            // Return both so this layer renders both
             return [...stations, ...routeMarkers];
          },
          cachePolicy: 'no-cache',
       },
 
-      // ✅ Wild Encounters (itinerary + explore layer)
       wildEncounter: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-wild-encounters', {
@@ -216,7 +203,6 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
-      // ✅ Build itinerary (special endpoint)
       buildItinerary: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/build-itinerary', {
@@ -224,14 +210,12 @@ export function createDataSources(store) {
                day: ctx.day,
                temp: ctx.temp,
 
-               // IMPORTANT: backend expects THESE keys:
                animals: ctx.animals || [],
                attractions: ctx.attractions || [],
                guardiansTalks: ctx.guardiansTalks || [],
                wildEncounters: ctx.wildEncounters || [],
             });
 
-            // Backend can return grouped or flat. Normalize to a flat marker list.
             const animals = Array.isArray(res?.animals) ? res.animals.map(r => ({ ...r, type: 'animal' })) : [];
             const attractions = Array.isArray(res?.attractions) ? res.attractions.map(r => ({ ...r, type: 'attraction' })) : [];
             const talks = Array.isArray(res?.guardians_talks)

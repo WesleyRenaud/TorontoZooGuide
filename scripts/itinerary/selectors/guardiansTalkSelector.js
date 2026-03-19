@@ -1,15 +1,9 @@
-// scripts/itinerary/guardiansTalkSelector.js
 import { normalizeParameter } from '../../utils/normalize.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
 const DATE_STORAGE_KEY = 'tzg.itineraryDateISO';
 
-/* -------------------------------------------------- */
-/* DATE HELPERS                                       */
-/* -------------------------------------------------- */
-
-// Monday=1 ... Sunday=7
 function isoDateToMonFirstDow(iso) {
    const d = iso ? new Date(`${iso}T12:00:00`) : new Date();
    if (!Number.isFinite(d.getTime())) return 1;
@@ -21,10 +15,6 @@ function isoDateToMonFirstDow(iso) {
 function getSavedISODate() {
    return localStorage.getItem(DATE_STORAGE_KEY) || '';
 }
-
-/* -------------------------------------------------- */
-/* BACKEND FIELD HELPERS                              */
-/* -------------------------------------------------- */
 
 function getName(row) {
    return row.name ?? row.NAME ?? '';
@@ -38,10 +28,6 @@ function getTimeOfDay(row) {
    return row.time_of_day ?? row.TIME_OF_DAY ?? '';
 }
 
-/* -------------------------------------------------- */
-/* KEY GENERATION                                     */
-/* -------------------------------------------------- */
-
 function buildKey(row, dayOfWeek) {
    const name = getName(row);
    const loc = getLocation(row);
@@ -50,20 +36,12 @@ function buildKey(row, dayOfWeek) {
    return `${name}||${loc}||${dayOfWeek}||${time}`;
 }
 
-/* -------------------------------------------------- */
-/* IMAGE                                              */
-/* -------------------------------------------------- */
-
 function buildTalkImageSrc(name) {
    const file = normalizeParameter(name || '');
    if (!file) return null;
 
    return `../images/guardians-talks/${file}.png`;
 }
-
-/* -------------------------------------------------- */
-/* STORAGE MIGRATION                                  */
-/* -------------------------------------------------- */
 
 function migrateIfNeeded(arr) {
    if (!Array.isArray(arr)) return [];
@@ -90,10 +68,6 @@ function migrateIfNeeded(arr) {
       .filter(Boolean)
       .filter(x => x.id);
 }
-
-/* -------------------------------------------------- */
-/* FACTORY WRAPPER                                    */
-/* -------------------------------------------------- */
 
 export function createItineraryGuardiansTalkSelectorController({
    mountEl,
@@ -138,7 +112,6 @@ export function createItineraryGuardiansTalkSelectorController({
       storageKey: STORAGE_KEY,
       migrateSelected: migrateIfNeeded,
 
-      // ✅ put date-derived context here
       getContext: getItineraryDateSearchContext,
 
       buildSearchPayload: (query) => ({

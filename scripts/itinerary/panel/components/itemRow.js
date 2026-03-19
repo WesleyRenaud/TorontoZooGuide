@@ -1,4 +1,3 @@
-// scripts/itinerary/panel/components/itemRow.js
 import { el, safeImg } from '../dom.js';
 
 export function makeItemRow({ name, imageSrc, metaLines = [], linkText, onLinkClick }) {

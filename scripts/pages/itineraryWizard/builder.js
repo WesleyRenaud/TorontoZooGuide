@@ -1,4 +1,3 @@
-// scripts/pages/itineraryWizard/builder.js
 import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
 import { createItineraryAnimalSelectorController } from '../../itinerary/selectors/animalSelector.js';
 import { createItineraryAttractionSelectorController } from '../../itinerary/selectors/attractionSelector.js';

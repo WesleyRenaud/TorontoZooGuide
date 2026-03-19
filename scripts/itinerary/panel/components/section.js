@@ -1,12 +1,5 @@
-// scripts/itinerary/panel/components/section.js
 import { el } from '../dom.js';
 
-/**
- * Creates a collapsible itinerary panel section with:
- * - Title + count
- * - "Edit" button that jumps to the wizard step
- * - Toggle chevron
- */
 export function makeSection({ title, count, children = [], stepKey }) {
    const section = el('section', 'itin-panel-section');
 
@@ -18,7 +11,6 @@ export function makeSection({ title, count, children = [], stepKey }) {
    const countEl = el('span', 'itin-panel-count', `(${count})`);
    titleEl.appendChild(countEl);
 
-   // Right-side actions: Edit + Toggle
    const actions = el('div', 'itin-panel-header-actions');
 
    const editBtn = el('button', 'itin-panel-section-edit-btn', 'Edit');
@@ -26,7 +18,7 @@ export function makeSection({ title, count, children = [], stepKey }) {
    editBtn.setAttribute('aria-label', `Edit ${title}`);
    editBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      e.stopPropagation(); // don't toggle collapse
+      e.stopPropagation();
       window.dispatchEvent(new CustomEvent('tzg:editItinerarySection', {
          detail: { step: stepKey || 'date' }
       }));

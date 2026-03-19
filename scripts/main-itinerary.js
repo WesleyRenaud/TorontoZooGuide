@@ -1,4 +1,3 @@
-// scripts/main-itinerary.js
 import { initItineraryWizardPage } from './pages/itineraryWizardPage.js';
 
 document.addEventListener('DOMContentLoaded', () => {

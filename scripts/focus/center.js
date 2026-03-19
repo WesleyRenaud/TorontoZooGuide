@@ -1,4 +1,3 @@
-// center.js
 const DEFAULT_CONTAIN = 'outside';
 const FOCUS_CONTAIN = 'none';
 
@@ -15,7 +14,6 @@ function getPanXY(panzoom) {
    return { x, y };
 }
 
-// Forces Panzoom to re-apply contain constraints immediately
 function clampNow(panzoom) {
    const p = getPanXY(panzoom);
    panzoom.pan(p.x, p.y, { animate: false });
@@ -26,7 +24,6 @@ export function centerMarkerWithContain(panzoom, markerEl, viewportEl) {
 
    const prevContain = panzoom?.options?.contain ?? DEFAULT_CONTAIN;
 
-   // --- compute target pan (same as you had) ---
    const markerRect = markerEl.getBoundingClientRect();
    const viewportRect = viewportEl.getBoundingClientRect();
 
@@ -47,12 +44,9 @@ export function centerMarkerWithContain(panzoom, markerEl, viewportEl) {
    const targetX = pan.x + panDx;
    const targetY = pan.y + panDy;
 
-   // --- atomic application (NO rAF) ---
-   // 1) temporarily allow overscroll (not painted yet)
    setContain(panzoom, FOCUS_CONTAIN);
    panzoom.pan(targetX, targetY, { animate: false });
 
-   // 2) immediately restore contain and re-pan to force clamp BEFORE next paint
    setContain(panzoom, prevContain);
    panzoom.pan(targetX, targetY, { animate: false });
    clampNow(panzoom);

@@ -473,7 +473,10 @@ class MyHandler( BaseHTTPRequestHandler ):
                   guardians_talks_json.append( d )
 
          if wild_encounters_to_include:
-            wild_encounters = self.database.get_wild_encounters( wild_encounters_to_include=wild_encounters_to_include )
+            wild_encounters = self.database.get_wild_encounters(
+               month=month,
+               day=day,
+               wild_encounters_to_include=wild_encounters_to_include )
             for wild_encounter in wild_encounters:
                   d = wild_encounter.to_dict()
                   d['type'] = d.get( 'type', 'wildEncounter' )

@@ -8,14 +8,12 @@ export function getLikelihoodPhrase(likelihood) {
    return 'Very low';
 }
 
-// Tooltip positioning helper (used by tooltipController if you want to share)
 export function positionTooltip(tooltipEl, markerEl) {
    const rect = markerEl.getBoundingClientRect();
    const tooltipRect = tooltipEl.getBoundingClientRect();
    const padding = 12;
    const gap = 12;
 
-   // IMPORTANT: convert viewport coords -> offsetParent coords
    const parent = tooltipEl.offsetParent || tooltipEl.parentElement;
    const parentRect = parent.getBoundingClientRect();
 

@@ -1,4 +1,3 @@
-// scripts/pages/mapPage.js
 import { CONFIG } from '../shared/config.js';
 import { createPanzoom } from '../map/panzoom.js';
 import { initMapControls } from '../map/controls.js';
@@ -98,7 +97,6 @@ export function initMapPage() {
       getSelectedTypes: () => initExploreTypeFilter.getSelectedTypes(),
    });
 
-   // Explore multi-select (✅ must exist before search uses it)
    const explore = initExploreTypeFilter({
       onChange: () => {
          updater.refetchWithCurrentControls(null);
@@ -112,7 +110,6 @@ export function initMapPage() {
 
    initExploreTypeFilter.getSelectedTypes = explore.getSelectedTypes;
 
-   // Search (✅ explore exists now)
    const search = initSearch({
       inputEl: animalSearchInput,
       getIncludeFlags: () => explore.buildSearchIncludeFlags(),
@@ -133,7 +130,6 @@ export function initMapPage() {
       onFocusRow: (row) => updater.focusFromSearchRow(row),
    });
 
-   // Wire controls (✅ refresh search after map updates)
    initMapControls({
       mapPreset,
       mapDateInput,
@@ -148,13 +144,11 @@ export function initMapPage() {
       },
    });
 
-   // Deep link focus
    initFocusFromQuery({
       onFocus: (rowOrSpec) => {
          updater.focusFromDeepLink(rowOrSpec);
       }
    });
 
-   // Kick initial map load
    mapPreset.dispatchEvent(new Event('change'));
 }

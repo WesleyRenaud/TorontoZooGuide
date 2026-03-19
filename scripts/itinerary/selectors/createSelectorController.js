@@ -1,4 +1,3 @@
-// scripts/itinerary/selectors/createSelectorController.js
 import { ajaxPost } from '../../utils/ajax.js';
 
 function debounce(fn, delay = 250) {

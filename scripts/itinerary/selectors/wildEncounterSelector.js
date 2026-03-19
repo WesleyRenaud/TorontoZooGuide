@@ -1,13 +1,8 @@
-// scripts/itinerary/wildEncounterSelector.js
 import { normalizeParameter } from '../../utils/normalize.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 
 const STORAGE_KEY = 'tzg.itineraryWildEncounters';
-
-/* -------------------------------------------------- */
-/* ROW FIELD HELPERS                                  */
-/* -------------------------------------------------- */
 
 function getName(row) {
    return row.name ?? row.NAME ?? '';
@@ -35,10 +30,6 @@ function getLink(row) {
    return s ? s : null;
 }
 
-/* -------------------------------------------------- */
-/* KEY + IMAGE                                        */
-/* -------------------------------------------------- */
-
 function buildKey(row, dayOfWeek) {
    const name = getName(row);
    const spot = getMeetingSpot(row);
@@ -51,10 +42,6 @@ function buildWildEncounterImageSrc(name) {
    if (!file) return null;
    return `../images/wild-encounters/${file}.png`;
 }
-
-/* -------------------------------------------------- */
-/* STORAGE MIGRATION                                  */
-/* -------------------------------------------------- */
 
 function migrateIfNeeded(arr) {
    if (!Array.isArray(arr)) return [];
@@ -82,10 +69,6 @@ function migrateIfNeeded(arr) {
       .filter(Boolean)
       .filter(x => x.id);
 }
-
-/* -------------------------------------------------- */
-/* FACTORY WRAPPER                                    */
-/* -------------------------------------------------- */
 
 export function createItineraryWildEncounterSelectorController({
    mountEl,
@@ -124,7 +107,6 @@ export function createItineraryWildEncounterSelectorController({
    return createItinerarySelectorController({
       mountEl,
 
-      // Wild Encounters step only has Prev + Finish
       onPrev,
       onFinish,
       onClose,
@@ -133,7 +115,6 @@ export function createItineraryWildEncounterSelectorController({
       storageKey: STORAGE_KEY,
       migrateSelected: migrateIfNeeded,
 
-      // ✅ date-derived context belongs here
       getContext,
 
       buildSearchPayload: (query) => ({

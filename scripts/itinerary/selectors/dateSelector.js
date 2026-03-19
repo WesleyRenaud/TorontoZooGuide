@@ -1,8 +1,6 @@
-// scripts/itinerary/dateSelector.js
 const STORAGE_KEY = 'tzg.itineraryDateISO';
 
 function toISODate(d) {
-   // YYYY-MM-DD in local time
    const y = d.getFullYear();
    const m = String(d.getMonth() + 1).padStart(2, '0');
    const day = String(d.getDate()).padStart(2, '0');
@@ -10,7 +8,6 @@ function toISODate(d) {
 }
 
 function formatLong(d) {
-   // e.g. Sunday, March 1, 2026
    return d.toLocaleDateString(undefined, {
       weekday: 'long',
       year: 'numeric',

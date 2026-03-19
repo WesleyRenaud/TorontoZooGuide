@@ -1,4 +1,3 @@
-// scripts/pages/itineraryWizard/flow.js
 import { createMapStore } from '../../map/store.js';
 import { createDataSources } from '../../map/sources.js';
 import { parseItineraryIncludes, dateISOToMonthDay } from '../../itinerary/itineraryHelpers.js';

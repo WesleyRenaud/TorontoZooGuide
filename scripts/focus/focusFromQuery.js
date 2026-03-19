@@ -6,7 +6,6 @@ export function initFocusFromQuery({ onFocus }) {
    const exParam = new URLSearchParams(window.location.search).get('exhibit');
    const exhibit = exParam ? decodeURIComponent(exParam) : null;
 
-   // ✅ Let updater refetch + render, then it will focus
    onFocus({ species, exhibit });
 
    history.replaceState({}, '', 'map.html');

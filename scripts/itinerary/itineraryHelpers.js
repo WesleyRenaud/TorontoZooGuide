@@ -1,5 +1,3 @@
-// scripts/itinerary/itineraryHelpers.js
-
 export function uniq(arr) {
    return Array.from(new Set((arr || []).map(s => String(s || '').trim()).filter(Boolean)));
 }
@@ -22,7 +20,6 @@ export function pluckTalkNames(arr) {
    return (Array.isArray(arr) ? arr : [])
       .map(x => {
          if (x && typeof x === 'object') {
-            // prefer explicit fields if present
             const name = x.name ?? x.NAME ?? x.title ?? x.TITLE ?? x.species ?? x.SPECIES ?? '';
             return String(name || '').trim();
          }
@@ -30,7 +27,6 @@ export function pluckTalkNames(arr) {
          const s = String(x || '').trim();
          if (!s) return '';
 
-         // legacy stored display strings
          if (s.includes('||')) return s.split('||')[0].trim();
          if (s.includes('–')) return s.split('–')[0].trim();
          if (s.includes(' - ')) return s.split(' - ')[0].trim();
@@ -40,8 +36,6 @@ export function pluckTalkNames(arr) {
       .filter(Boolean);
 }
 
-// ✅ WILD ENCOUNTERS: NAME ONLY
-// Strips "Name||Meeting Spot||dow||time" and similar display formats.
 export function pluckWildEncounterNames(arr) {
    return (Array.isArray(arr) ? arr : [])
       .map(x => {
@@ -61,7 +55,6 @@ export function pluckWildEncounterNames(arr) {
       .filter(Boolean);
 }
 
-// Used by main-itinerary.js
 export function dateISOToMonthDay(dateISO) {
    let month = null;
    let day = null;
@@ -78,15 +71,13 @@ export function dateISOToMonthDay(dateISO) {
    return { month, day };
 }
 
-// Monday=1 ... Sunday=7 (Mon-first)
 export function isoDateToMonFirstDow(iso) {
    const d = iso ? new Date(`${iso}T12:00:00`) : new Date();
    if (!Number.isFinite(d.getTime())) return 1;
-   const js = d.getDay(); // Sun=0 ... Sat=6
-   return js === 0 ? 7 : js; // Mon=1 ... Sun=7
+   const js = d.getDay();
+   return js === 0 ? 7 : js;
 }
 
-// Used in updater.js
 export function parseItineraryIncludes(itin) {
    if (!itin || typeof itin !== 'object') {
       return {

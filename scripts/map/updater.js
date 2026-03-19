@@ -1,4 +1,3 @@
-// scripts/map/updater.js
 import { getMonth, getDay, isWithinNextNDays } from '../utils/dates.js';
 import { fetchForecastTemp } from './weather.js';
 import {
@@ -22,14 +21,12 @@ export function createMapUpdater({
    let lastPreset = null;
    let lastDateStr = null;
 
-   // ✅ If focus/options are requested before the first updateMap runs, queue it here
    let pendingOptions = null;
 
    async function updateMap(preset, dateStr, options = null) {
       lastPreset = preset;
       lastDateStr = dateStr;
 
-      // ✅ Apply any queued focus/options on the first real update
       if (!options && pendingOptions) {
          options = pendingOptions;
          pendingOptions = null;
@@ -81,9 +78,6 @@ export function createMapUpdater({
 
       const dayOfWeek = dateCtx?.date ? isoDateToMonFirstDow(dateCtx.date) : 1;
 
-      // ------------------------------------------------------------
-      // ITINERARY MODE: only call /build-itinerary via sources.buildItinerary
-      // ------------------------------------------------------------
       if (itineraryOnly) {
          const inc = parseItineraryIncludes(itin);
 
@@ -92,13 +86,11 @@ export function createMapUpdater({
             day: dateCtx.day,
             temp: dateCtx.temp ?? null,
 
-            // ✅ these keys should match what sources.buildItinerary sends
             animals: inc.speciesToInclude,
             attractions: inc.attractionsToInclude,
             guardiansTalks: inc.guardiansTalksToInclude,
             wildEncounters: inc.wildEncountersToInclude,
 
-            // optional
             dayOfWeek,
             zoomobileRoute,
          };
@@ -122,9 +114,6 @@ export function createMapUpdater({
          }
       }
 
-      // ------------------------------------------------------------
-      // NORMAL MODE: existing behavior
-      // ------------------------------------------------------------
       const focusRow = options?.focus?.row || null;
       const focusType = String(options?.focus?.type || focusRow?.type || '').trim();
 

@@ -1,4 +1,3 @@
-// scripts/itinerary/itineraryRenderer.js
 import { renderItineraryPanelInto } from './panel/renderPanel.js';
 
 export function renderItineraryPanel() {

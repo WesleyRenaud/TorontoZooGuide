@@ -7,5 +7,5 @@ export function initLabelVisibilityToggle({ checkboxEl, rootEl }) {
    }
 
    checkboxEl.addEventListener('change', sync);
-   sync(); // apply on load
+   sync();
 }

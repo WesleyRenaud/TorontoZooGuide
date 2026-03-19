@@ -1,4 +1,3 @@
-// scripts/pages/itineraryWizard/keys.js
 export const ITIN_KEY = 'tzg.itinerary';
 export const DATE_KEY = 'tzg.itineraryDateISO';
 export const ANIMALS_KEY = 'tzg.itineraryAnimals';

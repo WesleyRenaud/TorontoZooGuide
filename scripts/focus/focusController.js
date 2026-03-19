@@ -32,17 +32,15 @@ function distToViewportCenter(markerEl, viewportEl) {
    async function focus({ row, type }) {
       if (!row) return;
 
-      // coords first — works for any type
       const x = row.x_coord ?? row.x ?? row.X ?? null;
       const y = row.y_coord ?? row.y ?? row.Y ?? null;
 
-      // Build matchFn (for tooltip jump) but don’t let it block focusing
       const typeKey = String(type || row.type || '');
       const renderer = TYPE_REGISTRY?.[typeKey] ?? TYPE_REGISTRY?.animal ?? null;
 
       const matchFn = renderer?.isMatch
          ? (item) => renderer.isMatch(item, row)
-         : () => true; // fallback: open first card
+         : () => true;
 
       if (x != null && y != null) {
          focusByCoord(x, y, matchFn);
@@ -83,13 +81,11 @@ function distToViewportCenter(markerEl, viewportEl) {
       if (!markers.length) return;
 
       let best = null;
-      // best = { marker, items, score }
 
       for (const marker of markers) {
          const items = marker.__items || [];
          if (!items.length) continue;
 
-         // Only consider items of the requested type, and that match the row.
          const matches = [];
          for (let i = 0; i < items.length; i++) {
          const it = items[i];
@@ -98,8 +94,6 @@ function distToViewportCenter(markerEl, viewportEl) {
          }
          if (!matches.length) continue;
 
-         // Pick best match within this marker
-         // Score: likelihood high, distance low (distance breaks ties)
          const d = distToViewportCenter(marker, viewport);
 
          let bestHereScore = -Infinity;

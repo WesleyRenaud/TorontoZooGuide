@@ -1,4 +1,3 @@
-// scripts/pages/itineraryWizardPage.js
 import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
 import { initItineraryPage } from './itineraryPage.js';
 

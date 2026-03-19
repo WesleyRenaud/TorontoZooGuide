@@ -7,7 +7,6 @@ export function createPanzoom(mapInner, { contain }) {
 
    mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
-   // hide labels at zoom
    const primaryLabels = document.querySelectorAll('.map-label-primary');
    const secondaryLabels = document.querySelectorAll('.map-label-secondary');
 

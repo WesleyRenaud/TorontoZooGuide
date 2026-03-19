@@ -1,4 +1,3 @@
-// scripts/itinerary/panel/format.js
 export function asString(x) {
    if (x == null) return '';
    return typeof x === 'string' ? x : String(x);
@@ -16,7 +15,6 @@ export function formatISODateLong(iso) {
    });
 }
 
-// Back-compat helpers in case any older storage still contains strings
 export function normalizeAnimal(a) {
    if (typeof a === 'string') return { species: a };
    return a && typeof a === 'object' ? a : { species: asString(a) };

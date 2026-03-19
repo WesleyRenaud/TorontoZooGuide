@@ -1,13 +1,7 @@
-// scripts/itinerary/panel/components/actionsBar.js
 import { el } from '../dom.js';
 import { clearItineraryStorage } from '../storage.js';
 import { showItineraryConfirmPopup } from './confirmPopup.js';
 
-/**
- * Renders the top action row for the itinerary panel.
- * - Edit Itinerary (opens wizard)
- * - Clear (TZG-style confirm popup)
- */
 export function makeActionsBar({ onAfterClear } = {}) {
    const actionsWrap = el('div', 'itin-panel-actions-wrap');
 
