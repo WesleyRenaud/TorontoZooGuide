@@ -2,7 +2,7 @@ import { ajaxPost } from '../utils/ajax.js';
 
 export function createDataSources(store) {
    return {
-\      animal: {
+      animal: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-visible-animals', {
                month: ctx.month,
