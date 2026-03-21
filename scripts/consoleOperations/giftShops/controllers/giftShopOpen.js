@@ -12,7 +12,7 @@ export function createGiftShopOpenController({
 } = {}) {
 
    function resetForm() {
-      if(giftShopEl) giftShopEl.value = '';
+      if (giftShopEl) giftShopEl.value = '';
    }
 
    function hide() {
@@ -43,7 +43,7 @@ export function createGiftShopOpenController({
 
       setStatus(statusEl, '');
 
-      if(!giftShop) {
+      if (!giftShop) {
          setStatus(statusEl, 'Gift shop is required.', 'is-error');
          return;
       }
@@ -54,7 +54,7 @@ export function createGiftShopOpenController({
             giftShop
          });
 
-         if(result.success) {
+         if (result.success) {
 
             setStatus(
                statusEl,

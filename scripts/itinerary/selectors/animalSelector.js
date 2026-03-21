@@ -14,12 +14,17 @@ function getExhibit(row) {
    return row.EXHIBIT ?? row.exhibit ?? '';
 }
 
+function getAnimalId(row) {
+   const species = getSpecies(row);
+   const exhibit = getExhibit(row);
+   return `${species}||${exhibit}`;
+}
+
 function getLikelihood(row) {
    const value = row.likelihood ?? row.LIKELIHOOD ?? null;
    const num = Number(value);
    return Number.isFinite(num) ? num : null;
 }
-
 
 function getLikelihoodLevel(row) {
    const likelihood = getLikelihood(row);
@@ -58,17 +63,27 @@ function migrateIfNeeded(arr) {
    if (arr.length > 0 && typeof arr[0] === 'string') {
       return arr
          .filter(Boolean)
-         .map(species => ({ id: species, species, exhibit: '', imageSrc: null }));
+         .map(species => ({
+            id: `${species}||`,
+            species,
+            exhibit: '',
+            imageSrc: null,
+         }));
    }
 
    return arr
       .filter(x => x && typeof x === 'object')
-      .map(x => ({
-         id: x.id ?? x.species ?? x.SPECIES ?? '',
-         species: x.species ?? x.SPECIES ?? '',
-         exhibit: x.exhibit ?? x.EXHIBIT ?? '',
-         imageSrc: x.imageSrc ?? x.image_src ?? x.image ?? null,
-      }))
+      .map(x => {
+         const species = x.species ?? x.SPECIES ?? '';
+         const exhibit = x.exhibit ?? x.EXHIBIT ?? '';
+
+         return {
+            id: x.id ?? `${species}||${exhibit}`,
+            species,
+            exhibit,
+            imageSrc: x.imageSrc ?? x.image_src ?? x.image ?? null,
+         };
+      })
       .filter(x => x.id);
 }
 
@@ -76,7 +91,13 @@ function makeSelection(row) {
    const species = getSpecies(row);
    const exhibit = getExhibit(row);
    const imageSrc = buildAnimalImageSrc(row);
-   return { id: species, species, exhibit, imageSrc };
+
+   return {
+      id: getAnimalId(row),
+      species,
+      exhibit,
+      imageSrc,
+   };
 }
 
 export function createItineraryAnimalSelectorController({ mountEl, onNext, onPrev, onFinish, onClose } = {}) {
@@ -170,21 +191,21 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
 
       getContext: getItineraryDateSearchContext,
 
-      buildSearchPayload: (query) => ({
+      buildSearchPayload: query => ({
          query,
          includeAnimals: true,
          includeOffDisplayAnimals,
       }),
 
-      extractRows: (response) =>
+      extractRows: response =>
          (Array.isArray(response?.animals) ? response.animals :
           Array.isArray(response) ? response :
           response?.results) || [],
 
-      getId: (row) => getSpecies(row),
-      getTitle: (row) => getSpecies(row) || 'Animal',
-      getSubtitle: (row) => getSubtitle(row),
-      getImageSrc: (row) => buildAnimalImageSrc(row),
+      getId: row => getAnimalId(row),
+      getTitle: row => getSpecies(row) || 'Animal',
+      getSubtitle: row => getSubtitle(row),
+      getImageSrc: row => buildAnimalImageSrc(row),
 
       makeSelection,
 

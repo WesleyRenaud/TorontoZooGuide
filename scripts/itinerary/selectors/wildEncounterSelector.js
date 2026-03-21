@@ -30,13 +30,6 @@ function getLink(row) {
    return s ? s : null;
 }
 
-function buildKey(row, dayOfWeek) {
-   const name = getName(row);
-   const spot = getMeetingSpot(row);
-   const time = getTimeOfDay(row);
-   return `${name}||${spot}||${dayOfWeek}||${time}`;
-}
-
 function buildWildEncounterImageSrc(name) {
    const file = normalizeParameter(name || '');
    if (!file) return null;
@@ -48,19 +41,28 @@ function migrateIfNeeded(arr) {
 
    return arr
       .map(x => {
-         if (typeof x === 'string') return null;
+         if (typeof x === 'string') {
+            return {
+               id: x,
+               name: x,
+               meetingSpot: '',
+               timeOfDay: '',
+               link: null,
+               imageSrc: buildWildEncounterImageSrc(x),
+            };
+         }
 
          if (x && typeof x === 'object') {
-            const key = x.key ?? '';
+            const name = x.name ?? x.NAME ?? '';
+            const id = x.id ?? name;
+
             return {
-               id: key,
-               key,
-               name: x.name ?? '',
-               meetingSpot: x.meetingSpot ?? x.meeting_spot ?? '',
-               dayOfWeek: x.dayOfWeek ?? '',
-               timeOfDay: x.timeOfDay ?? x.time_of_day ?? '',
-               link: x.link ?? null,
-               imageSrc: x.imageSrc ?? null,
+               id,
+               name,
+               meetingSpot: x.meetingSpot ?? x.meeting_spot ?? x.MEETING_SPOT ?? '',
+               timeOfDay: x.timeOfDay ?? x.time_of_day ?? x.TIME_OF_DAY ?? '',
+               link: x.link ?? x.LINK ?? x.info_link ?? x.INFO_LINK ?? null,
+               imageSrc: x.imageSrc ?? x.image_src ?? x.image ?? buildWildEncounterImageSrc(name),
             };
          }
 
@@ -76,28 +78,16 @@ export function createItineraryWildEncounterSelectorController({
    onFinish,
    onClose,
 } = {}) {
-   let dayOfWeek = 1;
-
-   async function getContext() {
-      const ctx = await getItineraryDateSearchContext();
-      dayOfWeek = ctx.dayOfWeek ?? 1;
-      return ctx;
-   }
-
    function makeSelection(row) {
       const name = getName(row);
       const meetingSpot = getMeetingSpot(row);
       const timeOfDay = getTimeOfDay(row);
       const link = getLink(row);
 
-      const key = buildKey(row, dayOfWeek);
-
       return {
-         id: key,
-         key,
+         id: name,
          name,
          meetingSpot,
-         dayOfWeek,
          timeOfDay,
          link,
          imageSrc: buildWildEncounterImageSrc(name),
@@ -115,32 +105,34 @@ export function createItineraryWildEncounterSelectorController({
       storageKey: STORAGE_KEY,
       migrateSelected: migrateIfNeeded,
 
-      getContext,
+      getContext: getItineraryDateSearchContext,
 
-      buildSearchPayload: (query) => ({
+      buildSearchPayload: query => ({
          query,
          includeWildEncounters: true,
       }),
 
-      extractRows: (response) =>
-         Array.isArray(response?.wild_encounters)
+      extractRows: response =>
+         Array.isArray(response?.wildEncounters)
+            ? response.wildEncounters
+            : Array.isArray(response?.wild_encounters)
             ? response.wild_encounters
             : [],
 
-      getId: (row) => buildKey(row, dayOfWeek),
+      getId: row => getName(row),
 
-      getTitle: (row) => getName(row) || 'Wild Encounter',
+      getTitle: row => getName(row) || 'Wild Encounter',
 
-      getSubtitle: (row) => {
+      getSubtitle: row => {
          const spot = getMeetingSpot(row);
          const time = getTimeOfDay(row);
 
          return `${spot ? `Meeting Spot: ${spot}` : 'Meeting Spot: —'}${time ? `  •  Time: ${time}` : ''}`;
       },
 
-      getImageSrc: (row) => buildWildEncounterImageSrc(getName(row)),
+      getImageSrc: row => buildWildEncounterImageSrc(getName(row)),
 
-      getInfoLink: (row) => getLink(row),
+      getInfoLink: row => getLink(row),
 
       makeSelection,
 

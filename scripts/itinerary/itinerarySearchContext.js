@@ -1,8 +1,7 @@
 import { buildDateSearchContext } from '../search/searchContext.js';
-
-const DATE_KEY = 'tzg.itineraryDateISO';
+import { DATE_KEY } from '../pages/itineraryWizard/keys.js';
 
 export async function getItineraryDateSearchContext({ includeTemp = true } = {}) {
-   const iso = localStorage.getItem(DATE_KEY) || '';
-   return await buildDateSearchContext(iso, { includeTemp });
+   const date = localStorage.getItem(DATE_KEY) || '';
+   return await buildDateSearchContext(date, { includeTemp });
 }

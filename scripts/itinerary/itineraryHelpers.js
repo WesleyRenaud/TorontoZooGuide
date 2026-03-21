@@ -2,6 +2,38 @@ export function uniq(arr) {
    return Array.from(new Set((arr || []).map(s => String(s || '').trim()).filter(Boolean)));
 }
 
+export function uniqBy(arr, getKey) {
+   const seen = new Set();
+   const out = [];
+
+   for(const item of (arr || [])) {
+      const key = String(getKey(item) || '').trim();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      out.push(item);
+   }
+
+   return out;
+}
+
+export function pluckAnimals(arr) {
+   return (Array.isArray(arr) ? arr : [])
+      .map(x => {
+         if (x && typeof x === 'object') {
+            return {
+               species: String(x.species ?? x.SPECIES ?? x.name ?? '').trim(),
+               exhibit: String(x.exhibit ?? x.EXHIBIT ?? '').trim(),
+            };
+         }
+
+         return {
+            species: String(x || '').trim(),
+            exhibit: '',
+         };
+      })
+      .filter(x => x.species);
+}
+
 export function pluckSpecies(arr) {
    return (Array.isArray(arr) ? arr : [])
       .map(x => (x && typeof x === 'object' ? (x.species ?? x.SPECIES ?? x.name ?? '') : String(x)))
@@ -55,16 +87,16 @@ export function pluckWildEncounterNames(arr) {
       .filter(Boolean);
 }
 
-export function dateISOToMonthDay(dateISO) {
+export function dateToMonthDay(date) {
    let month = null;
    let day = null;
 
-   if (!dateISO) return { month, day };
+   if (!date) return { month, day };
 
-   const d = new Date(`${dateISO}T12:00:00`);
+   const d = new Date(`${date}T12:00:00`);
    if (!Number.isFinite(d.getTime())) return { month, day };
 
-   const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+   const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
    month = months[d.getMonth()] || null;
    day = d.getDate();
 
@@ -81,7 +113,7 @@ export function isoDateToMonFirstDow(iso) {
 export function parseItineraryIncludes(itin) {
    if (!itin || typeof itin !== 'object') {
       return {
-         speciesToInclude: [],
+         animalsToInclude: [],
          attractionsToInclude: [],
          guardiansTalksToInclude: [],
          wildEncountersToInclude: [],
@@ -89,7 +121,10 @@ export function parseItineraryIncludes(itin) {
    }
 
    return {
-      speciesToInclude: uniq(pluckSpecies(itin.animals)),
+      animalsToInclude: uniqBy(
+         pluckAnimals(itin.animals),
+         animal => `${animal.species}||${animal.exhibit}`
+      ),
       attractionsToInclude: uniq(pluckName(itin.attractions)),
       guardiansTalksToInclude: uniq(pluckTalkNames(itin.guardiansTalks)),
       wildEncountersToInclude: uniq(pluckWildEncounterNames(itin.wildEncounters)),

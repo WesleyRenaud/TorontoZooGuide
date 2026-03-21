@@ -6,31 +6,19 @@ let cachedAttractions = null;
 let cachedGuardiansTalks = null;
 let cachedWildEncounters = null;
 
-export async function postJson(url, data) {
-   const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-   });
-
-   return await response.json();
-}
-
 export function setStatus(el, message, kind = '') {
-   if(!el) return;
+   if (!el) return;
 
    el.textContent = message || '';
    el.classList.remove('is-success', 'is-error');
 
-   if(kind) {
+   if (kind) {
       el.classList.add(kind);
    }
 }
 
 export function populateExhibitDropdown(selectEl, exhibits) {
-   if(!selectEl) return;
+   if (!selectEl) return;
 
    selectEl.innerHTML = '';
 
@@ -60,7 +48,7 @@ export function populateExhibitDropdown(selectEl, exhibits) {
                ? exhibit
                : exhibit.name ?? exhibit.NAME ?? '';
 
-         if(!name) return;
+         if (!name) return;
 
          const option = document.createElement('option');
          option.value = name;
@@ -70,7 +58,7 @@ export function populateExhibitDropdown(selectEl, exhibits) {
 }
 
 export function populateRestaurantDropdown(selectEl, restaurants) {
-   if(!selectEl) return;
+   if (!selectEl) return;
 
    selectEl.innerHTML = '';
 
@@ -100,7 +88,7 @@ export function populateRestaurantDropdown(selectEl, restaurants) {
                ? restaurant
                : restaurant.name ?? restaurant.NAME ?? '';
 
-         if(!name) return;
+         if (!name) return;
 
          const option = document.createElement('option');
          option.value = name;
@@ -110,7 +98,7 @@ export function populateRestaurantDropdown(selectEl, restaurants) {
 }
 
 export function populateGiftShopDropdown(selectEl, giftShops) {
-   if(!selectEl) return;
+   if (!selectEl) return;
 
    selectEl.innerHTML = '';
 
@@ -140,7 +128,7 @@ export function populateGiftShopDropdown(selectEl, giftShops) {
                ? giftShop
                : giftShop.name ?? giftShop.NAME ?? '';
 
-         if(!name) return;
+         if (!name) return;
 
          const option = document.createElement('option');
          option.value = name;
@@ -150,7 +138,7 @@ export function populateGiftShopDropdown(selectEl, giftShops) {
 }
 
 export function populateAttractionDropdown(selectEl, attractions) {
-   if(!selectEl) return;
+   if (!selectEl) return;
 
    selectEl.innerHTML = '';
 
@@ -180,7 +168,7 @@ export function populateAttractionDropdown(selectEl, attractions) {
                ? attraction
                : attraction.name ?? attraction.NAME ?? '';
 
-         if(!name) return;
+         if (!name) return;
 
          const option = document.createElement('option');
          option.value = name;
@@ -190,7 +178,7 @@ export function populateAttractionDropdown(selectEl, attractions) {
 }
 
 export function populateGuardiansTalkDropdown(selectEl, guardiansTalks) {
-   if(!selectEl) return;
+   if (!selectEl) return;
 
    selectEl.innerHTML = '';
 
@@ -220,7 +208,7 @@ export function populateGuardiansTalkDropdown(selectEl, guardiansTalks) {
                ? guardiansTalk
                : guardiansTalk.name ?? guardiansTalk.NAME ?? '';
 
-         if(!name) return;
+         if (!name) return;
 
          const option = document.createElement('option');
          option.value = name;
@@ -230,7 +218,7 @@ export function populateGuardiansTalkDropdown(selectEl, guardiansTalks) {
 }
 
 export function populateWildEncounterDropdown(selectEl, wildEncounters) {
-   if(!selectEl) return;
+   if (!selectEl) return;
 
    selectEl.innerHTML = '';
 
@@ -260,7 +248,7 @@ export function populateWildEncounterDropdown(selectEl, wildEncounters) {
                ? wildEncounter
                : wildEncounter.name ?? wildEncounter.NAME ?? '';
 
-         if(!name) return;
+         if (!name) return;
 
          const option = document.createElement('option');
          option.value = name;
@@ -271,7 +259,7 @@ export function populateWildEncounterDropdown(selectEl, wildEncounters) {
 
 export async function loadSpecies() {
 
-   if(cachedSpecies) {
+   if (cachedSpecies) {
       return cachedSpecies;
    }
 
@@ -287,7 +275,7 @@ export async function loadSpecies() {
 }
 
 export async function loadExhibits() {
-   if(cachedExhibits) {
+   if (cachedExhibits) {
       return cachedExhibits;
    }
 
@@ -314,7 +302,7 @@ export async function loadExhibits() {
 }
 
 export async function loadRestaurants() {
-   if(cachedRestaurants) {
+   if (cachedRestaurants) {
       return cachedRestaurants;
    }
 
@@ -341,7 +329,7 @@ export async function loadRestaurants() {
 }
 
 export async function loadGiftShops() {
-   if(cachedGiftShops) {
+   if (cachedGiftShops) {
       return cachedGiftShops;
    }
 
@@ -368,7 +356,7 @@ export async function loadGiftShops() {
 }
 
 export async function loadAttractions() {
-   if(cachedAttractions) {
+   if (cachedAttractions) {
       return cachedAttractions;
    }
 
@@ -395,7 +383,7 @@ export async function loadAttractions() {
 }
 
 export async function loadGuardiansTalks() {
-   if(cachedGuardiansTalks) {
+   if (cachedGuardiansTalks) {
       return cachedGuardiansTalks;
    }
 
@@ -422,7 +410,7 @@ export async function loadGuardiansTalks() {
 }
 
 export async function loadWildEncounters() {
-   if(cachedWildEncounters) {
+   if (cachedWildEncounters) {
       return cachedWildEncounters;
    }
 

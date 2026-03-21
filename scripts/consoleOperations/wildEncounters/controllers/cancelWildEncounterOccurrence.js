@@ -20,19 +20,19 @@ export function createCancelWildEncounterOccurrenceController({
 } = {}) {
 
    function resetOccurrenceDropdowns() {
-      if(occurrenceFilterController?.clear) {
+      if (occurrenceFilterController?.clear) {
          occurrenceFilterController.clear();
       }
       else {
-         if(dateEl) dateEl.value = '';
-         if(timeEl) timeEl.value = '';
+         if (dateEl) dateEl.value = '';
+         if (timeEl) timeEl.value = '';
       }
    }
 
    function resetForm() {
-      if(wildEncounterEl) wildEncounterEl.value = '';
-      if(dateEl) dateEl.value = '';
-      if(timeEl) timeEl.value = '';
+      if (wildEncounterEl) wildEncounterEl.value = '';
+      if (dateEl) dateEl.value = '';
+      if (timeEl) timeEl.value = '';
 
       resetOccurrenceDropdowns();
    }
@@ -51,7 +51,7 @@ export function createCancelWildEncounterOccurrenceController({
       setStatus(statusEl, '');
 
       try {
-         if(wildEncounterEl?.tagName === 'SELECT') {
+         if (wildEncounterEl?.tagName === 'SELECT') {
             const wildEncounters = await loadWildEncounters();
             populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
          }
@@ -72,17 +72,17 @@ export function createCancelWildEncounterOccurrenceController({
 
       setStatus(statusEl, '');
 
-      if(!wildEncounter) {
+      if (!wildEncounter) {
          setStatus(statusEl, 'Wild Encounter is required.', 'is-error');
          return;
       }
 
-      if(!date) {
+      if (!date) {
          setStatus(statusEl, 'Date is required.', 'is-error');
          return;
       }
 
-      if(!time) {
+      if (!time) {
          setStatus(statusEl, 'Time is required.', 'is-error');
          return;
       }
@@ -94,7 +94,7 @@ export function createCancelWildEncounterOccurrenceController({
             time
          });
 
-         if(result.success) {
+         if (result.success) {
             setStatus(
                statusEl,
                `${result.wildEncounter} on ${result.date} at ${result.time} was cancelled.`,
@@ -112,18 +112,18 @@ export function createCancelWildEncounterOccurrenceController({
    }
 
    wildEncounterEl?.addEventListener('change', async () => {
-      if(dateEl) dateEl.value = '';
-      if(timeEl) timeEl.value = '';
+      if (dateEl) dateEl.value = '';
+      if (timeEl) timeEl.value = '';
 
-      if(occurrenceFilterController?.refresh) {
+      if (occurrenceFilterController?.refresh) {
          await occurrenceFilterController.refresh();
       }
    });
 
    dateEl?.addEventListener('change', () => {
-      if(timeEl) timeEl.value = '';
+      if (timeEl) timeEl.value = '';
 
-      if(occurrenceFilterController?.refreshTimes) {
+      if (occurrenceFilterController?.refreshTimes) {
          occurrenceFilterController.refreshTimes();
       }
    });

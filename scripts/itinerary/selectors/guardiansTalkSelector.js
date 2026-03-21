@@ -1,20 +1,8 @@
 import { normalizeParameter } from '../../utils/normalize.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
+
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
-const DATE_STORAGE_KEY = 'tzg.itineraryDateISO';
-
-function isoDateToMonFirstDow(iso) {
-   const d = iso ? new Date(`${iso}T12:00:00`) : new Date();
-   if (!Number.isFinite(d.getTime())) return 1;
-
-   const js = d.getDay();
-   return js === 0 ? 7 : js;
-}
-
-function getSavedISODate() {
-   return localStorage.getItem(DATE_STORAGE_KEY) || '';
-}
 
 function getName(row) {
    return row.name ?? row.NAME ?? '';
@@ -26,14 +14,6 @@ function getLocation(row) {
 
 function getTimeOfDay(row) {
    return row.time_of_day ?? row.TIME_OF_DAY ?? '';
-}
-
-function buildKey(row, dayOfWeek) {
-   const name = getName(row);
-   const loc = getLocation(row);
-   const time = getTimeOfDay(row);
-
-   return `${name}||${loc}||${dayOfWeek}||${time}`;
 }
 
 function buildTalkImageSrc(name) {
@@ -48,18 +28,26 @@ function migrateIfNeeded(arr) {
 
    return arr
       .map(x => {
-         if (typeof x === 'string') return null;
+         if (typeof x === 'string') {
+            return {
+               id: x,
+               name: x,
+               location: '',
+               timeOfDay: '',
+               imageSrc: buildTalkImageSrc(x),
+            };
+         }
 
          if (x && typeof x === 'object') {
-            const key = x.key ?? '';
+            const name = x.name ?? x.NAME ?? '';
+            const id = x.id ?? name;
+
             return {
-               id: key,
-               key,
-               name: x.name ?? '',
-               location: x.location ?? '',
-               timeOfDay: x.timeOfDay ?? '',
-               dayOfWeek: x.dayOfWeek ?? '',
-               imageSrc: x.imageSrc ?? null,
+               id,
+               name,
+               location: x.location ?? x.LOCATION ?? '',
+               timeOfDay: x.timeOfDay ?? x.time_of_day ?? x.TIME_OF_DAY ?? '',
+               imageSrc: x.imageSrc ?? x.image_src ?? x.image ?? buildTalkImageSrc(name),
             };
          }
 
@@ -76,28 +64,16 @@ export function createItineraryGuardiansTalkSelectorController({
    onFinish,
    onClose,
 } = {}) {
-   let dayOfWeek = 1;
-
-   function getDayOfWeekContext() {
-      const iso = getSavedISODate();
-      dayOfWeek = isoDateToMonFirstDow(iso);
-      return { dayOfWeek };
-   }
-
    function makeSelection(row) {
       const name = getName(row);
       const location = getLocation(row);
       const timeOfDay = getTimeOfDay(row);
 
-      const key = buildKey(row, dayOfWeek);
-
       return {
-         id: key,
-         key,
+         id: name,
          name,
          location,
          timeOfDay,
-         dayOfWeek,
          imageSrc: buildTalkImageSrc(name),
       };
    }
@@ -114,29 +90,31 @@ export function createItineraryGuardiansTalkSelectorController({
 
       getContext: getItineraryDateSearchContext,
 
-      buildSearchPayload: (query) => ({
+      buildSearchPayload: query => ({
          query,
          includeGuardiansTalks: true,
       }),
 
-      extractRows: (response) =>
-         Array.isArray(response?.guardians_talks)
+      extractRows: response =>
+         Array.isArray(response?.guardiansTalks)
+            ? response.guardiansTalks
+            : Array.isArray(response?.guardians_talks)
             ? response.guardians_talks
             : [],
 
-      getId: (row) => buildKey(row, dayOfWeek),
+      getId: row => getName(row),
 
-      getTitle: (row) =>
+      getTitle: row =>
          getName(row) || 'Talk',
 
-      getSubtitle: (row) => {
+      getSubtitle: row => {
          const loc = getLocation(row);
          const time = getTimeOfDay(row);
 
          return `${loc ? `Location: ${loc}` : 'Location: —'}${time ? `  •  Time: ${time}` : ''}`;
       },
 
-      getImageSrc: (row) =>
+      getImageSrc: row =>
          buildTalkImageSrc(getName(row)),
 
       makeSelection,

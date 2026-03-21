@@ -39,8 +39,8 @@ function isFreeWithAdmission(row) {
 
    if (typeof v === 'string') {
       const s = v.trim().toLowerCase();
-      if ([ 'true', 't', 'yes', 'y', '1' ].includes(s)) return true;
-      if ([ 'false', 'f', 'no', 'n', '0' ].includes(s)) return false;
+      if (['true', 't', 'yes', 'y', '1'].includes(s)) return true;
+      if (['false', 'f', 'no', 'n', '0'].includes(s)) return false;
    }
 
    return false;
@@ -65,8 +65,8 @@ function isSeasonalAttraction(row) {
 
    if (typeof v === 'string') {
       const s = v.trim().toLowerCase();
-      if ([ 'true', 't', 'yes', 'y', '1' ].includes(s)) return true;
-      if ([ 'false', 'f', 'no', 'n', '0' ].includes(s)) return false;
+      if (['true', 't', 'yes', 'y', '1'].includes(s)) return true;
+      if (['false', 'f', 'no', 'n', '0'].includes(s)) return false;
    }
 
    return false;
@@ -87,8 +87,8 @@ function isClosed(row) {
 
    if (typeof v === 'string') {
       const s = v.trim().toLowerCase();
-      if ([ 'true', 't', 'yes', 'y', '1' ].includes(s)) return true;
-      if ([ 'false', 'f', 'no', 'n', '0' ].includes(s)) return false;
+      if (['true', 't', 'yes', 'y', '1'].includes(s)) return true;
+      if (['false', 'f', 'no', 'n', '0'].includes(s)) return false;
    }
 
    return false;
@@ -187,7 +187,6 @@ export function createItineraryAttractionSelectorController({
    onFinish,
    onClose,
 } = {}) {
-
    let includeClosedAttractions = false;
 
    return createItinerarySelectorController({
@@ -202,23 +201,23 @@ export function createItineraryAttractionSelectorController({
 
       getContext: () => getItineraryDateSearchContext({ includeTemp: false }),
 
-      buildSearchPayload: (query) => ({
+      buildSearchPayload: query => ({
          query,
          includeAttractions: true,
          includeClosedAttractions,
       }),
 
-      extractRows: (response) =>
+      extractRows: response =>
          (Array.isArray(response?.attractions) ? response.attractions :
           Array.isArray(response) ? response :
           Array.isArray(response?.results) ? response.results :
           []),
 
-      getId: (row) => getAttractionName(row),
-      getTitle: (row) => getAttractionName(row) || 'Attraction',
-      getSubtitle: (row) => getSubtitle(row),
-      getImageSrc: (row) => buildAttractionImageSrc(row),
-      getInfoLink: (row) => getInfoLink(row),
+      getId: row => getAttractionName(row),
+      getTitle: row => getAttractionName(row) || 'Attraction',
+      getSubtitle: row => getSubtitle(row),
+      getImageSrc: row => buildAttractionImageSrc(row),
+      getInfoLink: row => getInfoLink(row),
 
       makeSelection,
 
@@ -228,7 +227,6 @@ export function createItineraryAttractionSelectorController({
       emptyText: 'No attractions found.',
 
       onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
-
          if (isSelected) {
             proceed();
             return;
@@ -269,7 +267,7 @@ export function createItineraryAttractionSelectorController({
          checkbox.checked = false;
 
          const text = document.createElement('span');
-         text.textContent = 'Include seasonal attractions';
+         text.textContent = 'Include closed attractions';
 
          checkbox.addEventListener('change', () => {
             includeClosedAttractions = checkbox.checked;

@@ -19,23 +19,23 @@ export function createEndGuardiansTalkScheduleController({
 } = {}) {
 
    function resetTalkDropdown() {
-      if(talkLocationFilterController?.clear) {
+      if (talkLocationFilterController?.clear) {
          talkLocationFilterController.clear();
          return;
       }
 
-      if(talkNameEl?.tagName === 'SELECT') {
+      if (talkNameEl?.tagName === 'SELECT') {
          populateGuardiansTalkDropdown(talkNameEl, []);
       }
-      else if(talkNameEl) {
+      else if (talkNameEl) {
          talkNameEl.value = '';
       }
    }
 
    function resetForm() {
-      if(locationEl) locationEl.value = '';
-      if(talkNameEl) talkNameEl.value = '';
-      if(endDateEl) endDateEl.value = '';
+      if (locationEl) locationEl.value = '';
+      if (talkNameEl) talkNameEl.value = '';
+      if (endDateEl) endDateEl.value = '';
 
       resetTalkDropdown();
    }
@@ -56,7 +56,7 @@ export function createEndGuardiansTalkScheduleController({
       try {
          resetForm();
 
-         if(talkLocationFilterController?.refreshLocations) {
+         if (talkLocationFilterController?.refreshLocations) {
             await talkLocationFilterController.refreshLocations();
          }
 
@@ -76,12 +76,12 @@ export function createEndGuardiansTalkScheduleController({
 
       setStatus(statusEl, '');
 
-      if(!location) {
+      if (!location) {
          setStatus(statusEl, 'Location is required.', 'is-error');
          return;
       }
 
-      if(!talk) {
+      if (!talk) {
          setStatus(statusEl, 'Talk name is required.', 'is-error');
          return;
       }
@@ -94,7 +94,7 @@ export function createEndGuardiansTalkScheduleController({
             endDate: endDate || null
          });
 
-         if(result.success) {
+         if (result.success) {
             setStatus(
                statusEl,
                `${result.talk} in ${result.location} schedule was ended.`,

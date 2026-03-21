@@ -41,7 +41,7 @@ export function createRemoveRestaurantOpeningScheduleController({
 
       setStatus(statusEl, '');
 
-      if(!restaurant) {
+      if (!restaurant) {
          setStatus(statusEl, 'Restaurant is required.', 'is-error');
          return;
       }
@@ -52,7 +52,7 @@ export function createRemoveRestaurantOpeningScheduleController({
             restaurant
          });
 
-         if(result.success) {
+         if (result.success) {
 
             setStatus(
                statusEl,

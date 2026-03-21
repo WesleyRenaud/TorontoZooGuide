@@ -2,7 +2,7 @@ export function createRestaurantClosedBanner() {
    let el = null;
 
    function ensure() {
-      if(el) return el;
+      if (el) return el;
 
       el = document.createElement('div');
       el.className = 'off-display-closed-banner';
@@ -25,14 +25,14 @@ export function createRestaurantClosedBanner() {
    }
 
    function hide() {
-      if(!el) return;
+      if (!el) return;
       el.style.display = 'none';
    }
 
    function sync(restaurant) {
       const message = restaurant?.closed_message;
 
-      if(!message) {
+      if (!message) {
          hide();
          return;
       }

@@ -18,8 +18,8 @@ export function createEndWildEncounterScheduleController({
 } = {}) {
 
    function resetForm() {
-      if(wildEncounterEl) wildEncounterEl.value = '';
-      if(endDateEl) endDateEl.value = '';
+      if (wildEncounterEl) wildEncounterEl.value = '';
+      if (endDateEl) endDateEl.value = '';
    }
 
    function show() {
@@ -36,7 +36,7 @@ export function createEndWildEncounterScheduleController({
       setStatus(statusEl, '');
 
       try {
-         if(wildEncounterEl?.tagName === 'SELECT') {
+         if (wildEncounterEl?.tagName === 'SELECT') {
             const wildEncounters = await loadWildEncounters();
             populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
          }
@@ -56,7 +56,7 @@ export function createEndWildEncounterScheduleController({
 
       setStatus(statusEl, '');
 
-      if(!wildEncounter) {
+      if (!wildEncounter) {
          setStatus(statusEl, 'Wild Encounter is required.', 'is-error');
          return;
       }
@@ -67,7 +67,7 @@ export function createEndWildEncounterScheduleController({
             endDate: endDate || null
          });
 
-         if(result.success) {
+         if (result.success) {
             setStatus(
                statusEl,
                `${result.wildEncounter} schedule was ended.`,

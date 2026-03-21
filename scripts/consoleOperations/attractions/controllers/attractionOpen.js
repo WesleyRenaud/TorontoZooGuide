@@ -12,7 +12,7 @@ export function createAttractionOpenController( {
 } = {} ) {
 
    function resetForm() {
-      if(attractionEl) attractionEl.value = '';
+      if (attractionEl) attractionEl.value = '';
    }
 
    function show() {
@@ -46,7 +46,7 @@ export function createAttractionOpenController( {
 
       setStatus(statusEl, '');
 
-      if(!attraction) {
+      if (!attraction) {
          setStatus(statusEl, 'Attraction is required.', 'is-error');
          return;
       }
@@ -56,7 +56,7 @@ export function createAttractionOpenController( {
             attraction
          });
 
-         if(result.success) {
+         if (result.success) {
             setStatus(
                statusEl,
                `${result.attraction} was set as open.`,

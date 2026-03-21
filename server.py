@@ -68,13 +68,18 @@ class MyHandler( BaseHTTPRequestHandler ):
          temp = data.get( 'temp' )
          include_off_display_animals = data.get( 'includeOffDisplayAnimals' )
          species_to_include = data.get( 'speciesToInclude' )
+         itinerary_mode = data.get( 'itineraryMode' )
+
+         if itinerary_mode != True:
+            itinerary_mode = False
 
          animals = self.database.get_animals_viewable_on_day(
             month=month,
             day=day,
             temp=temp,
             include_off_display_animals=include_off_display_animals,
-            species_to_include=species_to_include )
+            species_to_include=species_to_include,
+            itinerary_mode=itinerary_mode )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -132,10 +137,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-pavilions':
-         content_length = int( self.headers[ 'Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
          pavilions = self.database.get_pavilions()
 
          self.send_response( 200 )
@@ -169,10 +170,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-restrooms':
-         content_length = int( self.headers[ 'Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
          restrooms = self.database.get_restrooms()
 
          self.send_response( 200 )
@@ -214,12 +211,14 @@ class MyHandler( BaseHTTPRequestHandler ):
          day = data.get( 'day' )
          include_closed_attractions = data.get( 'includeClosedAttractions' )
          attractions_to_include = data.get( 'attractionsToInclude' )
+         itinerary_mode = data.get( 'itineraryMode' )
 
          attractions = self.database.get_attractions(
             month=month,
             day=day,
             include_closed_attractions=include_closed_attractions,
-            attractions_to_include=attractions_to_include )
+            attractions_to_include=attractions_to_include,
+            itinerary_mode=itinerary_mode )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -258,11 +257,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          month = data.get( 'month' )
          day = data.get( 'day' )
          guardians_talks_to_include = data.get( 'guardiansTalksToInclude' )
+         itinerary_mode = data.get( 'itineraryMode' )
 
          guardians_talks = self.database.get_guardians_talks(
             month=month,
             day=day,
-            guardians_talks_to_include=guardians_talks_to_include )
+            guardians_talks_to_include=guardians_talks_to_include,
+            itinerary_mode=itinerary_mode )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -279,11 +280,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          month = data.get( 'month' )
          day = data.get( 'day' )
          wild_encounters_to_include = data.get( 'wildEncountersToInclude' )
+         itinerary_mode = data.get( 'itineraryMode' )
 
          wild_encounters = self.database.get_wild_encounters(
             month=month,
             day=day,
-            wild_encounters_to_include=wild_encounters_to_include )
+            wild_encounters_to_include=wild_encounters_to_include,
+            itinerary_mode=itinerary_mode )
          
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -419,8 +422,73 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.end_headers()
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
+
+      elif self.path == '/set-itinerary':
+         content_length = int( self.headers['Content-Length'] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         date = data.get( 'date' )
+         animals = data.get( 'animals' )
+         attractions = data.get( 'attractions' )
+         guardians_talks = data.get( 'guardiansTalks' )
+         wild_encounters = data.get( 'wildEncounters' )
+         is_active = data.get( 'isActive' )
+
+         success = self.database.set_itinerary(
+            date=date,
+            animals=animals,
+            attractions=attractions,
+            guardians_talks=guardians_talks,
+            wild_encounters=wild_encounters,
+            is_active=is_active )
+
+         itinerary = self.database.get_itinerary() if success else None
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'itinerary': itinerary.to_dict() if itinerary != None else None
+         }
+
+         if not success:
+            response['error'] = 'Could not save itinerary.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
    
-      elif self.path == '/build-itinerary':
+      elif self.path == '/get-itinerary':
+         itinerary = self.database.get_itinerary()
+
+         response = {'itinerary': itinerary.to_dict()}
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/clear-itinerary':
+         success = self.database.clear_itinerary()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success
+         }
+
+         if not success:
+            response['error'] = 'Could not clear itinerary.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/validate-itinerary':
          content_length = int( self.headers['Content-Length'] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
@@ -439,54 +507,48 @@ class MyHandler( BaseHTTPRequestHandler ):
          wild_encounters_json = []
 
          if animals_to_include:
-            animals = self.database.get_animals_viewable_on_day(
-               month=month,
-               day=day,
-               temp=temp,
-               species_to_include=animals_to_include,
-               itinerary_mode=True )
+            animals = self.database.validate_animals( month=month, day=day, temp=temp, animals_to_include=animals_to_include )
+
             for animal in animals:
                d = animal.to_dict()
                d['type'] = d.get( 'type', 'animal' )
                animals_json.append( d )
 
          if attractions_to_include:
-            attractions = self.database.get_attractions(
-               month=month,
-               day=day,
-               attractions_to_include=attractions_to_include,
-               itinerary_mode=True )
+            attractions = self.database.validate_attractions( month=month, day=day, attractions_to_include=attractions_to_include )
+
             for attraction in attractions:
-                  d = attraction.to_dict()
-                  d['type'] = d.get( 'type', 'attraction' )
-                  attractions_json.append( d )
-               
+               d = attraction.to_dict()
+               d['type'] = d.get( 'type', 'attraction' )
+               attractions_json.append( d )
+
          if guardians_talks_to_include:
-            guardians_talks = self.database.get_guardians_talks(
+            guardians_talks = self.database.validate_guardians_talks(
                month=month,
                day=day,
-               guardians_talks_to_include=guardians_talks_to_include,
-               itinerary_mode=True )
+               guardians_talks_to_include=guardians_talks_to_include )
+
             for guardians_talk in guardians_talks:
-                  d = guardians_talk.to_dict()
-                  d['type'] = d.get( 'type', 'guardiansTalk' )
-                  guardians_talks_json.append( d )
+               d = guardians_talk.to_dict()
+               d['type'] = d.get( 'type', 'guardiansTalk' )
+               guardians_talks_json.append( d )
 
          if wild_encounters_to_include:
-            wild_encounters = self.database.get_wild_encounters(
+            wild_encounters = self.database.validate_wild_encounters(
                month=month,
                day=day,
                wild_encounters_to_include=wild_encounters_to_include )
+
             for wild_encounter in wild_encounters:
-                  d = wild_encounter.to_dict()
-                  d['type'] = d.get( 'type', 'wildEncounter' )
-                  wild_encounters_json.append( d )
+               d = wild_encounter.to_dict()
+               d['type'] = d.get( 'type', 'wildEncounter' )
+               wild_encounters_json.append( d )
 
          response = {
             'animals': animals_json,
             'attractions': attractions_json,
-            'guardians_talks': guardians_talks_json,
-            'wild_encounters': wild_encounters_json
+            'guardiansTalks': guardians_talks_json,
+            'wildEncounters': wild_encounters_json,
          }
 
          self.send_response( 200 )
@@ -496,10 +558,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       if self.path == '/get-species':
-         content_length = int( self.headers['Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
          species = self.database.get_species()
 
          self.send_response( 200 )
@@ -510,10 +568,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       if self.path == '/get-restaurant-names':
-         content_length = int( self.headers['Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
          restaurants = self.database.get_restaurant_names()
 
          self.send_response( 200 )
@@ -524,10 +578,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       if self.path == '/get-gift-shop-names':
-         content_length = int( self.headers['Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
          gift_shops = self.database.get_gift_shop_names()
 
          self.send_response( 200 )
@@ -538,10 +588,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       if self.path == '/get-attraction-names':
-         content_length = int( self.headers['Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
          attractions = self.database.get_attraction_names()
 
          self.send_response( 200 )
@@ -552,10 +598,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       if self.path == '/get-guardians-talk-locations':
-         content_length = int( self.headers['Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
          guardians_talk_locations = self.database.get_guardians_talk_locations()
 
          self.send_response( 200 )
@@ -566,10 +608,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       if self.path == '/get-guardians-talk-names':
-         content_length = int( self.headers['Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
          guardians_talks = self.database.get_guardians_talk_names()
 
          self.send_response( 200 )
@@ -619,10 +657,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       if self.path == '/get-wild-encounter-names':
-         content_length = int( self.headers['Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
          wild_encounters = self.database.get_wild_encounter_names()
 
          self.send_response( 200 )
@@ -654,10 +688,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       if self.path == '/get-exhibits':
-         content_length = int( self.headers['Content-Length'] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
          exhibits = self.database.get_exhibits()
 
          self.send_response( 200 )

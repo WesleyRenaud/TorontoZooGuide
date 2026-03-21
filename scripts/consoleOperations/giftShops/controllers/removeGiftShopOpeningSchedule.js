@@ -40,7 +40,7 @@ export function createRemoveGiftShopOpeningScheduleController({
 
       setStatus(statusEl, '');
 
-      if(!giftShop) {
+      if (!giftShop) {
          setStatus(statusEl, 'Gift shop is required.', 'is-error');
          return;
       }
@@ -51,7 +51,7 @@ export function createRemoveGiftShopOpeningScheduleController({
             giftShop
          });
 
-         if(result.success) {
+         if (result.success) {
 
             setStatus(
                statusEl,

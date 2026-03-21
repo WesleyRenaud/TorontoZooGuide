@@ -22,7 +22,7 @@ export function createCancelGuardiansTalkOccurrenceController({
    let occurrences = [];
 
    function populateDateDropdown(occurrenceDates) {
-      if(dateEl?.tagName !== 'SELECT') {
+      if (dateEl?.tagName !== 'SELECT') {
          return;
       }
 
@@ -42,7 +42,7 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    function populateTimeDropdown(occurrenceTimes) {
-      if(timeEl?.tagName !== 'SELECT') {
+      if (timeEl?.tagName !== 'SELECT') {
          return;
       }
 
@@ -68,13 +68,13 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    function resetTalkDropdown() {
-      if(talkLocationFilterController?.clear) {
+      if (talkLocationFilterController?.clear) {
          talkLocationFilterController.clear();
       }
-      else if(talkNameEl?.tagName === 'SELECT') {
+      else if (talkNameEl?.tagName === 'SELECT') {
          populateGuardiansTalkDropdown(talkNameEl, []);
       }
-      else if(talkNameEl) {
+      else if (talkNameEl) {
          talkNameEl.value = '';
       }
 
@@ -82,10 +82,10 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    function resetForm() {
-      if(locationEl) locationEl.value = '';
-      if(talkNameEl) talkNameEl.value = '';
-      if(dateEl) dateEl.value = '';
-      if(timeEl) timeEl.value = '';
+      if (locationEl) locationEl.value = '';
+      if (talkNameEl) talkNameEl.value = '';
+      if (dateEl) dateEl.value = '';
+      if (timeEl) timeEl.value = '';
 
       resetTalkDropdown();
    }
@@ -106,7 +106,7 @@ export function createCancelGuardiansTalkOccurrenceController({
 
       clearOccurrenceDropdowns();
 
-      if(!talk || !location) {
+      if (!talk || !location) {
          return;
       }
 
@@ -138,7 +138,7 @@ export function createCancelGuardiansTalkOccurrenceController({
 
       populateTimeDropdown([]);
 
-      if(!selectedDate) {
+      if (!selectedDate) {
          return;
       }
 
@@ -160,7 +160,7 @@ export function createCancelGuardiansTalkOccurrenceController({
       try {
          resetForm();
 
-         if(talkLocationFilterController?.refreshLocations) {
+         if (talkLocationFilterController?.refreshLocations) {
             await talkLocationFilterController.refreshLocations();
          }
 
@@ -181,22 +181,22 @@ export function createCancelGuardiansTalkOccurrenceController({
 
       setStatus(statusEl, '');
 
-      if(!location) {
+      if (!location) {
          setStatus(statusEl, 'Location is required.', 'is-error');
          return;
       }
 
-      if(!talk) {
+      if (!talk) {
          setStatus(statusEl, 'Talk name is required.', 'is-error');
          return;
       }
 
-      if(!date) {
+      if (!date) {
          setStatus(statusEl, 'Date is required.', 'is-error');
          return;
       }
 
-      if(!time) {
+      if (!time) {
          setStatus(statusEl, 'Time is required.', 'is-error');
          return;
       }
@@ -210,7 +210,7 @@ export function createCancelGuardiansTalkOccurrenceController({
             time
          });
 
-         if(result.success) {
+         if (result.success) {
             setStatus(
                statusEl,
                `${result.talk} in ${result.location} on ${result.date} at ${result.time} was cancelled.`,
@@ -229,13 +229,13 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    talkNameEl?.addEventListener('change', async () => {
-      if(dateEl) dateEl.value = '';
-      if(timeEl) timeEl.value = '';
+      if (dateEl) dateEl.value = '';
+      if (timeEl) timeEl.value = '';
       await loadOccurrencesForSelectedTalk();
    });
 
    dateEl?.addEventListener('change', () => {
-      if(timeEl) timeEl.value = '';
+      if (timeEl) timeEl.value = '';
       loadTimesForSelectedDate();
    });
 

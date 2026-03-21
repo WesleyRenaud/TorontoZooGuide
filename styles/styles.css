@@ -132,6 +132,7 @@ html.home-page {
    flex: 0 0 var(--map-menu-width);
    width: var(--map-menu-width);
    min-height: 0;
+   height: 100%;
    overflow: hidden;
    display: flex;
    flex-direction: column;
@@ -147,7 +148,6 @@ html.home-page {
    display: flex;
    align-items: center;
    justify-content: center;
-   height: 4vh;
 }
 
 .side-panel-title {
@@ -159,14 +159,18 @@ html.home-page {
 }
 
 .side-panel-body {
-   padding: 96px 48px;
+   padding: 32px 20px 32px 20px;
    display: flex;
    flex-direction: column;
-   gap: 96px;
-   overflow-y: auto;            /* ✅ allow scrolling */
+   gap: 24px;
+
+   flex: 1 1 auto;
+   min-height: 0;
+   height: 0;
+
+   overflow-y: auto;
    overflow-x: hidden;
-   flex: 1 1 auto;              /* ✅ take remaining height */
-   min-height: 0;   
+   box-sizing: border-box;
 }
 
 /* ============================================================
@@ -1531,26 +1535,59 @@ nav ul li a:hover {
 ============================================================ */
 
 .itinerary-flow {
-   position: fixed;      /* ✅ was absolute */
-   inset: 0;             /* full viewport */
-   z-index: 9999;        /* above map + side panel */
+   position: fixed;
+   inset: 0;
+   z-index: 9999;
    pointer-events: none;
 }
 
 .itin-overlay {
-   position: absolute;   /* stays relative to itinerary-flow */
+   position: absolute;
    inset: 0;
    background: rgba(20, 35, 10, 0.22);
 
    display: flex;
    justify-content: center;
-
-   /* Keep slightly high so Flatpickr has room */
    align-items: flex-start;
+
    padding-top: 15vh;
    padding-bottom: 5vh;
 
    pointer-events: auto;
+}
+
+/* ============================================================
+   PAGE / LAYOUT: ITINERARY PAGE
+============================================================ */
+
+.map-layout.itinerary-layout {
+   display: flex;
+   align-items: stretch;
+   min-height: 0;
+   height: calc(100vh - 96px - 92px);
+}
+
+.itinerary-panel {
+   display: flex;
+   flex-direction: column;
+   min-height: 0;
+   height: 100%;
+}
+
+.itinerary-panel .side-panel-body {
+   flex: 1 1 auto;
+   min-height: 0;
+   height: 0;
+
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+
+   overflow-y: auto;
+   overflow-x: hidden;
+
+   padding: 32px 20px 32px 20px;
+   box-sizing: border-box;
 }
 
 /* ============================================================
@@ -1569,7 +1606,6 @@ nav ul li a:hover {
    overflow: hidden;
 }
 
-/* Top bar inside card (title only) */
 .itin-card-topbar {
    display: flex;
    justify-content: center;
@@ -1609,7 +1645,6 @@ nav ul li a:hover {
    color: rgba(20,35,10,0.60);
 }
 
-/* Bottom actions */
 .itin-card-actions {
    display: flex;
    justify-content: flex-end;
@@ -1622,29 +1657,7 @@ nav ul li a:hover {
    align-items: center;
 }
 
-.itin-next {
-   font-family: 'Poppins', sans-serif;
-   font-size: 3.8em;
-   font-weight: 950;
-
-   padding: 26px 58px;
-   border-radius: 18px;
-   border: none;
-
-   background: #5e9600;
-   color: #ffffff;
-
-   cursor: pointer;
-   box-shadow: 0 18px 40px rgba(0,0,0,0.22);
-   transition: transform 0.15s ease, background-color 0.2s ease;
-}
-
-.itin-next:hover {
-   background-color: #4b7c00;
-   transform: translateY(-2px);
-}
-
-/* Finish = same primary style as Next */
+.itin-next,
 .itin-finish {
    font-family: 'Poppins', sans-serif;
    font-size: 3.8em;
@@ -1662,6 +1675,7 @@ nav ul li a:hover {
    transition: transform 0.15s ease, background-color 0.2s ease;
 }
 
+.itin-next:hover,
 .itin-finish:hover {
    background-color: #4b7c00;
    transform: translateY(-2px);
@@ -1703,13 +1717,11 @@ nav ul li a:hover {
    box-shadow: 0 18px 40px rgba(0,0,0,0.18);
 }
 
-/* Flatpickr: larger, but keep it clickable */
 .itin-overlay .flatpickr-calendar {
    transform: scale(2.6);
    transform-origin: top left;
 }
 
-/* Make the calendar text itself bigger */
 .itin-overlay .flatpickr-current-month,
 .itin-overlay .flatpickr-weekday,
 .itin-overlay .flatpickr-day,
@@ -1717,7 +1729,6 @@ nav ul li a:hover {
    font-size: 22px;
 }
 
-/* Remove the month dropdown (so it looks like your map.html calendar) */
 .itin-overlay .flatpickr-monthDropdown-months {
    display: none !important;
 }
@@ -1739,36 +1750,33 @@ nav ul li a:hover {
 }
 
 /* ============================================================
-   ITINERARY: ANIMALS SELECTOR (tall) — SYNCED WITH animalSelector.js
+   ITINERARY: ANIMALS SELECTOR (tall)
 ============================================================ */
 
-/* Matches: <section class="itin-card itin-card-tall"> */
 .itin-card.itin-card-tall {
-   height: 88vh;                 /* fill most of screen */
-   max-height: 2400px;           /* allow big displays */
+   height: 88vh;
+   max-height: 2400px;
    display: flex;
    flex-direction: column;
 }
 
-/* Matches: <div class="itin-card-body itin-card-body-tall"> */
 .itin-card-body.itin-card-body-tall {
    flex: 1 1 auto;
-   min-height: 0;                /* allow results to scroll */
+   min-height: 0;
    display: flex;
    flex-direction: column;
 }
 
-/* Search input — same scale as date selector input */
 .itin-search-input {
    width: 100%;
    box-sizing: border-box;
 
    font-family: 'Poppins', sans-serif;
-   font-size: 4.2em;             /* match .itin-date-input */
+   font-size: 4.2em;
    font-weight: 850;
    color: rgba(20,35,10,0.95);
 
-   padding: 34px 34px;           /* match .itin-date-input */
+   padding: 34px 34px;
    border-radius: 22px;
 
    background: rgba(255,255,255,0.92);
@@ -1776,8 +1784,6 @@ nav ul li a:hover {
 
    box-shadow: 0 14px 30px rgba(0,0,0,0.12);
    outline: none;
-
-   /* Prevent multi-line / tall textbox look */
    line-height: 1.15;
 }
 
@@ -1791,12 +1797,12 @@ nav ul li a:hover {
    font-weight: 850;
 }
 
-/* Results list */
 .itin-results {
    margin-top: 36px;
    flex: 1 1 auto;
    min-height: 0;
    overflow-y: auto;
+   overflow-x: hidden;
    padding-right: 18px;
 
    display: flex;
@@ -1804,22 +1810,6 @@ nav ul li a:hover {
    gap: 22px;
 }
 
-/* Scrollbar (matches your green style) */
-.itin-results::-webkit-scrollbar { width: 28px; }
-.itin-results::-webkit-scrollbar-track {
-   background: rgba(94, 150, 0, 0.12);
-   border-radius: 999px;
-}
-.itin-results::-webkit-scrollbar-thumb {
-   background: rgba(94, 150, 0, 0.55);
-   border-radius: 999px;
-   border: 4px solid rgba(255,255,255,0.7);
-}
-.itin-results::-webkit-scrollbar-thumb:hover {
-   background: rgba(94, 150, 0, 0.8);
-}
-
-/* Empty state — make it match your UI scale */
 .itin-empty {
    font-family: 'Poppins', sans-serif;
    font-size: 3.2em;
@@ -1829,10 +1819,40 @@ nav ul li a:hover {
 }
 
 /* ============================================================
-   ITINERARY: RESULT ROW LAYOUT WITH FIXED IMAGE (INTEGRATED)
+   SHARED SCROLLBAR STYLING
 ============================================================ */
 
-/* The row itself: keep your existing "animal-result" styling, but enforce layout */
+.itin-results::-webkit-scrollbar,
+.itinerary-panel .side-panel-body::-webkit-scrollbar,
+.itin-panel-section-body::-webkit-scrollbar {
+   width: 28px;
+}
+
+.itin-results::-webkit-scrollbar-track,
+.itinerary-panel .side-panel-body::-webkit-scrollbar-track,
+.itin-panel-section-body::-webkit-scrollbar-track {
+   background: rgba(94, 150, 0, 0.12);
+   border-radius: 999px;
+}
+
+.itin-results::-webkit-scrollbar-thumb,
+.itinerary-panel .side-panel-body::-webkit-scrollbar-thumb,
+.itin-panel-section-body::-webkit-scrollbar-thumb {
+   background: rgba(94, 150, 0, 0.55);
+   border-radius: 999px;
+   border: 4px solid rgba(255,255,255,0.7);
+}
+
+.itin-results::-webkit-scrollbar-thumb:hover,
+.itinerary-panel .side-panel-body::-webkit-scrollbar-thumb:hover,
+.itin-panel-section-body::-webkit-scrollbar-thumb:hover {
+   background: rgba(94, 150, 0, 0.8);
+}
+
+/* ============================================================
+   ITINERARY: RESULT ROW LAYOUT WITH FIXED IMAGE
+============================================================ */
+
 .itin-results .animal-result {
    display: flex;
    align-items: center;
@@ -1840,17 +1860,15 @@ nav ul li a:hover {
    gap: 28px;
 }
 
-/* Wrap image + text together so they sit beside each other */
 .itin-animal-content {
    display: flex;
    align-items: center;
    gap: 28px;
 
    flex: 1 1 auto;
-   min-width: 0; /* important so the text can wrap instead of pushing layout */
+   min-width: 0;
 }
 
-/* Fixed thumbnail frame */
 .itin-animal-thumb {
    width: 280px;
    height: 220px;
@@ -1863,7 +1881,6 @@ nav ul li a:hover {
    box-shadow: inset 0 0 0 3px rgba(255,255,255,0.18);
 }
 
-/* Image always fills the frame */
 .itin-animal-thumb-img {
    width: 100%;
    height: 100%;
@@ -1873,24 +1890,22 @@ nav ul li a:hover {
    object-position: center;
 }
 
-/* Optional placeholder (if you add the class when the image fails) */
 .itin-animal-thumb.is-placeholder {
    display: grid;
    place-items: center;
 }
+
 .itin-animal-thumb.is-placeholder::before {
    content: "🐾";
    font-size: 5em;
    opacity: 0.85;
 }
 
-/* Ensure your existing text block works in this horizontal layout */
 .itin-animal-content .animal-result-left {
    flex: 1 1 auto;
    min-width: 0;
 }
 
-/* Allow wrapping (so long species names don’t force weird stacking) */
 .itin-animal-content .animal-result-species,
 .itin-animal-content .animal-result-exhibit {
    white-space: normal;
@@ -1939,7 +1954,6 @@ nav ul li a:hover {
    box-shadow: 0 14px 32px rgba(0,0,0,0.32);
 }
 
-/* Added state */
 .itin-add-btn.is-added {
    background: rgba(255,255,255,0.15);
    color: #ffffff;
@@ -1963,7 +1977,6 @@ nav ul li a:hover {
    padding: 0 64px 64px 64px;
 }
 
-/* Previous button */
 .itin-prev {
    font-family: 'Poppins', sans-serif;
    font-size: 3.8em;
@@ -1986,59 +1999,20 @@ nav ul li a:hover {
    transform: translateY(-2px);
 }
 
-/* Itinerary: make the "More Info" link match the subtitle size */
 .itin-animal-content .tooltip-link {
-   font-size: 2.8em;          /* same as .animal-result-exhibit */
-   font-weight: 600;          /* same as .animal-result-exhibit */
+   font-size: 2.8em;
+   font-weight: 600;
    line-height: 1.2;
    display: inline-block;
    margin-top: 6px;
    align-self: flex-start;
 }
 
-/* Meet the Guardians meta line (location + time) */
 .itin-talk-meta {
    font-family: 'Poppins', sans-serif;
-   font-size: 2.8em; /* same vibe as other subtitle rows */
+   font-size: 2.8em;
    font-weight: 650;
    color: rgba(255,255,255,0.9);
-
-   white-space: normal;
-   overflow-wrap: anywhere;
-   word-break: break-word;
-}
-
-/* ============================================================
-   ITINERARY PANEL: DATE HEADER
-============================================================ */
-
-.itin-panel-date {
-   background: rgba(255,255,255,0.55);
-   border: 3px solid rgba(94, 150, 0, 0.18);
-   border-radius: 22px;
-
-   padding: 26px 26px;
-
-   box-shadow: 0 12px 28px rgba(0,0,0,0.10);
-
-   display: flex;
-   flex-direction: column;
-   gap: 10px;
-}
-
-.itin-panel-date-label {
-   font-size: 2.6em;
-   font-weight: 850;
-   color: rgba(20, 35, 10, 0.70);
-   letter-spacing: 0.02em;
-   text-transform: uppercase;
-}
-
-.itin-panel-date-value {
-   font-size: 3.6em;
-   font-weight: 950;
-   color: rgba(20, 35, 10, 0.92);
-   letter-spacing: 0.01em;
 
    white-space: normal;
    overflow-wrap: anywhere;
@@ -2066,13 +2040,11 @@ nav ul li a:hover {
    margin-bottom: 36px;
 }
 
-/* Let buttons share the row nicely */
 .itin-panel-actions-wrap > button {
    flex: 1 1 0;
    min-width: 0;
 }
 
-/* Shared button base */
 .itin-panel-build-btn,
 .itin-panel-edit-btn,
 .itin-panel-clear-btn {
@@ -2093,7 +2065,6 @@ nav ul li a:hover {
                box-shadow 0.2s ease;
 }
 
-/* Primary (Build / Edit) */
 .itin-panel-build-btn,
 .itin-panel-edit-btn {
    background-color: #77B800;
@@ -2107,7 +2078,6 @@ nav ul li a:hover {
    box-shadow: 0 14px 32px rgba(0,0,0,0.28);
 }
 
-/* Secondary (Clear) */
 .itin-panel-clear-btn {
    background-color: rgba(255,255,255,0.90);
    color: rgba(20,35,10,0.90);
@@ -2122,7 +2092,7 @@ nav ul li a:hover {
 }
 
 /* ============================================================
-   DATE HEADER WRAPPER
+   ITINERARY PANEL: DATE HEADER
 ============================================================ */
 
 .itin-panel-date {
@@ -2137,6 +2107,18 @@ nav ul li a:hover {
    gap: 14px;
 }
 
+.itin-panel-date-top {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 24px;
+}
+
+.itin-panel-date-text {
+   flex: 1 1 auto;
+   min-width: 0;
+}
+
 .itin-panel-date-label {
    font-size: 2.4em;
    font-weight: 900;
@@ -2149,20 +2131,24 @@ nav ul li a:hover {
    font-size: 3.2em;
    font-weight: 900;
    color: rgba(20, 35, 10, 0.92);
+
+   white-space: normal;
+   overflow-wrap: anywhere;
+   word-break: break-word;
 }
 
 /* ============================================================
    SECTION SHELL
 ============================================================ */
 
-.itin-panel-header-actions{
+.itin-panel-header-actions {
    display: flex;
    align-items: center;
    gap: 16px;
+   flex: 0 0 auto;
 }
 
-/* Small “Edit” button in each dropdown header */
-.itin-panel-section-edit-btn{
+.itin-panel-section-edit-btn {
    border: none;
    cursor: pointer;
 
@@ -2179,11 +2165,12 @@ nav ul li a:hover {
    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
 }
 
-.itin-panel-section-edit-btn:hover{
+.itin-panel-section-edit-btn:hover {
    background: rgba(20, 35, 10, 0.16);
 }
 
 .itin-panel-section {
+   flex: 0 0 auto;
    background: rgba(255,255,255,0.55);
    border: 3px solid rgba(94, 150, 0, 0.18);
    border-radius: 22px;
@@ -2191,7 +2178,6 @@ nav ul li a:hover {
    box-shadow: 0 12px 28px rgba(0,0,0,0.10);
 }
 
-/* Header row (clickable) */
 .itin-panel-section-header {
    display: flex;
    align-items: center;
@@ -2222,7 +2208,6 @@ nav ul li a:hover {
    opacity: 0.7;
 }
 
-/* Chevron button */
 .itin-panel-toggle {
    border: none;
    background: rgba(20, 35, 10, 0.08);
@@ -2260,27 +2245,33 @@ nav ul li a:hover {
    border-right: 5px solid rgba(20, 35, 10, 0.85);
    border-bottom: 5px solid rgba(20, 35, 10, 0.85);
 
-   transform: rotate(45deg); /* expanded */
+   transform: rotate(45deg);
 }
 
-/* Body */
 .itin-panel-section-body {
+   overflow-y: auto;
+   overflow-x: hidden;
+   scrollbar-gutter: stable;
+}
+
+.itin-panel-section-body-inner {
    padding: 22px 22px 26px 22px;
+   padding-right: 12px;
    display: flex;
    flex-direction: column;
    gap: 22px;
+   box-sizing: border-box;
 }
 
-/* Prevent empty sections from creating a bottom lip */
 .itin-panel-section-body:empty {
    display: none;
    padding: 0;
 }
 
-/* Collapsed */
 .itin-panel-section.is-collapsed .itin-panel-section-body {
    display: none;
 }
+
 .itin-panel-section.is-collapsed .itin-panel-toggle-icon::before {
    transform: rotate(135deg);
 }
@@ -2373,20 +2364,17 @@ nav ul li a:hover {
    ITINERARY: ANIMAL LIKELIHOOD WARNING ICON
 ============================================================ */
 
-/* Title row (species + warning icon) */
 .itin-animal-title-wrap {
    display: flex;
    align-items: center;
    gap: 14px;
 }
 
-/* Keep the species text aligned nicely in the flex row */
 .itin-animal-title-wrap .animal-result-species {
    display: inline-block;
    margin: 0;
 }
 
-/* Warning icon wrapper */
 .itin-likelihood-warning {
    display: flex;
    align-items: center;
@@ -2395,7 +2383,6 @@ nav ul li a:hover {
    line-height: 1;
 }
 
-/* SVG icon */
 .itin-warning-icon {
    width: 40px;
    height: 40px;
@@ -2404,14 +2391,12 @@ nav ul li a:hover {
    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.4));
 }
 
-/* Yellow warning: 40%–79% */
 .itin-likelihood-warning.medium .itin-warning-icon path {
    fill: #ffd54d;
    stroke: #000;
    stroke-width: 1.5;
 }
 
-/* Red warning: below 40% */
 .itin-likelihood-warning.low .itin-warning-icon path {
    fill: #ff5252;
    stroke: #000;
@@ -2429,31 +2414,28 @@ nav ul li a:hover {
    pointer-events: auto;
 }
 
-/* Center popup vertically */
 .tzg-popup .itin-overlay {
    align-items: center;
    padding-top: 0;
    padding-bottom: 0;
 }
 
-/* Make popup body shorter and cleaner */
 .tzg-popup-body {
    padding-top: 40px;
    padding-bottom: 40px;
 
    display: flex;
-   align-items: center;   /* vertical centering */
+   align-items: center;
 }
 
-/* Message fills the full width */
 .tzg-popup-message {
    font-size: 3em;
    font-weight: 800;
    color: rgba(20,35,10,0.75);
    line-height: 1.25;
 
-   width: 100%;          /* fill full body width */
-   max-width: none;      /* remove narrow constraint */
+   width: 100%;
+   max-width: none;
 }
 
 /* ============================================================
@@ -2490,7 +2472,6 @@ nav ul li a:hover {
    position: relative;
 }
 
-/* Close button */
 .itin-close {
    position: absolute;
    right: 32px;
@@ -2521,13 +2502,11 @@ nav ul li a:hover {
    transition: background 0.18s ease, transform 0.12s ease;
 }
 
-/* Hover */
 .itin-close:hover {
    background: rgba(20, 35, 10, 0.16);
    transform: translateY(-50%) scale(1.05);
 }
 
-/* Active */
 .itin-close:active {
    transform: translateY(-50%) scale(0.96);
 }

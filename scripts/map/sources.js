@@ -3,13 +3,15 @@ import { ajaxPost } from '../utils/ajax.js';
 export function createDataSources(store) {
    return {
       animal: {
-         fetch: async (ctx) => {
+         fetch: async(ctx) => {
             const res = await ajaxPost('/get-visible-animals', {
                month: ctx.month,
                day: ctx.day,
                temp: ctx.temp,
                includeOffDisplayAnimals: ctx.includeOffDisplayAnimals,
                speciesToInclude: ctx.speciesToInclude,
+               animalsToInclude: ctx.animalsToInclude,
+               itineraryMode: ctx.itineraryMode,
             });
 
             const animals = res?.animals ?? [];
@@ -133,6 +135,7 @@ export function createDataSources(store) {
                day: ctx.day,
                includeClosedAttractions: ctx.includeClosedAttractions,
                attractionsToInclude: ctx.attractionsToInclude,
+               itineraryMode: ctx.itineraryMode,
             });
 
             const rows = res?.attractions ?? res?.results ?? res ?? [];
@@ -149,7 +152,8 @@ export function createDataSources(store) {
             const res = await ajaxPost('/get-guardians-talks', {
                month: ctx.month,
                day: ctx.day,
-               talksToInclude: ctx.talksToInclude,
+               guardiansTalksToInclude: ctx.guardiansTalksToInclude,
+               itineraryMode: ctx.itineraryMode,
             });
 
             const rows = res?.guardians_talks ?? res?.talks ?? res?.results ?? res ?? [];
@@ -161,37 +165,13 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
-      zoomobileRoute: {
-         fetch: async (ctx) => {
-            const res = await ajaxPost('/get-zoomobile-route', {
-               zoomobileRoute: ctx.zoomobileRoute,
-               zoomobileStationsToInclude: ctx.zoomobileStationsToInclude,
-            });
-
-            const stations = (res?.zoomobile_stations ?? []).map(r => ({
-               ...r,
-               type: 'zoomobileStation',
-            }));
-
-            const routeMarkers = (res?.zoomobile_route_markers ?? []).map(r => ({
-               ...r,
-               type: 'zoomobileRouteMarker',
-            }));
-
-            store.byType.zoomobileStation = stations;
-            store.byType.zoomobileRouteMarker = routeMarkers;
-
-            return [...stations, ...routeMarkers];
-         },
-         cachePolicy: 'no-cache',
-      },
-
       wildEncounter: {
          fetch: async (ctx) => {
             const res = await ajaxPost('/get-wild-encounters', {
                month: ctx.month,
                day: ctx.day,
                wildEncountersToInclude: ctx.wildEncountersToInclude,
+               itineraryMode: ctx.itineraryMode,
             });
 
             const rows = res?.wild_encounters ?? res?.results ?? res ?? [];
@@ -199,40 +179,6 @@ export function createDataSources(store) {
 
             store.byType.wildEncounter = normalized;
             return normalized;
-         },
-         cachePolicy: 'no-cache',
-      },
-
-      buildItinerary: {
-         fetch: async (ctx) => {
-            const res = await ajaxPost('/build-itinerary', {
-               month: ctx.month,
-               day: ctx.day,
-               temp: ctx.temp,
-
-               animals: ctx.animals || [],
-               attractions: ctx.attractions || [],
-               guardiansTalks: ctx.guardiansTalks || [],
-               wildEncounters: ctx.wildEncounters || [],
-            });
-
-            const animals = Array.isArray(res?.animals) ? res.animals.map(r => ({ ...r, type: 'animal' })) : [];
-            const attractions = Array.isArray(res?.attractions) ? res.attractions.map(r => ({ ...r, type: 'attraction' })) : [];
-            const talks = Array.isArray(res?.guardians_talks)
-               ? res.guardians_talks.map(r => ({ ...r, type: 'guardiansTalk' }))
-               : Array.isArray(res?.guardiansTalks)
-               ? res.guardiansTalks.map(r => ({ ...r, type: 'guardiansTalk' }))
-               : [];
-            const wild = Array.isArray(res?.wild_encounters)
-               ? res.wild_encounters.map(r => ({ ...r, type: 'wildEncounter' }))
-               : Array.isArray(res?.wildEncounters)
-               ? res.wild_encounters.map(r => ({ ...r, type: 'wildEncounter' }))
-               : [];
-
-            const flat = [...animals, ...attractions, ...talks, ...wild];
-
-            store.byType.buildItinerary = flat;
-            return flat;
          },
          cachePolicy: 'no-cache',
       },

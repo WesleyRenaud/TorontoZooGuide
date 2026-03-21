@@ -246,10 +246,46 @@ class WildEncounter:
       }
    
 
+class Itinerary:
+   def __init__( self, date, animals=[], attractions=[], guardians_talks=[], wild_encounters=[] ):
+      self.date = date
+      self.animals = animals
+      self.attractions = attractions
+      self.guardians_talks = guardians_talks
+      self.wild_encounters = wild_encounters
+
+
+   def to_dict( self ):
+      return {
+         'date': self.date,
+         'animals': [
+            self._to_dict_with_type(a, 'animal') for a in self.animals
+         ],
+         'attractions': [
+            self._to_dict_with_type(a, 'attraction') for a in self.attractions
+         ],
+         'guardians_talks': [
+            self._to_dict_with_type(g, 'guardiansTalk') for g in self.guardians_talks
+         ],
+         'wild_encounters': [
+            self._to_dict_with_type(w, 'wildEncounter') for w in self.wild_encounters
+         ]
+      }
+   
+   def _to_dict_with_type( self, obj, fallback_type ):
+      if hasattr(obj, 'to_dict'):
+         d = obj.to_dict()
+      else:
+         d = dict(obj) if isinstance(obj, dict) else {}
+
+      d['type'] = d.get('type', fallback_type)
+      return d
+   
+
 class Zoo_Util:   
    def get_average_temperature( self, month, day ):
       # Convert month/day to day-of-year
-      month = self.get_month_int( month )
+      month = self.normalize_month( month )
       day_of_year = sum( calendar.monthrange( 2024, m )[1] for m in range( 1, month ) ) + day
 
       # Month start temperatures (°C)
@@ -290,7 +326,7 @@ class Zoo_Util:
 
 
    def get_snow_likelihood( self, month, day ):
-      month = self.get_month_int( month )
+      month = self.normalize_month( month )
 
       MONTH_SNOW_BASE = {
          1: 0.90,
@@ -330,33 +366,100 @@ class Zoo_Util:
       return max( 0.0, min( 1.0, round( base, 2 ) ) )
 
 
-   def get_month_int( self, month ):
-      if month in ('JAN', 'Jan'):
+   def normalize_month( self, month ):
+      if not month:
+         return None
+
+      if isinstance( month, int ):
+         if 1 <= month <= 12:
+            return month
+         return None
+
+      m = str( month ).strip()
+
+      if m in ( 'JAN', 'Jan' ) or m.startswith( 'Jan' ) or m.startswith( 'JAN' ):
          return 1
-      elif month in ('FEB', 'Feb'):
+      elif m in ( 'FEB', 'Feb' ) or m.startswith( 'Feb' ) or m.startswith( 'FEB' ):
          return 2
-      elif month in ('MAR', 'Mar'):
+      elif m in ( 'MAR', 'Mar' ) or m.startswith( 'Mar' ) or m.startswith( 'MAR' ):
          return 3
-      elif month in ('APR', 'Apr'):
+      elif m in ( 'APR', 'Apr' ) or m.startswith( 'Apr' ) or m.startswith( 'APR' ):
          return 4
-      elif month in ('MAY', 'May'):
+      elif m in ( 'MAY', 'May' ) or m.startswith( 'May' ) or m.startswith( 'MAY' ):
          return 5
-      elif month in ('JUN', 'Jun'):
+      elif m in ( 'JUN', 'Jun' ) or m.startswith( 'Jun' ) or m.startswith( 'JUN' ):
          return 6
-      elif month in ('JUL', 'Jul'):
+      elif m in ( 'JUL', 'Jul' ) or m.startswith( 'Jul' ) or m.startswith( 'JUL' ):
          return 7
-      elif month in ('AUG', 'Aug'):
+      elif m in ( 'AUG', 'Aug' ) or m.startswith( 'Aug' ) or m.startswith( 'AUG' ):
          return 8
-      elif month in ('SEP', 'Sep'):
+      elif m in ( 'SEP', 'Sep' ) or m.startswith( 'Sep' ) or m.startswith( 'SEP' ):
          return 9
-      elif month in ('OCT', 'Oct'):
+      elif m in ( 'OCT', 'Oct' ) or m.startswith( 'Oct' ) or m.startswith( 'OCT' ):
          return 10
-      elif month in ('NOV', 'Nov'):
+      elif m in ( 'NOV', 'Nov' ) or m.startswith( 'Nov' ) or m.startswith( 'NOV' ):
          return 11
-      elif month in ('DEC', 'Dec'):
+      elif m in ( 'DEC', 'Dec' ) or m.startswith( 'Dec' ) or m.startswith( 'DEC' ):
          return 12
 
       return None
+   
+
+   def get_month_abbreviation( self, month ):
+      month_map = {
+         1: 'Jan',
+         2: 'Feb',
+         3: 'Mar',
+         4: 'Apr',
+         5: 'May',
+         6: 'Jun',
+         7: 'Jul',
+         8: 'Aug',
+         9: 'Sep',
+         10: 'Oct',
+         11: 'Nov',
+         12: 'Dec',
+      }
+
+      full_name_map = {
+         'january': 'Jan',
+         'february': 'Feb',
+         'march': 'Mar',
+         'april': 'Apr',
+         'may': 'May',
+         'june': 'Jun',
+         'july': 'Jul',
+         'august': 'Aug',
+         'september': 'Sep',
+         'october': 'Oct',
+         'november': 'Nov',
+         'december': 'Dec',
+      }
+
+      if isinstance( month, int ):
+         if month not in month_map:
+            raise ValueError( f'Invalid month: {month}' )
+         return month_map[month]
+
+      if isinstance( month, str ):
+         month = month.strip()
+
+         if month.isdigit():
+            month_num = int( month )
+            if month_num not in month_map:
+               raise ValueError( f'Invalid month: {month}' )
+            return month_map[month_num]
+
+         lowered = month.lower()
+
+         if lowered in full_name_map:
+            return full_name_map[lowered]
+
+         abbrev = month[:3].title()
+         if abbrev in month_map.values():
+            return abbrev
+
+      raise ValueError( f'Invalid month: {month}' )
       
 
    def get_day_of_year(self, month, day ):
@@ -418,7 +521,7 @@ class Zoo_Util:
    
 
    def is_peak_season_month( self, month ):
-      month = self.get_month_int( month )
+      month = self.normalize_month( month )
 
       if month >= 5 and month <= 10:
          return True

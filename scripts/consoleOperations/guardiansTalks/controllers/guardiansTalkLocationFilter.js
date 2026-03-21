@@ -9,7 +9,7 @@ export function createGuardiansTalkLocationFilterController({
 } = {}) {
 
    function populateLocationDropdown(locations) {
-      if(locationEl?.tagName !== 'SELECT') {
+      if (locationEl?.tagName !== 'SELECT') {
          return;
       }
 
@@ -41,7 +41,7 @@ export function createGuardiansTalkLocationFilterController({
                   ? location
                   : location.location ?? location.LOCATION ?? location.name ?? location.NAME ?? '';
 
-            if(!name) return;
+            if (!name) return;
 
             const option = document.createElement('option');
             option.value = name;
@@ -51,16 +51,16 @@ export function createGuardiansTalkLocationFilterController({
    }
 
    function clearTalkDropdown() {
-      if(talkNameEl?.tagName === 'SELECT') {
+      if (talkNameEl?.tagName === 'SELECT') {
          populateGuardiansTalkDropdown(talkNameEl, []);
       }
-      else if(talkNameEl) {
+      else if (talkNameEl) {
          talkNameEl.value = '';
       }
    }
 
    async function loadLocations() {
-      if(locationEl?.tagName !== 'SELECT') {
+      if (locationEl?.tagName !== 'SELECT') {
          return;
       }
 
@@ -78,7 +78,7 @@ export function createGuardiansTalkLocationFilterController({
 
       clearTalkDropdown();
 
-      if(!location) {
+      if (!location) {
          return;
       }
 
@@ -89,7 +89,7 @@ export function createGuardiansTalkLocationFilterController({
 
          const guardiansTalks = result?.guardians_talks ?? [];
 
-         if(talkNameEl?.tagName === 'SELECT') {
+         if (talkNameEl?.tagName === 'SELECT') {
             populateGuardiansTalkDropdown(talkNameEl, guardiansTalks);
          }
       }
@@ -98,7 +98,7 @@ export function createGuardiansTalkLocationFilterController({
    }
 
    locationEl?.addEventListener('change', () => {
-      if(talkNameEl) {
+      if (talkNameEl) {
          talkNameEl.value = '';
       }
 

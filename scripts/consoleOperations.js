@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
    const workspaceEl = document.getElementById('consoleOperationsWorkspace');
 
-   if(!workspaceEl) {
+   if (!workspaceEl) {
       console.warn('[consoleOperations] missing #consoleOperationsWorkspace');
       return;
    }

@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'tzg.itineraryDateISO';
+import { DATE_KEY } from '../../pages/itineraryWizard/keys.js';
 
 function toISODate(d) {
    const y = d.getFullYear();
@@ -30,7 +30,7 @@ export function createItineraryDateSelectorController({
    let currentDate = null;
 
    function getSavedDate() {
-      const iso = localStorage.getItem(STORAGE_KEY);
+      const iso = localStorage.getItem(DATE_KEY);
       if (!iso) return null;
       const d = new Date(`${iso}T12:00:00`);
       return Number.isFinite(d.getTime()) ? d : null;
@@ -42,13 +42,13 @@ export function createItineraryDateSelectorController({
 
       if (updateInput && inputEl) inputEl.value = formatLong(d);
 
-      if (persist) localStorage.setItem(STORAGE_KEY, toISODate(d));
+      if (persist) localStorage.setItem(DATE_KEY, toISODate(d));
    }
 
    function persistCurrentDate() {
       if (!currentDate) return null;
       setDate(currentDate, { persist: true, updateInput: true });
-      return { iso: toISODate(currentDate), dateObj: currentDate };
+      return { date: toISODate(currentDate), dateObj: currentDate };
    }
 
    function build() {
@@ -83,13 +83,13 @@ export function createItineraryDateSelectorController({
       root.querySelector('.itin-next')?.addEventListener('click', () => {
          const saved = persistCurrentDate();
          if (!saved) return;
-         onSave?.(saved.iso, saved.dateObj);
+         onSave?.(saved.date, saved.dateObj);
       });
 
       root.querySelector('.itin-finish')?.addEventListener('click', () => {
          const saved = persistCurrentDate();
          if (!saved) return;
-         onFinish?.(saved.iso, saved.dateObj);
+         onFinish?.(saved.date, saved.dateObj);
       });
 
       root.querySelector('.itin-close')?.addEventListener('click', () => {
@@ -105,7 +105,7 @@ export function createItineraryDateSelectorController({
             const d = instance.selectedDates?.[0] || new Date();
             setDate(d, { updateInput: true, persist: false });
          },
-         onChange: (selectedDates) => {
+         onChange: selectedDates => {
             const d = selectedDates?.[0];
             if (d) setDate(d, { updateInput: true, persist: false });
          },

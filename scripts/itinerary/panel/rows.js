@@ -7,14 +7,69 @@ import {
 
 import { makeItemRow } from './components/itemRow.js';
 
+function normalizeForPath(str = '') {
+   return String(str)
+      .toLowerCase()
+      .trim()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+}
+
+function buildAnimalImageSrc(exhibit, species) {
+   if (!exhibit || !species) return null;
+
+   const normalizedExhibit = normalizeForPath(exhibit);
+   const normalizedSpecies = normalizeForPath(species);
+
+   return `images/animals/${normalizedExhibit}/${normalizedSpecies}.png`;
+}
+
+function buildAttractionImageSrc(name) {
+   if (!name) return null;
+
+   const normalizedName = normalizeForPath(name);
+   return `images/attractions/${normalizedName}.png`;
+}
+
+function buildGuardiansTalkImageSrc(name) {
+   if (!name) return null;
+
+   const normalizedName = normalizeForPath(name);
+   return `images/guardians-talks/${normalizedName}.png`;
+}
+
+function buildWildEncounterImageSrc(name) {
+   if (!name) return null;
+
+   const normalizedName = normalizeForPath(name);
+   return `images/wild-encounters/${normalizedName}.png`;
+}
+
 export function buildAnimalRows(animals = []) {
-   return animals.map((rawAnimal) => {
+   const uniqueAnimals = [];
+   const seenSpecies = new Set();
+
+   animals.forEach((rawAnimal) => {
       const a = normalizeAnimal(rawAnimal);
 
       const name = a.species ?? a.SPECIES ?? a.name ?? a.species_name ?? 'Animal';
+      const speciesKey = String(name).trim().toLowerCase();
+
+      if (!speciesKey || seenSpecies.has(speciesKey)) {
+         return;
+      }
+
+      seenSpecies.add(speciesKey);
+      uniqueAnimals.push(a);
+   });
+
+   return uniqueAnimals.map((a) => {
+      const name = a.species ?? a.SPECIES ?? a.name ?? a.species_name ?? 'Animal';
       const exhibit = a.exhibit ?? a.EXHIBIT ?? a.exhibit_name ?? '';
-      const imageSrc = a.imageSrc ?? a.image_src ?? a.image ?? null;
       const link = a.link ?? a.infoLink ?? a.INFO_LINK ?? null;
+      const imageSrc = buildAnimalImageSrc(exhibit, name);
 
       return makeItemRow({
          name,
@@ -32,7 +87,7 @@ export function buildAttractionRows(attractions = []) {
 
       const name = x.name ?? x.NAME ?? 'Attraction';
       const subtitle = x.subtitle ?? '';
-      const imageSrc = x.imageSrc ?? x.image_src ?? null;
+      const imageSrc = buildAttractionImageSrc(name);
       const infoLink = x.infoLink ?? x.info_link ?? x.link ?? x.LINK ?? null;
 
       const location = x.location ?? '';
@@ -60,11 +115,7 @@ export function buildGuardiansRows(guardiansTalks = []) {
       const location = t.location ?? t.LOCATION ?? '';
       const time = t.time_of_day ?? t.TIME_OF_DAY ?? t.time ?? t.TIME ?? '';
       const link = t.link ?? t.LINK ?? t.infoLink ?? t.info_link ?? null;
-
-      const imageSrc =
-         t.imageSrc ??
-         t.image_src ??
-         (name ? `../images/guardians-talks/${name}.png` : null);
+      const imageSrc = buildGuardiansTalkImageSrc(name);
 
       return makeItemRow({
          name,
@@ -88,11 +139,7 @@ export function buildWildRows(wildEncounters = []) {
          w.meeting_spot ?? w.MEETING_SPOT ?? w.meetingSpot ?? w.location ?? w.LOCATION ?? '';
       const time = w.time_of_day ?? w.TIME_OF_DAY ?? w.time ?? w.TIME ?? '';
       const link = w.link ?? w.LINK ?? w.infoLink ?? w.info_link ?? null;
-
-      const imageSrc =
-         w.imageSrc ??
-         w.image_src ??
-         (name ? `../images/wild-encounters/${name}.png` : null);
+      const imageSrc = buildWildEncounterImageSrc(name);
 
       return makeItemRow({
          name,

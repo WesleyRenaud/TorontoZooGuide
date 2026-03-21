@@ -9,7 +9,7 @@ export function createWildEncounterOccurrenceFilterController({
    let occurrences = [];
 
    function populateDateDropdown(occurrenceDates) {
-      if(dateEl?.tagName !== 'SELECT') {
+      if (dateEl?.tagName !== 'SELECT') {
          return;
       }
 
@@ -29,7 +29,7 @@ export function createWildEncounterOccurrenceFilterController({
    }
 
    function populateTimeDropdown(occurrenceTimes) {
-      if(timeEl?.tagName !== 'SELECT') {
+      if (timeEl?.tagName !== 'SELECT') {
          return;
       }
 
@@ -59,7 +59,7 @@ export function createWildEncounterOccurrenceFilterController({
 
       clear();
 
-      if(!wildEncounter) {
+      if (!wildEncounter) {
          return;
       }
 
@@ -90,7 +90,7 @@ export function createWildEncounterOccurrenceFilterController({
 
       populateTimeDropdown([]);
 
-      if(!selectedDate) {
+      if (!selectedDate) {
          return;
       }
 

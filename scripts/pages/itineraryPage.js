@@ -13,12 +13,7 @@ import { createGiftShopClosedBanner } from '../ui/giftShopClosedBanner.js';
 import { createAttractionClosedBanner } from '../ui/attractionClosedBanner.js';
 import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
 import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
-
-const ITIN_KEY = 'tzg.itinerary';
-
-function safeParseJSON(raw, fallback) {
-   try { return JSON.parse(raw); } catch { return fallback; }
-}
+import { getItinerary, isItineraryEmpty } from '../pages/itineraryWizard/itineraryApi.js';
 
 function todayISO() {
    const d = new Date();
@@ -56,7 +51,7 @@ export function initItineraryPage() {
 
    const tooltip = createTooltipController({
       tooltipEl,
-      onAnimalCardClick: (item) => {
+      onAnimalCardClick: item => {
          if (!item || String(item.type || '') !== 'animal') return;
          speciesOverlay.openFromAnimal(item);
       },
@@ -79,7 +74,7 @@ export function initItineraryPage() {
 
    const focus = createFocusController({
       panzoom,
-      getMarkerByCoord: (key) => markers.getMarkerByCoord(key),
+      getMarkerByCoord: key => markers.getMarkerByCoord(key),
       getViewportEl: () => viewportEl,
       tooltip,
       getAllMarkers: () => markers.getAllMarkers(),
@@ -112,23 +107,25 @@ export function initItineraryPage() {
 
    window.addEventListener('resize', repositionTooltips);
 
-   function applyItineraryToMap() {
-      const itin = safeParseJSON(localStorage.getItem(ITIN_KEY) || '', null);
+   async function applyItineraryToMap() {
+      try {
+         const itin = await getItinerary();
 
-      if (!itin) {
+         if (!itin || isItineraryEmpty(itin)) {
+            markers.render([]);
+            return;
+         }
+
+         const dateStr = String(itin.date || todayISO());
+
+         await updater.updateMap('custom', dateStr, { itinerary: itin });
+      } catch(err) {
+         console.error('Failed to load itinerary:', err);
          markers.render([]);
-         return;
       }
-
-      const dateStr = String(itin.dateISO || todayISO());
-
-      updater.updateMap('custom', dateStr, { itinerary: itin });
    }
 
    applyItineraryToMap();
 
    window.addEventListener('tzg:itineraryUpdated', applyItineraryToMap);
-   window.addEventListener('storage', (e) => {
-      if (e.key === ITIN_KEY) applyItineraryToMap();
-   });
 }

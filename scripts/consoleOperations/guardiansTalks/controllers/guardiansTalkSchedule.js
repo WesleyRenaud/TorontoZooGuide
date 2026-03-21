@@ -29,33 +29,33 @@ export function createGuardiansTalkScheduleController({
 } = {}) {
 
    function resetTalkDropdown() {
-      if(talkLocationFilterController?.clear) {
+      if (talkLocationFilterController?.clear) {
          talkLocationFilterController.clear();
          return;
       }
 
-      if(talkNameEl?.tagName === 'SELECT') {
+      if (talkNameEl?.tagName === 'SELECT') {
          populateGuardiansTalkDropdown(talkNameEl, []);
       }
-      else if(talkNameEl) {
+      else if (talkNameEl) {
          talkNameEl.value = '';
       }
    }
 
    function resetForm() {
-      if(locationEl) locationEl.value = '';
-      if(startDateEl) startDateEl.value = '';
-      if(endDateEl) endDateEl.value = '';
-      if(timeEl) timeEl.value = '';
-      if(messageEl) messageEl.value = '';
+      if (locationEl) locationEl.value = '';
+      if (startDateEl) startDateEl.value = '';
+      if (endDateEl) endDateEl.value = '';
+      if (timeEl) timeEl.value = '';
+      if (messageEl) messageEl.value = '';
 
-      if(mondayEl) mondayEl.checked = false;
-      if(tuesdayEl) tuesdayEl.checked = false;
-      if(wednesdayEl) wednesdayEl.checked = false;
-      if(thursdayEl) thursdayEl.checked = false;
-      if(fridayEl) fridayEl.checked = false;
-      if(saturdayEl) saturdayEl.checked = false;
-      if(sundayEl) sundayEl.checked = false;
+      if (mondayEl) mondayEl.checked = false;
+      if (tuesdayEl) tuesdayEl.checked = false;
+      if (wednesdayEl) wednesdayEl.checked = false;
+      if (thursdayEl) thursdayEl.checked = false;
+      if (fridayEl) fridayEl.checked = false;
+      if (saturdayEl) saturdayEl.checked = false;
+      if (sundayEl) sundayEl.checked = false;
 
       resetTalkDropdown();
    }
@@ -88,7 +88,7 @@ export function createGuardiansTalkScheduleController({
       try {
          resetForm();
 
-         if(talkLocationFilterController?.refreshLocations) {
+         if (talkLocationFilterController?.refreshLocations) {
             await talkLocationFilterController.refreshLocations();
          }
 
@@ -110,38 +110,38 @@ export function createGuardiansTalkScheduleController({
 
       setStatus(statusEl, '');
 
-      if(!location) {
+      if (!location) {
          setStatus(statusEl, 'Location is required.', 'is-error');
          return;
       }
 
-      if(!talk) {
+      if (!talk) {
          setStatus(statusEl, 'Talk name is required.', 'is-error');
          return;
       }
 
-      if(!time) {
+      if (!time) {
          setStatus(statusEl, 'Talk time is required.', 'is-error');
          return;
       }
 
-      if(!hasAtLeastOneDaySelected()) {
+      if (!hasAtLeastOneDaySelected()) {
          setStatus(statusEl, 'At least one day must be selected.', 'is-error');
          return;
       }
 
       const effectiveStart = startDate || new Date().toISOString().split('T')[0];
 
-      if(endDate) {
+      if (endDate) {
          const startMs = new Date(effectiveStart).getTime();
          const endMs = new Date(endDate).getTime();
 
-         if(Number.isNaN(startMs) || Number.isNaN(endMs)) {
+         if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
             setStatus(statusEl, 'Invalid start or end date.', 'is-error');
             return;
          }
 
-         if(endMs < startMs) {
+         if (endMs < startMs) {
             setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
             return;
          }
@@ -164,7 +164,7 @@ export function createGuardiansTalkScheduleController({
             message
          });
 
-         if(result.success) {
+         if (result.success) {
             setStatus(
                statusEl,
                `${result.talk} in ${result.location} schedule was saved.`,

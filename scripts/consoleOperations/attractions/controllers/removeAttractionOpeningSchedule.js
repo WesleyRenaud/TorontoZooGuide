@@ -41,7 +41,7 @@ export function createRemoveAttractionOpeningScheduleController({
 
       setStatus(statusEl, '');
 
-      if(!attraction) {
+      if (!attraction) {
          setStatus(statusEl, 'Attraction is required.', 'is-error');
          return;
       }
@@ -52,7 +52,7 @@ export function createRemoveAttractionOpeningScheduleController({
             attraction
          });
 
-         if(result.success) {
+         if (result.success) {
 
             setStatus(
                statusEl,

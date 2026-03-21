@@ -839,6 +839,68 @@ if 'ENCOUNTER_TIME' not in wild_encounter_cancellation_columns:
       'ALTER TABLE WildEncounterCancellation ADD COLUMN ENCOUNTER_TIME TEXT NOT NULL DEFAULT "";'
    )
 
+# Itinerary tables
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS Itinerary
+               (  ID                 INTEGER     NOT NULL,
+                  IS_ACTIVE          BOOL        NOT NULL DEFAULT 0,
+                  ITINERARY_DATE     DATE,
+                  PRIMARY KEY ( ID ) ); ''' )
+
+itinerary_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( Itinerary );' ).fetchall()
+}
+
+if 'IS_ACTIVE' not in itinerary_columns:
+   cursor.execute(
+      'ALTER TABLE Itinerary ADD COLUMN IS_ACTIVE BOOL NOT NULL DEFAULT 0;'
+   )
+
+if 'ITINERARY_DATE' not in itinerary_columns:
+   cursor.execute(
+      'ALTER TABLE Itinerary ADD COLUMN ITINERARY_DATE DATE;'
+   )
+
+cursor.execute(
+   ''' INSERT OR IGNORE INTO Itinerary ( ID, IS_ACTIVE, ITINERARY_DATE )
+       VALUES ( 1, 0, NULL ); '''
+)
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryAnimal
+                  (  SPECIES              VARCHAR(64) NOT NULL,
+                     EXHIBIT              VARCHAR(64) NOT NULL,
+                     PRIMARY KEY ( SPECIES, EXHIBIT ),
+                     FOREIGN KEY ( SPECIES, EXHIBIT )
+                        REFERENCES Enclosure( SPECIES, EXHIBIT ) ); ''' )
+
+itinerary_animal_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( ItineraryAnimal );' ).fetchall()
+}
+
+if 'EXHIBIT' not in itinerary_animal_columns:
+   cursor.execute(
+      'ALTER TABLE ItineraryAnimal ADD COLUMN EXHIBIT VARCHAR(64) NOT NULL DEFAULT "";'
+   )
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryAttraction
+                  (  ATTRACTION           VARCHAR(64) NOT NULL,
+                     PRIMARY KEY ( ATTRACTION ),
+                     FOREIGN KEY ( ATTRACTION ) REFERENCES Attraction(NAME) ); ''' )
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryGuardiansTalk
+                  (  TALK_NAME            VARCHAR(64) NOT NULL,
+                     PRIMARY KEY ( TALK_NAME ),
+                     FOREIGN KEY ( TALK_NAME ) REFERENCES MeetTheGuardiansTalk(NAME) ); ''' )
+
+itinerary_guardians_talk_columns = {
+   row[1] for row in cursor.execute( 'PRAGMA table_info( ItineraryGuardiansTalk );' ).fetchall()
+}
+
+cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryWildEncounter
+                  (  WILD_ENCOUNTER       VARCHAR(64) NOT NULL,
+                     PRIMARY KEY ( WILD_ENCOUNTER ),
+                     FOREIGN KEY ( WILD_ENCOUNTER ) REFERENCES WildEncounter(NAME) ); ''' )
+
 # Old tables
 
 cursor.execute( 'DROP TABLE IF EXISTS MeetTheGuardiansTalkDateTime;' )

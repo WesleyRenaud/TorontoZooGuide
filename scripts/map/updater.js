@@ -86,29 +86,50 @@ export function createMapUpdater({
             day: dateCtx.day,
             temp: dateCtx.temp ?? null,
 
-            animals: inc.speciesToInclude,
-            attractions: inc.attractionsToInclude,
-            guardiansTalks: inc.guardiansTalksToInclude,
-            wildEncounters: inc.wildEncountersToInclude,
+            includeOffDisplayAnimals: false,
+            includeClosedRestaurants: false,
+            includeClosedGiftShops: false,
+            includeClosedAttractions: false,
+
+            itineraryMode: true,
+            animalsToInclude: inc.animalsToInclude,
+            speciesToInclude: inc.animalsToInclude.map(animal => animal.species),
+            attractionsToInclude: inc.attractionsToInclude,
+            guardiansTalksToInclude: inc.guardiansTalksToInclude,
+            wildEncountersToInclude: inc.wildEncountersToInclude,
 
             dayOfWeek,
             zoomobileRoute,
          };
 
          try {
-            const src = sources?.buildItinerary;
-            if (!src?.fetch) {
-               console.warn('Missing sources.buildItinerary — add it to scripts/map/sources.js');
-               markers.render([]);
-               return;
+            const rows = [];
+
+            if (inc.animalsToInclude.length) {
+               const animals = await sources.animal.fetch(ctx);
+               rows.push(...(Array.isArray(animals) ? animals : []));
             }
 
-            const rows = await src.fetch(ctx);
-            markers.render(Array.isArray(rows) ? rows : []);
+            if (inc.attractionsToInclude.length) {
+               const attractions = await sources.attraction.fetch(ctx);
+               rows.push(...(Array.isArray(attractions) ? attractions : []));
+            }
+
+            if (inc.guardiansTalksToInclude.length) {
+               const guardiansTalks = await sources.guardiansTalk.fetch(ctx);
+               rows.push(...(Array.isArray(guardiansTalks) ? guardiansTalks : []));
+            }
+
+            if (inc.wildEncountersToInclude.length) {
+               const wildEncounters = await sources.wildEncounter.fetch(ctx);
+               rows.push(...(Array.isArray(wildEncounters) ? wildEncounters : []));
+            }
+
+            markers.render(rows);
             focusIfRequested(options);
             return;
-         } catch (err) {
-            console.warn('/build-itinerary failed:', err);
+         } catch(err) {
+            console.warn('Failed to render itinerary layers:', err);
             markers.render([]);
             return;
          }
@@ -199,7 +220,7 @@ export function createMapUpdater({
       const unique = Array.from(new Set(selectedTypes));
 
       await Promise.all(
-         unique.map(async (layer) => {
+         unique.map(async layer => {
             const src = sources[layer];
 
             if (!src) {

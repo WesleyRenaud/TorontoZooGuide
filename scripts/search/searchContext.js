@@ -8,28 +8,28 @@ import { isoDateToMonFirstDow } from '../itinerary/itineraryHelpers.js';
  * @param {string} iso - 'YYYY-MM-DD' (or '')
  * @param {object} opts
  * @param {boolean} opts.includeTemp - if true, fetch forecast temp when applicable
- * @returns {Promise<{dateISO:string, month:string|null, day:number|null, dayOfWeek:number|null, temp:number|null}>}
+ * @returns {Promise<{date:string, month:string|null, day:number|null, dayOfWeek:number|null, temp:number|null}>}
  */
 export async function buildDateSearchContext(iso, { includeTemp = true } = {}) {
-   const dateISO = typeof iso === 'string' ? iso : '';
+   const date = typeof iso === 'string' ? iso : '';
 
-   const month = dateISO ? getMonth(dateISO) : null;
-   const day = dateISO ? getDay(dateISO) : null;
+   const month = date ? getMonth(date) : null;
+   const day = date ? getDay(date) : null;
 
-   const dayOfWeek = dateISO ? isoDateToMonFirstDow(dateISO) : null;
+   const dayOfWeek = date ? isoDateToMonFirstDow(date) : null;
 
-   if (!includeTemp || !dateISO) {
-      return { dateISO, month, day, dayOfWeek, temp: null };
+   if (!includeTemp || !date) {
+      return { date, month, day, dayOfWeek, temp: null };
    }
 
-   if (!isWithinNextNDays(dateISO, 7)) {
-      return { dateISO, month, day, dayOfWeek, temp: null };
+   if (!isWithinNextNDays(date, 7)) {
+      return { date, month, day, dayOfWeek, temp: null };
    }
 
    try {
-      const temp = await fetchForecastTemp(dateISO);
-      return { dateISO, month, day, dayOfWeek, temp };
+      const temp = await fetchForecastTemp(date);
+      return { date, month, day, dayOfWeek, temp };
    } catch {
-      return { dateISO, month, day, dayOfWeek, temp: null };
+      return { date, month, day, dayOfWeek, temp: null };
    }
 }

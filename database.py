@@ -22,6 +22,7 @@ class Database():
          threshold=0,
          species_to_include=[],
          itinerary_mode=False ):
+      month = self.zoo_util.get_month_abbreviation( month )
       cur = self.conn.cursor()
 
       if temp is None:
@@ -32,7 +33,7 @@ class Database():
 
       snow_likelihood = self.zoo_util.get_snow_likelihood( month=month, day=day )
 
-      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month=month ), int( day ) )
+      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month=month ), int( day ) )
 
       data = cur.execute(
          """   SELECT
@@ -498,7 +499,7 @@ class Database():
    def get_restaurants( self, month, day, include_closed_restaurants, restaurants_to_include=[] ):
       cur = self.conn.cursor()
 
-      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month=month ), int( day ) )
+      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month=month ), int( day ) )
 
       data = cur.execute(
          """   SELECT
@@ -647,7 +648,7 @@ class Database():
    def get_gift_shops( self, month, day, include_closed_gift_shops, gift_shops_to_include=[] ):
       cur = self.conn.cursor()
 
-      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), int( day ) )
+      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month ), int( day ) )
 
       data = cur.execute(
          """   SELECT
@@ -765,7 +766,7 @@ class Database():
    def get_attractions( self, month, day, include_closed_attractions=False, attractions_to_include=[], itinerary_mode=False ):
       cur = self.conn.cursor()
 
-      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), int( day ) )
+      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month ), int( day ) )
       weekday = target_date.weekday()
 
       data = cur.execute(
@@ -1047,7 +1048,7 @@ class Database():
    def get_guardians_talks( self, month, day, guardians_talks_to_include=[], itinerary_mode=False ):
       cur = self.conn.cursor()
 
-      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month ), int( day ) )
+      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month ), int( day ) )
       target_weekday = target_date.weekday()
       target_date_str = target_date.isoformat()
 
@@ -1147,7 +1148,7 @@ class Database():
    def get_wild_encounters( self, month, day, wild_encounters_to_include=[], itinerary_mode=False ):
       cur = self.conn.cursor()
 
-      target_date = date( datetime.now().year, self.zoo_util.get_month_int( month=month ), int( day ) )
+      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month=month ), int( day ) )
       target_weekday = target_date.weekday()
       target_date_str = target_date.isoformat()
 
@@ -1388,6 +1389,323 @@ class Database():
       cur.close()
 
       return species
+   
+
+   def get_itinerary( self ):
+      cur = self.conn.cursor()
+
+      itinerary_row = cur.execute(
+         """   SELECT
+                  ID,
+                  IS_ACTIVE,
+                  ITINERARY_DATE
+               FROM Itinerary
+               WHERE ID = 1;
+         """ ).fetchone()
+
+      if itinerary_row == None:
+         cur.close()
+         return None
+
+      date = ''
+      month = None
+      day = None
+
+      if itinerary_row['ITINERARY_DATE'] != None:
+         itinerary_date = self.parse_date_value(
+            value=itinerary_row['ITINERARY_DATE'] )
+
+         date = itinerary_date.isoformat()
+         month = itinerary_date.strftime( '%B' )
+         day = itinerary_date.day
+
+      animals_to_include = [
+         row['SPECIES']
+         for row in cur.execute(
+            """   SELECT
+                     SPECIES
+                  FROM ItineraryAnimal;
+            """ ).fetchall()
+      ]
+
+      attractions_to_include = [
+         row['ATTRACTION']
+         for row in cur.execute(
+            """   SELECT
+                     ATTRACTION
+                  FROM ItineraryAttraction;
+            """ ).fetchall()
+      ]
+
+      guardians_talks_to_include = [
+         row['TALK_NAME']
+         for row in cur.execute(
+            """   SELECT
+                     TALK_NAME
+                  FROM ItineraryGuardiansTalk;
+            """ ).fetchall()
+      ]
+
+      wild_encounters_to_include = [
+         row['WILD_ENCOUNTER']
+         for row in cur.execute(
+            """   SELECT
+                     WILD_ENCOUNTER
+                  FROM ItineraryWildEncounter;
+            """ ).fetchall()
+      ]
+
+      animals = []
+      attractions = []
+      guardians_talks = []
+      wild_encounters = []
+
+      if bool( itinerary_row['IS_ACTIVE'] ) and month and day:
+         if animals_to_include:
+            animals = self.get_animals_viewable_on_day(
+               month=month,
+               day=day,
+               temp=None,
+               species_to_include=animals_to_include,
+               itinerary_mode=True )
+
+         if attractions_to_include:
+            attractions = self.get_attractions(
+               month=month,
+               day=day,
+               attractions_to_include=attractions_to_include,
+               itinerary_mode=True )
+
+         if guardians_talks_to_include:
+            guardians_talks = self.get_guardians_talks(
+               month=month,
+               day=day,
+               guardians_talks_to_include=guardians_talks_to_include,
+               itinerary_mode=True )
+
+         if wild_encounters_to_include:
+            wild_encounters = self.get_wild_encounters(
+               month=month,
+               day=day,
+               wild_encounters_to_include=wild_encounters_to_include,
+               itinerary_mode=True )
+
+      itinerary = zoo.Itinerary(
+         date=date,
+         animals=animals,
+         attractions=attractions,
+         guardians_talks=guardians_talks,
+         wild_encounters=wild_encounters )
+
+      cur.close()
+
+      return itinerary
+   
+
+   def set_itinerary(
+         self,
+         date,
+         animals,
+         attractions,
+         guardians_talks,
+         wild_encounters,
+         is_active ):
+      cur = self.conn.cursor()
+
+      if not date:
+         date = None
+
+      if animals == None:
+         animals = []
+
+      if attractions == None:
+         attractions = []
+
+      if guardians_talks == None:
+         guardians_talks = []
+
+      if wild_encounters == None:
+         wild_encounters = []
+
+      cur.execute(
+         """   UPDATE Itinerary
+               SET IS_ACTIVE = ?,
+                   ITINERARY_DATE = ?
+               WHERE ID = 1;
+         """,
+         (
+            int( bool( is_active ) ),
+            date
+         ) )
+
+      cur.execute( 'DELETE FROM ItineraryAnimal;' )
+      cur.execute( 'DELETE FROM ItineraryAttraction;' )
+      cur.execute( 'DELETE FROM ItineraryGuardiansTalk;' )
+      cur.execute( 'DELETE FROM ItineraryWildEncounter;' )
+
+      for animal in animals:
+         species = None
+         exhibit = None
+
+         if isinstance( animal, dict ):
+            species = animal.get( 'species' )
+            exhibit = animal.get( 'exhibit' )
+
+         if species and exhibit:
+            cur.execute(
+               """   INSERT OR IGNORE INTO ItineraryAnimal (
+                        SPECIES,
+                        EXHIBIT
+                     )
+                     VALUES ( ?, ? );
+               """,
+               (
+                  species,
+                  exhibit
+               ) )
+
+      for attraction in attractions:
+         attraction_name = attraction
+
+         if isinstance( attraction, dict ):
+            attraction_name = attraction.get( 'name' )
+
+         if attraction_name:
+            cur.execute(
+               """   INSERT OR IGNORE INTO ItineraryAttraction (
+                        ATTRACTION
+                     )
+                     VALUES ( ? );
+               """,
+               ( attraction_name, ) )
+
+      for guardians_talk in guardians_talks:
+         talk_name = guardians_talk
+
+         if isinstance( guardians_talk, dict ):
+            talk_name = guardians_talk.get( 'name' )
+
+         if talk_name:
+            cur.execute(
+               """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
+                        TALK_NAME
+                     )
+                     VALUES ( ? );
+               """,
+               ( talk_name, ) )
+
+      for wild_encounter in wild_encounters:
+         wild_encounter_name = wild_encounter
+
+         if isinstance( wild_encounter, dict ):
+            wild_encounter_name = wild_encounter.get( 'name' )
+
+         if wild_encounter_name:
+            cur.execute(
+               """   INSERT OR IGNORE INTO ItineraryWildEncounter (
+                        WILD_ENCOUNTER
+                     )
+                     VALUES ( ? );
+               """,
+               ( wild_encounter_name, ) )
+
+      self.conn.commit()
+      cur.close()
+
+      return True
+   
+
+   def clear_itinerary( self ):
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   UPDATE Itinerary
+               SET IS_ACTIVE = 0,
+                   ITINERARY_DATE = NULL
+               WHERE ID = 1;
+         """ )
+
+      cur.execute( 'DELETE FROM ItineraryAnimal;' )
+      cur.execute( 'DELETE FROM ItineraryAttraction;' )
+      cur.execute( 'DELETE FROM ItineraryGuardiansTalk;' )
+      cur.execute( 'DELETE FROM ItineraryWildEncounter;' )
+
+      self.conn.commit()
+      cur.close()
+
+      return True
+   
+
+   def validate_animals( self, month, day, temp, animals_to_include=[] ):
+      animals = self.get_animals_viewable_on_day(
+         month=month,
+         day=day,
+         temp=temp,
+         include_off_display_animals=False,
+         species_to_include=animals_to_include,
+         itinerary_mode=True )
+
+      best_by_species = {}
+
+      for animal in animals:
+         if animal.likelihood <= 0:
+            continue
+
+         species = animal.species
+         current = best_by_species.get( species )
+
+         if current is None or animal.likelihood > current.likelihood:
+            best_by_species[species] = animal
+
+      valid_animals = list( best_by_species.values() )
+      valid_animals.sort( key=lambda a: a.species.lower() )
+
+      return valid_animals
+   
+
+   def validate_attractions( self, month, day, attractions_to_include=[] ):
+      attractions = self.get_attractions(
+         month=month,
+         day=day,
+         attractions_to_include=attractions_to_include,
+         itinerary_mode=True )
+
+      valid_attractions = [
+         attraction for attraction in attractions
+         if not attraction.is_closed
+      ]
+
+      valid_attractions.sort( key=lambda a: a.name.lower() )
+
+      return valid_attractions
+   
+
+   def validate_guardians_talks( self, month, day, guardians_talks_to_include=None ):
+      guardians_talks_to_include = guardians_talks_to_include or []
+
+      guardians_talks = self.get_guardians_talks(
+         month=month,
+         day=day,
+         guardians_talks_to_include=guardians_talks_to_include,
+         itinerary_mode=True )
+
+      guardians_talks.sort( key=lambda t: ( t.name.lower(), t.time_of_day ) )
+
+      return guardians_talks
+   
+
+   def validate_wild_encounters( self, month, day, wild_encounters_to_include=None ):
+      wild_encounters_to_include = wild_encounters_to_include or []
+
+      wild_encounters = self.get_wild_encounters(
+         month=month,
+         day=day,
+         wild_encounters_to_include=wild_encounters_to_include,
+         itinerary_mode=True )
+
+      wild_encounters.sort( key=lambda w: ( w.name.lower(), w.time_of_day ) )
+
+      return wild_encounters
    
 
    def get_exhibits( self ):

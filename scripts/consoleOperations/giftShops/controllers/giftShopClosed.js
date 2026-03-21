@@ -15,10 +15,10 @@ export function createGiftShopClosedController({
 } = {}) {
 
    function resetForm() {
-      if(giftShopEl) giftShopEl.value = '';
-      if(startDateEl) startDateEl.value = '';
-      if(endDateEl) endDateEl.value = '';
-      if(messageEl) messageEl.value = '';
+      if (giftShopEl) giftShopEl.value = '';
+      if (startDateEl) startDateEl.value = '';
+      if (endDateEl) endDateEl.value = '';
+      if (messageEl) messageEl.value = '';
    }
 
    async function onShowClick() {
@@ -48,24 +48,24 @@ export function createGiftShopClosedController({
 
       setStatus(statusEl, '');
 
-      if(!giftShop) {
+      if (!giftShop) {
          setStatus(statusEl, 'Gift shop is required.', 'is-error');
          return;
       }
 
       const effectiveStart = startDate || new Date().toISOString().split('T')[0];
 
-      if(endDate) {
+      if (endDate) {
 
          const startMs = new Date(effectiveStart).getTime();
          const endMs = new Date(endDate).getTime();
 
-         if(Number.isNaN(startMs) || Number.isNaN(endMs)) {
+         if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
             setStatus(statusEl, 'Invalid start or end date.', 'is-error');
             return;
          }
 
-         if(endMs < startMs) {
+         if (endMs < startMs) {
             setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
             return;
          }
@@ -81,7 +81,7 @@ export function createGiftShopClosedController({
             message
          });
 
-         if(result.success) {
+         if (result.success) {
 
             setStatus(
                statusEl,

@@ -28,19 +28,19 @@ export function createWildEncounterScheduleController({
 } = {}) {
 
    function resetForm() {
-      if(wildEncounterEl) wildEncounterEl.value = '';
-      if(startDateEl) startDateEl.value = '';
-      if(endDateEl) endDateEl.value = '';
-      if(timeEl) timeEl.value = '';
-      if(messageEl) messageEl.value = '';
+      if (wildEncounterEl) wildEncounterEl.value = '';
+      if (startDateEl) startDateEl.value = '';
+      if (endDateEl) endDateEl.value = '';
+      if (timeEl) timeEl.value = '';
+      if (messageEl) messageEl.value = '';
 
-      if(mondayEl) mondayEl.checked = false;
-      if(tuesdayEl) tuesdayEl.checked = false;
-      if(wednesdayEl) wednesdayEl.checked = false;
-      if(thursdayEl) thursdayEl.checked = false;
-      if(fridayEl) fridayEl.checked = false;
-      if(saturdayEl) saturdayEl.checked = false;
-      if(sundayEl) sundayEl.checked = false;
+      if (mondayEl) mondayEl.checked = false;
+      if (tuesdayEl) tuesdayEl.checked = false;
+      if (wednesdayEl) wednesdayEl.checked = false;
+      if (thursdayEl) thursdayEl.checked = false;
+      if (fridayEl) fridayEl.checked = false;
+      if (saturdayEl) saturdayEl.checked = false;
+      if (sundayEl) sundayEl.checked = false;
    }
 
    function show() {
@@ -69,7 +69,7 @@ export function createWildEncounterScheduleController({
       setStatus(statusEl, '');
 
       try {
-         if(wildEncounterEl?.tagName === 'SELECT') {
+         if (wildEncounterEl?.tagName === 'SELECT') {
             const wildEncounters = await loadWildEncounters();
             populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
          }
@@ -92,33 +92,33 @@ export function createWildEncounterScheduleController({
 
       setStatus(statusEl, '');
 
-      if(!wildEncounter) {
+      if (!wildEncounter) {
          setStatus(statusEl, 'Wild Encounter is required.', 'is-error');
          return;
       }
 
-      if(!time) {
+      if (!time) {
          setStatus(statusEl, 'Encounter time is required.', 'is-error');
          return;
       }
 
-      if(!hasAtLeastOneDaySelected()) {
+      if (!hasAtLeastOneDaySelected()) {
          setStatus(statusEl, 'At least one day must be selected.', 'is-error');
          return;
       }
 
       const effectiveStart = startDate || new Date().toISOString().split('T')[0];
 
-      if(endDate) {
+      if (endDate) {
          const startMs = new Date(effectiveStart).getTime();
          const endMs = new Date(endDate).getTime();
 
-         if(Number.isNaN(startMs) || Number.isNaN(endMs)) {
+         if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
             setStatus(statusEl, 'Invalid start or end date.', 'is-error');
             return;
          }
 
-         if(endMs < startMs) {
+         if (endMs < startMs) {
             setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
             return;
          }
@@ -140,7 +140,7 @@ export function createWildEncounterScheduleController({
             message
          });
 
-         if(result.success) {
+         if (result.success) {
             setStatus(
                statusEl,
                `${result.wildEncounter} schedule was saved.`,

@@ -12,8 +12,8 @@ export function createZoomobileRouteController({
 } = {}) {
 
    function resetForm() {
-      if(summerRouteEl) summerRouteEl.checked = true;
-      if(winterRouteEl) winterRouteEl.checked = false;
+      if (summerRouteEl) summerRouteEl.checked = true;
+      if (winterRouteEl) winterRouteEl.checked = false;
    }
 
    function hide() {
@@ -30,16 +30,16 @@ export function createZoomobileRouteController({
    async function onSubmitClick() {
       let route = '';
 
-      if(summerRouteEl?.checked) {
+      if (summerRouteEl?.checked) {
          route = 'summer';
       }
-      else if(winterRouteEl?.checked) {
+      else if (winterRouteEl?.checked) {
          route = 'winter';
       }
 
       setStatus(statusEl, '');
 
-      if(!route) {
+      if (!route) {
          setStatus(statusEl, 'Zoomobile route is required.', 'is-error');
          return;
       }
@@ -50,7 +50,7 @@ export function createZoomobileRouteController({
             route
          });
 
-         if(result.success) {
+         if (result.success) {
 
             setStatus(
                statusEl,

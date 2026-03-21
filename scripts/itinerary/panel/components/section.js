@@ -1,5 +1,46 @@
 import { el } from '../dom.js';
 
+const MAX_VISIBLE_ITEMS = 3;
+
+function updateSectionBodyHeight(body, bodyInner) {
+   const items = Array.from(bodyInner.children);
+
+   if (items.length === 0) {
+      body.style.display = 'none';
+      body.style.maxHeight = 'none';
+      body.style.overflowY = 'hidden';
+      body.style.overflowX = 'hidden';
+      return;
+   }
+
+   body.style.display = '';
+
+   if (items.length <= MAX_VISIBLE_ITEMS) {
+      body.style.maxHeight = 'none';
+      body.style.overflowY = 'hidden';
+      body.style.overflowX = 'hidden';
+      return;
+   }
+
+   const innerStyles = window.getComputedStyle(bodyInner);
+   const gap = parseFloat(innerStyles.rowGap || innerStyles.gap || '0') || 0;
+   const paddingTop = parseFloat(innerStyles.paddingTop || '0') || 0;
+   const paddingBottom = parseFloat(innerStyles.paddingBottom || '0') || 0;
+
+   const visibleItems = items.slice(0, MAX_VISIBLE_ITEMS);
+
+   const itemsHeight = visibleItems.reduce((sum, item) => {
+      return sum + item.getBoundingClientRect().height;
+   }, 0);
+
+   const totalGap = gap * Math.max(0, visibleItems.length - 1);
+   const maxHeight = Math.ceil(itemsHeight + totalGap + paddingTop + paddingBottom);
+
+   body.style.maxHeight = `${maxHeight}px`;
+   body.style.overflowY = 'auto';
+   body.style.overflowX = 'hidden';
+}
+
 export function makeSection({ title, count, children = [], stepKey }) {
    const section = el('section', 'itin-panel-section');
 
@@ -36,14 +77,27 @@ export function makeSection({ title, count, children = [], stepKey }) {
    header.appendChild(actions);
 
    const body = el('div', 'itin-panel-section-body');
-   children.forEach(child => body.appendChild(child));
+   const bodyInner = el('div', 'itin-panel-section-body-inner');
+
+   children.forEach(child => bodyInner.appendChild(child));
+   body.appendChild(bodyInner);
 
    const toggle = () => section.classList.toggle('is-collapsed');
    header.addEventListener('click', toggle);
-   toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+   toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggle();
+   });
 
    section.appendChild(header);
    section.appendChild(body);
+
+   const applyHeight = () => updateSectionBodyHeight(body, bodyInner);
+
+   requestAnimationFrame(applyHeight);
+
+   const resizeHandler = () => applyHeight();
+   window.addEventListener('resize', resizeHandler, { passive: true });
 
    return section;
 }

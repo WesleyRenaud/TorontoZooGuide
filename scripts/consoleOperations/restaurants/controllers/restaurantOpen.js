@@ -12,7 +12,7 @@ export function createRestaurantOpenController({
 } = {}) {
 
    function resetForm() {
-      if(restaurantEl) restaurantEl.value = '';
+      if (restaurantEl) restaurantEl.value = '';
    }
 
    function hide() {
@@ -43,7 +43,7 @@ export function createRestaurantOpenController({
 
       setStatus(statusEl, '');
 
-      if(!restaurant) {
+      if (!restaurant) {
          setStatus(statusEl, 'Restaurant is required.', 'is-error');
          return;
       }
@@ -54,7 +54,7 @@ export function createRestaurantOpenController({
             restaurant
          });
 
-         if(result.success) {
+         if (result.success) {
 
             setStatus(
                statusEl,

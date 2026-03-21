@@ -1,5 +1,4 @@
 import { el } from '../dom.js';
-import { clearItineraryStorage } from '../storage.js';
 import { showItineraryConfirmPopup } from './confirmPopup.js';
 
 export function makeActionsBar({ onAfterClear } = {}) {
@@ -22,9 +21,8 @@ export function makeActionsBar({ onAfterClear } = {}) {
          message: 'This will remove all selected Animals, Attractions, Meet the Guardians talks, and Wild Encounters.',
          confirmText: 'Clear',
          cancelText: 'Cancel',
-         onConfirm: () => {
-            clearItineraryStorage();
-            onAfterClear?.();
+         onConfirm: async () => {
+            await onAfterClear?.();
          }
       });
    });

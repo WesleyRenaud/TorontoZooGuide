@@ -2,7 +2,7 @@ export function createGiftShopClosedBanner() {
    let el = null;
 
    function ensure() {
-      if(el) return el;
+      if (el) return el;
 
       el = document.createElement('div');
       el.className = 'off-display-closed-banner';
@@ -25,14 +25,14 @@ export function createGiftShopClosedBanner() {
    }
 
    function hide() {
-      if(!el) return;
+      if (!el) return;
       el.style.display = 'none';
    }
 
    function sync(giftShop) {
       const message = giftShop?.closed_message;
 
-      if(!message) {
+      if (!message) {
          hide();
          return;
       }
