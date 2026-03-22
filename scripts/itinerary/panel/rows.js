@@ -47,6 +47,21 @@ function buildWildEncounterImageSrc(name) {
    return `images/wild-encounters/${normalizedName}.png`;
 }
 
+function buildAnimalRemovalReasonLine(animal) {
+   const reason =
+      animal.removalReason ??
+      animal.removal_reason ??
+      animal.off_display_message ??
+      animal.OFF_DISPLAY_MESSAGE ??
+      animal.display_message ??
+      animal.DISPLAY_MESSAGE ??
+      '';
+
+   if (!reason) return '';
+
+   return `Unavailable: ${reason}`;
+}
+
 export function buildAnimalRows(animals = []) {
    const uniqueAnimals = [];
    const seenSpecies = new Set();
@@ -62,7 +77,7 @@ export function buildAnimalRows(animals = []) {
       }
 
       seenSpecies.add(speciesKey);
-      uniqueAnimals.push(a);
+      uniqueAnimals.push({ ...rawAnimal, ...a });
    });
 
    return uniqueAnimals.map((a) => {
@@ -70,11 +85,15 @@ export function buildAnimalRows(animals = []) {
       const exhibit = a.exhibit ?? a.EXHIBIT ?? a.exhibit_name ?? '';
       const link = a.link ?? a.infoLink ?? a.INFO_LINK ?? null;
       const imageSrc = buildAnimalImageSrc(exhibit, name);
+      const reasonLine = buildAnimalRemovalReasonLine(a);
 
       return makeItemRow({
          name,
          imageSrc,
-         metaLines: [exhibit ? `Exhibit: ${exhibit}` : ''],
+         metaLines: [
+            exhibit ? `Exhibit: ${exhibit}` : '',
+         ],
+         alertLine: reasonLine,
          linkText: link ? 'More Info' : null,
          onLinkClick: link ? () => window.open(link, '_blank') : null,
       });

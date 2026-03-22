@@ -1,6 +1,13 @@
 import { el, safeImg } from '../dom.js';
 
-export function makeItemRow({ name, imageSrc, metaLines = [], linkText, onLinkClick }) {
+export function makeItemRow({
+   name,
+   imageSrc,
+   metaLines = [],
+   alertLine = '',
+   linkText,
+   onLinkClick,
+}) {
    const row = el('div', 'itin-panel-item');
 
    const left = el('div', 'itin-panel-item-left');
@@ -16,6 +23,10 @@ export function makeItemRow({ name, imageSrc, metaLines = [], linkText, onLinkCl
       if (!line) return;
       text.appendChild(el('div', 'itin-panel-meta', line));
    });
+
+   if (alertLine) {
+      text.appendChild(el('div', 'itin-panel-alert', alertLine));
+   }
 
    if (linkText) {
       const link = el('div', 'itin-panel-link', linkText);

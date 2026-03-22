@@ -1641,26 +1641,40 @@ class Database():
          month=month,
          day=day,
          temp=temp,
-         include_off_display_animals=False,
+         include_off_display_animals=True,
          species_to_include=animals_to_include,
          itinerary_mode=True )
 
-      best_by_species = {}
+      best_valid_by_species = {}
+      removed_by_species = {}
 
       for animal in animals:
+         species = animal.species
+
          if animal.likelihood <= 0:
+            removed_by_species[species] = animal
             continue
 
-         species = animal.species
-         current = best_by_species.get( species )
+         current = best_valid_by_species.get( species )
 
          if current is None or animal.likelihood > current.likelihood:
-            best_by_species[species] = animal
+            best_valid_by_species[species] = animal
 
-      valid_animals = list( best_by_species.values() )
+      valid_animals = list( best_valid_by_species.values() )
       valid_animals.sort( key=lambda a: a.species.lower() )
 
-      return valid_animals
+      removed_animals = []
+
+      for species, animal in removed_by_species.items():
+         if species not in best_valid_by_species:
+            removed_animals.append( animal )
+
+      removed_animals.sort( key=lambda a: a.species.lower() )
+
+      return {
+         'valid_animals': valid_animals,
+         'removed_animals': removed_animals
+      }
    
 
    def validate_attractions( self, month, day, attractions_to_include=[] ):

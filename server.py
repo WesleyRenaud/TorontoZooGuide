@@ -495,17 +495,49 @@ class MyHandler( BaseHTTPRequestHandler ):
          
          month = data.get( 'month' )
          day = data.get( 'day' )
+         date = data.get( 'date' )
          temp = data.get( 'temp' )
          animals_to_include = data.get( 'animals' ) or []
          attractions_to_include = data.get( 'attractions' ) or []
          guardians_talks_to_include = data.get( 'guardiansTalks' ) or []
          wild_encounters_to_include = data.get( 'wildEncounters' ) or []
 
-         animals = self.database.validate_animals(
+         previous_itinerary = self.database.get_itinerary()
+
+         previous_animals_json = []
+         previous_attractions_json = []
+         previous_guardians_talks_json = []
+         previous_wild_encounters_json = []
+
+         if previous_itinerary != None:
+            for animal in previous_itinerary.animals:
+               d = animal.to_dict()
+               d['type'] = d.get( 'type', 'animal' )
+               previous_animals_json.append( d )
+
+            for attraction in previous_itinerary.attractions:
+               d = attraction.to_dict()
+               d['type'] = d.get( 'type', 'attraction' )
+               previous_attractions_json.append( d )
+
+            for guardians_talk in previous_itinerary.guardians_talks:
+               d = guardians_talk.to_dict()
+               d['type'] = d.get( 'type', 'guardiansTalk' )
+               previous_guardians_talks_json.append( d )
+
+            for wild_encounter in previous_itinerary.wild_encounters:
+               d = wild_encounter.to_dict()
+               d['type'] = d.get( 'type', 'wildEncounter' )
+               previous_wild_encounters_json.append( d )
+
+         animal_validation = self.database.validate_animals(
             month=month,
             day=day,
             temp=temp,
             animals_to_include=animals_to_include )
+
+         animals = animal_validation['valid_animals']
+         removed_animals = animal_validation['removed_animals']
 
          attractions = self.database.validate_attractions(
             month=month,
@@ -523,6 +555,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             wild_encounters_to_include=wild_encounters_to_include )
 
          animals_json = []
+         removed_animals_json = []
          attractions_json = []
          guardians_talks_json = []
          wild_encounters_json = []
@@ -531,6 +564,12 @@ class MyHandler( BaseHTTPRequestHandler ):
             d = animal.to_dict()
             d['type'] = d.get( 'type', 'animal' )
             animals_json.append( d )
+
+         for animal in removed_animals:
+            d = animal.to_dict()
+            d['type'] = d.get( 'type', 'animal' )
+            d['removalReason'] = animal.off_display_message
+            removed_animals_json.append( d )
 
          for attraction in attractions:
             d = attraction.to_dict()
@@ -547,8 +586,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             d['type'] = d.get( 'type', 'wildEncounter' )
             wild_encounters_json.append( d )
 
-         date = f'{month} {day}' if month and day else None
-
          clear_success = self.database.clear_itinerary()
 
          set_success = False
@@ -564,10 +601,24 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          response = {
             'success': clear_success and set_success,
-            'animals': animals_json,
-            'attractions': attractions_json,
-            'guardiansTalks': guardians_talks_json,
-            'wildEncounters': wild_encounters_json,
+            'previous': {
+               'animals': previous_animals_json,
+               'attractions': previous_attractions_json,
+               'guardiansTalks': previous_guardians_talks_json,
+               'wildEncounters': previous_wild_encounters_json,
+            },
+            'validated': {
+               'animals': animals_json,
+               'attractions': attractions_json,
+               'guardiansTalks': guardians_talks_json,
+               'wildEncounters': wild_encounters_json,
+            },
+            'removed': {
+               'animals': removed_animals_json,
+               'attractions': [],
+               'guardiansTalks': [],
+               'wildEncounters': [],
+            },
          }
 
          if not clear_success:

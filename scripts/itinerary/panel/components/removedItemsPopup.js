@@ -26,7 +26,7 @@ function addAlternativesButton(rowNode, stepKey, onViewAlternatives, removePopup
    return rowNode;
 }
 
-function makeSection(title, rowNodes = []) {
+function makeSection(title, subtitle, rowNodes = []) {
    const validRows = rowNodes.filter(Boolean);
    if (!validRows.length) return null;
 
@@ -35,6 +35,12 @@ function makeSection(title, rowNodes = []) {
    section.appendChild(
       el('div', 'itin-removed-section-title', title)
    );
+
+   if (subtitle) {
+      section.appendChild(
+         el('div', 'itin-removed-section-subtitle', subtitle)
+      );
+   }
 
    const list = el('div', 'itin-removed-list');
 
@@ -86,7 +92,12 @@ export function showRemovedItemsPopup({
    topbar.appendChild(closeBtn);
 
    const body = el('div', 'itin-card-body tzg-popup-body itin-removed-popup-body');
-   const content = el('div', 'itin-removed-popup-content');
+   const content = el(
+      'div',
+      isEmptyItinerary
+         ? 'itin-removed-popup-content itin-removed-popup-content-empty'
+         : 'itin-removed-popup-content'
+   );
 
    content.appendChild(
       el(
@@ -140,10 +151,29 @@ export function showRemovedItemsPopup({
       addAlternativesButton(row, 'wildEncounters', onViewAlternatives, removePopupOnly)
    );
 
-   const animalsSection = makeSection('Animals', animalRows);
-   const attractionsSection = makeSection('Attractions', attractionRows);
-   const guardiansSection = makeSection('Meet the Guardians', guardiansRows);
-   const wildSection = makeSection('Wild Encounters', wildRows);
+   const animalsSection = makeSection(
+      'Animals',
+      'The following animals are unavailable on your new date for the reasons listed below.',
+      animalRows
+   );
+
+   const attractionsSection = makeSection(
+      'Attractions',
+      'The following attractions are unavailable on your new date.',
+      attractionRows
+   );
+
+   const guardiansSection = makeSection(
+      'Meet the Guardians',
+      'The following talks are not scheduled on your new date.',
+      guardiansRows
+   );
+
+   const wildSection = makeSection(
+      'Wild Encounters',
+      'The following encounters are not available on your new date.',
+      wildRows
+   );
 
    [animalsSection, attractionsSection, guardiansSection, wildSection]
       .filter(Boolean)
