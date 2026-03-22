@@ -5,6 +5,7 @@ import { createItineraryGuardiansTalkSelectorController } from '../../itinerary/
 import { createItineraryWildEncounterSelectorController } from '../../itinerary/selectors/wildEncounterSelector.js';
 
 import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
+import { showRemovedItemsPopup } from '../../itinerary/panel/components/removedItemsPopup.js';
 
 import { getItinerary } from './itineraryApi.js';
 import { loadArray } from '../../itinerary/panel/localStorage.js';
@@ -48,12 +49,54 @@ function restoreStorageSnapshot(snapshot) {
    });
 }
 
-function closeBuilder(mountEl, onDone) {
+function clearBuilder(mountEl) {
    if (mountEl) {
       mountEl.innerHTML = '';
    }
+}
 
+function closeBuilder(mountEl, onDone) {
+   clearBuilder(mountEl);
    onDone?.();
+}
+
+function applyValidatedSelections(
+   validated,
+   {
+      setAnimals,
+      setAttractions,
+      setGuardiansTalks,
+      setWildEncounters,
+   }
+) {
+   if (!validated) return;
+
+   setAnimals(Array.isArray(validated.animals) ? validated.animals : []);
+   setAttractions(Array.isArray(validated.attractions) ? validated.attractions : []);
+   setGuardiansTalks(Array.isArray(validated.guardiansTalks) ? validated.guardiansTalks : []);
+   setWildEncounters(Array.isArray(validated.wildEncounters) ? validated.wildEncounters : []);
+}
+
+function hasRemovedItems(removed) {
+   if (!removed || typeof removed !== 'object') return false;
+
+   return (
+      (Array.isArray(removed.animals) && removed.animals.length > 0) ||
+      (Array.isArray(removed.attractions) && removed.attractions.length > 0) ||
+      (Array.isArray(removed.guardiansTalks) && removed.guardiansTalks.length > 0) ||
+      (Array.isArray(removed.wildEncounters) && removed.wildEncounters.length > 0)
+   );
+}
+
+function isValidatedItineraryEmpty(validated) {
+   if (!validated || typeof validated !== 'object') return true;
+
+   return (
+      (!Array.isArray(validated.animals) || validated.animals.length === 0) &&
+      (!Array.isArray(validated.attractions) || validated.attractions.length === 0) &&
+      (!Array.isArray(validated.guardiansTalks) || validated.guardiansTalks.length === 0) &&
+      (!Array.isArray(validated.wildEncounters) || validated.wildEncounters.length === 0)
+   );
 }
 
 export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone } = {}) {
@@ -70,6 +113,9 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
    let selectedGuardiansTalks = Array.isArray(existing?.guardiansTalks) ? existing.guardiansTalks : [];
    let selectedWildEncounters = Array.isArray(existing?.wildEncounters) ? existing.wildEncounters : [];
 
+   let pendingRemovedItems = null;
+   let pendingValidatedEmpty = false;
+
    const initialStorageSnapshot = snapshotStorage();
    const initialDraftStateJSON = JSON.stringify(getDraftState());
 
@@ -82,7 +128,26 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       closeBuilder(mountEl, onDone);
    }
 
-   const finish = (override = {}) =>
+   function maybeShowRemovedItemsPopup(removed, isEmptyItinerary = false) {
+      if (!hasRemovedItems(removed)) return;
+
+      showRemovedItemsPopup({
+         mountEl,
+         removed,
+         isEmptyItinerary,
+         onAccept: () => {},
+         onDismiss: () => {},
+         onViewAlternatives: (stepKey) => {
+            openItineraryBuilder({
+               mountEl,
+               startAt: stepKey,
+               onDone,
+            });
+         },
+      });
+   }
+
+   const finish = (override = {}, options = {}) =>
       finalizeItinerary(
          {
             animals: override.animals ?? selectedAnimals,
@@ -91,7 +156,22 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
             wildEncounters: override.wildEncounters ?? selectedWildEncounters,
          },
          mountEl,
-         { onDone }
+         {
+            allowEmpty: pendingValidatedEmpty || options.allowEmpty === true,
+            onDone: () => {
+               onDone?.();
+
+               const removedToShow = pendingRemovedItems;
+               const wasValidatedEmpty = pendingValidatedEmpty;
+
+               pendingRemovedItems = null;
+               pendingValidatedEmpty = false;
+
+               requestAnimationFrame(() => {
+                  maybeShowRemovedItemsPopup(removedToShow, wasValidatedEmpty);
+               });
+            },
+         }
       );
 
    function saveDraftAndClose() {
@@ -138,7 +218,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       mountEl,
       onClose: handleClose,
       onPrev: () => guardiansTalkSelector.show(),
-      onFinish: wildEncounters => {
+      onFinish: (wildEncounters) => {
          selectedWildEncounters = Array.isArray(wildEncounters) ? wildEncounters : [];
          finish({ wildEncounters: selectedWildEncounters });
       },
@@ -148,11 +228,11 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       mountEl,
       onClose: handleClose,
       onPrev: () => attractionSelector.show(),
-      onNext: talks => {
+      onNext: (talks) => {
          selectedGuardiansTalks = Array.isArray(talks) ? talks : [];
          wildEncounterSelector.show();
       },
-      onFinish: talks => {
+      onFinish: (talks) => {
          selectedGuardiansTalks = Array.isArray(talks) ? talks : [];
          finish({ guardiansTalks: selectedGuardiansTalks });
       },
@@ -162,11 +242,11 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       mountEl,
       onClose: handleClose,
       onPrev: () => animalSelector.show(),
-      onNext: attractions => {
+      onNext: (attractions) => {
          selectedAttractions = Array.isArray(attractions) ? attractions : [];
          guardiansTalkSelector.show();
       },
-      onFinish: attractions => {
+      onFinish: (attractions) => {
          selectedAttractions = Array.isArray(attractions) ? attractions : [];
          finish({ attractions: selectedAttractions });
       },
@@ -176,11 +256,11 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       mountEl,
       onClose: handleClose,
       onPrev: () => dateSelector.show(),
-      onNext: animals => {
+      onNext: (animals) => {
          selectedAnimals = Array.isArray(animals) ? animals : [];
          attractionSelector.show();
       },
-      onFinish: animals => {
+      onFinish: (animals) => {
          selectedAnimals = Array.isArray(animals) ? animals : [];
          finish({ animals: selectedAnimals });
       },
@@ -190,38 +270,66 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       mountEl,
       onClose: handleClose,
       onSave: async (date, dateObj) => {
-         const validated = await validateItinerary({
+         const result = await validateItinerary({
             date,
             dateObj,
          });
 
-         if (validated) {
-            selectedAnimals = Array.isArray(validated.animals) ? validated.animals : [];
-            selectedAttractions = Array.isArray(validated.attractions) ? validated.attractions : [];
-            selectedGuardiansTalks = Array.isArray(validated.guardiansTalks) ? validated.guardiansTalks : [];
-            selectedWildEncounters = Array.isArray(validated.wildEncounters) ? validated.wildEncounters : [];
-         }
+         const validated = result?.validated ?? null;
+         const removed = result?.removed ?? null;
+
+         applyValidatedSelections(validated, {
+            setAnimals: (value) => {
+               selectedAnimals = value;
+            },
+            setAttractions: (value) => {
+               selectedAttractions = value;
+            },
+            setGuardiansTalks: (value) => {
+               selectedGuardiansTalks = value;
+            },
+            setWildEncounters: (value) => {
+               selectedWildEncounters = value;
+            },
+         });
+
+         pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
+         pendingValidatedEmpty = isValidatedItineraryEmpty(validated);
 
          animalSelector.show();
       },
       onFinish: async (date, dateObj) => {
-         const validated = await validateItinerary({
+         const result = await validateItinerary({
             date,
             dateObj,
          });
 
-         if (validated) {
-            selectedAnimals = Array.isArray(validated.animals) ? validated.animals : [];
-            selectedAttractions = Array.isArray(validated.attractions) ? validated.attractions : [];
-            selectedGuardiansTalks = Array.isArray(validated.guardiansTalks) ? validated.guardiansTalks : [];
-            selectedWildEncounters = Array.isArray(validated.wildEncounters) ? validated.wildEncounters : [];
-         }
+         const validated = result?.validated ?? null;
+         const removed = result?.removed ?? null;
+
+         applyValidatedSelections(validated, {
+            setAnimals: (value) => {
+               selectedAnimals = value;
+            },
+            setAttractions: (value) => {
+               selectedAttractions = value;
+            },
+            setGuardiansTalks: (value) => {
+               selectedGuardiansTalks = value;
+            },
+            setWildEncounters: (value) => {
+               selectedWildEncounters = value;
+            },
+         });
+
+         pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
+         pendingValidatedEmpty = isValidatedItineraryEmpty(validated);
 
          finish();
       },
    });
 
-   switch(startAt) {
+   switch (startAt) {
       case 'animals':
          return animalSelector.show();
       case 'attractions':

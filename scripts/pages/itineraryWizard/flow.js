@@ -21,7 +21,7 @@ function closeItineraryFlow(mountEl) {
 export async function finalizeItinerary(
    { animals, attractions, guardiansTalks, wildEncounters } = {},
    mountEl,
-   { onDone } = {}
+   { onDone, allowEmpty = false } = {}
 ) {
    const date = localStorage.getItem(DATE_KEY) || '';
 
@@ -33,7 +33,7 @@ export async function finalizeItinerary(
       wildEncounters: wildEncounters ?? loadArray(WILD_KEY),
    });
 
-   if (isItineraryEmpty(finalItin)) {
+   if (!allowEmpty && isItineraryEmpty(finalItin)) {
       showItineraryPopup({
          mountEl,
          title: 'No Items Selected',

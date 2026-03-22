@@ -1456,7 +1456,7 @@ nav ul li a:hover {
    align-items: center;
    gap: 60px;
 
-   width: min(1400px, 96vw);
+   width: min(1700px, 96vw);
    padding: 80px 120px;
 
    background: linear-gradient(180deg, #5d8f2a, #4f7e22);
@@ -2414,12 +2414,6 @@ nav ul li a:hover {
    pointer-events: auto;
 }
 
-.tzg-popup .itin-overlay {
-   align-items: center;
-   padding-top: 0;
-   padding-bottom: 0;
-}
-
 .tzg-popup-body {
    padding-top: 40px;
    padding-bottom: 40px;
@@ -2509,6 +2503,93 @@ nav ul li a:hover {
 
 .itin-close:active {
    transform: translateY(-50%) scale(0.96);
+}
+
+/* ============================================================
+   REMOVED ITEMS POPUP
+============================================================ */
+
+.itin-removed-popup-card {
+   width: min(1400px, 96vw);
+}
+
+.itin-removed-popup-body {
+   padding-top: 40px;
+   padding-bottom: 40px;
+   padding-left: 40px;
+   padding-right: 40px;
+}
+
+.itin-removed-popup-content {
+   display: flex;
+   flex-direction: column;
+   gap: 28px;
+   width: 100%;
+}
+
+.itin-removed-section {
+   display: flex;
+   flex-direction: column;
+   gap: 18px;
+   width: 100%;
+}
+
+.itin-removed-section-title {
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.4em;
+   font-weight: 900;
+   color: rgba(20, 35, 10, 0.72);
+   letter-spacing: 0.04em;
+   text-transform: uppercase;
+}
+
+.itin-removed-list {
+   display: flex;
+   flex-direction: column;
+   gap: 18px;
+   width: 100%;
+}
+
+.itin-removed-row {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 24px;
+}
+
+.itin-removed-row .itin-panel-item-left {
+   flex: 1 1 auto;
+   min-width: 0;
+}
+
+.itin-removed-alt-btn {
+   flex: 0 0 auto;
+
+   padding: 18px 26px;
+   border-radius: 16px;
+   border: none;
+
+   background: rgba(255,255,255,0.16);
+   color: #ffffff;
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.2em;
+   font-weight: 900;
+   line-height: 1.15;
+
+   cursor: pointer;
+
+   box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+   transition: background-color 0.18s ease, transform 0.12s ease;
+}
+
+.itin-removed-alt-btn:hover {
+   background: rgba(255,255,255,0.26);
+   transform: translateY(-2px);
+}
+
+.itin-removed-alt-btn:active {
+   transform: translateY(0);
 }
 
 /* ============================================================

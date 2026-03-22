@@ -492,64 +492,88 @@ class MyHandler( BaseHTTPRequestHandler ):
          content_length = int( self.headers['Content-Length'] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
-
+         
          month = data.get( 'month' )
          day = data.get( 'day' )
          temp = data.get( 'temp' )
-         animals_to_include = data.get( 'animals' )
-         attractions_to_include = data.get( 'attractions' )
-         guardians_talks_to_include = data.get( 'guardiansTalks' )
-         wild_encounters_to_include = data.get( 'wildEncounters' )
+         animals_to_include = data.get( 'animals' ) or []
+         attractions_to_include = data.get( 'attractions' ) or []
+         guardians_talks_to_include = data.get( 'guardiansTalks' ) or []
+         wild_encounters_to_include = data.get( 'wildEncounters' ) or []
+
+         animals = self.database.validate_animals(
+            month=month,
+            day=day,
+            temp=temp,
+            animals_to_include=animals_to_include )
+
+         attractions = self.database.validate_attractions(
+            month=month,
+            day=day,
+            attractions_to_include=attractions_to_include )
+
+         guardians_talks = self.database.validate_guardians_talks(
+            month=month,
+            day=day,
+            guardians_talks_to_include=guardians_talks_to_include )
+
+         wild_encounters = self.database.validate_wild_encounters(
+            month=month,
+            day=day,
+            wild_encounters_to_include=wild_encounters_to_include )
 
          animals_json = []
          attractions_json = []
          guardians_talks_json = []
          wild_encounters_json = []
 
-         if animals_to_include:
-            animals = self.database.validate_animals( month=month, day=day, temp=temp, animals_to_include=animals_to_include )
+         for animal in animals:
+            d = animal.to_dict()
+            d['type'] = d.get( 'type', 'animal' )
+            animals_json.append( d )
 
-            for animal in animals:
-               d = animal.to_dict()
-               d['type'] = d.get( 'type', 'animal' )
-               animals_json.append( d )
+         for attraction in attractions:
+            d = attraction.to_dict()
+            d['type'] = d.get( 'type', 'attraction' )
+            attractions_json.append( d )
 
-         if attractions_to_include:
-            attractions = self.database.validate_attractions( month=month, day=day, attractions_to_include=attractions_to_include )
+         for guardians_talk in guardians_talks:
+            d = guardians_talk.to_dict()
+            d['type'] = d.get( 'type', 'guardiansTalk' )
+            guardians_talks_json.append( d )
 
-            for attraction in attractions:
-               d = attraction.to_dict()
-               d['type'] = d.get( 'type', 'attraction' )
-               attractions_json.append( d )
+         for wild_encounter in wild_encounters:
+            d = wild_encounter.to_dict()
+            d['type'] = d.get( 'type', 'wildEncounter' )
+            wild_encounters_json.append( d )
 
-         if guardians_talks_to_include:
-            guardians_talks = self.database.validate_guardians_talks(
-               month=month,
-               day=day,
-               guardians_talks_to_include=guardians_talks_to_include )
+         date = f'{month} {day}' if month and day else None
 
-            for guardians_talk in guardians_talks:
-               d = guardians_talk.to_dict()
-               d['type'] = d.get( 'type', 'guardiansTalk' )
-               guardians_talks_json.append( d )
+         clear_success = self.database.clear_itinerary()
 
-         if wild_encounters_to_include:
-            wild_encounters = self.database.validate_wild_encounters(
-               month=month,
-               day=day,
-               wild_encounters_to_include=wild_encounters_to_include )
+         set_success = False
 
-            for wild_encounter in wild_encounters:
-               d = wild_encounter.to_dict()
-               d['type'] = d.get( 'type', 'wildEncounter' )
-               wild_encounters_json.append( d )
+         if clear_success:
+            set_success = self.database.set_itinerary(
+               date=date,
+               animals=animals_json,
+               attractions=attractions_json,
+               guardians_talks=guardians_talks_json,
+               wild_encounters=wild_encounters_json,
+               is_active=True )
 
          response = {
+            'success': clear_success and set_success,
             'animals': animals_json,
             'attractions': attractions_json,
             'guardiansTalks': guardians_talks_json,
             'wildEncounters': wild_encounters_json,
          }
+
+         if not clear_success:
+            response['error'] = 'Could not clear itinerary.'
+         elif not set_success:
+            response['error'] = 'Could not save validated itinerary.'
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )

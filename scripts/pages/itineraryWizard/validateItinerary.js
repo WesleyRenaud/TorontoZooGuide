@@ -24,7 +24,7 @@ function extractNames(items, fields = []) {
             return item.trim();
          }
 
-         for(const field of fields) {
+         for (const field of fields) {
             const value = item?.[field];
             if (typeof value === 'string' && value.trim()) {
                return value.trim();
@@ -58,6 +58,34 @@ function persistValidatedDraft({
    localStorage.setItem(WILD_KEY, JSON.stringify(wildEncounters));
 }
 
+function buildKey(item, fields = []) {
+   if (typeof item === 'string') {
+      return item.trim().toLowerCase();
+   }
+
+   for (const field of fields) {
+      const value = item?.[field];
+      if (typeof value === 'string' && value.trim()) {
+         return value.trim().toLowerCase();
+      }
+   }
+
+   return '';
+}
+
+function findRemovedItems(originalItems, validatedItems, fields = []) {
+   const validatedKeys = new Set(
+      validatedItems
+         .map(item => buildKey(item, fields))
+         .filter(Boolean)
+   );
+
+   return originalItems.filter(item => {
+      const key = buildKey(item, fields);
+      return key && !validatedKeys.has(key);
+   });
+}
+
 export async function validateItinerary({ date, dateObj } = {}) {
    if (!date || !(dateObj instanceof Date) || !Number.isFinite(dateObj.getTime())) {
       return null;
@@ -84,6 +112,13 @@ export async function validateItinerary({ date, dateObj } = {}) {
       wildEncounters: Array.isArray(result?.wildEncounters) ? result.wildEncounters : [],
    };
 
+   const removed = {
+      animals: findRemovedItems(animals, validated.animals, ['species', 'name']),
+      attractions: findRemovedItems(attractions, validated.attractions, ['name']),
+      guardiansTalks: findRemovedItems(guardiansTalks, validated.guardiansTalks, ['name']),
+      wildEncounters: findRemovedItems(wildEncounters, validated.wildEncounters, ['name']),
+   };
+
    persistValidatedDraft({
       date,
       animals: validated.animals,
@@ -92,5 +127,8 @@ export async function validateItinerary({ date, dateObj } = {}) {
       wildEncounters: validated.wildEncounters,
    });
 
-   return validated;
+   return {
+      validated,
+      removed,
+   };
 }
