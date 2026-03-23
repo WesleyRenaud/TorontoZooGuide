@@ -140,6 +140,43 @@ function findReducedVisibilityAnimals(previousAnimals, validatedAnimals, removed
       .filter(Boolean);
 }
 
+function findImprovedVisibilityAnimals(previousAnimals, validatedAnimals, removedAnimals = [], minIncrease = 0.2) {
+   const validatedByKey = new Map(
+      validatedAnimals
+         .map(animal => [buildKey(animal, ['species', 'name']), animal])
+         .filter(([key]) => Boolean(key))
+   );
+
+   const removedKeys = new Set(
+      removedAnimals
+         .map(animal => buildKey(animal, ['species', 'name']))
+         .filter(Boolean)
+   );
+
+   return previousAnimals
+      .map(previousAnimal => {
+         const key = buildKey(previousAnimal, ['species', 'name']);
+         if (!key || removedKeys.has(key)) return null;
+
+         const validatedAnimal = validatedByKey.get(key);
+         if (!validatedAnimal) return null;
+
+         const before = toNormalizedLikelihood(getLikelihoodValue(previousAnimal));
+         const after = toNormalizedLikelihood(getLikelihoodValue(validatedAnimal));
+
+         if (before == null || after == null) return null;
+         if (after <= before) return null;
+         if ((after - before) < minIncrease) return null;
+
+         return {
+            ...validatedAnimal,
+            likelihoodBefore: before,
+            likelihoodAfter: after,
+         };
+      })
+      .filter(Boolean);
+}
+
 export async function validateItinerary({ date, dateObj } = {}) {
    if (!date || !(dateObj instanceof Date) || !Number.isFinite(dateObj.getTime())) {
       return null;
@@ -208,6 +245,15 @@ export async function validateItinerary({ date, dateObj } = {}) {
       ),
    };
 
+   const improvedVisibility = {
+      animals: findImprovedVisibilityAnimals(
+         previous.animals,
+         validated.animals,
+         removed.animals,
+         0.2
+      ),
+   };
+
    persistValidatedDraft({
       date,
       animals: validated.animals,
@@ -221,5 +267,6 @@ export async function validateItinerary({ date, dateObj } = {}) {
       validated,
       removed,
       reducedVisibility,
+      improvedVisibility,
    };
 }

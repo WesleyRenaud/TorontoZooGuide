@@ -47,14 +47,21 @@ function buildWildEncounterImageSrc(name) {
    return `images/wild-encounters/${normalizedName}.png`;
 }
 
-function getLikelihoodValue(animal) {
-   const raw =
+function toPercent(value) {
+   if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+   return Math.round(value > 1 ? value : value * 100);
+}
+
+function getLikelihoodPair(animal) {
+   const beforeRaw =
       animal?.likelihoodBefore ??
       animal?.likelihood_before ??
       animal?.previousLikelihood ??
       animal?.previous_likelihood ??
       animal?.oldLikelihood ??
-      animal?.old_likelihood ??
+      animal?.old_likelihood;
+
+   const afterRaw =
       animal?.likelihoodAfter ??
       animal?.likelihood_after ??
       animal?.currentLikelihood ??
@@ -62,16 +69,12 @@ function getLikelihoodValue(animal) {
       animal?.newLikelihood ??
       animal?.new_likelihood ??
       animal?.likelihood ??
-      animal?.LIKELIHOOD ??
-      null;
+      animal?.LIKELIHOOD;
 
-   const value = Number(raw);
-   return Number.isFinite(value) ? value : null;
-}
+   const before = toPercent(Number(beforeRaw));
+   const after = toPercent(Number(afterRaw));
 
-function toPercent(value) {
-   if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-   return Math.round(value > 1 ? value : value * 100);
+   return { before, after };
 }
 
 function buildAnimalRemovalReasonLine(animal) {
@@ -89,39 +92,39 @@ function buildAnimalRemovalReasonLine(animal) {
    return `Unavailable: ${reason}`;
 }
 
-function buildAnimalVisibilityDropLine(animal) {
-   const beforeRaw =
-      animal.likelihoodBefore ??
-      animal.likelihood_before ??
-      animal.previousLikelihood ??
-      animal.previous_likelihood ??
-      animal.oldLikelihood ??
-      animal.old_likelihood;
+function buildAnimalVisibilityChange(animal) {
+   const { before, after } = getLikelihoodPair(animal);
 
-   const afterRaw =
-      animal.likelihoodAfter ??
-      animal.likelihood_after ??
-      animal.currentLikelihood ??
-      animal.current_likelihood ??
-      animal.newLikelihood ??
-      animal.new_likelihood ??
-      animal.likelihood ??
-      animal.LIKELIHOOD;
+   if (before == null || after == null || before === after) {
+      return {
+         line: '',
+         tone: 'default',
+      };
+   }
 
-   const before = toPercent(Number(beforeRaw));
-   const after = toPercent(Number(afterRaw));
+   if (after < before) {
+      return {
+         line: `Projected visibility changed from ${before}% to ${after}% on your new date.`,
+         tone: 'default',
+      };
+   }
 
-   if (before == null || after == null) return '';
-   if (after >= before) return '';
-
-   return `Projected visibility changed from ${before}% to ${after}% on your new date.`;
+   return {
+      line: `Projected visibility changed from ${before}% to ${after}% on your new date.`,
+      tone: 'positive',
+   };
 }
 
-function buildAnimalAlertLine(animal) {
+function buildAnimalAlert(animal) {
    const removalLine = buildAnimalRemovalReasonLine(animal);
-   if (removalLine) return removalLine;
+   if (removalLine) {
+      return {
+         line: removalLine,
+         tone: 'default',
+      };
+   }
 
-   return buildAnimalVisibilityDropLine(animal);
+   return buildAnimalVisibilityChange(animal);
 }
 
 export function buildAnimalRows(animals = []) {
@@ -147,7 +150,7 @@ export function buildAnimalRows(animals = []) {
       const exhibit = a.exhibit ?? a.EXHIBIT ?? a.exhibit_name ?? '';
       const link = a.link ?? a.infoLink ?? a.INFO_LINK ?? null;
       const imageSrc = buildAnimalImageSrc(exhibit, name);
-      const alertLine = buildAnimalAlertLine(a);
+      const alert = buildAnimalAlert(a);
 
       return makeItemRow({
          name,
@@ -155,7 +158,8 @@ export function buildAnimalRows(animals = []) {
          metaLines: [
             exhibit ? `Exhibit: ${exhibit}` : '',
          ],
-         alertLine,
+         alertLine: alert.line,
+         alertTone: alert.tone,
          linkText: link ? 'More Info' : null,
          onLinkClick: link ? () => window.open(link, '_blank') : null,
       });

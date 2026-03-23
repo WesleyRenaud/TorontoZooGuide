@@ -5,6 +5,7 @@ export function makeItemRow({
    imageSrc,
    metaLines = [],
    alertLine = '',
+   alertTone = 'default',
    linkText,
    onLinkClick,
 }) {
@@ -25,7 +26,12 @@ export function makeItemRow({
    });
 
    if (alertLine) {
-      text.appendChild(el('div', 'itin-panel-alert', alertLine));
+      const alertClass =
+         alertTone === 'positive'
+            ? 'itin-panel-alert-positive'
+            : 'itin-panel-alert';
+
+      text.appendChild(el('div', alertClass, alertLine));
    }
 
    if (linkText) {

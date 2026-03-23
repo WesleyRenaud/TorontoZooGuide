@@ -97,6 +97,15 @@ function hasReducedVisibility(reducedVisibility) {
    );
 }
 
+function hasImprovedVisibility(improvedVisibility) {
+   if (!improvedVisibility || typeof improvedVisibility !== 'object') return false;
+
+   return (
+      Array.isArray(improvedVisibility.animals) &&
+      improvedVisibility.animals.length > 0
+   );
+}
+
 function isValidatedItineraryEmpty(validated) {
    if (!validated || typeof validated !== 'object') return true;
 
@@ -124,6 +133,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
 
    let pendingRemovedItems = null;
    let pendingReducedVisibility = null;
+   let pendingImprovedVisibility = null;
    let pendingValidatedEmpty = false;
 
    const initialStorageSnapshot = snapshotStorage();
@@ -138,13 +148,25 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       closeBuilder(mountEl, onDone);
    }
 
-   function maybeShowRemovedItemsPopup(removed, reducedVisibility, isEmptyItinerary = false) {
-      if (!hasRemovedItems(removed) && !hasReducedVisibility(reducedVisibility)) return;
+   function maybeShowRemovedItemsPopup(
+      removed,
+      reducedVisibility,
+      improvedVisibility,
+      isEmptyItinerary = false
+   ) {
+      if (
+         !hasRemovedItems(removed) &&
+         !hasReducedVisibility(reducedVisibility) &&
+         !hasImprovedVisibility(improvedVisibility)
+      ) {
+         return;
+      }
 
       showRemovedItemsPopup({
          mountEl,
          removed,
          reducedVisibility,
+         improvedVisibility,
          isEmptyItinerary,
          onAccept: () => {},
          onDismiss: () => {},
@@ -174,16 +196,19 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
 
                const removedToShow = pendingRemovedItems;
                const reducedVisibilityToShow = pendingReducedVisibility;
+               const improvedVisibilityToShow = pendingImprovedVisibility;
                const wasValidatedEmpty = pendingValidatedEmpty;
 
                pendingRemovedItems = null;
                pendingReducedVisibility = null;
+               pendingImprovedVisibility = null;
                pendingValidatedEmpty = false;
 
                requestAnimationFrame(() => {
                   maybeShowRemovedItemsPopup(
                      removedToShow,
                      reducedVisibilityToShow,
+                     improvedVisibilityToShow,
                      wasValidatedEmpty
                   );
                });
@@ -295,6 +320,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
          const validated = result?.validated ?? null;
          const removed = result?.removed ?? null;
          const reducedVisibility = result?.reducedVisibility ?? null;
+         const improvedVisibility = result?.improvedVisibility ?? null;
 
          applyValidatedSelections(validated, {
             setAnimals: (value) => {
@@ -313,6 +339,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
 
          pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
          pendingReducedVisibility = hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
+         pendingImprovedVisibility = hasImprovedVisibility(improvedVisibility) ? improvedVisibility : null;
          pendingValidatedEmpty = isValidatedItineraryEmpty(validated);
 
          animalSelector.show();
@@ -326,6 +353,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
          const validated = result?.validated ?? null;
          const removed = result?.removed ?? null;
          const reducedVisibility = result?.reducedVisibility ?? null;
+         const improvedVisibility = result?.improvedVisibility ?? null;
 
          applyValidatedSelections(validated, {
             setAnimals: (value) => {
@@ -344,6 +372,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
 
          pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
          pendingReducedVisibility = hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
+         pendingImprovedVisibility = hasImprovedVisibility(improvedVisibility) ? improvedVisibility : null;
          pendingValidatedEmpty = isValidatedItineraryEmpty(validated);
 
          finish();

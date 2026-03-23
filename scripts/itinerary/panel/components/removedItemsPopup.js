@@ -56,6 +56,7 @@ export function showRemovedItemsPopup({
    mountEl,
    removed = {},
    reducedVisibility = {},
+   improvedVisibility = {},
    isEmptyItinerary = false,
    onAccept,
    onDismiss,
@@ -65,6 +66,7 @@ export function showRemovedItemsPopup({
 
    const safeRemoved = removed ?? {};
    const safeReducedVisibility = reducedVisibility ?? {};
+   const safeImprovedVisibility = improvedVisibility ?? {};
 
    const {
       animals = [],
@@ -77,12 +79,17 @@ export function showRemovedItemsPopup({
       animals: reducedVisibilityAnimals = [],
    } = safeReducedVisibility;
 
+   const {
+      animals: improvedVisibilityAnimals = [],
+   } = safeImprovedVisibility;
+
    const hasAnything =
       animals.length ||
       attractions.length ||
       guardiansTalks.length ||
       wildEncounters.length ||
-      reducedVisibilityAnimals.length;
+      reducedVisibilityAnimals.length ||
+      improvedVisibilityAnimals.length;
 
    if (!hasAnything) return;
 
@@ -152,6 +159,10 @@ export function showRemovedItemsPopup({
       addAlternativesButton(row, 'animals', onViewAlternatives, removePopupOnly)
    );
 
+   const improvedVisibilityAnimalRows = buildAnimalRows(improvedVisibilityAnimals).map((row) =>
+      addAlternativesButton(row, 'animals', onViewAlternatives, removePopupOnly)
+   );
+
    const attractionRows = buildAttractionRows(attractions).map((row) =>
       addAlternativesButton(row, 'attractions', onViewAlternatives, removePopupOnly)
    );
@@ -176,6 +187,12 @@ export function showRemovedItemsPopup({
       reducedVisibilityAnimalRows
    );
 
+   const improvedVisibilitySection = makeSection(
+      'Improved Animal Visibility',
+      'The following animals remain on your itinerary and are expected to be easier to see on your new date.',
+      improvedVisibilityAnimalRows
+   );
+
    const attractionsSection = makeSection(
       'Attractions',
       'The following attractions are unavailable on your new date.',
@@ -197,6 +214,7 @@ export function showRemovedItemsPopup({
    [
       animalsSection,
       reducedVisibilitySection,
+      improvedVisibilitySection,
       attractionsSection,
       guardiansSection,
       wildSection,
