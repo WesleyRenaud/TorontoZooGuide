@@ -16,6 +16,20 @@ function formatLong(d) {
    });
 }
 
+function getToday() {
+   const today = new Date();
+   return new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0, 0, 0);
+}
+
+function isBeforeToday(d) {
+   if (!d || !Number.isFinite(d.getTime())) return false;
+
+   const candidate = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0, 0);
+   const today = getToday();
+
+   return candidate < today;
+}
+
 export function createItineraryDateSelectorController({
    mountEl,
    initialDate = null,
@@ -38,6 +52,8 @@ export function createItineraryDateSelectorController({
 
    function setDate(d, { updateInput = true, persist = false } = {}) {
       if (!d || !Number.isFinite(d.getTime())) return;
+      if (isBeforeToday(d)) return;
+
       currentDate = d;
 
       if (updateInput && inputEl) inputEl.value = formatLong(d);
@@ -46,7 +62,7 @@ export function createItineraryDateSelectorController({
    }
 
    function persistCurrentDate() {
-      if (!currentDate) return null;
+      if (!currentDate || isBeforeToday(currentDate)) return null;
       setDate(currentDate, { persist: true, updateInput: true });
       return { date: toISODate(currentDate), dateObj: currentDate };
    }
@@ -100,9 +116,10 @@ export function createItineraryDateSelectorController({
          allowInput: false,
          dateFormat: 'Y-m-d',
          monthSelectorType: 'static',
-         defaultDate: currentDate || new Date(),
+         minDate: getToday(),
+         defaultDate: currentDate || getToday(),
          onReady: (_sel, _str, instance) => {
-            const d = instance.selectedDates?.[0] || new Date();
+            const d = instance.selectedDates?.[0] || getToday();
             setDate(d, { updateInput: true, persist: false });
          },
          onChange: selectedDates => {
@@ -122,9 +139,16 @@ export function createItineraryDateSelectorController({
       }
 
       const saved = getSavedDate();
-      setDate(initialDate || saved || new Date(), { updateInput: true, persist: false });
+      const today = getToday();
+      const selected = initialDate || saved || today;
+      const safeDate = isBeforeToday(selected) ? today : selected;
 
-      if (fp && currentDate) fp.setDate(currentDate, true);
+      setDate(safeDate, { updateInput: true, persist: false });
+
+      if (fp && currentDate) {
+         fp.set('minDate', today);
+         fp.setDate(currentDate, true);
+      }
 
       mountEl.innerHTML = '';
       mountEl.appendChild(root);
