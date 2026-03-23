@@ -6,6 +6,11 @@ import {
    GUARDIANS_KEY,
    WILD_KEY,
 } from './keys.js';
+import {
+   buildRemovedItems,
+   buildReducedVisibility,
+   buildImprovedVisibility,
+} from './itineraryDiff.js';
 
 function loadArray(key) {
    try {
@@ -58,153 +63,25 @@ function persistValidatedDraft({
    localStorage.setItem(WILD_KEY, JSON.stringify(wildEncounters));
 }
 
-function buildKey(item, fields = []) {
-   if (typeof item === 'string') {
-      return item.trim().toLowerCase();
-   }
-
-   for (const field of fields) {
-      const value = item?.[field];
-      if (typeof value === 'string' && value.trim()) {
-         return value.trim().toLowerCase();
-      }
-   }
-
-   return '';
-}
-
-function findRemovedItems(previousItems, validatedItems, fields = []) {
-   const validatedKeys = new Set(
-      validatedItems
-         .map(item => buildKey(item, fields))
-         .filter(Boolean)
-   );
-
-   return previousItems.filter(item => {
-      const key = buildKey(item, fields);
-      return key && !validatedKeys.has(key);
-   });
-}
-
-function getLikelihoodValue(animal) {
-   const raw =
-      animal?.likelihood ??
-      animal?.LIKELIHOOD ??
-      animal?.likelihood_value ??
-      animal?.LIKELIHOOD_VALUE ??
-      null;
-
-   const value = Number(raw);
-   return Number.isFinite(value) ? value : null;
-}
-
-function toNormalizedLikelihood(value) {
-   if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-   return value > 1 ? value / 100 : value;
-}
-
-function findReducedVisibilityAnimals(previousAnimals, validatedAnimals, removedAnimals = [], minDrop = 0.2) {
-   const validatedByKey = new Map(
-      validatedAnimals
-         .map(animal => [buildKey(animal, ['species', 'name']), animal])
-         .filter(([key]) => Boolean(key))
-   );
-
-   const removedKeys = new Set(
-      removedAnimals
-         .map(animal => buildKey(animal, ['species', 'name']))
-         .filter(Boolean)
-   );
-
-   return previousAnimals
-      .map(previousAnimal => {
-         const key = buildKey(previousAnimal, ['species', 'name']);
-         if (!key || removedKeys.has(key)) return null;
-
-         const validatedAnimal = validatedByKey.get(key);
-         if (!validatedAnimal) return null;
-
-         const before = toNormalizedLikelihood(getLikelihoodValue(previousAnimal));
-         const after = toNormalizedLikelihood(getLikelihoodValue(validatedAnimal));
-
-         if (before == null || after == null) return null;
-         if (after >= before) return null;
-         if ((before - after) < minDrop) return null;
-
-         return {
-            ...validatedAnimal,
-            likelihoodBefore: before,
-            likelihoodAfter: after,
-         };
-      })
-      .filter(Boolean);
-}
-
-function findImprovedVisibilityAnimals(previousAnimals, validatedAnimals, removedAnimals = [], minIncrease = 0.2) {
-   const validatedByKey = new Map(
-      validatedAnimals
-         .map(animal => [buildKey(animal, ['species', 'name']), animal])
-         .filter(([key]) => Boolean(key))
-   );
-
-   const removedKeys = new Set(
-      removedAnimals
-         .map(animal => buildKey(animal, ['species', 'name']))
-         .filter(Boolean)
-   );
-
-   return previousAnimals
-      .map(previousAnimal => {
-         const key = buildKey(previousAnimal, ['species', 'name']);
-         if (!key || removedKeys.has(key)) return null;
-
-         const validatedAnimal = validatedByKey.get(key);
-         if (!validatedAnimal) return null;
-
-         const before = toNormalizedLikelihood(getLikelihoodValue(previousAnimal));
-         const after = toNormalizedLikelihood(getLikelihoodValue(validatedAnimal));
-
-         if (before == null || after == null) return null;
-         if (after <= before) return null;
-         if ((after - before) < minIncrease) return null;
-
-         return {
-            ...validatedAnimal,
-            likelihoodBefore: before,
-            likelihoodAfter: after,
-         };
-      })
-      .filter(Boolean);
-}
-
-export async function validateItinerary({ date, dateObj } = {}) {
-   if (!date || !(dateObj instanceof Date) || !Number.isFinite(dateObj.getTime())) {
-      return null;
-   }
-
-   const animals = loadArray(ANIMALS_KEY);
-   const attractions = loadArray(ATTRACTIONS_KEY);
-   const guardiansTalks = loadArray(GUARDIANS_KEY);
-   const wildEncounters = loadArray(WILD_KEY);
-
-   const result = await postJson('/validate-itinerary', {
-      date,
-      month: getMonthName(dateObj),
-      day: getDayOfMonth(dateObj),
-      animals: extractNames(animals, ['species', 'name']),
-      attractions: extractNames(attractions, ['name']),
-      guardiansTalks: extractNames(guardiansTalks, ['name']),
-      wildEncounters: extractNames(wildEncounters, ['name']),
-   });
-
-   const previous = {
-      animals: Array.isArray(result?.previous?.animals) ? result.previous.animals : animals,
-      attractions: Array.isArray(result?.previous?.attractions) ? result.previous.attractions : attractions,
-      guardiansTalks: Array.isArray(result?.previous?.guardiansTalks) ? result.previous.guardiansTalks : guardiansTalks,
-      wildEncounters: Array.isArray(result?.previous?.wildEncounters) ? result.previous.wildEncounters : wildEncounters,
+function buildPreviousState(result, fallback) {
+   return {
+      animals: Array.isArray(result?.previous?.animals)
+         ? result.previous.animals
+         : fallback.animals,
+      attractions: Array.isArray(result?.previous?.attractions)
+         ? result.previous.attractions
+         : fallback.attractions,
+      guardiansTalks: Array.isArray(result?.previous?.guardiansTalks)
+         ? result.previous.guardiansTalks
+         : fallback.guardiansTalks,
+      wildEncounters: Array.isArray(result?.previous?.wildEncounters)
+         ? result.previous.wildEncounters
+         : fallback.wildEncounters,
    };
+}
 
-   const validated = {
+function buildValidatedState(result) {
+   return {
       animals: Array.isArray(result?.validated?.animals)
          ? result.validated.animals
          : Array.isArray(result?.animals)
@@ -226,39 +103,36 @@ export async function validateItinerary({ date, dateObj } = {}) {
             ? result.wildEncounters
             : [],
    };
+}
 
-   const removed = {
-      animals: Array.isArray(result?.removed?.animals)
-         ? result.removed.animals
-         : findRemovedItems(previous.animals, validated.animals, ['species', 'name']),
-      attractions: Array.isArray(result?.removed?.attractions)
-         ? result.removed.attractions
-         : findRemovedItems(previous.attractions, validated.attractions, ['name']),
-      guardiansTalks: Array.isArray(result?.removed?.guardiansTalks)
-         ? result.removed.guardiansTalks
-         : findRemovedItems(previous.guardiansTalks, validated.guardiansTalks, ['name']),
-      wildEncounters: Array.isArray(result?.removed?.wildEncounters)
-         ? result.removed.wildEncounters
-         : findRemovedItems(previous.wildEncounters, validated.wildEncounters, ['name']),
+export async function validateItinerary({ date, dateObj } = {}) {
+   if (!date || !(dateObj instanceof Date) || !Number.isFinite(dateObj.getTime())) {
+      return null;
+   }
+
+   const draftState = {
+      animals: loadArray(ANIMALS_KEY),
+      attractions: loadArray(ATTRACTIONS_KEY),
+      guardiansTalks: loadArray(GUARDIANS_KEY),
+      wildEncounters: loadArray(WILD_KEY),
    };
 
-   const reducedVisibility = {
-      animals: findReducedVisibilityAnimals(
-         previous.animals,
-         validated.animals,
-         removed.animals,
-         0.2
-      ),
-   };
+   const result = await postJson('/validate-itinerary', {
+      date,
+      month: getMonthName(dateObj),
+      day: getDayOfMonth(dateObj),
+      animals: extractNames(draftState.animals, ['species', 'name']),
+      attractions: extractNames(draftState.attractions, ['name']),
+      guardiansTalks: extractNames(draftState.guardiansTalks, ['name']),
+      wildEncounters: extractNames(draftState.wildEncounters, ['name']),
+   });
 
-   const improvedVisibility = {
-      animals: findImprovedVisibilityAnimals(
-         previous.animals,
-         validated.animals,
-         removed.animals,
-         0.2
-      ),
-   };
+   const previous = buildPreviousState(result, draftState);
+   const validated = buildValidatedState(result);
+
+   const removed = buildRemovedItems(previous, validated, result?.removed);
+   const reducedVisibility = buildReducedVisibility(previous, validated, removed);
+   const improvedVisibility = buildImprovedVisibility(previous, validated, removed);
 
    persistValidatedDraft({
       date,
