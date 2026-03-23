@@ -47,6 +47,33 @@ function buildWildEncounterImageSrc(name) {
    return `images/wild-encounters/${normalizedName}.png`;
 }
 
+function getLikelihoodValue(animal) {
+   const raw =
+      animal?.likelihoodBefore ??
+      animal?.likelihood_before ??
+      animal?.previousLikelihood ??
+      animal?.previous_likelihood ??
+      animal?.oldLikelihood ??
+      animal?.old_likelihood ??
+      animal?.likelihoodAfter ??
+      animal?.likelihood_after ??
+      animal?.currentLikelihood ??
+      animal?.current_likelihood ??
+      animal?.newLikelihood ??
+      animal?.new_likelihood ??
+      animal?.likelihood ??
+      animal?.LIKELIHOOD ??
+      null;
+
+   const value = Number(raw);
+   return Number.isFinite(value) ? value : null;
+}
+
+function toPercent(value) {
+   if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+   return Math.round(value > 1 ? value : value * 100);
+}
+
 function buildAnimalRemovalReasonLine(animal) {
    const reason =
       animal.removalReason ??
@@ -60,6 +87,41 @@ function buildAnimalRemovalReasonLine(animal) {
    if (!reason) return '';
 
    return `Unavailable: ${reason}`;
+}
+
+function buildAnimalVisibilityDropLine(animal) {
+   const beforeRaw =
+      animal.likelihoodBefore ??
+      animal.likelihood_before ??
+      animal.previousLikelihood ??
+      animal.previous_likelihood ??
+      animal.oldLikelihood ??
+      animal.old_likelihood;
+
+   const afterRaw =
+      animal.likelihoodAfter ??
+      animal.likelihood_after ??
+      animal.currentLikelihood ??
+      animal.current_likelihood ??
+      animal.newLikelihood ??
+      animal.new_likelihood ??
+      animal.likelihood ??
+      animal.LIKELIHOOD;
+
+   const before = toPercent(Number(beforeRaw));
+   const after = toPercent(Number(afterRaw));
+
+   if (before == null || after == null) return '';
+   if (after >= before) return '';
+
+   return `Projected visibility changed from ${before}% to ${after}% on your new date.`;
+}
+
+function buildAnimalAlertLine(animal) {
+   const removalLine = buildAnimalRemovalReasonLine(animal);
+   if (removalLine) return removalLine;
+
+   return buildAnimalVisibilityDropLine(animal);
 }
 
 export function buildAnimalRows(animals = []) {
@@ -85,7 +147,7 @@ export function buildAnimalRows(animals = []) {
       const exhibit = a.exhibit ?? a.EXHIBIT ?? a.exhibit_name ?? '';
       const link = a.link ?? a.infoLink ?? a.INFO_LINK ?? null;
       const imageSrc = buildAnimalImageSrc(exhibit, name);
-      const reasonLine = buildAnimalRemovalReasonLine(a);
+      const alertLine = buildAnimalAlertLine(a);
 
       return makeItemRow({
          name,
@@ -93,7 +155,7 @@ export function buildAnimalRows(animals = []) {
          metaLines: [
             exhibit ? `Exhibit: ${exhibit}` : '',
          ],
-         alertLine: reasonLine,
+         alertLine,
          linkText: link ? 'More Info' : null,
          onLinkClick: link ? () => window.open(link, '_blank') : null,
       });

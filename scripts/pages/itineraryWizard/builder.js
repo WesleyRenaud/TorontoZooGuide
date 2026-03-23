@@ -88,6 +88,15 @@ function hasRemovedItems(removed) {
    );
 }
 
+function hasReducedVisibility(reducedVisibility) {
+   if (!reducedVisibility || typeof reducedVisibility !== 'object') return false;
+
+   return (
+      Array.isArray(reducedVisibility.animals) &&
+      reducedVisibility.animals.length > 0
+   );
+}
+
 function isValidatedItineraryEmpty(validated) {
    if (!validated || typeof validated !== 'object') return true;
 
@@ -114,6 +123,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
    let selectedWildEncounters = Array.isArray(existing?.wildEncounters) ? existing.wildEncounters : [];
 
    let pendingRemovedItems = null;
+   let pendingReducedVisibility = null;
    let pendingValidatedEmpty = false;
 
    const initialStorageSnapshot = snapshotStorage();
@@ -128,12 +138,13 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       closeBuilder(mountEl, onDone);
    }
 
-   function maybeShowRemovedItemsPopup(removed, isEmptyItinerary = false) {
-      if (!hasRemovedItems(removed)) return;
+   function maybeShowRemovedItemsPopup(removed, reducedVisibility, isEmptyItinerary = false) {
+      if (!hasRemovedItems(removed) && !hasReducedVisibility(reducedVisibility)) return;
 
       showRemovedItemsPopup({
          mountEl,
          removed,
+         reducedVisibility,
          isEmptyItinerary,
          onAccept: () => {},
          onDismiss: () => {},
@@ -162,13 +173,19 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
                onDone?.();
 
                const removedToShow = pendingRemovedItems;
+               const reducedVisibilityToShow = pendingReducedVisibility;
                const wasValidatedEmpty = pendingValidatedEmpty;
 
                pendingRemovedItems = null;
+               pendingReducedVisibility = null;
                pendingValidatedEmpty = false;
 
                requestAnimationFrame(() => {
-                  maybeShowRemovedItemsPopup(removedToShow, wasValidatedEmpty);
+                  maybeShowRemovedItemsPopup(
+                     removedToShow,
+                     reducedVisibilityToShow,
+                     wasValidatedEmpty
+                  );
                });
             },
          }
@@ -277,6 +294,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
 
          const validated = result?.validated ?? null;
          const removed = result?.removed ?? null;
+         const reducedVisibility = result?.reducedVisibility ?? null;
 
          applyValidatedSelections(validated, {
             setAnimals: (value) => {
@@ -294,6 +312,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
          });
 
          pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
+         pendingReducedVisibility = hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
          pendingValidatedEmpty = isValidatedItineraryEmpty(validated);
 
          animalSelector.show();
@@ -306,6 +325,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
 
          const validated = result?.validated ?? null;
          const removed = result?.removed ?? null;
+         const reducedVisibility = result?.reducedVisibility ?? null;
 
          applyValidatedSelections(validated, {
             setAnimals: (value) => {
@@ -323,6 +343,7 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
          });
 
          pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
+         pendingReducedVisibility = hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
          pendingValidatedEmpty = isValidatedItineraryEmpty(validated);
 
          finish();

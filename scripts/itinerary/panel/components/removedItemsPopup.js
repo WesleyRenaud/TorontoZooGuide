@@ -55,6 +55,7 @@ function makeSection(title, subtitle, rowNodes = []) {
 export function showRemovedItemsPopup({
    mountEl,
    removed = {},
+   reducedVisibility = {},
    isEmptyItinerary = false,
    onAccept,
    onDismiss,
@@ -62,18 +63,26 @@ export function showRemovedItemsPopup({
 } = {}) {
    if (!mountEl) return;
 
+   const safeRemoved = removed ?? {};
+   const safeReducedVisibility = reducedVisibility ?? {};
+
    const {
       animals = [],
       attractions = [],
       guardiansTalks = [],
       wildEncounters = [],
-   } = removed;
+   } = safeRemoved;
+
+   const {
+      animals: reducedVisibilityAnimals = [],
+   } = safeReducedVisibility;
 
    const hasAnything =
       animals.length ||
       attractions.length ||
       guardiansTalks.length ||
-      wildEncounters.length;
+      wildEncounters.length ||
+      reducedVisibilityAnimals.length;
 
    if (!hasAnything) return;
 
@@ -103,7 +112,7 @@ export function showRemovedItemsPopup({
       el(
          'div',
          'itin-h1',
-         isEmptyItinerary ? 'Your itinerary is now empty' : 'Some items were removed'
+         isEmptyItinerary ? 'Your itinerary is now empty' : 'Some itinerary details changed'
       )
    );
 
@@ -113,7 +122,7 @@ export function showRemovedItemsPopup({
          'itin-subtitle',
          isEmptyItinerary
             ? 'None of your selected items are available on the new date. You can view alternatives below.'
-            : 'These items are unavailable on your selected date.'
+            : 'Some itinerary items changed for your new date. Review the updates below.'
       )
    );
 
@@ -139,6 +148,10 @@ export function showRemovedItemsPopup({
       addAlternativesButton(row, 'animals', onViewAlternatives, removePopupOnly)
    );
 
+   const reducedVisibilityAnimalRows = buildAnimalRows(reducedVisibilityAnimals).map((row) =>
+      addAlternativesButton(row, 'animals', onViewAlternatives, removePopupOnly)
+   );
+
    const attractionRows = buildAttractionRows(attractions).map((row) =>
       addAlternativesButton(row, 'attractions', onViewAlternatives, removePopupOnly)
    );
@@ -152,9 +165,15 @@ export function showRemovedItemsPopup({
    );
 
    const animalsSection = makeSection(
-      'Animals',
+      'Animals Removed',
       'The following animals are unavailable on your new date for the reasons listed below.',
       animalRows
+   );
+
+   const reducedVisibilitySection = makeSection(
+      'Reduced Animal Visibility',
+      'The following animals remain on your itinerary, but are expected to be less visible on your new date.',
+      reducedVisibilityAnimalRows
    );
 
    const attractionsSection = makeSection(
@@ -175,7 +194,13 @@ export function showRemovedItemsPopup({
       wildRows
    );
 
-   [animalsSection, attractionsSection, guardiansSection, wildSection]
+   [
+      animalsSection,
+      reducedVisibilitySection,
+      attractionsSection,
+      guardiansSection,
+      wildSection,
+   ]
       .filter(Boolean)
       .forEach((section) => content.appendChild(section));
 
