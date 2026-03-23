@@ -21,13 +21,28 @@ function getToday() {
    return new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0, 0, 0);
 }
 
-function isBeforeToday(d) {
-   if (!d || !Number.isFinite(d.getTime())) return false;
-
-   const candidate = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0, 0);
+function getMaxDate(daysAhead = 90) {
    const today = getToday();
+   const max = new Date(today);
+   max.setDate(today.getDate() + daysAhead);
+   return max;
+}
 
-   return candidate < today;
+function normalizeDate(d) {
+   if (!d || !Number.isFinite(d.getTime())) return null;
+   return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0, 0);
+}
+
+function isBeforeToday(d) {
+   const candidate = normalizeDate(d);
+   if (!candidate) return false;
+   return candidate < getToday();
+}
+
+function isAfterMaxDate(d, daysAhead = 90) {
+   const candidate = normalizeDate(d);
+   if (!candidate) return false;
+   return candidate > getMaxDate(daysAhead);
 }
 
 export function createItineraryDateSelectorController({
@@ -51,20 +66,33 @@ export function createItineraryDateSelectorController({
    }
 
    function setDate(d, { updateInput = true, persist = false } = {}) {
-      if (!d || !Number.isFinite(d.getTime())) return;
-      if (isBeforeToday(d)) return;
+      const normalized = normalizeDate(d);
+      if (!normalized) return;
+      if (isBeforeToday(normalized)) return;
+      if (isAfterMaxDate(normalized, 90)) return;
 
-      currentDate = d;
+      currentDate = normalized;
 
-      if (updateInput && inputEl) inputEl.value = formatLong(d);
+      if (updateInput && inputEl) {
+         inputEl.value = formatLong(normalized);
+      }
 
-      if (persist) localStorage.setItem(DATE_KEY, toISODate(d));
+      if (persist) {
+         localStorage.setItem(DATE_KEY, toISODate(normalized));
+      }
    }
 
    function persistCurrentDate() {
-      if (!currentDate || isBeforeToday(currentDate)) return null;
+      if (!currentDate) return null;
+      if (isBeforeToday(currentDate)) return null;
+      if (isAfterMaxDate(currentDate, 90)) return null;
+
       setDate(currentDate, { persist: true, updateInput: true });
-      return { date: toISODate(currentDate), dateObj: currentDate };
+
+      return {
+         date: toISODate(currentDate),
+         dateObj: currentDate,
+      };
    }
 
    function build() {
@@ -117,6 +145,7 @@ export function createItineraryDateSelectorController({
          dateFormat: 'Y-m-d',
          monthSelectorType: 'static',
          minDate: getToday(),
+         maxDate: getMaxDate(90),
          defaultDate: currentDate || getToday(),
          onReady: (_sel, _str, instance) => {
             const d = instance.selectedDates?.[0] || getToday();
@@ -124,7 +153,9 @@ export function createItineraryDateSelectorController({
          },
          onChange: selectedDates => {
             const d = selectedDates?.[0];
-            if (d) setDate(d, { updateInput: true, persist: false });
+            if (d) {
+               setDate(d, { updateInput: true, persist: false });
+            }
          },
       });
 
@@ -140,13 +171,24 @@ export function createItineraryDateSelectorController({
 
       const saved = getSavedDate();
       const today = getToday();
+      const maxDate = getMaxDate(90);
       const selected = initialDate || saved || today;
-      const safeDate = isBeforeToday(selected) ? today : selected;
+
+      let safeDate = normalizeDate(selected) || today;
+
+      if (isBeforeToday(safeDate)) {
+         safeDate = today;
+      }
+
+      if (isAfterMaxDate(safeDate, 90)) {
+         safeDate = maxDate;
+      }
 
       setDate(safeDate, { updateInput: true, persist: false });
 
       if (fp && currentDate) {
          fp.set('minDate', today);
+         fp.set('maxDate', maxDate);
          fp.setDate(currentDate, true);
       }
 
