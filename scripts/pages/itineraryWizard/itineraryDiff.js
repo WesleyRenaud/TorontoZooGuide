@@ -43,17 +43,44 @@ function toNormalizedLikelihood(value) {
    return value > 1 ? value / 100 : value;
 }
 
+function getBestAnimalsBySpecies(animals = []) {
+   const bestByKey = new Map();
+
+   animals.forEach((animal) => {
+      const key = buildKey(animal, ['species', 'name']);
+      if (!key) return;
+
+      const likelihood = toNormalizedLikelihood(getLikelihoodValue(animal));
+      const currentBest = bestByKey.get(key);
+      const currentBestLikelihood = currentBest == null
+         ? null
+         : toNormalizedLikelihood(getLikelihoodValue(currentBest));
+
+      if (currentBest == null) {
+         bestByKey.set(key, animal);
+         return;
+      }
+
+      if (likelihood == null) {
+         return;
+      }
+
+      if (currentBestLikelihood == null || likelihood > currentBestLikelihood) {
+         bestByKey.set(key, animal);
+      }
+   });
+
+   return bestByKey;
+}
+
 function findReducedVisibilityAnimals(
    previousAnimals,
    validatedAnimals,
    removedAnimals = [],
    minDrop = 0.2
 ) {
-   const validatedByKey = new Map(
-      validatedAnimals
-         .map(animal => [buildKey(animal, ['species', 'name']), animal])
-         .filter(([key]) => Boolean(key))
-   );
+   const previousByKey = getBestAnimalsBySpecies(previousAnimals);
+   const validatedByKey = getBestAnimalsBySpecies(validatedAnimals);
 
    const removedKeys = new Set(
       removedAnimals
@@ -61,10 +88,9 @@ function findReducedVisibilityAnimals(
          .filter(Boolean)
    );
 
-   return previousAnimals
-      .map(previousAnimal => {
-         const key = buildKey(previousAnimal, ['species', 'name']);
-         if (!key || removedKeys.has(key)) return null;
+   return Array.from(previousByKey.entries())
+      .map(([key, previousAnimal]) => {
+         if (removedKeys.has(key)) return null;
 
          const validatedAnimal = validatedByKey.get(key);
          if (!validatedAnimal) return null;
@@ -91,11 +117,8 @@ function findImprovedVisibilityAnimals(
    removedAnimals = [],
    minIncrease = 0.2
 ) {
-   const validatedByKey = new Map(
-      validatedAnimals
-         .map(animal => [buildKey(animal, ['species', 'name']), animal])
-         .filter(([key]) => Boolean(key))
-   );
+   const previousByKey = getBestAnimalsBySpecies(previousAnimals);
+   const validatedByKey = getBestAnimalsBySpecies(validatedAnimals);
 
    const removedKeys = new Set(
       removedAnimals
@@ -103,10 +126,9 @@ function findImprovedVisibilityAnimals(
          .filter(Boolean)
    );
 
-   return previousAnimals
-      .map(previousAnimal => {
-         const key = buildKey(previousAnimal, ['species', 'name']);
-         if (!key || removedKeys.has(key)) return null;
+   return Array.from(previousByKey.entries())
+      .map(([key, previousAnimal]) => {
+         if (removedKeys.has(key)) return null;
 
          const validatedAnimal = validatedByKey.get(key);
          if (!validatedAnimal) return null;
