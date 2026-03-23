@@ -2138,13 +2138,13 @@ class Database():
       return updated > 0
    
 
-   def set_animal_limited_viewing_schedule( self, species, exhibit, schedule_start_date, schedule_end_date, daily_start_time,
+   def set_animal_limited_viewing_schedule( self, species, exhibit, start_date, end_date, daily_start_time,
                                             daily_end_time, message ):
-      if not schedule_start_date:
-         schedule_start_date = datetime.now().date().isoformat()
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
 
-      if not schedule_end_date:
-         schedule_end_date = None
+      if not end_date:
+         end_date = None
 
       if not daily_start_time or not daily_end_time:
          return False
@@ -2154,13 +2154,13 @@ class Database():
          formatted_daily_start_time = datetime.strptime( daily_start_time, '%H:%M' ).strftime( '%I:%M %p' ).lstrip( '0' )
          formatted_daily_end_time = datetime.strptime( daily_end_time, '%H:%M' ).strftime( '%I:%M %p' ).lstrip( '0' )
 
-         if schedule_end_date != None:
+         if end_date != None:
 
-            formatted_schedule_end_date = datetime.strptime( schedule_end_date, '%Y-%m-%d' ).strftime( '%A, %B %d, %Y' )
+            formatted_end_date = datetime.strptime( end_date, '%Y-%m-%d' ).strftime( '%A, %B %d, %Y' )
 
             message = (
                f'The {species} is viewable daily only from {formatted_daily_start_time} to {formatted_daily_end_time} '
-               f'until {formatted_schedule_end_date}.'
+               f'until {formatted_end_date}.'
             )
 
          else:
@@ -2187,7 +2187,7 @@ class Database():
                   DAILY_START_TIME = excluded.DAILY_START_TIME,
                   DAILY_END_TIME = excluded.DAILY_END_TIME,
                   VIEWING_MESSAGE = excluded.VIEWING_MESSAGE;
-         """, ( species, exhibit, schedule_start_date, schedule_end_date, daily_start_time, daily_end_time, message ) )
+         """, ( species, exhibit, start_date, end_date, daily_start_time, daily_end_time, message ) )
 
       self.conn.commit()
       updated = cur.rowcount

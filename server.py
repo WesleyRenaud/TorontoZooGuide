@@ -863,8 +863,8 @@ class MyHandler( BaseHTTPRequestHandler ):
          success = self.database.set_animal_limited_viewing_schedule(
             species=species,
             exhibit=exhibit,
-            schedule_start_date=schedule_start_date,
-            schedule_end_date=schedule_end_date,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
             daily_start_time=daily_start_time,
             daily_end_time=daily_end_time,
             message=message )
@@ -1397,8 +1397,8 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          success = self.database.set_attraction_opening_schedule(
             attraction=attraction,
-            schedule_start_date=schedule_start_date,
-            schedule_end_date=schedule_end_date,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
             monday=monday,
             tuesday=tuesday,
             wednesday=wednesday,

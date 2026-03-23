@@ -1,3 +1,5 @@
+import { postJson } from '../api/apiClient.js';
+
 let cachedSpecies = null;
 let cachedExhibits = null;
 let cachedRestaurants = null;
