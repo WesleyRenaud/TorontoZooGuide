@@ -142,6 +142,36 @@ function buildAttractionRemovalReasonLine(attraction) {
    return `Not available on this date: ${reason}`;
 }
 
+function buildGuardiansRemovalReasonLine(guardiansTalk) {
+   const reason =
+      guardiansTalk.removalReason ??
+      guardiansTalk.removal_reason ??
+      guardiansTalk.unavailable_message ??
+      guardiansTalk.UNAVAILABLE_MESSAGE ??
+      guardiansTalk.display_message ??
+      guardiansTalk.DISPLAY_MESSAGE ??
+      '';
+
+   if (!reason) return '';
+
+   return `Not available on this date: ${reason}`;
+}
+
+function buildWildRemovalReasonLine(wildEncounter) {
+   const reason =
+      wildEncounter.removalReason ??
+      wildEncounter.removal_reason ??
+      wildEncounter.unavailable_message ??
+      wildEncounter.UNAVAILABLE_MESSAGE ??
+      wildEncounter.display_message ??
+      wildEncounter.DISPLAY_MESSAGE ??
+      '';
+
+   if (!reason) return '';
+
+   return `Not available on this date: ${reason}`;
+}
+
 export function buildAnimalRows(animals = []) {
    const uniqueAnimals = [];
    const seenSpecies = new Set();
@@ -218,12 +248,14 @@ export function buildAttractionRows(attractions = []) {
 export function buildGuardiansRows(guardiansTalks = []) {
    return guardiansTalks.map((rawTalk) => {
       const t = normalizeTalk(rawTalk);
+      const talk = { ...rawTalk, ...t };
 
-      const name = t.name ?? t.NAME ?? 'Talk';
-      const location = t.location ?? t.LOCATION ?? '';
-      const time = t.time_of_day ?? t.TIME_OF_DAY ?? t.time ?? t.TIME ?? '';
-      const link = t.link ?? t.LINK ?? t.infoLink ?? t.info_link ?? null;
+      const name = talk.name ?? talk.NAME ?? 'Talk';
+      const location = talk.location ?? talk.LOCATION ?? '';
+      const time = talk.time_of_day ?? talk.TIME_OF_DAY ?? talk.time ?? talk.TIME ?? '';
+      const link = talk.link ?? talk.LINK ?? talk.infoLink ?? talk.info_link ?? null;
       const imageSrc = buildGuardiansTalkImageSrc(name);
+      const alertLine = buildGuardiansRemovalReasonLine(talk);
 
       return makeItemRow({
          name,
@@ -232,6 +264,7 @@ export function buildGuardiansRows(guardiansTalks = []) {
             location ? `Location: ${location}` : '',
             time ? `Time: ${time}` : '',
          ],
+         alertLine,
          linkText: link ? 'More Info' : null,
          onLinkClick: link ? () => window.open(link, '_blank') : null,
       });
@@ -241,13 +274,15 @@ export function buildGuardiansRows(guardiansTalks = []) {
 export function buildWildRows(wildEncounters = []) {
    return wildEncounters.map((rawWild) => {
       const w = normalizeWild(rawWild);
+      const wild = { ...rawWild, ...w };
 
-      const name = w.name ?? w.NAME ?? 'Wild Encounter';
+      const name = wild.name ?? wild.NAME ?? 'Wild Encounter';
       const meetingSpot =
-         w.meeting_spot ?? w.MEETING_SPOT ?? w.meetingSpot ?? w.location ?? w.LOCATION ?? '';
-      const time = w.time_of_day ?? w.TIME_OF_DAY ?? w.time ?? w.TIME ?? '';
-      const link = w.link ?? w.LINK ?? w.infoLink ?? w.info_link ?? null;
+         wild.meeting_spot ?? wild.MEETING_SPOT ?? wild.meetingSpot ?? wild.location ?? wild.LOCATION ?? '';
+      const time = wild.time_of_day ?? wild.TIME_OF_DAY ?? wild.time ?? wild.TIME ?? '';
+      const link = wild.link ?? wild.LINK ?? wild.infoLink ?? wild.info_link ?? null;
       const imageSrc = buildWildEncounterImageSrc(name);
+      const alertLine = buildWildRemovalReasonLine(wild);
 
       return makeItemRow({
          name,
@@ -256,6 +291,7 @@ export function buildWildRows(wildEncounters = []) {
             meetingSpot ? `Meeting Spot: ${meetingSpot}` : '',
             time ? `Time: ${time}` : '',
          ],
+         alertLine,
          linkText: link ? 'More Info' : null,
          onLinkClick: link ? () => window.open(link, '_blank') : null,
       });

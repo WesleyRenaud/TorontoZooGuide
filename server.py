@@ -547,22 +547,30 @@ class MyHandler( BaseHTTPRequestHandler ):
          attractions = attraction_validation['valid_attractions']
          removed_attractions = attraction_validation['removed_attractions']
 
-         guardians_talks = self.database.validate_guardians_talks(
+         guardians_talk_validation = self.database.validate_guardians_talks(
             month=month,
             day=day,
             guardians_talks_to_include=guardians_talks_to_include )
 
-         wild_encounters = self.database.validate_wild_encounters(
+         guardians_talks = guardians_talk_validation['valid_guardians_talks']
+         removed_guardians_talks = guardians_talk_validation['removed_guardians_talks']
+
+         wild_encounter_validation = self.database.validate_wild_encounters(
             month=month,
             day=day,
             wild_encounters_to_include=wild_encounters_to_include )
+
+         wild_encounters = wild_encounter_validation['valid_wild_encounters']
+         removed_wild_encounters = wild_encounter_validation['removed_wild_encounters']
 
          animals_json = []
          removed_animals_json = []
          attractions_json = []
          removed_attractions_json = []
          guardians_talks_json = []
+         removed_guardians_talks_json = []
          wild_encounters_json = []
+         removed_wild_encounters_json = []
 
          for animal in animals:
             d = animal.to_dict()
@@ -591,10 +599,22 @@ class MyHandler( BaseHTTPRequestHandler ):
             d['type'] = d.get( 'type', 'guardiansTalk' )
             guardians_talks_json.append( d )
 
+         for guardians_talk in removed_guardians_talks:
+            d = guardians_talk.to_dict()
+            d['type'] = d.get( 'type', 'guardiansTalk' )
+            d['removalReason'] = guardians_talk.unavailable_message
+            removed_guardians_talks_json.append( d )
+
          for wild_encounter in wild_encounters:
             d = wild_encounter.to_dict()
             d['type'] = d.get( 'type', 'wildEncounter' )
             wild_encounters_json.append( d )
+
+         for wild_encounter in removed_wild_encounters:
+            d = wild_encounter.to_dict()
+            d['type'] = d.get( 'type', 'wildEncounter' )
+            d['removalReason'] = wild_encounter.unavailable_message
+            removed_wild_encounters_json.append( d )
 
          clear_success = self.database.clear_itinerary()
 
@@ -626,8 +646,8 @@ class MyHandler( BaseHTTPRequestHandler ):
             'removed': {
                'animals': removed_animals_json,
                'attractions': removed_attractions_json,
-               'guardiansTalks': [],
-               'wildEncounters': [],
+               'guardiansTalks': removed_guardians_talks_json,
+               'wildEncounters': removed_wild_encounters_json,
             },
          }
 

@@ -1085,6 +1085,7 @@ class Database():
 
          start_ok = True
          end_ok = True
+         unavailable_message = None
 
          if guardians_talk['SCHEDULE_START_DATE'] != None:
             schedule_start_date = self.parse_date_value(
@@ -1129,16 +1130,33 @@ class Database():
             ) )
 
          is_cancelled = cancellation_data.fetchone() != None
+         is_available = start_ok and end_ok and weekday_ok and not is_cancelled
 
-         if start_ok and end_ok and weekday_ok and not is_cancelled:
-            if not itinerary_mode or name in guardians_talks_to_include:
-               guardians_talks.append(
-                  zoo.GuardiansTalk(
-                     name=name,
-                     location=location,
-                     x_coord=guardians_talk['X_COORD'],
-                     y_coord=guardians_talk['Y_COORD'],
-                     time_of_day=talk_time ) )
+         if not is_available:
+            if not start_ok or not end_ok:
+               unavailable_message = f'{name} is not scheduled on {target_date.strftime("%B")} {target_date.day}.'
+            elif not weekday_ok:
+               unavailable_message = f'{name} is not offered on this day of the week.'
+            elif is_cancelled:
+               unavailable_message = f'{name} has been cancelled for this date.'
+
+         should_include = False
+
+         if not itinerary_mode:
+            should_include = is_available
+         else:
+            should_include = name in guardians_talks_to_include
+
+         if should_include:
+            guardians_talks.append(
+               zoo.GuardiansTalk(
+                  name=name,
+                  location=location,
+                  x_coord=guardians_talk['X_COORD'],
+                  y_coord=guardians_talk['Y_COORD'],
+                  time_of_day=talk_time,
+                  is_available=is_available,
+                  unavailable_message=unavailable_message ) )
 
       cur.close()
 
@@ -1148,7 +1166,10 @@ class Database():
    def get_wild_encounters( self, month, day, wild_encounters_to_include=[], itinerary_mode=False ):
       cur = self.conn.cursor()
 
-      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month=month ), int( day ) )
+      target_date = date(
+         datetime.now().year,
+         self.zoo_util.normalize_month( month=month ),
+         int( day ) )
       target_weekday = target_date.weekday()
       target_date_str = target_date.isoformat()
 
@@ -1186,13 +1207,16 @@ class Database():
 
          start_ok = True
          end_ok = True
+         unavailable_message = None
 
          if wild_encounter['SCHEDULE_START_DATE'] != None:
-            schedule_start_date = self.parse_date_value( value=wild_encounter['SCHEDULE_START_DATE'] )
+            schedule_start_date = self.parse_date_value(
+               value=wild_encounter['SCHEDULE_START_DATE'] )
             start_ok = target_date >= schedule_start_date
 
          if wild_encounter['SCHEDULE_END_DATE'] != None:
-            schedule_end_date = self.parse_date_value( value=wild_encounter['SCHEDULE_END_DATE'] )
+            schedule_end_date = self.parse_date_value(
+               value=wild_encounter['SCHEDULE_END_DATE'] )
             end_ok = target_date <= schedule_end_date
 
          weekday_ok = False
@@ -1226,17 +1250,34 @@ class Database():
             ) )
 
          is_cancelled = cancellation_data.fetchone() != None
+         is_available = start_ok and end_ok and weekday_ok and not is_cancelled
 
-         if start_ok and end_ok and weekday_ok and not is_cancelled:
-            if not itinerary_mode or name in wild_encounters_to_include:
-               wild_encounters.append(
-                  zoo.WildEncounter(
-                     name=name,
-                     meeting_spot=wild_encounter['MEETING_SPOT'],
-                     link=wild_encounter['LINK'],
-                     time_of_day=encounter_time,
-                     x_coord=wild_encounter['X_COORD'],
-                     y_coord=wild_encounter['Y_COORD'] ) )
+         if not is_available:
+            if not start_ok or not end_ok:
+               unavailable_message = f'{name} is not scheduled on {target_date.strftime("%B")} {target_date.day}.'
+            elif not weekday_ok:
+               unavailable_message = f'{name} is not offered on this day of the week.'
+            elif is_cancelled:
+               unavailable_message = f'{name} has been cancelled for this date.'
+
+         should_include = False
+
+         if not itinerary_mode:
+            should_include = is_available
+         else:
+            should_include = name in wild_encounters_to_include
+
+         if should_include:
+            wild_encounters.append(
+               zoo.WildEncounter(
+                  name=name,
+                  meeting_spot=wild_encounter['MEETING_SPOT'],
+                  link=wild_encounter['LINK'],
+                  time_of_day=encounter_time,
+                  x_coord=wild_encounter['X_COORD'],
+                  y_coord=wild_encounter['Y_COORD'],
+                  is_available=is_available,
+                  unavailable_message=unavailable_message ) )
 
       cur.close()
 
@@ -1711,10 +1752,23 @@ class Database():
          guardians_talks_to_include=guardians_talks_to_include,
          itinerary_mode=True )
 
-      guardians_talks.sort( key=lambda t: ( t.name.lower(), t.time_of_day ) )
+      valid_guardians_talks = []
+      removed_guardians_talks = []
 
-      return guardians_talks
-   
+      for guardians_talk in guardians_talks:
+         if getattr( guardians_talk, 'is_available', True ):
+            valid_guardians_talks.append( guardians_talk )
+         else:
+            removed_guardians_talks.append( guardians_talk )
+
+      valid_guardians_talks.sort( key=lambda t: ( t.name.lower(), t.time_of_day ) )
+      removed_guardians_talks.sort( key=lambda t: ( t.name.lower(), t.time_of_day ) )
+
+      return {
+         'valid_guardians_talks': valid_guardians_talks,
+         'removed_guardians_talks': removed_guardians_talks
+      }
+
 
    def validate_wild_encounters( self, month, day, wild_encounters_to_include=None ):
       wild_encounters_to_include = wild_encounters_to_include or []
@@ -1725,9 +1779,22 @@ class Database():
          wild_encounters_to_include=wild_encounters_to_include,
          itinerary_mode=True )
 
-      wild_encounters.sort( key=lambda w: ( w.name.lower(), w.time_of_day ) )
+      valid_wild_encounters = []
+      removed_wild_encounters = []
 
-      return wild_encounters
+      for wild_encounter in wild_encounters:
+         if getattr( wild_encounter, 'is_available', True ):
+            valid_wild_encounters.append( wild_encounter )
+         else:
+            removed_wild_encounters.append( wild_encounter )
+
+      valid_wild_encounters.sort( key=lambda w: ( w.name.lower(), w.time_of_day ) )
+      removed_wild_encounters.sort( key=lambda w: ( w.name.lower(), w.time_of_day ) )
+
+      return {
+         'valid_wild_encounters': valid_wild_encounters,
+         'removed_wild_encounters': removed_wild_encounters
+      }
    
 
    def get_exhibits( self ):
