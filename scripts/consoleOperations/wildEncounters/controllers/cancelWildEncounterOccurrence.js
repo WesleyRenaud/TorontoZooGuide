@@ -1,9 +1,5 @@
-import {
-   loadWildEncounters,
-   postJson,
-   setStatus,
-   populateWildEncounterDropdown
-} from '../../utils.js';
+import { loadWildEncounters, setStatus, populateWildEncounterDropdown } from '../../utils.js';
+import { postJson } from '../../../api/apiClient.js';
 
 export function createCancelWildEncounterOccurrenceController({
    showButtonEl,

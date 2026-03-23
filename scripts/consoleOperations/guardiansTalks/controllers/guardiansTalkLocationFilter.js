@@ -1,7 +1,5 @@
-import {
-   postJson,
-   populateGuardiansTalkDropdown
-} from '../../utils.js';
+import { populateGuardiansTalkDropdown } from '../../utils.js';
+import { postJson } from '../../../api/apiClient.js';
 
 export function createGuardiansTalkLocationFilterController({
    locationEl,

@@ -1,8 +1,5 @@
-import {
-   postJson,
-   setStatus,
-   populateGuardiansTalkDropdown
-} from '../../utils.js';
+import { setStatus, populateGuardiansTalkDropdown } from '../../utils.js';
+import { postJson } from '../../../api/apiClient.js';
 
 export function createCancelGuardiansTalkOccurrenceController({
    showButtonEl,

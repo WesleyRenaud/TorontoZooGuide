@@ -231,9 +231,15 @@ export async function validateItinerary({ date, dateObj } = {}) {
       animals: Array.isArray(result?.removed?.animals)
          ? result.removed.animals
          : findRemovedItems(previous.animals, validated.animals, ['species', 'name']),
-      attractions: findRemovedItems(previous.attractions, validated.attractions, ['name']),
-      guardiansTalks: findRemovedItems(previous.guardiansTalks, validated.guardiansTalks, ['name']),
-      wildEncounters: findRemovedItems(previous.wildEncounters, validated.wildEncounters, ['name']),
+      attractions: Array.isArray(result?.removed?.attractions)
+         ? result.removed.attractions
+         : findRemovedItems(previous.attractions, validated.attractions, ['name']),
+      guardiansTalks: Array.isArray(result?.removed?.guardiansTalks)
+         ? result.removed.guardiansTalks
+         : findRemovedItems(previous.guardiansTalks, validated.guardiansTalks, ['name']),
+      wildEncounters: Array.isArray(result?.removed?.wildEncounters)
+         ? result.removed.wildEncounters
+         : findRemovedItems(previous.wildEncounters, validated.wildEncounters, ['name']),
    };
 
    const reducedVisibility = {

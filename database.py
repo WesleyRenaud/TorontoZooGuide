@@ -1684,14 +1684,22 @@ class Database():
          attractions_to_include=attractions_to_include,
          itinerary_mode=True )
 
-      valid_attractions = [
-         attraction for attraction in attractions
-         if not attraction.is_closed
-      ]
+      valid_attractions = []
+      removed_attractions = []
+
+      for attraction in attractions:
+         if attraction.is_closed:
+            removed_attractions.append( attraction )
+         else:
+            valid_attractions.append( attraction )
 
       valid_attractions.sort( key=lambda a: a.name.lower() )
+      removed_attractions.sort( key=lambda a: a.name.lower() )
 
-      return valid_attractions
+      return {
+         'valid_attractions': valid_attractions,
+         'removed_attractions': removed_attractions
+      }
    
 
    def validate_guardians_talks( self, month, day, guardians_talks_to_include=None ):

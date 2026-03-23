@@ -127,6 +127,21 @@ function buildAnimalAlert(animal) {
    return buildAnimalVisibilityChange(animal);
 }
 
+function buildAttractionRemovalReasonLine(attraction) {
+   const reason =
+      attraction.removalReason ??
+      attraction.removal_reason ??
+      attraction.closed_message ??
+      attraction.CLOSED_MESSAGE ??
+      attraction.display_message ??
+      attraction.DISPLAY_MESSAGE ??
+      '';
+
+   if (!reason) return '';
+
+   return `Not available on this date: ${reason}`;
+}
+
 export function buildAnimalRows(animals = []) {
    const uniqueAnimals = [];
    const seenSpecies = new Set();
@@ -169,14 +184,21 @@ export function buildAnimalRows(animals = []) {
 export function buildAttractionRows(attractions = []) {
    return attractions.map((rawAttr) => {
       const x = normalizeAttraction(rawAttr);
+      const attraction = { ...rawAttr, ...x };
 
-      const name = x.name ?? x.NAME ?? 'Attraction';
-      const subtitle = x.subtitle ?? '';
+      const name = attraction.name ?? attraction.NAME ?? 'Attraction';
+      const subtitle = attraction.subtitle ?? '';
       const imageSrc = buildAttractionImageSrc(name);
-      const infoLink = x.infoLink ?? x.info_link ?? x.link ?? x.LINK ?? null;
+      const infoLink =
+         attraction.infoLink ??
+         attraction.info_link ??
+         attraction.link ??
+         attraction.LINK ??
+         null;
 
-      const location = x.location ?? '';
-      const price = x.price ?? '';
+      const location = attraction.location ?? '';
+      const price = attraction.price ?? '';
+      const alertLine = buildAttractionRemovalReasonLine(attraction);
 
       return makeItemRow({
          name,
@@ -186,6 +208,7 @@ export function buildAttractionRows(attractions = []) {
             location ? `Location: ${location}` : '',
             price ? `Price: ${price}` : '',
          ],
+         alertLine,
          linkText: infoLink ? 'More Info' : null,
          onLinkClick: infoLink ? () => window.open(infoLink, '_blank') : null,
       });

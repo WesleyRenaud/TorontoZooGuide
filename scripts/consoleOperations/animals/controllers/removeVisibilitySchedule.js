@@ -1,4 +1,5 @@
-import { loadExhibits, postJson, setStatus, populateExhibitDropdown } from '../../utils.js';
+import { loadExhibits, setStatus, populateExhibitDropdown } from '../../utils.js';
+import { postJson } from '../../../api/apiClient.js';
 
 export function createRemoveVisibilityScheduleController({
    showButtonEl,

@@ -1,4 +1,4 @@
-import { postJson } from '../../utils.js';
+import { postJson } from '../../../api/apiClient.js';
 
 export function createWildEncounterOccurrenceFilterController({
    wildEncounterEl,

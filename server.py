@@ -539,10 +539,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          animals = animal_validation['valid_animals']
          removed_animals = animal_validation['removed_animals']
 
-         attractions = self.database.validate_attractions(
+         attraction_validation = self.database.validate_attractions(
             month=month,
             day=day,
             attractions_to_include=attractions_to_include )
+
+         attractions = attraction_validation['valid_attractions']
+         removed_attractions = attraction_validation['removed_attractions']
 
          guardians_talks = self.database.validate_guardians_talks(
             month=month,
@@ -557,6 +560,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          animals_json = []
          removed_animals_json = []
          attractions_json = []
+         removed_attractions_json = []
          guardians_talks_json = []
          wild_encounters_json = []
 
@@ -575,6 +579,12 @@ class MyHandler( BaseHTTPRequestHandler ):
             d = attraction.to_dict()
             d['type'] = d.get( 'type', 'attraction' )
             attractions_json.append( d )
+
+         for attraction in removed_attractions:
+            d = attraction.to_dict()
+            d['type'] = d.get( 'type', 'attraction' )
+            d['removalReason'] = attraction.closed_message
+            removed_attractions_json.append( d )
 
          for guardians_talk in guardians_talks:
             d = guardians_talk.to_dict()
@@ -615,7 +625,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             },
             'removed': {
                'animals': removed_animals_json,
-               'attractions': [],
+               'attractions': removed_attractions_json,
                'guardiansTalks': [],
                'wildEncounters': [],
             },
@@ -630,7 +640,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-
+         
 
       if self.path == '/get-species':
          species = self.database.get_species()

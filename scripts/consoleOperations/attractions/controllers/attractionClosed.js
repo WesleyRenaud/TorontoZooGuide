@@ -1,4 +1,5 @@
-import { loadAttractions, postJson, setStatus, populateAttractionDropdown } from '../../utils.js';
+import { loadAttractions, setStatus, populateAttractionDropdown } from '../../utils.js';
+import { postJson } from '../../../api/apiClient.js';
 
 export function createAttractionClosedController( {
    showButtonEl,
