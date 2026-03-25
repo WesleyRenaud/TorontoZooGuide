@@ -19,7 +19,7 @@ export function createAnimalsApi() {
    }
 
    async function getAnimalsInExhibit(exhibit) {
-      const res = await ajaxPost('/get-animals-in-exhibit', { exhibit });
+      const res = await ajaxPost('/get-animal-names-by-exhibit', { exhibit });
       return res?.animals ?? [];
    }
 

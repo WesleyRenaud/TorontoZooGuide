@@ -1,10 +1,15 @@
 import { getMonth, getDay, isWithinNextNDays } from '../utils/dates.js';
 import { fetchForecastTemp } from './weather.js';
-import {
-   uniq,
-   isoDateToMonFirstDow,
-   parseItineraryIncludes,
-} from '../itinerary/itineraryHelpers.js';
+import { uniq, isoDateToMonFirstDow } from '../itinerary/itineraryHelpers.js';
+
+function toTypedRows(items, type) {
+   if (!Array.isArray(items)) return [];
+
+   return items.map((item) => ({
+      ...item,
+      type: item?.type || type,
+   }));
+}
 
 export function createMapUpdater({
    store,
@@ -32,8 +37,13 @@ export function createMapUpdater({
          pendingOptions = null;
       }
 
-      if (preset === 'summer') return run({ preset, month: 'JUL', day: 20, date: null, temp: null }, options);
-      if (preset === 'winter') return run({ preset, month: 'JAN', day: 30, date: null, temp: null }, options);
+      if (preset === 'summer') {
+         return run({ preset, month: 'JUL', day: 20, date: null, temp: null }, options);
+      }
+
+      if (preset === 'winter') {
+         return run({ preset, month: 'JAN', day: 30, date: null, temp: null }, options);
+      }
 
       const month = getMonth(dateStr);
       const day = getDay(dateStr);
@@ -50,16 +60,12 @@ export function createMapUpdater({
       return run({ preset, month, day, date: dateStr, temp: null }, options);
    }
 
-   function addType(selectedTypes, type) {
-      const t = String(type || '').trim();
-      if (!t) return selectedTypes;
-      return selectedTypes.includes(t) ? selectedTypes : [t, ...selectedTypes];
-   }
-
    function focusIfRequested(options) {
       if (!options?.focus?.row) return;
+
       const row = options.focus.row;
       const type = String(options.focus.type || row.type || '');
+
       setTimeout(() => {
          focus.focus({ row, type });
       }, 0);
@@ -79,56 +85,18 @@ export function createMapUpdater({
       const dayOfWeek = dateCtx?.date ? isoDateToMonFirstDow(dateCtx.date) : 1;
 
       if (itineraryOnly) {
-         const inc = parseItineraryIncludes(itin);
-
-         const ctx = {
-            month: dateCtx.month,
-            day: dateCtx.day,
-            temp: dateCtx.temp ?? null,
-
-            includeOffDisplayAnimals: false,
-            includeClosedRestaurants: false,
-            includeClosedGiftShops: false,
-            includeClosedAttractions: false,
-
-            itineraryMode: true,
-            animalsToInclude: inc.animalsToInclude,
-            speciesToInclude: inc.animalsToInclude.map(animal => animal.species),
-            attractionsToInclude: inc.attractionsToInclude,
-            guardiansTalksToInclude: inc.guardiansTalksToInclude,
-            wildEncountersToInclude: inc.wildEncountersToInclude,
-
-            dayOfWeek,
-            zoomobileRoute,
-         };
-
          try {
-            const rows = [];
-
-            if (inc.animalsToInclude.length) {
-               const animals = await sources.animal.fetch(ctx);
-               rows.push(...(Array.isArray(animals) ? animals : []));
-            }
-
-            if (inc.attractionsToInclude.length) {
-               const attractions = await sources.attraction.fetch(ctx);
-               rows.push(...(Array.isArray(attractions) ? attractions : []));
-            }
-
-            if (inc.guardiansTalksToInclude.length) {
-               const guardiansTalks = await sources.guardiansTalk.fetch(ctx);
-               rows.push(...(Array.isArray(guardiansTalks) ? guardiansTalks : []));
-            }
-
-            if (inc.wildEncountersToInclude.length) {
-               const wildEncounters = await sources.wildEncounter.fetch(ctx);
-               rows.push(...(Array.isArray(wildEncounters) ? wildEncounters : []));
-            }
+            const rows = [
+               ...toTypedRows(itin.animals, 'animal'),
+               ...toTypedRows(itin.attractions, 'attraction'),
+               ...toTypedRows(itin.guardiansTalks, 'guardiansTalk'),
+               ...toTypedRows(itin.wildEncounters, 'wildEncounter'),
+            ];
 
             markers.render(rows);
             focusIfRequested(options);
             return;
-         } catch(err) {
+         } catch (err) {
             console.warn('Failed to render itinerary layers:', err);
             markers.render([]);
             return;
@@ -171,7 +139,7 @@ export function createMapUpdater({
          }
       }
 
-      let selectedTypes = (getSelectedTypes() || []).map(t => String(t).trim());
+      let selectedTypes = (getSelectedTypes() || []).map((t) => String(t).trim());
 
       const routeActive = zoomobileRoute !== 'none';
       const focusIsZoomobileStation = focusType === 'zoomobileStation';
@@ -220,7 +188,7 @@ export function createMapUpdater({
       const unique = Array.from(new Set(selectedTypes));
 
       await Promise.all(
-         unique.map(async layer => {
+         unique.map(async (layer) => {
             const src = sources[layer];
 
             if (!src) {
@@ -240,7 +208,7 @@ export function createMapUpdater({
 
    function combine(selectedTypes) {
       const unique = Array.from(new Set(selectedTypes || []));
-      return unique.flatMap(t => store.byType[t] || []);
+      return unique.flatMap((t) => store.byType[t] || []);
    }
 
    function refetchWithCurrentControls(options) {
@@ -248,6 +216,7 @@ export function createMapUpdater({
          pendingOptions = options;
          return;
       }
+
       updateMap(lastPreset, lastDateStr, options);
    }
 
@@ -273,7 +242,7 @@ export function createMapUpdater({
       if (payload && typeof payload === 'object' && payload.row) {
          focus.focus({
             row: payload.row,
-            type: payload.type || payload.row.type
+            type: payload.type || payload.row.type,
          });
          return;
       }
@@ -284,6 +253,7 @@ export function createMapUpdater({
             species: payload.species,
             exhibit: payload.exhibit ?? null,
          };
+
          refetchWithCurrentControls({ focus: { type: 'animal', row } });
          return;
       }

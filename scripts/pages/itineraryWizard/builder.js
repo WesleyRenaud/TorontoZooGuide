@@ -1,4 +1,5 @@
 import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
+import { createItineraryRegionSelectorController } from '../../itinerary/selectors/regionSelector.js';
 import { createItineraryAnimalSelectorController } from '../../itinerary/selectors/animalSelector.js';
 import { createItineraryAttractionSelectorController } from '../../itinerary/selectors/attractionSelector.js';
 import { createItineraryGuardiansTalkSelectorController } from '../../itinerary/selectors/guardiansTalkSelector.js';
@@ -19,6 +20,11 @@ import {
 import { finalizeItinerary } from './flow.js';
 import { validateItinerary } from './validateItinerary.js';
 
+// TODO:
+// Replace this import once you move the animal-selector fetch logic
+// into a shared helper.
+// import { getSelectableAnimalsForCurrentItineraryDate } from '../../itinerary/selectors/animalData.js';
+
 function getDraftState() {
    return {
       date: localStorage.getItem(DATE_KEY) || '',
@@ -27,6 +33,40 @@ function getDraftState() {
       guardiansTalks: loadArray(GUARDIANS_KEY),
       wildEncounters: loadArray(WILD_KEY),
    };
+}
+
+function writeDraftState({
+   date = '',
+   animals = [],
+   attractions = [],
+   guardiansTalks = [],
+   wildEncounters = [],
+}) {
+   if (date) {
+      localStorage.setItem(DATE_KEY, date);
+   } else {
+      localStorage.removeItem(DATE_KEY);
+   }
+
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify(Array.isArray(animals) ? animals : [])
+   );
+
+   localStorage.setItem(
+      ATTRACTIONS_KEY,
+      JSON.stringify(Array.isArray(attractions) ? attractions : [])
+   );
+
+   localStorage.setItem(
+      GUARDIANS_KEY,
+      JSON.stringify(Array.isArray(guardiansTalks) ? guardiansTalks : [])
+   );
+
+   localStorage.setItem(
+      WILD_KEY,
+      JSON.stringify(Array.isArray(wildEncounters) ? wildEncounters : [])
+   );
 }
 
 function snapshotStorage() {
@@ -122,14 +162,24 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
 
    const existing = await getItinerary();
 
-   if (existing?.date && !localStorage.getItem(DATE_KEY)) {
-      localStorage.setItem(DATE_KEY, existing.date);
-   }
+   const existingDate = existing?.date || '';
+   const existingAnimals = Array.isArray(existing?.animals) ? existing.animals : [];
+   const existingAttractions = Array.isArray(existing?.attractions) ? existing.attractions : [];
+   const existingGuardiansTalks = Array.isArray(existing?.guardiansTalks) ? existing.guardiansTalks : [];
+   const existingWildEncounters = Array.isArray(existing?.wildEncounters) ? existing.wildEncounters : [];
 
-   let selectedAnimals = Array.isArray(existing?.animals) ? existing.animals : [];
-   let selectedAttractions = Array.isArray(existing?.attractions) ? existing.attractions : [];
-   let selectedGuardiansTalks = Array.isArray(existing?.guardiansTalks) ? existing.guardiansTalks : [];
-   let selectedWildEncounters = Array.isArray(existing?.wildEncounters) ? existing.wildEncounters : [];
+   writeDraftState({
+      date: existingDate,
+      animals: existingAnimals,
+      attractions: existingAttractions,
+      guardiansTalks: existingGuardiansTalks,
+      wildEncounters: existingWildEncounters,
+   });
+
+   let selectedAnimals = existingAnimals;
+   let selectedAttractions = existingAttractions;
+   let selectedGuardiansTalks = existingGuardiansTalks;
+   let selectedWildEncounters = existingWildEncounters;
 
    let pendingRemovedItems = null;
    let pendingReducedVisibility = null;
@@ -256,12 +306,27 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       });
    }
 
+   async function getAllSelectableAnimals() {
+      // Replace this whole function with the shared animal-selector fetch helper.
+      // For example:
+      // return await getSelectableAnimalsForCurrentItineraryDate();
+
+      return selectedAnimals;
+   }
+
    const wildEncounterSelector = createItineraryWildEncounterSelectorController({
       mountEl,
       onClose: handleClose,
       onPrev: () => guardiansTalkSelector.show(),
       onFinish: (wildEncounters) => {
          selectedWildEncounters = Array.isArray(wildEncounters) ? wildEncounters : [];
+         writeDraftState({
+            date: localStorage.getItem(DATE_KEY) || '',
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
          finish({ wildEncounters: selectedWildEncounters });
       },
    });
@@ -272,10 +337,24 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       onPrev: () => attractionSelector.show(),
       onNext: (talks) => {
          selectedGuardiansTalks = Array.isArray(talks) ? talks : [];
+         writeDraftState({
+            date: localStorage.getItem(DATE_KEY) || '',
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
          wildEncounterSelector.show();
       },
       onFinish: (talks) => {
          selectedGuardiansTalks = Array.isArray(talks) ? talks : [];
+         writeDraftState({
+            date: localStorage.getItem(DATE_KEY) || '',
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
          finish({ guardiansTalks: selectedGuardiansTalks });
       },
    });
@@ -286,10 +365,24 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       onPrev: () => animalSelector.show(),
       onNext: (attractions) => {
          selectedAttractions = Array.isArray(attractions) ? attractions : [];
+         writeDraftState({
+            date: localStorage.getItem(DATE_KEY) || '',
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
          guardiansTalkSelector.show();
       },
       onFinish: (attractions) => {
          selectedAttractions = Array.isArray(attractions) ? attractions : [];
+         writeDraftState({
+            date: localStorage.getItem(DATE_KEY) || '',
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
          finish({ attractions: selectedAttractions });
       },
    });
@@ -297,15 +390,58 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
    const animalSelector = createItineraryAnimalSelectorController({
       mountEl,
       onClose: handleClose,
-      onPrev: () => dateSelector.show(),
+      onPrev: () => regionSelector.show(),
       onNext: (animals) => {
          selectedAnimals = Array.isArray(animals) ? animals : [];
+         writeDraftState({
+            date: localStorage.getItem(DATE_KEY) || '',
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
          attractionSelector.show();
       },
       onFinish: (animals) => {
          selectedAnimals = Array.isArray(animals) ? animals : [];
+         writeDraftState({
+            date: localStorage.getItem(DATE_KEY) || '',
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
          finish({ animals: selectedAnimals });
       },
+   });
+
+   const regionSelector = createItineraryRegionSelectorController({
+      mountEl,
+      onClose: handleClose,
+      onPrev: () => dateSelector.show(),
+      onNext: (animals) => {
+         selectedAnimals = Array.isArray(animals) ? animals : selectedAnimals;
+         writeDraftState({
+            date: localStorage.getItem(DATE_KEY) || '',
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
+         animalSelector.show();
+      },
+      onFinish: (animals) => {
+         selectedAnimals = Array.isArray(animals) ? animals : selectedAnimals;
+         writeDraftState({
+            date: localStorage.getItem(DATE_KEY) || '',
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
+         finish({ animals: selectedAnimals });
+      },
+      getAllSelectableAnimals,
    });
 
    const dateSelector = createItineraryDateSelectorController({
@@ -337,12 +473,20 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
             },
          });
 
+         writeDraftState({
+            date,
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
+
          pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
          pendingReducedVisibility = hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
          pendingImprovedVisibility = hasImprovedVisibility(improvedVisibility) ? improvedVisibility : null;
          pendingValidatedEmpty = isValidatedItineraryEmpty(validated);
 
-         animalSelector.show();
+         regionSelector.show();
       },
       onFinish: async (date, dateObj) => {
          const result = await validateItinerary({
@@ -370,16 +514,26 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
             },
          });
 
+         writeDraftState({
+            date,
+            animals: selectedAnimals,
+            attractions: selectedAttractions,
+            guardiansTalks: selectedGuardiansTalks,
+            wildEncounters: selectedWildEncounters,
+         });
+
          pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
          pendingReducedVisibility = hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
          pendingImprovedVisibility = hasImprovedVisibility(improvedVisibility) ? improvedVisibility : null;
          pendingValidatedEmpty = isValidatedItineraryEmpty(validated);
 
-         finish();
+         regionSelector.show();
       },
    });
 
    switch (startAt) {
+      case 'regions':
+         return regionSelector.show();
       case 'animals':
          return animalSelector.show();
       case 'attractions':

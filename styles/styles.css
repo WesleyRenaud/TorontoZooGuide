@@ -1924,6 +1924,7 @@ nav ul li a:hover {
 
    width: 90px;
    height: 90px;
+   box-sizing: border-box;
 
    display: flex;
    align-items: center;
@@ -2358,6 +2359,18 @@ nav ul li a:hover {
 
 .itin-panel-link:hover {
    color: #ffd54d;
+}
+
+.itin-region-choice-row {
+   width: 100%;
+   border: none;
+   cursor: pointer;
+   text-align: left;
+}
+
+.itin-region-choice-row .itin-add-btn {
+   flex-shrink: 0;
+   pointer-events: none;
 }
 
 /* ============================================================

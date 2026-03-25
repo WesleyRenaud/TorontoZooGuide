@@ -132,7 +132,7 @@ export function createAnimalSpeciesAutocompleteController({
          return speciesByExhibit.get(exhibit);
       }
 
-      const result = await postJson('/get-animals-in-exhibit', {
+      const result = await postJson('/get-animal-names-by-exhibit', {
          exhibit
       });
 

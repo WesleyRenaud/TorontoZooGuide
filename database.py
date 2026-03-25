@@ -20,8 +20,10 @@ class Database():
          temp=None,
          include_off_display_animals=False,
          threshold=0,
-         species_to_include=[],
-         itinerary_mode=False ):
+         exhibits_to_include=None ):
+
+      exhibits_to_include = exhibits_to_include or []
+
       month = self.zoo_util.get_month_abbreviation( month )
       cur = self.conn.cursor()
 
@@ -33,7 +35,10 @@ class Database():
 
       snow_likelihood = self.zoo_util.get_snow_likelihood( month=month, day=day )
 
-      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month=month ), int( day ) )
+      target_date = date(
+         datetime.now().year,
+         self.zoo_util.normalize_month( month=month ),
+         int( day ) )
 
       data = cur.execute(
          """   SELECT
@@ -96,9 +101,16 @@ class Database():
       animal_data = data.fetchall()
       animals = []
 
+      exhibits_filter = set(
+         exhibit.strip() for exhibit in exhibits_to_include
+         if isinstance( exhibit, str ) and exhibit.strip() != '' )
+
       for animal in animal_data:
          species = animal['SPECIES']
          exhibit = animal['EXHIBIT']
+
+         if exhibits_filter and exhibit not in exhibits_filter:
+            continue
 
          min_temperature = animal['MIN_TEMPERATURE']
          snow_resistance = animal['SNOW_RESISTANCE']
@@ -106,7 +118,9 @@ class Database():
          enclosure_type = animal['ENCLOSURE_TYPE']
          seasonally_off_display_message = animal['SEASONALLY_OFF_DISPLAY_MESSAGE']
 
-         is_off_display, off_display_message = self.get_active_off_display_status( animal=animal, target_date=target_date )
+         is_off_display, off_display_message = self.get_active_off_display_status(
+            animal=animal,
+            target_date=target_date )
 
          has_limited_viewing_schedule, limited_viewing_message = self.get_active_limited_viewing_status(
             animal=animal,
@@ -116,7 +130,9 @@ class Database():
             animal=animal,
             target_date=target_date )
 
-         is_exhibit_closed, exhibit_closed_message = self.get_active_exhibit_closed_status( animal=animal, target_date=target_date )
+         is_exhibit_closed, exhibit_closed_message = self.get_active_exhibit_closed_status(
+            animal=animal,
+            target_date=target_date )
 
          if is_off_display or is_exhibit_closed:
             likelihood = 0
@@ -133,18 +149,10 @@ class Database():
                part_of_seasonal_exhibit=part_of_seasonal_exhibit,
                exhibit=exhibit )
 
-         should_include = False
-
-         if not itinerary_mode:
-
-            should_include = (
-               (likelihood > threshold)
-               or (include_off_display_animals and likelihood == 0)
-               or species in species_to_include
-            )
-
-         else:
-            should_include = species in species_to_include
+         should_include = (
+            (likelihood > threshold)
+            or (include_off_display_animals and likelihood == 0)
+         )
 
          if should_include:
             display_message = None
@@ -184,7 +192,7 @@ class Database():
                   limited_viewing_message=limited_viewing_message,
                   has_viewing_alert=has_viewing_alert,
                   viewing_alert_message=viewing_alert_message ) )
-            
+
       cur.close()
 
       return animals
@@ -763,10 +771,14 @@ class Database():
       return gift_shops
    
 
-   def get_attractions( self, month, day, include_closed_attractions=False, attractions_to_include=[], itinerary_mode=False ):
+   def get_attractions( self, month, day, include_closed_attractions=False ):
       cur = self.conn.cursor()
 
-      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month ), int( day ) )
+      target_date = date(
+         datetime.now().year,
+         self.zoo_util.normalize_month( month ),
+         int( day ) )
+
       weekday = target_date.weekday()
 
       data = cur.execute(
@@ -794,7 +806,10 @@ class Database():
       for attraction in attraction_data:
          name = attraction['NAME']
 
-         is_closed = self.is_attraction_manually_closed( attraction=attraction, target_date=target_date )
+         is_closed = self.is_attraction_manually_closed(
+            attraction=attraction,
+            target_date=target_date )
+
          closed_message = attraction['CLOSED_MESSAGE'] if is_closed else None
 
          if not is_closed:
@@ -806,16 +821,10 @@ class Database():
             if is_closed:
                closed_message = schedule_message
 
-         should_include = False
-
-         if not itinerary_mode:
-            should_include = (
-               (not is_closed)
-               or include_closed_attractions
-               or name in attractions_to_include
-            )
-         else:
-            should_include = name in attractions_to_include
+         should_include = (
+            ( not is_closed )
+            or include_closed_attractions
+         )
 
          if not should_include:
             continue
@@ -1045,10 +1054,14 @@ class Database():
       return [ zoomobile_stations, zoomobile_route_markers ]
 
 
-   def get_guardians_talks( self, month, day, guardians_talks_to_include=[], itinerary_mode=False ):
+   def get_guardians_talks( self, month, day ):
       cur = self.conn.cursor()
 
-      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month ), int( day ) )
+      target_date = date(
+         datetime.now().year,
+         self.zoo_util.normalize_month( month ),
+         int( day ) )
+
       target_weekday = target_date.weekday()
       target_date_str = target_date.isoformat()
 
@@ -1073,7 +1086,7 @@ class Database():
                   ON t.NAME = s.TALK_NAME
                   AND t.LOCATION = s.LOCATION;
          """ )
-      
+
       guardians_talk_data = data.fetchall()
 
       guardians_talks = []
@@ -1140,14 +1153,7 @@ class Database():
             elif is_cancelled:
                unavailable_message = f'{name} has been cancelled for this date.'
 
-         should_include = False
-
-         if not itinerary_mode:
-            should_include = is_available
-         else:
-            should_include = name in guardians_talks_to_include
-
-         if should_include:
+         if is_available:
             guardians_talks.append(
                zoo.GuardiansTalk(
                   name=name,
@@ -1163,13 +1169,14 @@ class Database():
       return guardians_talks
    
 
-   def get_wild_encounters( self, month, day, wild_encounters_to_include=[], itinerary_mode=False ):
+   def get_wild_encounters( self, month, day ):
       cur = self.conn.cursor()
 
       target_date = date(
          datetime.now().year,
          self.zoo_util.normalize_month( month=month ),
          int( day ) )
+
       target_weekday = target_date.weekday()
       target_date_str = target_date.isoformat()
 
@@ -1260,24 +1267,16 @@ class Database():
             elif is_cancelled:
                unavailable_message = f'{name} has been cancelled for this date.'
 
-         should_include = False
-
-         if not itinerary_mode:
-            should_include = is_available
-         else:
-            should_include = name in wild_encounters_to_include
-
-         if should_include:
-            wild_encounters.append(
-               zoo.WildEncounter(
-                  name=name,
-                  meeting_spot=wild_encounter['MEETING_SPOT'],
-                  link=wild_encounter['LINK'],
-                  time_of_day=encounter_time,
-                  x_coord=wild_encounter['X_COORD'],
-                  y_coord=wild_encounter['Y_COORD'],
-                  is_available=is_available,
-                  unavailable_message=unavailable_message ) )
+         wild_encounters.append(
+            zoo.WildEncounter(
+               name=name,
+               meeting_spot=wild_encounter['MEETING_SPOT'],
+               link=wild_encounter['LINK'],
+               time_of_day=encounter_time,
+               x_coord=wild_encounter['X_COORD'],
+               y_coord=wild_encounter['Y_COORD'],
+               is_available=is_available,
+               unavailable_message=unavailable_message ) )
 
       cur.close()
 
@@ -1460,13 +1459,19 @@ class Database():
          month = itinerary_date.strftime( '%B' )
          day = itinerary_date.day
 
-      animals_to_include = [
-         row['SPECIES']
-         for row in cur.execute(
-            """   SELECT
-                     SPECIES
-                  FROM ItineraryAnimal;
-            """ ).fetchall()
+      animal_rows = cur.execute(
+         """   SELECT
+                  SPECIES,
+                  EXHIBIT
+               FROM ItineraryAnimal;
+         """ ).fetchall()
+
+      species_exhibit_pairs = [
+         {
+            'species': row['SPECIES'],
+            'exhibit': row['EXHIBIT']
+         }
+         for row in animal_rows
       ]
 
       attractions_to_include = [
@@ -1502,34 +1507,32 @@ class Database():
       wild_encounters = []
 
       if bool( itinerary_row['IS_ACTIVE'] ) and month and day:
-         if animals_to_include:
-            animals = self.get_animals_viewable_on_day(
+         if species_exhibit_pairs:
+            animals = self.get_animals_for_itinerary(
                month=month,
                day=day,
                temp=None,
-               species_to_include=animals_to_include,
-               itinerary_mode=True )
+               species_exhibit_pairs=species_exhibit_pairs,
+               include_off_display_animals=True )
 
          if attractions_to_include:
-            attractions = self.get_attractions(
+            attractions = self.get_attractions_for_itinerary(
                month=month,
                day=day,
                attractions_to_include=attractions_to_include,
-               itinerary_mode=True )
+               include_closed_attractions=True )
 
          if guardians_talks_to_include:
-            guardians_talks = self.get_guardians_talks(
+            guardians_talks = self.get_guardians_talks_for_itinerary(
                month=month,
                day=day,
-               guardians_talks_to_include=guardians_talks_to_include,
-               itinerary_mode=True )
+               guardians_talks_to_include=guardians_talks_to_include )
 
          if wild_encounters_to_include:
-            wild_encounters = self.get_wild_encounters(
+            wild_encounters = self.get_wild_encounters_for_itinerary(
                month=month,
                day=day,
-               wild_encounters_to_include=wild_encounters_to_include,
-               itinerary_mode=True )
+               wild_encounters_to_include=wild_encounters_to_include )
 
       itinerary = zoo.Itinerary(
          date=date,
@@ -1677,14 +1680,15 @@ class Database():
       return True
    
 
-   def validate_animals( self, month, day, temp, animals_to_include=[] ):
-      animals = self.get_animals_viewable_on_day(
+   def validate_animals( self, month, day, temp, animals_to_include=None ):
+      animals_to_include = animals_to_include or []
+
+      animals = self.get_animals_for_itinerary(
          month=month,
          day=day,
          temp=temp,
-         include_off_display_animals=True,
-         species_to_include=animals_to_include,
-         itinerary_mode=True )
+         species_exhibit_pairs=animals_to_include,
+         include_off_display_animals=True )
 
       best_valid_by_species = {}
       removed_by_species = {}
@@ -1718,12 +1722,14 @@ class Database():
       }
    
 
-   def validate_attractions( self, month, day, attractions_to_include=[] ):
-      attractions = self.get_attractions(
+   def validate_attractions( self, month, day, attractions_to_include=None ):
+      attractions_to_include = attractions_to_include or []
+
+      attractions = self.get_attractions_for_itinerary(
          month=month,
          day=day,
          attractions_to_include=attractions_to_include,
-         itinerary_mode=True )
+         include_closed_attractions=True )
 
       valid_attractions = []
       removed_attractions = []
@@ -1746,11 +1752,10 @@ class Database():
    def validate_guardians_talks( self, month, day, guardians_talks_to_include=None ):
       guardians_talks_to_include = guardians_talks_to_include or []
 
-      guardians_talks = self.get_guardians_talks(
+      guardians_talks = self.get_guardians_talks_for_itinerary(
          month=month,
          day=day,
-         guardians_talks_to_include=guardians_talks_to_include,
-         itinerary_mode=True )
+         guardians_talks_to_include=guardians_talks_to_include )
 
       valid_guardians_talks = []
       removed_guardians_talks = []
@@ -1761,8 +1766,13 @@ class Database():
          else:
             removed_guardians_talks.append( guardians_talk )
 
-      valid_guardians_talks.sort( key=lambda t: ( t.name.lower(), t.time_of_day ) )
-      removed_guardians_talks.sort( key=lambda t: ( t.name.lower(), t.time_of_day ) )
+      valid_guardians_talks.sort(
+         key=lambda t: ( t.name.lower(), t.time_of_day )
+      )
+
+      removed_guardians_talks.sort(
+         key=lambda t: ( t.name.lower(), t.time_of_day )
+      )
 
       return {
          'valid_guardians_talks': valid_guardians_talks,
@@ -1773,11 +1783,10 @@ class Database():
    def validate_wild_encounters( self, month, day, wild_encounters_to_include=None ):
       wild_encounters_to_include = wild_encounters_to_include or []
 
-      wild_encounters = self.get_wild_encounters(
+      wild_encounters = self.get_wild_encounters_for_itinerary(
          month=month,
          day=day,
-         wild_encounters_to_include=wild_encounters_to_include,
-         itinerary_mode=True )
+         wild_encounters_to_include=wild_encounters_to_include )
 
       valid_wild_encounters = []
       removed_wild_encounters = []
@@ -1788,13 +1797,90 @@ class Database():
          else:
             removed_wild_encounters.append( wild_encounter )
 
-      valid_wild_encounters.sort( key=lambda w: ( w.name.lower(), w.time_of_day ) )
-      removed_wild_encounters.sort( key=lambda w: ( w.name.lower(), w.time_of_day ) )
+      valid_wild_encounters.sort(
+         key=lambda w: ( w.name.lower(), w.time_of_day )
+      )
+
+      removed_wild_encounters.sort(
+         key=lambda w: ( w.name.lower(), w.time_of_day )
+      )
 
       return {
          'valid_wild_encounters': valid_wild_encounters,
          'removed_wild_encounters': removed_wild_encounters
       }
+
+
+   def get_regions_with_exhibits( self, month, day ):
+      cur = self.conn.cursor()
+
+      target_date = date(
+         datetime.now().year,
+         self.zoo_util.normalize_month( month ),
+         int( day ) )
+
+      data = cur.execute(
+         """   SELECT
+                  r.NAME AS REGION_NAME,
+                  e.NAME AS EXHIBIT_NAME,
+                  s.IS_CLOSED,
+                  s.CLOSED_START,
+                  s.CLOSED_END
+               FROM Region r
+               LEFT JOIN Exhibit e
+                  ON e.REGION = r.NAME
+               LEFT JOIN ExhibitStatus s
+                  ON e.NAME = s.EXHIBIT
+               ORDER BY r.NAME, e.NAME;
+         """ )
+
+      rows = data.fetchall()
+      regions = []
+      current_region = None
+
+      for row in rows:
+         region_name = row['REGION_NAME']
+         exhibit_name = row['EXHIBIT_NAME']
+
+         if current_region == None or current_region['name'] != region_name:
+            current_region = {
+               'name': region_name,
+               'exhibits': []
+            }
+            regions.append( current_region )
+
+         if exhibit_name == None:
+            continue
+
+         is_closed = False
+
+         if row['IS_CLOSED']:
+            start_ok = True
+            end_ok = True
+
+            if row['CLOSED_START'] != None:
+               closed_start = self.parse_date_value(
+                  value=row['CLOSED_START'] )
+               start_ok = target_date >= closed_start
+
+            if row['CLOSED_END'] != None:
+               closed_end = self.parse_date_value(
+                  value=row['CLOSED_END'] )
+               end_ok = target_date <= closed_end
+
+            is_closed = start_ok and end_ok
+
+         if not is_closed:
+            current_region['exhibits'].append( exhibit_name )
+
+      cur.close()
+
+      regions = [
+         region for region in regions
+         if len( region['exhibits'] ) > 0
+      ]
+
+      return regions
    
 
    def get_exhibits( self ):
@@ -2144,6 +2230,201 @@ class Database():
 
       return wild_encounter_occurrences
    
+
+   def get_animals_for_itinerary(
+         self,
+         month,
+         day,
+         temp=None,
+         species_exhibit_pairs=None,
+         include_off_display_animals=True,
+         exhibits_to_include=None ):
+
+      species_exhibit_pairs = species_exhibit_pairs or []
+
+      pairs_filter = set()
+
+      for pair in species_exhibit_pairs:
+
+         if not isinstance( pair, dict ):
+            continue
+
+         species = ( pair.get( 'species' ) or '' ).strip().lower()
+         exhibit = ( pair.get( 'exhibit' ) or '' ).strip().lower()
+
+         if species and exhibit:
+            pairs_filter.add( ( species, exhibit ) )
+
+      if not pairs_filter:
+         return []
+
+      animals = self.get_animals_viewable_on_day(
+         month=month,
+         day=day,
+         temp=temp,
+         include_off_display_animals=include_off_display_animals,
+         threshold=0,
+         exhibits_to_include=exhibits_to_include )
+
+      animals = [
+         a for a in animals
+         if (
+            ( a.species or '' ).strip().lower(),
+            ( a.exhibit or '' ).strip().lower()
+         ) in pairs_filter
+      ]
+
+      has_positive_by_species = set()
+
+      for animal in animals:
+         if ( animal.likelihood or 0 ) > 0:
+            has_positive_by_species.add(
+               ( animal.species or '' ).strip().lower()
+            )
+
+      filtered_animals = []
+
+      for animal in animals:
+         species = ( animal.species or '' ).strip().lower()
+         likelihood = animal.likelihood or 0
+
+         if likelihood <= 0 and species in has_positive_by_species:
+            continue
+
+         filtered_animals.append( animal )
+
+      filtered_animals.sort(
+         key=lambda a: (
+            ( a.species or '' ).lower(),
+            ( a.exhibit or '' ).lower()
+         )
+      )
+
+      return filtered_animals
+   
+
+   def get_attractions_for_itinerary(
+         self,
+         month,
+         day,
+         attractions_to_include=None,
+         include_closed_attractions=True ):
+
+      attractions_to_include = attractions_to_include or []
+
+      attractions_filter = set()
+
+      for attraction_name in attractions_to_include:
+
+         if not isinstance( attraction_name, str ):
+            continue
+
+         attraction_name = attraction_name.strip().lower()
+
+         if attraction_name:
+            attractions_filter.add( attraction_name )
+
+      if not attractions_filter:
+         return []
+
+      attractions = self.get_attractions(
+         month=month,
+         day=day,
+         include_closed_attractions=include_closed_attractions )
+
+      attractions = [
+         attraction for attraction in attractions
+         if ( attraction.name or '' ).strip().lower() in attractions_filter
+      ]
+
+      attractions.sort( key=lambda a: ( a.name or '' ).lower() )
+
+      return attractions
+   
+
+   def get_guardians_talks_for_itinerary(
+         self,
+         month,
+         day,
+         guardians_talks_to_include=None ):
+
+      guardians_talks_to_include = guardians_talks_to_include or []
+
+      guardians_talks_filter = set()
+
+      for talk_name in guardians_talks_to_include:
+
+         if not isinstance( talk_name, str ):
+            continue
+
+         talk_name = talk_name.strip().lower()
+
+         if talk_name:
+            guardians_talks_filter.add( talk_name )
+
+      if not guardians_talks_filter:
+         return []
+
+      guardians_talks = self.get_guardians_talks(
+         month=month,
+         day=day )
+
+      guardians_talks = [
+         guardians_talk for guardians_talk in guardians_talks
+         if ( guardians_talk.name or '' ).strip().lower() in guardians_talks_filter
+      ]
+
+      guardians_talks.sort(
+         key=lambda t: (
+            ( t.name or '' ).lower(),
+            t.time_of_day or ''
+         )
+      )
+
+      return guardians_talks
+   
+
+   def get_wild_encounters_for_itinerary(
+         self,
+         month,
+         day,
+         wild_encounters_to_include=None ):
+
+      wild_encounters_to_include = wild_encounters_to_include or []
+
+      wild_encounters_filter = set()
+
+      for wild_encounter_name in wild_encounters_to_include:
+
+         if not isinstance( wild_encounter_name, str ):
+            continue
+
+         wild_encounter_name = wild_encounter_name.strip().lower()
+
+         if wild_encounter_name:
+            wild_encounters_filter.add( wild_encounter_name )
+
+      if not wild_encounters_filter:
+         return []
+
+      wild_encounters = self.get_wild_encounters(
+         month=month,
+         day=day )
+
+      wild_encounters = [
+         wild_encounter for wild_encounter in wild_encounters
+         if ( wild_encounter.name or '' ).strip().lower() in wild_encounters_filter
+      ]
+
+      wild_encounters.sort(
+         key=lambda w: (
+            ( w.name or '' ).lower(),
+            w.time_of_day or ''
+         )
+      )
+
+      return wild_encounters
+      
 
    def set_animal_as_off_display( self, species, exhibit, start_date, end_date, message ):
       if not message:

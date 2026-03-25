@@ -3,6 +3,8 @@ export const ANIMALS_KEY = 'tzg.itineraryAnimals';
 export const ATTRACTIONS_KEY = 'tzg.itineraryAttractions';
 export const GUARDIANS_KEY = 'tzg.itineraryGuardiansTalks';
 export const WILD_KEY = 'tzg.itineraryWildEncounters';
+export const SELECTED_EXHIBITS_KEY = 'tzg.itinerarySelectedExhibits';
+export const SELECTED_REGIONS_KEY = 'tzg.itinerarySelectedRegions';
 
 export function safeParseJSON(raw, fallback) {
    try {
@@ -68,6 +70,8 @@ export function clearItineraryStorage({ emitEvent = true } = {}) {
    localStorage.removeItem(ATTRACTIONS_KEY);
    localStorage.removeItem(GUARDIANS_KEY);
    localStorage.removeItem(WILD_KEY);
+   localStorage.removeItem(SELECTED_EXHIBITS_KEY);
+   localStorage.removeItem(SELECTED_REGIONS_KEY);
 
    if (emitEvent) {
       window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {

@@ -909,7 +909,7 @@ cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingTime;' )
 
 regions = [
    (
-      'Austrailasia',
+      'Australasia',
    ),
    (
       'Eurasia Wilds',

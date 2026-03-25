@@ -1,4 +1,4 @@
-import { ajaxPost } from '../../utils/ajax.js';
+import { postJson } from '../../api/apiClient.js';
 
 function debounce(fn, delay = 250) {
    let t = null;
@@ -244,7 +244,7 @@ export function createItinerarySelectorController({
             ...ctx,
          };
 
-         const response = await ajaxPost(searchEndpoint, payload);
+         const response = await postJson(searchEndpoint, payload);
          const rows = extractRows(response) || [];
          render(Array.isArray(rows) ? rows : []);
       } catch {

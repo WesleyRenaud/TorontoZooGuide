@@ -1,10 +1,10 @@
-import { ajaxPost } from '../utils/ajax.js';
+import { postJson } from '../api/apiClient.js';
 
 export function createDataSources(store) {
    return {
       animal: {
-         fetch: async(ctx) => {
-            const res = await ajaxPost('/get-visible-animals', {
+         fetch: async (ctx) => {
+            const res = await postJson('/get-visible-animals', {
                month: ctx.month,
                day: ctx.day,
                temp: ctx.temp,
@@ -27,7 +27,7 @@ export function createDataSources(store) {
             const cache = store.cache.pavilion ?? store.cache.pavilions;
 
             if (!cache) {
-               const res = await ajaxPost('/get-pavilions', {});
+               const res = await postJson('/get-pavilions', {});
                const rows = res?.pavilions ?? res?.results ?? res ?? [];
                const normalized = rows.map(p => ({ ...p, type: 'pavilion' }));
                store.byType.pavilion = normalized;
@@ -37,7 +37,7 @@ export function createDataSources(store) {
             if (cache.loaded) return store.byType.pavilion ?? store.byType.pavilions ?? [];
             if (cache.inFlight) return cache.inFlight;
 
-            cache.inFlight = ajaxPost('/get-pavilions', {})
+            cache.inFlight = postJson('/get-pavilions', {})
                .then(res => {
                   const rows = res?.pavilions ?? res?.results ?? res ?? [];
                   const normalized = rows.map(p => ({ ...p, type: 'pavilion' }));
@@ -59,7 +59,7 @@ export function createDataSources(store) {
 
       restaurant: {
          fetch: async (ctx) => {
-            const res = await ajaxPost('/get-restaurants', {
+            const res = await postJson('/get-restaurants', {
                month: ctx.month,
                day: ctx.day,
                includeClosedRestaurants: ctx.includeClosedRestaurants,
@@ -80,7 +80,7 @@ export function createDataSources(store) {
             const cache = store.cache.restroom ?? store.cache.restrooms;
 
             if (!cache) {
-               const res = await ajaxPost('/get-restrooms', {});
+               const res = await postJson('/get-restrooms', {});
                const rows = res?.restrooms ?? res?.results ?? res ?? [];
                const normalized = rows.map(p => ({ ...p, type: 'restroom' }));
                store.byType.restroom = normalized;
@@ -90,7 +90,7 @@ export function createDataSources(store) {
             if (cache.loaded) return store.byType.restroom ?? store.byType.restrooms ?? [];
             if (cache.inFlight) return cache.inFlight;
 
-            cache.inFlight = ajaxPost('/get-restrooms', {})
+            cache.inFlight = postJson('/get-restrooms', {})
                .then(res => {
                   const rows = res?.restrooms ?? res?.results ?? res ?? [];
                   const normalized = rows.map(p => ({ ...p, type: 'restroom' }));
@@ -112,7 +112,7 @@ export function createDataSources(store) {
 
       giftShop: {
          fetch: async (ctx) => {
-            const res = await ajaxPost('/get-gift-shops', {
+            const res = await postJson('/get-gift-shops', {
                month: ctx.month,
                day: ctx.day,
                includeClosedGiftShops: ctx.includeClosedGiftShops,
@@ -130,7 +130,7 @@ export function createDataSources(store) {
 
       attraction: {
          fetch: async (ctx) => {
-            const res = await ajaxPost('/get-attractions', {
+            const res = await postJson('/get-attractions', {
                month: ctx.month,
                day: ctx.day,
                includeClosedAttractions: ctx.includeClosedAttractions,
@@ -149,7 +149,7 @@ export function createDataSources(store) {
 
       guardiansTalk: {
          fetch: async (ctx) => {
-            const res = await ajaxPost('/get-guardians-talks', {
+            const res = await postJson('/get-guardians-talks', {
                month: ctx.month,
                day: ctx.day,
                guardiansTalksToInclude: ctx.guardiansTalksToInclude,
@@ -167,7 +167,7 @@ export function createDataSources(store) {
 
       wildEncounter: {
          fetch: async (ctx) => {
-            const res = await ajaxPost('/get-wild-encounters', {
+            const res = await postJson('/get-wild-encounters', {
                month: ctx.month,
                day: ctx.day,
                wildEncountersToInclude: ctx.wildEncountersToInclude,
@@ -188,7 +188,7 @@ export function createDataSources(store) {
             const cache = store.cache.exhibit ?? store.cache.exhibits;
 
             if (!cache) {
-               const res = await ajaxPost('/get-exhibits', {});
+               const res = await postJson('/get-exhibits', {});
                const rows = res?.exhibits ?? res?.results ?? res ?? [];
                const normalized = rows.map(e => ({ ...e, type: 'exhibit' }));
                store.byType.exhibit = normalized;
@@ -198,7 +198,7 @@ export function createDataSources(store) {
             if (cache.loaded) return store.byType.exhibit ?? store.byType.exhibits ?? [];
             if (cache.inFlight) return cache.inFlight;
 
-            cache.inFlight = ajaxPost('/get-exhibits', {})
+            cache.inFlight = postJson('/get-exhibits', {})
                .then(res => {
                   const rows = res?.exhibits ?? res?.results ?? res ?? [];
                   const normalized = rows.map(e => ({ ...e, type: 'exhibit' }));

@@ -5,6 +5,7 @@ import {
    normalizeWild,
 } from './format.js';
 
+import { normalizeParameter } from '../../utils/normalize.js';
 import { makeItemRow } from './components/itemRow.js';
 import {
    buildAnimalAlert,
@@ -13,21 +14,11 @@ import {
    buildWildRemovalReasonLine,
 } from './rowAlerts.js';
 
-function normalizeForPath(str = '') {
-   return String(str)
-      .toLowerCase()
-      .trim()
-      .replace(/&/g, 'and')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-}
-
 function buildAnimalImageSrc(exhibit, species) {
    if (!exhibit || !species) return null;
 
-   const normalizedExhibit = normalizeForPath(exhibit);
-   const normalizedSpecies = normalizeForPath(species);
+   const normalizedExhibit = normalizeParameter(exhibit);
+   const normalizedSpecies = normalizeParameter(species);
 
    return `images/animals/${normalizedExhibit}/${normalizedSpecies}.png`;
 }
@@ -35,21 +26,21 @@ function buildAnimalImageSrc(exhibit, species) {
 function buildAttractionImageSrc(name) {
    if (!name) return null;
 
-   const normalizedName = normalizeForPath(name);
+   const normalizedName = normalizeParameter(name);
    return `images/attractions/${normalizedName}.png`;
 }
 
 function buildGuardiansTalkImageSrc(name) {
    if (!name) return null;
 
-   const normalizedName = normalizeForPath(name);
+   const normalizedName = normalizeParameter(name);
    return `images/guardians-talks/${normalizedName}.png`;
 }
 
 function buildWildEncounterImageSrc(name) {
    if (!name) return null;
 
-   const normalizedName = normalizeForPath(name);
+   const normalizedName = normalizeParameter(name);
    return `images/wild-encounters/${normalizedName}.png`;
 }
 
