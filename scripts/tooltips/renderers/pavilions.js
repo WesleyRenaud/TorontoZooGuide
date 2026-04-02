@@ -19,7 +19,7 @@ export const pavilionRenderer = {
             src="${imgSrc}"
             alt="${name}"
             class="tooltip-image"
-            onerror="this.onerror=null; this.src='images/generic-icons/pavilion.png';"
+            onerror="this.onerror=null; this.src='images/generic-icons/pavilion-open.png';"
          >
          </div>
 

@@ -1,4 +1,5 @@
 import { CONFIG } from '../shared/config.js';
+import { loadInlineZooMap } from './loadInlineZooMap.js';
 import { createPanzoom } from '../map/panzoom.js';
 import { initMapControls } from '../map/controls.js';
 import { initExploreTypeFilter } from '../search/exploreFilter.js';
@@ -17,10 +18,9 @@ import { createGiftShopClosedBanner } from '../ui/giftShopClosedBanner.js';
 import { createAttractionClosedBanner } from '../ui/attractionClosedBanner.js';
 import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
 import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
-import { initMapLegend } from '../ui/mapLegend.js';
 import { buildDateSearchContext } from '../search/searchContext.js';
 
-export function initMapPage() {
+export async function initMapPage() {
    const mapInner = document.getElementById('mapInner');
    const mapPreset = document.getElementById('mapPreset');
    const mapDateInput = document.getElementById('mapDate');
@@ -31,13 +31,14 @@ export function initMapPage() {
    const includeClosedAttractionsCheckbox = document.getElementById('includeClosedAttractions');
    const zoomobileRouteRadios = document.querySelectorAll?.('input[name="zoomobileRoute"]');
    const animalSearchInput = document.getElementById('animalSearch');
-   initMapLegend();
 
    const tooltipEl = document.getElementById('tooltip');
    const hoverTooltipEl = document.getElementById('hoverTooltip');
    const viewportEl = mapInner?.parentElement;
 
    if (!mapInner || !mapPreset || !mapDateInput || !tooltipEl || !viewportEl) return;
+
+   await loadInlineZooMap();
 
    const panzoom = createPanzoom(mapInner, { contain: CONFIG.DEFAULT_CONTAIN });
 
@@ -93,7 +94,7 @@ export function initMapPage() {
       getIncludeClosedRestaurants: () => includeClosedRestaurantsCheckbox?.checked ?? false,
       getIncludeClosedGiftShops: () => includeClosedGiftShopsCheckbox?.checked ?? false,
       getIncludeClosedAttractions: () => includeClosedAttractionsCheckbox?.checked ?? false,
-      getZoomobileRoute: () => Array.from(zoomobileRouteRadios).find(r => r.checked)?.value ?? 'none',
+      getZoomobileRoute: () => Array.from(zoomobileRouteRadios).find((r) => r.checked)?.value ?? 'none',
       getSelectedTypes: () => initExploreTypeFilter.getSelectedTypes(),
    });
 
@@ -105,7 +106,7 @@ export function initMapPage() {
       onAnimalsUnchecked: () => {
          const resultsEl = document.getElementById('animalSearchResults');
          if (resultsEl) resultsEl.innerHTML = '';
-      }
+      },
    });
 
    initExploreTypeFilter.getSelectedTypes = explore.getSelectedTypes;
@@ -147,7 +148,7 @@ export function initMapPage() {
    initFocusFromQuery({
       onFocus: (rowOrSpec) => {
          updater.focusFromDeepLink(rowOrSpec);
-      }
+      },
    });
 
    mapPreset.dispatchEvent(new Event('change'));

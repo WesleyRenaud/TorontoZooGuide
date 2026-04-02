@@ -9,37 +9,33 @@ export function initOffDisplayDatePickers(
    offDisplayEndDateEl
 ) {
 
-   const startPicker = initFlatpickr( offDisplayStartDateEl, {
+   const startPicker = initFlatpickr(offDisplayStartDateEl, {
       enableTime: false,
       dateFormat: 'Y-m-d',
       minDate: 'today'
-   } );
+   });
 
-   const endPicker = initFlatpickr( offDisplayEndDateEl, {
+   const endPicker = initFlatpickr(offDisplayEndDateEl, {
       enableTime: false,
       dateFormat: 'Y-m-d',
       minDate: 'today'
-   } );
+   });
 
-   if ( offDisplayStartDateEl && endPicker ) {
-
-      offDisplayStartDateEl.addEventListener( 'change', () => {
+   if (offDisplayStartDateEl && endPicker) {
+      offDisplayStartDateEl.addEventListener('change', () => {
 
          const startValue = offDisplayStartDateEl.value?.trim();
 
-         if ( startValue ) {
-            endPicker.set( 'minDate', startValue );
+         if (startValue) {
+            endPicker.set('minDate', startValue);
          }
          else {
-            endPicker.set( 'minDate', 'today' );
+            endPicker.set('minDate', 'today');
          }
-
-      } );
-
+      });
    }
 
    return { startPicker, endPicker };
-
 }
 
 
@@ -53,46 +49,41 @@ export function initVisibilityScheduleDateTimePickers(
    dailyStartTimeEl,
    dailyEndTimeEl
 ) {
-
-   const startDatePicker = initFlatpickr( startDateEl, {
+   const startDatePicker = initFlatpickr(startDateEl, {
       enableTime: false,
       dateFormat: 'Y-m-d'
-   } );
+   });
 
-   const endDatePicker = initFlatpickr( endDateEl, {
+   const endDatePicker = initFlatpickr(endDateEl, {
       enableTime: false,
       dateFormat: 'Y-m-d'
-   } );
+   });
 
-   const dailyStartTimePicker = initFlatpickr( dailyStartTimeEl, {
+   const dailyStartTimePicker = initFlatpickr(dailyStartTimeEl, {
       enableTime: true,
       noCalendar: true,
       dateFormat: 'h:i K',
       time_24hr: false
-   } );
+   });
 
-   const dailyEndTimePicker = initFlatpickr( dailyEndTimeEl, {
+   const dailyEndTimePicker = initFlatpickr(dailyEndTimeEl, {
       enableTime: true,
       noCalendar: true,
       dateFormat: 'h:i K',
       time_24hr: false
-   } );
+   });
 
-   if ( startDateEl && endDatePicker ) {
-
-      startDateEl.addEventListener( 'change', () => {
-
+   if (startDateEl && endDatePicker) {
+      startDateEl.addEventListener('change', () => {
          const startValue = startDateEl.value?.trim();
 
-         if ( startValue ) {
-            endDatePicker.set( 'minDate', startValue );
+         if (startValue) {
+            endDatePicker.set('minDate', startValue);
          }
          else {
-            endDatePicker.set( 'minDate', null );
+            endDatePicker.set('minDate', null);
          }
-
-      } );
-
+      });
    }
 
    return {
@@ -101,5 +92,4 @@ export function initVisibilityScheduleDateTimePickers(
       dailyStartTimePicker,
       dailyEndTimePicker
    };
-
 }

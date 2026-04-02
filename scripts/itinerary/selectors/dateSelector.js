@@ -1,11 +1,15 @@
 import { DATE_KEY } from '../../pages/itineraryWizard/keys.js';
-
-function toISODate(d) {
-   const y = d.getFullYear();
-   const m = String(d.getMonth() + 1).padStart(2, '0');
-   const day = String(d.getDate()).padStart(2, '0');
-   return `${y}-${m}-${day}`;
-}
+import { initVisitDateFlatpickr } from '../../shared/visitDateFlatpickr.js';
+import {
+   DEFAULT_DAYS_AHEAD,
+   toISODate,
+   getToday,
+   getMaxDate,
+   normalizeDate,
+   isBeforeToday,
+   isAfterMaxDate,
+   clampToAllowedVisitDate,
+} from '../../shared/visitDateRules.js';
 
 function formatLong(d) {
    return d.toLocaleDateString(undefined, {
@@ -14,35 +18,6 @@ function formatLong(d) {
       month: 'long',
       day: 'numeric',
    });
-}
-
-function getToday() {
-   const today = new Date();
-   return new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0, 0, 0);
-}
-
-function getMaxDate(daysAhead = 90) {
-   const today = getToday();
-   const max = new Date(today);
-   max.setDate(today.getDate() + daysAhead);
-   return max;
-}
-
-function normalizeDate(d) {
-   if (!d || !Number.isFinite(d.getTime())) return null;
-   return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0, 0);
-}
-
-function isBeforeToday(d) {
-   const candidate = normalizeDate(d);
-   if (!candidate) return false;
-   return candidate < getToday();
-}
-
-function isAfterMaxDate(d, daysAhead = 90) {
-   const candidate = normalizeDate(d);
-   if (!candidate) return false;
-   return candidate > getMaxDate(daysAhead);
 }
 
 export function createItineraryDateSelectorController({
@@ -61,6 +36,7 @@ export function createItineraryDateSelectorController({
    function getSavedDate() {
       const iso = localStorage.getItem(DATE_KEY);
       if (!iso) return null;
+
       const d = new Date(`${iso}T12:00:00`);
       return Number.isFinite(d.getTime()) ? d : null;
    }
@@ -69,7 +45,7 @@ export function createItineraryDateSelectorController({
       const normalized = normalizeDate(d);
       if (!normalized) return;
       if (isBeforeToday(normalized)) return;
-      if (isAfterMaxDate(normalized, 90)) return;
+      if (isAfterMaxDate(normalized, DEFAULT_DAYS_AHEAD)) return;
 
       currentDate = normalized;
 
@@ -85,7 +61,7 @@ export function createItineraryDateSelectorController({
    function persistCurrentDate() {
       if (!currentDate) return null;
       if (isBeforeToday(currentDate)) return null;
-      if (isAfterMaxDate(currentDate, 90)) return null;
+      if (isAfterMaxDate(currentDate, DEFAULT_DAYS_AHEAD)) return null;
 
       setDate(currentDate, { persist: true, updateInput: true });
 
@@ -93,6 +69,11 @@ export function createItineraryDateSelectorController({
          date: toISODate(currentDate),
          dateObj: currentDate,
       };
+   }
+
+   function closePicker() {
+      fp?.close();
+      inputEl?.blur();
    }
 
    function build() {
@@ -110,7 +91,13 @@ export function createItineraryDateSelectorController({
                <p class="itin-subtitle">Choose the date for your visit.</p>
 
                <div class="itin-field-label">Visit Date</div>
-               <input class="itin-date-input" type="text" inputmode="none" autocomplete="off" />
+               <input
+                  class="itin-date-input"
+                  type="text"
+                  inputmode="none"
+                  autocomplete="off"
+                  readonly
+               />
             </div>
 
             <div class="itin-card-actions">
@@ -127,39 +114,39 @@ export function createItineraryDateSelectorController({
       root.querySelector('.itin-next')?.addEventListener('click', () => {
          const saved = persistCurrentDate();
          if (!saved) return;
+         closePicker();
          onSave?.(saved.date, saved.dateObj);
       });
 
       root.querySelector('.itin-finish')?.addEventListener('click', () => {
          const saved = persistCurrentDate();
          if (!saved) return;
+         closePicker();
          onFinish?.(saved.date, saved.dateObj);
       });
 
       root.querySelector('.itin-close')?.addEventListener('click', () => {
+         closePicker();
          onClose?.();
       });
 
-      fp = flatpickr(inputEl, {
-         allowInput: false,
-         dateFormat: 'Y-m-d',
-         monthSelectorType: 'static',
-         minDate: getToday(),
-         maxDate: getMaxDate(90),
+      fp = initVisitDateFlatpickr(inputEl, {
          defaultDate: currentDate || getToday(),
-         onReady: (_sel, _str, instance) => {
-            const d = instance.selectedDates?.[0] || getToday();
-            setDate(d, { updateInput: true, persist: false });
+         clickOpens: true,
+         onReady: (safeDate, _isoDate, instance) => {
+            setDate(safeDate, { updateInput: true, persist: false });
+            instance.input.value = formatLong(safeDate);
          },
-         onChange: selectedDates => {
-            const d = selectedDates?.[0];
-            if (d) {
-               setDate(d, { updateInput: true, persist: false });
-            }
+         onChange: (safeDate, _isoDate, instance) => {
+            setDate(safeDate, { updateInput: true, persist: false });
+            instance.input.value = formatLong(safeDate);
+            instance.close();
+            inputEl?.blur();
          },
+         onClose: () => {
+            inputEl?.blur();
+         }
       });
-
-      inputEl.addEventListener('click', () => fp?.open());
    }
 
    function show() {
@@ -171,25 +158,22 @@ export function createItineraryDateSelectorController({
 
       const saved = getSavedDate();
       const today = getToday();
-      const maxDate = getMaxDate(90);
+      const maxDate = getMaxDate(DEFAULT_DAYS_AHEAD);
       const selected = initialDate || saved || today;
 
-      let safeDate = normalizeDate(selected) || today;
-
-      if (isBeforeToday(safeDate)) {
-         safeDate = today;
-      }
-
-      if (isAfterMaxDate(safeDate, 90)) {
-         safeDate = maxDate;
-      }
+      const safeDate = clampToAllowedVisitDate(
+         selected,
+         DEFAULT_DAYS_AHEAD
+      );
 
       setDate(safeDate, { updateInput: true, persist: false });
 
       if (fp && currentDate) {
          fp.set('minDate', today);
          fp.set('maxDate', maxDate);
-         fp.setDate(currentDate, true);
+         fp.setDate(currentDate, false);
+         inputEl.value = formatLong(currentDate);
+         closePicker();
       }
 
       mountEl.innerHTML = '';
@@ -197,6 +181,8 @@ export function createItineraryDateSelectorController({
    }
 
    function hide() {
+      closePicker();
+
       if (!mountEl) return;
       mountEl.innerHTML = '';
    }

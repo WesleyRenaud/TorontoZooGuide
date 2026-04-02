@@ -98,7 +98,7 @@ export function createItinerarySelectorController({
       } else {
          const sel = makeSelection(row) || {};
          if (!sel.id) sel.id = id;
-         selected = [ ...selected, sel ];
+         selected = [...selected, sel];
       }
 
       saveSelected(storageKey, selected);

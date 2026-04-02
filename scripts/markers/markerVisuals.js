@@ -9,7 +9,7 @@ function resetMarkerVisual(markerEl) {
    markerEl.style.backgroundPosition = 'center';
    markerEl.style.backgroundSize = 'cover';
 
-   markerEl.classList.remove( 'marker-has-limited-viewing' );
+   markerEl.classList.remove('marker-has-limited-viewing');
 }
 
 function applyGenericIcon(markerEl, iconUrl, count) {
@@ -78,7 +78,7 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
    }
 
    if (type === 'pavilion') {
-      applyGenericIcon(markerEl, '/images/generic-icons/pavilion.png', count);
+      applyGenericIcon(markerEl, '/images/generic-icons/pavilion-open.png', count);
       return;
    }
 
@@ -95,7 +95,7 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
 
    if (type === 'restroom') {
       markerEl.classList.add('marker-restroom');
-      applyGenericIcon(markerEl, '/images/generic-icons/restroom.png', count);
+      applyGenericIcon(markerEl, '/images/generic-icons/restroom-open.png', count);
       return;
    }
 

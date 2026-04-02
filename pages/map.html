@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" class="home-page">
    <head>
-      <!-- Stylesheets -->
       <link rel="stylesheet" href="../styles/styles.css">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-      <!-- jQuery (must be available before your module runs if you still use $.ajax) -->
       <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-      <!-- Vendor libs your modules rely on -->
       <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js" defer></script>
 
-      <!-- ✅ Your map entry module (this replaces scripts.js on map.html) -->
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
       <script type="module" src="../scripts/main-map.js"></script>
    </head>
 
@@ -27,19 +25,6 @@
                alt="Toronto Zoo Logo"
                class="top-bar-logo"
             >
-         </div>
-
-         <!-- Dropdown container -->
-         <div class="map-controls">
-            <select id="mapPreset">
-               <option value="" disabled hidden>Select a map</option>
-               <option value="summer">Summer Map</option>
-               <option value="winter">Winter Map</option>
-               <option value="specific-day" selected>Specific Map</option>
-            </select>
-
-            <!-- Date picker only relevant if "Specific Map" is selected -->
-            <input type="text" id="mapDate" placeholder="Select a date">
          </div>
 
          <main class="map-layout">
@@ -165,126 +150,32 @@
 
                   <!-- Results -->
                   <div id="animalSearchResults" class="animal-search-results" aria-live="polite"></div>
-                  
                </div>
-
             </aside>
 
             <!-- MAP -->
             <div class="map-container">
+               <!-- Dropdown container -->
+               <div class="map-controls">
+                  <select id="mapPreset">
+                     <option value="" disabled hidden>Select a map</option>
+                     <option value="summer">Summer Map</option>
+                     <option value="winter">Winter Map</option>
+                     <option value="specific-day" selected>Specific Map</option>
+                  </select>
+
+                  <!-- Date picker only relevant if "Specific Map" is selected -->
+                  <input type="text" id="mapDate" placeholder="Select a date">
+               </div>
+
                <div id="mapInner">
-                  <img id="zooMap" src="../images/map/zoo-map.png" alt="Toronto Zoo Map">
-
-                  <!-- Static labels -->
-                  <div class="map-label map-label-primary" style="left: 70%; top: 22%;">Eurasia Wilds</div>
-                  <div class="map-label map-label-primary" style="left: 61%; top: 41%;">Australasia</div>
-                  <div class="map-label map-label-primary" style="left: 50%; top: 17%;">Tundra Trek</div>
-                  <div class="map-label map-label-primary" style="left: 45%; top: 31%;">Americas</div>
-                  <div class="map-label map-label-primary" style="left: 16%; top: 67%;">Canadian Domain</div>
-                  <div class="map-label map-label-primary" style="left: 43%; top: 72%;">Africa</div>
-                  <div class="map-label map-label-primary" style="left: 63%; top: 79%;">Indo-Malaya</div>
-                  <div class="map-label map-label-primary" style="left: 69%; top: 44%;">Discovery Zone</div>
-
-                  <div class="map-label map-label-secondary" style="left: 60%; top: 38%;">Australasia Pavilion</div>
-                  <div class="map-label map-label-secondary" style="left: 46%; top: 38%;">Americas Pavilion</div>
-                  <div class="map-label map-label-secondary" style="left: 42%; top: 24%;">Mayan Temple Ruins</div>
-                  <div class="map-label map-label-secondary" style="left: 50%; top: 76%;">African Rainforest Pavilion</div>
-                  <div class="map-label map-label-secondary" style="left: 60%; top: 82%;">Indo-Malaya Pavilion</div>
-                  <div class="map-label map-label-secondary" style="left: 66%; top: 76%;">Malayan Woods Pavilion</div>
-                  <div class="map-label map-label-secondary" style="left: 69%; top: 50%;">Kidz Zoo</div>
+                  <div id="zooMapMount" aria-label="Toronto Zoo Map"></div>
 
                   <!-- markers injected here -->
                </div>
 
                <div id="tooltip" class="tooltip" style="display:none;"></div>
                <div id="hoverTooltip" class="hover-tooltip" style="display:none;"></div>
-
-               <div class="map-legend" id="mapLegend" aria-label="Map legend">
-                  <div class="map-legend-header">
-                     <div class="map-legend-title">Legend</div>
-
-                     <button
-                        class="map-legend-toggle"
-                        type="button"
-                        aria-label="Hide legend"
-                        aria-expanded="true"
-                     >
-                        <span class="map-legend-toggle-icon"></span>
-                     </button>
-                  </div>
-
-                  <div class="map-legend-body">
-                     <div class="map-legend-item">
-                        <img src="../images/generic-icons/gift-shop-open.png" alt="">
-                        <span>Gift Shop</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/generic-icons/restaurant-open.png" alt="">
-                        <span>Restaurant</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/generic-icons/restroom.png" alt="">
-                        <span>Restroom</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/generic-icons/pavilion.png" alt="">
-                        <span>Pavilion</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/attraction-icons/zoomobile-open.png" alt="">
-                        <span>Zoomobile</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/generic-icons/zoomobile-station.png" alt="">
-                        <span>Zoomobile Station</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/attraction-icons/conservation-carousel-open.png" alt="">
-                        <span>Conservation Carousel</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/attraction-icons/greenhouse-open.png" alt="">
-                        <span>Greenhouse</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/attraction-icons/wildlife-health-and-science-centre-open.png" alt="">
-                        <span>Animal Hospital</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/attraction-icons/kangaroo-walk-thru-open.png" alt="">
-                        <span>Kangaroo Walk-Thru</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/attraction-icons/splash-island-open.png" alt="">
-                        <span>Splash Island</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/attraction-icons/gorilla-climb-ropes-course-open.png" alt="">
-                        <span>Gorilla Ropes Course</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/attraction-icons/face-painting-caricatures-and-henna-open.png" alt="">
-                        <span>Face Painting</span>
-                     </div>
-
-                     <div class="map-legend-item">
-                        <img src="../images/attraction-icons/virtual-reality-vr-theatre-open.png" alt="">
-                        <span>VR Theatre</span>
-                     </div>
-                  </div>
-               </div>
             </div>
          </main>
 

@@ -1,4 +1,5 @@
 import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
+import { loadInlineZooMap } from './loadInlineZooMap.js';
 import { initItineraryPage } from './itineraryPage.js';
 
 import { blockMapWheelWhileWizardOpen } from './itineraryWizard/wheelBlocker.js';
@@ -9,8 +10,9 @@ export function initItineraryWizardPage() {
    const mountEl = document.getElementById('itineraryFlow');
    if (!mountEl) return;
 
-   window.addEventListener('tzg:editItinerarySection', e => {
+   window.addEventListener('tzg:editItinerarySection', (e) => {
       const step = e?.detail?.step || 'date';
+
       openItineraryBuilder({
          mountEl,
          startAt: step,
@@ -19,14 +21,6 @@ export function initItineraryWizardPage() {
    });
 
    blockMapWheelWhileWizardOpen(mountEl);
-
-   if (document.getElementById('mapInner')) {
-      try {
-         initItineraryPage();
-      } catch(err) {
-         console.warn('initItineraryPage() failed:', err);
-      }
-   }
 
    window.addEventListener('tzg:editItinerary', () => {
       openItineraryBuilder({
@@ -46,7 +40,16 @@ export function initItineraryWizardPage() {
       renderItineraryPanel();
    });
 
-   (async() => {
+   (async () => {
+      if (document.getElementById('mapInner')) {
+         try {
+            await loadInlineZooMap();
+            initItineraryPage();
+         } catch (err) {
+            console.warn('initItineraryPage() failed:', err);
+         }
+      }
+
       await renderItineraryPanel();
 
       const itin = await getItinerary();

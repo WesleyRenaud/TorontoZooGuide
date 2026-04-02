@@ -1,4 +1,4 @@
-import { ajaxPost } from '../utils/ajax.js';
+import { postJson } from '../api/apiClient.js';
 
 function debounce(fn, delay = 250) {
    let t = null;
@@ -53,7 +53,7 @@ export function initSearch({
       const ctx = (await getContext?.()) ?? {};
 
       try {
-         const response = await ajaxPost('/search', {
+         const response = await postJson('/search', {
             query,
             ...flags,
             ...ctx,
@@ -80,7 +80,7 @@ function getRowType(row) {
 }
 
 function getRowTitle(row, type) {
-   if (type == 'wildEncounter') return row.name ?? row.NAME ?? 'Wild Encounter';
+   if (type === 'wildEncounter') return row.name ?? row.NAME ?? 'Wild Encounter';
    if (type === 'guardiansTalk') return row.name ?? row.NAME ?? 'Meet The Guardians Talk';
    if (type === 'zoomobileStation') return row.name ?? row.NAME ?? 'Zoomobile Station';
    if (type === 'attraction') return row.name ?? row.NAME ?? 'Attraction';
@@ -161,7 +161,7 @@ function renderSearchResults(resultsEl, rows, onFocusRow) {
    resultsEl.innerHTML = '';
    if (!Array.isArray(rows) || rows.length === 0) return;
 
-   rows.forEach(row => {
+   rows.forEach((row) => {
       const type = getRowType(row);
       const title = getRowTitle(row, type);
       const subtitle = getRowSubtitle(row, type);

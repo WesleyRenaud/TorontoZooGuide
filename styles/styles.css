@@ -5,7 +5,7 @@
 :root {
    /* Layout */
    --side-column-width: clamp(630px, 39vw, 1050px);
-   --map-menu-width: clamp(840px, 52vw, 1400px);
+   --map-menu-width: clamp(980px, 60vw, 1620px);
 
    /* Explore control (dropdown + search input) */
    --explore-control-font: 4em;
@@ -23,18 +23,6 @@
 
    --explore-control-shadow: 0 10px 24px rgba(0,0,0,0.18);
    --explore-control-shadow-focus: 0 14px 34px rgba(0,0,0,0.28);
-
-   /* Map legend */
-   --legend-bg: rgba(255, 255, 255, 0.96);
-   --legend-radius: 18px;
-   --legend-pad-y: 18px;
-   --legend-pad-x: 22px;
-   --legend-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-
-   --legend-title-size: 2.6em;
-   --legend-item-size: 2.2em;
-   --legend-gap: 18px;
-   --legend-icon-size: 64px;
 }
 
 /* ============================================================
@@ -554,13 +542,26 @@ html.home-page {
    overflow: hidden;
 }
 
-#zooMap {
+#zooMapMount {
+   position: absolute;
+   inset: 0;
+   width: 100%;
+   height: 100%;
+}
+
+#zooMapMount svg {
    position: absolute;
    inset: 0;
    width: 100%;
    height: 100%;
    object-fit: cover;
    object-position: center;
+   display: block;
+}
+
+.hide-map-labels .map-label-primary-svg,
+.hide-map-labels .map-label-secondary-svg {
+   display: none !important;
 }
 
 /* ============================================================
@@ -569,7 +570,7 @@ html.home-page {
 
 .home-page .map-controls {
    position: absolute;
-   top: 10vh;
+   top: 1vh;
    left: 50%;
    transform: translateX(-50%);
    background-color: rgba(255, 255, 255, 0.85);
@@ -618,161 +619,6 @@ html.home-page {
 }
 
 /* ============================================================
-   MAP LEGEND (WIDER + MORE BREATHING ROOM)
-============================================================ */
-
-:root {
-   --legend-radius: 24px;
-   --legend-pad-y: 44px;
-   --legend-pad-x: 64px;          /* 👈 more horizontal padding */
-   --legend-gap: 30px;
-   --legend-title-size: 3em;
-   --legend-item-size: 2.6em;
-   --legend-icon-size: 44px;
-   --legend-shadow: 0 16px 40px rgba(0,0,0,0.22);
-}
-
-.map-legend {
-   position: absolute;
-
-   bottom: 64px;
-   right: 64px;
-
-   background: rgba(252, 248, 236, 0.98);
-   backdrop-filter: blur(6px);
-
-   border-radius: var(--legend-radius);
-   padding: var(--legend-pad-y) var(--legend-pad-x);
-
-   border: 3px solid rgba(20, 35, 10, 0.08);
-   box-shadow: var(--legend-shadow);
-
-   display: flex;
-   flex-direction: column;
-   gap: var(--legend-gap);
-
-   z-index: 20;
-
-   max-width: 760px;              /* 👈 wider overall */
-}
-
-/* Title */
-.map-legend-title {
-   font-family: "Arial Narrow", Arial, sans-serif;
-   font-size: var(--legend-title-size);
-   font-weight: 800;
-   letter-spacing: 0.14em;
-   color: rgba(20, 35, 10, 0.95);
-   text-transform: uppercase;
-
-   text-align: center;
-   width: 100%;
-
-   margin-bottom: 20px;
-}
-
-/* Rows */
-.map-legend-item {
-   display: flex;
-   align-items: center;
-   gap: 34px;                     /* 👈 more icon-to-text spacing */
-
-   font-family: "Arial Narrow", Arial, sans-serif;
-   font-size: var(--legend-item-size);
-   font-weight: 700;
-   color: rgba(20, 35, 10, 0.9);
-
-   line-height: 1.25;             /* 👈 more vertical breathing room */
-}
-
-/* Icons */
-.map-legend-item img {
-   width: var(--legend-icon-size);
-   height: var(--legend-icon-size);
-   object-fit: contain;
-   flex: 0 0 auto;
-}
-
-/* Header row (title + toggle button) */
-.map-legend-header {
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-   gap: 24px;
-}
-
-/* The body is what collapses */
-.map-legend-body {
-   display: flex;
-   flex-direction: column;
-   gap: var(--legend-gap);
-}
-
-/* Toggle button */
-.map-legend-toggle {
-   border: none;
-   background: rgba(20, 35, 10, 0.08);
-   color: rgba(20, 35, 10, 0.9);
-   width: 72px;
-   height: 72px;
-   border-radius: 18px;
-   cursor: pointer;
-   display: grid;
-   place-items: center;
-   padding: 0;
-   flex: 0 0 auto;
-}
-
-.map-legend-toggle:hover {
-   background: rgba(20, 35, 10, 0.14);
-}
-
-/* ✅ CSS chevron (no text glyphs) */
-.map-legend-toggle-icon {
-   width: 22px;
-   height: 22px;
-   display: inline-block;
-   position: relative;
-   transition: transform 0.18s ease;
-}
-
-/* draw the chevron using borders */
-.map-legend-toggle-icon::before {
-   content: "";
-   position: absolute;
-   inset: 0;
-   margin: auto;
-
-   width: 16px;
-   height: 16px;
-
-   border-right: 5px solid rgba(20, 35, 10, 0.85);
-   border-bottom: 5px solid rgba(20, 35, 10, 0.85);
-
-   /* expanded: point LEFT (matches your “rotate(180deg)” intent) */
-   transform: rotate(45deg);
-}
-
-/* Collapsed state */
-.map-legend.is-collapsed .map-legend-body {
-   display: none;
-}
-
-.map-legend.is-collapsed .map-legend-title {
-   display: none;
-}
-
-/* collapsed: point RIGHT */
-.map-legend.is-collapsed .map-legend-toggle-icon::before {
-   transform: rotate(-135deg);
-}
-
-/* Optional: shrink padding when collapsed so it becomes a neat badge */
-.map-legend.is-collapsed {
-   padding: calc(var(--legend-pad-y) * 0.6) calc(var(--legend-pad-x) * 0.6);
-}
-
-/* ============================================================
    BOTTOM NAV
 ============================================================ */
 
@@ -818,40 +664,6 @@ nav ul li a {
 nav ul li a:hover {
    background-color: #5e9600;
    transform: translateY(-2px);
-}
-
-/* ============================================================
-   MAP LABELS
-============================================================ */
-
-.map-label {
-   font-family: 'Poppins', sans-serif;
-   font-weight: 700;          /* was 900 */
-   letter-spacing: 0.04em;    /* improves readability */
-   color: #111;
-
-   transform: translate(-50%, -50%);
-   position: absolute;
-   background: transparent;
-   pointer-events: none;
-   z-index: 12;
-}
-
-.map-label-primary {
-   font-size: 3rem;
-}
-
-.map-label-secondary {
-   font-size: 2rem;
-}
-
-/* Hide region/exhibit/pavilion labels when toggle is off */
-.hide-map-labels .map-label-primary,
-.hide-map-labels .map-label-secondary,
-.hide-map-labels .pavilion-label,
-.hide-map-labels .pavilion-text,
-.hide-map-labels .map-label {
-   display: none !important;
 }
 
 /* ============================================================

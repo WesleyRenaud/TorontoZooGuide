@@ -28,6 +28,8 @@ import { createAttractionOpenController } from './consoleOperations/attractions/
 import { createAttractionOpeningScheduleController } from './consoleOperations/attractions/controllers/attractionOpeningSchedule.js';
 import { createRemoveAttractionOpeningScheduleController } from './consoleOperations/attractions/controllers/removeAttractionOpeningSchedule.js';
 
+import { createZoomobileStationClosedController } from './consoleOperations/zoomobile/controllers/zoomobileStationClosed.js';
+import { createZoomobileStationOpenController } from './consoleOperations/zoomobile/controllers/zoomobileStationOpen.js';
 import { createZoomobileRouteController } from './consoleOperations/zoomobile/controllers/zoomobileRoute.js';
 
 import { createGuardiansTalkScheduleController } from './consoleOperations/guardiansTalks/controllers/guardiansTalkSchedule.js';
@@ -67,6 +69,8 @@ import { createAttractionOpenPanelHtml } from './consoleOperations/attractions/p
 import { createAttractionOpeningSchedulePanelHtml } from './consoleOperations/attractions/panels/attractionOpeningSchedulePanel.js';
 import { createRemoveAttractionOpeningSchedulePanelHtml } from './consoleOperations/attractions/panels/removeAttractionOpeningSchedulePanel.js';
 
+import { createZoomobileStationClosedPanelHtml } from './consoleOperations/zoomobile/panels/zoomobileStationClosedPanel.js';
+import { createZoomobileStationOpenPanelHtml } from './consoleOperations/zoomobile/panels/zoomobileStationOpenPanel.js';
 import { createZoomobileRoutePanelHtml } from './consoleOperations/zoomobile/panels/zoomobileRoutePanel.js';
 
 import { createGuardiansTalkSchedulePanelHtml } from './consoleOperations/guardiansTalks/panels/guardiansTalkSchedulePanel.js';
@@ -107,6 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createAttractionOpenPanelHtml()}
       ${createAttractionOpeningSchedulePanelHtml()}
       ${createRemoveAttractionOpeningSchedulePanelHtml()}
+      ${createZoomobileStationClosedPanelHtml()}
+      ${createZoomobileStationOpenPanelHtml()}
       ${createZoomobileRoutePanelHtml()}
       ${createGuardiansTalkSchedulePanelHtml()}
       ${createEndGuardiansTalkSchedulePanelHtml()}
@@ -136,6 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
    const attractionOpenPanel = document.getElementById('attractionOpenPanel');
    const attractionOpeningSchedulePanel = document.getElementById('attractionOpeningSchedulePanel');
    const removeAttractionOpeningSchedulePanel = document.getElementById('removeAttractionOpeningSchedulePanel');
+   const zoomobileStationClosedPanel = document.getElementById('zoomobileStationClosedPanel');
+   const zoomobileStationOpenPanel = document.getElementById('zoomobileStationOpenPanel');
    const zoomobileRoutePanel = document.getElementById('zoomobileRoutePanel');
    const guardiansTalkSchedulePanel = document.getElementById('guardiansTalkSchedulePanel');
    const endGuardiansTalkSchedulePanel = document.getElementById('endGuardiansTalkSchedulePanel');
@@ -178,6 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
    const attractionOpenAttractionEl = document.getElementById('attractionOpenAttraction');
    const attractionOpeningScheduleAttractionEl = document.getElementById('attractionOpeningScheduleAttraction');
    const removeAttractionOpeningScheduleAttractionEl = document.getElementById('removeAttractionOpeningScheduleAttraction');
+   const zoomobileStationClosedZoomobileStationEl = document.getElementById('zoomobileStationClosedZoomobileStation');
+   const zoomobileStationOpenZoomobileStationEl = document.getElementById('zoomobileStationOpenZoomobileStation');
    const zoomobileRouteSummerEl = document.getElementById('zoomobileRouteSummer');
    const zoomobileRouteWinterEl = document.getElementById('zoomobileRouteWinter');
    const guardiansTalkScheduleLocationEl = document.getElementById('guardiansTalkScheduleLocation');
@@ -248,6 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
    const attractionOpeningScheduleSaturdayEl = document.getElementById('attractionOpeningScheduleSaturday');
    const attractionOpeningScheduleSundayEl = document.getElementById('attractionOpeningScheduleSunday');
    const attractionOpeningScheduleHolidaysOnlyEl = document.getElementById('attractionOpeningScheduleHolidaysOnly');
+
+   const zoomobileStationClosedStartDateEl = document.getElementById('zoomobileStationClosedStartDate');
+   const zoomobileStationClosedEndDateEl = document.getElementById('zoomobileStationClosedEndDate');
 
    const guardiansTalkScheduleStartDateEl = document.getElementById('guardiansTalkScheduleStartDate');
    const guardiansTalkScheduleEndDateEl = document.getElementById('guardiansTalkScheduleEndDate');
@@ -654,6 +667,31 @@ document.addEventListener('DOMContentLoaded', () => {
       hidePanels,
    });
 
+   createZoomobileStationClosedController({
+      showButtonEl: document.getElementById('showZoomobileStationClosedForm'),
+      panelEl: zoomobileStationClosedPanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitZoomobileStationClosed'),
+      statusEl: document.getElementById('zoomobileStationClosedStatus'),
+      zoomobileStationEl: zoomobileStationClosedZoomobileStationEl,
+      startDateEl: zoomobileStationClosedStartDateEl,
+      endDateEl: zoomobileStationClosedEndDateEl,
+      messageEl: document.getElementById('zoomobileStationClosedMessage'),
+      activatePanel,
+      hidePanels,
+   });
+
+   createZoomobileStationOpenController({
+      showButtonEl: document.getElementById('showZoomobileStationOpenForm'),
+      panelEl: zoomobileStationOpenPanel,
+      cancelButtonEl: null,
+      submitButtonEl: document.getElementById('submitZoomobileStationOpen'),
+      statusEl: document.getElementById('zoomobileStationOpenStatus'),
+      zoomobileStationEl: zoomobileStationOpenZoomobileStationEl,
+      activatePanel,
+      hidePanels,
+   });
+
    createZoomobileRouteController({
       showButtonEl: document.getElementById('showZoomobileRouteForm'),
       panelEl: zoomobileRoutePanel,
@@ -817,6 +855,11 @@ document.addEventListener('DOMContentLoaded', () => {
    initOffDisplayDatePickers(
       attractionOpeningScheduleStartDateEl,
       attractionOpeningScheduleEndDateEl
+   );
+
+   initOffDisplayDatePickers(
+      zoomobileStationClosedStartDateEl,
+      zoomobileStationClosedEndDateEl
    );
 
    initOffDisplayDatePickers(

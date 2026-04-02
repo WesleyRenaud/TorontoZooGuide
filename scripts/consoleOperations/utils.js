@@ -5,6 +5,7 @@ let cachedExhibits = null;
 let cachedRestaurants = null;
 let cachedGiftShops = null;
 let cachedAttractions = null;
+let cachedZoomobileStations = null;
 let cachedGuardiansTalks = null;
 let cachedWildEncounters = null;
 
@@ -169,6 +170,46 @@ export function populateAttractionDropdown(selectEl, attractions) {
             typeof attraction === 'string'
                ? attraction
                : attraction.name ?? attraction.NAME ?? '';
+
+         if (!name) return;
+
+         const option = document.createElement('option');
+         option.value = name;
+         option.textContent = name;
+         selectEl.appendChild(option);
+      });
+}
+
+export function populateZoomobileStationDropdown(selectEl, zoomobileStations) {
+   if (!selectEl) return;
+
+   selectEl.innerHTML = '';
+
+   const placeholder = document.createElement('option');
+   placeholder.value = '';
+   placeholder.textContent = 'Select a zoomobile station';
+   selectEl.appendChild(placeholder);
+
+   zoomobileStations
+      .slice()
+      .sort((a, b) => {
+         const aName =
+            typeof a === 'string'
+               ? a
+               : String(a.name ?? a.NAME ?? '');
+
+         const bName =
+            typeof b === 'string'
+               ? b
+               : String(b.name ?? b.NAME ?? '');
+
+         return aName.localeCompare(bName);
+      })
+      .forEach(zoomobileStation => {
+         const name =
+            typeof zoomobileStation === 'string'
+               ? zoomobileStation
+               : zoomobileStation.name ?? zoomobileStation.NAME ?? '';
 
          if (!name) return;
 
@@ -382,6 +423,33 @@ export async function loadAttractions() {
       });
 
    return cachedAttractions;
+}
+
+export async function loadZoomobileStations() {
+   if (cachedZoomobileStations) {
+      return cachedZoomobileStations;
+   }
+
+   const result = await postJson('/get-zoomobile-station-names', {});
+   const zoomobileStations = result?.zoomobile_stations ?? [];
+
+   cachedZoomobileStations = zoomobileStations
+      .slice()
+      .sort((a, b) => {
+         const aName =
+            typeof a === 'string'
+               ? a
+               : String(a.name ?? a.NAME ?? '');
+
+         const bName =
+            typeof b === 'string'
+               ? b
+               : String(b.name ?? b.NAME ?? '');
+
+         return aName.localeCompare(bName);
+      });
+
+   return cachedZoomobileStations;
 }
 
 export async function loadGuardiansTalks() {

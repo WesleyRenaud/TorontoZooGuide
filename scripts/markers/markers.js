@@ -6,7 +6,7 @@ export function createMarkerLayer({ mapInner, tooltip, hover }) {
    const markerElsByCoord = new Map();
 
    function clear() {
-      mapInner.querySelectorAll('.marker').forEach(m => m.remove());
+      mapInner.querySelectorAll('.marker').forEach((m) => m.remove());
       markerElsByCoord.clear();
    }
 
@@ -15,17 +15,26 @@ export function createMarkerLayer({ mapInner, tooltip, hover }) {
 
       const markerMap = new Map();
 
-      (items || []).forEach(item => {
+      (items || []).forEach((item) => {
          const x = item.x_coord ?? item.x ?? item.X ?? null;
          const y = item.y_coord ?? item.y ?? item.Y ?? null;
+
          if (x == null || y == null) return;
 
          const key = coordKey(x, y);
-         if (!markerMap.has(key)) markerMap.set(key, { x: Number(x), y: Number(y), items: [] });
+
+         if (!markerMap.has(key)) {
+            markerMap.set(key, {
+               x: Number(x),
+               y: Number(y),
+               items: [],
+            });
+         }
+
          markerMap.get(key).items.push(item);
       });
 
-      markerMap.forEach(group => {
+      markerMap.forEach((group) => {
          const itemsAtPoint = group.items;
          if (!itemsAtPoint.length) return;
 
@@ -41,10 +50,10 @@ export function createMarkerLayer({ mapInner, tooltip, hover }) {
 
          const key = coordKey(group.x, group.y);
          if (!key) return;
+
          markerElsByCoord.set(key, el);
 
          applyMarkerVisual(el, itemsAtPoint);
-
          mapInner.appendChild(el);
 
          const type = String(itemsAtPoint[0]?.type || '');
@@ -55,8 +64,7 @@ export function createMarkerLayer({ mapInner, tooltip, hover }) {
    }
 
    function getMarkerByCoord(key) {
-      const found = markerElsByCoord.get(key) || null;
-      return found;
+      return markerElsByCoord.get(key) || null;
    }
 
    function getAllMarkers() {

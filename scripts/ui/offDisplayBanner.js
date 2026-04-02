@@ -49,7 +49,7 @@ export function createOffDisplayBanner() {
          return;
       }
 
-      const uniqueMessages = [ ...new Set(messages) ];
+      const uniqueMessages = [...new Set(messages)];
 
       const banner = ensure();
       banner.querySelector('.off-display-closed-text').innerHTML = uniqueMessages.join('<br><br>');

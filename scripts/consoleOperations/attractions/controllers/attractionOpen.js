@@ -1,7 +1,7 @@
 import { loadAttractions, setStatus, populateAttractionDropdown } from '../../utils.js';
 import { postJson } from '../../../api/apiClient.js';
 
-export function createAttractionOpenController( {
+export function createAttractionOpenController({
    showButtonEl,
    panelEl,
    cancelButtonEl,
@@ -10,7 +10,7 @@ export function createAttractionOpenController( {
    attractionEl,
    activatePanel,
    hidePanels,
-} = {} ) {
+} = {}) {
 
    function resetForm() {
       if (attractionEl) attractionEl.value = '';

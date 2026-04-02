@@ -7,23 +7,27 @@ export function createPanzoom(mapInner, { contain }) {
 
    mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
-   const primaryLabels = document.querySelectorAll('.map-label-primary');
-   const secondaryLabels = document.querySelectorAll('.map-label-secondary');
+   const primaryLabelHideZoomScale = 2;
+   const secondaryLabelHideZoomScale = 2.5;
 
-   const primaryLabelHideZoomScale = 1.5;
-   const secondaryLabelHideZoomScale = 2;
-
-   mapInner.addEventListener('panzoomchange', () => {
+   function updateSvgLabelVisibility() {
       const currentScale = panzoom.getScale();
 
-      primaryLabels.forEach(label => {
-         label.style.display = currentScale > primaryLabelHideZoomScale ? 'none' : 'block';
+      const primaryLabels = mapInner.querySelectorAll('.map-label-primary-svg');
+      const secondaryLabels = mapInner.querySelectorAll('.map-label-secondary-svg');
+
+      primaryLabels.forEach((label) => {
+         label.style.display = currentScale > primaryLabelHideZoomScale ? 'none' : '';
       });
 
-      secondaryLabels.forEach(label => {
-         label.style.display = currentScale > secondaryLabelHideZoomScale ? 'none' : 'block';
+      secondaryLabels.forEach((label) => {
+         label.style.display = currentScale > secondaryLabelHideZoomScale ? 'none' : '';
       });
-   });
+   }
+
+   mapInner.addEventListener('panzoomchange', updateSvgLabelVisibility);
+
+   updateSvgLabelVisibility();
 
    return panzoom;
 }

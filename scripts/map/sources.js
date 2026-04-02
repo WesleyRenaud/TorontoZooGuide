@@ -147,6 +147,59 @@ export function createDataSources(store) {
          cachePolicy: 'no-cache',
       },
 
+      zoomobileRoute: {
+         fetch: async (ctx) => {
+            const svgRoot = document.querySelector('#zooMapMount svg');
+
+            const hideAllRouteLayers = () => {
+               if (!svgRoot) return;
+
+               svgRoot.querySelector('#zoomobile-route-summer')?.style.setProperty('display', 'none');
+               svgRoot.querySelector('#zoomobile-route-winter')?.style.setProperty('display', 'none');
+            };
+
+            hideAllRouteLayers();
+
+            if (ctx.zoomobileRoute === 'none') {
+               store.byType.zoomobileStation = [];
+               store.byType.zoomobileRoute = [];
+               return [];
+            }
+
+            const res = await postJson('/get-zoomobile-route', {
+               zoomobileRoute: ctx.zoomobileRoute,
+               month: ctx.month,
+               day: ctx.day,
+               zoomobileStationsToInclude: ctx.zoomobileStationsToInclude,
+            });
+
+            console.log(res);
+
+            const route = String(res?.route || '').trim().toLowerCase();
+
+            if (svgRoot) {
+               if (route === 'summer') {
+                  svgRoot.querySelector('#zoomobile-route-summer')?.style.setProperty('display', '');
+               } else if (route === 'winter') {
+                  svgRoot.querySelector('#zoomobile-route-winter')?.style.setProperty('display', '');
+               }
+            }
+
+            const stations = Array.isArray(res?.zoomobile_stations)
+               ? res.zoomobile_stations.map((station) => ({
+                  ...station,
+                  type: 'zoomobileStation',
+               }))
+               : [];
+
+            store.byType.zoomobileStation = stations;
+            store.byType.zoomobileRoute = [];
+
+            return stations;
+         },
+         cachePolicy: 'no-cache',
+      },
+
       guardiansTalk: {
          fetch: async (ctx) => {
             const res = await postJson('/get-guardians-talks', {
@@ -216,6 +269,19 @@ export function createDataSources(store) {
             return cache.inFlight;
          },
          cachePolicy: 'static',
+      },
+
+      closedExhibit: {
+         fetch: async (ctx) => {
+            const res = await postJson('/get-closed-exhibits', {
+               month: ctx.month,
+               day: ctx.day,
+               dayOfWeek: ctx.dayOfWeek,
+            });
+
+            return Array.isArray(res?.closed_exhibits) ? res.closed_exhibits : [];
+         },
+         cachePolicy: 'no-cache',
       },
    };
 }

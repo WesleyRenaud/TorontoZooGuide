@@ -49,7 +49,7 @@ class MyHandler( BaseHTTPRequestHandler ):
       if path.startswith( "/styles/" ):
          return self._send_file( "." + path )
       if path.startswith( "/scripts/" ):
-         return self._send_file("." + path )   # serves ALL modules
+         return self._send_file( "." + path )   # serves ALL modules
       if path.startswith( "/images/" ):
          return self._send_file( "." + path )
 
@@ -59,7 +59,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
    def do_POST( self ):
       if self.path == '/get-visible-animals':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -79,15 +79,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {
-            "animals": [animal.to_dict() for animal in animals]
-         }
+         response = { "animals": [ animal.to_dict() for animal in animals ] }
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-exhibits-in-region':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -98,12 +96,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"exhibits": exhibits}
+         response = { "exhibits": exhibits }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-animal-names-by-exhibit':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -114,12 +112,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"animals": animals}
+         response = { "animals": animals }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-animal-information':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -130,12 +128,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"information": [animal_info.to_dict()]}
+         response = { "information": [ animal_info.to_dict() ] }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-animals-by-exhibit':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -156,7 +154,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          for animal in animals:
             d = animal.to_dict()
-            d['type'] = d.get( 'type', 'animal' )
+            d[ 'type' ] = d.get( 'type', 'animal' )
             animals_json.append( d )
 
          self.send_response( 200 )
@@ -176,12 +174,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"pavilions": [pavilion.to_dict() for pavilion in pavilions]}
+         response = { "pavilions": [ pavilion.to_dict() for pavilion in pavilions ] }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-restaurants':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -199,7 +197,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"restaurants": [restaurant.to_dict() for restaurant in restaurants]}
+         response = { "restaurants": [ restaurant.to_dict() for restaurant in restaurants ] }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
@@ -209,12 +207,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"restrooms": [restroom.to_dict() for restroom in restrooms]}
+         response = { "restrooms": [ restroom.to_dict() for restroom in restrooms ] }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-gift-shops':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -232,12 +230,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"gift_shops": [gift_shop.to_dict() for gift_shop in gift_shops]}
+         response = { "gift_shops": [ gift_shop.to_dict() for gift_shop in gift_shops ] }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-attractions':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -254,34 +252,40 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {"attractions": [attraction.to_dict() for attraction in attractions]}
+         response = { "attractions": [ attraction.to_dict() for attraction in attractions ] }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-zoomobile-route':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
          route = data.get( 'zoomobileRoute' )
-         zoomobile_stations_to_include = data.get( 'zoomobileStationsToInclude' )
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+         zoomobile_stations_to_include = data.get( 'zoomobileStationsToInclude' ) or []
 
          zoomobile_route = self.database.get_zoomobile_route(
             route=route,
+            month=month,
+            day=day,
             zoomobile_stations_to_include=zoomobile_stations_to_include )
-         
+
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
+
          response = {
-            "zoomobile_stations": [station.to_dict() for station in zoomobile_route[0]],
-            "zoomobile_route_markers": [marker.to_dict() for marker in zoomobile_route[1]]
+            'route': zoomobile_route[ 'route' ],
+            'zoomobile_stations': [ station.to_dict() for station in zoomobile_route[ 'zoomobile_stations' ] ]
          }
+
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-guardians-talks':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -294,13 +298,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {"guardians_talks": [guardians_talk.to_dict() for guardians_talk in guardians_talks]}
+         response = { "guardians_talks": [ guardians_talk.to_dict() for guardians_talk in guardians_talks ] }
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-wild-encounters':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -309,20 +313,39 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          wild_encounters = self.database.get_wild_encounters( month=month, day=day )
 
-         wild_encounters = [
-            w for w in wild_encounters
-            if getattr( w, 'is_available', True )
-         ]
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "wild_encounters": [ wild_encounter.to_dict() for wild_encounter in wild_encounters ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-closed-exhibits':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+
+         closed_exhibits = self.database.get_closed_exhibits(
+            month=month,
+            day=day
+         )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"wild_encounters": [wild_encounter.to_dict() for wild_encounter in wild_encounters]}
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+         response = { "closed_exhibits": closed_exhibits }
+
+         self.wfile.write(
+            json.dumps( response ).encode( 'utf-8' )
+         )
 
 
       elif self.path == '/search':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -364,14 +387,14 @@ class MyHandler( BaseHTTPRequestHandler ):
                include_off_display_animals=include_off_display_animals ) or []
             for animal in animals:
                   d = animal.to_dict()
-                  d['type'] = d.get( 'type', 'animal' )
+                  d[ 'type' ] = d.get( 'type', 'animal' )
                   animals_json.append( d )
 
          if include_pavilions:
             pavilions = self.database.get_pavilions_matching_query( query=query ) or []
             for pavilion in pavilions:
                   d = pavilion.to_dict()
-                  d['type'] = d.get( 'type', 'pavilion' )
+                  d[ 'type' ] = d.get( 'type', 'pavilion' )
                   pavilions_json.append( d )
 
          if include_restaurants:
@@ -382,21 +405,21 @@ class MyHandler( BaseHTTPRequestHandler ):
                include_closed_restaurants=include_closed_restaurants ) or []
             for restaurant in restaurants:
                   d = restaurant.to_dict()
-                  d['type'] = d.get( 'type', 'restaurant' )
+                  d[ 'type' ] = d.get( 'type', 'restaurant' )
                   restaurants_json.append( d )
 
          if include_restrooms:
             restrooms = self.database.get_restrooms_matching_query( query=query ) or []
             for restroom in restrooms:
                   d = restroom.to_dict()
-                  d['type'] = d.get( 'type', 'restroom' )
+                  d[ 'type' ] = d.get( 'type', 'restroom' )
                   restrooms_json.append( d )
 
          if include_gift_shops:
             gift_shops = self.database.get_gift_shops_matching_query( query=query, month=month, day=day ) or []
             for gift_shop in gift_shops:
                   d = gift_shop.to_dict()
-                  d['type'] = d.get( 'type', 'giftShop' )
+                  d[ 'type' ] = d.get( 'type', 'giftShop' )
                   gift_shops_json.append( d )
 
          if include_attractions:
@@ -407,28 +430,28 @@ class MyHandler( BaseHTTPRequestHandler ):
                include_closed_attractions=include_closed_attractions ) or []
             for attraction in attractions:
                   d = attraction.to_dict()
-                  d['type'] = d.get( 'type', 'attraction' )
+                  d[ 'type' ] = d.get( 'type', 'attraction' )
                   attractions_json.append( d )
 
          if include_zoomobile_stations:
             zoomobile_stations = self.database.get_zoomobile_stations_matching_query( query=query ) or []
             for zoomobile_station in zoomobile_stations:
                   d = zoomobile_station.to_dict()
-                  d['type'] = d.get( 'type', 'zoomobileStation' )
+                  d[ 'type' ] = d.get( 'type', 'zoomobileStation' )
                   zoomobile_stations_json.append( d )
 
          if include_guardians_talks:
             guardians_talks = self.database.get_guardians_talks_matching_query( query=query, month=month, day=day ) or []
             for guardians_talk in guardians_talks:
                   d = guardians_talk.to_dict()
-                  d['type'] = d.get( 'type', 'guardiansTalk' )
+                  d[ 'type' ] = d.get( 'type', 'guardiansTalk' )
                   guardians_talks_json.append( d )
 
          if include_wild_encounters:
             wild_encounters = self.database.get_wild_encounters_matching_query( query=query, month=month, day=day ) or []
             for wild_encounter in wild_encounters:
                   d = wild_encounter.to_dict()
-                  d['type'] = d.get( 'type', 'wildEncounter' )
+                  d[ 'type' ] = d.get( 'type', 'wildEncounter' )
                   wild_encounters_json.append( d )
 
          response = {
@@ -450,7 +473,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/set-itinerary':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -481,7 +504,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = 'Could not save itinerary.'
+            response[ 'error' ] = 'Could not save itinerary.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -489,7 +512,7 @@ class MyHandler( BaseHTTPRequestHandler ):
       elif self.path == '/get-itinerary':
          itinerary = self.database.get_itinerary()
 
-         response = {'itinerary': itinerary.to_dict()}
+         response = { 'itinerary': itinerary.to_dict() }
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -509,13 +532,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = 'Could not clear itinerary.'
+            response[ 'error' ] = 'Could not clear itinerary.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/validate-itinerary':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
          
@@ -538,22 +561,22 @@ class MyHandler( BaseHTTPRequestHandler ):
          if previous_itinerary != None:
             for animal in previous_itinerary.animals:
                d = animal.to_dict()
-               d['type'] = d.get( 'type', 'animal' )
+               d[ 'type' ] = d.get( 'type', 'animal' )
                previous_animals_json.append( d )
 
             for attraction in previous_itinerary.attractions:
                d = attraction.to_dict()
-               d['type'] = d.get( 'type', 'attraction' )
+               d[ 'type' ] = d.get( 'type', 'attraction' )
                previous_attractions_json.append( d )
 
             for guardians_talk in previous_itinerary.guardians_talks:
                d = guardians_talk.to_dict()
-               d['type'] = d.get( 'type', 'guardiansTalk' )
+               d[ 'type' ] = d.get( 'type', 'guardiansTalk' )
                previous_guardians_talks_json.append( d )
 
             for wild_encounter in previous_itinerary.wild_encounters:
                d = wild_encounter.to_dict()
-               d['type'] = d.get( 'type', 'wildEncounter' )
+               d[ 'type' ] = d.get( 'type', 'wildEncounter' )
                previous_wild_encounters_json.append( d )
 
          animal_validation = self.database.validate_animals(
@@ -562,32 +585,32 @@ class MyHandler( BaseHTTPRequestHandler ):
             temp=temp,
             animals_to_include=animals_to_include )
 
-         animals = animal_validation['valid_animals']
-         removed_animals = animal_validation['removed_animals']
+         animals = animal_validation[ 'valid_animals' ]
+         removed_animals = animal_validation[ 'removed_animals' ]
 
          attraction_validation = self.database.validate_attractions(
             month=month,
             day=day,
             attractions_to_include=attractions_to_include )
 
-         attractions = attraction_validation['valid_attractions']
-         removed_attractions = attraction_validation['removed_attractions']
+         attractions = attraction_validation[ 'valid_attractions' ]
+         removed_attractions = attraction_validation[ 'removed_attractions' ]
 
          guardians_talk_validation = self.database.validate_guardians_talks(
             month=month,
             day=day,
             guardians_talks_to_include=guardians_talks_to_include )
 
-         guardians_talks = guardians_talk_validation['valid_guardians_talks']
-         removed_guardians_talks = guardians_talk_validation['removed_guardians_talks']
+         guardians_talks = guardians_talk_validation[ 'valid_guardians_talks' ]
+         removed_guardians_talks = guardians_talk_validation[ 'removed_guardians_talks' ]
 
          wild_encounter_validation = self.database.validate_wild_encounters(
             month=month,
             day=day,
             wild_encounters_to_include=wild_encounters_to_include )
 
-         wild_encounters = wild_encounter_validation['valid_wild_encounters']
-         removed_wild_encounters = wild_encounter_validation['removed_wild_encounters']
+         wild_encounters = wild_encounter_validation[ 'valid_wild_encounters' ]
+         removed_wild_encounters = wild_encounter_validation[ 'removed_wild_encounters' ]
 
          animals_json = []
          removed_animals_json = []
@@ -600,46 +623,46 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          for animal in animals:
             d = animal.to_dict()
-            d['type'] = d.get( 'type', 'animal' )
+            d[ 'type' ] = d.get( 'type', 'animal' )
             animals_json.append( d )
 
          for animal in removed_animals:
             d = animal.to_dict()
-            d['type'] = d.get( 'type', 'animal' )
-            d['removalReason'] = animal.off_display_message
+            d[ 'type' ] = d.get( 'type', 'animal' )
+            d[ 'removalReason' ] = animal.off_display_message
             removed_animals_json.append( d )
 
          for attraction in attractions:
             d = attraction.to_dict()
-            d['type'] = d.get( 'type', 'attraction' )
+            d[ 'type' ] = d.get( 'type', 'attraction' )
             attractions_json.append( d )
 
          for attraction in removed_attractions:
             d = attraction.to_dict()
-            d['type'] = d.get( 'type', 'attraction' )
-            d['removalReason'] = attraction.closed_message
+            d[ 'type' ] = d.get( 'type', 'attraction' )
+            d[ 'removalReason' ] = attraction.closed_message
             removed_attractions_json.append( d )
 
          for guardians_talk in guardians_talks:
             d = guardians_talk.to_dict()
-            d['type'] = d.get( 'type', 'guardiansTalk' )
+            d[ 'type' ] = d.get( 'type', 'guardiansTalk' )
             guardians_talks_json.append( d )
 
          for guardians_talk in removed_guardians_talks:
             d = guardians_talk.to_dict()
-            d['type'] = d.get( 'type', 'guardiansTalk' )
-            d['removalReason'] = guardians_talk.unavailable_message
+            d[ 'type' ] = d.get( 'type', 'guardiansTalk' )
+            d[ 'removalReason' ] = guardians_talk.unavailable_message
             removed_guardians_talks_json.append( d )
 
          for wild_encounter in wild_encounters:
             d = wild_encounter.to_dict()
-            d['type'] = d.get( 'type', 'wildEncounter' )
+            d[ 'type' ] = d.get( 'type', 'wildEncounter' )
             wild_encounters_json.append( d )
 
          for wild_encounter in removed_wild_encounters:
             d = wild_encounter.to_dict()
-            d['type'] = d.get( 'type', 'wildEncounter' )
-            d['removalReason'] = wild_encounter.unavailable_message
+            d[ 'type' ] = d.get( 'type', 'wildEncounter' )
+            d[ 'removalReason' ] = wild_encounter.unavailable_message
             removed_wild_encounters_json.append( d )
 
          clear_success = self.database.clear_itinerary()
@@ -678,9 +701,9 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not clear_success:
-            response['error'] = 'Could not clear itinerary.'
+            response[ 'error' ] = 'Could not clear itinerary.'
          elif not set_success:
-            response['error'] = 'Could not save validated itinerary.'
+            response[ 'error' ] = 'Could not save validated itinerary.'
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -694,7 +717,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"species": species}
+         response = { "species": species }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
@@ -704,7 +727,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"restaurants": restaurants}
+         response = { "restaurants": restaurants }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )   
 
 
@@ -714,7 +737,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"gift_shops": gift_shops}
+         response = { "gift_shops": gift_shops }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )   
 
 
@@ -724,7 +747,17 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"attractions": attractions}
+         response = { "attractions": attractions }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-zoomobile-station-names':
+         zoomobile_stations = self.database.get_zoomobile_station_names()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "zoomobile_stations": zoomobile_stations }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
@@ -734,7 +767,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"guardians_talk_locations": guardians_talk_locations}
+         response = { "guardians_talk_locations": guardians_talk_locations }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
@@ -744,12 +777,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"guardians_talks": guardians_talks}
+         response = { "guardians_talks": guardians_talks }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-guardians-talk-names-at-location':
-         content_length = int( self.headers[ 'Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -760,12 +793,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"guardians_talks": guardians_talks}
+         response = { "guardians_talks": guardians_talks }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-guardians-talk-occurrences':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -793,12 +826,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"wild_encounters": wild_encounters}
+         response = { "wild_encounters": wild_encounters }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-wild-encounter-occurrences':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -833,7 +866,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"regions": regions}
+         response = { "regions": regions }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
@@ -843,12 +876,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = {"exhibits": exhibits}
+         response = { "exhibits": exhibits }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-animal-off-display':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -879,13 +912,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response[ 'error' ] = f'No animal found with species "{species}".'
+            response[ 'error' ] = f'No animal found with species "{ species }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-animal-on-display':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -907,13 +940,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'No off-display entry found for "{species}" in "{exhibit}".'
+            response[ 'error' ] = f'No off-display entry found for "{ species }" in "{ exhibit }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-animal-visibility-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -950,13 +983,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response[ 'error' ] = f'Could not set limited viewing schedule for "{species}" in "{exhibit}".'
+            response[ 'error' ] = f'Could not set limited viewing schedule for "{ species }" in "{ exhibit }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
    
       elif self.path == '/remove-animal-visibility-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -976,13 +1009,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not remove visibility schedule for "{species}" in "{exhibit}".'
+            response[ 'error' ] = f'Could not remove visibility schedule for "{ species }" in "{ exhibit }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-animal-viewing-alert':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1013,13 +1046,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set viewing alert for "{species}" in "{exhibit}".'
+            response[ 'error' ] = f'Could not set viewing alert for "{ species }" in "{ exhibit }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/remove-animal-viewing-alert':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1039,13 +1072,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not remove viewing alert for "{species}" in "{exhibit}".'
+            response[ 'error' ] = f'Could not remove viewing alert for "{ species }" in "{ exhibit }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-exhibit-closed':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1069,13 +1102,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set "{exhibit}" as closed.'
+            response[ 'error' ] = f'Could not set "{ exhibit }" as closed.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-exhibit-open':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1093,13 +1126,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set "{exhibit}" as open.'
+            response[ 'error' ] = f'Could not set "{ exhibit }" as open.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-restaurant-closed':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1127,13 +1160,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set "{restaurant}" as closed.'
+            response[ 'error' ] = f'Could not set "{ restaurant }" as closed.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-restaurant-open':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1151,13 +1184,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set "{restaurant}" as open.'
+            response[ 'error' ] = f'Could not set "{ restaurant }" as open.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-restaurant-opening-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1211,13 +1244,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set opening schedule for "{restaurant}".'
+            response[ 'error' ] = f'Could not set opening schedule for "{ restaurant }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/remove-restaurant-opening-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1235,13 +1268,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not remove schedule for "{restaurant}".'
+            response[ 'error' ] = f'Could not remove schedule for "{ restaurant }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-gift-shop-closed':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1269,13 +1302,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set "{gift_shop}" as closed.'
+            response[ 'error' ] = f'Could not set "{ gift_shop }" as closed.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-gift-shop-open':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1293,13 +1326,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set "{gift_shop}" as open.'
+            response[ 'error' ] = f'Could not set "{ gift_shop }" as open.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-gift-shop-opening-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1353,13 +1386,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set opening schedule for "{gift_shop}".'
+            response[ 'error' ] = f'Could not set opening schedule for "{ gift_shop }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/remove-gift-shop-opening-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1377,13 +1410,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not remove schedule for "{gift_shop}".'
+            response[ 'error' ] = f'Could not remove schedule for "{ gift_shop }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-attraction-closed':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1411,13 +1444,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set "{attraction}" as closed.'
+            response[ 'error' ] = f'Could not set "{ attraction }" as closed.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-attraction-open':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1435,13 +1468,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set "{attraction}" as open.'
+            response[ 'error' ] = f'Could not set "{ attraction }" as open.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-attraction-opening-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1495,13 +1528,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set opening schedule for "{attraction}".'
+            response[ 'error' ] = f'Could not set opening schedule for "{ attraction }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
          
 
       elif self.path == '/remove-attraction-opening-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1519,13 +1552,71 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not remove schedule for "{attraction}".'
+            response[ 'error' ] = f'Could not remove schedule for "{ attraction }".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-zoomobile-station-closed':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         zoomobile_station = data.get( 'zoomobileStation' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+         message = data.get( 'message' )
+
+         success = self.database.set_zoomobile_station_as_closed(
+            zoomobile_station=zoomobile_station,
+            start_date=start_date,
+            end_date=end_date,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'zoomobile_station': zoomobile_station,
+            'startDate': start_date,
+            'endDate': end_date,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not set "{ zoomobile_station }" as closed.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-zoomobile-station-open':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         zoomobile_station = data.get( 'zoomobileStation' )
+
+         success = self.database.set_zoomobile_station_as_open( zoomobile_station=zoomobile_station )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'zoomobile_station': zoomobile_station
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not set "{ zoomobile_station }" as open.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-current-zoomobile-route':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1546,13 +1637,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set Zoomobile route to "{route}".'
+            response[ 'error' ] = f'Could not set Zoomobile route to "{ route }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-guardians-talk-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1609,13 +1700,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set schedule for "{talk}" at "{location}".'
+            response[ 'error' ] = f'Could not set schedule for "{ talk }" at "{ location }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
             
 
       elif self.path == '/cancel-guardians-talk-occurrence':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1643,13 +1734,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not cancel "{talk}" at "{location}" on {date} at {time}.'
+            response[ 'error' ] = f'Could not cancel "{ talk }" at "{ location }" on { date } at { time }.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/set-wild-encounter-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1703,13 +1794,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not set schedule for "{wild_encounter}".'
+            response[ 'error' ] = f'Could not set schedule for "{ wild_encounter }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/end-wild-encounter-schedule':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1731,13 +1822,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not end schedule for "{wild_encounter}".'
+            response[ 'error' ] = f'Could not end schedule for "{ wild_encounter }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/cancel-wild-encounter-occurrence':
-         content_length = int( self.headers['Content-Length'] )
+         content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
@@ -1762,12 +1853,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          }
 
          if not success:
-            response['error'] = f'Could not cancel "{wild_encounter}" on {date} at {time}.'
+            response[ 'error' ] = f'Could not cancel "{ wild_encounter }" on { date } at { time }.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
          
 
 if __name__ == '__main__':
-   httpd = HTTPServer( ( 'localhost', int( sys.argv[1] ) ), MyHandler )
-   print( 'Server listing in port:  ', int( sys.argv[1] ) )
+   httpd = HTTPServer( ( 'localhost', int( sys.argv[ 1 ] ) ), MyHandler )
+   print( 'Server listing in port:  ', int( sys.argv[ 1 ] ) )
    httpd.serve_forever()

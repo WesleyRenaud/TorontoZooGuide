@@ -1,7 +1,7 @@
-import { initFlatpickr } from '../ui/flatpickr.js';
+import { initVisitDateFlatpickr } from '../shared/visitDateFlatpickr.js';
 
-export function initMapControls
-   ({
+export function initMapControls(
+   {
       mapPreset,
       mapDateInput,
       includeOffDisplayCheckbox,
@@ -10,19 +10,28 @@ export function initMapControls
       includeClosedAttractionsCheckbox,
       zoomobileRouteRadios,
       onUpdate
-   }) {
-
+   }
+) {
    if (!mapPreset || !mapDateInput || !onUpdate) {
       console.warn('[controls] missing elements:', { mapPreset, mapDateInput, onUpdate });
       return;
    }
 
-   const fp = initFlatpickr(mapDateInput, {
+   const fp = initVisitDateFlatpickr(mapDateInput, {
       defaultDate: new Date(),
-      dateFormat: 'Y-m-d',
-      minDate: 'today',
-      onChange: (_, dateStr) => {
-         if (mapPreset.value === 'specific-day') onUpdate('specific-day', dateStr);
+      clickOpens: false,
+      onChange: (_safeDate, isoDate, instance) => {
+         instance.close();
+         mapDateInput.blur();
+         document.activeElement?.blur?.();
+
+         if (mapPreset.value === 'specific-day') {
+            onUpdate('specific-day', isoDate);
+         }
+      },
+      onClose: () => {
+         mapDateInput.blur();
+         document.activeElement?.blur?.();
       }
    });
 
@@ -39,7 +48,8 @@ export function initMapControls
          const dateStr = currentDateStr();
          if (!dateStr) return;
          onUpdate('specific-day', dateStr);
-      } else {
+      }
+      else {
          onUpdate(preset, null);
       }
    }
@@ -49,20 +59,34 @@ export function initMapControls
 
       if (!preset) {
          mapDateInput.style.display = 'none';
+         fp?.close();
+         mapDateInput.blur();
          return;
       }
 
       if (preset === 'specific-day') {
          mapDateInput.style.display = 'inline-block';
+         fp?.close();
+         mapDateInput.blur();
          onUpdate('specific-day', currentDateStr());
-      } else {
+      }
+      else {
          mapDateInput.style.display = 'none';
+         fp?.close();
+         mapDateInput.blur();
          onUpdate(preset, null);
       }
    });
 
-   mapDateInput.addEventListener('change', () => {
-      if (mapPreset.value === 'specific-day') onUpdate('specific-day', currentDateStr());
+   mapDateInput.addEventListener('mousedown', event => {
+      if (mapPreset.value !== 'specific-day') return;
+
+      event.preventDefault();
+      fp?.open();
+   });
+
+   mapDateInput.addEventListener('focus', () => {
+      mapDateInput.blur();
    });
 
    if (includeOffDisplayCheckbox) {
@@ -90,8 +114,10 @@ export function initMapControls
    }
 
    if (zoomobileRouteRadios) {
-      Array.from(zoomobileRouteRadios || []).forEach(r => r.addEventListener('change', () => {
-         refetch();
-      }));
+      Array.from(zoomobileRouteRadios || []).forEach(r => {
+         r.addEventListener('change', () => {
+            refetch();
+         });
+      });
    }
 }

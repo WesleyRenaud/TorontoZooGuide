@@ -286,7 +286,7 @@ class Itinerary:
       else:
          d = dict(obj) if isinstance(obj, dict) else {}
 
-      d['type'] = d.get('type', fallback_type)
+      d[ 'type' ] = d.get('type', fallback_type)
       return d
    
 
@@ -294,7 +294,7 @@ class Zoo_Util:
    def get_average_temperature( self, month, day ):
       # Convert month/day to day-of-year
       month = self.normalize_month( month )
-      day_of_year = sum( calendar.monthrange( 2024, m )[1] for m in range( 1, month ) ) + day
+      day_of_year = sum( calendar.monthrange( 2024, m )[ 1 ] for m in range( 1, month ) ) + day
 
       # Month start temperatures (°C)
       month_base = {
@@ -316,20 +316,20 @@ class Zoo_Util:
       month_start_doy = []
       cumulative = 1
       for m in range( 1, 13 ):
-         month_start_doy.append( (cumulative, month_base[m]) )
-         cumulative += calendar.monthrange( 2024, m )[1]
+         month_start_doy.append( (cumulative, month_base[ m ]) )
+         cumulative += calendar.monthrange( 2024, m )[ 1 ]
 
       # Find which interval the day-of-year falls into
       for i in range( len( month_start_doy ) - 1 ):
-         start_day, start_temp = month_start_doy[i]
-         end_day, end_temp = month_start_doy[i+1]
+         start_day, start_temp = month_start_doy[ i ]
+         end_day, end_temp = month_start_doy[ i + 1 ]
          if start_day <= day_of_year < end_day:
             progress = (day_of_year - start_day) / (end_day - start_day)
             temp = start_temp + (end_temp - start_temp) * progress
             return round( temp, 1 )
 
       # If day is in December
-      temp = month_start_doy[-1][1]
+      temp = month_start_doy[ -1 ][ 1 ]
       return round( temp, 1 )
 
 
@@ -353,7 +353,7 @@ class Zoo_Util:
 
       base = MONTH_SNOW_BASE.get( month, 0.0 )
 
-      days_in_month = calendar.monthrange( 2024, month )[1]
+      days_in_month = calendar.monthrange( 2024, month )[ 1 ]
       progress = (day - 1) / (days_in_month - 1)
 
       if month == 12:
@@ -447,7 +447,7 @@ class Zoo_Util:
       if isinstance( month, int ):
          if month not in month_map:
             raise ValueError( f'Invalid month: {month}' )
-         return month_map[month]
+         return month_map[ month ]
 
       if isinstance( month, str ):
          month = month.strip()
@@ -456,14 +456,14 @@ class Zoo_Util:
             month_num = int( month )
             if month_num not in month_map:
                raise ValueError( f'Invalid month: {month}' )
-            return month_map[month_num]
+            return month_map[ month_num ]
 
          lowered = month.lower()
 
          if lowered in full_name_map:
-            return full_name_map[lowered]
+            return full_name_map[ lowered ]
 
-         abbrev = month[:3].title()
+         abbrev = month[ :3 ].title()
          if abbrev in month_map.values():
             return abbrev
 
@@ -476,9 +476,9 @@ class Zoo_Util:
          "JUL":6, "AUG":7, "SEP":8, "OCT":9, "NOV":10, "DEC":11
       }
 
-      days_in_month = [31,28,31,30,31,30,31,31,30,31,30,31]
+      days_in_month = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
 
-      doy = sum( days_in_month[:month_index[month]] )
+      doy = sum( days_in_month[ :month_index[ month ] ] )
       return doy + (day - 1)
    
 

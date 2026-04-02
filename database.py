@@ -106,17 +106,17 @@ class Database():
          if isinstance( exhibit, str ) and exhibit.strip() != '' )
 
       for animal in animal_data:
-         species = animal['SPECIES']
-         exhibit = animal['EXHIBIT']
+         species = animal[ 'SPECIES' ]
+         exhibit = animal[ 'EXHIBIT' ]
 
          if exhibits_filter and exhibit not in exhibits_filter:
             continue
 
-         min_temperature = animal['MIN_TEMPERATURE']
-         snow_resistance = animal['SNOW_RESISTANCE']
-         part_of_seasonal_exhibit = animal['PART_OF_SEASONAL_EXHIBIT']
-         enclosure_type = animal['ENCLOSURE_TYPE']
-         seasonally_off_display_message = animal['SEASONALLY_OFF_DISPLAY_MESSAGE']
+         min_temperature = animal[ 'MIN_TEMPERATURE' ]
+         snow_resistance = animal[ 'SNOW_RESISTANCE' ]
+         part_of_seasonal_exhibit = animal[ 'PART_OF_SEASONAL_EXHIBIT' ]
+         enclosure_type = animal[ 'ENCLOSURE_TYPE' ]
+         seasonally_off_display_message = animal[ 'SEASONALLY_OFF_DISPLAY_MESSAGE' ]
 
          is_off_display, off_display_message = self.get_active_off_display_status(
             animal=animal,
@@ -150,8 +150,8 @@ class Database():
                exhibit=exhibit )
 
          should_include = (
-            (likelihood > threshold)
-            or (include_off_display_animals and likelihood == 0)
+            ( likelihood > threshold )
+            or ( include_off_display_animals and likelihood == 0 )
          )
 
          if should_include:
@@ -165,28 +165,28 @@ class Database():
                if seasonally_off_display_message:
                   display_message = seasonally_off_display_message
                else:
-                  display_message = f'The {species} is off display due to cold weather.'
+                  display_message = f'The { species } is off display due to cold weather.'
 
             animals.append(
                zoo.Animal(
                   species=species,
-                  latin_name=animal['LATIN_NAME'],
-                  general_viewing_tips=animal['GENERAL_VIEWING_TIPS'],
-                  seasonal_viewing_tips=animal['SEASONAL_VIEWING_TIPS'],
-                  identification=animal['IDENTIFICATION'],
-                  habitat_and_range=animal['HABITAT_AND_RANGE'],
-                  diet_and_feeding=animal['DIET_AND_FEEDING'],
-                  behaviour_and_life_cycle=animal['BEHAVIOUR_AND_SOCIAL_LIFE'],
-                  adaptations=animal['ADAPTATIONS'],
-                  reproduction_and_life_cycle=animal['REPRODUCTION_AND_LIFE_CYCLE'],
-                  animals_at_the_zoo=animal['ANIMALS_AT_THE_ZOO'],
+                  latin_name=animal[ 'LATIN_NAME' ],
+                  general_viewing_tips=animal[ 'GENERAL_VIEWING_TIPS' ],
+                  seasonal_viewing_tips=animal[ 'SEASONAL_VIEWING_TIPS' ],
+                  identification=animal[ 'IDENTIFICATION' ],
+                  habitat_and_range=animal[ 'HABITAT_AND_RANGE' ],
+                  diet_and_feeding=animal[ 'DIET_AND_FEEDING' ],
+                  behaviour_and_life_cycle=animal[ 'BEHAVIOUR_AND_SOCIAL_LIFE' ],
+                  adaptations=animal[ 'ADAPTATIONS' ],
+                  reproduction_and_life_cycle=animal[ 'REPRODUCTION_AND_LIFE_CYCLE' ],
+                  animals_at_the_zoo=animal[ 'ANIMALS_AT_THE_ZOO' ],
                   exhibit=exhibit,
-                  seasonal_viewing_summary=animal['SEASONAL_VIEWING_SUMMARY'],
-                  seasonal_viewing_information=animal['SEASONAL_VIEWING_INFORMATION'],
+                  seasonal_viewing_summary=animal[ 'SEASONAL_VIEWING_SUMMARY' ],
+                  seasonal_viewing_information=animal[ 'SEASONAL_VIEWING_INFORMATION' ],
                   off_display_message=display_message,
                   enclosure_type=enclosure_type,
-                  x_coord=animal['X_COORD'],
-                  y_coord=animal['Y_COORD'],
+                  x_coord=animal[ 'X_COORD' ],
+                  y_coord=animal[ 'Y_COORD' ],
                   likelihood=likelihood,
                   has_limited_viewing_schedule=has_limited_viewing_schedule,
                   limited_viewing_message=limited_viewing_message,
@@ -199,14 +199,14 @@ class Database():
 
 
    def get_active_off_display_status( self, animal, target_date ):
-      stored_is_off_display = bool( animal['IS_OFF_DISPLAY'] ) if animal['IS_OFF_DISPLAY'] != None else False
+      stored_is_off_display = bool( animal[ 'IS_OFF_DISPLAY' ] ) if animal[ 'IS_OFF_DISPLAY' ] != None else False
 
       if not stored_is_off_display:
          return False, None
 
-      off_display_message = animal['OFF_DISPLAY_MESSAGE']
-      off_display_start = animal['OFF_DISPLAY_START']
-      off_display_end = animal['OFF_DISPLAY_END']
+      off_display_message = animal[ 'OFF_DISPLAY_MESSAGE' ]
+      off_display_start = animal[ 'OFF_DISPLAY_START' ]
+      off_display_end = animal[ 'OFF_DISPLAY_END' ]
 
       is_off_display = self.is_date_in_range(
          target_date=target_date,
@@ -220,11 +220,11 @@ class Database():
 
 
    def get_active_limited_viewing_status( self, animal, target_date ):
-      schedule_start_date = animal['SCHEDULE_START_DATE']
-      schedule_end_date = animal['SCHEDULE_END_DATE']
-      daily_start_time = animal['DAILY_START_TIME']
-      daily_end_time = animal['DAILY_END_TIME']
-      viewing_message = animal['VIEWING_MESSAGE']
+      schedule_start_date = animal[ 'SCHEDULE_START_DATE' ]
+      schedule_end_date = animal[ 'SCHEDULE_END_DATE' ]
+      daily_start_time = animal[ 'DAILY_START_TIME' ]
+      daily_end_time = animal[ 'DAILY_END_TIME' ]
+      viewing_message = animal[ 'VIEWING_MESSAGE' ]
 
       if daily_start_time == None or daily_end_time == None:
          return False, None
@@ -238,9 +238,9 @@ class Database():
 
 
    def get_active_viewing_alert_status( self, animal, target_date ):
-      alert_message = animal['ALERT_MESSAGE']
-      alert_start_date = animal['ALERT_START_DATE']
-      alert_end_date = animal['ALERT_END_DATE']
+      alert_message = animal[ 'ALERT_MESSAGE' ]
+      alert_start_date = animal[ 'ALERT_START_DATE' ]
+      alert_end_date = animal[ 'ALERT_END_DATE' ]
 
       if alert_message == None:
          return False, None
@@ -254,14 +254,14 @@ class Database():
 
 
    def get_active_exhibit_closed_status( self, animal, target_date ):
-      stored_is_closed = bool( animal['IS_CLOSED'] ) if animal['IS_CLOSED'] != None else False
+      stored_is_closed = bool( animal[ 'IS_CLOSED' ] ) if animal[ 'IS_CLOSED' ] != None else False
 
       if not stored_is_closed:
          return False, None
 
-      closed_message = animal['CLOSED_MESSAGE']
-      closed_start = animal['CLOSED_START']
-      closed_end = animal['CLOSED_END']
+      closed_message = animal[ 'CLOSED_MESSAGE' ]
+      closed_start = animal[ 'CLOSED_START' ]
+      closed_end = animal[ 'CLOSED_END' ]
 
       is_closed = self.is_date_in_range( target_date=target_date, start_date_value=closed_start, end_date_value=closed_end )
 
@@ -286,10 +286,10 @@ class Database():
       if enclosure_type == 'Outdoor':
 
          avg_temp = self.zoo_util.get_average_temperature( month=month, day=day )
-         effective_temp = avg_temp + 0.5 * (temp - avg_temp)
+         effective_temp = avg_temp + 0.5 * ( temp - avg_temp )
 
          likelihood = self.zoo_util.get_temperature_probability( mu=effective_temp, sigma=sigma, min_temperature=min_temperature )
-         likelihood = likelihood - (1.0 - snow_resistance) * snow_likelihood
+         likelihood = likelihood - ( 1.0 - snow_resistance ) * snow_likelihood
 
       else:
          likelihood = 1
@@ -330,7 +330,7 @@ class Database():
          except ValueError:
             pass
 
-      raise ValueError( f'Unsupported datetime format: {value}' )
+      raise ValueError( f'Unsupported datetime format: { value }' )
    
 
    def parse_date_value( self, value ):
@@ -350,14 +350,14 @@ class Database():
       except ValueError:
          pass
 
-      date_part = value.split( ' ' )[0]
+      date_part = value.split( ' ' )[ 0 ]
 
       try:
          return date.fromisoformat( date_part )
       except ValueError:
          pass
 
-      raise ValueError( f'Unsupported date format: {value}' )
+      raise ValueError( f'Unsupported date format: { value }' )
 
 
    def get_exhibit_likelihood( self, exhibit, month, day ):
@@ -368,7 +368,7 @@ class Database():
 
       days_in_month = self.zoo_util.get_number_of_days_in_month( month=month )
       
-      return month_likelihood + (next_month_likelihood - month_likelihood) / (days_in_month - 1) * (day - 1)
+      return month_likelihood + ( next_month_likelihood - month_likelihood ) / ( days_in_month - 1 ) * ( day - 1 )
       
 
    def get_exhibit_month_likelihood( self, exhibit, month ):
@@ -376,12 +376,12 @@ class Database():
 
       data = cur.execute(
          f"""  SELECT
-                  e.{month}_PROBABILITY
+                  e.{ month }_PROBABILITY
                FROM Exhibit e
                WHERE e.NAME = ?;
-         """, (exhibit, ) )
+         """, ( exhibit, ) )
             
-      exhibit_probability = data.fetchone()[0]
+      exhibit_probability = data.fetchone()[ 0 ]
       cur.close()
 
       return exhibit_probability
@@ -395,9 +395,9 @@ class Database():
                   e.NAME
                FROM Exhibit e
                WHERE e.REGION = ?;
-         """, (region, ) )
+         """, ( region, ) )
       
-      exhibits = [row[0] for row in data.fetchall()]
+      exhibits = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return exhibits
@@ -413,9 +413,9 @@ class Database():
                JOIN Enclosure e
                   ON a.SPECIES = e.SPECIES
                WHERE e.EXHIBIT = ?
-         """, (exhibit, ) )
+         """, ( exhibit, ) )
 
-      animals = [row[0] for row in data.fetchall()]
+      animals = [ row[ 0 ] for row in data.fetchall() ]
 
       cur.close()
 
@@ -454,19 +454,19 @@ class Database():
 
       animal_info = zoo.Animal(
          species = species,
-         latin_name = animal['LATIN_NAME'],
-         general_viewing_tips = animal['GENERAL_VIEWING_TIPS'],
-         seasonal_viewing_tips = animal['SEASONAL_VIEWING_TIPS'],
-         identification = animal['IDENTIFICATION'],
-         habitat_and_range = animal['HABITAT_AND_RANGE'],
-         diet_and_feeding = animal['DIET_AND_FEEDING'],
-         behaviour_and_life_cycle = animal['BEHAVIOUR_AND_SOCIAL_LIFE'],
-         adaptations = animal['ADAPTATIONS'],
-         reproduction_and_life_cycle = animal['REPRODUCTION_AND_LIFE_CYCLE'],
-         animals_at_the_zoo = animal['ANIMALS_AT_THE_ZOO'],
-         exhibit = animal['EXHIBIT'],
-         seasonal_viewing_summary = animal['SEASONAL_VIEWING_SUMMARY'],
-         seasonal_viewing_information = animal['SEASONAL_VIEWING_INFORMATION'] )
+         latin_name = animal[ 'LATIN_NAME' ],
+         general_viewing_tips = animal[ 'GENERAL_VIEWING_TIPS' ],
+         seasonal_viewing_tips = animal[ 'SEASONAL_VIEWING_TIPS' ],
+         identification = animal[ 'IDENTIFICATION' ],
+         habitat_and_range = animal[ 'HABITAT_AND_RANGE' ],
+         diet_and_feeding = animal[ 'DIET_AND_FEEDING' ],
+         behaviour_and_life_cycle = animal[ 'BEHAVIOUR_AND_SOCIAL_LIFE' ],
+         adaptations = animal[ 'ADAPTATIONS' ],
+         reproduction_and_life_cycle = animal[ 'REPRODUCTION_AND_LIFE_CYCLE' ],
+         animals_at_the_zoo = animal[ 'ANIMALS_AT_THE_ZOO' ],
+         exhibit = animal[ 'EXHIBIT' ],
+         seasonal_viewing_summary = animal[ 'SEASONAL_VIEWING_SUMMARY' ],
+         seasonal_viewing_information = animal[ 'SEASONAL_VIEWING_INFORMATION' ] )
 
       cur.close()
 
@@ -493,11 +493,11 @@ class Database():
       for pavilion in pavilion_data:
          pavilions.append(
             zoo.Pavilion(
-               name=pavilion['NAME'],
-               region=pavilion['REGION'],
-               description=pavilion['DESCRIPTION'],
-               x_coord=pavilion['X_COORD'],
-               y_coord=pavilion['Y_COORD'] ) )
+               name=pavilion[ 'NAME' ],
+               region=pavilion[ 'REGION' ],
+               description=pavilion[ 'DESCRIPTION' ],
+               x_coord=pavilion[ 'X_COORD' ],
+               y_coord=pavilion[ 'Y_COORD' ] ) )
 
       cur.close()
 
@@ -545,9 +545,9 @@ class Database():
       restaurants = []
 
       for restaurant in restaurant_data:
-         name = restaurant['NAME']
+         name = restaurant[ 'NAME' ]
 
-         stored_is_closed = bool( restaurant['IS_CLOSED'] ) if restaurant['IS_CLOSED'] != None else False
+         stored_is_closed = bool( restaurant[ 'IS_CLOSED' ] ) if restaurant[ 'IS_CLOSED' ] != None else False
 
          is_closed = False
          closed_message = None
@@ -556,68 +556,68 @@ class Database():
             start_ok = True
             end_ok = True
 
-            if restaurant['CLOSED_START'] != None:
-               start_date = self.parse_date_value( value=restaurant['CLOSED_START'] )
+            if restaurant[ 'CLOSED_START' ] != None:
+               start_date = self.parse_date_value( value=restaurant[ 'CLOSED_START' ] )
                start_ok = target_date >= start_date
 
-            if restaurant['CLOSED_END'] != None:
-               end_date = self.parse_date_value( value=restaurant['CLOSED_END'] )
+            if restaurant[ 'CLOSED_END' ] != None:
+               end_date = self.parse_date_value( value=restaurant[ 'CLOSED_END' ] )
                end_ok = target_date <= end_date
 
             if start_ok and end_ok:
                is_closed = True
-               closed_message = restaurant['CLOSED_MESSAGE']
+               closed_message = restaurant[ 'CLOSED_MESSAGE' ]
 
-         if not is_closed and restaurant['SCHEDULE_START_DATE'] != None:
+         if not is_closed and restaurant[ 'SCHEDULE_START_DATE' ] != None:
             schedule_start_ok = True
             schedule_end_ok = True
 
-            if restaurant['SCHEDULE_START_DATE'] != None:
-               schedule_start_date = self.parse_date_value( value=restaurant['SCHEDULE_START_DATE'] )
+            if restaurant[ 'SCHEDULE_START_DATE' ] != None:
+               schedule_start_date = self.parse_date_value( value=restaurant[ 'SCHEDULE_START_DATE' ] )
                schedule_start_ok = target_date >= schedule_start_date
 
-            if restaurant['SCHEDULE_END_DATE'] != None:
-               schedule_end_date = self.parse_date_value( value=restaurant['SCHEDULE_END_DATE'] )
+            if restaurant[ 'SCHEDULE_END_DATE' ] != None:
+               schedule_end_date = self.parse_date_value( value=restaurant[ 'SCHEDULE_END_DATE' ] )
                schedule_end_ok = target_date <= schedule_end_date
 
             if schedule_start_ok and schedule_end_ok:
                is_open_today = False
 
                if self.zoo_util.is_holiday( d=target_date ):
-                  is_open_today = bool( restaurant['HOLIDAYS_ONLY'] )
+                  is_open_today = bool( restaurant[ 'HOLIDAYS_ONLY' ] )
 
                if not is_open_today:
                   day_of_week = target_date.weekday()
 
                   if day_of_week == 0:
-                     is_open_today = bool( restaurant['MONDAY'] )
+                     is_open_today = bool( restaurant[ 'MONDAY' ] )
                   elif day_of_week == 1:
-                     is_open_today = bool( restaurant['TUESDAY'] )
+                     is_open_today = bool( restaurant[ 'TUESDAY' ] )
                   elif day_of_week == 2:
-                     is_open_today = bool( restaurant['WEDNESDAY'] )
+                     is_open_today = bool( restaurant[ 'WEDNESDAY' ] )
                   elif day_of_week == 3:
-                     is_open_today = bool( restaurant['THURSDAY'] )
+                     is_open_today = bool( restaurant[ 'THURSDAY' ] )
                   elif day_of_week == 4:
-                     is_open_today = bool( restaurant['FRIDAY'] )
+                     is_open_today = bool( restaurant[ 'FRIDAY' ] )
                   elif day_of_week == 5:
-                     is_open_today = bool( restaurant['SATURDAY'] )
+                     is_open_today = bool( restaurant[ 'SATURDAY' ] )
                   elif day_of_week == 6:
-                     is_open_today = bool( restaurant['SUNDAY'] )
+                     is_open_today = bool( restaurant[ 'SUNDAY' ] )
 
                if not is_open_today:
                   is_closed = True
-                  closed_message = restaurant['SCHEDULE_MESSAGE']
+                  closed_message = restaurant[ 'SCHEDULE_MESSAGE' ]
 
          if include_closed_restaurants or not is_closed or name in restaurants_to_include:
             restaurants.append(
                zoo.Restaurant(
                   name=name,
-                  location=restaurant['LOCATION'],
-                  sub_location=restaurant['SUB_LOCATION'],
-                  description=restaurant['DESCRIPTION'],
-                  menu_link=restaurant['MENU_LINK'],
-                  x_coord=restaurant['X_COORD'],
-                  y_coord=restaurant['Y_COORD'],
+                  location=restaurant[ 'LOCATION' ],
+                  sub_location=restaurant[ 'SUB_LOCATION' ],
+                  description=restaurant[ 'DESCRIPTION' ],
+                  menu_link=restaurant[ 'MENU_LINK' ],
+                  x_coord=restaurant[ 'X_COORD' ],
+                  y_coord=restaurant[ 'Y_COORD' ],
                   is_closed=is_closed,
                   closed_message=closed_message ) )
 
@@ -644,9 +644,9 @@ class Database():
       for restroom in restroom_data:
          restrooms.append(
             zoo.Restroom(
-               title=restroom['TITLE'],
-               x_coord=restroom['X_COORD'],
-               y_coord=restroom['Y_COORD'] ) )
+               title=restroom[ 'TITLE' ],
+               x_coord=restroom[ 'X_COORD' ],
+               y_coord=restroom[ 'Y_COORD' ] ) )
 
       cur.close()
 
@@ -692,9 +692,9 @@ class Database():
       gift_shops = []
 
       for gift_shop in gift_shop_data:
-         name = gift_shop['NAME']
+         name = gift_shop[ 'NAME' ]
 
-         stored_is_closed = bool( gift_shop['IS_CLOSED'] ) if gift_shop['IS_CLOSED'] != None else False
+         stored_is_closed = bool( gift_shop[ 'IS_CLOSED' ] ) if gift_shop[ 'IS_CLOSED' ] != None else False
 
          is_closed = False
          closed_message = None
@@ -703,66 +703,66 @@ class Database():
             start_ok = True
             end_ok = True
 
-            if gift_shop['CLOSED_START'] != None:
-               start_date = self.parse_date_value( value=gift_shop['CLOSED_START'] )
+            if gift_shop[ 'CLOSED_START' ] != None:
+               start_date = self.parse_date_value( value=gift_shop[ 'CLOSED_START' ] )
                start_ok = target_date >= start_date
 
-            if gift_shop['CLOSED_END'] != None:
-               end_date = self.parse_date_value( value=gift_shop['CLOSED_END'] )
+            if gift_shop[ 'CLOSED_END' ] != None:
+               end_date = self.parse_date_value( value=gift_shop[ 'CLOSED_END' ] )
                end_ok = target_date <= end_date
 
             if start_ok and end_ok:
                is_closed = True
-               closed_message = gift_shop['CLOSED_MESSAGE']
+               closed_message = gift_shop[ 'CLOSED_MESSAGE' ]
 
-         if not is_closed and gift_shop['SCHEDULE_START_DATE'] != None:
+         if not is_closed and gift_shop[ 'SCHEDULE_START_DATE' ] != None:
             schedule_start_ok = True
             schedule_end_ok = True
 
-            if gift_shop['SCHEDULE_START_DATE'] != None:
-               schedule_start_date = self.parse_date_value( value=gift_shop['SCHEDULE_START_DATE'] )
+            if gift_shop[ 'SCHEDULE_START_DATE' ] != None:
+               schedule_start_date = self.parse_date_value( value=gift_shop[ 'SCHEDULE_START_DATE' ] )
                schedule_start_ok = target_date >= schedule_start_date
 
-            if gift_shop['SCHEDULE_END_DATE'] != None:
-               schedule_end_date = self.parse_date_value( value=gift_shop['SCHEDULE_END_DATE'] )
+            if gift_shop[ 'SCHEDULE_END_DATE' ] != None:
+               schedule_end_date = self.parse_date_value( value=gift_shop[ 'SCHEDULE_END_DATE' ] )
                schedule_end_ok = target_date <= schedule_end_date
 
             if schedule_start_ok and schedule_end_ok:
                is_open_today = False
 
                if self.zoo_util.is_holiday( target_date ):
-                  is_open_today = bool( gift_shop['HOLIDAYS_ONLY'] )
+                  is_open_today = bool( gift_shop[ 'HOLIDAYS_ONLY' ] )
 
                if not is_open_today:
                   day_of_week = target_date.weekday()
 
                   if day_of_week == 0:
-                     is_open_today = bool( gift_shop['MONDAY'] )
+                     is_open_today = bool( gift_shop[ 'MONDAY' ] )
                   elif day_of_week == 1:
-                     is_open_today = bool( gift_shop['TUESDAY'] )
+                     is_open_today = bool( gift_shop[ 'TUESDAY' ] )
                   elif day_of_week == 2:
-                     is_open_today = bool( gift_shop['WEDNESDAY'] )
+                     is_open_today = bool( gift_shop[ 'WEDNESDAY' ] )
                   elif day_of_week == 3:
-                     is_open_today = bool( gift_shop['THURSDAY'] )
+                     is_open_today = bool( gift_shop[ 'THURSDAY' ] )
                   elif day_of_week == 4:
-                     is_open_today = bool( gift_shop['FRIDAY'] )
+                     is_open_today = bool( gift_shop[ 'FRIDAY' ] )
                   elif day_of_week == 5:
-                     is_open_today = bool( gift_shop['SATURDAY'] )
+                     is_open_today = bool( gift_shop[ 'SATURDAY' ] )
                   elif day_of_week == 6:
-                     is_open_today = bool( gift_shop['SUNDAY'] )
+                     is_open_today = bool( gift_shop[ 'SUNDAY' ] )
 
                if not is_open_today:
                   is_closed = True
-                  closed_message = gift_shop['SCHEDULE_MESSAGE']
+                  closed_message = gift_shop[ 'SCHEDULE_MESSAGE' ]
 
          if include_closed_gift_shops or not is_closed or name in gift_shops_to_include:
             gift_shops.append(
                zoo.GiftShop(
                   name=name,
-                  location=gift_shop['LOCATION'],
-                  description=gift_shop['DESCRIPTION'],
-                  x_coord=gift_shop['X_COORD'],
-                  y_coord=gift_shop['Y_COORD'],
+                  location=gift_shop[ 'LOCATION' ],
+                  description=gift_shop[ 'DESCRIPTION' ],
+                  x_coord=gift_shop[ 'X_COORD' ],
+                  y_coord=gift_shop[ 'Y_COORD' ],
                   is_closed=is_closed,
                   closed_message=closed_message ) )
 
@@ -804,13 +804,13 @@ class Database():
       attractions = []
 
       for attraction in attraction_data:
-         name = attraction['NAME']
+         name = attraction[ 'NAME' ]
 
          is_closed = self.is_attraction_manually_closed(
             attraction=attraction,
             target_date=target_date )
 
-         closed_message = attraction['CLOSED_MESSAGE'] if is_closed else None
+         closed_message = attraction[ 'CLOSED_MESSAGE' ] if is_closed else None
 
          if not is_closed:
             is_closed, schedule_message = self.is_attraction_closed_by_schedule(
@@ -832,12 +832,12 @@ class Database():
          attractions.append(
             zoo.Attraction(
                name=name,
-               free_with_admission=attraction['FREE_WITH_ADMISSION'],
-               description=attraction['DESCRIPTION'],
-               info_link=attraction['INFO_LINK'],
-               hyperlink_text=attraction['HYPERLINK_TEXT'],
-               x_coord=attraction['X_COORD'],
-               y_coord=attraction['Y_COORD'],
+               free_with_admission=attraction[ 'FREE_WITH_ADMISSION' ],
+               description=attraction[ 'DESCRIPTION' ],
+               info_link=attraction[ 'INFO_LINK' ],
+               hyperlink_text=attraction[ 'HYPERLINK_TEXT' ],
+               x_coord=attraction[ 'X_COORD' ],
+               y_coord=attraction[ 'Y_COORD' ],
                is_closed=is_closed,
                closed_message=closed_message ) )
 
@@ -847,7 +847,7 @@ class Database():
 
 
    def is_attraction_manually_closed( self, attraction, target_date ):
-      stored_is_closed = bool( attraction['IS_CLOSED'] ) if attraction['IS_CLOSED'] != None else False
+      stored_is_closed = bool( attraction[ 'IS_CLOSED' ] ) if attraction[ 'IS_CLOSED' ] != None else False
 
       if not stored_is_closed:
          return False
@@ -855,12 +855,12 @@ class Database():
       start_ok = True
       end_ok = True
 
-      if attraction['CLOSED_START'] != None:
-         start_date = self.parse_date_value( value=attraction['CLOSED_START'] )
+      if attraction[ 'CLOSED_START' ] != None:
+         start_date = self.parse_date_value( value=attraction[ 'CLOSED_START' ] )
          start_ok = target_date >= start_date
 
-      if attraction['CLOSED_END'] != None:
-         end_date = self.parse_date_value( value=attraction['CLOSED_END'] )
+      if attraction[ 'CLOSED_END' ] != None:
+         end_date = self.parse_date_value( value=attraction[ 'CLOSED_END' ] )
          end_ok = target_date <= end_date
 
       return start_ok and end_ok
@@ -896,12 +896,12 @@ class Database():
          start_ok = True
          end_ok = True
 
-         if schedule['SCHEDULE_START_DATE'] != None:
-            start_date = self.parse_date_value( value=schedule['SCHEDULE_START_DATE'] )
+         if schedule[ 'SCHEDULE_START_DATE' ] != None:
+            start_date = self.parse_date_value( value=schedule[ 'SCHEDULE_START_DATE' ] )
             start_ok = target_date >= start_date
 
-         if schedule['SCHEDULE_END_DATE'] != None:
-            end_date = self.parse_date_value( value=schedule['SCHEDULE_END_DATE'] )
+         if schedule[ 'SCHEDULE_END_DATE' ] != None:
+            end_date = self.parse_date_value( value=schedule[ 'SCHEDULE_END_DATE' ] )
             end_ok = target_date <= end_date
 
          if not ( start_ok and end_ok ):
@@ -911,93 +911,50 @@ class Database():
 
          open_on_day = False
 
-         if weekday == 0 and schedule['MONDAY']:
+         if weekday == 0 and schedule[ 'MONDAY' ]:
             open_on_day = True
-         elif weekday == 1 and schedule['TUESDAY']:
+         elif weekday == 1 and schedule[ 'TUESDAY' ]:
             open_on_day = True
-         elif weekday == 2 and schedule['WEDNESDAY']:
+         elif weekday == 2 and schedule[ 'WEDNESDAY' ]:
             open_on_day = True
-         elif weekday == 3 and schedule['THURSDAY']:
+         elif weekday == 3 and schedule[ 'THURSDAY' ]:
             open_on_day = True
-         elif weekday == 4 and schedule['FRIDAY']:
+         elif weekday == 4 and schedule[ 'FRIDAY' ]:
             open_on_day = True
-         elif weekday == 5 and schedule['SATURDAY']:
+         elif weekday == 5 and schedule[ 'SATURDAY' ]:
             open_on_day = True
-         elif weekday == 6 and schedule['SUNDAY']:
+         elif weekday == 6 and schedule[ 'SUNDAY' ]:
             open_on_day = True
-         elif schedule['HOLIDAYS_ONLY'] and is_holiday:
+         elif schedule[ 'HOLIDAYS_ONLY' ] and is_holiday:
             open_on_day = True
 
          if open_on_day:
             return False, None
 
-         message = schedule['SCHEDULE_MESSAGE']
+         message = schedule[ 'SCHEDULE_MESSAGE' ]
 
          if not message:
-            if schedule['SATURDAY'] and schedule['SUNDAY'] and schedule['HOLIDAYS_ONLY']:
-               message = f'The {attraction_name} is open on weekends and holidays only.'
+            if schedule[ 'SATURDAY' ] and schedule[ 'SUNDAY' ] and schedule[ 'HOLIDAYS_ONLY' ]:
+               message = f'The { attraction_name } is open on weekends and holidays only.'
             else:
-               message = f'The {attraction_name} is not scheduled to be open today.'
+               message = f'The { attraction_name } is not scheduled to be open today.'
 
          return True, message
 
       return False, None
    
 
-   def get_zoomobile_stations( self ):
+   def get_zoomobile_stations( self, route, month, day, zoomobile_stations_to_include=None ):
+      if zoomobile_stations_to_include is None:
+         zoomobile_stations_to_include = []
+
+      target_date = date(
+         datetime.now().year,
+         self.zoo_util.normalize_month( month ),
+         int( day ) )
+
       cur = self.conn.cursor()
 
-      data = cur.execute(
-         """   SELECT
-                  s.NAME,
-                  s.X_COORD,
-                  s.Y_COORD
-               FROM ZoomobileStation s;
-         """ )
-
-      zoomobile_station_data = data.fetchall()
-
-      zoomobile_stations = []
-
-      for zoomobile_station in zoomobile_station_data:
-         zoomobile_stations.append(
-            zoo.ZoomobileStation(
-               name=zoomobile_station['NAME'],
-               x_coord=zoomobile_station['X_COORD'],
-               y_coord=zoomobile_station['Y_COORD'] ) )
-
-      cur.close()
-
-      return zoomobile_stations
-
-
-   def get_zoomobile_route( self, route, zoomobile_stations_to_include=[] ):
-      cur = self.conn.cursor()
-
-      if route == 'current':
-         data = cur.execute(
-            """   SELECT
-                     a.SETTING_VALUE
-                  FROM AppSetting a
-                  WHERE a.SETTING_KEY = 'zoomobile_route';
-            """ )
-
-         current_route_data = data.fetchone()
-
-         if current_route_data != None:
-            stored_route = current_route_data[ 'SETTING_VALUE' ]
-
-            if stored_route in [ 'summer', 'winter' ]:
-               route = stored_route
-            else:
-               route = 'summer'
-         else:
-            route = 'summer'
-
-      if route not in [ 'summer', 'winter' ]:
-         route = 'summer'
-
-      # Zoomobile stations
       data = cur.execute(
          """   SELECT
                   s.NAME,
@@ -1016,42 +973,103 @@ class Database():
          name = zoomobile_station[ 'NAME' ]
          on_winter_route = zoomobile_station[ 'ON_WINTER_ROUTE' ]
 
-         if route == 'summer' or on_winter_route or name in zoomobile_stations_to_include:
-            zoomobile_stations.append(
-               zoo.ZoomobileStation(
-                  name=name,
-                  description=zoomobile_station[ 'DESCRIPTION' ],
-                  x_coord=zoomobile_station[ 'X_COORD' ],
-                  y_coord=zoomobile_station[ 'Y_COORD' ] ) )
+         if not (
+            route == 'summer'
+            or on_winter_route
+            or name in zoomobile_stations_to_include
+         ):
+            continue
 
-      # Zoomobile route markers
-      data = cur.execute(
-         """   SELECT
-                  m.ON_WINTER_ROUTE,
-                  m.ON_SUMMER_ROUTE,
-                  m.X_COORD,
-                  m.Y_COORD
-               FROM ZoomobileRouteMarker m;
-         """ )
+         status_data = cur.execute(
+            """   SELECT
+                     s.CLOSED_START,
+                     s.CLOSED_END,
+                     s.IS_CLOSED,
+                     s.CLOSED_MESSAGE
+                  FROM ZoomobileStationStatus s
+                  WHERE s.ZOOMOBILE_STATION = ?;
+            """, ( name, ) )
 
-      zoomobile_route_marker_data = data.fetchall()
+         status_rows = status_data.fetchall()
 
-      zoomobile_route_markers = []
+         is_closed = False
 
-      for zoomobile_route_marker in zoomobile_route_marker_data:
-         on_winter_route = zoomobile_route_marker[ 'ON_WINTER_ROUTE' ]
-         on_summer_route = zoomobile_route_marker[ 'ON_SUMMER_ROUTE' ]
+         for status in status_rows:
+            start_ok = True
+            end_ok = True
 
-         if ( route == 'winter' and on_winter_route ) or ( route == 'summer' and on_summer_route ):
-            zoomobile_route_markers.append(
-               zoo.ZoomobileRouteMarker(
-                  route_type=route,
-                  x_coord=zoomobile_route_marker[ 'X_COORD' ],
-                  y_coord=zoomobile_route_marker[ 'Y_COORD' ] ) )
+            if status[ 'CLOSED_START' ] != None:
+               start_date = self.parse_date_value( value=status[ 'CLOSED_START' ] )
+               start_ok = target_date >= start_date
+
+            if status[ 'CLOSED_END' ] != None:
+               end_date = self.parse_date_value( value=status[ 'CLOSED_END' ] )
+               end_ok = target_date <= end_date
+
+            if not ( start_ok and end_ok ):
+               continue
+
+            if status[ 'IS_CLOSED' ]:
+               is_closed = True
+               break
+
+         if is_closed:
+            continue
+
+         zoomobile_stations.append(
+            zoo.ZoomobileStation(
+               name=name,
+               description=zoomobile_station[ 'DESCRIPTION' ],
+               x_coord=zoomobile_station[ 'X_COORD' ],
+               y_coord=zoomobile_station[ 'Y_COORD' ] ) )
 
       cur.close()
 
-      return [ zoomobile_stations, zoomobile_route_markers ]
+      return zoomobile_stations
+
+
+   def get_zoomobile_route( self, route, month, day, zoomobile_stations_to_include=None ):
+      if zoomobile_stations_to_include is None:
+         zoomobile_stations_to_include = []
+
+      cur = self.conn.cursor()
+
+      if route == 'current':
+         data = cur.execute(
+            """SELECT
+                  a.SETTING_VALUE
+               FROM AppSetting a
+               WHERE a.SETTING_KEY = 'zoomobile_route';
+            """
+         )
+
+         current_route_data = data.fetchone()
+
+         if current_route_data is not None:
+            stored_route = current_route_data[ 'SETTING_VALUE' ]
+
+            if stored_route in [ 'summer', 'winter' ]:
+               route = stored_route
+            else:
+               route = 'summer'
+         else:
+            route = 'summer'
+
+      if route not in [ 'summer', 'winter' ]:
+         route = 'summer'
+
+      cur.close()
+
+      zoomobile_stations = self.get_zoomobile_stations(
+         route=route,
+         month=month,
+         day=day,
+         zoomobile_stations_to_include=zoomobile_stations_to_include )
+
+      return {
+         'route': route,
+         'zoomobile_stations': zoomobile_stations
+      }
 
 
    def get_guardians_talks( self, month, day ):
@@ -1092,40 +1110,40 @@ class Database():
       guardians_talks = []
 
       for guardians_talk in guardians_talk_data:
-         name = guardians_talk['NAME']
-         location = guardians_talk['LOCATION']
-         talk_time = guardians_talk['TALK_TIME']
+         name = guardians_talk[ 'NAME' ]
+         location = guardians_talk[ 'LOCATION' ]
+         talk_time = guardians_talk[ 'TALK_TIME' ]
 
          start_ok = True
          end_ok = True
          unavailable_message = None
 
-         if guardians_talk['SCHEDULE_START_DATE'] != None:
+         if guardians_talk[ 'SCHEDULE_START_DATE' ] != None:
             schedule_start_date = self.parse_date_value(
-               value=guardians_talk['SCHEDULE_START_DATE'] )
+               value=guardians_talk[ 'SCHEDULE_START_DATE' ] )
             start_ok = target_date >= schedule_start_date
 
-         if guardians_talk['SCHEDULE_END_DATE'] != None:
+         if guardians_talk[ 'SCHEDULE_END_DATE' ] != None:
             schedule_end_date = self.parse_date_value(
-               value=guardians_talk['SCHEDULE_END_DATE'] )
+               value=guardians_talk[ 'SCHEDULE_END_DATE' ] )
             end_ok = target_date <= schedule_end_date
 
          weekday_ok = False
 
          if target_weekday == 0:
-            weekday_ok = bool( guardians_talk['MONDAY'] )
+            weekday_ok = bool( guardians_talk[ 'MONDAY' ] )
          elif target_weekday == 1:
-            weekday_ok = bool( guardians_talk['TUESDAY'] )
+            weekday_ok = bool( guardians_talk[ 'TUESDAY' ] )
          elif target_weekday == 2:
-            weekday_ok = bool( guardians_talk['WEDNESDAY'] )
+            weekday_ok = bool( guardians_talk[ 'WEDNESDAY' ] )
          elif target_weekday == 3:
-            weekday_ok = bool( guardians_talk['THURSDAY'] )
+            weekday_ok = bool( guardians_talk[ 'THURSDAY' ] )
          elif target_weekday == 4:
-            weekday_ok = bool( guardians_talk['FRIDAY'] )
+            weekday_ok = bool( guardians_talk[ 'FRIDAY' ] )
          elif target_weekday == 5:
-            weekday_ok = bool( guardians_talk['SATURDAY'] )
+            weekday_ok = bool( guardians_talk[ 'SATURDAY' ] )
          elif target_weekday == 6:
-            weekday_ok = bool( guardians_talk['SUNDAY'] )
+            weekday_ok = bool( guardians_talk[ 'SUNDAY' ] )
 
          cancellation_data = cur.execute(
             """   SELECT 1
@@ -1147,19 +1165,19 @@ class Database():
 
          if not is_available:
             if not start_ok or not end_ok:
-               unavailable_message = f'{name} is not scheduled on {target_date.strftime("%B")} {target_date.day}.'
+               unavailable_message = f'{ name } is not scheduled on { target_date.strftime( "%B" ) } { target_date.day }.'
             elif not weekday_ok:
-               unavailable_message = f'{name} is not offered on this day of the week.'
+               unavailable_message = f'{ name } is not offered on this day of the week.'
             elif is_cancelled:
-               unavailable_message = f'{name} has been cancelled for this date.'
+               unavailable_message = f'{ name } has been cancelled for this date.'
 
          if is_available:
             guardians_talks.append(
                zoo.GuardiansTalk(
                   name=name,
                   location=location,
-                  x_coord=guardians_talk['X_COORD'],
-                  y_coord=guardians_talk['Y_COORD'],
+                  x_coord=guardians_talk[ 'X_COORD' ],
+                  y_coord=guardians_talk[ 'Y_COORD' ],
                   time_of_day=talk_time,
                   is_available=is_available,
                   unavailable_message=unavailable_message ) )
@@ -1209,39 +1227,39 @@ class Database():
       wild_encounters = []
 
       for wild_encounter in wild_encounter_data:
-         name = wild_encounter['NAME']
-         encounter_time = wild_encounter['ENCOUNTER_TIME']
+         name = wild_encounter[ 'NAME' ]
+         encounter_time = wild_encounter[ 'ENCOUNTER_TIME' ]
 
          start_ok = True
          end_ok = True
          unavailable_message = None
 
-         if wild_encounter['SCHEDULE_START_DATE'] != None:
+         if wild_encounter[ 'SCHEDULE_START_DATE' ] != None:
             schedule_start_date = self.parse_date_value(
-               value=wild_encounter['SCHEDULE_START_DATE'] )
+               value=wild_encounter[ 'SCHEDULE_START_DATE' ] )
             start_ok = target_date >= schedule_start_date
 
-         if wild_encounter['SCHEDULE_END_DATE'] != None:
+         if wild_encounter[ 'SCHEDULE_END_DATE' ] != None:
             schedule_end_date = self.parse_date_value(
-               value=wild_encounter['SCHEDULE_END_DATE'] )
+               value=wild_encounter[ 'SCHEDULE_END_DATE' ] )
             end_ok = target_date <= schedule_end_date
 
          weekday_ok = False
 
          if target_weekday == 0:
-            weekday_ok = bool( wild_encounter['MONDAY'] )
+            weekday_ok = bool( wild_encounter[ 'MONDAY' ] )
          elif target_weekday == 1:
-            weekday_ok = bool( wild_encounter['TUESDAY'] )
+            weekday_ok = bool( wild_encounter[ 'TUESDAY' ] )
          elif target_weekday == 2:
-            weekday_ok = bool( wild_encounter['WEDNESDAY'] )
+            weekday_ok = bool( wild_encounter[ 'WEDNESDAY' ] )
          elif target_weekday == 3:
-            weekday_ok = bool( wild_encounter['THURSDAY'] )
+            weekday_ok = bool( wild_encounter[ 'THURSDAY' ] )
          elif target_weekday == 4:
-            weekday_ok = bool( wild_encounter['FRIDAY'] )
+            weekday_ok = bool( wild_encounter[ 'FRIDAY' ] )
          elif target_weekday == 5:
-            weekday_ok = bool( wild_encounter['SATURDAY'] )
+            weekday_ok = bool( wild_encounter[ 'SATURDAY' ] )
          elif target_weekday == 6:
-            weekday_ok = bool( wild_encounter['SUNDAY'] )
+            weekday_ok = bool( wild_encounter[ 'SUNDAY' ] )
 
          cancellation_data = cur.execute(
             """   SELECT 1
@@ -1261,26 +1279,72 @@ class Database():
 
          if not is_available:
             if not start_ok or not end_ok:
-               unavailable_message = f'{name} is not scheduled on {target_date.strftime("%B")} {target_date.day}.'
+               unavailable_message = f'{ name } is not scheduled on { target_date.strftime( "%B" ) } { target_date.day }.'
             elif not weekday_ok:
-               unavailable_message = f'{name} is not offered on this day of the week.'
+               unavailable_message = f'{ name } is not offered on this day of the week.'
             elif is_cancelled:
-               unavailable_message = f'{name} has been cancelled for this date.'
+               unavailable_message = f'{ name } has been cancelled for this date.'
 
          wild_encounters.append(
             zoo.WildEncounter(
                name=name,
-               meeting_spot=wild_encounter['MEETING_SPOT'],
-               link=wild_encounter['LINK'],
+               meeting_spot=wild_encounter[ 'MEETING_SPOT' ],
+               link=wild_encounter[ 'LINK' ],
                time_of_day=encounter_time,
-               x_coord=wild_encounter['X_COORD'],
-               y_coord=wild_encounter['Y_COORD'],
+               x_coord=wild_encounter[ 'X_COORD' ],
+               y_coord=wild_encounter[ 'Y_COORD' ],
                is_available=is_available,
                unavailable_message=unavailable_message ) )
 
       cur.close()
 
       return wild_encounters
+   
+
+   def get_closed_exhibits( self, month, day ):
+      cur = self.conn.cursor()
+
+      target_date = date(
+         datetime.now().year,
+         self.zoo_util.normalize_month( month=month ),
+         int( day ) )
+
+      data = cur.execute(
+         """   SELECT
+                  e.EXHIBIT,
+                  e.IS_CLOSED,
+                  e.CLOSED_START,
+                  e.CLOSED_END
+               FROM ExhibitStatus e
+               WHERE e.IS_CLOSED = 1;
+         """ )
+
+      exhibit_status_data = data.fetchall()
+
+      closed_exhibits = []
+
+      for exhibit_status in exhibit_status_data:
+         exhibit = exhibit_status[ 'EXHIBIT' ]
+
+         start_ok = True
+         end_ok = True
+
+         if exhibit_status[ 'CLOSED_START' ] != None:
+            closed_start = self.parse_date_value(
+               value=exhibit_status[ 'CLOSED_START' ] )
+            start_ok = target_date >= closed_start
+
+         if exhibit_status[ 'CLOSED_END' ] != None:
+            closed_end = self.parse_date_value(
+               value=exhibit_status[ 'CLOSED_END' ] )
+            end_ok = target_date <= closed_end
+
+         if start_ok and end_ok:
+            closed_exhibits.append( exhibit )
+
+      cur.close()
+
+      return closed_exhibits
    
 
    def get_animals_matching_query( self, query, month, day, temp, include_off_display_animals ):
@@ -1303,8 +1367,8 @@ class Database():
 
          current = best_by_species.get( species )
 
-         if current is None or (a.likelihood or 0) > (current.likelihood or 0):
-            best_by_species[species] = a
+         if current is None or ( a.likelihood or 0 ) > ( current.likelihood or 0 ):
+            best_by_species[ species ] = a
 
       unique_animals = list( best_by_species.values() )
 
@@ -1425,7 +1489,7 @@ class Database():
                FROM Animal a;
          """ )
       
-      species = [row[0] for row in data.fetchall()]
+      species = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return species
@@ -1451,9 +1515,9 @@ class Database():
       month = None
       day = None
 
-      if itinerary_row['ITINERARY_DATE'] != None:
+      if itinerary_row[ 'ITINERARY_DATE' ] != None:
          itinerary_date = self.parse_date_value(
-            value=itinerary_row['ITINERARY_DATE'] )
+            value=itinerary_row[ 'ITINERARY_DATE' ] )
 
          date = itinerary_date.isoformat()
          month = itinerary_date.strftime( '%B' )
@@ -1468,14 +1532,14 @@ class Database():
 
       species_exhibit_pairs = [
          {
-            'species': row['SPECIES'],
-            'exhibit': row['EXHIBIT']
+            'species': row[ 'SPECIES' ],
+            'exhibit': row[ 'EXHIBIT' ]
          }
          for row in animal_rows
       ]
 
       attractions_to_include = [
-         row['ATTRACTION']
+         row[ 'ATTRACTION' ]
          for row in cur.execute(
             """   SELECT
                      ATTRACTION
@@ -1484,7 +1548,7 @@ class Database():
       ]
 
       guardians_talks_to_include = [
-         row['TALK_NAME']
+         row[ 'TALK_NAME' ]
          for row in cur.execute(
             """   SELECT
                      TALK_NAME
@@ -1493,7 +1557,7 @@ class Database():
       ]
 
       wild_encounters_to_include = [
-         row['WILD_ENCOUNTER']
+         row[ 'WILD_ENCOUNTER' ]
          for row in cur.execute(
             """   SELECT
                      WILD_ENCOUNTER
@@ -1506,7 +1570,7 @@ class Database():
       guardians_talks = []
       wild_encounters = []
 
-      if bool( itinerary_row['IS_ACTIVE'] ) and month and day:
+      if bool( itinerary_row[ 'IS_ACTIVE' ] ) and month and day:
          if species_exhibit_pairs:
             animals = self.get_animals_for_itinerary(
                month=month,
@@ -1697,13 +1761,13 @@ class Database():
          species = animal.species
 
          if animal.likelihood <= 0:
-            removed_by_species[species] = animal
+            removed_by_species[ species ] = animal
             continue
 
          current = best_valid_by_species.get( species )
 
          if current is None or animal.likelihood > current.likelihood:
-            best_valid_by_species[species] = animal
+            best_valid_by_species[ species ] = animal
 
       valid_animals = list( best_valid_by_species.values() )
       valid_animals.sort( key=lambda a: a.species.lower() )
@@ -1839,10 +1903,10 @@ class Database():
       current_region = None
 
       for row in rows:
-         region_name = row['REGION_NAME']
-         exhibit_name = row['EXHIBIT_NAME']
+         region_name = row[ 'REGION_NAME' ]
+         exhibit_name = row[ 'EXHIBIT_NAME' ]
 
-         if current_region == None or current_region['name'] != region_name:
+         if current_region == None or current_region[ 'name' ] != region_name:
             current_region = {
                'name': region_name,
                'exhibits': []
@@ -1854,30 +1918,30 @@ class Database():
 
          is_closed = False
 
-         if row['IS_CLOSED']:
+         if row[ 'IS_CLOSED' ]:
             start_ok = True
             end_ok = True
 
-            if row['CLOSED_START'] != None:
+            if row[ 'CLOSED_START' ] != None:
                closed_start = self.parse_date_value(
-                  value=row['CLOSED_START'] )
+                  value=row[ 'CLOSED_START' ] )
                start_ok = target_date >= closed_start
 
-            if row['CLOSED_END'] != None:
+            if row[ 'CLOSED_END' ] != None:
                closed_end = self.parse_date_value(
-                  value=row['CLOSED_END'] )
+                  value=row[ 'CLOSED_END' ] )
                end_ok = target_date <= closed_end
 
             is_closed = start_ok and end_ok
 
          if not is_closed:
-            current_region['exhibits'].append( exhibit_name )
+            current_region[ 'exhibits' ].append( exhibit_name )
 
       cur.close()
 
       regions = [
          region for region in regions
-         if len( region['exhibits'] ) > 0
+         if len( region[ 'exhibits' ] ) > 0
       ]
 
       return regions
@@ -1892,7 +1956,7 @@ class Database():
                FROM Exhibit e;
          """ )
       
-      exhibits = [row[0] for row in data.fetchall()]
+      exhibits = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return exhibits
@@ -1907,7 +1971,7 @@ class Database():
                FROM Restaurant r;
          """ )
 
-      restaurants = [row[0] for row in data.fetchall()]
+      restaurants = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return restaurants
@@ -1922,7 +1986,7 @@ class Database():
                FROM GiftShop g;
          """ )
 
-      gift_shops = [row[0] for row in data.fetchall()]
+      gift_shops = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return gift_shops
@@ -1937,11 +2001,26 @@ class Database():
                FROM Attraction a;
          """ )
 
-      attractions = [row[0] for row in data.fetchall()]
+      attractions = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return attractions
    
+
+   def get_zoomobile_station_names( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         f"""  SELECT
+                  s.NAME
+               FROM ZoomobileStation s;
+         """ )
+
+      zoomobile_stations = [ row[ 0 ] for row in data.fetchall() ]
+      cur.close()
+
+      return zoomobile_stations
+
 
    def get_guardians_talk_locations( self ):
       cur = self.conn.cursor()
@@ -1954,7 +2033,7 @@ class Database():
                ORDER BY t.LOCATION;
          """ )
 
-      guardians_talk_locations = [row[0] for row in data.fetchall()]
+      guardians_talk_locations = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return guardians_talk_locations
@@ -1969,7 +2048,7 @@ class Database():
                FROM MeetTheGuardiansTalk t;
          """ )
 
-      guardians_talks = [row[0] for row in data.fetchall()]
+      guardians_talks = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return guardians_talks
@@ -1986,7 +2065,7 @@ class Database():
          """,
          ( location, ) )
 
-      guardians_talks = [ row[0] for row in data.fetchall() ]
+      guardians_talks = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return guardians_talks
@@ -2030,15 +2109,15 @@ class Database():
       schedule_start_date = today
       schedule_end_date = today + timedelta( days=days_ahead )
 
-      if guardians_talk_schedule['SCHEDULE_START_DATE'] != None:
+      if guardians_talk_schedule[ 'SCHEDULE_START_DATE' ] != None:
          parsed_start_date = self.parse_date_value(
-            value=guardians_talk_schedule['SCHEDULE_START_DATE'] )
+            value=guardians_talk_schedule[ 'SCHEDULE_START_DATE' ] )
          if parsed_start_date > schedule_start_date:
             schedule_start_date = parsed_start_date
 
-      if guardians_talk_schedule['SCHEDULE_END_DATE'] != None:
+      if guardians_talk_schedule[ 'SCHEDULE_END_DATE' ] != None:
          parsed_end_date = self.parse_date_value(
-            value=guardians_talk_schedule['SCHEDULE_END_DATE'] )
+            value=guardians_talk_schedule[ 'SCHEDULE_END_DATE' ] )
          if parsed_end_date < schedule_end_date:
             schedule_end_date = parsed_end_date
 
@@ -2046,7 +2125,7 @@ class Database():
          cur.close()
          return []
 
-      talk_time = guardians_talk_schedule['TALK_TIME']
+      talk_time = guardians_talk_schedule[ 'TALK_TIME' ]
 
       cancellation_data = cur.execute(
          """   SELECT
@@ -2063,8 +2142,8 @@ class Database():
 
       cancelled_occurrence_keys = {
          (
-            row['CANCELLATION_DATE'],
-            row['TALK_TIME']
+            row[ 'CANCELLATION_DATE' ],
+            row[ 'TALK_TIME' ]
          )
          for row in cancellation_data.fetchall()
       }
@@ -2078,19 +2157,19 @@ class Database():
          target_weekday = current_date.weekday()
 
          if target_weekday == 0:
-            weekday_ok = bool( guardians_talk_schedule['MONDAY'] )
+            weekday_ok = bool( guardians_talk_schedule[ 'MONDAY' ] )
          elif target_weekday == 1:
-            weekday_ok = bool( guardians_talk_schedule['TUESDAY'] )
+            weekday_ok = bool( guardians_talk_schedule[ 'TUESDAY' ] )
          elif target_weekday == 2:
-            weekday_ok = bool( guardians_talk_schedule['WEDNESDAY'] )
+            weekday_ok = bool( guardians_talk_schedule[ 'WEDNESDAY' ] )
          elif target_weekday == 3:
-            weekday_ok = bool( guardians_talk_schedule['THURSDAY'] )
+            weekday_ok = bool( guardians_talk_schedule[ 'THURSDAY' ] )
          elif target_weekday == 4:
-            weekday_ok = bool( guardians_talk_schedule['FRIDAY'] )
+            weekday_ok = bool( guardians_talk_schedule[ 'FRIDAY' ] )
          elif target_weekday == 5:
-            weekday_ok = bool( guardians_talk_schedule['SATURDAY'] )
+            weekday_ok = bool( guardians_talk_schedule[ 'SATURDAY' ] )
          elif target_weekday == 6:
-            weekday_ok = bool( guardians_talk_schedule['SUNDAY'] )
+            weekday_ok = bool( guardians_talk_schedule[ 'SUNDAY' ] )
 
          current_date_str = current_date.isoformat()
 
@@ -2117,7 +2196,7 @@ class Database():
                FROM WildEncounter w;
          """ )
 
-      wild_encounters = [row[0] for row in data.fetchall()]
+      wild_encounters = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return wild_encounters
@@ -2157,15 +2236,15 @@ class Database():
       schedule_start_date = today
       schedule_end_date = today + timedelta( days=days_ahead )
 
-      if wild_encounter_schedule['SCHEDULE_START_DATE'] != None:
+      if wild_encounter_schedule[ 'SCHEDULE_START_DATE' ] != None:
          parsed_start_date = self.parse_date_value(
-            value=wild_encounter_schedule['SCHEDULE_START_DATE'] )
+            value=wild_encounter_schedule[ 'SCHEDULE_START_DATE' ] )
          if parsed_start_date > schedule_start_date:
             schedule_start_date = parsed_start_date
 
-      if wild_encounter_schedule['SCHEDULE_END_DATE'] != None:
+      if wild_encounter_schedule[ 'SCHEDULE_END_DATE' ] != None:
          parsed_end_date = self.parse_date_value(
-            value=wild_encounter_schedule['SCHEDULE_END_DATE'] )
+            value=wild_encounter_schedule[ 'SCHEDULE_END_DATE' ] )
          if parsed_end_date < schedule_end_date:
             schedule_end_date = parsed_end_date
 
@@ -2173,7 +2252,7 @@ class Database():
          cur.close()
          return []
 
-      encounter_time = wild_encounter_schedule['ENCOUNTER_TIME']
+      encounter_time = wild_encounter_schedule[ 'ENCOUNTER_TIME' ]
 
       cancellation_data = cur.execute(
          """   SELECT
@@ -2186,8 +2265,8 @@ class Database():
 
       cancelled_occurrence_keys = {
          (
-            row['CANCELLATION_DATE'],
-            row['ENCOUNTER_TIME']
+            row[ 'CANCELLATION_DATE' ],
+            row[ 'ENCOUNTER_TIME' ]
          )
          for row in cancellation_data.fetchall()
       }
@@ -2201,19 +2280,19 @@ class Database():
          target_weekday = current_date.weekday()
 
          if target_weekday == 0:
-            weekday_ok = bool( wild_encounter_schedule['MONDAY'] )
+            weekday_ok = bool( wild_encounter_schedule[ 'MONDAY' ] )
          elif target_weekday == 1:
-            weekday_ok = bool( wild_encounter_schedule['TUESDAY'] )
+            weekday_ok = bool( wild_encounter_schedule[ 'TUESDAY' ] )
          elif target_weekday == 2:
-            weekday_ok = bool( wild_encounter_schedule['WEDNESDAY'] )
+            weekday_ok = bool( wild_encounter_schedule[ 'WEDNESDAY' ] )
          elif target_weekday == 3:
-            weekday_ok = bool( wild_encounter_schedule['THURSDAY'] )
+            weekday_ok = bool( wild_encounter_schedule[ 'THURSDAY' ] )
          elif target_weekday == 4:
-            weekday_ok = bool( wild_encounter_schedule['FRIDAY'] )
+            weekday_ok = bool( wild_encounter_schedule[ 'FRIDAY' ] )
          elif target_weekday == 5:
-            weekday_ok = bool( wild_encounter_schedule['SATURDAY'] )
+            weekday_ok = bool( wild_encounter_schedule[ 'SATURDAY' ] )
          elif target_weekday == 6:
-            weekday_ok = bool( wild_encounter_schedule['SUNDAY'] )
+            weekday_ok = bool( wild_encounter_schedule[ 'SUNDAY' ] )
 
          current_date_str = current_date.isoformat()
 
@@ -2428,7 +2507,7 @@ class Database():
 
    def set_animal_as_off_display( self, species, exhibit, start_date, end_date, message ):
       if not message:
-         message = f'The {species} is temporarily off-display.'
+         message = f'The { species } is temporarily off-display.'
 
       if not start_date:
          start_date = datetime.now().date().isoformat()
@@ -2507,13 +2586,13 @@ class Database():
             formatted_end_date = datetime.strptime( end_date, '%Y-%m-%d' ).strftime( '%A, %B %d, %Y' )
 
             message = (
-               f'The {species} is viewable daily only from {formatted_daily_start_time} to {formatted_daily_end_time} '
-               f'until {formatted_end_date}.'
+               f'The { species } is viewable daily only from { formatted_daily_start_time } to { formatted_daily_end_time }'
+               f'until { formatted_end_date }.'
             )
 
          else:
             message = (
-               f'The {species} is viewable daily only from {formatted_daily_start_time} to {formatted_daily_end_time}.'
+               f'The { species } is viewable daily only from { formatted_daily_start_time } to { formatted_daily_end_time }.'
             )
 
       cur = self.conn.cursor()
@@ -2569,7 +2648,7 @@ class Database():
          alert_end_date = None
 
       if not message:
-         message = f'The {species} may be less visible than usual at this time.'
+         message = f'The { species } may be less visible than usual at this time.'
 
       cur = self.conn.cursor()
 
@@ -2623,7 +2702,7 @@ class Database():
          end_date = None
 
       if not message:
-         message = f'The {exhibit} is temporarily closed.'
+         message = f'The { exhibit } is temporarily closed.'
 
       cur = self.conn.cursor()
 
@@ -2679,7 +2758,7 @@ class Database():
          end_date = None
 
       if not message:
-         message = f'The {restaurant} is temporarily closed.'
+         message = f'The { restaurant } is temporarily closed.'
 
       cur = self.conn.cursor()
 
@@ -2748,7 +2827,7 @@ class Database():
          end_date = None
 
       if not message:
-         message = f'The {restaurant} is not scheduled to be open today.'
+         message = f'The { restaurant } is not scheduled to be open today.'
 
       cur = self.conn.cursor()
 
@@ -2832,7 +2911,7 @@ class Database():
          end_date = None
 
       if not message:
-         message = f'The {gift_shop} is temporarily closed.'
+         message = f'The { gift_shop } is temporarily closed.'
 
       cur = self.conn.cursor()
 
@@ -2901,7 +2980,7 @@ class Database():
          end_date = None
 
       if not message:
-         message = f'The {gift_shop} is not scheduled to be open today.'
+         message = f'The { gift_shop } is not scheduled to be open today.'
 
       cur = self.conn.cursor()
 
@@ -2985,7 +3064,7 @@ class Database():
          end_date = None
 
       if not message:
-         message = f'The {attraction} is temporarily closed.'
+         message = f'The { attraction } is temporarily closed.'
 
       cur = self.conn.cursor()
 
@@ -3054,7 +3133,7 @@ class Database():
          end_date = None
 
       if not message:
-         message = f'The {attraction} is not scheduled to be open today.'
+         message = f'The { attraction } is not scheduled to be open today.'
 
       cur = self.conn.cursor()
 
@@ -3127,6 +3206,62 @@ class Database():
       return removed > 0
    
 
+   def set_zoomobile_station_as_closed( self, zoomobile_station, start_date, end_date, message ):
+      if not zoomobile_station:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      if not message:
+         message = f'The { zoomobile_station } is temporarily closed.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO ZoomobileStationStatus (
+                  ZOOMOBILE_STATION,
+                  IS_CLOSED,
+                  CLOSED_MESSAGE,
+                  CLOSED_START,
+                  CLOSED_END
+               )
+               VALUES (?, 1, ?, ?, ?)
+               ON CONFLICT(ZOOMOBILE_STATION) DO UPDATE SET
+                  IS_CLOSED = 1,
+                  CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
+                  CLOSED_START = excluded.CLOSED_START,
+                  CLOSED_END = excluded.CLOSED_END;
+         """, ( zoomobile_station, message, start_date, end_date ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
+   def set_zoomobile_station_as_open( self, zoomobile_station ):
+      if not zoomobile_station:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   DELETE FROM ZoomobileStationStatus
+               WHERE ZOOMOBILE_STATION = ?;
+         """, ( zoomobile_station, ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+   
+
    def set_current_zoomobile_route( self, route ):
       if route not in ( 'summer', 'winter' ):
          return False
@@ -3175,7 +3310,7 @@ class Database():
          end_date = None
 
       if not message:
-         message = f'The {talk} at {location} is not scheduled today.'
+         message = f'The { talk } at { location } is not scheduled today.'
 
       cur = self.conn.cursor()
 
@@ -3315,7 +3450,7 @@ class Database():
          end_date = None
 
       if not message:
-         message = f'The {wild_encounter} is not scheduled today.'
+         message = f'The { wild_encounter } is not scheduled today.'
 
       cur = self.conn.cursor()
 
