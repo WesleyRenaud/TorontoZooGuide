@@ -6762,6 +6762,44 @@ animals = [
       None                                                           # Animals at the zoo
    ),
    (
+      'African Spurred Tortoise',
+      'Centrochelys Sulcata',
+      14,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      0,                                                              # Snow resistance (only for animals with outdoor viewing)
+      '''The African spurred tortoise can be found in the African Savanna pavilion, where it inhabits a warm, dry terrestrial exhibit
+         designed to reflect its native grassland and desert-edge environment.'''.replace( '\n', ' ' ),
+      '''African spurred tortoises are best viewed on warmer days, when they are most active and may be seen walking, grazing, or
+         basking under heat sources. During cooler conditions, they may remain more stationary under lamps or sheltered areas.'''
+         .replace( '\n', ' ' ),
+      '''African spurred tortoises are the largest mainland tortoise species in Africa and the third largest tortoise species in the
+         world. Adults commonly reach 45–75 cm in shell length and may weigh 30–80 kg, with some exceptionally large males exceeding
+         100 kg. Their shell is tan to sandy brown with prominent growth rings, and their thick, scaly forelimbs are covered in large
+         protective scales. The species is named for the large spurs located on the backs of their hind legs.'''
+         .replace( '\n', ' ' ),
+      '''This species is native to the southern edge of the Sahara Desert across North-Central Africa, including countries such as
+         Senegal, Mali, Chad, Sudan, and Ethiopia. They inhabit arid grasslands, savannas, thorn scrub, and semi-desert regions where
+         temperatures are high and vegetation is sparse. They often dig extensive burrows to escape heat and conserve moisture.'''
+         .replace( '\n', ' ' ),
+      '''African spurred tortoises are herbivores, feeding primarily on grasses, leaves, flowers, and succulents. Their diet is high
+         in fibre and low in protein, which supports healthy shell growth. In managed care they are often offered grasses, hay, leafy
+         greens, and calcium-rich vegetables. They spend much of the day grazing slowly across their habitat.'''
+         .replace( '\n', ' ' ),
+      '''These tortoises are generally solitary and spend most of their time moving slowly through their habitat in search of food or
+         suitable basking areas. They may interact peacefully in shared spaces but are not highly social. Males can become territorial,
+         especially during breeding season, using ramming and shell-butting behaviours to compete for mates.'''
+         .replace( '\n', ' ' ),
+      '''African spurred tortoises are highly adapted to hot, dry climates. Their thick scaly skin reduces water loss, while their
+         powerful forelimbs and flattened claws allow them to dig deep burrows that remain cool and humid. Their domed shell provides
+         protection from predators and environmental extremes, and their efficient herbivorous digestion helps them survive on tough,
+         fibrous vegetation.'''
+         .replace( '\n', ' ' ),
+      '''Breeding usually occurs during the warmer months, with females laying clutches of 15–30 eggs in shallow nests dug into sandy
+         soil. Incubation typically lasts 90–120 days depending on temperature. Hatchlings emerge fully independent and grow steadily
+         over many years. Sexual maturity may take 10–15 years, and this species can live for over 70 years in captivity.'''
+         .replace( '\n', ' ' ),
+      None                                                            # Animals at the zoo
+   ),
+   (
       'Western Lowland Gorilla',
       'Gorilla Gorilla Gorilla',
       12,                                                            # Minimum temperature (only for animals with outdoor viewing)
@@ -9761,6 +9799,13 @@ enclosures =\
       None                                         # Seasonal viewing information (for seasonal exhibits)
    ),
    (
+      'African Spurred Tortoise',
+      'African Rainforest Pavilion',
+      0,                                           # Part of seasonal exhibit
+      'Outdoor: May-Jun, Sep-Oct',                 # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
       'Western Lowland Gorilla',
       'African Rainforest Pavilion',
       0,                                           # Part of seasonal exhibit
@@ -11693,7 +11738,16 @@ enclosureViewings =\
       'Aldabra Tortoise',
       'African Rainforest Pavilion',
       'Outdoor',
-      '''The Aldabra tortoises can amost likely be seen inside on this day due to cooler weather.''',
+      '''The Aldabra tortoises can most likely be seen inside on this day due to cooler weather.''',
+      47.091,                 # X coordinate on map
+      66.261                  # Y coordinate on map
+   ),
+   (
+      'African Spurred Tortoise',
+      'African Rainforest Pavilion',
+      'Outdoor',
+      '''The African spurred tortoise likely inside and off-display on this day due to cooler weather, or because the aldabra
+         tortoises are in the habitat.'''.replace( '\n', ' ' ),
       47.091,                 # X coordinate on map
       66.261                  # Y coordinate on map
    ),
