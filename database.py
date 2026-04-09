@@ -12,7 +12,7 @@ class Database():
       self.zoo_util = zoo.Zoo_Util()
 
 
-   # Returns all animals which may be viewable in the given month with their likelihoods (probability from 0 to 1)
+   # Returns all animals which may be viewable in the given month with their likelihoods (0 to 100)
    def get_animals_viewable_on_day(
          self,
          month,
@@ -25,6 +25,8 @@ class Database():
       exhibits_to_include = exhibits_to_include or []
 
       month = self.zoo_util.get_month_abbreviation( month )
+      normalized_month = self.zoo_util.normalize_month( month=month )
+      normalized_day = int( day )
       cur = self.conn.cursor()
 
       if temp is None:
@@ -33,19 +35,16 @@ class Database():
       else:
          sigma = 2
 
-      snow_likelihood = self.zoo_util.get_snow_likelihood( month=month, day=day )
-
       target_date = date(
          datetime.now().year,
-         self.zoo_util.normalize_month( month=month ),
-         int( day ) )
+         normalized_month,
+         normalized_day )
 
       data = cur.execute(
          """   SELECT
                   a.SPECIES,
                   a.LATIN_NAME,
                   a.MIN_TEMPERATURE,
-                  a.SNOW_RESISTANCE,
                   a.GENERAL_VIEWING_TIPS,
                   a.SEASONAL_VIEWING_TIPS,
                   a.IDENTIFICATION,
@@ -56,7 +55,6 @@ class Database():
                   a.REPRODUCTION_AND_LIFE_CYCLE,
                   a.ANIMALS_AT_THE_ZOO,
                   e.EXHIBIT,
-                  e.PART_OF_SEASONAL_EXHIBIT,
                   e.SEASONAL_VIEWING_SUMMARY,
                   e.SEASONAL_VIEWING_INFORMATION,
                   v.ENCLOSURE_TYPE,
@@ -78,7 +76,8 @@ class Database():
                   es.IS_CLOSED,
                   es.CLOSED_MESSAGE,
                   es.CLOSED_START,
-                  es.CLOSED_END
+                  es.CLOSED_END,
+                  COALESCE( adsvm.VALUE, 1.0 ) AS DAY_SEASONAL_MULTIPLIER
                FROM Animal a
                JOIN Enclosure e
                   ON a.SPECIES = e.SPECIES
@@ -95,8 +94,13 @@ class Database():
                   ON e.SPECIES = va.SPECIES
                   AND e.EXHIBIT = va.EXHIBIT
                LEFT JOIN ExhibitStatus es
-                  ON e.EXHIBIT = es.EXHIBIT;
-         """ )
+                  ON e.EXHIBIT = es.EXHIBIT
+               LEFT JOIN AnimalDaySeasonalViewabilityMultiplier adsvm
+                  ON e.SPECIES = adsvm.SPECIES
+                  AND e.EXHIBIT = adsvm.EXHIBIT
+                  AND adsvm.MONTH = ?
+                  AND adsvm.DAY = ?;
+         """, ( normalized_month, normalized_day ) )
 
       animal_data = data.fetchall()
       animals = []
@@ -113,10 +117,9 @@ class Database():
             continue
 
          min_temperature = animal[ 'MIN_TEMPERATURE' ]
-         snow_resistance = animal[ 'SNOW_RESISTANCE' ]
-         part_of_seasonal_exhibit = animal[ 'PART_OF_SEASONAL_EXHIBIT' ]
          enclosure_type = animal[ 'ENCLOSURE_TYPE' ]
          seasonally_off_display_message = animal[ 'SEASONALLY_OFF_DISPLAY_MESSAGE' ]
+         day_seasonal_multiplier = animal[ 'DAY_SEASONAL_MULTIPLIER' ]
 
          is_off_display, off_display_message = self.get_active_off_display_status(
             animal=animal,
@@ -138,16 +141,11 @@ class Database():
             likelihood = 0
          else:
             likelihood = self.calculate_animal_likelihood(
-               month=month,
-               day=day,
                temp=temp,
                sigma=sigma,
-               snow_likelihood=snow_likelihood,
-               min_temperature=min_temperature,
-               snow_resistance=snow_resistance,
                enclosure_type=enclosure_type,
-               part_of_seasonal_exhibit=part_of_seasonal_exhibit,
-               exhibit=exhibit )
+               min_temperature=min_temperature,
+               day_seasonal_multiplier=day_seasonal_multiplier )
 
          should_include = (
             ( likelihood > threshold )
@@ -165,7 +163,7 @@ class Database():
                if seasonally_off_display_message:
                   display_message = seasonally_off_display_message
                else:
-                  display_message = f'The { species } is off display due to cold weather.'
+                  display_message = f'The { species } is most likely off display on this day.'
 
             animals.append(
                zoo.Animal(
@@ -273,29 +271,26 @@ class Database():
 
    def calculate_animal_likelihood(
          self,
-         month,
-         day,
          temp,
          sigma,
-         snow_likelihood,
-         min_temperature,
-         snow_resistance,
          enclosure_type,
-         part_of_seasonal_exhibit,
-         exhibit ):
-      if enclosure_type == 'Outdoor':
+         min_temperature,
+         day_seasonal_multiplier ):
+      normalized_enclosure_type = str( enclosure_type ).strip().lower() if enclosure_type is not None else None
 
-         avg_temp = self.zoo_util.get_average_temperature( month=month, day=day )
-         effective_temp = avg_temp + 0.5 * ( temp - avg_temp )
+      if normalized_enclosure_type == 'indoor':
+         return 100
 
-         likelihood = self.zoo_util.get_temperature_probability( mu=effective_temp, sigma=sigma, min_temperature=min_temperature )
-         likelihood = likelihood - ( 1.0 - snow_resistance ) * snow_likelihood
-
+      if min_temperature is None:
+         temperature_likelihood = 1.0
       else:
-         likelihood = 1
+         temperature_likelihood = self.zoo_util.get_temperature_probability(
+            mu=temp,
+            sigma=sigma,
+            min_temperature=min_temperature )
 
-      if part_of_seasonal_exhibit:
-         likelihood = likelihood * self.get_exhibit_likelihood( exhibit=exhibit, month=month, day=day )
+      seasonal_multiplier = day_seasonal_multiplier if day_seasonal_multiplier is not None else 1.0
+      likelihood = max( 0.0, min( temperature_likelihood * seasonal_multiplier, 1.0 ) )
 
       return max( round( likelihood * 100 ), 0 )
 
@@ -358,34 +353,6 @@ class Database():
          pass
 
       raise ValueError( f'Unsupported date format: { value }' )
-
-
-   def get_exhibit_likelihood( self, exhibit, month, day ):
-      next_month = self.zoo_util.get_next_month( month=month )
-
-      month_likelihood = self.get_exhibit_month_likelihood( exhibit=exhibit, month=month )
-      next_month_likelihood = self.get_exhibit_month_likelihood( exhibit=exhibit, month=next_month )
-
-      days_in_month = self.zoo_util.get_number_of_days_in_month( month=month )
-      
-      return month_likelihood + ( next_month_likelihood - month_likelihood ) / ( days_in_month - 1 ) * ( day - 1 )
-      
-
-   def get_exhibit_month_likelihood( self, exhibit, month ):
-      cur = self.conn.cursor()
-
-      data = cur.execute(
-         f"""  SELECT
-                  e.{ month }_PROBABILITY
-               FROM Exhibit e
-               WHERE e.NAME = ?;
-         """, ( exhibit, ) )
-            
-      exhibit_probability = data.fetchone()[ 0 ]
-      cur.close()
-
-      return exhibit_probability
-   
 
    def get_exhibits_in_region( self, region ):
       cur = self.conn.cursor()

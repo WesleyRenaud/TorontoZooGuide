@@ -333,47 +333,6 @@ class Zoo_Util:
       return round( temp, 1 )
 
 
-   def get_snow_likelihood( self, month, day ):
-      month = self.normalize_month( month )
-
-      MONTH_SNOW_BASE = {
-         1: 0.90,
-         2: 0.85,
-         3: 0.50,
-         4: 0.10,
-         5: 0.01,
-         6: 0.00,
-         7: 0.00,
-         8: 0.00,
-         9: 0.00,
-         10: 0.02,
-         11: 0.20,
-         12: 0.70
-      }
-
-      base = MONTH_SNOW_BASE.get( month, 0.0 )
-
-      days_in_month = calendar.monthrange( 2024, month )[ 1 ]
-      progress = (day - 1) / (days_in_month - 1)
-
-      if month == 12:
-         base *= 0.6 + 0.4 * progress
-
-      elif month == 3:
-         # Snow usually persists through early March,
-         # then melts quickly in the second half.
-         melt_progress = max( 0, (progress - 0.35) / 0.65 )
-         base *= 1.0 - 0.6 * melt_progress
-
-      elif month == 11:
-         base *= 0.3 + 0.7 * progress
-
-      elif month == 4:
-         base *= 1.0 - progress
-
-      return max( 0.0, min( 1.0, round( base, 2 ) ) )
-
-
    def normalize_month( self, month ):
       if not month:
          return None
