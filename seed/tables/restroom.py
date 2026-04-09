@@ -1,0 +1,58 @@
+def create_table( cursor ):
+   cursor.execute( 'DROP TABLE IF EXISTS Restroom;' )
+   cursor.execute( ''' CREATE TABLE Restroom
+                     (  TITLE    VARCHAR(64) NOT NULL,
+                        X_COORD  FLOAT       NOT NULL,
+                        Y_COORD  FLOAT       NOT NULL,
+                        PRIMARY KEY (TITLE) ); ''' )
+
+restrooms = [
+   (
+      'Entrance Restroom',
+      57.418,  # X coordinate on map
+      84.787   # Y coordinate on map
+   ),
+   (
+      'Africa Restaurant Restroom',
+      52.751,  # X coordinate on map
+      59.47    # Y coordinate on map
+   ),
+   (
+      'Simba Safari Lodge Restroom',
+      38.27,   # X coordinate on map
+      51.794   # Y coordinate on map
+   ),
+   (
+      'Canadian Domain Zoomobile Stop Restroom',
+      35.98,   # X coordinate on map
+      26.384   # Y coordinate on map
+   ),
+   (
+      'Canadian Domain Restroom',
+      17.865,  # X coordinate on map
+      13.699   # Y coordinate on map
+   ),
+   (
+      'Caribou Café Restroom',
+      72.594,  # X coordinate on map
+      54.25    # Y coordinate on map
+   ),
+   (
+      'Eurasia Restroom',
+      77.472,  # X coordinate on map
+      69.345   # Y coordinate on map
+   ),
+   (
+      'Splash Island Restroom',
+      67.201,  # X coordinate on map
+      75.854   # Y coordinate on map
+   )
+]
+
+def insert_rows( cursor ):
+   cursor.executemany( ''' INSERT INTO Restroom (
+                              TITLE,
+                              X_COORD,
+                              Y_COORD
+                           ) 
+                           VALUES (?, ?, ?) ''', restrooms )
