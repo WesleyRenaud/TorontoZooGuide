@@ -7916,7 +7916,6 @@ animals = [
       'Wrinkled Hornbill',
       'Rhabdotorrhinus Corrugatus',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)
-      None,                                                          # Snow resistance (only for animals with outdoor viewing)
       '''The wrinkled hornbill can be found just beside the elevated orangutan viewing area. When you enter the pavilion head to the
          left and up the stairs. The hornbill can be found just past the orangutan viewing and on the right.'''.replace( '\n', ' ' ),
       None,                                                          # Seasonal viewing tips
@@ -9512,14 +9511,6 @@ enclosures =\
    (
       'Wrinkled Hornbill',
       'Malayan Woods Pavilion',
-      0,                                           # Part of seasonal exhibit
-      'Year-round',                                # Seasonal viewing summary
-      None                                         # Seasonal viewing information (for seasonal exhibits)
-   ),
-   (
-      'Wrinkled Hornbill',
-      'Malayan Woods Pavilion',
-      0,                                           # Part of seasonal exhibit
       'Year-round',                                # Seasonal viewing summary
       None                                         # Seasonal viewing information (for seasonal exhibits)
    ),
