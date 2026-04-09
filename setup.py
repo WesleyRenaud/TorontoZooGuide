@@ -3841,9 +3841,10 @@ animals = [
          several months after fertilisation, ensuring births occur in spring. Litters of 1–5 pups are born in dens near water, and
          juveniles remain with the mother for 6–12 months. Lifespan is typically 8–9 years in the wild but can exceed 20 years in
          captivity.'''.replace( '\n', ' ' ),
-      '''The Toronto Zoo is home to a pair of North American river otters, a younger female Maybelle, and an older male, RJ.
-         Maybelle arrived from the Calgary Zoo as a companion for RJ. They can often be spotted swimming around together, but if you
-         see one otter being active, and the other not, it is likely that RJ is the one needing a rest.'''.replace( '\n', ' ' )
+      '''The Toronto Zoo recently celebrated the birth of three river otter pups. The Toronto Zoo is also home to a pair of adult
+         otters, female, Maybelle, and male, RJ. First-time mom, Maybelle is currently spending time behind the scenes, bonding
+         with the pups. During this time only RJ is viewing in the Americas Pavilion. The zoo hopes than the pups can make their
+         public debut along Maybelle sometime in May.'''.replace( '\n', ' ' )
    ),
    (
       'Opal-Rumped Tanager',
