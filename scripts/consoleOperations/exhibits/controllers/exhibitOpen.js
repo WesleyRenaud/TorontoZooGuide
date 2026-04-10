@@ -8,12 +8,16 @@ export function createExhibitOpenController({
    submitButtonEl,
    statusEl,
    exhibitEl,
+   startDateEl,
+   endDateEl,
    activatePanel,
    hidePanels,
 } = {}) {
 
    function resetForm() {
       if (exhibitEl) exhibitEl.value = '';
+      if (startDateEl) startDateEl.value = '';
+      if (endDateEl) endDateEl.value = '';
    }
 
    function show() {
@@ -44,6 +48,8 @@ export function createExhibitOpenController({
 
    async function onSubmitClick() {
       const exhibit = exhibitEl?.value.trim() ?? '';
+      const startDate = startDateEl?.value.trim() ?? '';
+      const endDate = endDateEl?.value.trim() ?? '';
 
       setStatus(statusEl, '');
 
@@ -52,15 +58,34 @@ export function createExhibitOpenController({
          return;
       }
 
+      const effectiveStart = startDate || new Date().toISOString().split('T')[0];
+
+      if (endDate) {
+         const startMs = new Date(effectiveStart).getTime();
+         const endMs = new Date(endDate).getTime();
+
+         if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
+            setStatus(statusEl, 'Invalid start or end date.', 'is-error');
+            return;
+         }
+
+         if (endMs < startMs) {
+            setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
+            return;
+         }
+      }
+
       try {
          const result = await postJson('/set-exhibit-open', {
-            exhibit
+            exhibit,
+            startDate: startDate || null,
+            endDate: endDate || null
          });
 
          if (result.success) {
             setStatus(
                statusEl,
-               `${result.exhibit} was set as open.`,
+               `${result.exhibit} was set as explicitly open.`,
                'is-success'
             );
             resetForm();

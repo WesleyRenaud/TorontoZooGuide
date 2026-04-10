@@ -1,5 +1,6 @@
 from .tables.region import regions
 from .tables.exhibit import exhibits
+from .tables.exhibit_day_seasonal_viewability_multiplier import exhibit_day_seasonal_viewability_multipliers
 from .tables.animal import animals
 from .tables.enclosure import enclosures
 from .tables.enclosure_viewing import enclosure_viewings

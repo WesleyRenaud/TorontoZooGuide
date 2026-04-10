@@ -1,5 +1,6 @@
 from . import region
 from . import exhibit
+from . import exhibit_day_seasonal_viewability_multiplier
 from . import animal
 from . import enclosure
 from . import enclosure_viewing
@@ -18,6 +19,7 @@ from . import wild_encounter
 static_tables = [
    region,
    exhibit,
+   exhibit_day_seasonal_viewability_multiplier,
    animal,
    enclosure,
    enclosure_viewing,

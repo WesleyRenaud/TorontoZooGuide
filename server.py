@@ -1113,8 +1113,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          data = json.loads( post_data.decode( 'utf-8' ) )
 
          exhibit = data.get( 'exhibit' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
 
-         success = self.database.set_exhibit_as_open( exhibit=exhibit )
+         success = self.database.set_exhibit_as_open(
+            exhibit=exhibit,
+            start_date=start_date,
+            end_date=end_date )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -1122,7 +1127,9 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          response = {
             'success': success,
-            'exhibit': exhibit
+            'exhibit': exhibit,
+            'startDate': start_date,
+            'endDate': end_date
          }
 
          if not success:

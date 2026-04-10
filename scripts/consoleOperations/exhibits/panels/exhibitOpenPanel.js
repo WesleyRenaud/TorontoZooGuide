@@ -29,6 +29,48 @@ export function createExhibitOpenPanelHtml() {
                </select>
             </div>
 
+            <div class="console-operations-field">
+               <label
+                  class="console-operations-label"
+                  for="exhibitOpenStartDate"
+               >
+                  Start date
+               </label>
+
+               <input
+                  id="exhibitOpenStartDate"
+                  type="text"
+                  class="console-operations-input console-operations-datetime"
+                  placeholder="Select a start date"
+                  autocomplete="off"
+               >
+
+               <div class="console-operations-help">
+                  Leave blank to start immediately.
+               </div>
+            </div>
+
+            <div class="console-operations-field">
+               <label
+                  class="console-operations-label"
+                  for="exhibitOpenEndDate"
+               >
+                  End date
+               </label>
+
+               <input
+                  id="exhibitOpenEndDate"
+                  type="text"
+                  class="console-operations-input console-operations-datetime"
+                  placeholder="Select an end date"
+                  autocomplete="off"
+               >
+
+               <div class="console-operations-help">
+                  Leave blank to keep the exhibit explicitly open until it is changed.
+               </div>
+            </div>
+
             <div class="console-operations-actions">
                <button
                   id="submitExhibitOpen"

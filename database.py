@@ -77,7 +77,8 @@ class Database():
                   es.CLOSED_MESSAGE,
                   es.CLOSED_START,
                   es.CLOSED_END,
-                  COALESCE( adsvm.VALUE, 1.0 ) AS DAY_SEASONAL_MULTIPLIER
+                  COALESCE( adsvm.VALUE, 1.0 ) AS ANIMAL_DAY_SEASONAL_MULTIPLIER,
+                  COALESCE( edsvm.VALUE, 1.0 ) AS EXHIBIT_DAY_SEASONAL_MULTIPLIER
                FROM Animal a
                JOIN Enclosure e
                   ON a.SPECIES = e.SPECIES
@@ -99,8 +100,12 @@ class Database():
                   ON e.SPECIES = adsvm.SPECIES
                   AND e.EXHIBIT = adsvm.EXHIBIT
                   AND adsvm.MONTH = ?
-                  AND adsvm.DAY = ?;
-         """, ( normalized_month, normalized_day ) )
+                  AND adsvm.DAY = ?
+               LEFT JOIN ExhibitDaySeasonalViewabilityMultiplier edsvm
+                  ON e.EXHIBIT = edsvm.EXHIBIT
+                  AND edsvm.MONTH = ?
+                  AND edsvm.DAY = ?;
+         """, ( normalized_month, normalized_day, normalized_month, normalized_day ) )
 
       animal_data = data.fetchall()
       animals = []
@@ -119,7 +124,8 @@ class Database():
          min_temperature = animal[ 'MIN_TEMPERATURE' ]
          enclosure_type = animal[ 'ENCLOSURE_TYPE' ]
          seasonally_off_display_message = animal[ 'SEASONALLY_OFF_DISPLAY_MESSAGE' ]
-         day_seasonal_multiplier = animal[ 'DAY_SEASONAL_MULTIPLIER' ]
+         animal_day_seasonal_multiplier = animal[ 'ANIMAL_DAY_SEASONAL_MULTIPLIER' ]
+         exhibit_day_seasonal_multiplier = animal[ 'EXHIBIT_DAY_SEASONAL_MULTIPLIER' ]
 
          is_off_display, off_display_message = self.get_active_off_display_status(
             animal=animal,
@@ -133,19 +139,25 @@ class Database():
             animal=animal,
             target_date=target_date )
 
-         is_exhibit_closed, exhibit_closed_message = self.get_active_exhibit_closed_status(
+         exhibit_status, exhibit_closed_message = self.get_active_exhibit_status(
             animal=animal,
             target_date=target_date )
 
-         if is_off_display or is_exhibit_closed:
+         if is_off_display or exhibit_status == 'closed':
             likelihood = 0
          else:
+            applied_exhibit_day_multiplier = 1.0
+
+            if exhibit_status == 'unknown':
+               applied_exhibit_day_multiplier = exhibit_day_seasonal_multiplier
+
             likelihood = self.calculate_animal_likelihood(
                temp=temp,
                sigma=sigma,
                enclosure_type=enclosure_type,
                min_temperature=min_temperature,
-               day_seasonal_multiplier=day_seasonal_multiplier )
+               day_seasonal_multiplier=animal_day_seasonal_multiplier,
+               exhibit_day_seasonal_multiplier=applied_exhibit_day_multiplier )
 
          should_include = (
             ( likelihood > threshold )
@@ -157,10 +169,12 @@ class Database():
 
             if is_off_display:
                display_message = off_display_message
-            elif is_exhibit_closed:
+            elif exhibit_status == 'closed':
                display_message = exhibit_closed_message
             elif likelihood == 0:
-               if seasonally_off_display_message:
+               if exhibit_status == 'unknown' and exhibit_day_seasonal_multiplier == 0:
+                  display_message = f'The { exhibit } is most likely closed on this day.'
+               elif seasonally_off_display_message:
                   display_message = seasonally_off_display_message
                else:
                   display_message = f'The { species } is most likely off display on this day.'
@@ -251,22 +265,25 @@ class Database():
       return False, None
 
 
-   def get_active_exhibit_closed_status( self, animal, target_date ):
-      stored_is_closed = bool( animal[ 'IS_CLOSED' ] ) if animal[ 'IS_CLOSED' ] != None else False
+   def get_active_exhibit_status( self, animal, target_date ):
+      if animal[ 'IS_CLOSED' ] == None:
+         return 'unknown', None
 
-      if not stored_is_closed:
-         return False, None
+      status_start = animal[ 'CLOSED_START' ]
+      status_end = animal[ 'CLOSED_END' ]
 
-      closed_message = animal[ 'CLOSED_MESSAGE' ]
-      closed_start = animal[ 'CLOSED_START' ]
-      closed_end = animal[ 'CLOSED_END' ]
+      is_active = self.is_date_in_range(
+         target_date=target_date,
+         start_date_value=status_start,
+         end_date_value=status_end )
 
-      is_closed = self.is_date_in_range( target_date=target_date, start_date_value=closed_start, end_date_value=closed_end )
+      if not is_active:
+         return 'unknown', None
 
-      if is_closed:
-         return True, closed_message
+      if bool( animal[ 'IS_CLOSED' ] ):
+         return 'closed', animal[ 'CLOSED_MESSAGE' ]
 
-      return False, None
+      return 'open', None
 
 
    def calculate_animal_likelihood(
@@ -275,22 +292,32 @@ class Database():
          sigma,
          enclosure_type,
          min_temperature,
-         day_seasonal_multiplier ):
+         day_seasonal_multiplier,
+         exhibit_day_seasonal_multiplier=1.0 ):
       normalized_enclosure_type = str( enclosure_type ).strip().lower() if enclosure_type is not None else None
 
       if normalized_enclosure_type == 'indoor':
-         return 100
-
-      if min_temperature is None:
          temperature_likelihood = 1.0
+         animal_seasonal_multiplier = 1.0
       else:
-         temperature_likelihood = self.zoo_util.get_temperature_probability(
-            mu=temp,
-            sigma=sigma,
-            min_temperature=min_temperature )
+         if min_temperature is None:
+            temperature_likelihood = 1.0
+         else:
+            temperature_likelihood = self.zoo_util.get_temperature_probability(
+               mu=temp,
+               sigma=sigma,
+               min_temperature=min_temperature )
 
-      seasonal_multiplier = day_seasonal_multiplier if day_seasonal_multiplier is not None else 1.0
-      likelihood = max( 0.0, min( temperature_likelihood * seasonal_multiplier, 1.0 ) )
+         animal_seasonal_multiplier = day_seasonal_multiplier if day_seasonal_multiplier is not None else 1.0
+
+      exhibit_seasonal_multiplier = exhibit_day_seasonal_multiplier if exhibit_day_seasonal_multiplier is not None else 1.0
+      likelihood = max(
+         0.0,
+         min(
+            temperature_likelihood
+            * animal_seasonal_multiplier
+            * exhibit_seasonal_multiplier,
+            1.0 ) )
 
       return max( round( likelihood * 100 ), 0 )
 
@@ -2696,16 +2723,33 @@ class Database():
       return updated > 0
    
 
-   def set_exhibit_as_open( self, exhibit ):
+   def set_exhibit_as_open( self, exhibit, start_date, end_date ):
       if not exhibit:
          return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
 
       cur = self.conn.cursor()
 
       cur.execute(
-         """ DELETE FROM ExhibitStatus
-            WHERE EXHIBIT = ?;
-         """, ( exhibit, ) )
+         """   INSERT INTO ExhibitStatus (
+                  EXHIBIT,
+                  IS_CLOSED,
+                  CLOSED_MESSAGE,
+                  CLOSED_START,
+                  CLOSED_END
+               )
+               VALUES (?, 0, NULL, ?, ?)
+               ON CONFLICT(EXHIBIT) DO UPDATE SET
+                  IS_CLOSED = 0,
+                  CLOSED_MESSAGE = NULL,
+                  CLOSED_START = excluded.CLOSED_START,
+                  CLOSED_END = excluded.CLOSED_END;
+         """, ( exhibit, start_date, end_date ) )
 
       self.conn.commit()
       updated = cur.rowcount
