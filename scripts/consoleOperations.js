@@ -213,6 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
    const exhibitClosedStartDateEl = document.getElementById('exhibitClosedStartDate');
    const exhibitClosedEndDateEl = document.getElementById('exhibitClosedEndDate');
+   const exhibitOpenStartDateEl = document.getElementById('exhibitOpenStartDate');
+   const exhibitOpenEndDateEl = document.getElementById('exhibitOpenEndDate');
 
    const restaurantClosedStartDateEl = document.getElementById('restaurantClosedStartDate');
    const restaurantClosedEndDateEl = document.getElementById('restaurantClosedEndDate');
@@ -486,6 +488,8 @@ document.addEventListener('DOMContentLoaded', () => {
       submitButtonEl: document.getElementById('submitExhibitOpen'),
       statusEl: document.getElementById('exhibitOpenStatus'),
       exhibitEl: exhibitOpenExhibitEl,
+      startDateEl: exhibitOpenStartDateEl,
+      endDateEl: exhibitOpenEndDateEl,
       activatePanel,
       hidePanels,
    });
@@ -825,6 +829,11 @@ document.addEventListener('DOMContentLoaded', () => {
    initOffDisplayDatePickers(
       exhibitClosedStartDateEl,
       exhibitClosedEndDateEl
+   );
+
+   initOffDisplayDatePickers(
+      exhibitOpenStartDateEl,
+      exhibitOpenEndDateEl
    );
 
    initOffDisplayDatePickers(
