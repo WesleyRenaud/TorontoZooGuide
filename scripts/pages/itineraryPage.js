@@ -33,6 +33,8 @@ export function initItineraryPage() {
    const tooltipEl = document.getElementById('tooltip');
    const hoverTooltipEl = document.getElementById('hoverTooltip');
    const viewportEl = mapInner?.parentElement;
+   const urlParams = new URLSearchParams(window.location.search);
+   const enableCoordinateEditing = urlParams.get('editCoords') === '1';
 
    if (!mapInner || !tooltipEl || !viewportEl) return;
 
@@ -70,6 +72,7 @@ export function initItineraryPage() {
       mapInner,
       tooltip,
       hover,
+      enableCoordinateEditing,
    });
 
    const focus = createFocusController({

@@ -1,6 +1,18 @@
 import { likelihoodToColor, getAnimalIconUrl } from '../utils/icons.js';
 import { normalizeParameter } from '../utils/normalize.js';
 
+const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
+
+const attractionMarkerScaleOverrides = {
+   'Greenhouse': 2.5,
+   'Wildlife Health & Science Centre': 2.5,
+   'Splash Island': 2.5,
+   'Gorilla Climb Ropes Course': 1.35,
+   'TundraAir Ride': 2.0,
+   'Conservation Carousel': 2.5,
+   'Zoomobile': 2.0,
+};
+
 function resetMarkerVisual(markerEl) {
    markerEl.textContent = '';
    markerEl.style.backgroundImage = 'none';
@@ -8,8 +20,21 @@ function resetMarkerVisual(markerEl) {
    markerEl.style.backgroundRepeat = 'no-repeat';
    markerEl.style.backgroundPosition = 'center';
    markerEl.style.backgroundSize = 'cover';
+   markerEl.style.width = '';
+   markerEl.style.height = '';
 
    markerEl.classList.remove('marker-has-limited-viewing');
+}
+
+function applyAttractionMarkerSize(markerEl, attractionName) {
+   const scale = attractionMarkerScaleOverrides[attractionName];
+
+   if (!scale) return;
+
+   const size = Math.round(DEFAULT_ATTRACTION_MARKER_SIZE * scale);
+
+   markerEl.style.width = `${size}px`;
+   markerEl.style.height = `${size}px`;
 }
 
 function applyGenericIcon(markerEl, iconUrl, count) {
@@ -114,6 +139,8 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
       markerEl.classList.add('marker-attraction');
 
       const attraction = items[0];
+      applyAttractionMarkerSize(markerEl, attraction.name);
+
       const slug = normalizeParameter(attraction.name);
 
       const state = attraction.is_closed ? 'closed' : 'open';

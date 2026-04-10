@@ -35,6 +35,8 @@ export async function initMapPage() {
    const tooltipEl = document.getElementById('tooltip');
    const hoverTooltipEl = document.getElementById('hoverTooltip');
    const viewportEl = mapInner?.parentElement;
+   const urlParams = new URLSearchParams(window.location.search);
+   const enableCoordinateEditing = urlParams.get('editCoords') === '1';
 
    if (!mapInner || !mapPreset || !mapDateInput || !tooltipEl || !viewportEl) return;
 
@@ -74,6 +76,7 @@ export async function initMapPage() {
       mapInner,
       tooltip,
       hover,
+      enableCoordinateEditing,
    });
 
    const focus = createFocusController({

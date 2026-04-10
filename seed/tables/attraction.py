@@ -17,8 +17,8 @@ attractions = [
       '''All Aboard for a Wild Ride! Climb aboard the Zoomobile for a fun ride through your Toronto Zoo!''',
       '''https://www.torontozoo.com/tickets/zoomobile''',                     # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
-      56.44,                                                                  # X coordinate on map
-      82.061                                                                  # Y coordinate on map
+      56.246,                                                                 # X coordinate on map
+      81.096                                                                  # Y coordinate on map
    ),
    (
       'Conservation Carousel',
@@ -26,8 +26,8 @@ attractions = [
       '''Carousels are timeless and fun for all ages! Hop on and choose a unique animal seat.''',
       '''https://www.torontozoo.com/tickets/carousel''',                      # Info link
       '''TICKETS & DETAILS''',                                                # Hyperlink text
-      58.554,                                                                 # X coordinate on map
-      76.04                                                                   # Y coordinate on map
+      58.475,                                                                 # X coordinate on map
+      75.904                                                                  # Y coordinate on map
    ),
    (
       'Greenhouse',
@@ -35,8 +35,8 @@ attractions = [
       '''Take a self-guided tour of our Greenhouse, full of plants from around the world.''',
       '''https://www.torontozoo.com/tz/greenhouse''',                         # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
-      82.669,                                                                 # X coordinate on map
-      55.171                                                                  # Y coordinate on map
+      82.835,                                                                 # X coordinate on map
+      54.277                                                                  # Y coordinate on map
    ),
    (
       'Wildlife Health & Science Centre',
@@ -44,8 +44,8 @@ attractions = [
       '''Step inside one of the most advanced wildlife health and science facilities in Canada.''',
       '''https://www.torontozoo.com/whsc''',                                  # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
-      84.253,                                                                 # X coordinate on map
-      52                                                                      # Y coordinate on map
+      84.459,                                                                 # X coordinate on map
+      50.743                                                                  # Y coordinate on map
    ),
    (
       'Kangaroo Walk-Thru',
@@ -72,8 +72,8 @@ attractions = [
       '''Soar through the air at speeds of 48km/hr over the Tundra Trek on the TundraAir Ride.''',
       '''https://www.torontozoo.com/tz/tundraair''',                          # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
-      74.489,                                                                 # X coordinate on map
-      58.976                                                                  # Y coordinate on map
+      75.152,                                                                 # X coordinate on map
+      60.212                                                                  # Y coordinate on map
    ),
    (
       'Gorilla Climb Ropes Course',
@@ -81,8 +81,8 @@ attractions = [
       '''Hang out like the gorilla troop do! Swing, crawl and balance on 26 elements almost 33 feet high!''',
       '''https://www.torontozoo.com/tz/gorillaclimb''',                       # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
-      49.841,                                                                 # X coordinate on map
-      59.074                                                                  # Y coordinate on map
+      50.023,                                                                 # X coordinate on map
+      58.884                                                                  # Y coordinate on map
    ),
    (
       'Splash Island',
@@ -90,8 +90,8 @@ attractions = [
       '''Cool off at our 2-acre splash pad, filled with water-spouting animals.''',
       '''https://www.torontozoo.com/tz/splash''',                             # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
-      67.785,                                                                 # X coordinate on map
-      73.789                                                                  # Y coordinate on map
+      67.797,                                                                 # X coordinate on map
+      72.648                                                                  # Y coordinate on map
    ),
    (
       'Face Painting, Caricatures and Henna!',
