@@ -2027,7 +2027,7 @@ enclosure_viewings =\
       'Outdoor',
       '''The Abyssinian ground hornbills are most likely inside and off-display on this day due to cooler weather.''',
       66.827,                 # X coordinate on map
-      79.627                  # Y coordinate on map
+      80.627                  # Y coordinate on map
    ),
    (
       'Common Raven',
@@ -2035,7 +2035,7 @@ enclosure_viewings =\
       'Outdoor',
       None,
       66.827,                 # X coordinate on map
-      79.627                  # Y coordinate on map
+      80.627                  # Y coordinate on map
    ),
    (
       'Eurasian Eagle Owl',
@@ -2043,7 +2043,7 @@ enclosure_viewings =\
       'Outdoor',
       None,
       66.827,                 # X coordinate on map
-      79.627                  # Y coordinate on map
+      80.627                  # Y coordinate on map
    ),
    (
       'Great Horned Owl',
@@ -2051,7 +2051,7 @@ enclosure_viewings =\
       'Outdoor',
       None,
       66.827,                 # X coordinate on map
-      79.627                  # Y coordinate on map
+      80.627                  # Y coordinate on map
    ),
    (
       'Guinea Pig',
@@ -2059,7 +2059,7 @@ enclosure_viewings =\
       'Indoor',
       None,
       66.827,                 # X coordinate on map
-      79.627                  # Y coordinate on map
+      80.627                  # Y coordinate on map
    ),
    (
       'Harris\'s Hawk',
@@ -2067,7 +2067,7 @@ enclosure_viewings =\
       'Outdoor',
       '''The Harris' hawks can most likely be seen inside on this day due to cold weather.''',
       66.827,                 # X coordinate on map
-      79.627                  # Y coordinate on map
+      80.627                  # Y coordinate on map
    ),
    (
       'Marabou Stork',
@@ -2075,7 +2075,7 @@ enclosure_viewings =\
       'Outdoor',
       '''The marabou storks are most likely inside and off-display on this day due to cooler weather.''',
       66.827,                 # X coordinate on map
-      79.627                  # Y coordinate on map
+      80.627                  # Y coordinate on map
    ),
    (
       'Rabbit',
@@ -2083,7 +2083,7 @@ enclosure_viewings =\
       'Outdoor',
       '''The rabbits are most likely inside and off-display on this day due to particularly harsh conditions.''',
       66.827,                 # X coordinate on map
-      79.627                  # Y coordinate on map
+      80.627                  # Y coordinate on map
    )
 ]
 
