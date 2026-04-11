@@ -8,6 +8,9 @@ from urllib.parse import unquote, urlparse
 import database
 
 
+DEFAULT_PORT = 8000
+
+
 class MyHandler( BaseHTTPRequestHandler ):
    database = database.Database()
 
@@ -1866,6 +1869,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
 if __name__ == '__main__':
-   httpd = HTTPServer( ( 'localhost', int( sys.argv[ 1 ] ) ), MyHandler )
-   print( 'Server listing in port:  ', int( sys.argv[ 1 ] ) )
+   port = int( sys.argv[ 1 ] ) if len( sys.argv ) > 1 else DEFAULT_PORT
+   httpd = HTTPServer( ( 'localhost', port ), MyHandler )
+   print( 'Server listening on port: ', port )
    httpd.serve_forever()
