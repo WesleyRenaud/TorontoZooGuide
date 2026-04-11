@@ -1,0 +1,12 @@
+{
+   "name": "toronto-zoo-guide",
+   "private": true,
+   "scripts": {
+      "lint": "npm run lint:js && npm run lint:py",
+      "lint:js": "eslint scripts && echo 'All checks passed!'",
+      "lint:py": "python3 scripts/lint_python_house_style.py && ruff check ."
+   },
+   "devDependencies": {
+      "eslint": "^10.2.0"
+   }
+}

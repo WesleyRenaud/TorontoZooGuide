@@ -548,3 +548,15 @@ For a visitor, the app can be understood simply:
 - use `Map` to explore what is around the zoo and what is available on a certain date
 - use `Animals` to browse species and learn more about them
 - use `Itinerary` to build a personalized visit plan and see that plan on the map
+
+## Linting
+
+The repo now includes separate linting for JavaScript and Python.
+
+- install JavaScript lint dependencies with `npm install`
+- install the Python lint dependency with `python3 -m pip install -r requirements-dev.txt`
+- run JavaScript linting with `npm run lint:js`
+- run Python linting with `npm run lint:py`
+- run both with `npm run lint`
+
+The JavaScript lint setup uses ESLint and is configured for the browser-based module structure in `scripts/`, including the CDN-loaded globals used by the app. The Python lint setup uses Ruff and is intentionally scoped to correctness-focused checks so it does not fight the existing Python formatting style in the project.

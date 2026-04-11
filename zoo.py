@@ -1,5 +1,6 @@
 from datetime import date, timedelta
-import calendar, math
+import calendar
+import math
 
 class Animal:
    def __init__( self, species, latin_name=None, general_viewing_tips=None, seasonal_viewing_tips=None, identification=None,
@@ -59,7 +60,7 @@ class Animal:
          'has_viewing_alert': self.has_viewing_alert,
          'viewing_alert_message': self.viewing_alert_message
       }
-   
+
 
 class Pavilion:
    def __init__( self, name, region, description=None, x_coord=None, y_coord=None ):
@@ -78,7 +79,7 @@ class Pavilion:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord
       }
-   
+
 
 class Restaurant:
    def __init__( self, name, location, sub_location, description=None, menu_link=None, x_coord=None, y_coord=None, is_closed=None,
@@ -106,7 +107,7 @@ class Restaurant:
          'is_closed': self.is_closed,
          'closed_message': self.closed_message
       }
-   
+
 
 class Restroom:
    def __init__( self, title, x_coord=None, y_coord=None ):
@@ -121,7 +122,7 @@ class Restroom:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord
       }
-   
+
 
 class GiftShop:
    def __init__( self, name, location, description=None, x_coord=None, y_coord=None, is_closed=None, closed_message=None ):
@@ -144,7 +145,7 @@ class GiftShop:
          'is_closed': self.is_closed,
          'closed_message': self.closed_message,
       }
-   
+
 
 class Attraction:
    def __init__( self, name, free_with_admission, description=None, info_link=None, hyperlink_text=None, x_coord=None, y_coord=None,
@@ -172,7 +173,7 @@ class Attraction:
          'is_closed': self.is_closed,
          'closed_message': self.closed_message
       }
-   
+
 
 class ZoomobileStation:
    def __init__( self, name, description=None, x_coord=None, y_coord=None ):
@@ -189,7 +190,7 @@ class ZoomobileStation:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord
       }
-   
+
 
 class ZoomobileRouteMarker:
    def __init__( self, route_type, x_coord, y_coord ):
@@ -204,8 +205,8 @@ class ZoomobileRouteMarker:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord
       }
-   
-   
+
+
 class GuardiansTalk:
    def __init__( self, name, location, x_coord, y_coord, time_of_day=None, is_available=True, unavailable_message=None ):
       self.name = name
@@ -227,7 +228,7 @@ class GuardiansTalk:
          'is_available': self.is_available,
          'unavailable_message': self.unavailable_message
       }
-   
+
 
 class WildEncounter:
    def __init__( self, name, meeting_spot, link, time_of_day=None, x_coord=None, y_coord=None, is_available=True, unavailable_message=None ):
@@ -252,7 +253,7 @@ class WildEncounter:
          'is_available': self.is_available,
          'unavailable_message': self.unavailable_message
       }
-   
+
 
 class Itinerary:
    def __init__( self, date, animals=[], attractions=[], guardians_talks=[], wild_encounters=[] ):
@@ -279,7 +280,7 @@ class Itinerary:
             self._to_dict_with_type(w, 'wildEncounter') for w in self.wild_encounters
          ]
       }
-   
+
    def _to_dict_with_type( self, obj, fallback_type ):
       if hasattr(obj, 'to_dict'):
          d = obj.to_dict()
@@ -288,9 +289,9 @@ class Itinerary:
 
       d[ 'type' ] = d.get('type', fallback_type)
       return d
-   
 
-class Zoo_Util:   
+
+class Zoo_Util:
    def get_average_temperature( self, month, day ):
       # Convert month/day to day-of-year
       month = self.normalize_month( month )
@@ -370,7 +371,7 @@ class Zoo_Util:
          return 12
 
       return None
-   
+
 
    def get_month_abbreviation( self, month ):
       month_map = {
@@ -427,7 +428,7 @@ class Zoo_Util:
             return abbrev
 
       raise ValueError( f'Invalid month: {month}' )
-      
+
 
    def get_day_of_year(self, month, day ):
       month_index = {
@@ -439,7 +440,7 @@ class Zoo_Util:
 
       doy = sum( days_in_month[ :month_index[ month ] ] )
       return doy + (day - 1)
-   
+
 
    def get_next_month( self, month ):
       if month in ('JAN', 'Jan'):
@@ -466,7 +467,7 @@ class Zoo_Util:
          return 'Dec'
       elif month in ('DEC', 'Dec'):
          return 'Jan'
-      
+
 
    def get_number_of_days_in_month( self, month ):
       if month in ('JAN', 'Jan', 'MAR', 'Mar', 'MAY', 'May', 'JUL', 'Jul', 'AUG', 'Aug', 'OCT', 'Oct', 'DEC', 'Dec'):
@@ -475,7 +476,7 @@ class Zoo_Util:
          return 30
       elif month in ('FEB', 'Feb'):
          return 28
-      
+
 
    # Returns probability (between 0 and 1) that temperature is >= min_temperature, assuming a normal distribution N(mu, sigma)
    def get_temperature_probability( self, mu, sigma, min_temperature ):
@@ -485,16 +486,16 @@ class Zoo_Util:
       cdf = 0.5 * (1 + math.erf( z / math.sqrt( 2) ) )
 
       return round( 1.0 - cdf, 3 )
-   
+
 
    def is_peak_season_month( self, month ):
       month = self.normalize_month( month )
 
       if month >= 5 and month <= 10:
          return True
-      
+
       return False
-   
+
 
    def is_holiday( self, d ):
       year = d.year
@@ -539,10 +540,10 @@ class Zoo_Util:
       h = ( 19 * a + b - d - g + 15 ) % 30
       i = c // 4
       k = c % 4
-      l = ( 32 + 2 * e + 2 * i - h - k ) % 7
-      m = ( a + 11 * h + 22 * l ) // 451
-      month = ( h + l - 7 * m + 114 ) // 31
-      day = ( ( h + l - 7 * m + 114 ) % 31 ) + 1
+      weekday_offset = ( 32 + 2 * e + 2 * i - h - k ) % 7
+      m = ( a + 11 * h + 22 * weekday_offset ) // 451
+      month = ( h + weekday_offset - 7 * m + 114 ) // 31
+      day = ( ( h + weekday_offset - 7 * m + 114 ) % 31 ) + 1
 
       return date( year, month, day )
 

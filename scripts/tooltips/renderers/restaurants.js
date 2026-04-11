@@ -35,7 +35,7 @@ export const restaurantRenderer = {
                   >
                      MENU
                   </a>
-               </span>` 
+               </span>`
             : ''
          }      `;
       return card;

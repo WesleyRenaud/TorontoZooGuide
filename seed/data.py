@@ -14,3 +14,22 @@ from .tables.zoomobile_station import zoomobile_stations
 from .tables.meet_the_guardians_talk import guardians_talks
 from .tables.wild_encounter_meeting_spot import wild_encounter_meeting_spots
 from .tables.wild_encounter import wild_encounters
+
+__all__ = [
+   'regions',
+   'exhibits',
+   'exhibit_day_seasonal_viewability_multipliers',
+   'animals',
+   'enclosures',
+   'enclosure_viewings',
+   'animal_day_seasonal_viewability_multipliers',
+   'pavilions',
+   'restaurants',
+   'restrooms',
+   'gift_shops',
+   'attractions',
+   'zoomobile_stations',
+   'guardians_talks',
+   'wild_encounter_meeting_spots',
+   'wild_encounters',
+]

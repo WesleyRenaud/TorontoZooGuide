@@ -50,7 +50,7 @@ attractions = [
    (
       'Kangaroo Walk-Thru',
       1,                                                                      # Free with admission
-      '''Walk among the kangaroos!''',                                        
+      '''Walk among the kangaroos!''',
       '''https://www.torontozoo.com/tz/kangaroo''',                           # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
       74.985,                                                                 # X coordinate on map

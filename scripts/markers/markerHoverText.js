@@ -61,7 +61,8 @@ export function buildHoverText(itemsAtPoint) {
 
    if (type === 'guardiansTalk') {
       if (itemsAtPoint.length === 1) {
-         return `${itemsAtPoint[0].name} Meet The Guardians Talk` || 'Meet The Guardians Talk';
+         const name = itemsAtPoint[0].name || '';
+         return name ? `${name} Meet The Guardians Talk` : 'Meet The Guardians Talk';
       }
       const first = itemsAtPoint[0].name || 'Meet The Guardians Talk';
       return `${first} + ${itemsAtPoint.length - 1}`;
@@ -69,7 +70,8 @@ export function buildHoverText(itemsAtPoint) {
 
    if (type === 'wildEncounter') {
       if (itemsAtPoint.length === 1) {
-         return `Wild Encounter • ${itemsAtPoint[0].name} - Meeting Spot` || 'Wild Encounter Meeting Spot';
+         const name = itemsAtPoint[0].name || '';
+         return name ? `Wild Encounter • ${name} - Meeting Spot` : 'Wild Encounter Meeting Spot';
       }
       const first = itemsAtPoint[0].name || 'Wild Encounter Meeting Spot';
       return `Wild Encounter • ${first} + ${itemsAtPoint.length - 1} more - Meeting Spot`;
