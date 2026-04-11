@@ -35,7 +35,7 @@ export const wildEncounterRenderer = {
                   >
                      More Info
                   </a>
-               </span>` 
+               </span>`
             : ''
          }      `;
       return card;

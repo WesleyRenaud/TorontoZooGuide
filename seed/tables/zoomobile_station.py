@@ -15,7 +15,7 @@ zoomobile_stations = [
       '''This stop is right beside the entrance and exit to the zoo. Located next door is the Peacock Café. This is also the closest
          stop to Indo-Malaya where you can see Sumatran orangutans, white-handed gibbons, greater one-horned rhinos, Sumatran tigers,
          clouded leopards, and so much more.'''.replace( '\n', ' ' ),
-      56.992,  # X coordinate on map                     
+      56.992,  # X coordinate on map
       80.918   # Y coordinate on map
    ),
    (
@@ -24,7 +24,7 @@ zoomobile_stations = [
       '''This stop gives you direct access to the Canadian Domain, home to raccoons, bald eagles, wood bison, cougars, and grizzly
          bears. Please note that this station is located at the top of the domain hill, and if you wish to venture down to see the
          Canadian animals you will have to come back up the hill on foot.'''.replace( '\n', ' ' ),
-      35.356,  # X coordinate on map                     
+      35.356,  # X coordinate on map
       25.491   # Y coordinate on map
    ),
    (
@@ -33,7 +33,7 @@ zoomobile_stations = [
       '''This stop drops you off at the back of the Africa Savanna section of the zoo home to hyenas, African penguins, lions,
          cheetahs, zebras, rhinos, hippos, giraffes, and more! If you move through the savanna you will reach the African Rainforest
          Pavilion which is home to Western lowland gorillas, pygmy hippos, ring-tailed lemurs, to name a few.'''.replace( '\n', ' ' ),
-      56.186,  # X coordinate on map                     
+      56.186,  # X coordinate on map
       35.325   # Y coordinate on map
    ),
    (
@@ -44,7 +44,7 @@ zoomobile_stations = [
          capybaras, flamingoes, and spider monkeys. Across from Tundra zoomobile station are the greenhouse and wildlife health
          center, which are available for guests to walk through, free with admission, year-round. This stop is also the closest
          access point to the Americas and Australasia pavilions.'''.replace( '\n', ' ' ),
-      80.191,  # X coordinate on map                     
+      80.191,  # X coordinate on map
       56.422   # Y coordinate on map
    ),
    (
@@ -54,7 +54,7 @@ zoomobile_stations = [
          red pandas, camels, highland cows, and more. Between this station and the tundra station you will also pass through the
          Eurasia Wilds drive-thru where you can get face-to-face with Asian wild horses, West Caucasian turs, and yaks.'''
          .replace( '\n', ' ' ),
-      75.145,  # X coordinate on map                     
+      75.145,  # X coordinate on map
       88.373   # Y coordinate on map
    ),
 ]

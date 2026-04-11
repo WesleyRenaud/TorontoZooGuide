@@ -107,7 +107,7 @@ animals = [
          the mother’s pouch for several months before emerging. Females can reproduce year-round under suitable conditions, which
          helps populations recover when threats are controlled.'''.replace( '\n', ' ' ),
       '''The Toronto Zoo is home to a male brush-tailed bettong, Tucker.'''
-   ),   
+   ),
    (
       'Clown Triggerfish',
       'Balistoides Capriscus',
@@ -205,7 +205,7 @@ animals = [
          and is named for its elegant, graceful appearance reminiscent of a young lady.'''.replace( '\n', ' ' ),
       '''Demoiselle cranes are native to central Eurasia, ranging from the Black Sea region through Central Asia to Mongolia. They
          inhabit grasslands, steppes, and semi-arid plains, often near water sources. During migration, they travel thousands of
-         kilometers, spending winters in India and northeastern Africa.'''.replace( '\n', ' ' ),       
+         kilometers, spending winters in India and northeastern Africa.'''.replace( '\n', ' ' ),
       '''They are omnivorous, feeding primarily on seeds, grains, insects, small vertebrates, and plant material. Demoiselle cranes
          forage by walking slowly through grasslands, pecking at the ground, and probing for insects or other small prey. In
          captivity, their diet is supplemented with grains, vegetables, and formulated pellets to mimic their natural intake.'''
@@ -219,7 +219,7 @@ animals = [
          head are thought to enhance visual signals during mating rituals.'''.replace( '\n', ' ' ),
       '''Breeding occurs in spring and summer. Pairs nest on the ground in shallow scrapes lined with grass. Typically, two eggs
          are laid and both parents share incubation duties. Chicks are precocial, leaving the nest shortly after hatching and
-         following their parents to learn foraging and survival behaviours.'''.replace( '\n', ' ' ),                              
+         following their parents to learn foraging and survival behaviours.'''.replace( '\n', ' ' ),
       '''The Toronto Zoo is home to one male and one female demoiselle crane.'''.replace( '\n', ' ' )
    ),
    (
@@ -1273,7 +1273,7 @@ animals = [
       '''Breeding typically occurs in late spring or early summer. After a gestation period of about 11–12 months, a single foal is
          born and can stand and walk shortly after birth. Foals remain with their mothers within the herd and mature over several
          years. Asian Wild Horses can live 20–25 years, with similar lifespans observed in managed care.'''.replace( '\n', ' ' ),
-      None,                                                          # Animals at the zoo   
+      None,                                                          # Animals at the zoo
    ),
    (
       'Bactrian Camel',
@@ -5633,7 +5633,7 @@ animals = [
       '''These turtles are largely solitary and secretive, interacting minimally outside of breeding. They are mostly diurnal,
          emerging during cooler parts of the day to forage, and retreating to hiding places during high heat. Defensive behaviours
          include retracting the head and limbs into the shell and remaining motionless, which is highly effective due to their
-         cryptic colouration.'''.replace( '\n', ' ' ), 
+         cryptic colouration.'''.replace( '\n', ' ' ),
       '''Adaptations include a low, mossy carapace that provides camouflage, strong limbs and claws for digging and maneuvering
          through leaf litter, and a slow metabolism that allows survival during periods of limited food availability. Their
          colouration, shape, and behaviour make them well-suited to life on the forest floor, where concealment is key to avoiding

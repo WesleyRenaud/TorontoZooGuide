@@ -9760,7 +9760,7 @@ animal_day_seasonal_viewability_multipliers = [
    ( 'Two-Toed Sloth', 'Americas Pavilion', 12, 28, 0.0 ),
    ( 'Two-Toed Sloth', 'Americas Pavilion', 12, 29, 0.0 ),
    ( 'Two-Toed Sloth', 'Americas Pavilion', 12, 30, 0.0 ),
-  
+
    # White-Faced Saki
    # January
    ( 'White-Faced Saki', 'Americas Pavilion', 1, 1, 0.0 ),

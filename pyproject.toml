@@ -1,0 +1,21 @@
+[tool.ruff]
+target-version = "py311"
+exclude = [
+   ".git",
+   ".vscode",
+   "__pycache__",
+   "images"
+]
+
+[tool.ruff.lint]
+select = [
+   "F841",
+   "W293"
+]
+
+[tool.tzg_python_style]
+exclude = [
+   "scripts/capture_readme_screenshots.py",
+   "seed/tables/animal.py",
+   "zoo.py"
+]

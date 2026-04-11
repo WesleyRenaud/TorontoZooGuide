@@ -17,7 +17,7 @@ wild_encounter_meeting_spots = [
       40.044,  # X coordinate on map
       69       # Y coordinate on map
    ),
-   ( 
+   (
       '''Wild Encounter - Discovery Zone Meeting Spot''',
       65.885,  # X coordinate on map
       77.803   # Y coordinate on map

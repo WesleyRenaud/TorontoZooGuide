@@ -147,7 +147,7 @@ def create_schema( cursor ):
          'ALTER TABLE ExhibitStatus ADD COLUMN CLOSED_END DATE;'
       )
 
-   cursor.execute(''' CREATE TABLE IF NOT EXISTS RestaurantStatus
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS RestaurantStatus
                      (  RESTAURANT          VARCHAR(64) NOT NULL,
                         IS_CLOSED           BOOL        NOT NULL DEFAULT 0,
                         CLOSED_MESSAGE      TEXT,
@@ -157,7 +157,7 @@ def create_schema( cursor ):
                         FOREIGN KEY (RESTAURANT) REFERENCES Restaurant(NAME) ); ''' )
 
    restaurant_status_columns = {
-      row[ 1 ] for row in cursor.execute('PRAGMA table_info( RestaurantStatus );').fetchall()
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( RestaurantStatus );' ).fetchall()
    }
 
    if 'IS_CLOSED' not in restaurant_status_columns:
@@ -255,7 +255,7 @@ def create_schema( cursor ):
          'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
       )
 
-   cursor.execute(''' CREATE TABLE IF NOT EXISTS GiftShopStatus
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS GiftShopStatus
                      (  GIFT_SHOP           VARCHAR(64) NOT NULL,
                         IS_CLOSED           BOOL        NOT NULL DEFAULT 0,
                         CLOSED_MESSAGE      TEXT,
@@ -265,7 +265,7 @@ def create_schema( cursor ):
                         FOREIGN KEY (GIFT_SHOP) REFERENCES GiftShop(NAME) ); ''' )
 
    gift_shops_status_columns = {
-      row[ 1 ] for row in cursor.execute('PRAGMA table_info( GiftShopStatus );').fetchall()
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( GiftShopStatus );' ).fetchall()
    }
 
    if 'IS_CLOSED' not in gift_shops_status_columns:
@@ -770,10 +770,6 @@ def create_schema( cursor ):
                      (  TALK_NAME            VARCHAR(64) NOT NULL,
                         PRIMARY KEY ( TALK_NAME ),
                         FOREIGN KEY ( TALK_NAME ) REFERENCES MeetTheGuardiansTalk(NAME) ); ''' )
-
-   itinerary_guardians_talk_columns = {
-      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( ItineraryGuardiansTalk );' ).fetchall()
-   }
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryWildEncounter
                      (  WILD_ENCOUNTER       VARCHAR(64) NOT NULL,

@@ -36,7 +36,7 @@ export const attractionRenderer = {
                   >
                      ${a.hyperlink_text}
                   </a>
-               </span>` 
+               </span>`
             : ''
          }      `;
       return card;

@@ -8,13 +8,7 @@ export function createAnimalsRouter({ listEl }) {
    const listView = createAnimalsListView({ listEl });
    const detailView = createAnimalDetailView({ listEl });
 
-   let currentRegion = null;
-   let currentExhibit = null;
-
    async function showRegions() {
-      currentRegion = null;
-      currentExhibit = null;
-
       const regions = getRegions();
 
       listView.renderRegions(regions, {
@@ -29,9 +23,6 @@ export function createAnimalsRouter({ listEl }) {
    }
 
    async function showExhibits(regionName) {
-      currentRegion = regionName;
-      currentExhibit = null;
-
       const exhibits = await api.getExhibitsInRegion(regionName);
 
       listView.renderExhibits(regionName, exhibits, {
@@ -43,9 +34,6 @@ export function createAnimalsRouter({ listEl }) {
    }
 
    async function showAnimals(regionName, exhibitName) {
-      currentRegion = regionName;
-      currentExhibit = exhibitName;
-
       const animals = await api.getAnimalsInExhibit(exhibitName);
 
       listView.renderAnimals(regionName, exhibitName, animals, {

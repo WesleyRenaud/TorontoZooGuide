@@ -353,7 +353,7 @@ class Database():
             pass
 
       raise ValueError( f'Unsupported datetime format: { value }' )
-   
+
 
    def parse_date_value( self, value ):
       if value == None:
@@ -390,12 +390,12 @@ class Database():
                FROM Exhibit e
                WHERE e.REGION = ?;
          """, ( region, ) )
-      
+
       exhibits = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return exhibits
-   
+
 
    def get_animals_in_exhibit( self, exhibit ):
       cur = self.conn.cursor()
@@ -414,7 +414,7 @@ class Database():
       cur.close()
 
       return animals
-   
+
 
    def get_animal_information( self, species ):
       cur = self.conn.cursor()
@@ -465,7 +465,7 @@ class Database():
       cur.close()
 
       return animal_info
-   
+
 
    def get_pavilions( self ):
       cur = self.conn.cursor()
@@ -496,7 +496,7 @@ class Database():
       cur.close()
 
       return pavilions
-   
+
 
    def get_restaurants( self, month, day, include_closed_restaurants, restaurants_to_include=[] ):
       cur = self.conn.cursor()
@@ -618,7 +618,7 @@ class Database():
       cur.close()
 
       return restaurants
-   
+
 
    def get_restrooms( self ):
       cur = self.conn.cursor()
@@ -645,7 +645,7 @@ class Database():
       cur.close()
 
       return restrooms
-   
+
 
    def get_gift_shops( self, month, day, include_closed_gift_shops, gift_shops_to_include=[] ):
       cur = self.conn.cursor()
@@ -763,7 +763,7 @@ class Database():
       cur.close()
 
       return gift_shops
-   
+
 
    def get_attractions( self, month, day, include_closed_attractions=False ):
       cur = self.conn.cursor()
@@ -936,7 +936,7 @@ class Database():
          return True, message
 
       return False, None
-   
+
 
    def get_zoomobile_stations( self, route, month, day, zoomobile_stations_to_include=None ):
       if zoomobile_stations_to_include is None:
@@ -1179,7 +1179,7 @@ class Database():
       cur.close()
 
       return guardians_talks
-   
+
 
    def get_wild_encounters( self, month, day ):
       cur = self.conn.cursor()
@@ -1293,7 +1293,7 @@ class Database():
       cur.close()
 
       return wild_encounters
-   
+
 
    def get_closed_exhibits( self, month, day ):
       cur = self.conn.cursor()
@@ -1339,7 +1339,7 @@ class Database():
       cur.close()
 
       return closed_exhibits
-   
+
 
    def get_animals_matching_query( self, query, month, day, temp, include_off_display_animals ):
       animals = self.get_animals_viewable_on_day( month=month, day=day, temp=temp, include_off_display_animals=include_off_display_animals )
@@ -1369,7 +1369,7 @@ class Database():
       unique_animals.sort( key=lambda a: a.species.lower() )
 
       return unique_animals
-   
+
 
    def get_pavilions_matching_query( self, query ):
       if not query:
@@ -1381,7 +1381,7 @@ class Database():
          p for p in self.get_pavilions()
          if p.name and query_lower in p.name.lower()
       ]
-   
+
 
    def get_restaurants_matching_query( self, query, month, day, include_closed_restaurants ):
       if not query:
@@ -1393,7 +1393,7 @@ class Database():
          r for r in self.get_restaurants( month=month, day=day, include_closed_restaurants=include_closed_restaurants )
          if r.name and query_lower in r.name.lower()
       ]
-   
+
 
    def get_restrooms_matching_query( self, query ):
       if not query:
@@ -1405,7 +1405,7 @@ class Database():
          r for r in self.get_restrooms()
          if r.title and query_lower in r.title.lower()
       ]
-   
+
 
    def get_gift_shops_matching_query( self, query, month, day ):
       if not query:
@@ -1417,7 +1417,7 @@ class Database():
          g for g in self.get_gift_shops( month=month, day=day, include_seasonal_gift_shops=True )
          if g.name and query_lower in g.name.lower()
       ]
-   
+
 
    def get_attractions_matching_query( self, query, month, day, include_closed_attractions ):
       if not query:
@@ -1429,7 +1429,7 @@ class Database():
          a for a in self.get_attractions( month=month, day=day, include_closed_attractions=include_closed_attractions )
          if a.name and query_lower in a.name.lower()
       ]
-   
+
 
    def get_zoomobile_stations_matching_query( self, query ):
       if not query:
@@ -1441,7 +1441,7 @@ class Database():
          s for s in self.get_zoomobile_stations()
          if s.name and query_lower in s.name.lower()
       ]
-   
+
 
    def get_guardians_talks_matching_query( self, query, month, day ):
       talks = self.get_guardians_talks( month=month, day=day )
@@ -1458,7 +1458,7 @@ class Database():
             and query_lower in t.name.lower()
          )
       ]
-   
+
 
    def get_wild_encounters_matching_query( self, query, month, day ):
       wild_encounters = self.get_wild_encounters( month=month, day=day )
@@ -1472,7 +1472,7 @@ class Database():
          w for w in wild_encounters
          if w.name and query_lower in w.name.lower()
       ]
-   
+
 
    def get_species( self ):
       cur = self.conn.cursor()
@@ -1482,12 +1482,12 @@ class Database():
                   a.SPECIES
                FROM Animal a;
          """ )
-      
+
       species = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return species
-   
+
 
    def get_itinerary( self ):
       cur = self.conn.cursor()
@@ -1602,7 +1602,7 @@ class Database():
       cur.close()
 
       return itinerary
-   
+
 
    def set_itinerary(
          self,
@@ -1715,7 +1715,7 @@ class Database():
       cur.close()
 
       return True
-   
+
 
    def clear_itinerary( self ):
       cur = self.conn.cursor()
@@ -1736,7 +1736,7 @@ class Database():
       cur.close()
 
       return True
-   
+
 
    def validate_animals( self, month, day, temp, animals_to_include=None ):
       animals_to_include = animals_to_include or []
@@ -1778,7 +1778,7 @@ class Database():
          'valid_animals': valid_animals,
          'removed_animals': removed_animals
       }
-   
+
 
    def validate_attractions( self, month, day, attractions_to_include=None ):
       attractions_to_include = attractions_to_include or []
@@ -1805,7 +1805,7 @@ class Database():
          'valid_attractions': valid_attractions,
          'removed_attractions': removed_attractions
       }
-   
+
 
    def validate_guardians_talks( self, month, day, guardians_talks_to_include=None ):
       guardians_talks_to_include = guardians_talks_to_include or []
@@ -1939,7 +1939,7 @@ class Database():
       ]
 
       return regions
-   
+
 
    def get_exhibits( self ):
       cur = self.conn.cursor()
@@ -1949,12 +1949,12 @@ class Database():
                   e.NAME
                FROM Exhibit e;
          """ )
-      
+
       exhibits = [ row[ 0 ] for row in data.fetchall() ]
       cur.close()
 
       return exhibits
-   
+
 
    def get_restaurant_names( self ):
       cur = self.conn.cursor()
@@ -1969,7 +1969,7 @@ class Database():
       cur.close()
 
       return restaurants
-   
+
 
    def get_gift_shop_names( self ):
       cur = self.conn.cursor()
@@ -1984,7 +1984,7 @@ class Database():
       cur.close()
 
       return gift_shops
-   
+
 
    def get_attraction_names( self ):
       cur = self.conn.cursor()
@@ -1999,7 +1999,7 @@ class Database():
       cur.close()
 
       return attractions
-   
+
 
    def get_zoomobile_station_names( self ):
       cur = self.conn.cursor()
@@ -2031,7 +2031,7 @@ class Database():
       cur.close()
 
       return guardians_talk_locations
-   
+
 
    def get_guardians_talk_names( self ):
       cur = self.conn.cursor()
@@ -2046,7 +2046,7 @@ class Database():
       cur.close()
 
       return guardians_talks
-   
+
 
    def get_guardians_talk_names_at_location( self, location ):
       cur = self.conn.cursor()
@@ -2179,7 +2179,7 @@ class Database():
       cur.close()
 
       return guardians_talk_occurrences
-   
+
 
    def get_wild_encounter_names( self ):
       cur = self.conn.cursor()
@@ -2194,7 +2194,7 @@ class Database():
       cur.close()
 
       return wild_encounters
-   
+
 
    def get_wild_encounter_occurrences( self, wild_encounter, days_ahead=60 ):
       if not wild_encounter:
@@ -2302,7 +2302,7 @@ class Database():
       cur.close()
 
       return wild_encounter_occurrences
-   
+
 
    def get_animals_for_itinerary(
          self,
@@ -2374,7 +2374,7 @@ class Database():
       )
 
       return filtered_animals
-   
+
 
    def get_attractions_for_itinerary(
          self,
@@ -2413,7 +2413,7 @@ class Database():
       attractions.sort( key=lambda a: ( a.name or '' ).lower() )
 
       return attractions
-   
+
 
    def get_guardians_talks_for_itinerary(
          self,
@@ -2455,7 +2455,7 @@ class Database():
       )
 
       return guardians_talks
-   
+
 
    def get_wild_encounters_for_itinerary(
          self,
@@ -2497,7 +2497,7 @@ class Database():
       )
 
       return wild_encounters
-      
+
 
    def set_animal_as_off_display( self, species, exhibit, start_date, end_date, message ):
       if not message:
@@ -2534,7 +2534,7 @@ class Database():
       cur.close()
 
       return updated > 0
-      
+
 
    def set_animal_as_on_display( self, species, exhibit ):
       cur = self.conn.cursor()
@@ -2550,14 +2550,14 @@ class Database():
                ON CONFLICT(SPECIES, EXHIBIT) DO UPDATE SET
                   IS_OFF_DISPLAY = 0,
                   OFF_DISPLAY_MESSAGE = NULL;
-         """, (species, exhibit, ) )
+         """, ( species, exhibit, ) )
 
       self.conn.commit()
       updated = cur.rowcount
       cur.close()
 
       return updated > 0
-   
+
 
    def set_animal_limited_viewing_schedule( self, species, exhibit, start_date, end_date, daily_start_time,
                                             daily_end_time, message ):
@@ -2615,7 +2615,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def remove_animal_visibility_schedule( self, species, exhibit ):
       cur = self.conn.cursor()
@@ -2632,7 +2632,7 @@ class Database():
       cur.close()
 
       return deleted > 0
-   
+
 
    def set_animal_viewing_alert( self, species, exhibit, alert_start_date, alert_end_date, message ):
       if not alert_start_date:
@@ -2666,7 +2666,7 @@ class Database():
       cur.close()
 
       return updated > 0
-      
+
 
    def remove_animal_viewing_alert( self, species, exhibit ):
       cur = self.conn.cursor()
@@ -2683,7 +2683,7 @@ class Database():
       cur.close()
 
       return removed > 0
-   
+
 
    def set_exhibit_as_closed( self, exhibit, start_date, end_date, message ):
       if not exhibit:
@@ -2721,7 +2721,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def set_exhibit_as_open( self, exhibit, start_date, end_date ):
       if not exhibit:
@@ -2756,7 +2756,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def set_restaurant_as_closed( self, restaurant, start_date, end_date, message ):
       if not restaurant:
@@ -2812,7 +2812,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def set_restaurant_opening_schedule(
          self,
@@ -2891,7 +2891,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def remove_restaurant_opening_schedule( self, restaurant ):
       if not restaurant:
@@ -2965,7 +2965,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def set_gift_shop_opening_schedule(
          self,
@@ -3044,7 +3044,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def remove_gift_shop_opening_schedule( self, gift_shop ):
       if not gift_shop:
@@ -3062,7 +3062,7 @@ class Database():
       cur.close()
 
       return removed > 0
-   
+
 
    def set_attraction_as_closed( self, attraction, start_date, end_date, message ):
       if not attraction:
@@ -3100,7 +3100,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def set_attraction_as_open( self, attraction ):
       if not attraction:
@@ -3118,7 +3118,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def set_attraction_opening_schedule(
          self,
@@ -3197,7 +3197,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def remove_attraction_opening_schedule( self, attraction ):
       if not attraction:
@@ -3215,7 +3215,7 @@ class Database():
       cur.close()
 
       return removed > 0
-   
+
 
    def set_zoomobile_station_as_closed( self, zoomobile_station, start_date, end_date, message ):
       if not zoomobile_station:
@@ -3253,7 +3253,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def set_zoomobile_station_as_open( self, zoomobile_station ):
       if not zoomobile_station:
@@ -3271,7 +3271,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def set_current_zoomobile_route( self, route ):
       if route not in ( 'summer', 'winter' ):
@@ -3294,7 +3294,7 @@ class Database():
       cur.close()
 
       return updated > 0
-      
+
 
    def set_guardians_talk_schedule(
          self,
@@ -3376,7 +3376,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def end_guardians_talk_schedule( self, talk, location, schedule_end_date ):
       if not talk or not location:
@@ -3404,7 +3404,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def cancel_guardians_talk_occurrence( self, talk, location, date, time ):
       if not talk or not location or not date or not time:
@@ -3514,7 +3514,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def end_wild_encounter_schedule( self, wild_encounter, schedule_end_date ):
       if not wild_encounter:
@@ -3540,7 +3540,7 @@ class Database():
       cur.close()
 
       return updated > 0
-   
+
 
    def cancel_wild_encounter_occurrence( self, wild_encounter, date, time ):
       if not wild_encounter or not date or not time:

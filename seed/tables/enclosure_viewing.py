@@ -1089,7 +1089,7 @@ enclosure_viewings =\
       'Canadian Domain',
       'Outdoor',
       None,
-      28.482,                 # X coordinate on map      
+      28.482,                 # X coordinate on map
       4.141                   # Y coordinate on map
    ),
    (

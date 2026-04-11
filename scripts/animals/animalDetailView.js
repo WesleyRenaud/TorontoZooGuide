@@ -52,7 +52,7 @@ export function createAnimalDetailView({ listEl }) {
       `;
    }
 
-   function render(animalInfo, { regionName, exhibitName, onBack }) {
+   function render(animalInfo, { exhibitName, onBack }) {
       clear();
 
       if (!animalInfo) return;

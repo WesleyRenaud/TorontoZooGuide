@@ -135,7 +135,7 @@ restaurants = [
    (
       'Smokes Poutinerie Trailer',                                                                       # Name
       'Front Courtyard',                                                                                 # Location
-      None,                                                                                              # Sub-location                                                                      
+      None,                                                                                              # Sub-location
       '''Enjoy a variety of poutine creations.''',
       'https://www.torontozoo.com/!/pdfs/food/Smokes-Front-Courtyard-Menu.pdf',                          # Menu link
       60.694,                                                                                            # X coordinate on map
@@ -144,7 +144,7 @@ restaurants = [
    (
       'Tim Hortons Express',                                                                             # Name
       'Tundra Trek',                                                                                     # Location
-      None,                                                                                              # Sub-location        
+      None,                                                                                              # Sub-location
       '''Grab a quick beverage or snack including coffee, tea, iced caps, timbits, and frozen lemonade.''',
       'https://www.torontozoo.com/!/pdfs/food/Express%20Menu%202025.pdf',                                # Menu link
       79.073,                                                                                            # X coordinate on map

@@ -226,7 +226,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             day=day,
             include_closed_gift_shops=include_closed_gift_shops,
             gift_shops_to_include=gift_shops_to_include )
-         
+
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
@@ -293,7 +293,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day = data.get( 'day' )
 
          guardians_talks = self.database.get_guardians_talks( month=month, day=day )
-         
+
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
@@ -352,7 +352,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          query = ( data.get( 'query' ) or '' ).strip()
          include_animals = bool( data.get( 'includeAnimals' ) )
          include_pavilions = bool( data.get( 'includePavilions' ) )
-         include_restaurants = bool( data.get( 'includeRestaurants') )
+         include_restaurants = bool( data.get( 'includeRestaurants' ) )
          include_restrooms = bool( data.get( 'includeRestrooms' ) )
          include_gift_shops = bool( data.get( 'includeGiftShops' ) )
          include_attractions = bool( data.get( 'includeAttractions' ) )
@@ -508,7 +508,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
-   
+
       elif self.path == '/get-itinerary':
          itinerary = self.database.get_itinerary()
 
@@ -541,7 +541,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
-         
+
          month = data.get( 'month' )
          day = data.get( 'day' )
          date = data.get( 'date' )
@@ -709,7 +709,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-         
+
 
       elif self.path == '/get-species':
          species = self.database.get_species()
@@ -728,7 +728,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
          response = { "restaurants": restaurants }
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )   
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-gift-shop-names':
@@ -738,7 +738,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
          response = { "gift_shops": gift_shops }
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )   
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
       elif self.path == '/get-attraction-names':
@@ -987,7 +987,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
-   
+
       elif self.path == '/remove-animal-visibility-schedule':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -1538,7 +1538,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             response[ 'error' ] = f'Could not set opening schedule for "{ attraction }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-         
+
 
       elif self.path == '/remove-attraction-opening-schedule':
          content_length = int( self.headers[ 'Content-Length' ] )
@@ -1710,7 +1710,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             response[ 'error' ] = f'Could not set schedule for "{ talk }" at "{ location }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-            
+
 
       elif self.path == '/cancel-guardians-talk-occurrence':
          content_length = int( self.headers[ 'Content-Length' ] )
@@ -1863,7 +1863,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             response[ 'error' ] = f'Could not cancel "{ wild_encounter }" on { date } at { time }.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-         
+
 
 if __name__ == '__main__':
    httpd = HTTPServer( ( 'localhost', int( sys.argv[ 1 ] ) ), MyHandler )

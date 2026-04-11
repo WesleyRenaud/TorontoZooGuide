@@ -9,7 +9,7 @@ export function createTooltipController({
    restaurantClosedBanner,
    giftShopClosedBanner,
    attractionClosedBanner }) {
-   
+
       let openMarker = null;
    let itemsForOpen = [];
    let carouselEl = null;

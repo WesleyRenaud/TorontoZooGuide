@@ -15,7 +15,7 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
                includeGuardiansTalks: false,
                includeWildEncounters: false,
             }),
-                  
+
       };
    }
 
