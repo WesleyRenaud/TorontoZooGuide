@@ -17,3 +17,13 @@ export function getAnimalIconUrl(exhibit, species, backgroundColourForUrl) {
    const normalizedAnimal = normalizeParameter(species);
    return `url("/images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${backgroundColourForUrl}.png")`;
 }
+
+export function getAttractionIconUrl(attractionName, backgroundColourForUrl) {
+   const normalizedAttraction = normalizeParameter(attractionName);
+
+   if (!backgroundColourForUrl || backgroundColourForUrl == 'open') {
+      return `url("/images/attraction-icons/${normalizedAttraction}-open.png")`;
+   }
+
+   return `url("/images/attraction-icons/${normalizedAttraction}/${normalizedAttraction}-${backgroundColourForUrl}.png")`;
+}

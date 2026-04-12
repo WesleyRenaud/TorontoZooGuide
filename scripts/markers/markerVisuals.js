@@ -1,5 +1,4 @@
-import { likelihoodToColor, getAnimalIconUrl } from '../utils/icons.js';
-import { normalizeParameter } from '../utils/normalize.js';
+import { likelihoodToColor, getAnimalIconUrl, getAttractionIconUrl } from '../utils/icons.js';
 
 const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
 
@@ -140,13 +139,29 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
 
       const attraction = items[0];
       applyAttractionMarkerSize(markerEl, attraction.name);
+      const attractionLikelihood = Math.max(
+         0,
+         Math.min(100, Number(attraction.likelihood) || 0)
+      );
+      const colour = likelihoodToColor(attractionLikelihood);
+      const colourForUrl = attractionLikelihood >= 100
+         ? 'open'
+         : String(colour || '').replace('#', '');
 
-      const slug = normalizeParameter(attraction.name);
+      if (count === 1) {
+         markerEl.style.backgroundColor = 'transparent';
+         markerEl.style.backgroundImage = getAttractionIconUrl(
+            attraction.name,
+            colourForUrl
+         );
+         markerEl.style.backgroundSize = 'cover';
+         markerEl.textContent = '';
+      } else {
+         markerEl.style.backgroundImage = 'none';
+         markerEl.style.backgroundColor = colour;
+         markerEl.textContent = String(count);
+      }
 
-      const state = attraction.is_closed ? 'closed' : 'open';
-      const iconPath = `/images/attraction-icons/${slug}-${state}.png`;
-
-      applyGenericIcon(markerEl, iconPath, count);
       return;
    }
 

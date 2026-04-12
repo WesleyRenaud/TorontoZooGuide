@@ -363,39 +363,6 @@ def create_schema( cursor ):
          'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
       )
 
-   cursor.execute( ''' CREATE TABLE IF NOT EXISTS AttractionStatus
-                     (  ATTRACTION        VARCHAR(64) NOT NULL,
-                        IS_CLOSED         BOOL        NOT NULL DEFAULT 0,
-                        CLOSED_MESSAGE    TEXT,
-                        CLOSED_START      DATE,
-                        CLOSED_END        DATE,
-                        PRIMARY KEY (ATTRACTION),
-                        FOREIGN KEY (ATTRACTION) REFERENCES Attraction(NAME) ); ''' )
-
-   attraction_status_columns = {
-      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( AttractionStatus );' ).fetchall()
-   }
-
-   if 'IS_CLOSED' not in attraction_status_columns:
-      cursor.execute(
-         'ALTER TABLE AttractionStatus ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 0;'
-      )
-
-   if 'CLOSED_MESSAGE' not in attraction_status_columns:
-      cursor.execute(
-         'ALTER TABLE AttractionStatus ADD COLUMN CLOSED_MESSAGE TEXT;'
-      )
-
-   if 'CLOSED_START' not in attraction_status_columns:
-      cursor.execute(
-         'ALTER TABLE AttractionStatus ADD COLUMN CLOSED_START DATE;'
-      )
-
-   if 'CLOSED_END' not in attraction_status_columns:
-      cursor.execute(
-         'ALTER TABLE AttractionStatus ADD COLUMN CLOSED_END DATE;'
-      )
-
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS AppSetting
                      (  SETTING_KEY     VARCHAR(64) NOT NULL,
                         SETTING_VALUE   VARCHAR(64) NOT NULL,
