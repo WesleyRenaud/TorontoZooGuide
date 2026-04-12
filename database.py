@@ -78,7 +78,7 @@ class Database():
                   es.CLOSED_START,
                   es.CLOSED_END,
                   COALESCE( adsvm.VALUE, 1.0 ) AS ANIMAL_DAY_SEASONAL_MULTIPLIER,
-                  COALESCE( edsvm.VALUE, 1.0 ) AS EXHIBIT_DAY_SEASONAL_MULTIPLIER
+                  COALESCE( edsam.VALUE, 1.0 ) AS EXHIBIT_DAY_SEASONAL_AVAILABILITY_MULTIPLIER
                FROM Animal a
                JOIN Enclosure e
                   ON a.SPECIES = e.SPECIES
@@ -101,10 +101,10 @@ class Database():
                   AND e.EXHIBIT = adsvm.EXHIBIT
                   AND adsvm.MONTH = ?
                   AND adsvm.DAY = ?
-               LEFT JOIN ExhibitDaySeasonalViewabilityMultiplier edsvm
-                  ON e.EXHIBIT = edsvm.EXHIBIT
-                  AND edsvm.MONTH = ?
-                  AND edsvm.DAY = ?;
+               LEFT JOIN ExhibitDaySeasonalAvailabilityMultiplier edsam
+                  ON e.EXHIBIT = edsam.EXHIBIT
+                  AND edsam.MONTH = ?
+                  AND edsam.DAY = ?;
          """, ( normalized_month, normalized_day, normalized_month, normalized_day ) )
 
       animal_data = data.fetchall()
@@ -125,7 +125,7 @@ class Database():
          enclosure_type = animal[ 'ENCLOSURE_TYPE' ]
          seasonally_off_display_message = animal[ 'SEASONALLY_OFF_DISPLAY_MESSAGE' ]
          animal_day_seasonal_multiplier = animal[ 'ANIMAL_DAY_SEASONAL_MULTIPLIER' ]
-         exhibit_day_seasonal_multiplier = animal[ 'EXHIBIT_DAY_SEASONAL_MULTIPLIER' ]
+         exhibit_day_seasonal_availability_multiplier = animal[ 'EXHIBIT_DAY_SEASONAL_AVAILABILITY_MULTIPLIER' ]
 
          is_off_display, off_display_message = self.get_active_off_display_status(
             animal=animal,
@@ -146,10 +146,10 @@ class Database():
          if is_off_display or exhibit_status == 'closed':
             likelihood = 0
          else:
-            applied_exhibit_day_multiplier = 1.0
+            applied_exhibit_day_availability_multiplier = 1.0
 
             if exhibit_status == 'unknown':
-               applied_exhibit_day_multiplier = exhibit_day_seasonal_multiplier
+               applied_exhibit_day_availability_multiplier = exhibit_day_seasonal_availability_multiplier
 
             likelihood = self.calculate_animal_likelihood(
                temp=temp,
@@ -157,7 +157,7 @@ class Database():
                enclosure_type=enclosure_type,
                min_temperature=min_temperature,
                day_seasonal_multiplier=animal_day_seasonal_multiplier,
-               exhibit_day_seasonal_multiplier=applied_exhibit_day_multiplier )
+               exhibit_day_seasonal_availability_multiplier=applied_exhibit_day_availability_multiplier )
 
          should_include = (
             ( likelihood > threshold )
@@ -172,7 +172,7 @@ class Database():
             elif exhibit_status == 'closed':
                display_message = exhibit_closed_message
             elif likelihood == 0:
-               if exhibit_status == 'unknown' and exhibit_day_seasonal_multiplier == 0:
+               if exhibit_status == 'unknown' and exhibit_day_seasonal_availability_multiplier == 0:
                   display_message = f'The { exhibit } is most likely closed on this day.'
                elif seasonally_off_display_message:
                   display_message = seasonally_off_display_message
@@ -293,7 +293,7 @@ class Database():
          enclosure_type,
          min_temperature,
          day_seasonal_multiplier,
-         exhibit_day_seasonal_multiplier=1.0 ):
+         exhibit_day_seasonal_availability_multiplier=1.0 ):
       normalized_enclosure_type = str( enclosure_type ).strip().lower() if enclosure_type is not None else None
 
       if normalized_enclosure_type == 'indoor':
@@ -310,7 +310,11 @@ class Database():
 
          animal_seasonal_multiplier = day_seasonal_multiplier if day_seasonal_multiplier is not None else 1.0
 
-      exhibit_seasonal_multiplier = exhibit_day_seasonal_multiplier if exhibit_day_seasonal_multiplier is not None else 1.0
+      exhibit_seasonal_multiplier = (
+         exhibit_day_seasonal_availability_multiplier
+         if exhibit_day_seasonal_availability_multiplier is not None
+         else 1.0
+      )
       likelihood = max(
          0.0,
          min(
@@ -767,13 +771,18 @@ class Database():
 
    def get_attractions( self, month, day, include_closed_attractions=False ):
       cur = self.conn.cursor()
+      normalized_month = self.zoo_util.normalize_month( month )
+      normalized_day = int( day )
 
       target_date = date(
          datetime.now().year,
-         self.zoo_util.normalize_month( month ),
-         int( day ) )
+         normalized_month,
+         normalized_day )
 
       weekday = target_date.weekday()
+      is_weekend_or_holiday = (
+         weekday >= 5
+         or self.zoo_util.is_holiday( d=target_date ) )
 
       data = cur.execute(
          """   SELECT
@@ -784,14 +793,14 @@ class Database():
                   a.HYPERLINK_TEXT,
                   a.X_COORD,
                   a.Y_COORD,
-                  s.IS_CLOSED,
-                  s.CLOSED_MESSAGE,
-                  s.CLOSED_START,
-                  s.CLOSED_END
+                  COALESCE( adsam.WEEKDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
+                  COALESCE( adsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
                FROM Attraction a
-               LEFT JOIN AttractionStatus s
-                  ON a.NAME = s.ATTRACTION;
-         """ )
+               LEFT JOIN AttractionDaySeasonalAvailabilityMultiplier adsam
+                  ON a.NAME = adsam.ATTRACTION
+                  AND adsam.MONTH = ?
+                  AND adsam.DAY = ?;
+         """, ( normalized_month, normalized_day ) )
 
       attraction_data = data.fetchall()
 
@@ -799,21 +808,30 @@ class Database():
 
       for attraction in attraction_data:
          name = attraction[ 'NAME' ]
+         likelihood = 100
+         closed_message = None
+         attraction_day_seasonal_availability_multiplier = (
+            attraction[ 'ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ]
+            if is_weekend_or_holiday
+            else attraction[ 'ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER' ]
+         )
 
-         is_closed = self.is_attraction_manually_closed(
-            attraction=attraction,
-            target_date=target_date )
+         schedule_status, schedule_message = self.get_active_attraction_schedule_status(
+            attraction_name=name,
+            target_date=target_date,
+            weekday=weekday )
 
-         closed_message = attraction[ 'CLOSED_MESSAGE' ] if is_closed else None
+         if schedule_status == 'closed':
+            likelihood = 0
+            closed_message = schedule_message
+         elif schedule_status == 'unknown':
+            likelihood = self.calculate_attraction_likelihood(
+               day_seasonal_availability_multiplier=attraction_day_seasonal_availability_multiplier )
 
-         if not is_closed:
-            is_closed, schedule_message = self.is_attraction_closed_by_schedule(
-               attraction_name=name,
-               target_date=target_date,
-               weekday=weekday )
+            if likelihood == 0:
+               closed_message = f'The { name } is most likely not operating on this day.'
 
-            if is_closed:
-               closed_message = schedule_message
+         is_closed = likelihood <= 0
 
          should_include = (
             ( not is_closed )
@@ -833,34 +851,15 @@ class Database():
                x_coord=attraction[ 'X_COORD' ],
                y_coord=attraction[ 'Y_COORD' ],
                is_closed=is_closed,
-               closed_message=closed_message ) )
+               closed_message=closed_message,
+               likelihood=likelihood ) )
 
       cur.close()
 
       return attractions
 
 
-   def is_attraction_manually_closed( self, attraction, target_date ):
-      stored_is_closed = bool( attraction[ 'IS_CLOSED' ] ) if attraction[ 'IS_CLOSED' ] != None else False
-
-      if not stored_is_closed:
-         return False
-
-      start_ok = True
-      end_ok = True
-
-      if attraction[ 'CLOSED_START' ] != None:
-         start_date = self.parse_date_value( value=attraction[ 'CLOSED_START' ] )
-         start_ok = target_date >= start_date
-
-      if attraction[ 'CLOSED_END' ] != None:
-         end_date = self.parse_date_value( value=attraction[ 'CLOSED_END' ] )
-         end_ok = target_date <= end_date
-
-      return start_ok and end_ok
-
-
-   def is_attraction_closed_by_schedule( self, attraction_name, target_date, weekday ):
+   def get_active_attraction_schedule_status( self, attraction_name, target_date, weekday ):
       cur = self.conn.cursor()
 
       data = cur.execute(
@@ -884,21 +883,15 @@ class Database():
       cur.close()
 
       if len( schedule_rows ) == 0:
-         return False, None
+         return 'unknown', None
 
       for schedule in schedule_rows:
-         start_ok = True
-         end_ok = True
+         is_active = self.is_date_in_range(
+            target_date=target_date,
+            start_date_value=schedule[ 'SCHEDULE_START_DATE' ],
+            end_date_value=schedule[ 'SCHEDULE_END_DATE' ] )
 
-         if schedule[ 'SCHEDULE_START_DATE' ] != None:
-            start_date = self.parse_date_value( value=schedule[ 'SCHEDULE_START_DATE' ] )
-            start_ok = target_date >= start_date
-
-         if schedule[ 'SCHEDULE_END_DATE' ] != None:
-            end_date = self.parse_date_value( value=schedule[ 'SCHEDULE_END_DATE' ] )
-            end_ok = target_date <= end_date
-
-         if not ( start_ok and end_ok ):
+         if not is_active:
             continue
 
          is_holiday = self.zoo_util.is_holiday( d=target_date ) if hasattr( self.zoo_util, 'is_holiday' ) else False
@@ -923,7 +916,7 @@ class Database():
             open_on_day = True
 
          if open_on_day:
-            return False, None
+            return 'open', None
 
          message = schedule[ 'SCHEDULE_MESSAGE' ]
 
@@ -933,9 +926,20 @@ class Database():
             else:
                message = f'The { attraction_name } is not scheduled to be open today.'
 
-         return True, message
+         return 'closed', message
 
-      return False, None
+      return 'unknown', None
+
+
+   def calculate_attraction_likelihood( self, day_seasonal_availability_multiplier ):
+      seasonal_multiplier = (
+         day_seasonal_availability_multiplier
+         if day_seasonal_availability_multiplier is not None
+         else 1.0
+      )
+      likelihood = max( 0.0, min( seasonal_multiplier, 1.0 ) )
+
+      return max( round( likelihood * 100 ), 0 )
 
 
    def get_zoomobile_stations( self, route, month, day, zoomobile_stations_to_include=None ):
@@ -3068,56 +3072,41 @@ class Database():
       if not attraction:
          return False
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
       if not message:
          message = f'The { attraction } is temporarily closed.'
 
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO AttractionStatus (
-                  ATTRACTION,
-                  IS_CLOSED,
-                  CLOSED_MESSAGE,
-                  CLOSED_START,
-                  CLOSED_END
-               )
-               VALUES (?, 1, ?, ?, ?)
-               ON CONFLICT(ATTRACTION) DO UPDATE SET
-                  IS_CLOSED = 1,
-                  CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
-                  CLOSED_START = excluded.CLOSED_START,
-                  CLOSED_END = excluded.CLOSED_END;
-         """, ( attraction, message, start_date, end_date ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return self.set_attraction_opening_schedule(
+         attraction=attraction,
+         start_date=start_date,
+         end_date=end_date,
+         monday=False,
+         tuesday=False,
+         wednesday=False,
+         thursday=False,
+         friday=False,
+         saturday=False,
+         sunday=False,
+         holidays_only=False,
+         message=message )
 
 
-   def set_attraction_as_open( self, attraction ):
+   def set_attraction_as_open( self, attraction, start_date, end_date ):
       if not attraction:
          return False
 
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   DELETE FROM AttractionStatus
-               WHERE ATTRACTION = ?;
-         """, ( attraction, ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return self.set_attraction_opening_schedule(
+         attraction=attraction,
+         start_date=start_date,
+         end_date=end_date,
+         monday=True,
+         tuesday=True,
+         wednesday=True,
+         thursday=True,
+         friday=True,
+         saturday=True,
+         sunday=True,
+         holidays_only=True,
+         message=None )
 
 
    def set_attraction_opening_schedule(

@@ -1,4 +1,4 @@
-export const DEFAULT_DAYS_AHEAD = 90;
+export const DEFAULT_DAYS_AHEAD = 360;
 
 export function toISODate(d) {
    const y = d.getFullYear();

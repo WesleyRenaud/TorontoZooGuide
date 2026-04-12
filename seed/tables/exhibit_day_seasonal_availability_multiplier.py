@@ -1,14 +1,15 @@
 def create_table( cursor ):
    cursor.execute( 'DROP TABLE IF EXISTS ExhibitDaySeasonalViewabilityMultiplier;' )
-   cursor.execute( ''' CREATE TABLE ExhibitDaySeasonalViewabilityMultiplier
-                     (  EXHIBIT  VARCHAR(64) NOT NULL,
-                        MONTH    INTEGER     NOT NULL CHECK (MONTH BETWEEN 1 AND 12),
-                        DAY      INTEGER     NOT NULL CHECK (DAY BETWEEN 1 AND 31),
-                        VALUE    FLOAT       NOT NULL CHECK (VALUE BETWEEN 0.0 AND 1.0),
+   cursor.execute( 'DROP TABLE IF EXISTS ExhibitDaySeasonalAvailabilityMultiplier;' )
+   cursor.execute( ''' CREATE TABLE ExhibitDaySeasonalAvailabilityMultiplier
+                     (  EXHIBIT   VARCHAR(64) NOT NULL,
+                        MONTH     INTEGER     NOT NULL CHECK (MONTH BETWEEN 1 AND 12),
+                        DAY       INTEGER     NOT NULL CHECK (DAY BETWEEN 1 AND 31),
+                        VALUE     FLOAT       NOT NULL CHECK (VALUE BETWEEN 0.0 AND 1.0),
                         FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(NAME),
                         PRIMARY KEY (EXHIBIT, MONTH, DAY) ); ''' )
 
-exhibit_day_seasonal_viewability_multipliers = [
+exhibit_day_seasonal_availability_multipliers = [
    # Canadian Domain
    ( 'Canadian Domain', 1, 1, 0.369 ),
    ( 'Canadian Domain', 1, 2, 0.308 ),
@@ -1114,11 +1115,12 @@ exhibit_day_seasonal_viewability_multipliers = [
    ( 'Kids Zoo', 12, 31, 0.0 ),
 ]
 
+
 def insert_rows( cursor ):
-   cursor.executemany( ''' INSERT INTO ExhibitDaySeasonalViewabilityMultiplier (
+   cursor.executemany( ''' INSERT INTO ExhibitDaySeasonalAvailabilityMultiplier (
                               EXHIBIT,
                               MONTH,
                               DAY,
                               VALUE
-                           ) 
-                           VALUES (?, ?, ?, ?) ''', exhibit_day_seasonal_viewability_multipliers )
+                           )
+                           VALUES (?, ?, ?, ?) ''', exhibit_day_seasonal_availability_multipliers )

@@ -149,7 +149,7 @@ class GiftShop:
 
 class Attraction:
    def __init__( self, name, free_with_admission, description=None, info_link=None, hyperlink_text=None, x_coord=None, y_coord=None,
-                 is_closed=False, closed_message=None ):
+                 is_closed=False, closed_message=None, likelihood=None ):
       self.name = name
       self.free_with_admission = free_with_admission
       self.description = description
@@ -159,6 +159,7 @@ class Attraction:
       self.y_coord = y_coord
       self.is_closed = is_closed
       self.closed_message = closed_message
+      self.likelihood = likelihood
 
 
    def to_dict( self ):
@@ -171,7 +172,8 @@ class Attraction:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'is_closed': self.is_closed,
-         'closed_message': self.closed_message
+         'closed_message': self.closed_message,
+         'likelihood': self.likelihood
       }
 
 
