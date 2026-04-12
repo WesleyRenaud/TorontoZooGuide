@@ -311,8 +311,8 @@ class Zoo_Util:
          8: 25.0,   # August
          9: 22.0,   # September
          10: 20.0,  # October
-         11: 10.0,   # November
-         12: 1.0   # December
+         11: 10.0,  # November
+         12: 1.0    # December
       }
 
       # Compute start-of-month day-of-year mapping
