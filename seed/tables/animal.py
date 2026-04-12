@@ -3924,7 +3924,7 @@ animals = [
    ( # Also in Kids Zoo
       'Marabou Stork',
       'Leptoptilos Crumenifer',
-      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       '''There are a couple different spots to spot the marabou storks in the Africa Savanna. They go on exhibit with the kudu and
          can be spotted in that habitat. You may see them from any of the three viewings, at the savanna overlook in the African 
          Rainforest Pavilion by the meerkats, on the offshoot between the hippos and rhinos, or at the main viewing across from the
@@ -4119,7 +4119,7 @@ animals = [
    (
       'Southern Ground Hornbill',
       'Bucorvus Leadbeateri',
-      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       '''Southern ground hornbills can be spotted in two habitats in the Africa Savanna. Some of the hornbills share a habitat with
          the kudus and other savanna birds. They can be viewed in this habitat from any of the three viewings: the savanna outlook
          in the African Rainforest Pavilion near the meerkats, on the offshoot path between the rhinos and hippos, or in the main
@@ -4336,7 +4336,7 @@ animals = [
    (
       'White-Headed Vulture',
       'Trigonoceps Occipitalis',
-      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       '''The zoo is home to one white-headed vulture, Lloyd, and he is one of the more reclusive residents. He resides in the
          enclosure with the kudu and other savanna birds. He may be spotted from any of the three viewing areas for this exhibit:
          the savanna outlook in the African Rainforest Pavilion near the meerkats, on the offshoot path between the hippos and
@@ -6980,7 +6980,7 @@ animals = [
    (
       'Abyssinian Ground Hornbill',
       'Bucorvus Abyssinicus',
-      18,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
       '''The Abyssinian ground hornbill can be found in the Kidz Zoo.''',
       '''Abyssinian ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.'''
          .replace( '\n', ' ' ),

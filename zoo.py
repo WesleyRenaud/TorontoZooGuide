@@ -308,9 +308,9 @@ class Zoo_Util:
          5: 14.0,   # May
          6: 22.0,   # June
          7: 26.0,   # July
-         8: 24.0,   # August
-         9: 21.0,   # September
-         10: 17.0,  # October
+         8: 25.0,   # August
+         9: 22.0,   # September
+         10: 20.0,  # October
          11: 10.0,   # November
          12: 1.0   # December
       }
