@@ -27,3 +27,11 @@ export function getAttractionIconUrl(attractionName, backgroundColourForUrl) {
 
    return `url("/images/attraction-icons/${normalizedAttraction}/${normalizedAttraction}-${backgroundColourForUrl}.png")`;
 }
+
+export function getRestaurantIconUrl(backgroundColourForUrl) {
+   if (!backgroundColourForUrl || backgroundColourForUrl == 'open') {
+      return 'url("/images/generic-icons/restaurant-open.png")';
+   }
+
+   return `url("/images/generic-icons/restaurant/restaurant-${backgroundColourForUrl}.png")`;
+}

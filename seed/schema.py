@@ -147,38 +147,6 @@ def create_schema( cursor ):
          'ALTER TABLE ExhibitStatus ADD COLUMN CLOSED_END DATE;'
       )
 
-   cursor.execute( ''' CREATE TABLE IF NOT EXISTS RestaurantStatus
-                     (  RESTAURANT          VARCHAR(64) NOT NULL,
-                        IS_CLOSED           BOOL        NOT NULL DEFAULT 0,
-                        CLOSED_MESSAGE      TEXT,
-                        CLOSED_START        DATE,
-                        CLOSED_END          DATE,
-                        PRIMARY KEY (RESTAURANT),
-                        FOREIGN KEY (RESTAURANT) REFERENCES Restaurant(NAME) ); ''' )
-
-   restaurant_status_columns = {
-      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( RestaurantStatus );' ).fetchall()
-   }
-
-   if 'IS_CLOSED' not in restaurant_status_columns:
-      cursor.execute(
-         'ALTER TABLE RestaurantStatus ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 0;'
-      )
-
-   if 'CLOSED_MESSAGE' not in restaurant_status_columns:
-      cursor.execute(
-         'ALTER TABLE RestaurantStatus ADD COLUMN CLOSED_MESSAGE TEXT;'
-      )
-
-   if 'CLOSED_START' not in restaurant_status_columns:
-      cursor.execute(
-         'ALTER TABLE RestaurantStatus ADD COLUMN CLOSED_START DATE;'
-      )
-
-   if 'CLOSED_END' not in restaurant_status_columns:
-      cursor.execute(
-         'ALTER TABLE RestaurantStatus ADD COLUMN CLOSED_END DATE;'
-      )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS RestaurantOpeningSchedule
                      (  RESTAURANT            VARCHAR(64) NOT NULL,
@@ -748,3 +716,5 @@ def create_schema( cursor ):
    cursor.execute( 'DROP TABLE IF EXISTS MeetTheGuardiansTalkDateTime;' )
 
    cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingTime;' )
+
+   cursor.execute( 'DROP TABLE IF EXISTS RestaurantStatus;' )

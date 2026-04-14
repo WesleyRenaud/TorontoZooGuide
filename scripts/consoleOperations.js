@@ -15,8 +15,6 @@ import { createExhibitOpenController } from './consoleOperations/exhibits/contro
 
 import { createRestaurantClosedController } from './consoleOperations/restaurants/controllers/restaurantClosed.js';
 import { createRestaurantOpenController } from './consoleOperations/restaurants/controllers/restaurantOpen.js';
-import { createRestaurantOpeningScheduleController } from './consoleOperations/restaurants/controllers/restaurantOpeningSchedule.js';
-import { createRemoveRestaurantOpeningScheduleController } from './consoleOperations/restaurants/controllers/removeRestaurantOpeningSchedule.js';
 
 import { createGiftShopClosedController } from './consoleOperations/giftShops/controllers/giftShopClosed.js';
 import { createGiftShopOpenController } from './consoleOperations/giftShops/controllers/giftShopOpen.js';
@@ -54,8 +52,6 @@ import { createExhibitOpenPanelHtml } from './consoleOperations/exhibits/panels/
 
 import { createRestaurantClosedPanelHtml } from './consoleOperations/restaurants/panels/restaurantClosedPanel.js';
 import { createRestaurantOpenPanelHtml } from './consoleOperations/restaurants/panels/restaurantOpenPanel.js';
-import { createRestaurantOpeningSchedulePanelHtml } from './consoleOperations/restaurants/panels/restaurantOpeningSchedulePanel.js';
-import { createRemoveRestaurantOpeningSchedulePanelHtml } from './consoleOperations/restaurants/panels/removeRestaurantOpeningSchedulePanel.js';
 
 import { createGiftShopClosedPanelHtml } from './consoleOperations/giftShops/panels/giftShopClosedPanel.js';
 import { createGiftShopOpenPanelHtml } from './consoleOperations/giftShops/panels/giftShopOpenPanel.js';
@@ -97,8 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createExhibitOpenPanelHtml()}
       ${createRestaurantClosedPanelHtml()}
       ${createRestaurantOpenPanelHtml()}
-      ${createRestaurantOpeningSchedulePanelHtml()}
-      ${createRemoveRestaurantOpeningSchedulePanelHtml()}
       ${createGiftShopClosedPanelHtml()}
       ${createGiftShopOpenPanelHtml()}
       ${createGiftShopOpeningSchedulePanelHtml()}
@@ -126,8 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
    const exhibitOpenPanel = document.getElementById('exhibitOpenPanel');
    const restaurantClosedPanel = document.getElementById('restaurantClosedPanel');
    const restaurantOpenPanel = document.getElementById('restaurantOpenPanel');
-   const restaurantOpeningSchedulePanel = document.getElementById('restaurantOpeningSchedulePanel');
-   const removeRestaurantOpeningSchedulePanel = document.getElementById('removeRestaurantOpeningSchedulePanel');
    const giftShopClosedPanel = document.getElementById('giftShopClosedPanel');
    const giftShopOpenPanel = document.getElementById('giftShopOpenPanel');
    const giftShopOpeningSchedulePanel = document.getElementById('giftShopOpeningSchedulePanel');
@@ -168,8 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
    const exhibitOpenExhibitEl = document.getElementById('exhibitOpenExhibit');
    const restaurantClosedRestaurantEl = document.getElementById('restaurantClosedRestaurant');
    const restaurantOpenRestaurantEl = document.getElementById('restaurantOpenRestaurant');
-   const restaurantOpeningScheduleRestaurantEl = document.getElementById('restaurantOpeningScheduleRestaurant');
-   const removeRestaurantOpeningScheduleRestaurantEl = document.getElementById('removeRestaurantOpeningScheduleRestaurant');
    const giftShopClosedGiftShopEl = document.getElementById('giftShopClosedGiftShop');
    const giftShopOpenGiftShopEl = document.getElementById('giftShopOpenGiftShop');
    const giftShopOpeningScheduleGiftShopEl = document.getElementById('giftShopOpeningScheduleGiftShop');
@@ -208,18 +198,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
    const restaurantClosedStartDateEl = document.getElementById('restaurantClosedStartDate');
    const restaurantClosedEndDateEl = document.getElementById('restaurantClosedEndDate');
-
-   const restaurantOpeningSchedulePresetEl = document.getElementById('restaurantOpeningSchedulePreset');
-   const restaurantOpeningScheduleStartDateEl = document.getElementById('restaurantOpeningScheduleStartDate');
-   const restaurantOpeningScheduleEndDateEl = document.getElementById('restaurantOpeningScheduleEndDate');
-   const restaurantOpeningScheduleMondayEl = document.getElementById('restaurantOpeningScheduleMonday');
-   const restaurantOpeningScheduleTuesdayEl = document.getElementById('restaurantOpeningScheduleTuesday');
-   const restaurantOpeningScheduleWednesdayEl = document.getElementById('restaurantOpeningScheduleWednesday');
-   const restaurantOpeningScheduleThursdayEl = document.getElementById('restaurantOpeningScheduleThursday');
-   const restaurantOpeningScheduleFridayEl = document.getElementById('restaurantOpeningScheduleFriday');
-   const restaurantOpeningScheduleSaturdayEl = document.getElementById('restaurantOpeningScheduleSaturday');
-   const restaurantOpeningScheduleSundayEl = document.getElementById('restaurantOpeningScheduleSunday');
-   const restaurantOpeningScheduleHolidaysOnlyEl = document.getElementById('restaurantOpeningScheduleHolidaysOnly');
+   const restaurantOpenPresetEl = document.getElementById('restaurantOpenPreset');
+   const restaurantOpenStartDateEl = document.getElementById('restaurantOpenStartDate');
+   const restaurantOpenEndDateEl = document.getElementById('restaurantOpenEndDate');
+   const restaurantOpenMondayEl = document.getElementById('restaurantOpenMonday');
+   const restaurantOpenTuesdayEl = document.getElementById('restaurantOpenTuesday');
+   const restaurantOpenWednesdayEl = document.getElementById('restaurantOpenWednesday');
+   const restaurantOpenThursdayEl = document.getElementById('restaurantOpenThursday');
+   const restaurantOpenFridayEl = document.getElementById('restaurantOpenFriday');
+   const restaurantOpenSaturdayEl = document.getElementById('restaurantOpenSaturday');
+   const restaurantOpenSundayEl = document.getElementById('restaurantOpenSunday');
+   const restaurantOpenHolidaysOnlyEl = document.getElementById('restaurantOpenHolidaysOnly');
 
    const giftShopClosedStartDateEl = document.getElementById('giftShopClosedStartDate');
    const giftShopClosedEndDateEl = document.getElementById('giftShopClosedEndDate');
@@ -504,40 +493,18 @@ document.addEventListener('DOMContentLoaded', () => {
       submitButtonEl: document.getElementById('submitRestaurantOpen'),
       statusEl: document.getElementById('restaurantOpenStatus'),
       restaurantEl: restaurantOpenRestaurantEl,
-      activatePanel,
-      hidePanels,
-   });
-
-   createRestaurantOpeningScheduleController({
-      showButtonEl: document.getElementById('showRestaurantOpeningScheduleForm'),
-      panelEl: restaurantOpeningSchedulePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitRestaurantOpeningSchedule'),
-      statusEl: document.getElementById('restaurantOpeningScheduleStatus'),
-      restaurantEl: restaurantOpeningScheduleRestaurantEl,
-      presetEl: restaurantOpeningSchedulePresetEl,
-      startDateEl: restaurantOpeningScheduleStartDateEl,
-      endDateEl: restaurantOpeningScheduleEndDateEl,
-      mondayEl: restaurantOpeningScheduleMondayEl,
-      tuesdayEl: restaurantOpeningScheduleTuesdayEl,
-      wednesdayEl: restaurantOpeningScheduleWednesdayEl,
-      thursdayEl: restaurantOpeningScheduleThursdayEl,
-      fridayEl: restaurantOpeningScheduleFridayEl,
-      saturdayEl: restaurantOpeningScheduleSaturdayEl,
-      sundayEl: restaurantOpeningScheduleSundayEl,
-      holidaysOnlyEl: restaurantOpeningScheduleHolidaysOnlyEl,
-      messageEl: document.getElementById('restaurantOpeningScheduleMessage'),
-      activatePanel,
-      hidePanels,
-   });
-
-   createRemoveRestaurantOpeningScheduleController({
-      showButtonEl: document.getElementById('showRemoveRestaurantOpeningScheduleForm'),
-      panelEl: removeRestaurantOpeningSchedulePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitRemoveRestaurantOpeningSchedule'),
-      statusEl: document.getElementById('removeRestaurantOpeningScheduleStatus'),
-      restaurantEl: removeRestaurantOpeningScheduleRestaurantEl,
+      presetEl: restaurantOpenPresetEl,
+      startDateEl: restaurantOpenStartDateEl,
+      endDateEl: restaurantOpenEndDateEl,
+      mondayEl: restaurantOpenMondayEl,
+      tuesdayEl: restaurantOpenTuesdayEl,
+      wednesdayEl: restaurantOpenWednesdayEl,
+      thursdayEl: restaurantOpenThursdayEl,
+      fridayEl: restaurantOpenFridayEl,
+      saturdayEl: restaurantOpenSaturdayEl,
+      sundayEl: restaurantOpenSundayEl,
+      holidaysOnlyEl: restaurantOpenHolidaysOnlyEl,
+      messageEl: document.getElementById('restaurantOpenMessage'),
       activatePanel,
       hidePanels,
    });
@@ -809,8 +776,8 @@ document.addEventListener('DOMContentLoaded', () => {
    );
 
    initOffDisplayDatePickers(
-      restaurantOpeningScheduleStartDateEl,
-      restaurantOpeningScheduleEndDateEl
+      restaurantOpenStartDateEl,
+      restaurantOpenEndDateEl
    );
 
    initOffDisplayDatePickers(
