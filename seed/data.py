@@ -7,6 +7,7 @@ from .tables.enclosure_viewing import enclosure_viewings
 from .tables.animal_day_seasonal_viewability_multiplier import animal_day_seasonal_viewability_multipliers
 from .tables.pavilion import pavilions
 from .tables.restaurant import restaurants
+from .tables.restaurant_day_seasonal_availability_multiplier import restaurant_day_seasonal_availability_multipliers
 from .tables.restroom import restrooms
 from .tables.gift_shop import gift_shops
 from .tables.attraction import attractions
@@ -26,6 +27,7 @@ __all__ = [
    'animal_day_seasonal_viewability_multipliers',
    'pavilions',
    'restaurants',
+   'restaurant_day_seasonal_availability_multipliers',
    'restrooms',
    'gift_shops',
    'attractions',

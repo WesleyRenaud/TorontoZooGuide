@@ -3689,7 +3689,6 @@ attraction_day_seasonal_availability_multipliers = [
    ( 'Face Painting, Caricatures and Henna!', 12, 29, 0.0, 0.0 ),
    ( 'Face Painting, Caricatures and Henna!', 12, 30, 0.0, 0.0 ),
    ( 'Face Painting, Caricatures and Henna!', 12, 31, 0.0, 0.0 ),
-
 ]
 
 

@@ -7,6 +7,7 @@ from . import enclosure_viewing
 from . import animal_day_seasonal_viewability_multiplier
 from . import pavilion
 from . import restaurant
+from . import restaurant_day_seasonal_availability_multiplier
 from . import restroom
 from . import gift_shop
 from . import attraction
@@ -27,6 +28,7 @@ static_tables = [
    animal_day_seasonal_viewability_multiplier,
    pavilion,
    restaurant,
+   restaurant_day_seasonal_availability_multiplier,
    restroom,
    gift_shop,
    attraction,
