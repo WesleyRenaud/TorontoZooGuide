@@ -158,6 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
    const attractionOpenAttractionEl = document.getElementById('attractionOpenAttraction');
    const zoomobileStationClosedZoomobileStationEl = document.getElementById('zoomobileStationClosedZoomobileStation');
    const zoomobileStationOpenZoomobileStationEl = document.getElementById('zoomobileStationOpenZoomobileStation');
+   const zoomobileRouteStartDateEl = document.getElementById('zoomobileRouteStartDate');
+   const zoomobileRouteEndDateEl = document.getElementById('zoomobileRouteEndDate');
    const zoomobileRouteSummerEl = document.getElementById('zoomobileRouteSummer');
    const zoomobileRouteWinterEl = document.getElementById('zoomobileRouteWinter');
    const guardiansTalkScheduleLocationEl = document.getElementById('guardiansTalkScheduleLocation');
@@ -603,6 +605,8 @@ document.addEventListener('DOMContentLoaded', () => {
       cancelButtonEl: null,
       submitButtonEl: document.getElementById('submitZoomobileRoute'),
       statusEl: document.getElementById('zoomobileRouteStatus'),
+      startDateEl: zoomobileRouteStartDateEl,
+      endDateEl: zoomobileRouteEndDateEl,
       summerRouteEl: zoomobileRouteSummerEl,
       winterRouteEl: zoomobileRouteWinterEl,
       activatePanel,
@@ -770,6 +774,11 @@ document.addEventListener('DOMContentLoaded', () => {
    initOffDisplayDatePickers(
       zoomobileStationClosedStartDateEl,
       zoomobileStationClosedEndDateEl
+   );
+
+   initOffDisplayDatePickers(
+      zoomobileRouteStartDateEl,
+      zoomobileRouteEndDateEl
    );
 
    initOffDisplayDatePickers(

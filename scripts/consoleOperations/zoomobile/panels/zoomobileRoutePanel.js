@@ -15,7 +15,7 @@ export function createZoomobileRoutePanelHtml() {
 
             <div class="console-operations-field">
                <label class="console-operations-label">
-                  Current route
+                  Route
                </label>
 
                <div class="console-operations-radio-group">
@@ -38,6 +38,48 @@ export function createZoomobileRoutePanelHtml() {
                      >
                      <span>Winter</span>
                   </label>
+               </div>
+            </div>
+
+            <div class="console-operations-field">
+               <label
+                  class="console-operations-label"
+                  for="zoomobileRouteStartDate"
+               >
+                  Start date
+               </label>
+
+               <input
+                  id="zoomobileRouteStartDate"
+                  type="text"
+                  class="console-operations-input console-operations-datetime"
+                  placeholder="Select a start date"
+                  autocomplete="off"
+               >
+
+               <div class="console-operations-help">
+                  Leave blank to start immediately.
+               </div>
+            </div>
+
+            <div class="console-operations-field">
+               <label
+                  class="console-operations-label"
+                  for="zoomobileRouteEndDate"
+               >
+                  End date
+               </label>
+
+               <input
+                  id="zoomobileRouteEndDate"
+                  type="text"
+                  class="console-operations-input console-operations-datetime"
+                  placeholder="Select an end date"
+                  autocomplete="off"
+               >
+
+               <div class="console-operations-help">
+                  Leave blank to keep this route until it is changed again.
                </div>
             </div>
 

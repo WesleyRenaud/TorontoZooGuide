@@ -281,6 +281,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          response = {
             'route': zoomobile_route[ 'route' ],
+            'route_source': zoomobile_route[ 'route_source' ],
             'zoomobile_stations': [ station.to_dict() for station in zoomobile_route[ 'zoomobile_stations' ] ]
          }
 
@@ -1638,11 +1639,16 @@ class MyHandler( BaseHTTPRequestHandler ):
          data = json.loads( post_data.decode( 'utf-8' ) )
 
          route = data.get( 'route' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
 
          success = False
 
          if route in ( 'summer', 'winter' ):
-            success = self.database.set_current_zoomobile_route( route=route )
+            success = self.database.set_current_zoomobile_route(
+               route=route,
+               start_date=start_date,
+               end_date=end_date )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -1650,7 +1656,9 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          response = {
             'success': success,
-            'route': route
+            'route': route,
+            'startDate': start_date,
+            'endDate': end_date
          }
 
          if not success:
