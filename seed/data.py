@@ -10,6 +10,7 @@ from .tables.restaurant import restaurants
 from .tables.restaurant_day_seasonal_availability_multiplier import restaurant_day_seasonal_availability_multipliers
 from .tables.restroom import restrooms
 from .tables.gift_shop import gift_shops
+from .tables.gift_shop_day_seasonal_availability_multiplier import gift_shop_day_seasonal_availability_multipliers
 from .tables.attraction import attractions
 from .tables.attraction_day_seasonal_availability_multiplier import attraction_day_seasonal_availability_multipliers
 from .tables.zoomobile_station import zoomobile_stations
@@ -30,6 +31,7 @@ __all__ = [
    'restaurant_day_seasonal_availability_multipliers',
    'restrooms',
    'gift_shops',
+   'gift_shop_day_seasonal_availability_multipliers',
    'attractions',
    'attraction_day_seasonal_availability_multipliers',
    'zoomobile_stations',

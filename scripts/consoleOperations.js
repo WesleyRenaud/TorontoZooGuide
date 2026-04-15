@@ -18,8 +18,6 @@ import { createRestaurantOpenController } from './consoleOperations/restaurants/
 
 import { createGiftShopClosedController } from './consoleOperations/giftShops/controllers/giftShopClosed.js';
 import { createGiftShopOpenController } from './consoleOperations/giftShops/controllers/giftShopOpen.js';
-import { createGiftShopOpeningScheduleController } from './consoleOperations/giftShops/controllers/giftShopOpeningSchedule.js';
-import { createRemoveGiftShopOpeningScheduleController } from './consoleOperations/giftShops/controllers/removeGiftShopOpeningSchedule.js';
 
 import { createAttractionClosedController } from './consoleOperations/attractions/controllers/attractionClosed.js';
 import { createAttractionOpenController } from './consoleOperations/attractions/controllers/attractionOpen.js';
@@ -55,8 +53,6 @@ import { createRestaurantOpenPanelHtml } from './consoleOperations/restaurants/p
 
 import { createGiftShopClosedPanelHtml } from './consoleOperations/giftShops/panels/giftShopClosedPanel.js';
 import { createGiftShopOpenPanelHtml } from './consoleOperations/giftShops/panels/giftShopOpenPanel.js';
-import { createGiftShopOpeningSchedulePanelHtml } from './consoleOperations/giftShops/panels/giftShopOpeningSchedulePanel.js';
-import { createRemoveGiftShopOpeningSchedulePanelHtml } from './consoleOperations/giftShops/panels/removeGiftShopOpeningSchedulePanel.js';
 
 import { createAttractionClosedPanelHtml } from './consoleOperations/attractions/panels/attractionClosedPanel.js';
 import { createAttractionOpenPanelHtml } from './consoleOperations/attractions/panels/attractionOpenPanel.js';
@@ -95,8 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ${createRestaurantOpenPanelHtml()}
       ${createGiftShopClosedPanelHtml()}
       ${createGiftShopOpenPanelHtml()}
-      ${createGiftShopOpeningSchedulePanelHtml()}
-      ${createRemoveGiftShopOpeningSchedulePanelHtml()}
       ${createAttractionClosedPanelHtml()}
       ${createAttractionOpenPanelHtml()}
       ${createZoomobileStationClosedPanelHtml()}
@@ -122,8 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
    const restaurantOpenPanel = document.getElementById('restaurantOpenPanel');
    const giftShopClosedPanel = document.getElementById('giftShopClosedPanel');
    const giftShopOpenPanel = document.getElementById('giftShopOpenPanel');
-   const giftShopOpeningSchedulePanel = document.getElementById('giftShopOpeningSchedulePanel');
-   const removeGiftShopOpeningSchedulePanel = document.getElementById('removeGiftShopOpeningSchedulePanel');
    const attractionClosedPanel = document.getElementById('attractionClosedPanel');
    const attractionOpenPanel = document.getElementById('attractionOpenPanel');
    const zoomobileStationClosedPanel = document.getElementById('zoomobileStationClosedPanel');
@@ -162,8 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
    const restaurantOpenRestaurantEl = document.getElementById('restaurantOpenRestaurant');
    const giftShopClosedGiftShopEl = document.getElementById('giftShopClosedGiftShop');
    const giftShopOpenGiftShopEl = document.getElementById('giftShopOpenGiftShop');
-   const giftShopOpeningScheduleGiftShopEl = document.getElementById('giftShopOpeningScheduleGiftShop');
-   const removeGiftShopOpeningScheduleGiftShopEl = document.getElementById('removeGiftShopOpeningScheduleGiftShop');
    const attractionClosedAttractionEl = document.getElementById('attractionClosedAttraction');
    const attractionOpenAttractionEl = document.getElementById('attractionOpenAttraction');
    const zoomobileStationClosedZoomobileStationEl = document.getElementById('zoomobileStationClosedZoomobileStation');
@@ -212,18 +202,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
    const giftShopClosedStartDateEl = document.getElementById('giftShopClosedStartDate');
    const giftShopClosedEndDateEl = document.getElementById('giftShopClosedEndDate');
-
-   const giftShopOpeningSchedulePresetEl = document.getElementById('giftShopOpeningSchedulePreset');
-   const giftShopOpeningScheduleStartDateEl = document.getElementById('giftShopOpeningScheduleStartDate');
-   const giftShopOpeningScheduleEndDateEl = document.getElementById('giftShopOpeningScheduleEndDate');
-   const giftShopOpeningScheduleMondayEl = document.getElementById('giftShopOpeningScheduleMonday');
-   const giftShopOpeningScheduleTuesdayEl = document.getElementById('giftShopOpeningScheduleTuesday');
-   const giftShopOpeningScheduleWednesdayEl = document.getElementById('giftShopOpeningScheduleWednesday');
-   const giftShopOpeningScheduleThursdayEl = document.getElementById('giftShopOpeningScheduleThursday');
-   const giftShopOpeningScheduleFridayEl = document.getElementById('giftShopOpeningScheduleFriday');
-   const giftShopOpeningScheduleSaturdayEl = document.getElementById('giftShopOpeningScheduleSaturday');
-   const giftShopOpeningScheduleSundayEl = document.getElementById('giftShopOpeningScheduleSunday');
-   const giftShopOpeningScheduleHolidaysOnlyEl = document.getElementById('giftShopOpeningScheduleHolidaysOnly');
+   const giftShopOpenPresetEl = document.getElementById('giftShopOpenPreset');
+   const giftShopOpenStartDateEl = document.getElementById('giftShopOpenStartDate');
+   const giftShopOpenEndDateEl = document.getElementById('giftShopOpenEndDate');
+   const giftShopOpenMondayEl = document.getElementById('giftShopOpenMonday');
+   const giftShopOpenTuesdayEl = document.getElementById('giftShopOpenTuesday');
+   const giftShopOpenWednesdayEl = document.getElementById('giftShopOpenWednesday');
+   const giftShopOpenThursdayEl = document.getElementById('giftShopOpenThursday');
+   const giftShopOpenFridayEl = document.getElementById('giftShopOpenFriday');
+   const giftShopOpenSaturdayEl = document.getElementById('giftShopOpenSaturday');
+   const giftShopOpenSundayEl = document.getElementById('giftShopOpenSunday');
+   const giftShopOpenHolidaysOnlyEl = document.getElementById('giftShopOpenHolidaysOnly');
 
    const attractionClosedStartDateEl = document.getElementById('attractionClosedStartDate');
    const attractionClosedEndDateEl = document.getElementById('attractionClosedEndDate');
@@ -530,40 +519,18 @@ document.addEventListener('DOMContentLoaded', () => {
       submitButtonEl: document.getElementById('submitGiftShopOpen'),
       statusEl: document.getElementById('giftShopOpenStatus'),
       giftShopEl: giftShopOpenGiftShopEl,
-      activatePanel,
-      hidePanels,
-   });
-
-   createGiftShopOpeningScheduleController({
-      showButtonEl: document.getElementById('showGiftShopOpeningScheduleForm'),
-      panelEl: giftShopOpeningSchedulePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitGiftShopOpeningSchedule'),
-      statusEl: document.getElementById('giftShopOpeningScheduleStatus'),
-      giftShopEl: giftShopOpeningScheduleGiftShopEl,
-      presetEl: giftShopOpeningSchedulePresetEl,
-      startDateEl: giftShopOpeningScheduleStartDateEl,
-      endDateEl: giftShopOpeningScheduleEndDateEl,
-      mondayEl: giftShopOpeningScheduleMondayEl,
-      tuesdayEl: giftShopOpeningScheduleTuesdayEl,
-      wednesdayEl: giftShopOpeningScheduleWednesdayEl,
-      thursdayEl: giftShopOpeningScheduleThursdayEl,
-      fridayEl: giftShopOpeningScheduleFridayEl,
-      saturdayEl: giftShopOpeningScheduleSaturdayEl,
-      sundayEl: giftShopOpeningScheduleSundayEl,
-      holidaysOnlyEl: giftShopOpeningScheduleHolidaysOnlyEl,
-      messageEl: document.getElementById('giftShopOpeningScheduleMessage'),
-      activatePanel,
-      hidePanels,
-   });
-
-   createRemoveGiftShopOpeningScheduleController({
-      showButtonEl: document.getElementById('showRemoveGiftShopOpeningScheduleForm'),
-      panelEl: removeGiftShopOpeningSchedulePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitRemoveGiftShopOpeningSchedule'),
-      statusEl: document.getElementById('removeGiftShopOpeningScheduleStatus'),
-      giftShopEl: removeGiftShopOpeningScheduleGiftShopEl,
+      presetEl: giftShopOpenPresetEl,
+      startDateEl: giftShopOpenStartDateEl,
+      endDateEl: giftShopOpenEndDateEl,
+      mondayEl: giftShopOpenMondayEl,
+      tuesdayEl: giftShopOpenTuesdayEl,
+      wednesdayEl: giftShopOpenWednesdayEl,
+      thursdayEl: giftShopOpenThursdayEl,
+      fridayEl: giftShopOpenFridayEl,
+      saturdayEl: giftShopOpenSaturdayEl,
+      sundayEl: giftShopOpenSundayEl,
+      holidaysOnlyEl: giftShopOpenHolidaysOnlyEl,
+      messageEl: document.getElementById('giftShopOpenMessage'),
       activatePanel,
       hidePanels,
    });
@@ -786,8 +753,8 @@ document.addEventListener('DOMContentLoaded', () => {
    );
 
    initOffDisplayDatePickers(
-      giftShopOpeningScheduleStartDateEl,
-      giftShopOpeningScheduleEndDateEl
+      giftShopOpenStartDateEl,
+      giftShopOpenEndDateEl
    );
 
    initOffDisplayDatePickers(

@@ -10,6 +10,7 @@ from . import restaurant
 from . import restaurant_day_seasonal_availability_multiplier
 from . import restroom
 from . import gift_shop
+from . import gift_shop_day_seasonal_availability_multiplier
 from . import attraction
 from . import attraction_day_seasonal_availability_multiplier
 from . import zoomobile_station
@@ -31,6 +32,7 @@ static_tables = [
    restaurant_day_seasonal_availability_multiplier,
    restroom,
    gift_shop,
+   gift_shop_day_seasonal_availability_multiplier,
    attraction,
    attraction_day_seasonal_availability_multiplier,
    zoomobile_station,

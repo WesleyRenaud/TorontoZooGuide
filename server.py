@@ -1322,7 +1322,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
 
-         gift_shop = data.get( 'GiftShop' )
+         gift_shop = data.get( 'giftShop' )
 
          success = self.database.set_gift_shop_as_open( gift_shop=gift_shop )
 

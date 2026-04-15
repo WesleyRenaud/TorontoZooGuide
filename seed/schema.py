@@ -5,6 +5,13 @@ def create_schema( cursor ):
    for table in static_tables:
       table.create_table( cursor )
 
+   # Old tables
+
+   cursor.execute( 'DROP TABLE IF EXISTS GiftShopStatus;' )
+   cursor.execute( 'DROP TABLE IF EXISTS MeetTheGuardiansTalkDateTime;' )
+   cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingTime;' )
+   cursor.execute( 'DROP TABLE IF EXISTS RestaurantStatus;' )
+
    # Dynamic tables
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS AnimalStatus
@@ -221,39 +228,6 @@ def create_schema( cursor ):
    if 'SCHEDULE_MESSAGE' not in restaurant_schedule_columns:
       cursor.execute(
          'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
-      )
-
-   cursor.execute( ''' CREATE TABLE IF NOT EXISTS GiftShopStatus
-                     (  GIFT_SHOP           VARCHAR(64) NOT NULL,
-                        IS_CLOSED           BOOL        NOT NULL DEFAULT 0,
-                        CLOSED_MESSAGE      TEXT,
-                        CLOSED_START        DATE,
-                        CLOSED_END          DATE,
-                        PRIMARY KEY (GIFT_SHOP),
-                        FOREIGN KEY (GIFT_SHOP) REFERENCES GiftShop(NAME) ); ''' )
-
-   gift_shops_status_columns = {
-      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( GiftShopStatus );' ).fetchall()
-   }
-
-   if 'IS_CLOSED' not in gift_shops_status_columns:
-      cursor.execute(
-         'ALTER TABLE GiftShopStatus ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 0;'
-      )
-
-   if 'CLOSED_MESSAGE' not in gift_shops_status_columns:
-      cursor.execute(
-         'ALTER TABLE GiftShopStatus ADD COLUMN CLOSED_MESSAGE TEXT;'
-      )
-
-   if 'CLOSED_START' not in gift_shops_status_columns:
-      cursor.execute(
-         'ALTER TABLE GiftShopStatus ADD COLUMN CLOSED_START DATE;'
-      )
-
-   if 'CLOSED_END' not in gift_shops_status_columns:
-      cursor.execute(
-         'ALTER TABLE GiftShopStatus ADD COLUMN CLOSED_END DATE;'
       )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS GiftShopOpeningSchedule
@@ -710,11 +684,3 @@ def create_schema( cursor ):
                      (  WILD_ENCOUNTER       VARCHAR(64) NOT NULL,
                         PRIMARY KEY ( WILD_ENCOUNTER ),
                         FOREIGN KEY ( WILD_ENCOUNTER ) REFERENCES WildEncounter(NAME) ); ''' )
-
-   # Old tables
-
-   cursor.execute( 'DROP TABLE IF EXISTS MeetTheGuardiansTalkDateTime;' )
-
-   cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingTime;' )
-
-   cursor.execute( 'DROP TABLE IF EXISTS RestaurantStatus;' )

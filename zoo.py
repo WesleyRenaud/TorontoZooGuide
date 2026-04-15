@@ -127,7 +127,8 @@ class Restroom:
 
 
 class GiftShop:
-   def __init__( self, name, location, description=None, x_coord=None, y_coord=None, is_closed=None, closed_message=None ):
+   def __init__( self, name, location, description=None, x_coord=None, y_coord=None, is_closed=None, closed_message=None,
+                 likelihood=None ):
       self.name = name
       self.location = location
       self.description = description
@@ -135,6 +136,7 @@ class GiftShop:
       self.y_coord = y_coord
       self.is_closed = is_closed
       self.closed_message = closed_message
+      self.likelihood = likelihood
 
 
    def to_dict( self ):
@@ -146,6 +148,7 @@ class GiftShop:
          'y_coord': self.y_coord,
          'is_closed': self.is_closed,
          'closed_message': self.closed_message,
+         'likelihood': self.likelihood,
       }
 
 
