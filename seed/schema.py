@@ -11,6 +11,7 @@ def create_schema( cursor ):
    cursor.execute( 'DROP TABLE IF EXISTS MeetTheGuardiansTalkDateTime;' )
    cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingTime;' )
    cursor.execute( 'DROP TABLE IF EXISTS RestaurantStatus;' )
+   cursor.execute( 'DROP TABLE IF EXISTS ZoomobileRouteOverride;' )
 
    # Dynamic tables
 
@@ -397,6 +398,31 @@ def create_schema( cursor ):
    if 'SCHEDULE_MESSAGE' not in attraction_schedule_columns:
       cursor.execute(
          'ALTER TABLE AttractionOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
+      )
+
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS ZoomobileRouteSchedule
+                     (  SCHEDULE_START_DATE   DATE        NOT NULL,
+                        SCHEDULE_END_DATE     DATE,
+                        ROUTE                 VARCHAR(16) NOT NULL CHECK (ROUTE IN ('summer', 'winter')),
+                        PRIMARY KEY (SCHEDULE_START_DATE) ); ''' )
+
+   zoomobile_route_schedule_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( ZoomobileRouteSchedule );' ).fetchall()
+   }
+
+   if 'SCHEDULE_START_DATE' not in zoomobile_route_schedule_columns:
+      cursor.execute(
+         'ALTER TABLE ZoomobileRouteSchedule ADD COLUMN SCHEDULE_START_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+      )
+
+   if 'SCHEDULE_END_DATE' not in zoomobile_route_schedule_columns:
+      cursor.execute(
+         'ALTER TABLE ZoomobileRouteSchedule ADD COLUMN SCHEDULE_END_DATE DATE;'
+      )
+
+   if 'ROUTE' not in zoomobile_route_schedule_columns:
+      cursor.execute(
+         "ALTER TABLE ZoomobileRouteSchedule ADD COLUMN ROUTE VARCHAR(16) NOT NULL DEFAULT 'summer';"
       )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ZoomobileStationStatus

@@ -1098,44 +1098,94 @@ class Database():
       if zoomobile_stations_to_include is None:
          zoomobile_stations_to_include = []
 
-      cur = self.conn.cursor()
+      normalized_month = self.zoo_util.normalize_month( month )
+      normalized_day = int( day )
+      target_date = date(
+         datetime.now().year,
+         normalized_month,
+         normalized_day )
+      route_source = 'manual'
 
       if route == 'current':
-         data = cur.execute(
-            """SELECT
-                  a.SETTING_VALUE
-               FROM AppSetting a
-               WHERE a.SETTING_KEY = 'zoomobile_route';
-            """
-         )
+         route = self.get_active_zoomobile_route( target_date=target_date )
 
-         current_route_data = data.fetchone()
-
-         if current_route_data is not None:
-            stored_route = current_route_data[ 'SETTING_VALUE' ]
-
-            if stored_route in [ 'summer', 'winter' ]:
-               route = stored_route
-            else:
-               route = 'summer'
+         if route in [ 'summer', 'winter' ]:
+            route_source = 'override'
          else:
-            route = 'summer'
+            route = self.get_zoomobile_day_route(
+               month=normalized_month,
+               day=normalized_day )
+            route_source = 'fallback'
 
       if route not in [ 'summer', 'winter' ]:
          route = 'summer'
 
-      cur.close()
-
       zoomobile_stations = self.get_zoomobile_stations(
          route=route,
-         month=month,
-         day=day,
+         month=normalized_month,
+         day=normalized_day,
          zoomobile_stations_to_include=zoomobile_stations_to_include )
 
       return {
          'route': route,
+         'route_source': route_source,
          'zoomobile_stations': zoomobile_stations
       }
+
+
+   def get_active_zoomobile_route( self, target_date ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  z.ROUTE
+               FROM ZoomobileRouteSchedule z
+               WHERE z.SCHEDULE_START_DATE <= ?
+               AND (
+                  z.SCHEDULE_END_DATE IS NULL
+                  OR z.SCHEDULE_END_DATE >= ?
+               )
+               ORDER BY z.SCHEDULE_START_DATE DESC
+               LIMIT 1;
+         """, ( target_date.isoformat(), target_date.isoformat() ) )
+
+      route_data = data.fetchone()
+      cur.close()
+
+      if route_data is None:
+         return None
+
+      route = route_data[ 'ROUTE' ]
+
+      if route not in [ 'summer', 'winter' ]:
+         return None
+
+      return route
+
+
+   def get_zoomobile_day_route( self, month, day ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  z.ROUTE
+               FROM ZoomobileDayRoute z
+               WHERE z.MONTH = ?
+               AND z.DAY = ?;
+         """, ( month, day ) )
+
+      route_data = data.fetchone()
+      cur.close()
+
+      if route_data is None:
+         return None
+
+      route = route_data[ 'ROUTE' ]
+
+      if route not in [ 'summer', 'winter' ]:
+         return None
+
+      return route
 
 
    def get_guardians_talks( self, month, day ):
@@ -3300,21 +3350,44 @@ class Database():
       return updated > 0
 
 
-   def set_current_zoomobile_route( self, route ):
+   def set_current_zoomobile_route( self, route, start_date, end_date ):
       if route not in ( 'summer', 'winter' ):
          return False
+
+      try:
+         normalized_start_date = (
+            self.parse_date_value( value=start_date ).isoformat()
+            if start_date
+            else datetime.now().date().isoformat()
+         )
+      except ValueError:
+         return False
+
+      normalized_end_date = None
+
+      if end_date:
+         try:
+            normalized_end_date = self.parse_date_value( value=end_date ).isoformat()
+         except ValueError:
+            return False
+
+         if normalized_end_date < normalized_start_date:
+            return False
 
       cur = self.conn.cursor()
 
       cur.execute(
-         """   INSERT INTO AppSetting (
-                  SETTING_KEY,
-                  SETTING_VALUE
+         """   DELETE FROM ZoomobileRouteSchedule;
+         """ )
+
+      cur.execute(
+         """   INSERT INTO ZoomobileRouteSchedule (
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  ROUTE
                )
-               VALUES ( 'zoomobile_route', ? )
-               ON CONFLICT(SETTING_KEY) DO UPDATE SET
-                  SETTING_VALUE = excluded.SETTING_VALUE;
-         """, ( route, ) )
+               VALUES ( ?, ?, ? )
+         """, ( normalized_start_date, normalized_end_date, route ) )
 
       self.conn.commit()
       updated = cur.rowcount

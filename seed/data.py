@@ -14,6 +14,7 @@ from .tables.gift_shop_day_seasonal_availability_multiplier import gift_shop_day
 from .tables.attraction import attractions
 from .tables.attraction_day_seasonal_availability_multiplier import attraction_day_seasonal_availability_multipliers
 from .tables.zoomobile_station import zoomobile_stations
+from .tables.zoomobile_day_route import zoomobile_day_routes
 from .tables.meet_the_guardians_talk import guardians_talks
 from .tables.wild_encounter_meeting_spot import wild_encounter_meeting_spots
 from .tables.wild_encounter import wild_encounters
@@ -35,6 +36,7 @@ __all__ = [
    'attractions',
    'attraction_day_seasonal_availability_multipliers',
    'zoomobile_stations',
+   'zoomobile_day_routes',
    'guardians_talks',
    'wild_encounter_meeting_spots',
    'wild_encounters',

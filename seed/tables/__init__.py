@@ -14,6 +14,7 @@ from . import gift_shop_day_seasonal_availability_multiplier
 from . import attraction
 from . import attraction_day_seasonal_availability_multiplier
 from . import zoomobile_station
+from . import zoomobile_day_route
 from . import meet_the_guardians_talk
 from . import wild_encounter_meeting_spot
 from . import wild_encounter
@@ -36,6 +37,7 @@ static_tables = [
    attraction,
    attraction_day_seasonal_availability_multiplier,
    zoomobile_station,
+   zoomobile_day_route,
    meet_the_guardians_talk,
    wild_encounter_meeting_spot,
    wild_encounter,
