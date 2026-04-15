@@ -688,7 +688,14 @@ class Database():
    def get_gift_shops( self, month, day, include_closed_gift_shops, gift_shops_to_include=[] ):
       cur = self.conn.cursor()
 
-      target_date = date( datetime.now().year, self.zoo_util.normalize_month( month ), int( day ) )
+      normalized_month = self.zoo_util.normalize_month( month )
+      normalized_day = int( day )
+
+      target_date = date( datetime.now().year, normalized_month, normalized_day )
+      weekday = target_date.weekday()
+      is_weekend_or_holiday = (
+         weekday >= 5
+         or self.zoo_util.is_holiday( d=target_date ) )
 
       data = cur.execute(
          """   SELECT
@@ -697,27 +704,14 @@ class Database():
                   g.DESCRIPTION,
                   g.X_COORD,
                   g.Y_COORD,
-                  s.IS_CLOSED,
-                  s.CLOSED_MESSAGE,
-                  s.CLOSED_START,
-                  s.CLOSED_END,
-                  os.SCHEDULE_START_DATE,
-                  os.SCHEDULE_END_DATE,
-                  os.MONDAY,
-                  os.TUESDAY,
-                  os.WEDNESDAY,
-                  os.THURSDAY,
-                  os.FRIDAY,
-                  os.SATURDAY,
-                  os.SUNDAY,
-                  os.HOLIDAYS_ONLY,
-                  os.SCHEDULE_MESSAGE
+                  COALESCE( gdsam.WEEKDAY_VALUE, 1.0 ) AS GIFT_SHOP_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
+                  COALESCE( gdsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS GIFT_SHOP_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
                FROM GiftShop g
-               LEFT JOIN GiftShopStatus s
-                  ON g.NAME = s.GIFT_SHOP
-               LEFT JOIN GiftShopOpeningSchedule os
-                  ON g.NAME = os.GIFT_SHOP;
-         """ )
+               LEFT JOIN GiftShopDaySeasonalAvailabilityMultiplier gdsam
+                  ON g.NAME = gdsam.GIFT_SHOP
+                  AND gdsam.MONTH = ?
+                  AND gdsam.DAY = ?;
+         """, ( normalized_month, normalized_day ) )
 
       gift_shop_data = data.fetchall()
 
@@ -725,67 +719,30 @@ class Database():
 
       for gift_shop in gift_shop_data:
          name = gift_shop[ 'NAME' ]
-
-         stored_is_closed = bool( gift_shop[ 'IS_CLOSED' ] ) if gift_shop[ 'IS_CLOSED' ] != None else False
-
-         is_closed = False
+         likelihood = 100
          closed_message = None
+         gift_shop_day_seasonal_availability_multiplier = (
+            gift_shop[ 'GIFT_SHOP_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ]
+            if is_weekend_or_holiday
+            else gift_shop[ 'GIFT_SHOP_DAY_SEASONAL_WEEKDAY_MULTIPLIER' ]
+         )
 
-         if stored_is_closed:
-            start_ok = True
-            end_ok = True
+         schedule_status, schedule_message = self.get_active_gift_shop_schedule_status(
+            gift_shop_name=name,
+            target_date=target_date,
+            weekday=weekday )
 
-            if gift_shop[ 'CLOSED_START' ] != None:
-               start_date = self.parse_date_value( value=gift_shop[ 'CLOSED_START' ] )
-               start_ok = target_date >= start_date
+         if schedule_status == 'closed':
+            likelihood = 0
+            closed_message = schedule_message
+         elif schedule_status == 'unknown':
+            likelihood = self.calculate_gift_shop_likelihood(
+               day_seasonal_availability_multiplier=gift_shop_day_seasonal_availability_multiplier )
 
-            if gift_shop[ 'CLOSED_END' ] != None:
-               end_date = self.parse_date_value( value=gift_shop[ 'CLOSED_END' ] )
-               end_ok = target_date <= end_date
+            if likelihood == 0:
+               closed_message = f'The { name } is most likely not open on this day.'
 
-            if start_ok and end_ok:
-               is_closed = True
-               closed_message = gift_shop[ 'CLOSED_MESSAGE' ]
-
-         if not is_closed and gift_shop[ 'SCHEDULE_START_DATE' ] != None:
-            schedule_start_ok = True
-            schedule_end_ok = True
-
-            if gift_shop[ 'SCHEDULE_START_DATE' ] != None:
-               schedule_start_date = self.parse_date_value( value=gift_shop[ 'SCHEDULE_START_DATE' ] )
-               schedule_start_ok = target_date >= schedule_start_date
-
-            if gift_shop[ 'SCHEDULE_END_DATE' ] != None:
-               schedule_end_date = self.parse_date_value( value=gift_shop[ 'SCHEDULE_END_DATE' ] )
-               schedule_end_ok = target_date <= schedule_end_date
-
-            if schedule_start_ok and schedule_end_ok:
-               is_open_today = False
-
-               if self.zoo_util.is_holiday( target_date ):
-                  is_open_today = bool( gift_shop[ 'HOLIDAYS_ONLY' ] )
-
-               if not is_open_today:
-                  day_of_week = target_date.weekday()
-
-                  if day_of_week == 0:
-                     is_open_today = bool( gift_shop[ 'MONDAY' ] )
-                  elif day_of_week == 1:
-                     is_open_today = bool( gift_shop[ 'TUESDAY' ] )
-                  elif day_of_week == 2:
-                     is_open_today = bool( gift_shop[ 'WEDNESDAY' ] )
-                  elif day_of_week == 3:
-                     is_open_today = bool( gift_shop[ 'THURSDAY' ] )
-                  elif day_of_week == 4:
-                     is_open_today = bool( gift_shop[ 'FRIDAY' ] )
-                  elif day_of_week == 5:
-                     is_open_today = bool( gift_shop[ 'SATURDAY' ] )
-                  elif day_of_week == 6:
-                     is_open_today = bool( gift_shop[ 'SUNDAY' ] )
-
-               if not is_open_today:
-                  is_closed = True
-                  closed_message = gift_shop[ 'SCHEDULE_MESSAGE' ]
+         is_closed = likelihood <= 0
 
          if include_closed_gift_shops or not is_closed or name in gift_shops_to_include:
             gift_shops.append(
@@ -796,11 +753,88 @@ class Database():
                   x_coord=gift_shop[ 'X_COORD' ],
                   y_coord=gift_shop[ 'Y_COORD' ],
                   is_closed=is_closed,
-                  closed_message=closed_message ) )
+                  closed_message=closed_message,
+                  likelihood=likelihood ) )
 
       cur.close()
 
       return gift_shops
+
+
+   def get_active_gift_shop_schedule_status( self, gift_shop_name, target_date, weekday ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  s.SCHEDULE_START_DATE,
+                  s.SCHEDULE_END_DATE,
+                  s.MONDAY,
+                  s.TUESDAY,
+                  s.WEDNESDAY,
+                  s.THURSDAY,
+                  s.FRIDAY,
+                  s.SATURDAY,
+                  s.SUNDAY,
+                  s.HOLIDAYS_ONLY,
+                  s.SCHEDULE_MESSAGE
+               FROM GiftShopOpeningSchedule s
+               WHERE s.GIFT_SHOP = ?;
+         """, ( gift_shop_name, ) )
+
+      schedule_rows = data.fetchall()
+      cur.close()
+
+      if len( schedule_rows ) == 0:
+         return 'unknown', None
+
+      for schedule in schedule_rows:
+         is_active = self.is_date_in_range(
+            target_date=target_date,
+            start_date_value=schedule[ 'SCHEDULE_START_DATE' ],
+            end_date_value=schedule[ 'SCHEDULE_END_DATE' ] )
+
+         if not is_active:
+            continue
+
+         is_holiday = self.zoo_util.is_holiday( d=target_date ) if hasattr( self.zoo_util, 'is_holiday' ) else False
+
+         open_on_day = False
+
+         if weekday == 0 and schedule[ 'MONDAY' ]:
+            open_on_day = True
+         elif weekday == 1 and schedule[ 'TUESDAY' ]:
+            open_on_day = True
+         elif weekday == 2 and schedule[ 'WEDNESDAY' ]:
+            open_on_day = True
+         elif weekday == 3 and schedule[ 'THURSDAY' ]:
+            open_on_day = True
+         elif weekday == 4 and schedule[ 'FRIDAY' ]:
+            open_on_day = True
+         elif weekday == 5 and schedule[ 'SATURDAY' ]:
+            open_on_day = True
+         elif weekday == 6 and schedule[ 'SUNDAY' ]:
+            open_on_day = True
+
+         if is_holiday and schedule[ 'HOLIDAYS_ONLY' ]:
+            open_on_day = True
+
+         if open_on_day:
+            return 'open', None
+
+         return 'closed', schedule[ 'SCHEDULE_MESSAGE' ]
+
+      return 'unknown', None
+
+
+   def calculate_gift_shop_likelihood( self, day_seasonal_availability_multiplier ):
+      seasonal_multiplier = (
+         day_seasonal_availability_multiplier
+         if day_seasonal_availability_multiplier is not None
+         else 1.0
+      )
+      likelihood = max( 0.0, min( seasonal_multiplier, 1.0 ) )
+
+      return max( round( likelihood * 100 ), 0 )
 
 
    def get_attractions( self, month, day, include_closed_attractions=False ):
@@ -1447,12 +1481,12 @@ class Database():
 
    def get_gift_shops_matching_query( self, query, month, day ):
       if not query:
-         return self.get_gift_shops( month=month, day=day, include_seasonal_gift_shops=True )
+         return self.get_gift_shops( month=month, day=day, include_closed_gift_shops=True )
 
       query_lower = query.lower()
 
       return [
-         g for g in self.get_gift_shops( month=month, day=day, include_seasonal_gift_shops=True )
+         g for g in self.get_gift_shops( month=month, day=day, include_closed_gift_shops=True )
          if g.name and query_lower in g.name.lower()
       ]
 
@@ -2938,56 +2972,41 @@ class Database():
       if not gift_shop:
          return False
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
       if not message:
          message = f'The { gift_shop } is temporarily closed.'
 
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO GiftShopStatus (
-                  GIFT_SHOP,
-                  IS_CLOSED,
-                  CLOSED_MESSAGE,
-                  CLOSED_START,
-                  CLOSED_END
-               )
-               VALUES (?, 1, ?, ?, ?)
-               ON CONFLICT(GIFT_SHOP) DO UPDATE SET
-                  IS_CLOSED = 1,
-                  CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
-                  CLOSED_START = excluded.CLOSED_START,
-                  CLOSED_END = excluded.CLOSED_END;
-         """, ( gift_shop, message, start_date, end_date ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return self.set_gift_shop_opening_schedule(
+         gift_shop=gift_shop,
+         start_date=start_date,
+         end_date=end_date,
+         monday=False,
+         tuesday=False,
+         wednesday=False,
+         thursday=False,
+         friday=False,
+         saturday=False,
+         sunday=False,
+         holidays_only=False,
+         message=message )
 
 
    def set_gift_shop_as_open( self, gift_shop ):
       if not gift_shop:
          return False
 
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   DELETE FROM GiftShopStatus
-               WHERE RESTAURANT = ?;
-         """, ( gift_shop, ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return self.set_gift_shop_opening_schedule(
+         gift_shop=gift_shop,
+         start_date=None,
+         end_date=None,
+         monday=True,
+         tuesday=True,
+         wednesday=True,
+         thursday=True,
+         friday=True,
+         saturday=True,
+         sunday=True,
+         holidays_only=True,
+         message=None )
 
 
    def set_gift_shop_opening_schedule(
@@ -3077,7 +3096,7 @@ class Database():
 
       cur.execute(
          """   DELETE FROM GiftShopOpeningSchedule
-               WHERE RESTAURANT = ?;
+               WHERE GIFT_SHOP = ?;
          """, ( gift_shop, ) )
 
       self.conn.commit()

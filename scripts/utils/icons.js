@@ -35,3 +35,11 @@ export function getRestaurantIconUrl(backgroundColourForUrl) {
 
    return `url("/images/generic-icons/restaurant/restaurant-${backgroundColourForUrl}.png")`;
 }
+
+export function getGiftShopIconUrl(backgroundColourForUrl) {
+   if (!backgroundColourForUrl || backgroundColourForUrl == 'open') {
+      return 'url("/images/generic-icons/gift-shop-open.png")';
+   }
+
+   return `url("/images/generic-icons/gift-shop/gift-shop-${backgroundColourForUrl}.png")`;
+}

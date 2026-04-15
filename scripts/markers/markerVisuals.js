@@ -1,4 +1,4 @@
-import { likelihoodToColor, getAnimalIconUrl, getAttractionIconUrl, getRestaurantIconUrl } from '../utils/icons.js';
+import { likelihoodToColor, getAnimalIconUrl, getAttractionIconUrl, getGiftShopIconUrl, getRestaurantIconUrl } from '../utils/icons.js';
 
 const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
 
@@ -144,10 +144,26 @@ export function applyMarkerVisual(markerEl, itemsAtPoint) {
       markerEl.classList.add('marker-gift-shop');
 
       const giftShop = items[0];
-      const state = giftShop.is_closed ? 'closed' : 'open';
-      const iconPath = `/images/generic-icons/gift-shop-${state}.png`;
+      const giftShopLikelihood = Math.max(
+         0,
+         Math.min(100, Number(giftShop.likelihood) || 0)
+      );
+      const colour = likelihoodToColor(giftShopLikelihood);
+      const colourForUrl = giftShopLikelihood >= 100
+         ? 'open'
+         : String(colour || '').replace('#', '');
 
-      applyGenericIcon(markerEl, iconPath, count);
+      if (count === 1) {
+         markerEl.style.backgroundColor = 'transparent';
+         markerEl.style.backgroundImage = getGiftShopIconUrl(colourForUrl);
+         markerEl.style.backgroundSize = 'cover';
+         markerEl.textContent = '';
+      } else {
+         markerEl.style.backgroundImage = 'none';
+         markerEl.style.backgroundColor = colour;
+         markerEl.textContent = String(count);
+      }
+
       return;
    }
 
