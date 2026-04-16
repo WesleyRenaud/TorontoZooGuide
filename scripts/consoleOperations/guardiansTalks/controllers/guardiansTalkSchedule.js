@@ -1,5 +1,11 @@
 import { setStatus, populateGuardiansTalkDropdown } from '../../utils.js';
 import { postJson } from '../../../api/apiClient.js';
+import {
+   hasCheckedField,
+   hideConsolePanel,
+   resetFormFields,
+   validateOptionalDateRange,
+} from '../../shared/controllerUtils.js';
 
 export function createGuardiansTalkScheduleController({
    showButtonEl,
@@ -40,19 +46,20 @@ export function createGuardiansTalkScheduleController({
    }
 
    function resetForm() {
-      if (locationEl) locationEl.value = '';
-      if (startDateEl) startDateEl.value = '';
-      if (endDateEl) endDateEl.value = '';
-      if (timeEl) timeEl.value = '';
-      if (messageEl) messageEl.value = '';
-
-      if (mondayEl) mondayEl.checked = false;
-      if (tuesdayEl) tuesdayEl.checked = false;
-      if (wednesdayEl) wednesdayEl.checked = false;
-      if (thursdayEl) thursdayEl.checked = false;
-      if (fridayEl) fridayEl.checked = false;
-      if (saturdayEl) saturdayEl.checked = false;
-      if (sundayEl) sundayEl.checked = false;
+      resetFormFields([
+         locationEl,
+         startDateEl,
+         endDateEl,
+         timeEl,
+         messageEl,
+         mondayEl,
+         tuesdayEl,
+         wednesdayEl,
+         thursdayEl,
+         fridayEl,
+         saturdayEl,
+         sundayEl,
+      ]);
 
       resetTalkDropdown();
    }
@@ -63,20 +70,23 @@ export function createGuardiansTalkScheduleController({
    }
 
    function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
    function hasAtLeastOneDaySelected() {
-      return Boolean(
-         mondayEl?.checked
-         || tuesdayEl?.checked
-         || wednesdayEl?.checked
-         || thursdayEl?.checked
-         || fridayEl?.checked
-         || saturdayEl?.checked
-         || sundayEl?.checked
-      );
+      return hasCheckedField([
+         mondayEl,
+         tuesdayEl,
+         wednesdayEl,
+         thursdayEl,
+         fridayEl,
+         saturdayEl,
+         sundayEl,
+      ]);
    }
 
    async function onShowClick() {
@@ -127,21 +137,11 @@ export function createGuardiansTalkScheduleController({
          return;
       }
 
-      const effectiveStart = startDate || new Date().toISOString().split('T')[0];
+      const dateError = validateOptionalDateRange(startDate, endDate);
 
-      if (endDate) {
-         const startMs = new Date(effectiveStart).getTime();
-         const endMs = new Date(endDate).getTime();
-
-         if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
-            setStatus(statusEl, 'Invalid start or end date.', 'is-error');
-            return;
-         }
-
-         if (endMs < startMs) {
-            setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
-            return;
-         }
+      if (dateError) {
+         setStatus(statusEl, dateError, 'is-error');
+         return;
       }
 
       try {

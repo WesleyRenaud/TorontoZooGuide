@@ -1,5 +1,11 @@
 import { loadGiftShops, setStatus, populateGiftShopDropdown } from '../../utils.js';
 import { postJson } from '../../../api/apiClient.js';
+import {
+   hideConsolePanel,
+   loadOptionsAndShowPanel,
+   resetFormFields,
+   validateOptionalDateRange,
+} from '../../shared/controllerUtils.js';
 
 export function createGiftShopClosedController({
    showButtonEl,
@@ -16,28 +22,29 @@ export function createGiftShopClosedController({
 } = {}) {
 
    function resetForm() {
-      if (giftShopEl) giftShopEl.value = '';
-      if (startDateEl) startDateEl.value = '';
-      if (endDateEl) endDateEl.value = '';
-      if (messageEl) messageEl.value = '';
+      resetFormFields([giftShopEl, startDateEl, endDateEl, messageEl]);
+   }
+
+   function hide() {
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
    async function onShowClick() {
-
-      setStatus(statusEl, '');
-
-      try {
-         const giftShops = await loadGiftShops();
-         populateGiftShopDropdown(giftShopEl, giftShops);
-         resetForm();
-         activatePanel?.(panelEl);
-      }
-      catch(err) {
-         console.log(err);
-         setStatus(statusEl, 'Failed to load gift shops.', 'is-error');
-         activatePanel?.(panelEl);
-      }
-
+      await loadOptionsAndShowPanel({
+         statusEl,
+         setStatus,
+         loadOptions: loadGiftShops,
+         populateOptions: populateGiftShopDropdown,
+         targetEl: giftShopEl,
+         resetForm,
+         activatePanel,
+         panelEl,
+         errorMessage: 'Failed to load gift shops.',
+      });
    }
 
    async function onSubmitClick() {
@@ -54,23 +61,11 @@ export function createGiftShopClosedController({
          return;
       }
 
-      const effectiveStart = startDate || new Date().toISOString().split('T')[0];
+      const dateError = validateOptionalDateRange(startDate, endDate);
 
-      if (endDate) {
-
-         const startMs = new Date(effectiveStart).getTime();
-         const endMs = new Date(endDate).getTime();
-
-         if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
-            setStatus(statusEl, 'Invalid start or end date.', 'is-error');
-            return;
-         }
-
-         if (endMs < startMs) {
-            setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
-            return;
-         }
-
+      if (dateError) {
+         setStatus(statusEl, dateError, 'is-error');
+         return;
       }
 
       try {
@@ -105,6 +100,10 @@ export function createGiftShopClosedController({
    }
 
    showButtonEl?.addEventListener('click', onShowClick);
-   cancelButtonEl?.addEventListener('click', hidePanels);
+   cancelButtonEl?.addEventListener('click', hide);
    submitButtonEl?.addEventListener('click', onSubmitClick);
+
+   return {
+      hide,
+   };
 }

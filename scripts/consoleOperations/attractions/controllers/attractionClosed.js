@@ -1,5 +1,11 @@
 import { loadAttractions, setStatus, populateAttractionDropdown } from '../../utils.js';
 import { postJson } from '../../../api/apiClient.js';
+import {
+   hideConsolePanel,
+   loadOptionsAndShowPanel,
+   resetFormFields,
+   validateOptionalDateRange,
+} from '../../shared/controllerUtils.js';
 
 export function createAttractionClosedController({
    showButtonEl,
@@ -16,10 +22,7 @@ export function createAttractionClosedController({
 } = {}) {
 
    function resetForm() {
-      if (attractionEl) attractionEl.value = '';
-      if (startDateEl) startDateEl.value = '';
-      if (endDateEl) endDateEl.value = '';
-      if (messageEl) messageEl.value = '';
+      resetFormFields([attractionEl, startDateEl, endDateEl, messageEl]);
    }
 
    function show() {
@@ -28,24 +31,25 @@ export function createAttractionClosedController({
    }
 
    function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
    async function onShowClick() {
-      setStatus(statusEl, '');
-
-      try {
-         const attractions = await loadAttractions();
-         populateAttractionDropdown(attractionEl, attractions);
-
-         resetForm();
-         activatePanel?.(panelEl);
-      }
-      catch (err) {
-         setStatus(statusEl, 'Failed to load attractions.', 'is-error');
-         activatePanel?.(panelEl);
-      }
+      await loadOptionsAndShowPanel({
+         statusEl,
+         setStatus,
+         loadOptions: loadAttractions,
+         populateOptions: populateAttractionDropdown,
+         targetEl: attractionEl,
+         resetForm,
+         activatePanel,
+         panelEl,
+         errorMessage: 'Failed to load attractions.',
+      });
    }
 
    async function onSubmitClick() {
@@ -61,21 +65,11 @@ export function createAttractionClosedController({
          return;
       }
 
-      const effectiveStart = startDate || new Date().toISOString().split('T')[0];
+      const dateError = validateOptionalDateRange(startDate, endDate);
 
-      if (endDate) {
-         const startMs = new Date(effectiveStart).getTime();
-         const endMs = new Date(endDate).getTime();
-
-         if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
-            setStatus(statusEl, 'Invalid start or end date.', 'is-error');
-            return;
-         }
-
-         if (endMs < startMs) {
-            setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
-            return;
-         }
+      if (dateError) {
+         setStatus(statusEl, dateError, 'is-error');
+         return;
       }
 
       try {
@@ -99,7 +93,7 @@ export function createAttractionClosedController({
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
       }
-      catch (err) {
+      catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
    }

@@ -1,5 +1,10 @@
 import { setStatus } from '../../utils.js';
 import { postJson } from '../../../api/apiClient.js';
+import {
+   hideConsolePanel,
+   resetFormFields,
+   validateOptionalDateRange,
+} from '../../shared/controllerUtils.js';
 
 export function createZoomobileRouteController({
    showButtonEl,
@@ -15,15 +20,19 @@ export function createZoomobileRouteController({
 } = {}) {
 
    function resetForm() {
-      if (startDateEl) startDateEl.value = '';
-      if (endDateEl) endDateEl.value = '';
-      if (summerRouteEl) summerRouteEl.checked = true;
-      if (winterRouteEl) winterRouteEl.checked = false;
+      resetFormFields([startDateEl, endDateEl, summerRouteEl, winterRouteEl]);
+
+      if (summerRouteEl) {
+         summerRouteEl.checked = true;
+      }
    }
 
    function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
    async function onShowClick() {
@@ -51,21 +60,11 @@ export function createZoomobileRouteController({
          return;
       }
 
-      const effectiveStart = startDate || new Date().toISOString().split('T')[0];
+      const dateError = validateOptionalDateRange(startDate, endDate);
 
-      if (endDate) {
-         const startMs = new Date(effectiveStart).getTime();
-         const endMs = new Date(endDate).getTime();
-
-         if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
-            setStatus(statusEl, 'Invalid start or end date.', 'is-error');
-            return;
-         }
-
-         if (endMs < startMs) {
-            setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
-            return;
-         }
+      if (dateError) {
+         setStatus(statusEl, dateError, 'is-error');
+         return;
       }
 
       try {
@@ -101,7 +100,6 @@ export function createZoomobileRouteController({
 
    return {
       hide,
-      resetForm
+      resetForm,
    };
-
 }

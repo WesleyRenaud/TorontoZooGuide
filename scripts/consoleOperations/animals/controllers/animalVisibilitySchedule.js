@@ -1,5 +1,12 @@
 import { loadExhibits, setStatus, populateExhibitDropdown } from '../../utils.js';
 import { postJson } from '../../../api/apiClient.js';
+import {
+   bindResetValueOnChange,
+   hideConsolePanel,
+   loadOptionsAndShowPanel,
+   resetFormFields,
+   validateOptionalDateRange,
+} from '../../shared/controllerUtils.js';
 
 export function createAnimalVisibilityScheduleController({
    showButtonEl,
@@ -19,13 +26,15 @@ export function createAnimalVisibilityScheduleController({
 } = {}) {
 
    function resetForm() {
-      if (speciesEl) speciesEl.value = '';
-      if (exhibitEl) exhibitEl.value = '';
-      if (startDateEl) startDateEl.value = '';
-      if (endDateEl) endDateEl.value = '';
-      if (dailyStartTimeEl) dailyStartTimeEl.value = '';
-      if (dailyEndTimeEl) dailyEndTimeEl.value = '';
-      if (messageEl) messageEl.value = '';
+      resetFormFields([
+         speciesEl,
+         exhibitEl,
+         startDateEl,
+         endDateEl,
+         dailyStartTimeEl,
+         dailyEndTimeEl,
+         messageEl,
+      ]);
    }
 
    function show() {
@@ -34,23 +43,25 @@ export function createAnimalVisibilityScheduleController({
    }
 
    function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
    async function onShowClick() {
-      setStatus(statusEl, '');
-
-      try {
-         const exhibits = await loadExhibits();
-         populateExhibitDropdown(exhibitEl, exhibits);
-
-         resetForm();
-         activatePanel?.(panelEl);
-      } catch (err) {
-         setStatus(statusEl, 'Failed to load exhibits.', 'is-error');
-         activatePanel?.(panelEl);
-      }
+      await loadOptionsAndShowPanel({
+         statusEl,
+         setStatus,
+         loadOptions: loadExhibits,
+         populateOptions: populateExhibitDropdown,
+         targetEl: exhibitEl,
+         resetForm,
+         activatePanel,
+         panelEl,
+         errorMessage: 'Failed to load exhibits.',
+      });
    }
 
    async function onSubmitClick() {
@@ -80,6 +91,13 @@ export function createAnimalVisibilityScheduleController({
          return;
       }
 
+      const dateError = validateOptionalDateRange(startDate, endDate);
+
+      if (dateError) {
+         setStatus(statusEl, dateError, 'is-error');
+         return;
+      }
+
       try {
 
          const result = await postJson('/set-animal-visibility-schedule', {
@@ -102,24 +120,22 @@ export function createAnimalVisibilityScheduleController({
 
             resetForm();
 
-         } else {
+         }
+         else {
 
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
 
          }
 
-      } catch (err) {
+      }
+      catch(err) {
 
          setStatus(statusEl, 'Request failed.', 'is-error');
 
       }
    }
 
-   exhibitEl?.addEventListener('change', () => {
-      if (speciesEl) {
-         speciesEl.value = '';
-      }
-   });
+   bindResetValueOnChange(exhibitEl, speciesEl);
 
    showButtonEl?.addEventListener('click', onShowClick);
    cancelButtonEl?.addEventListener('click', hide);
