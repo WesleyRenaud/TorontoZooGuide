@@ -1,5 +1,11 @@
 import { loadExhibits, setStatus, populateExhibitDropdown } from '../../utils.js';
 import { postJson } from '../../../api/apiClient.js';
+import {
+   bindResetValueOnChange,
+   hideConsolePanel,
+   loadOptionsAndShowPanel,
+   resetFormFields,
+} from '../../shared/controllerUtils.js';
 
 export function createAnimalOnDisplayController({
    showButtonEl,
@@ -13,27 +19,29 @@ export function createAnimalOnDisplayController({
 } = {}) {
 
    function resetForm() {
-      if (speciesEl) speciesEl.value = '';
-      if (exhibitEl) exhibitEl.value = '';
+      resetFormFields([speciesEl, exhibitEl]);
    }
 
    function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
    async function show() {
-      setStatus(statusEl, '');
-
-      try {
-         const exhibits = await loadExhibits();
-         populateExhibitDropdown(exhibitEl, exhibits);
-         resetForm();
-         activatePanel?.(panelEl);
-      } catch (err) {
-         setStatus(statusEl, 'Failed to load exhibits.', 'is-error');
-         activatePanel?.(panelEl);
-      }
+      await loadOptionsAndShowPanel({
+         statusEl,
+         setStatus,
+         loadOptions: loadExhibits,
+         populateOptions: populateExhibitDropdown,
+         targetEl: exhibitEl,
+         resetForm,
+         activatePanel,
+         panelEl,
+         errorMessage: 'Failed to load exhibits.',
+      });
    }
 
    async function onSubmitClick() {
@@ -65,7 +73,8 @@ export function createAnimalOnDisplayController({
                'is-success'
             );
             resetForm();
-         } else {
+         }
+         else {
             setStatus(
                statusEl,
                result.error || 'Failed.',
@@ -73,16 +82,13 @@ export function createAnimalOnDisplayController({
             );
          }
 
-      } catch (err) {
+      }
+      catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
    }
 
-   exhibitEl?.addEventListener('change', () => {
-      if (speciesEl) {
-         speciesEl.value = '';
-      }
-   });
+   bindResetValueOnChange(exhibitEl, speciesEl);
 
    showButtonEl?.addEventListener('click', show);
    cancelButtonEl?.addEventListener('click', hide);

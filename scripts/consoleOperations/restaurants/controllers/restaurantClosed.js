@@ -1,5 +1,11 @@
 import { loadRestaurants, setStatus, populateRestaurantDropdown } from '../../utils.js';
 import { postJson } from '../../../api/apiClient.js';
+import {
+   hideConsolePanel,
+   loadOptionsAndShowPanel,
+   resetFormFields,
+   validateOptionalDateRange,
+} from '../../shared/controllerUtils.js';
 
 export function createRestaurantClosedController({
    showButtonEl,
@@ -16,27 +22,29 @@ export function createRestaurantClosedController({
 } = {}) {
 
    function resetForm() {
-      if (restaurantEl) restaurantEl.value = '';
-      if (startDateEl) startDateEl.value = '';
-      if (endDateEl) endDateEl.value = '';
-      if (messageEl) messageEl.value = '';
+      resetFormFields([restaurantEl, startDateEl, endDateEl, messageEl]);
+   }
+
+   function hide() {
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
    async function onShowClick() {
-
-      setStatus(statusEl, '');
-
-      try {
-         const restaurants = await loadRestaurants();
-         populateRestaurantDropdown(restaurantEl, restaurants);
-         resetForm();
-         activatePanel?.(panelEl);
-      }
-      catch(err) {
-         setStatus(statusEl, 'Failed to load restaurants.', 'is-error');
-         activatePanel?.(panelEl);
-      }
-
+      await loadOptionsAndShowPanel({
+         statusEl,
+         setStatus,
+         loadOptions: loadRestaurants,
+         populateOptions: populateRestaurantDropdown,
+         targetEl: restaurantEl,
+         resetForm,
+         activatePanel,
+         panelEl,
+         errorMessage: 'Failed to load restaurants.',
+      });
    }
 
    async function onSubmitClick() {
@@ -53,23 +61,11 @@ export function createRestaurantClosedController({
          return;
       }
 
-      const effectiveStart = startDate || new Date().toISOString().split('T')[0];
+      const dateError = validateOptionalDateRange(startDate, endDate);
 
-      if (endDate) {
-
-         const startMs = new Date(effectiveStart).getTime();
-         const endMs = new Date(endDate).getTime();
-
-         if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
-            setStatus(statusEl, 'Invalid start or end date.', 'is-error');
-            return;
-         }
-
-         if (endMs < startMs) {
-            setStatus(statusEl, 'End date cannot be before the start date.', 'is-error');
-            return;
-         }
-
+      if (dateError) {
+         setStatus(statusEl, dateError, 'is-error');
+         return;
       }
 
       try {
@@ -104,6 +100,10 @@ export function createRestaurantClosedController({
    }
 
    showButtonEl?.addEventListener('click', onShowClick);
-   cancelButtonEl?.addEventListener('click', hidePanels);
+   cancelButtonEl?.addEventListener('click', hide);
    submitButtonEl?.addEventListener('click', onSubmitClick);
+
+   return {
+      hide,
+   };
 }

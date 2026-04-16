@@ -1,5 +1,11 @@
 import { loadExhibits, setStatus, populateExhibitDropdown } from '../../utils.js';
 import { postJson } from '../../../api/apiClient.js';
+import {
+   bindResetValueOnChange,
+   hideConsolePanel,
+   loadOptionsAndShowPanel,
+   resetFormFields,
+} from '../../shared/controllerUtils.js';
 
 export function createRemoveVisibilityScheduleController({
    showButtonEl,
@@ -14,8 +20,7 @@ export function createRemoveVisibilityScheduleController({
 } = {}) {
 
    function resetForm() {
-      if (speciesEl) speciesEl.value = '';
-      if (exhibitEl) exhibitEl.value = '';
+      resetFormFields([speciesEl, exhibitEl]);
    }
 
    function show() {
@@ -24,24 +29,25 @@ export function createRemoveVisibilityScheduleController({
    }
 
    function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
    async function onShowClick() {
-      setStatus(statusEl, '');
-
-      try {
-         const exhibits = await loadExhibits();
-         populateExhibitDropdown(exhibitEl, exhibits);
-         resetForm();
-         setStatus(statusEl, '');
-         activatePanel?.(panelEl);
-      }
-      catch (err) {
-         setStatus(statusEl, 'Failed to load exhibits.', 'is-error');
-         activatePanel?.(panelEl);
-      }
+      await loadOptionsAndShowPanel({
+         statusEl,
+         setStatus,
+         loadOptions: loadExhibits,
+         populateOptions: populateExhibitDropdown,
+         targetEl: exhibitEl,
+         resetForm,
+         activatePanel,
+         panelEl,
+         errorMessage: 'Failed to load exhibits.',
+      });
    }
 
    async function onSubmitClick() {
@@ -78,16 +84,12 @@ export function createRemoveVisibilityScheduleController({
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
       }
-      catch (err) {
+      catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
    }
 
-   exhibitEl?.addEventListener('change', () => {
-      if (speciesEl) {
-         speciesEl.value = '';
-      }
-   });
+   bindResetValueOnChange(exhibitEl, speciesEl);
 
    showButtonEl?.addEventListener('click', onShowClick);
    cancelButtonEl?.addEventListener('click', hide);

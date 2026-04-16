@@ -1,5 +1,10 @@
 import { loadZoomobileStations, setStatus, populateZoomobileStationDropdown } from '../../utils.js';
 import { postJson } from '../../../api/apiClient.js';
+import {
+   hideConsolePanel,
+   loadOptionsAndShowPanel,
+   resetFormFields,
+} from '../../shared/controllerUtils.js';
 
 export function createZoomobileStationOpenController({
    showButtonEl,
@@ -13,7 +18,7 @@ export function createZoomobileStationOpenController({
 } = {}) {
 
    function resetForm() {
-      if (zoomobileStationEl) zoomobileStationEl.value = '';
+      resetFormFields([zoomobileStationEl]);
    }
 
    function show() {
@@ -22,24 +27,25 @@ export function createZoomobileStationOpenController({
    }
 
    function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
    async function onShowClick() {
-      setStatus(statusEl, '');
-
-      try {
-         const zoomobileStations = await loadZoomobileStations();
-         populateZoomobileStationDropdown(zoomobileStationEl, zoomobileStations);
-         resetForm();
-         setStatus(statusEl, '');
-         activatePanel?.(panelEl);
-      }
-      catch(err) {
-         setStatus(statusEl, 'Failed to load zoomobile stations.', 'is-error');
-         activatePanel?.(panelEl);
-      }
+      await loadOptionsAndShowPanel({
+         statusEl,
+         setStatus,
+         loadOptions: loadZoomobileStations,
+         populateOptions: populateZoomobileStationDropdown,
+         targetEl: zoomobileStationEl,
+         resetForm,
+         activatePanel,
+         panelEl,
+         errorMessage: 'Failed to load zoomobile stations.',
+      });
    }
 
    async function onSubmitClick() {

@@ -37,37 +37,117 @@ import { createCancelWildEncounterOccurrenceController } from './consoleOperatio
 import { createWildEncounterOccurrenceFilterController } from './consoleOperations/wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
 
 import { createAnimalSpeciesAutocompleteController } from './consoleOperations/animals/controllers/animalSpeciesAutocomplete.js';
+import { renderConsoleOperationsPanels } from './consoleOperations/registry/panels.js';
+import { getConsoleOperationsRefs } from './consoleOperations/registry/refs.js';
 
-import { createOffDisplayPanelHtml } from './consoleOperations/animals/panels/offDisplayPanel.js';
-import { createOnDisplayPanelHtml } from './consoleOperations/animals/panels/onDisplayPanel.js';
-import { createVisibilitySchedulePanelHtml } from './consoleOperations/animals/panels/visibilitySchedulePanel.js';
-import { createRemoveVisibilitySchedulePanelHtml } from './consoleOperations/animals/panels/removeVisibilitySchedulePanel.js';
-import { createViewingAlertPanelHtml } from './consoleOperations/animals/panels/viewingAlertPanel.js';
-import { createRemoveViewingAlertPanelHtml } from './consoleOperations/animals/panels/removeViewingAlertPanel.js';
+function activatePanel(panelEl) {
+   document
+      .querySelectorAll('.console-operations-panel')
+      .forEach(panel => panel.classList.remove('active'));
 
-import { createExhibitClosedPanelHtml } from './consoleOperations/exhibits/panels/exhibitClosedPanel.js';
-import { createExhibitOpenPanelHtml } from './consoleOperations/exhibits/panels/exhibitOpenPanel.js';
+   panelEl?.classList.add('active');
 
-import { createRestaurantClosedPanelHtml } from './consoleOperations/restaurants/panels/restaurantClosedPanel.js';
-import { createRestaurantOpenPanelHtml } from './consoleOperations/restaurants/panels/restaurantOpenPanel.js';
+   document
+      .querySelectorAll('.console-operations-menu-btn')
+      .forEach(button => {
+         button.classList.toggle(
+            'active',
+            button.dataset.panelTarget === panelEl?.id
+         );
+      });
+}
 
-import { createGiftShopClosedPanelHtml } from './consoleOperations/giftShops/panels/giftShopClosedPanel.js';
-import { createGiftShopOpenPanelHtml } from './consoleOperations/giftShops/panels/giftShopOpenPanel.js';
+function hidePanels() {
+   document
+      .querySelectorAll('.console-operations-panel')
+      .forEach(panel => panel.classList.remove('active'));
 
-import { createAttractionClosedPanelHtml } from './consoleOperations/attractions/panels/attractionClosedPanel.js';
-import { createAttractionOpenPanelHtml } from './consoleOperations/attractions/panels/attractionOpenPanel.js';
+   document
+      .querySelectorAll('.console-operations-menu-btn')
+      .forEach(button => button.classList.remove('active'));
+}
 
-import { createZoomobileStationClosedPanelHtml } from './consoleOperations/zoomobile/panels/zoomobileStationClosedPanel.js';
-import { createZoomobileStationOpenPanelHtml } from './consoleOperations/zoomobile/panels/zoomobileStationOpenPanel.js';
-import { createZoomobileRoutePanelHtml } from './consoleOperations/zoomobile/panels/zoomobileRoutePanel.js';
+function initAnimalSpeciesAutocompletes(animals) {
+   [
+      animals.offDisplay,
+      animals.onDisplay,
+      animals.visibilitySchedule,
+      animals.removeVisibilitySchedule,
+      animals.viewingAlert,
+      animals.removeViewingAlert,
+   ].forEach(({ speciesEl, speciesResultsEl, exhibitEl }) => {
+      createAnimalSpeciesAutocompleteController({
+         inputEl: speciesEl,
+         resultsEl: speciesResultsEl,
+         exhibitEl,
+      });
+   });
+}
 
-import { createGuardiansTalkSchedulePanelHtml } from './consoleOperations/guardiansTalks/panels/guardiansTalkSchedulePanel.js';
-import { createEndGuardiansTalkSchedulePanelHtml } from './consoleOperations/guardiansTalks/panels/endGuardiansTalkSchedulePanel.js';
-import { createCancelGuardiansTalkOccurrencePanelHtml } from './consoleOperations/guardiansTalks/panels/cancelGuardiansTalkOccurrencePanel.js';
+function initConsoleDatePickers({
+   animals,
+   exhibits,
+   restaurants,
+   giftShops,
+   attractions,
+   zoomobile,
+   guardiansTalks,
+   wildEncounters,
+}) {
+   [
+      animals.offDisplay,
+      animals.viewingAlert,
+      exhibits.closed,
+      exhibits.open,
+      restaurants.closed,
+      restaurants.open,
+      giftShops.closed,
+      giftShops.open,
+      attractions.closed,
+      attractions.open,
+      zoomobile.stationClosed,
+      zoomobile.route,
+      guardiansTalks.schedule,
+      wildEncounters.schedule,
+   ].forEach(({ startDateEl, endDateEl }) => {
+      initOffDisplayDatePickers(startDateEl, endDateEl);
+   });
 
-import { createWildEncounterSchedulePanelHtml } from './consoleOperations/wildEncounters/panels/wildEncounterSchedulePanel.js';
-import { createEndWildEncounterSchedulePanelHtml } from './consoleOperations/wildEncounters/panels/endWildEncounterSchedulePanel.js';
-import { createCancelWildEncounterOccurrencePanelHtml } from './consoleOperations/wildEncounters/panels/cancelWildEncounterOccurrencePanel.js';
+   [
+      guardiansTalks.endSchedule.endDateEl,
+      wildEncounters.endSchedule.endDateEl,
+   ].forEach(dateEl => {
+      initOffDisplayDatePickers(dateEl, null);
+   });
+
+   [
+      {
+         startDateEl: animals.visibilitySchedule.startDateEl,
+         endDateEl: animals.visibilitySchedule.endDateEl,
+         startTimeEl: animals.visibilitySchedule.dailyStartTimeEl,
+         endTimeEl: animals.visibilitySchedule.dailyEndTimeEl,
+      },
+      {
+         startDateEl: guardiansTalks.schedule.startDateEl,
+         endDateEl: guardiansTalks.schedule.endDateEl,
+         startTimeEl: guardiansTalks.schedule.timeEl,
+         endTimeEl: null,
+      },
+      {
+         startDateEl: wildEncounters.schedule.startDateEl,
+         endDateEl: wildEncounters.schedule.endDateEl,
+         startTimeEl: wildEncounters.schedule.timeEl,
+         endTimeEl: null,
+      }
+   ].forEach(({ startDateEl, endDateEl, startTimeEl, endTimeEl }) => {
+      initVisibilityScheduleDateTimePickers(
+         startDateEl,
+         endDateEl,
+         startTimeEl,
+         endTimeEl
+      );
+   });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -78,741 +158,197 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
    }
 
-   workspaceEl.innerHTML = `
-      ${createOffDisplayPanelHtml()}
-      ${createOnDisplayPanelHtml()}
-      ${createVisibilitySchedulePanelHtml()}
-      ${createRemoveVisibilitySchedulePanelHtml()}
-      ${createViewingAlertPanelHtml()}
-      ${createRemoveViewingAlertPanelHtml()}
-      ${createExhibitClosedPanelHtml()}
-      ${createExhibitOpenPanelHtml()}
-      ${createRestaurantClosedPanelHtml()}
-      ${createRestaurantOpenPanelHtml()}
-      ${createGiftShopClosedPanelHtml()}
-      ${createGiftShopOpenPanelHtml()}
-      ${createAttractionClosedPanelHtml()}
-      ${createAttractionOpenPanelHtml()}
-      ${createZoomobileStationClosedPanelHtml()}
-      ${createZoomobileStationOpenPanelHtml()}
-      ${createZoomobileRoutePanelHtml()}
-      ${createGuardiansTalkSchedulePanelHtml()}
-      ${createEndGuardiansTalkSchedulePanelHtml()}
-      ${createCancelGuardiansTalkOccurrencePanelHtml()}
-      ${createWildEncounterSchedulePanelHtml()}
-      ${createEndWildEncounterSchedulePanelHtml()}
-      ${createCancelWildEncounterOccurrencePanelHtml()}
-   `;
+   renderConsoleOperationsPanels(workspaceEl);
 
-   const offDisplayPanel = document.getElementById('offDisplayPanel');
-   const onDisplayPanel = document.getElementById('onDisplayPanel');
-   const visibilitySchedulePanel = document.getElementById('visibilitySchedulePanel');
-   const removeVisibilitySchedulePanel = document.getElementById('removeVisibilitySchedulePanel');
-   const viewingAlertPanel = document.getElementById('viewingAlertPanel');
-   const removeViewingAlertPanel = document.getElementById('removeViewingAlertPanel');
-   const exhibitClosedPanel = document.getElementById('exhibitClosedPanel');
-   const exhibitOpenPanel = document.getElementById('exhibitOpenPanel');
-   const restaurantClosedPanel = document.getElementById('restaurantClosedPanel');
-   const restaurantOpenPanel = document.getElementById('restaurantOpenPanel');
-   const giftShopClosedPanel = document.getElementById('giftShopClosedPanel');
-   const giftShopOpenPanel = document.getElementById('giftShopOpenPanel');
-   const attractionClosedPanel = document.getElementById('attractionClosedPanel');
-   const attractionOpenPanel = document.getElementById('attractionOpenPanel');
-   const zoomobileStationClosedPanel = document.getElementById('zoomobileStationClosedPanel');
-   const zoomobileStationOpenPanel = document.getElementById('zoomobileStationOpenPanel');
-   const zoomobileRoutePanel = document.getElementById('zoomobileRoutePanel');
-   const guardiansTalkSchedulePanel = document.getElementById('guardiansTalkSchedulePanel');
-   const endGuardiansTalkSchedulePanel = document.getElementById('endGuardiansTalkSchedulePanel');
-   const cancelGuardiansTalkOccurrencePanel = document.getElementById('cancelGuardiansTalkOccurrencePanel');
-   const wildEncounterSchedulePanel = document.getElementById('wildEncounterSchedulePanel');
-   const endWildEncounterSchedulePanel = document.getElementById('endWildEncounterSchedulePanel');
-   const cancelWildEncounterOccurrencePanel = document.getElementById('cancelWildEncounterOccurrencePanel');
-
-   const offDisplaySpeciesEl = document.getElementById('offDisplaySpecies');
-   const onDisplaySpeciesEl = document.getElementById('onDisplaySpecies');
-   const visibilityScheduleSpeciesEl = document.getElementById('visibilityScheduleSpecies');
-   const removeVisibilityScheduleSpeciesEl = document.getElementById('removeVisibilityScheduleSpecies');
-   const viewingAlertSpeciesEl = document.getElementById('viewingAlertSpecies');
-   const removeViewingAlertSpeciesEl = document.getElementById('removeViewingAlertSpecies');
-
-   const offDisplaySpeciesResults = document.getElementById('offDisplaySpeciesResults');
-   const onDisplaySpeciesResults = document.getElementById('onDisplaySpeciesResults');
-   const visibilityScheduleSpeciesResults = document.getElementById('visibilityScheduleSpeciesResults');
-   const removeVisibilityScheduleSpeciesResults = document.getElementById('removeVisibilityScheduleSpeciesResults');
-   const viewingAlertSpeciesResults = document.getElementById('viewingAlertSpeciesResults');
-   const removeViewingAlertSpeciesResults = document.getElementById('removeViewingAlertSpeciesResults');
-
-   const offDisplayExhibitEl = document.getElementById('offDisplayExhibit');
-   const onDisplayExhibitEl = document.getElementById('onDisplayExhibit');
-   const visibilityScheduleExhibitEl = document.getElementById('visibilityScheduleExhibit');
-   const removeVisibilityScheduleExhibitEl = document.getElementById('removeVisibilityScheduleExhibit');
-   const viewingAlertExhibitEl = document.getElementById('viewingAlertExhibit');
-   const removeViewingAlertExhibitEl = document.getElementById('removeViewingAlertExhibit');
-   const exhibitClosedExhibitEl = document.getElementById('exhibitClosedExhibit');
-   const exhibitOpenExhibitEl = document.getElementById('exhibitOpenExhibit');
-   const restaurantClosedRestaurantEl = document.getElementById('restaurantClosedRestaurant');
-   const restaurantOpenRestaurantEl = document.getElementById('restaurantOpenRestaurant');
-   const giftShopClosedGiftShopEl = document.getElementById('giftShopClosedGiftShop');
-   const giftShopOpenGiftShopEl = document.getElementById('giftShopOpenGiftShop');
-   const attractionClosedAttractionEl = document.getElementById('attractionClosedAttraction');
-   const attractionOpenAttractionEl = document.getElementById('attractionOpenAttraction');
-   const zoomobileStationClosedZoomobileStationEl = document.getElementById('zoomobileStationClosedZoomobileStation');
-   const zoomobileStationOpenZoomobileStationEl = document.getElementById('zoomobileStationOpenZoomobileStation');
-   const zoomobileRouteStartDateEl = document.getElementById('zoomobileRouteStartDate');
-   const zoomobileRouteEndDateEl = document.getElementById('zoomobileRouteEndDate');
-   const zoomobileRouteSummerEl = document.getElementById('zoomobileRouteSummer');
-   const zoomobileRouteWinterEl = document.getElementById('zoomobileRouteWinter');
-   const guardiansTalkScheduleLocationEl = document.getElementById('guardiansTalkScheduleLocation');
-   const guardiansTalkScheduleTalkNameEl = document.getElementById('guardiansTalkScheduleTalkName');
-   const endGuardiansTalkScheduleLocationEl = document.getElementById('endGuardiansTalkScheduleLocation');
-   const endGuardiansTalkScheduleTalkNameEl = document.getElementById('endGuardiansTalkScheduleTalkName');
-   const cancelGuardiansTalkOccurrenceLocationEl = document.getElementById('cancelGuardiansTalkOccurrenceLocation');
-   const cancelGuardiansTalkOccurrenceTalkNameEl = document.getElementById('cancelGuardiansTalkOccurrenceTalkName');
-   const wildEncounterScheduleNameEl = document.getElementById('wildEncounterScheduleName');
-   const endWildEncounterScheduleNameEl = document.getElementById('endWildEncounterScheduleName');
-   const cancelWildEncounterOccurrenceNameEl = document.getElementById('cancelWildEncounterOccurrenceName');
-
-   const offDisplayStartDateEl = document.getElementById('offDisplayStartDate');
-   const offDisplayEndDateEl = document.getElementById('offDisplayEndDate');
-
-   const visibilityScheduleStartDateEl = document.getElementById('visibilityScheduleStartDate');
-   const visibilityScheduleEndDateEl = document.getElementById('visibilityScheduleEndDate');
-   const visibilityScheduleDailyStartTimeEl = document.getElementById('visibilityScheduleDailyStartTime');
-   const visibilityScheduleDailyEndTimeEl = document.getElementById('visibilityScheduleDailyEndTime');
-
-   const viewingAlertStartDateEl = document.getElementById('viewingAlertStartDate');
-   const viewingAlertEndDateEl = document.getElementById('viewingAlertEndDate');
-
-   const exhibitClosedStartDateEl = document.getElementById('exhibitClosedStartDate');
-   const exhibitClosedEndDateEl = document.getElementById('exhibitClosedEndDate');
-   const exhibitOpenStartDateEl = document.getElementById('exhibitOpenStartDate');
-   const exhibitOpenEndDateEl = document.getElementById('exhibitOpenEndDate');
-
-   const restaurantClosedStartDateEl = document.getElementById('restaurantClosedStartDate');
-   const restaurantClosedEndDateEl = document.getElementById('restaurantClosedEndDate');
-   const restaurantOpenPresetEl = document.getElementById('restaurantOpenPreset');
-   const restaurantOpenStartDateEl = document.getElementById('restaurantOpenStartDate');
-   const restaurantOpenEndDateEl = document.getElementById('restaurantOpenEndDate');
-   const restaurantOpenMondayEl = document.getElementById('restaurantOpenMonday');
-   const restaurantOpenTuesdayEl = document.getElementById('restaurantOpenTuesday');
-   const restaurantOpenWednesdayEl = document.getElementById('restaurantOpenWednesday');
-   const restaurantOpenThursdayEl = document.getElementById('restaurantOpenThursday');
-   const restaurantOpenFridayEl = document.getElementById('restaurantOpenFriday');
-   const restaurantOpenSaturdayEl = document.getElementById('restaurantOpenSaturday');
-   const restaurantOpenSundayEl = document.getElementById('restaurantOpenSunday');
-   const restaurantOpenHolidaysOnlyEl = document.getElementById('restaurantOpenHolidaysOnly');
-
-   const giftShopClosedStartDateEl = document.getElementById('giftShopClosedStartDate');
-   const giftShopClosedEndDateEl = document.getElementById('giftShopClosedEndDate');
-   const giftShopOpenPresetEl = document.getElementById('giftShopOpenPreset');
-   const giftShopOpenStartDateEl = document.getElementById('giftShopOpenStartDate');
-   const giftShopOpenEndDateEl = document.getElementById('giftShopOpenEndDate');
-   const giftShopOpenMondayEl = document.getElementById('giftShopOpenMonday');
-   const giftShopOpenTuesdayEl = document.getElementById('giftShopOpenTuesday');
-   const giftShopOpenWednesdayEl = document.getElementById('giftShopOpenWednesday');
-   const giftShopOpenThursdayEl = document.getElementById('giftShopOpenThursday');
-   const giftShopOpenFridayEl = document.getElementById('giftShopOpenFriday');
-   const giftShopOpenSaturdayEl = document.getElementById('giftShopOpenSaturday');
-   const giftShopOpenSundayEl = document.getElementById('giftShopOpenSunday');
-   const giftShopOpenHolidaysOnlyEl = document.getElementById('giftShopOpenHolidaysOnly');
-
-   const attractionClosedStartDateEl = document.getElementById('attractionClosedStartDate');
-   const attractionClosedEndDateEl = document.getElementById('attractionClosedEndDate');
-   const attractionOpenPresetEl = document.getElementById('attractionOpenPreset');
-   const attractionOpenStartDateEl = document.getElementById('attractionOpenStartDate');
-   const attractionOpenEndDateEl = document.getElementById('attractionOpenEndDate');
-   const attractionOpenMondayEl = document.getElementById('attractionOpenMonday');
-   const attractionOpenTuesdayEl = document.getElementById('attractionOpenTuesday');
-   const attractionOpenWednesdayEl = document.getElementById('attractionOpenWednesday');
-   const attractionOpenThursdayEl = document.getElementById('attractionOpenThursday');
-   const attractionOpenFridayEl = document.getElementById('attractionOpenFriday');
-   const attractionOpenSaturdayEl = document.getElementById('attractionOpenSaturday');
-   const attractionOpenSundayEl = document.getElementById('attractionOpenSunday');
-   const attractionOpenHolidaysOnlyEl = document.getElementById('attractionOpenHolidaysOnly');
-
-   const zoomobileStationClosedStartDateEl = document.getElementById('zoomobileStationClosedStartDate');
-   const zoomobileStationClosedEndDateEl = document.getElementById('zoomobileStationClosedEndDate');
-
-   const guardiansTalkScheduleStartDateEl = document.getElementById('guardiansTalkScheduleStartDate');
-   const guardiansTalkScheduleEndDateEl = document.getElementById('guardiansTalkScheduleEndDate');
-   const guardiansTalkScheduleTimeEl = document.getElementById('guardiansTalkScheduleTime');
-   const guardiansTalkScheduleMondayEl = document.getElementById('guardiansTalkScheduleMonday');
-   const guardiansTalkScheduleTuesdayEl = document.getElementById('guardiansTalkScheduleTuesday');
-   const guardiansTalkScheduleWednesdayEl = document.getElementById('guardiansTalkScheduleWednesday');
-   const guardiansTalkScheduleThursdayEl = document.getElementById('guardiansTalkScheduleThursday');
-   const guardiansTalkScheduleFridayEl = document.getElementById('guardiansTalkScheduleFriday');
-   const guardiansTalkScheduleSaturdayEl = document.getElementById('guardiansTalkScheduleSaturday');
-   const guardiansTalkScheduleSundayEl = document.getElementById('guardiansTalkScheduleSunday');
-
-   const endGuardiansTalkScheduleEndDateEl = document.getElementById('endGuardiansTalkScheduleEndDate');
-
-   const cancelGuardiansTalkOccurrenceDateEl = document.getElementById('cancelGuardiansTalkOccurrenceDate');
-   const cancelGuardiansTalkOccurrenceTimeEl = document.getElementById('cancelGuardiansTalkOccurrenceTime');
-
-   const wildEncounterScheduleStartDateEl = document.getElementById('wildEncounterScheduleStartDate');
-   const wildEncounterScheduleEndDateEl = document.getElementById('wildEncounterScheduleEndDate');
-   const wildEncounterScheduleTimeEl = document.getElementById('wildEncounterScheduleTime');
-   const wildEncounterScheduleMondayEl = document.getElementById('wildEncounterScheduleMonday');
-   const wildEncounterScheduleTuesdayEl = document.getElementById('wildEncounterScheduleTuesday');
-   const wildEncounterScheduleWednesdayEl = document.getElementById('wildEncounterScheduleWednesday');
-   const wildEncounterScheduleThursdayEl = document.getElementById('wildEncounterScheduleThursday');
-   const wildEncounterScheduleFridayEl = document.getElementById('wildEncounterScheduleFriday');
-   const wildEncounterScheduleSaturdayEl = document.getElementById('wildEncounterScheduleSaturday');
-   const wildEncounterScheduleSundayEl = document.getElementById('wildEncounterScheduleSunday');
-
-   const endWildEncounterScheduleDateEl = document.getElementById('endWildEncounterScheduleDate');
-
-   const cancelWildEncounterOccurrenceDateEl = document.getElementById('cancelWildEncounterOccurrenceDate');
-   const cancelWildEncounterOccurrenceTimeEl = document.getElementById('cancelWildEncounterOccurrenceTime');
+   const {
+      animals,
+      exhibits,
+      restaurants,
+      giftShops,
+      attractions,
+      zoomobile,
+      guardiansTalks,
+      wildEncounters,
+   } = getConsoleOperationsRefs(document);
 
    const guardiansTalkScheduleLocationFilterController =
       createGuardiansTalkLocationFilterController({
-         locationEl: guardiansTalkScheduleLocationEl,
-         talkNameEl: guardiansTalkScheduleTalkNameEl,
+         locationEl: guardiansTalks.schedule.locationEl,
+         talkNameEl: guardiansTalks.schedule.talkNameEl,
       });
 
    const endGuardiansTalkScheduleLocationFilterController =
       createGuardiansTalkLocationFilterController({
-         locationEl: endGuardiansTalkScheduleLocationEl,
-         talkNameEl: endGuardiansTalkScheduleTalkNameEl,
+         locationEl: guardiansTalks.endSchedule.locationEl,
+         talkNameEl: guardiansTalks.endSchedule.talkNameEl,
       });
 
    const cancelGuardiansTalkOccurrenceLocationFilterController =
       createGuardiansTalkLocationFilterController({
-         locationEl: cancelGuardiansTalkOccurrenceLocationEl,
-         talkNameEl: cancelGuardiansTalkOccurrenceTalkNameEl,
+         locationEl: guardiansTalks.cancelOccurrence.locationEl,
+         talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
       });
 
    const wildEncounterOccurrenceFilterController =
       createWildEncounterOccurrenceFilterController({
-         wildEncounterEl: cancelWildEncounterOccurrenceNameEl,
-         dateEl: cancelWildEncounterOccurrenceDateEl,
-         timeEl: cancelWildEncounterOccurrenceTimeEl,
+         wildEncounterEl: wildEncounters.cancelOccurrence.wildEncounterEl,
+         dateEl: wildEncounters.cancelOccurrence.dateEl,
+         timeEl: wildEncounters.cancelOccurrence.timeEl,
       });
 
-   function activatePanel(panelEl) {
-      document
-         .querySelectorAll('.console-operations-panel')
-         .forEach(panel => panel.classList.remove('active'));
-
-      panelEl?.classList.add('active');
-
-      document
-         .querySelectorAll('.console-operations-menu-btn')
-         .forEach(button => {
-            button.classList.toggle(
-               'active',
-               button.dataset.panelTarget === panelEl?.id
-            );
-         });
-   }
-
-   function hidePanels() {
-      document
-         .querySelectorAll('.console-operations-panel')
-         .forEach(panel => panel.classList.remove('active'));
-
-      document
-         .querySelectorAll('.console-operations-menu-btn')
-         .forEach(button => button.classList.remove('active'));
-   }
-
-   createAnimalSpeciesAutocompleteController({
-      inputEl: offDisplaySpeciesEl,
-      resultsEl: offDisplaySpeciesResults,
-      exhibitEl: offDisplayExhibitEl,
-   });
-
-   createAnimalSpeciesAutocompleteController({
-      inputEl: onDisplaySpeciesEl,
-      resultsEl: onDisplaySpeciesResults,
-      exhibitEl: onDisplayExhibitEl,
-   });
-
-   createAnimalSpeciesAutocompleteController({
-      inputEl: visibilityScheduleSpeciesEl,
-      resultsEl: visibilityScheduleSpeciesResults,
-      exhibitEl: visibilityScheduleExhibitEl,
-   });
-
-   createAnimalSpeciesAutocompleteController({
-      inputEl: removeVisibilityScheduleSpeciesEl,
-      resultsEl: removeVisibilityScheduleSpeciesResults,
-      exhibitEl: removeVisibilityScheduleExhibitEl,
-   });
-
-   createAnimalSpeciesAutocompleteController({
-      inputEl: viewingAlertSpeciesEl,
-      resultsEl: viewingAlertSpeciesResults,
-      exhibitEl: viewingAlertExhibitEl,
-   });
-
-   createAnimalSpeciesAutocompleteController({
-      inputEl: removeViewingAlertSpeciesEl,
-      resultsEl: removeViewingAlertSpeciesResults,
-      exhibitEl: removeViewingAlertExhibitEl,
-   });
+   initAnimalSpeciesAutocompletes(animals);
 
    createAnimalOffDisplayController({
-      showButtonEl: document.getElementById('showOffDisplayForm'),
-      panelEl: offDisplayPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitOffDisplay'),
-      statusEl: document.getElementById('offDisplayStatus'),
-      speciesEl: offDisplaySpeciesEl,
-      exhibitEl: offDisplayExhibitEl,
-      startDateEl: offDisplayStartDateEl,
-      endDateEl: offDisplayEndDateEl,
-      messageEl: document.getElementById('offDisplayMessage'),
+      ...animals.offDisplay,
       activatePanel,
       hidePanels,
    });
 
    createAnimalOnDisplayController({
-      showButtonEl: document.getElementById('showOnDisplayForm'),
-      panelEl: onDisplayPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitOnDisplay'),
-      statusEl: document.getElementById('onDisplayStatus'),
-      speciesEl: onDisplaySpeciesEl,
-      exhibitEl: onDisplayExhibitEl,
+      ...animals.onDisplay,
       activatePanel,
       hidePanels,
    });
 
    createAnimalVisibilityScheduleController({
-      showButtonEl: document.getElementById('showVisibilityScheduleForm'),
-      panelEl: visibilitySchedulePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitVisibilitySchedule'),
-      statusEl: document.getElementById('visibilityScheduleStatus'),
-      speciesEl: visibilityScheduleSpeciesEl,
-      exhibitEl: visibilityScheduleExhibitEl,
-      startDateEl: visibilityScheduleStartDateEl,
-      endDateEl: visibilityScheduleEndDateEl,
-      dailyStartTimeEl: visibilityScheduleDailyStartTimeEl,
-      dailyEndTimeEl: visibilityScheduleDailyEndTimeEl,
-      messageEl: document.getElementById('visibilityScheduleMessage'),
+      ...animals.visibilitySchedule,
       activatePanel,
       hidePanels,
    });
 
    createRemoveVisibilityScheduleController({
-      showButtonEl: document.getElementById('showRemoveVisibilityScheduleForm'),
-      panelEl: removeVisibilitySchedulePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitRemoveVisibilitySchedule'),
-      statusEl: document.getElementById('removeVisibilityScheduleStatus'),
-      speciesEl: removeVisibilityScheduleSpeciesEl,
-      exhibitEl: removeVisibilityScheduleExhibitEl,
+      ...animals.removeVisibilitySchedule,
       activatePanel,
       hidePanels,
    });
 
    createAnimalViewingAlertController({
-      showButtonEl: document.getElementById('showViewingAlertForm'),
-      panelEl: viewingAlertPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitViewingAlert'),
-      statusEl: document.getElementById('viewingAlertStatus'),
-      speciesEl: viewingAlertSpeciesEl,
-      exhibitEl: viewingAlertExhibitEl,
-      startDateEl: viewingAlertStartDateEl,
-      endDateEl: viewingAlertEndDateEl,
-      messageEl: document.getElementById('viewingAlertMessage'),
+      ...animals.viewingAlert,
       activatePanel,
       hidePanels,
    });
 
    createRemoveViewingAlertController({
-      showButtonEl: document.getElementById('showRemoveViewingAlertForm'),
-      panelEl: removeViewingAlertPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitRemoveViewingAlert'),
-      statusEl: document.getElementById('removeViewingAlertStatus'),
-      speciesEl: removeViewingAlertSpeciesEl,
-      exhibitEl: removeViewingAlertExhibitEl,
+      ...animals.removeViewingAlert,
       activatePanel,
       hidePanels,
    });
 
    createExhibitClosedController({
-      showButtonEl: document.getElementById('showExhibitClosedForm'),
-      panelEl: exhibitClosedPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitExhibitClosed'),
-      statusEl: document.getElementById('exhibitClosedStatus'),
-      exhibitEl: exhibitClosedExhibitEl,
-      startDateEl: exhibitClosedStartDateEl,
-      endDateEl: exhibitClosedEndDateEl,
-      messageEl: document.getElementById('exhibitClosedMessage'),
+      ...exhibits.closed,
       activatePanel,
       hidePanels,
    });
 
    createExhibitOpenController({
-      showButtonEl: document.getElementById('showExhibitOpenForm'),
-      panelEl: exhibitOpenPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitExhibitOpen'),
-      statusEl: document.getElementById('exhibitOpenStatus'),
-      exhibitEl: exhibitOpenExhibitEl,
-      startDateEl: exhibitOpenStartDateEl,
-      endDateEl: exhibitOpenEndDateEl,
+      ...exhibits.open,
       activatePanel,
       hidePanels,
    });
 
    createRestaurantClosedController({
-      showButtonEl: document.getElementById('showRestaurantClosedForm'),
-      panelEl: restaurantClosedPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitRestaurantClosed'),
-      statusEl: document.getElementById('restaurantClosedStatus'),
-      restaurantEl: restaurantClosedRestaurantEl,
-      startDateEl: restaurantClosedStartDateEl,
-      endDateEl: restaurantClosedEndDateEl,
-      messageEl: document.getElementById('restaurantClosedMessage'),
+      ...restaurants.closed,
       activatePanel,
       hidePanels,
    });
 
    createRestaurantOpenController({
-      showButtonEl: document.getElementById('showRestaurantOpenForm'),
-      panelEl: restaurantOpenPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitRestaurantOpen'),
-      statusEl: document.getElementById('restaurantOpenStatus'),
-      restaurantEl: restaurantOpenRestaurantEl,
-      presetEl: restaurantOpenPresetEl,
-      startDateEl: restaurantOpenStartDateEl,
-      endDateEl: restaurantOpenEndDateEl,
-      mondayEl: restaurantOpenMondayEl,
-      tuesdayEl: restaurantOpenTuesdayEl,
-      wednesdayEl: restaurantOpenWednesdayEl,
-      thursdayEl: restaurantOpenThursdayEl,
-      fridayEl: restaurantOpenFridayEl,
-      saturdayEl: restaurantOpenSaturdayEl,
-      sundayEl: restaurantOpenSundayEl,
-      holidaysOnlyEl: restaurantOpenHolidaysOnlyEl,
-      messageEl: document.getElementById('restaurantOpenMessage'),
+      ...restaurants.open,
       activatePanel,
       hidePanels,
    });
 
    createGiftShopClosedController({
-      showButtonEl: document.getElementById('showGiftShopClosedForm'),
-      panelEl: giftShopClosedPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitGiftShopClosed'),
-      statusEl: document.getElementById('giftShopClosedStatus'),
-      giftShopEl: giftShopClosedGiftShopEl,
-      startDateEl: giftShopClosedStartDateEl,
-      endDateEl: giftShopClosedEndDateEl,
-      messageEl: document.getElementById('giftShopClosedMessage'),
+      ...giftShops.closed,
       activatePanel,
       hidePanels,
    });
 
    createGiftShopOpenController({
-      showButtonEl: document.getElementById('showGiftShopOpenForm'),
-      panelEl: giftShopOpenPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitGiftShopOpen'),
-      statusEl: document.getElementById('giftShopOpenStatus'),
-      giftShopEl: giftShopOpenGiftShopEl,
-      presetEl: giftShopOpenPresetEl,
-      startDateEl: giftShopOpenStartDateEl,
-      endDateEl: giftShopOpenEndDateEl,
-      mondayEl: giftShopOpenMondayEl,
-      tuesdayEl: giftShopOpenTuesdayEl,
-      wednesdayEl: giftShopOpenWednesdayEl,
-      thursdayEl: giftShopOpenThursdayEl,
-      fridayEl: giftShopOpenFridayEl,
-      saturdayEl: giftShopOpenSaturdayEl,
-      sundayEl: giftShopOpenSundayEl,
-      holidaysOnlyEl: giftShopOpenHolidaysOnlyEl,
-      messageEl: document.getElementById('giftShopOpenMessage'),
+      ...giftShops.open,
       activatePanel,
       hidePanels,
    });
 
    createAttractionClosedController({
-      showButtonEl: document.getElementById('showAttractionClosedForm'),
-      panelEl: attractionClosedPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitAttractionClosed'),
-      statusEl: document.getElementById('attractionClosedStatus'),
-      attractionEl: attractionClosedAttractionEl,
-      startDateEl: attractionClosedStartDateEl,
-      endDateEl: attractionClosedEndDateEl,
-      messageEl: document.getElementById('attractionClosedMessage'),
+      ...attractions.closed,
       activatePanel,
       hidePanels,
    });
 
    createAttractionOpenController({
-      showButtonEl: document.getElementById('showAttractionOpenForm'),
-      panelEl: attractionOpenPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitAttractionOpen'),
-      statusEl: document.getElementById('attractionOpenStatus'),
-      attractionEl: attractionOpenAttractionEl,
-      presetEl: attractionOpenPresetEl,
-      startDateEl: attractionOpenStartDateEl,
-      endDateEl: attractionOpenEndDateEl,
-      mondayEl: attractionOpenMondayEl,
-      tuesdayEl: attractionOpenTuesdayEl,
-      wednesdayEl: attractionOpenWednesdayEl,
-      thursdayEl: attractionOpenThursdayEl,
-      fridayEl: attractionOpenFridayEl,
-      saturdayEl: attractionOpenSaturdayEl,
-      sundayEl: attractionOpenSundayEl,
-      holidaysOnlyEl: attractionOpenHolidaysOnlyEl,
-      messageEl: document.getElementById('attractionOpenMessage'),
+      ...attractions.open,
       activatePanel,
       hidePanels,
    });
 
    createZoomobileStationClosedController({
-      showButtonEl: document.getElementById('showZoomobileStationClosedForm'),
-      panelEl: zoomobileStationClosedPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitZoomobileStationClosed'),
-      statusEl: document.getElementById('zoomobileStationClosedStatus'),
-      zoomobileStationEl: zoomobileStationClosedZoomobileStationEl,
-      startDateEl: zoomobileStationClosedStartDateEl,
-      endDateEl: zoomobileStationClosedEndDateEl,
-      messageEl: document.getElementById('zoomobileStationClosedMessage'),
+      ...zoomobile.stationClosed,
       activatePanel,
       hidePanels,
    });
 
    createZoomobileStationOpenController({
-      showButtonEl: document.getElementById('showZoomobileStationOpenForm'),
-      panelEl: zoomobileStationOpenPanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitZoomobileStationOpen'),
-      statusEl: document.getElementById('zoomobileStationOpenStatus'),
-      zoomobileStationEl: zoomobileStationOpenZoomobileStationEl,
+      ...zoomobile.stationOpen,
       activatePanel,
       hidePanels,
    });
 
    createZoomobileRouteController({
-      showButtonEl: document.getElementById('showZoomobileRouteForm'),
-      panelEl: zoomobileRoutePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitZoomobileRoute'),
-      statusEl: document.getElementById('zoomobileRouteStatus'),
-      startDateEl: zoomobileRouteStartDateEl,
-      endDateEl: zoomobileRouteEndDateEl,
-      summerRouteEl: zoomobileRouteSummerEl,
-      winterRouteEl: zoomobileRouteWinterEl,
+      ...zoomobile.route,
       activatePanel,
       hidePanels,
    });
 
    createGuardiansTalkScheduleController({
-      showButtonEl: document.getElementById('showGuardiansTalkScheduleForm'),
-      panelEl: guardiansTalkSchedulePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitGuardiansTalkSchedule'),
-      statusEl: document.getElementById('guardiansTalkScheduleStatus'),
-      talkNameEl: guardiansTalkScheduleTalkNameEl,
-      locationEl: guardiansTalkScheduleLocationEl,
-      startDateEl: guardiansTalkScheduleStartDateEl,
-      endDateEl: guardiansTalkScheduleEndDateEl,
-      timeEl: guardiansTalkScheduleTimeEl,
-      mondayEl: guardiansTalkScheduleMondayEl,
-      tuesdayEl: guardiansTalkScheduleTuesdayEl,
-      wednesdayEl: guardiansTalkScheduleWednesdayEl,
-      thursdayEl: guardiansTalkScheduleThursdayEl,
-      fridayEl: guardiansTalkScheduleFridayEl,
-      saturdayEl: guardiansTalkScheduleSaturdayEl,
-      sundayEl: guardiansTalkScheduleSundayEl,
-      messageEl: document.getElementById('guardiansTalkScheduleMessage'),
+      ...guardiansTalks.schedule,
       activatePanel,
       hidePanels,
       talkLocationFilterController: guardiansTalkScheduleLocationFilterController,
    });
 
    createEndGuardiansTalkScheduleController({
-      showButtonEl: document.getElementById('showEndGuardiansTalkScheduleForm'),
-      panelEl: endGuardiansTalkSchedulePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitEndGuardiansTalkSchedule'),
-      statusEl: document.getElementById('endGuardiansTalkScheduleStatus'),
-      talkNameEl: endGuardiansTalkScheduleTalkNameEl,
-      locationEl: endGuardiansTalkScheduleLocationEl,
-      endDateEl: endGuardiansTalkScheduleEndDateEl,
+      ...guardiansTalks.endSchedule,
       activatePanel,
       hidePanels,
       talkLocationFilterController: endGuardiansTalkScheduleLocationFilterController,
    });
 
    createCancelGuardiansTalkOccurrenceController({
-      showButtonEl: document.getElementById('showCancelGuardiansTalkOccurrenceForm'),
-      panelEl: cancelGuardiansTalkOccurrencePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitCancelGuardiansTalkOccurrence'),
-      statusEl: document.getElementById('cancelGuardiansTalkOccurrenceStatus'),
-      talkNameEl: cancelGuardiansTalkOccurrenceTalkNameEl,
-      locationEl: cancelGuardiansTalkOccurrenceLocationEl,
-      dateEl: cancelGuardiansTalkOccurrenceDateEl,
-      timeEl: cancelGuardiansTalkOccurrenceTimeEl,
+      ...guardiansTalks.cancelOccurrence,
       activatePanel,
       hidePanels,
       talkLocationFilterController: cancelGuardiansTalkOccurrenceLocationFilterController,
    });
 
    createWildEncounterScheduleController({
-      showButtonEl: document.getElementById('showWildEncounterScheduleForm'),
-      panelEl: wildEncounterSchedulePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitWildEncounterSchedule'),
-      statusEl: document.getElementById('wildEncounterScheduleStatus'),
-      wildEncounterEl: wildEncounterScheduleNameEl,
-      startDateEl: wildEncounterScheduleStartDateEl,
-      endDateEl: wildEncounterScheduleEndDateEl,
-      timeEl: wildEncounterScheduleTimeEl,
-      mondayEl: wildEncounterScheduleMondayEl,
-      tuesdayEl: wildEncounterScheduleTuesdayEl,
-      wednesdayEl: wildEncounterScheduleWednesdayEl,
-      thursdayEl: wildEncounterScheduleThursdayEl,
-      fridayEl: wildEncounterScheduleFridayEl,
-      saturdayEl: wildEncounterScheduleSaturdayEl,
-      sundayEl: wildEncounterScheduleSundayEl,
-      messageEl: document.getElementById('wildEncounterScheduleMessage'),
+      ...wildEncounters.schedule,
       activatePanel,
       hidePanels,
    });
 
    createEndWildEncounterScheduleController({
-      showButtonEl: document.getElementById('showEndWildEncounterScheduleForm'),
-      panelEl: endWildEncounterSchedulePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitEndWildEncounterSchedule'),
-      statusEl: document.getElementById('endWildEncounterScheduleStatus'),
-      wildEncounterEl: endWildEncounterScheduleNameEl,
-      endDateEl: endWildEncounterScheduleDateEl,
+      ...wildEncounters.endSchedule,
       activatePanel,
       hidePanels,
    });
 
    createCancelWildEncounterOccurrenceController({
-      showButtonEl: document.getElementById('showCancelWildEncounterOccurrenceForm'),
-      panelEl: cancelWildEncounterOccurrencePanel,
-      cancelButtonEl: null,
-      submitButtonEl: document.getElementById('submitCancelWildEncounterOccurrence'),
-      statusEl: document.getElementById('cancelWildEncounterOccurrenceStatus'),
-      wildEncounterEl: cancelWildEncounterOccurrenceNameEl,
-      dateEl: cancelWildEncounterOccurrenceDateEl,
-      timeEl: cancelWildEncounterOccurrenceTimeEl,
+      ...wildEncounters.cancelOccurrence,
       activatePanel,
       hidePanels,
       occurrenceFilterController: wildEncounterOccurrenceFilterController,
    });
 
-   initOffDisplayDatePickers(
-      offDisplayStartDateEl,
-      offDisplayEndDateEl
-   );
-
-   initVisibilityScheduleDateTimePickers(
-      visibilityScheduleStartDateEl,
-      visibilityScheduleEndDateEl,
-      visibilityScheduleDailyStartTimeEl,
-      visibilityScheduleDailyEndTimeEl
-   );
-
-   initOffDisplayDatePickers(
-      viewingAlertStartDateEl,
-      viewingAlertEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      exhibitClosedStartDateEl,
-      exhibitClosedEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      exhibitOpenStartDateEl,
-      exhibitOpenEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      restaurantClosedStartDateEl,
-      restaurantClosedEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      restaurantOpenStartDateEl,
-      restaurantOpenEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      giftShopClosedStartDateEl,
-      giftShopClosedEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      giftShopOpenStartDateEl,
-      giftShopOpenEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      attractionClosedStartDateEl,
-      attractionClosedEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      attractionOpenStartDateEl,
-      attractionOpenEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      zoomobileStationClosedStartDateEl,
-      zoomobileStationClosedEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      zoomobileRouteStartDateEl,
-      zoomobileRouteEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      guardiansTalkScheduleStartDateEl,
-      guardiansTalkScheduleEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      endGuardiansTalkScheduleEndDateEl,
-      null
-   );
-
-   initVisibilityScheduleDateTimePickers(
-      guardiansTalkScheduleStartDateEl,
-      guardiansTalkScheduleEndDateEl,
-      guardiansTalkScheduleTimeEl,
-      null
-   );
-
-   initOffDisplayDatePickers(
-      wildEncounterScheduleStartDateEl,
-      wildEncounterScheduleEndDateEl
-   );
-
-   initOffDisplayDatePickers(
-      endWildEncounterScheduleDateEl,
-      null
-   );
-
-   initVisibilityScheduleDateTimePickers(
-      wildEncounterScheduleStartDateEl,
-      wildEncounterScheduleEndDateEl,
-      wildEncounterScheduleTimeEl,
-      null
-   );
+   initConsoleDatePickers({
+      animals,
+      exhibits,
+      restaurants,
+      giftShops,
+      attractions,
+      zoomobile,
+      guardiansTalks,
+      wildEncounters,
+   });
 
 });
