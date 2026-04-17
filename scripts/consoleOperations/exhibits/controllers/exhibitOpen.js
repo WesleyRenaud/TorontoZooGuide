@@ -1,11 +1,13 @@
-import { loadExhibits, setStatus, populateExhibitDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadExhibits } from '../../options/loaders.js';
+import { populateExhibitDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setExhibitOpen } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
    validateOptionalDateRange,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createExhibitOpenController({
    showButtonEl,
@@ -71,7 +73,7 @@ export function createExhibitOpenController({
       }
 
       try {
-         const result = await postJson('/set-exhibit-open', {
+         const result = await setExhibitOpen({
             exhibit,
             startDate: startDate || null,
             endDate: endDate || null

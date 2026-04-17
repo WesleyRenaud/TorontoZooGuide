@@ -5,7 +5,7 @@ import {
    createSelectFieldHtml,
    createStatusHtml,
    createTextareaFieldHtml,
-} from '../../shared/panelFragments.js';
+} from '../../templates/fragments.js';
 
 export function createAttractionClosedPanelHtml() {
    return createPanelShellHtml({

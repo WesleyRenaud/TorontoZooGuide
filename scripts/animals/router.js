@@ -1,5 +1,5 @@
 import { getRegions } from './regions.js';
-import { createAnimalsApi } from './api.js';
+import { createAnimalsApi } from '../api/animalsApi.js';
 import { createAnimalsListView } from './listView.js';
 import { createAnimalDetailView } from './animalDetailView.js';
 

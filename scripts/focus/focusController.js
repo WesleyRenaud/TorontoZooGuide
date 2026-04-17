@@ -1,7 +1,8 @@
 import { TYPE_REGISTRY } from '../tooltips/tooltipRenderers.js';
 import { centerMarkerWithContain } from './center.js';
-import { coordKey } from '../utils/coords.js';
+import { coordKey } from '../map/coordKey.js';
 
+// TO-DO: cleanup/revisit file
 function itemLikelihood(item) {
    const v = Number(item?.likelihood);
    return Number.isFinite(v) ? v : -1;

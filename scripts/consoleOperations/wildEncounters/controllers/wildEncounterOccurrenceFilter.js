@@ -1,4 +1,4 @@
-import { postJson } from '../../../api/apiClient.js';
+import { getWildEncounterOccurrences } from '../../../api/consoleOperationsApi.js';
 
 export function createWildEncounterOccurrenceFilterController({
    wildEncounterEl,
@@ -64,7 +64,7 @@ export function createWildEncounterOccurrenceFilterController({
       }
 
       try {
-         const result = await postJson('/get-wild-encounter-occurrences', {
+         const result = await getWildEncounterOccurrences({
             wildEncounter
          });
 

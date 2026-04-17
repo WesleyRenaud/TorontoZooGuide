@@ -1,13 +1,13 @@
-import { normalizeParameter } from '../../utils/normalize.js';
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 
 export const guardiansTalkRenderer = {
    key: 'guardiansTalk',
 
    getGenericDescription() {
-      return   `Join our knowledgeable Guardians as they share fascinating facts about our animal residents. Discover how they are cared
-               for, learn about conservation efforts, and explore the important role enrichment plays in their well-being. You may also
-               see the animals enjoying their meals, learn about their diets, and observe their natural behaviours in action. Follow the
-               schedule below to learn more about your favourite Toronto Zoo animals!`;
+      return   `Join our knowledgeable Guardians as they share fascinating facts about our animal residents. Discover how they
+               are cared for, learn about conservation efforts, and explore the important role enrichment plays in their
+               well-being. You may also see the animals enjoying their meals, learn about their diets, and observe their natural
+               behaviours in action. Follow the schedule below to learn more about your favourite Toronto Zoo animals!`;
    },
 
    createCard(t, index) {
@@ -17,7 +17,7 @@ export const guardiansTalkRenderer = {
       card.style.display = index === 0 ? 'flex' : 'none';
 
       const name = t.name || 'Meet The Guardians Talk';
-      const normalizedName = normalizeParameter(name);
+      const normalizedName = normalizeAssetKey(name);
 
       card.innerHTML = `
          <div class="tooltip-image-frame">

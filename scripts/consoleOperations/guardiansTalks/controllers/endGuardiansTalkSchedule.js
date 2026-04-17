@@ -1,5 +1,6 @@
-import { setStatus, populateGuardiansTalkDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { endGuardiansTalkSchedule } from '../../../api/consoleOperationsApi.js';
 
 export function createEndGuardiansTalkScheduleController({
    showButtonEl,
@@ -85,7 +86,7 @@ export function createEndGuardiansTalkScheduleController({
 
       try {
 
-         const result = await postJson('/end-guardians-talk-schedule', {
+         const result = await endGuardiansTalkSchedule({
             talk,
             location,
             endDate: endDate || null

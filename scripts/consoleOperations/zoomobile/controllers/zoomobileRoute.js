@@ -1,10 +1,10 @@
-import { setStatus } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { setStatus } from '../../shell/status.js';
+import { setCurrentZoomobileRoute } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
    resetFormFields,
    validateOptionalDateRange,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createZoomobileRouteController({
    showButtonEl,
@@ -69,7 +69,7 @@ export function createZoomobileRouteController({
 
       try {
 
-         const result = await postJson('/set-current-zoomobile-route', {
+         const result = await setCurrentZoomobileRoute({
             route,
             startDate: startDate || null,
             endDate: endDate || null

@@ -1,5 +1,8 @@
-import { populateGuardiansTalkDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import {
+   getGuardiansTalkLocations,
+   getGuardiansTalkNamesAtLocation,
+} from '../../../api/consoleOperationsApi.js';
 
 export function createGuardiansTalkLocationFilterController({
    locationEl,
@@ -63,7 +66,7 @@ export function createGuardiansTalkLocationFilterController({
       }
 
       try {
-         const result = await postJson('/get-guardians-talk-locations', {});
+         const result = await getGuardiansTalkLocations();
          const guardiansTalkLocations = result?.guardians_talk_locations ?? [];
          populateLocationDropdown(guardiansTalkLocations);
       }
@@ -81,7 +84,7 @@ export function createGuardiansTalkLocationFilterController({
       }
 
       try {
-         const result = await postJson('/get-guardians-talk-names-at-location', {
+         const result = await getGuardiansTalkNamesAtLocation({
             location
          });
 

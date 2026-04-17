@@ -1,134 +1,65 @@
-import { CONFIG } from '../shared/config.js';
-import { createPanzoom } from '../map/panzoom.js';
-import { createMapStore } from '../map/store.js';
-import { createDataSources } from '../map/sources.js';
-import { createMapUpdater } from '../map/updater.js';
-import { createMarkerLayer } from '../markers/markers.js';
-import { createHoverTooltip } from '../markers/hoverTooltip.js';
-import { createTooltipController } from '../tooltips/tooltipController.js';
-import { createFocusController } from '../focus/focusController.js';
-import { createOffDisplayBanner } from '../ui/offDisplayBanner.js';
-import { createRestaurantClosedBanner } from '../ui/restaurantClosedBanner.js';
-import { createGiftShopClosedBanner } from '../ui/giftShopClosedBanner.js';
-import { createAttractionClosedBanner } from '../ui/attractionClosedBanner.js';
-import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
-import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
-import { getItinerary, isItineraryEmpty } from '../pages/itineraryWizard/itineraryApi.js';
+import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
+import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
+import { initItineraryMap } from '../itinerary/itineraryMapController.js';
 
-function todayISO() {
-   const d = new Date();
-   const y = d.getFullYear();
-   const m = String(d.getMonth() + 1).padStart(2, '0');
-   const day = String(d.getDate()).padStart(2, '0');
-   return `${y}-${m}-${day}`;
-}
-
-let _didInit = false;
+import { blockMapWheelWhileWizardOpen } from '../itinerary/wizard/wheelBlocker.js';
+import { openItineraryWizard } from '../itinerary/wizard/wizardController.js';
+import { getItinerary, isItineraryEmpty } from '../itinerary/itineraryService.js';
 
 export function initItineraryPage() {
-   if (_didInit) return;
-   _didInit = true;
+   const mountEl = document.getElementById('itineraryFlow');
+   if (!mountEl) return;
 
-   const mapInner = document.getElementById('mapInner');
-   const tooltipEl = document.getElementById('tooltip');
-   const hoverTooltipEl = document.getElementById('hoverTooltip');
-   const viewportEl = mapInner?.parentElement;
-   const urlParams = new URLSearchParams(window.location.search);
-   const enableCoordinateEditing = urlParams.get('editCoords') === '1';
+   window.addEventListener('tzg:editItinerarySection', (e) => {
+      const step = e?.detail?.step || 'date';
 
-   if (!mapInner || !tooltipEl || !viewportEl) return;
-
-   const panzoom = createPanzoom(mapInner, { contain: CONFIG.DEFAULT_CONTAIN });
-
-   const store = createMapStore();
-   const sources = createDataSources(store);
-
-   const hover = hoverTooltipEl ? createHoverTooltip(hoverTooltipEl) : null;
-
-   const offDisplay = createOffDisplayBanner();
-   const restaurantClosed = createRestaurantClosedBanner();
-   const giftShopClosed = createGiftShopClosedBanner();
-   const attractionClosed = createAttractionClosedBanner();
-   const speciesOverlay = initSpeciesOverlay();
-
-   const tooltip = createTooltipController({
-      tooltipEl,
-      onAnimalCardClick: item => {
-         if (!item || String(item.type || '') !== 'animal') return;
-         speciesOverlay.openFromAnimal(item);
-      },
-      offDisplayBanner: offDisplay,
-      restaurantClosedBanner: restaurantClosed,
-      giftShopClosedBanner: giftShopClosed,
-      attractionClosedBanner: attractionClosed,
-   });
-
-   initLabelVisibilityToggle({
-      checkboxEl: document.getElementById('showMapLabels'),
-      rootEl: document.body,
-   });
-
-   const markers = createMarkerLayer({
-      mapInner,
-      tooltip,
-      hover,
-      enableCoordinateEditing,
-   });
-
-   const focus = createFocusController({
-      panzoom,
-      getMarkerByCoord: key => markers.getMarkerByCoord(key),
-      getViewportEl: () => viewportEl,
-      tooltip,
-      getAllMarkers: () => markers.getAllMarkers(),
-   });
-
-   const updater = createMapUpdater({
-      store,
-      sources,
-      markers,
-      focus,
-      getIncludeOffDisplay: () => false,
-      getIncludeClosedRestaurants: () => false,
-      getIncludeClosedGiftShops: () => false,
-      getIncludeClosedAttractions: () => false,
-      getZoomobileRoute: () => 'none',
-      getSelectedTypes: () => [],
-   });
-
-   function repositionTooltips() {
-      if (typeof tooltip?.reposition === 'function') tooltip.reposition();
-      if (typeof hover?.reposition === 'function') hover.reposition();
-
-      requestAnimationFrame(() => {
-         if (typeof tooltip?.reposition === 'function') tooltip.reposition();
-         if (typeof hover?.reposition === 'function') hover.reposition();
+      openItineraryWizard({
+         mountEl,
+         startAt: step,
+         onDone: () => renderItineraryPanel(),
       });
-   }
+   });
 
-   mapInner.addEventListener('panzoomchange', repositionTooltips);
+   blockMapWheelWhileWizardOpen(mountEl);
 
-   window.addEventListener('resize', repositionTooltips);
+   window.addEventListener('tzg:editItinerary', () => {
+      openItineraryWizard({
+         mountEl,
+         onDone: () => renderItineraryPanel(),
+      });
+   });
 
-   async function applyItineraryToMap() {
-      try {
-         const itin = await getItinerary();
+   window.addEventListener('tzg:buildItinerary', () => {
+      openItineraryWizard({
+         mountEl,
+         onDone: () => renderItineraryPanel(),
+      });
+   });
 
-         if (!itin || isItineraryEmpty(itin)) {
-            markers.render([]);
-            return;
+   window.addEventListener('tzg:itineraryUpdated', () => {
+      renderItineraryPanel();
+   });
+
+   (async () => {
+      if (document.getElementById('mapInner')) {
+         try {
+            await loadInlineZooMap();
+            initItineraryMap();
+         } catch (err) {
+            console.warn('initItineraryMap() failed:', err);
          }
-
-         const dateStr = String(itin.date || todayISO());
-
-         await updater.updateMap('custom', dateStr, { itinerary: itin });
-      } catch(err) {
-         console.error('Failed to load itinerary:', err);
-         markers.render([]);
       }
-   }
 
-   applyItineraryToMap();
+      await renderItineraryPanel();
 
-   window.addEventListener('tzg:itineraryUpdated', applyItineraryToMap);
+      const itin = await getItinerary();
+      const shouldAutoOpen = !itin || isItineraryEmpty(itin);
+
+      if (shouldAutoOpen) {
+         openItineraryWizard({
+            mountEl,
+            onDone: () => renderItineraryPanel(),
+         });
+      }
+   })();
 }

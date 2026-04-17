@@ -1,3 +1,4 @@
+// TO-DO: Should call a backend method
 export function getRegions() {
    return [
       { name: 'Africa', hasExhibits: true },

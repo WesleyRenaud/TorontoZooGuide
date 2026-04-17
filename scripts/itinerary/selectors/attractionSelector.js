@@ -1,4 +1,4 @@
-import { normalizeParameter } from '../../utils/normalize.js';
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
@@ -100,7 +100,7 @@ function getSubtitle(row) {
 
 function buildAttractionImageSrc(row) {
    const name = getAttractionName(row);
-   const nameFile = normalizeParameter(name || '');
+   const nameFile = normalizeAssetKey(name || '');
    if (!nameFile) return null;
    return `../images/attractions/${nameFile}.png`;
 }

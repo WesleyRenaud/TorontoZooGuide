@@ -5,7 +5,7 @@ import {
    normalizeWild,
 } from './format.js';
 
-import { normalizeParameter } from '../../utils/normalize.js';
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { makeItemRow } from './components/itemRow.js';
 import {
    buildAnimalAlert,
@@ -17,8 +17,8 @@ import {
 function buildAnimalImageSrc(exhibit, species) {
    if (!exhibit || !species) return null;
 
-   const normalizedExhibit = normalizeParameter(exhibit);
-   const normalizedSpecies = normalizeParameter(species);
+   const normalizedExhibit = normalizeAssetKey(exhibit);
+   const normalizedSpecies = normalizeAssetKey(species);
 
    return `images/animals/${normalizedExhibit}/${normalizedSpecies}.png`;
 }
@@ -26,21 +26,21 @@ function buildAnimalImageSrc(exhibit, species) {
 function buildAttractionImageSrc(name) {
    if (!name) return null;
 
-   const normalizedName = normalizeParameter(name);
+   const normalizedName = normalizeAssetKey(name);
    return `images/attractions/${normalizedName}.png`;
 }
 
 function buildGuardiansTalkImageSrc(name) {
    if (!name) return null;
 
-   const normalizedName = normalizeParameter(name);
+   const normalizedName = normalizeAssetKey(name);
    return `images/guardians-talks/${normalizedName}.png`;
 }
 
 function buildWildEncounterImageSrc(name) {
    if (!name) return null;
 
-   const normalizedName = normalizeParameter(name);
+   const normalizedName = normalizeAssetKey(name);
    return `images/wild-encounters/${normalizedName}.png`;
 }
 

@@ -7,7 +7,7 @@ import {
    createStatusHtml,
    createTextareaFieldHtml,
    createWeeklyScheduleCheckboxesHtml,
-} from '../../shared/panelFragments.js';
+} from '../../templates/fragments.js';
 
 export function createRestaurantOpenPanelHtml() {
    return createPanelShellHtml({

@@ -1,11 +1,13 @@
-import { loadWildEncounters, setStatus, populateWildEncounterDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadWildEncounters } from '../../options/loaders.js';
+import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
 import {
    hasCheckedField,
    hideConsolePanel,
    resetFormFields,
    validateOptionalDateRange,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createWildEncounterScheduleController({
    showButtonEl,
@@ -121,7 +123,7 @@ export function createWildEncounterScheduleController({
       }
 
       try {
-         const result = await postJson('/set-wild-encounter-schedule', {
+         const result = await setWildEncounterSchedule({
             wildEncounter,
             startDate: startDate || null,
             endDate: endDate || null,

@@ -1,5 +1,7 @@
-import { loadGiftShops, populateGiftShopDropdown } from '../../utils.js';
-import { createWeeklyAvailabilityController } from '../../shared/weeklyAvailabilityController.js';
+import { loadGiftShops } from '../../options/loaders.js';
+import { populateGiftShopDropdown } from '../../options/dropdowns.js';
+import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
+import { setGiftShopOpeningSchedule } from '../../../api/consoleOperationsApi.js';
 
 export function createGiftShopOpenController({
    showButtonEl,
@@ -23,7 +25,7 @@ export function createGiftShopOpenController({
    activatePanel,
    hidePanels,
 } = {}) {
-   return createWeeklyAvailabilityController({
+   return createWeeklyAvailabilityFormController({
       showButtonEl,
       panelEl,
       cancelButtonEl,
@@ -45,7 +47,7 @@ export function createGiftShopOpenController({
       activatePanel,
       loadOptions: loadGiftShops,
       populateOptions: populateGiftShopDropdown,
-      endpoint: '/set-gift-shop-opening-schedule',
+      submitSchedule: setGiftShopOpeningSchedule,
       entityLabel: 'Gift shop',
       optionsLabel: 'gift shops',
       payloadKey: 'giftShop',
