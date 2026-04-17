@@ -7,7 +7,7 @@ import {
    createSelectFieldHtml,
    createStatusHtml,
    createTextareaFieldHtml,
-} from '../../shared/panelFragments.js';
+} from '../../templates/fragments.js';
 
 export function createWildEncounterSchedulePanelHtml() {
    return createPanelShellHtml({

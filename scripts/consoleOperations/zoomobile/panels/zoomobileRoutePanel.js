@@ -4,7 +4,7 @@ import {
    createPanelShellHtml,
    createRadioGroupFieldHtml,
    createStatusHtml,
-} from '../../shared/panelFragments.js';
+} from '../../templates/fragments.js';
 
 export function createZoomobileRoutePanelHtml() {
    return createPanelShellHtml({

@@ -1,4 +1,4 @@
-import { postJson } from '../../api/apiClient.js';
+import { searchItineraryItems } from '../../api/searchApi.js';
 
 function debounce(fn, delay = 250) {
    let t = null;
@@ -244,7 +244,7 @@ export function createItinerarySelectorController({
             ...ctx,
          };
 
-         const response = await postJson(searchEndpoint, payload);
+         const response = await searchItineraryItems(searchEndpoint, payload);
          const rows = extractRows(response) || [];
          render(Array.isArray(rows) ? rows : []);
       } catch {

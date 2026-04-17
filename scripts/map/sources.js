@@ -1,10 +1,22 @@
-import { postJson } from '../api/apiClient.js';
+import {
+   getAttractions,
+   getClosedExhibits,
+   getExhibits,
+   getGiftShops,
+   getGuardiansTalks,
+   getPavilions,
+   getRestaurants,
+   getRestrooms,
+   getVisibleAnimals,
+   getWildEncounters,
+   getZoomobileRoute,
+} from '../api/mapApi.js';
 
 export function createDataSources(store) {
    return {
       animal: {
          fetch: async (ctx) => {
-            const res = await postJson('/get-visible-animals', {
+            const res = await getVisibleAnimals({
                month: ctx.month,
                day: ctx.day,
                temp: ctx.temp,
@@ -27,7 +39,7 @@ export function createDataSources(store) {
             const cache = store.cache.pavilion ?? store.cache.pavilions;
 
             if (!cache) {
-               const res = await postJson('/get-pavilions', {});
+               const res = await getPavilions();
                const rows = res?.pavilions ?? res?.results ?? res ?? [];
                const normalized = rows.map(p => ({ ...p, type: 'pavilion' }));
                store.byType.pavilion = normalized;
@@ -37,7 +49,7 @@ export function createDataSources(store) {
             if (cache.loaded) return store.byType.pavilion ?? store.byType.pavilions ?? [];
             if (cache.inFlight) return cache.inFlight;
 
-            cache.inFlight = postJson('/get-pavilions', {})
+            cache.inFlight = getPavilions()
                .then(res => {
                   const rows = res?.pavilions ?? res?.results ?? res ?? [];
                   const normalized = rows.map(p => ({ ...p, type: 'pavilion' }));
@@ -59,7 +71,7 @@ export function createDataSources(store) {
 
       restaurant: {
          fetch: async (ctx) => {
-            const res = await postJson('/get-restaurants', {
+            const res = await getRestaurants({
                month: ctx.month,
                day: ctx.day,
                includeClosedRestaurants: ctx.includeClosedRestaurants,
@@ -80,7 +92,7 @@ export function createDataSources(store) {
             const cache = store.cache.restroom ?? store.cache.restrooms;
 
             if (!cache) {
-               const res = await postJson('/get-restrooms', {});
+               const res = await getRestrooms();
                const rows = res?.restrooms ?? res?.results ?? res ?? [];
                const normalized = rows.map(p => ({ ...p, type: 'restroom' }));
                store.byType.restroom = normalized;
@@ -90,7 +102,7 @@ export function createDataSources(store) {
             if (cache.loaded) return store.byType.restroom ?? store.byType.restrooms ?? [];
             if (cache.inFlight) return cache.inFlight;
 
-            cache.inFlight = postJson('/get-restrooms', {})
+            cache.inFlight = getRestrooms()
                .then(res => {
                   const rows = res?.restrooms ?? res?.results ?? res ?? [];
                   const normalized = rows.map(p => ({ ...p, type: 'restroom' }));
@@ -112,7 +124,7 @@ export function createDataSources(store) {
 
       giftShop: {
          fetch: async (ctx) => {
-            const res = await postJson('/get-gift-shops', {
+            const res = await getGiftShops({
                month: ctx.month,
                day: ctx.day,
                includeClosedGiftShops: ctx.includeClosedGiftShops,
@@ -130,7 +142,7 @@ export function createDataSources(store) {
 
       attraction: {
          fetch: async (ctx) => {
-            const res = await postJson('/get-attractions', {
+            const res = await getAttractions({
                month: ctx.month,
                day: ctx.day,
                includeClosedAttractions: ctx.includeClosedAttractions,
@@ -166,7 +178,7 @@ export function createDataSources(store) {
                return [];
             }
 
-            const res = await postJson('/get-zoomobile-route', {
+            const res = await getZoomobileRoute({
                zoomobileRoute: ctx.zoomobileRoute,
                month: ctx.month,
                day: ctx.day,
@@ -202,7 +214,7 @@ export function createDataSources(store) {
 
       guardiansTalk: {
          fetch: async (ctx) => {
-            const res = await postJson('/get-guardians-talks', {
+            const res = await getGuardiansTalks({
                month: ctx.month,
                day: ctx.day,
                guardiansTalksToInclude: ctx.guardiansTalksToInclude,
@@ -220,7 +232,7 @@ export function createDataSources(store) {
 
       wildEncounter: {
          fetch: async (ctx) => {
-            const res = await postJson('/get-wild-encounters', {
+            const res = await getWildEncounters({
                month: ctx.month,
                day: ctx.day,
                wildEncountersToInclude: ctx.wildEncountersToInclude,
@@ -241,7 +253,7 @@ export function createDataSources(store) {
             const cache = store.cache.exhibit ?? store.cache.exhibits;
 
             if (!cache) {
-               const res = await postJson('/get-exhibits', {});
+               const res = await getExhibits();
                const rows = res?.exhibits ?? res?.results ?? res ?? [];
                const normalized = rows.map(e => ({ ...e, type: 'exhibit' }));
                store.byType.exhibit = normalized;
@@ -251,7 +263,7 @@ export function createDataSources(store) {
             if (cache.loaded) return store.byType.exhibit ?? store.byType.exhibits ?? [];
             if (cache.inFlight) return cache.inFlight;
 
-            cache.inFlight = postJson('/get-exhibits', {})
+            cache.inFlight = getExhibits()
                .then(res => {
                   const rows = res?.exhibits ?? res?.results ?? res ?? [];
                   const normalized = rows.map(e => ({ ...e, type: 'exhibit' }));
@@ -273,7 +285,7 @@ export function createDataSources(store) {
 
       closedExhibit: {
          fetch: async (ctx) => {
-            const res = await postJson('/get-closed-exhibits', {
+            const res = await getClosedExhibits({
                month: ctx.month,
                day: ctx.day,
                dayOfWeek: ctx.dayOfWeek,

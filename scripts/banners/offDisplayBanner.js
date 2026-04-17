@@ -1,0 +1,23 @@
+import { createMessageBanner } from './messageBanner.js';
+
+export function createOffDisplayBanner() {
+   return createMessageBanner({
+      getMessages: animal => {
+         const messages = [];
+
+         if (animal?.off_display_message) {
+            messages.push(animal.off_display_message);
+         }
+
+         if (animal?.limited_viewing_message) {
+            messages.push(animal.limited_viewing_message);
+         }
+
+         if (animal?.viewing_alert_message) {
+            messages.push(animal.viewing_alert_message);
+         }
+
+         return [...new Set(messages)];
+      },
+   });
+}

@@ -1,4 +1,4 @@
-import { normalizeParameter } from '../utils/normalize.js';
+import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
 
 export function createAnimalDetailView({ listEl }) {
    function clear() {
@@ -25,8 +25,8 @@ export function createAnimalDetailView({ listEl }) {
          `;
       };
 
-      const exhibitFile = normalizeParameter(animal.exhibit || '');
-      const speciesFile = normalizeParameter(animal.species || '');
+      const exhibitFile = normalizeAssetKey(animal.exhibit || '');
+      const speciesFile = normalizeAssetKey(animal.species || '');
 
       return `
          <img

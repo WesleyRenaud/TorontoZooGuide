@@ -1,5 +1,7 @@
-import { loadAttractions, populateAttractionDropdown } from '../../utils.js';
-import { createWeeklyAvailabilityController } from '../../shared/weeklyAvailabilityController.js';
+import { loadAttractions } from '../../options/loaders.js';
+import { populateAttractionDropdown } from '../../options/dropdowns.js';
+import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
+import { setAttractionOpeningSchedule } from '../../../api/consoleOperationsApi.js';
 
 export function createAttractionOpenController({
    showButtonEl,
@@ -23,7 +25,7 @@ export function createAttractionOpenController({
    activatePanel,
    hidePanels,
 } = {}) {
-   return createWeeklyAvailabilityController({
+   return createWeeklyAvailabilityFormController({
       showButtonEl,
       panelEl,
       cancelButtonEl,
@@ -45,7 +47,7 @@ export function createAttractionOpenController({
       activatePanel,
       loadOptions: loadAttractions,
       populateOptions: populateAttractionDropdown,
-      endpoint: '/set-attraction-opening-schedule',
+      submitSchedule: setAttractionOpeningSchedule,
       entityLabel: 'Attraction',
       optionsLabel: 'attractions',
       payloadKey: 'attraction',

@@ -1,6 +1,8 @@
-import { loadSpecies } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadSpecies } from '../../options/loaders.js';
+import { getAnimalsInExhibit } from '../../../api/animalsApi.js';
 
+
+// TO-DO: refactor/divide responsibilties
 function debounce(fn, delay = 200) {
    let timer = null;
 
@@ -132,11 +134,7 @@ export function createAnimalSpeciesAutocompleteController({
          return speciesByExhibit.get(exhibit);
       }
 
-      const result = await postJson('/get-animal-names-by-exhibit', {
-         exhibit
-      });
-
-      const animals = result?.animals ?? [];
+      const animals = await getAnimalsInExhibit(exhibit);
       const species = normalizeSpeciesList(
          animals.map(animal => animal.species ?? animal.SPECIES ?? animal)
       );

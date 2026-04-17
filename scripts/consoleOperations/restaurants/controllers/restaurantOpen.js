@@ -1,5 +1,7 @@
-import { loadRestaurants, populateRestaurantDropdown } from '../../utils.js';
-import { createWeeklyAvailabilityController } from '../../shared/weeklyAvailabilityController.js';
+import { loadRestaurants } from '../../options/loaders.js';
+import { populateRestaurantDropdown } from '../../options/dropdowns.js';
+import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
+import { setRestaurantOpeningSchedule } from '../../../api/consoleOperationsApi.js';
 
 export function createRestaurantOpenController({
    showButtonEl,
@@ -23,7 +25,7 @@ export function createRestaurantOpenController({
    activatePanel,
    hidePanels,
 } = {}) {
-   return createWeeklyAvailabilityController({
+   return createWeeklyAvailabilityFormController({
       showButtonEl,
       panelEl,
       cancelButtonEl,
@@ -45,7 +47,7 @@ export function createRestaurantOpenController({
       activatePanel,
       loadOptions: loadRestaurants,
       populateOptions: populateRestaurantDropdown,
-      endpoint: '/set-restaurant-opening-schedule',
+      submitSchedule: setRestaurantOpeningSchedule,
       entityLabel: 'Restaurant',
       optionsLabel: 'restaurants',
       payloadKey: 'restaurant',

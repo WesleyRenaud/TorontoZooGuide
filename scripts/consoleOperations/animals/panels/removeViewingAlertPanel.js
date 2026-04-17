@@ -4,7 +4,7 @@ import {
    createPanelShellHtml,
    createSelectFieldHtml,
    createStatusHtml,
-} from '../../shared/panelFragments.js';
+} from '../../templates/fragments.js';
 
 export function createRemoveViewingAlertPanelHtml() {
    return createPanelShellHtml({

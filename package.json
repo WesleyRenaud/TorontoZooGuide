@@ -4,8 +4,8 @@
    "scripts": {
       "build": "python3 setup.py && npm run lint && echo 'Build complete!'",
       "lint": "npm run lint:js && npm run lint:py",
-      "lint:js": "eslint scripts && echo 'All checks passed!'",
-      "lint:py": "python3 scripts/lint_python_house_style.py && ruff check .",
+      "lint:js": "node tools/lint/jsFilenameStyle.js && eslint scripts && echo 'All checks passed!'",
+      "lint:py": "python3 tools/lint/pythonHouseStyle.py && ruff check .",
       "start": "python3 server.py"
    },
    "devDependencies": {

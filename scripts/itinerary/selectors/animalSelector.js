@@ -1,4 +1,4 @@
-import { normalizeParameter } from '../../utils/normalize.js';
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
@@ -50,8 +50,8 @@ function buildAnimalImageSrc(row) {
    const exhibit = getExhibit(row);
    const species = getSpecies(row);
 
-   const exhibitFile = normalizeParameter(exhibit || '');
-   const speciesFile = normalizeParameter(species || '');
+   const exhibitFile = normalizeAssetKey(exhibit || '');
+   const speciesFile = normalizeAssetKey(species || '');
 
    if (!exhibitFile || !speciesFile) return null;
    return `../images/animals/${exhibitFile}/${speciesFile}.png`;

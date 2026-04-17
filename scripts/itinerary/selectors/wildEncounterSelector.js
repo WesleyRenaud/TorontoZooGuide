@@ -1,4 +1,4 @@
-import { normalizeParameter } from '../../utils/normalize.js';
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 
@@ -31,7 +31,7 @@ function getLink(row) {
 }
 
 function buildWildEncounterImageSrc(name) {
-   const file = normalizeParameter(name || '');
+   const file = normalizeAssetKey(name || '');
    if (!file) return null;
    return `../images/wild-encounters/${file}.png`;
 }

@@ -1,11 +1,13 @@
-import { loadExhibits, setStatus, populateExhibitDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadExhibits } from '../../options/loaders.js';
+import { populateExhibitDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { removeAnimalVisibilitySchedule } from '../../../api/consoleOperationsApi.js';
 import {
    bindResetValueOnChange,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createRemoveVisibilityScheduleController({
    showButtonEl,
@@ -67,7 +69,7 @@ export function createRemoveVisibilityScheduleController({
       }
 
       try {
-         const result = await postJson('/remove-animal-visibility-schedule', {
+         const result = await removeAnimalVisibilitySchedule({
             species,
             exhibit
          });

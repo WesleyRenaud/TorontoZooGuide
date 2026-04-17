@@ -1,4 +1,4 @@
-import { normalizeParameter } from '../../utils/normalize.js';
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 
 export const wildEncounterRenderer = {
    key: 'wildEncounter',
@@ -10,7 +10,7 @@ export const wildEncounterRenderer = {
       card.style.display = index === 0 ? 'flex' : 'none';
 
       const name = w.name || 'Wild Encounter';
-      const normalizedName = normalizeParameter(name);
+      const normalizedName = normalizeAssetKey(name);
       const imgSrc = `images/wild-encounters/${normalizedName}.png`;
 
       card.innerHTML = `

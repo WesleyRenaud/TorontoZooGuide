@@ -1,11 +1,13 @@
-import { loadGiftShops, setStatus, populateGiftShopDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadGiftShops } from '../../options/loaders.js';
+import { populateGiftShopDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setGiftShopClosed } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
    validateOptionalDateRange,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createGiftShopClosedController({
    showButtonEl,
@@ -70,7 +72,7 @@ export function createGiftShopClosedController({
 
       try {
 
-         const result = await postJson('/set-gift-shop-closed', {
+         const result = await setGiftShopClosed({
             giftShop,
             startDate: startDate || null,
             endDate: endDate || null,

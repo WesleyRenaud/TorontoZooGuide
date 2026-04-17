@@ -1,11 +1,13 @@
-import { loadZoomobileStations, setStatus, populateZoomobileStationDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadZoomobileStations } from '../../options/loaders.js';
+import { populateZoomobileStationDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setZoomobileStationClosed } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
    validateOptionalDateRange,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createZoomobileStationClosedController({
    showButtonEl,
@@ -73,7 +75,7 @@ export function createZoomobileStationClosedController({
       }
 
       try {
-         const result = await postJson('/set-zoomobile-station-closed', {
+         const result = await setZoomobileStationClosed({
             zoomobileStation,
             startDate: startDate || null,
             endDate: endDate || null,

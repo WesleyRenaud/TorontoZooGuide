@@ -1,4 +1,4 @@
-import { initVisitDateFlatpickr } from '../shared/visitDateFlatpickr.js';
+import { initVisitDateFlatpickr } from '../visitDates/visitDateFlatpickr.js';
 
 export function initMapControls(
    {

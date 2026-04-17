@@ -1,5 +1,5 @@
-import { getMonth, getDay, isWithinNextNDays } from '../utils/dates.js';
-import { fetchForecastTemp } from './weather.js';
+import { getMonth, getDay, isWithinNextNDays } from '../visitDates/visitDateRules.js';
+import { fetchForecastTemp } from '../api/weatherApi.js';
 import { uniq, isoDateToMonFirstDow } from '../itinerary/itineraryHelpers.js';
 
 function toTypedRows(items, type) {
