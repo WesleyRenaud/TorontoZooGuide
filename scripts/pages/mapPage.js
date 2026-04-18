@@ -1,5 +1,5 @@
-import { CONFIG } from '../shared/config.js';
-import { loadInlineZooMap } from './loadInlineZooMap.js';
+import { CONFIG } from '../config/appConfig.js';
+import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { createPanzoom } from '../map/panzoom.js';
 import { initMapControls } from '../map/controls.js';
 import { initExploreTypeFilter } from '../search/exploreFilter.js';
@@ -12,11 +12,11 @@ import { createHoverTooltip } from '../markers/hoverTooltip.js';
 import { createTooltipController } from '../tooltips/tooltipController.js';
 import { createFocusController } from '../focus/focusController.js';
 import { initFocusFromQuery } from '../focus/focusFromQuery.js';
-import { createOffDisplayBanner } from '../ui/offDisplayBanner.js';
-import { createRestaurantClosedBanner } from '../ui/restaurantClosedBanner.js';
-import { createGiftShopClosedBanner } from '../ui/giftShopClosedBanner.js';
-import { createAttractionClosedBanner } from '../ui/attractionClosedBanner.js';
-import { initSpeciesOverlay } from '../ui/speciesOverlay.js';
+import { createOffDisplayBanner } from '../banners/offDisplayBanner.js';
+import { createRestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
+import { createGiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
+import { createAttractionClosedBanner } from '../banners/attractionClosedBanner.js';
+import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
 import { buildDateSearchContext } from '../search/searchContext.js';
 

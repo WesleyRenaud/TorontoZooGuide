@@ -1,5 +1,5 @@
-import { normalizeParameter } from '../../utils/normalize.js';
-import { getLikelihoodPhrase } from '../../utils/dom.js';
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { getLikelihoodPhrase } from '../../likelihood/likelihoodPresentation.js';
 
 export const animalRenderer = {
    key: 'animal',
@@ -20,8 +20,8 @@ export const animalRenderer = {
       card.dataset.index = index;
       card.style.display = index === 0 ? 'flex' : 'none';
 
-      const exhibit = normalizeParameter(a.exhibit);
-      const species = normalizeParameter(a.species);
+      const exhibit = normalizeAssetKey(a.exhibit);
+      const species = normalizeAssetKey(a.species);
 
       card.innerHTML = `
          <div class="tooltip-image-frame">

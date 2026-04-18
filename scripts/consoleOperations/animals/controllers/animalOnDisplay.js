@@ -1,11 +1,13 @@
-import { loadExhibits, setStatus, populateExhibitDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadExhibits } from '../../options/loaders.js';
+import { populateExhibitDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setAnimalOnDisplay } from '../../../api/consoleOperationsApi.js';
 import {
    bindResetValueOnChange,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createAnimalOnDisplayController({
    showButtonEl,
@@ -61,7 +63,7 @@ export function createAnimalOnDisplayController({
       }
 
       try {
-         const result = await postJson('/set-animal-on-display', {
+         const result = await setAnimalOnDisplay({
             species,
             exhibit
          });

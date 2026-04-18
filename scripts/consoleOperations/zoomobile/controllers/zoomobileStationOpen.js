@@ -1,10 +1,12 @@
-import { loadZoomobileStations, setStatus, populateZoomobileStationDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadZoomobileStations } from '../../options/loaders.js';
+import { populateZoomobileStationDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setZoomobileStationOpen } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createZoomobileStationOpenController({
    showButtonEl,
@@ -59,7 +61,7 @@ export function createZoomobileStationOpenController({
       }
 
       try {
-         const result = await postJson('/set-zoomobile-station-open', {
+         const result = await setZoomobileStationOpen({
             zoomobileStation
          });
 

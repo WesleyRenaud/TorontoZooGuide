@@ -1,11 +1,13 @@
-import { loadAttractions, setStatus, populateAttractionDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadAttractions } from '../../options/loaders.js';
+import { populateAttractionDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setAttractionClosed } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
    validateOptionalDateRange,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createAttractionClosedController({
    showButtonEl,
@@ -73,7 +75,7 @@ export function createAttractionClosedController({
       }
 
       try {
-         const result = await postJson('/set-attraction-closed', {
+         const result = await setAttractionClosed({
             attraction,
             startDate: startDate || null,
             endDate: endDate || null,

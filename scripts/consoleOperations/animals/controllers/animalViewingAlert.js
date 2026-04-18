@@ -1,12 +1,14 @@
-import { loadExhibits, setStatus, populateExhibitDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadExhibits } from '../../options/loaders.js';
+import { populateExhibitDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setAnimalViewingAlert } from '../../../api/consoleOperationsApi.js';
 import {
    bindResetValueOnChange,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
    validateOptionalDateRange,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createAnimalViewingAlertController({
    showButtonEl,
@@ -86,7 +88,7 @@ export function createAnimalViewingAlertController({
       }
 
       try {
-         const result = await postJson('/set-animal-viewing-alert', {
+         const result = await setAnimalViewingAlert({
             species,
             exhibit,
             alertStartDate: startDate || null,

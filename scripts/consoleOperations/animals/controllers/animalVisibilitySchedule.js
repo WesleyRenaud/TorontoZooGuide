@@ -1,12 +1,14 @@
-import { loadExhibits, setStatus, populateExhibitDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadExhibits } from '../../options/loaders.js';
+import { populateExhibitDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setAnimalVisibilitySchedule } from '../../../api/consoleOperationsApi.js';
 import {
    bindResetValueOnChange,
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
    validateOptionalDateRange,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createAnimalVisibilityScheduleController({
    showButtonEl,
@@ -100,7 +102,7 @@ export function createAnimalVisibilityScheduleController({
 
       try {
 
-         const result = await postJson('/set-animal-visibility-schedule', {
+         const result = await setAnimalVisibilitySchedule({
             species,
             exhibit,
             startDate: startDate || null,

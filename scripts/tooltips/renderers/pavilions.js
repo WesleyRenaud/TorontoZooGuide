@@ -1,4 +1,4 @@
-import { normalizeParameter } from '../../utils/normalize.js';
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 
 export const pavilionRenderer = {
    key: 'pavilion',
@@ -10,7 +10,7 @@ export const pavilionRenderer = {
       card.style.display = index === 0 ? 'flex' : 'none';
 
       const name = p.name || 'Pavilion';
-      const normalizedName = normalizeParameter(name);
+      const normalizedName = normalizeAssetKey(name);
       const imgSrc = `images/pavilions/${normalizedName}.png`;
 
       card.innerHTML = `

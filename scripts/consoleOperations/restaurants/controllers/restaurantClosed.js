@@ -1,11 +1,13 @@
-import { loadRestaurants, setStatus, populateRestaurantDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadRestaurants } from '../../options/loaders.js';
+import { populateRestaurantDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setRestaurantClosed } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
    validateOptionalDateRange,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createRestaurantClosedController({
    showButtonEl,
@@ -70,7 +72,7 @@ export function createRestaurantClosedController({
 
       try {
 
-         const result = await postJson('/set-restaurant-closed', {
+         const result = await setRestaurantClosed({
             restaurant,
             startDate: startDate || null,
             endDate: endDate || null,

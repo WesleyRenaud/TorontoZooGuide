@@ -1,5 +1,7 @@
-import { likelihoodToColor, getAnimalIconUrl, getAttractionIconUrl, getGiftShopIconUrl, getRestaurantIconUrl } from '../utils/icons.js';
+import { getAnimalIconUrl, getAttractionIconUrl, getGiftShopIconUrl, getRestaurantIconUrl } from '../assets/iconUrls.js';
+import { likelihoodToColor } from '../likelihood/likelihoodColors.js';
 
+// TO-DO: review/refactor, split up responsibilities
 const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
 
 const attractionMarkerScaleOverrides = {

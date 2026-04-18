@@ -11,26 +11,14 @@ import {
 } from './rows.js';
 
 import {
+   clearItinerary,
    getItinerary,
    isItineraryEmpty,
-} from '../../pages/itineraryWizard/itineraryApi.js';
+} from '../itineraryService.js';
 
 import { clearItineraryStorage } from './localStorage.js';
 
 let latestRenderToken = 0;
-
-async function clearItineraryViaApi() {
-   const res = await fetch('/clear-itinerary', {
-      method: 'POST',
-      headers: {
-         'Content-Type': 'application/json',
-      },
-   });
-
-   if (!res.ok) {
-      throw new Error(`Failed to clear itinerary: ${res.status}`);
-   }
-}
 
 export async function renderItineraryPanelInto(bodyEl) {
    if (!bodyEl) return;
@@ -55,20 +43,8 @@ export async function renderItineraryPanelInto(bodyEl) {
    bodyEl.appendChild(makeActionsBar({
       onAfterClear: async () => {
          try {
-            await clearItineraryViaApi();
+            await clearItinerary();
             clearItineraryStorage();
-
-            window.dispatchEvent(new CustomEvent('tzg:itineraryCleared'));
-            window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {
-               detail: {
-                  itinerary: {
-                     animals: [],
-                     attractions: [],
-                     guardiansTalks: [],
-                     wildEncounters: [],
-                  }
-               }
-            }));
 
             await renderItineraryPanelInto(bodyEl);
          } catch (err) {

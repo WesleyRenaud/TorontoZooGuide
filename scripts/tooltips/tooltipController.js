@@ -1,5 +1,5 @@
 import { getRendererForItem } from './tooltipRenderers.js';
-import { positionTooltip } from '../utils/dom.js';
+import { positionTooltip } from './positionTooltip.js';
 import { setMarkerToAnimalIcon, applyMarkerVisual } from '../markers/markerVisuals.js';
 
 export function createTooltipController({

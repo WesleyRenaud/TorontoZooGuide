@@ -1,4 +1,4 @@
-import { normalizeParameter } from '../../utils/normalize.js';
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 
 export const zoomobileStationRenderer = {
    key: 'zoomobileStation',
@@ -10,7 +10,7 @@ export const zoomobileStationRenderer = {
       card.style.display = index === 0 ? 'flex' : 'none';
 
       const name = s.name || 'Zoomobile Station';
-      const normalizedName = normalizeParameter(name);
+      const normalizedName = normalizeAssetKey(name);
       const imgSrc = `images/zoomobile-stations/${normalizedName}.png`;
 
       card.innerHTML = `

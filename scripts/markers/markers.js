@@ -1,6 +1,6 @@
 import { buildHoverText } from './markerHoverText.js';
 import { applyMarkerVisual } from './markerVisuals.js';
-import { coordKey } from '../utils/coords.js';
+import { coordKey } from '../map/coordKey.js';
 
 function clampPercent(value) {
    return Math.max(0, Math.min(100, value));

@@ -1,5 +1,7 @@
-import { loadWildEncounters, setStatus, populateWildEncounterDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { loadWildEncounters } from '../../options/loaders.js';
+import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { cancelWildEncounterOccurrence } from '../../../api/consoleOperationsApi.js';
 
 export function createCancelWildEncounterOccurrenceController({
    showButtonEl,
@@ -84,7 +86,7 @@ export function createCancelWildEncounterOccurrenceController({
       }
 
       try {
-         const result = await postJson('/cancel-wild-encounter-occurrence', {
+         const result = await cancelWildEncounterOccurrence({
             wildEncounter,
             date,
             time

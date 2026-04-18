@@ -1,5 +1,9 @@
-import { setStatus, populateGuardiansTalkDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import {
+   cancelGuardiansTalkOccurrence,
+   getGuardiansTalkOccurrences,
+} from '../../../api/consoleOperationsApi.js';
 
 export function createCancelGuardiansTalkOccurrenceController({
    showButtonEl,
@@ -108,7 +112,7 @@ export function createCancelGuardiansTalkOccurrenceController({
       }
 
       try {
-         const result = await postJson('/get-guardians-talk-occurrences', {
+         const result = await getGuardiansTalkOccurrences({
             talk,
             location
          });
@@ -200,7 +204,7 @@ export function createCancelGuardiansTalkOccurrenceController({
 
       try {
 
-         const result = await postJson('/cancel-guardians-talk-occurrence', {
+         const result = await cancelGuardiansTalkOccurrence({
             talk,
             location,
             date,

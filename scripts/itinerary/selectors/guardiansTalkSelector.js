@@ -1,4 +1,4 @@
-import { normalizeParameter } from '../../utils/normalize.js';
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 
@@ -17,7 +17,7 @@ function getTimeOfDay(row) {
 }
 
 function buildTalkImageSrc(name) {
-   const file = normalizeParameter(name || '');
+   const file = normalizeAssetKey(name || '');
    if (!file) return null;
 
    return `../images/guardians-talks/${file}.png`;

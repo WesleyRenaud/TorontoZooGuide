@@ -1,5 +1,5 @@
-import { getMonth, getDay, isWithinNextNDays } from '../utils/dates.js';
-import { fetchForecastTemp } from '../map/weather.js';
+import { getMonth, getDay, isWithinNextNDays } from '../visitDates/visitDateRules.js';
+import { fetchForecastTemp } from '../api/weatherApi.js';
 import { isoDateToMonFirstDow } from '../itinerary/itineraryHelpers.js';
 
 /**

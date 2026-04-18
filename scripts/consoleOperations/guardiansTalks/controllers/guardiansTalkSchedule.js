@@ -1,11 +1,12 @@
-import { setStatus, populateGuardiansTalkDropdown } from '../../utils.js';
-import { postJson } from '../../../api/apiClient.js';
+import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { setGuardiansTalkSchedule } from '../../../api/consoleOperationsApi.js';
 import {
    hasCheckedField,
    hideConsolePanel,
    resetFormFields,
    validateOptionalDateRange,
-} from '../../shared/controllerUtils.js';
+} from '../../helpers/controllerUtils.js';
 
 export function createGuardiansTalkScheduleController({
    showButtonEl,
@@ -145,7 +146,7 @@ export function createGuardiansTalkScheduleController({
       }
 
       try {
-         const result = await postJson('/set-guardians-talk-schedule', {
+         const result = await setGuardiansTalkSchedule({
             talk,
             location,
             startDate: startDate || null,

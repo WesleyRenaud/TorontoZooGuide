@@ -1,5 +1,5 @@
-import { DATE_KEY } from '../../pages/itineraryWizard/keys.js';
-import { initVisitDateFlatpickr } from '../../shared/visitDateFlatpickr.js';
+import { DATE_KEY } from '../storageKeys.js';
+import { initVisitDateFlatpickr } from '../../visitDates/visitDateFlatpickr.js';
 import {
    DEFAULT_DAYS_AHEAD,
    toISODate,
@@ -9,7 +9,7 @@ import {
    isBeforeToday,
    isAfterMaxDate,
    clampToAllowedVisitDate,
-} from '../../shared/visitDateRules.js';
+} from '../../visitDates/visitDateRules.js';
 
 function formatLong(d) {
    return d.toLocaleDateString(undefined, {

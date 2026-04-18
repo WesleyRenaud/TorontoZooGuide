@@ -1,10 +1,10 @@
 import { loadArray, saveArray } from '../panel/localStorage.js';
-import { ANIMALS_KEY } from '../../pages/itineraryWizard/keys.js';
+import { ANIMALS_KEY } from '../storageKeys.js';
 
 import {
    getExhibitsByRegion,
    getAnimalsByExhibit,
-} from './regionSelector/regionApi.js';
+} from '../../api/itinerarySelectorApi.js';
 
 import {
    normalizeRegion,

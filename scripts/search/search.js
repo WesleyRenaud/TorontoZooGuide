@@ -1,4 +1,4 @@
-import { postJson } from '../api/apiClient.js';
+import { searchZoo } from '../api/searchApi.js';
 
 function debounce(fn, delay = 250) {
    let t = null;
@@ -53,7 +53,7 @@ export function initSearch({
       const ctx = (await getContext?.()) ?? {};
 
       try {
-         const response = await postJson('/search', {
+         const response = await searchZoo({
             query,
             ...flags,
             ...ctx,
