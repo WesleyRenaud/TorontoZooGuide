@@ -20,11 +20,6 @@ import {
 import { finalizeItinerary } from './flow.js';
 import { validateItinerary } from './validateItinerary.js';
 
-// TODO:
-// Replace this import once you move the animal-selector fetch logic
-// into a shared helper.
-// import { getSelectableAnimalsForCurrentItineraryDate } from '../../itinerary/selectors/animalData.js';
-
 function getDraftState() {
    return {
       date: localStorage.getItem(DATE_KEY) || '',
@@ -306,14 +301,6 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
       });
    }
 
-   async function getAllSelectableAnimals() {
-      // Replace this whole function with the shared animal-selector fetch helper.
-      // For example:
-      // return await getSelectableAnimalsForCurrentItineraryDate();
-
-      return selectedAnimals;
-   }
-
    const wildEncounterSelector = createItineraryWildEncounterSelectorController({
       mountEl,
       onClose: handleClose,
@@ -441,7 +428,6 @@ export async function openItineraryBuilder({ mountEl, startAt = 'date', onDone }
          });
          finish({ animals: selectedAnimals });
       },
-      getAllSelectableAnimals,
    });
 
    const dateSelector = createItineraryDateSelectorController({
