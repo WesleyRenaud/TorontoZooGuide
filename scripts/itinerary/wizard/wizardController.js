@@ -20,11 +20,6 @@ import {
 import { finalizeItineraryWizard } from './wizardFinalizer.js';
 import { validateItineraryDraft } from './draftValidator.js';
 
-// TODO:
-// Replace this import once you move the animal-selector fetch logic
-// into a shared helper.
-// import { getSelectableAnimalsForCurrentItineraryDate } from '../../itinerary/selectors/animalData.js';
-
 function getDraftState() {
    return {
       date: localStorage.getItem(DATE_KEY) || '',
