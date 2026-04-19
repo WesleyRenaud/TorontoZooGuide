@@ -4,23 +4,8 @@ function toPercent(value) {
 }
 
 function getLikelihoodPair(animal) {
-   const beforeRaw =
-      animal?.likelihoodBefore ??
-      animal?.likelihood_before ??
-      animal?.previousLikelihood ??
-      animal?.previous_likelihood ??
-      animal?.oldLikelihood ??
-      animal?.old_likelihood;
-
-   const afterRaw =
-      animal?.likelihoodAfter ??
-      animal?.likelihood_after ??
-      animal?.currentLikelihood ??
-      animal?.current_likelihood ??
-      animal?.newLikelihood ??
-      animal?.new_likelihood ??
-      animal?.likelihood ??
-      animal?.LIKELIHOOD;
+   const beforeRaw = animal?.likelihoodBefore;
+   const afterRaw = animal?.likelihoodAfter;
 
    const before = toPercent(Number(beforeRaw));
    const after = toPercent(Number(afterRaw));
@@ -29,18 +14,11 @@ function getLikelihoodPair(animal) {
 }
 
 function buildAnimalRemovalReasonLine(animal) {
-   const reason =
-      animal.removalReason ??
-      animal.removal_reason ??
-      animal.off_display_message ??
-      animal.OFF_DISPLAY_MESSAGE ??
-      animal.display_message ??
-      animal.DISPLAY_MESSAGE ??
-      '';
+   const reason = animal.removalReason ?? '';
 
    if (!reason) return '';
 
-   return `Unavailable: ${reason}`;
+  return `Unavailable: ${reason}`;
 }
 
 function buildAnimalVisibilityChange(animal) {
@@ -80,14 +58,7 @@ export function buildAnimalAlert(animal) {
 }
 
 export function buildAttractionRemovalReasonLine(attraction) {
-   const reason =
-      attraction.removalReason ??
-      attraction.removal_reason ??
-      attraction.closed_message ??
-      attraction.CLOSED_MESSAGE ??
-      attraction.display_message ??
-      attraction.DISPLAY_MESSAGE ??
-      '';
+   const reason = attraction.removalReason ?? '';
 
    if (!reason) return '';
 
@@ -95,14 +66,7 @@ export function buildAttractionRemovalReasonLine(attraction) {
 }
 
 export function buildGuardiansRemovalReasonLine(guardiansTalk) {
-   const reason =
-      guardiansTalk.removalReason ??
-      guardiansTalk.removal_reason ??
-      guardiansTalk.unavailable_message ??
-      guardiansTalk.UNAVAILABLE_MESSAGE ??
-      guardiansTalk.display_message ??
-      guardiansTalk.DISPLAY_MESSAGE ??
-      '';
+   const reason = guardiansTalk.removalReason ?? '';
 
    if (!reason) return '';
 
@@ -110,14 +74,7 @@ export function buildGuardiansRemovalReasonLine(guardiansTalk) {
 }
 
 export function buildWildRemovalReasonLine(wildEncounter) {
-   const reason =
-      wildEncounter.removalReason ??
-      wildEncounter.removal_reason ??
-      wildEncounter.unavailable_message ??
-      wildEncounter.UNAVAILABLE_MESSAGE ??
-      wildEncounter.display_message ??
-      wildEncounter.DISPLAY_MESSAGE ??
-      '';
+   const reason = wildEncounter.removalReason ?? '';
 
    if (!reason) return '';
 

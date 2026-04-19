@@ -1,6 +1,9 @@
 import { getRendererForItem } from './tooltipRenderers.js';
 import { positionTooltip } from './positionTooltip.js';
 import { setMarkerToAnimalIcon, applyMarkerVisual } from '../markers/markerVisuals.js';
+import { createTooltipBannerSync } from './bannerSync.js';
+import { createTooltipCarouselView } from './carouselView.js';
+import { createTooltipGlobalListeners } from './globalListeners.js';
 
 export function createTooltipController({
    tooltipEl,
@@ -10,10 +13,33 @@ export function createTooltipController({
    giftShopClosedBanner,
    attractionClosedBanner }) {
 
-      let openMarker = null;
+   let openMarker = null;
    let itemsForOpen = [];
-   let carouselEl = null;
-   let listenersInstalled = false;
+
+   const banners = createTooltipBannerSync({
+      offDisplayBanner,
+      restaurantClosedBanner,
+      giftShopClosedBanner,
+      attractionClosedBanner,
+   });
+
+   const carousel = createTooltipCarouselView({
+      tooltipEl,
+      getRendererForItem,
+      onIndexChange: (index) => {
+         syncMarkerToIndex(index);
+         banners.sync(itemsForOpen[index] || null);
+      },
+   });
+
+   const globalListeners = createTooltipGlobalListeners({
+      tooltipEl,
+      isOpen,
+      close,
+      step: (delta) => carousel.step(delta),
+      getItemAtIndex: (index) => itemsForOpen[index] || null,
+      onAnimalCardClick,
+   });
 
    function isOpen() {
       return tooltipEl && tooltipEl.style.display === 'flex';
@@ -45,14 +71,10 @@ export function createTooltipController({
 
       openMarker = markerEl;
       itemsForOpen = items || [];
-      carouselEl = null;
 
-      render(itemsForOpen);
-
-      if (!carouselEl || carouselEl.children.length === 0) {
+      if (!carousel.render(itemsForOpen)) {
          openMarker = null;
          itemsForOpen = [];
-         carouselEl = null;
          return;
       }
 
@@ -60,18 +82,14 @@ export function createTooltipController({
       tooltipEl.style.pointerEvents = 'auto';
       positionTooltip(tooltipEl, markerEl);
 
-      installGlobalListeners();
-
-      showIndex(Number(carouselEl.dataset.index || 0) || 0);
+      globalListeners.install();
+      carousel.showIndex(0);
    }
 
    function close() {
       if (!tooltipEl || !isOpen()) return;
 
-      offDisplayBanner?.hide?.();
-      restaurantClosedBanner?.hide?.();
-      giftShopClosedBanner?.hide?.();
-      attractionClosedBanner?.hide?.();
+      banners.hideAll();
 
       if (openMarker) {
          applyMarkerVisual(openMarker, itemsForOpen || openMarker.__items || []);
@@ -79,88 +97,9 @@ export function createTooltipController({
 
       tooltipEl.style.display = 'none';
       tooltipEl.style.pointerEvents = 'none';
-      tooltipEl.innerHTML = '';
+      carousel.clear();
       openMarker = null;
       itemsForOpen = [];
-      carouselEl = null;
-   }
-
-   function render(items) {
-      tooltipEl.innerHTML = '';
-
-      const first = items?.[0] || null;
-      const firstRenderer = first ? getRendererForItem(first) : null;
-      if (!firstRenderer) {
-         carouselEl = null;
-         return;
-      }
-
-      const content = document.createElement('div');
-      content.className = 'tooltip-content';
-
-      carouselEl = document.createElement('div');
-      carouselEl.className = 'tooltip-carousel';
-      carouselEl.dataset.index = 0;
-
-      items.forEach((item, i) => {
-         const renderer = getRendererForItem(item);
-         if (!renderer) return;
-         carouselEl.appendChild(renderer.createCard(item, i));
-      });
-
-      content.appendChild(carouselEl);
-      tooltipEl.appendChild(content);
-
-      if (items.length > 1) {
-         tooltipEl.classList.remove('no-arrows');
-         tooltipEl.appendChild(createNav());
-      } else {
-         tooltipEl.classList.add('no-arrows');
-      }
-   }
-
-   function createNav() {
-      const nav = document.createElement('div');
-      nav.className = 'tooltip-nav';
-
-      const left = createArrow('<', () => step(-1));
-      left.classList.add('tooltip-prev', 'visible');
-
-      const right = createArrow('>', () => step(+1));
-      right.classList.add('tooltip-next', 'visible');
-
-      nav.appendChild(left);
-      nav.appendChild(document.createElement('div'));
-      nav.appendChild(right);
-      return nav;
-   }
-
-   function createArrow(symbol, onClick) {
-      const el = document.createElement('div');
-      el.className = 'tooltip-arrow';
-      el.textContent = symbol;
-      el.addEventListener('click', (e) => {
-         e.stopPropagation();
-         onClick();
-      });
-      return el;
-   }
-
-   function showIndex(newIndex) {
-      if (!carouselEl) return;
-
-      const cards = Array.from(carouselEl.children);
-      if (cards.length === 0) return;
-
-      const safeIndex = Math.max(0, Math.min(cards.length - 1, newIndex));
-
-      cards.forEach((c) => (c.style.display = 'none'));
-      if (cards[safeIndex]) cards[safeIndex].style.display = 'flex';
-
-      carouselEl.dataset.index = String(safeIndex);
-
-      syncMarkerToIndex(safeIndex);
-      syncStatusBannersToIndex(safeIndex);
    }
 
    function syncMarkerToIndex(index) {
@@ -175,101 +114,29 @@ export function createTooltipController({
       setMarkerToAnimalIcon(openMarker, item);
    }
 
-   function syncStatusBannersToIndex(index) {
-      const item = itemsForOpen[index] || null;
-      const type = String(item?.type || '');
-
-      if (type === 'animal') {
-         offDisplayBanner?.sync?.(item);
-         restaurantClosedBanner?.hide?.();
-         giftShopClosedBanner?.hide?.();
-         attractionClosedBanner?.hide?.();
-         return;
-      }
-
-      if (type === 'restaurant') {
-         restaurantClosedBanner?.sync?.(item);
-         offDisplayBanner?.hide?.();
-         giftShopClosedBanner?.hide?.();
-         attractionClosedBanner?.hide?.();
-         return;
-      }
-
-      if (type === 'giftShop') {
-         giftShopClosedBanner?.sync?.(item);
-         offDisplayBanner?.hide?.();
-         restaurantClosedBanner?.hide?.();
-         attractionClosedBanner?.hide?.();
-         return;
-      }
-
-      if (type === 'attraction') {
-         attractionClosedBanner?.sync?.(item);
-         offDisplayBanner?.hide?.();
-         restaurantClosedBanner?.hide?.();
-         giftShopClosedBanner?.hide?.();
-         return;
-      }
-
-      offDisplayBanner?.hide?.();
-      restaurantClosedBanner?.hide?.();
-      giftShopClosedBanner?.hide?.();
-      attractionClosedBanner?.hide?.();
-   }
-
-   function step(delta) {
-      if (!carouselEl) return;
-
-      const cards = Array.from(carouselEl.children);
-      if (cards.length === 0) return;
-
-      let index = Number(carouselEl.dataset.index || 0);
-      if (!Number.isFinite(index)) index = 0;
-
-      index = (index + delta + cards.length) % cards.length;
-      showIndex(index);
-   }
-
-   function installGlobalListeners() {
-      if (listenersInstalled) return;
-      listenersInstalled = true;
-
-      document.addEventListener('click', (e) => {
-         const speciesLink = e.target.closest('.species-link');
-         if (speciesLink) {
-            e.stopPropagation();
-            const idx = Number(speciesLink.dataset.index);
-            const item = itemsForOpen[idx];
-            if (onAnimalCardClick) onAnimalCardClick(item);
-            return;
-         }
-
-         if (!isOpen()) return;
-         const clickedMarker = e.target.closest('.marker');
-         const clickedTooltip = tooltipEl.contains(e.target);
-         if (!clickedMarker && !clickedTooltip) close();
-      });
-
-      document.addEventListener('keydown', (e) => {
-         if (!isOpen()) return;
-         if (e.key === 'Escape') close();
-         if (e.key === 'ArrowRight') step(+1);
-         if (e.key === 'ArrowLeft') step(-1);
-      });
-   }
-
    function jumpTo(matchFn) {
-      if (!carouselEl) return;
-
-      const idx = itemsForOpen.findIndex(matchFn);
-      const newIndex = idx >= 0 ? idx : 0;
-
-      showIndex(newIndex);
+      carousel.jumpTo(itemsForOpen, matchFn);
    }
 
    function getOpenItems() {
       return itemsForOpen;
    }
 
-   return { attachToMarker, open, close, toggle, jumpTo, getOpenItems };
+   function reposition() {
+      if (!tooltipEl || !isOpen() || !openMarker) {
+         return;
+      }
+
+      positionTooltip(tooltipEl, openMarker);
+   }
+
+   return {
+      attachToMarker,
+      open,
+      close,
+      toggle,
+      jumpTo,
+      getOpenItems,
+      reposition,
+   };
 }

@@ -32,10 +32,6 @@ export function getWildEncounterNameOptions() {
    return postJson('/get-wild-encounter-names', {});
 }
 
-export function getAnimalNamesByExhibit(payload) {
-   return postJson('/get-animal-names-by-exhibit', payload);
-}
-
 export function setAnimalOffDisplay(payload) {
    return postJson('/set-animal-off-display', payload);
 }

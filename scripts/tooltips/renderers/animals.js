@@ -5,12 +5,12 @@ export const animalRenderer = {
    key: 'animal',
 
    isMatch(item, row) {
-      const s1 = (item.species ?? item.SPECIES ?? '').trim();
-      const s2 = (row.species ?? row.SPECIES ?? '').trim();
+      const s1 = String(item?.species || '').trim();
+      const s2 = String(row?.species || '').trim();
       if (!s1 || !s2 || s1 !== s2) return false;
 
-      const e1 = (item.exhibit ?? item.EXHIBIT ?? '').trim();
-      const e2 = (row.exhibit ?? row.EXHIBIT ?? '').trim();
+      const e1 = String(item?.exhibit || '').trim();
+      const e2 = String(row?.exhibit || '').trim();
       return e2 ? e1 === e2 : true;
    },
 

@@ -14,6 +14,7 @@ export function createMapStore() {
       cache: {
          pavilion: { loaded: false, inFlight: null },
          restroom: { loaded: false, inFlight: null },
+         exhibit: { loaded: false, inFlight: null },
       },
    };
 }

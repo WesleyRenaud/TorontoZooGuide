@@ -1,7 +1,7 @@
 export function getOptionItemName(item) {
    return typeof item === 'string'
       ? item
-      : item.name ?? item.NAME ?? '';
+      : item.name ?? '';
 }
 
 export function sortNamedOptions(items = []) {

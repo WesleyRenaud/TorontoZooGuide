@@ -27,12 +27,12 @@ export function createGuardiansTalkLocationFilterController({
             const aName =
                typeof a === 'string'
                   ? a
-                  : String(a.location ?? a.LOCATION ?? a.name ?? a.NAME ?? '');
+                  : String(a.location ?? a.name ?? '');
 
             const bName =
                typeof b === 'string'
                   ? b
-                  : String(b.location ?? b.LOCATION ?? b.name ?? b.NAME ?? '');
+                  : String(b.location ?? b.name ?? '');
 
             return aName.localeCompare(bName);
          })
@@ -40,7 +40,7 @@ export function createGuardiansTalkLocationFilterController({
             const name =
                typeof location === 'string'
                   ? location
-                  : location.location ?? location.LOCATION ?? location.name ?? location.NAME ?? '';
+                  : location.location ?? location.name ?? '';
 
             if (!name) return;
 

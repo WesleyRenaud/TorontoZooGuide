@@ -104,5 +104,3 @@ export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
 
    return { getSelectedTypes, buildSearchIncludeFlags };
 }
-
-initExploreTypeFilter.getSelectedTypes = () => ['animal'];

@@ -1,19 +1,20 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
+import { normalizeStoredString } from './base/storedSelection.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
 
 function getName(row) {
-   return row.name ?? row.NAME ?? '';
+   return row.name ?? '';
 }
 
 function getLocation(row) {
-   return row.location ?? row.LOCATION ?? '';
+   return row.location ?? '';
 }
 
 function getTimeOfDay(row) {
-   return row.time_of_day ?? row.TIME_OF_DAY ?? '';
+   return row.time_of_day ?? '';
 }
 
 function buildTalkImageSrc(name) {
@@ -27,34 +28,43 @@ function migrateIfNeeded(arr) {
    if (!Array.isArray(arr)) return [];
 
    return arr
-      .map(x => {
-         if (typeof x === 'string') {
+      .map((item) => {
+         if (typeof item === 'string') {
+            const name = item.trim();
+
+            if (!name) {
+               return null;
+            }
+
             return {
-               id: x,
-               name: x,
+               id: name,
+               name,
                location: '',
                timeOfDay: '',
-               imageSrc: buildTalkImageSrc(x),
+               imageSrc: buildTalkImageSrc(name),
             };
          }
 
-         if (x && typeof x === 'object') {
-            const name = x.name ?? x.NAME ?? '';
-            const id = x.id ?? name;
+         if (item && typeof item === 'object') {
+            const name = normalizeStoredString(item.name);
+            const id = normalizeStoredString(item.id) || name;
+
+            if (!id) {
+               return null;
+            }
 
             return {
                id,
                name,
-               location: x.location ?? x.LOCATION ?? '',
-               timeOfDay: x.timeOfDay ?? x.time_of_day ?? x.TIME_OF_DAY ?? '',
-               imageSrc: x.imageSrc ?? x.image_src ?? x.image ?? buildTalkImageSrc(name),
+               location: normalizeStoredString(item.location),
+               timeOfDay: normalizeStoredString(item.timeOfDay),
+               imageSrc: normalizeStoredString(item.imageSrc) || buildTalkImageSrc(name),
             };
          }
 
          return null;
       })
       .filter(Boolean)
-      .filter(x => x.id);
 }
 
 export function createItineraryGuardiansTalkSelectorController({
@@ -95,12 +105,7 @@ export function createItineraryGuardiansTalkSelectorController({
          includeGuardiansTalks: true,
       }),
 
-      extractRows: response =>
-         Array.isArray(response?.guardiansTalks)
-            ? response.guardiansTalks
-            : Array.isArray(response?.guardians_talks)
-            ? response.guardians_talks
-            : [],
+      extractRows: response => response.guardians_talks,
 
       getId: row => getName(row),
 

@@ -1,97 +1,35 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
+import {
+   normalizeStoredBoolean,
+   normalizeStoredLink,
+   normalizeStoredString,
+} from './base/storedSelection.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
 
 const STORAGE_KEY = 'tzg.itineraryAttractions';
 
 function getAttractionName(row) {
-   return (
-      row.NAME ??
-      row.name ??
-      row.TITLE ??
-      row.title ??
-      row.ATTRACTION ??
-      row.attraction ??
-      ''
-   );
+   return row.name ?? '';
 }
 
 function getInfoLink(row) {
-   const v = row.info_link ?? row.INFO_LINK ?? row.infoLink ?? row.link ?? row.LINK ?? null;
+   const v = row.info_link ?? null;
    const s = typeof v === 'string' ? v.trim() : '';
    return s ? s : null;
 }
 
 function isFreeWithAdmission(row) {
-   const v =
-      row.free_with_admission ??
-      row.FREE_WITH_ADMISSION ??
-      row.freeWithAdmission ??
-      row.is_free_with_admission ??
-      row.IS_FREE_WITH_ADMISSION ??
-      null;
-
-   if (v === true) return true;
-   if (v === false) return false;
-
-   if (typeof v === 'number') return v !== 0;
-
-   if (typeof v === 'string') {
-      const s = v.trim().toLowerCase();
-      if (['true', 't', 'yes', 'y', '1'].includes(s)) return true;
-      if (['false', 'f', 'no', 'n', '0'].includes(s)) return false;
-   }
-
-   return false;
+   return row.free_with_admission === true;
 }
 
 function isSeasonalAttraction(row) {
-   const v =
-      row.part_of_seasonal_attraction ??
-      row.PART_OF_SEASONAL_ATTRACTION ??
-      row.part_of_seasonal_exhibit ??
-      row.PART_OF_SEASONAL_EXHIBIT ??
-      row.is_seasonal ??
-      row.IS_SEASONAL ??
-      row.seasonal ??
-      row.SEASONAL ??
-      false;
-
-   if (v === true) return true;
-   if (v === false) return false;
-
-   if (typeof v === 'number') return v !== 0;
-
-   if (typeof v === 'string') {
-      const s = v.trim().toLowerCase();
-      if (['true', 't', 'yes', 'y', '1'].includes(s)) return true;
-      if (['false', 'f', 'no', 'n', '0'].includes(s)) return false;
-   }
-
-   return false;
+   return row.part_of_seasonal_attraction === true;
 }
 
 function isClosed(row) {
-   const v =
-      row.is_closed ??
-      row.IS_CLOSED ??
-      row.closed ??
-      row.CLOSED ??
-      false;
-
-   if (v === true) return true;
-   if (v === false) return false;
-
-   if (typeof v === 'number') return v !== 0;
-
-   if (typeof v === 'string') {
-      const s = v.trim().toLowerCase();
-      if (['true', 't', 'yes', 'y', '1'].includes(s)) return true;
-      if (['false', 'f', 'no', 'n', '0'].includes(s)) return false;
-   }
-
-   return false;
+   return row.is_closed === true;
 }
 
 function getSubtitle(row) {
@@ -109,9 +47,14 @@ function migrateIfNeeded(arr) {
    if (!Array.isArray(arr)) return [];
 
    return arr
-      .map(x => {
-         if (typeof x === 'string') {
-            const name = x;
+      .map((item) => {
+         if (typeof item === 'string') {
+            const name = item.trim();
+
+            if (!name) {
+               return null;
+            }
+
             return {
                id: name,
                name,
@@ -123,40 +66,29 @@ function migrateIfNeeded(arr) {
             };
          }
 
-         if (x && typeof x === 'object') {
-            const name = x.name ?? x.NAME ?? x.title ?? x.TITLE ?? '';
-            const id = x.id ?? name;
+         if (item && typeof item === 'object') {
+            const name = normalizeStoredString(item.name);
+            const id = normalizeStoredString(item.id) || name;
+
+            if (!id) {
+               return null;
+            }
 
             return {
                id,
                name,
-               subtitle: x.subtitle ?? '',
-               freeWithAdmission:
-                  x.freeWithAdmission ??
-                  x.free_with_admission ??
-                  x.is_free_with_admission ??
-                  false,
-               seasonal:
-                  x.seasonal ??
-                  x.isSeasonal ??
-                  x.is_seasonal ??
-                  x.part_of_seasonal_attraction ??
-                  x.part_of_seasonal_exhibit ??
-                  false,
-               isClosed:
-                  x.isClosed ??
-                  x.is_closed ??
-                  x.closed ??
-                  false,
-               infoLink: x.infoLink ?? x.info_link ?? x.link ?? x.LINK ?? null,
-               imageSrc: x.imageSrc ?? x.image_src ?? x.image ?? null,
+               subtitle: normalizeStoredString(item.subtitle),
+               freeWithAdmission: normalizeStoredBoolean(item.freeWithAdmission),
+               seasonal: normalizeStoredBoolean(item.seasonal),
+               isClosed: normalizeStoredBoolean(item.isClosed),
+               infoLink: normalizeStoredLink(item.infoLink),
+               imageSrc: normalizeStoredLink(item.imageSrc),
             };
          }
 
          return null;
       })
       .filter(Boolean)
-      .filter(x => x.id);
 }
 
 function makeSelection(row) {
@@ -207,11 +139,7 @@ export function createItineraryAttractionSelectorController({
          includeClosedAttractions,
       }),
 
-      extractRows: response =>
-         (Array.isArray(response?.attractions) ? response.attractions :
-          Array.isArray(response) ? response :
-          Array.isArray(response?.results) ? response.results :
-          []),
+      extractRows: response => response.attractions,
 
       getId: row => getAttractionName(row),
       getTitle: row => getAttractionName(row) || 'Attraction',

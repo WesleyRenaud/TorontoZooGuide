@@ -11,287 +11,143 @@ import {
    getWildEncounters,
    getZoomobileRoute,
 } from '../api/mapApi.js';
+import {
+   createDynamicTypedSource,
+   createStaticTypedSource,
+   normalizeTypedRows,
+   setSourceRows,
+} from './sourceHelpers.js';
+import {
+   hideZoomobileRouteLayers,
+   showZoomobileRouteLayer,
+} from './zoomobileRouteOverlay.js';
 
 export function createDataSources(store) {
    return {
-      animal: {
-         fetch: async (ctx) => {
-            const res = await getVisibleAnimals({
-               month: ctx.month,
-               day: ctx.day,
-               temp: ctx.temp,
-               includeOffDisplayAnimals: ctx.includeOffDisplayAnimals,
-               speciesToInclude: ctx.speciesToInclude,
-               animalsToInclude: ctx.animalsToInclude,
-               itineraryMode: ctx.itineraryMode,
-            });
+      animal: createDynamicTypedSource(store, 'animal', async (ctx) => {
+         const animals = await getVisibleAnimals({
+            month: ctx.month,
+            day: ctx.day,
+            temp: ctx.temp,
+            includeOffDisplayAnimals: ctx.includeOffDisplayAnimals,
+            speciesToInclude: ctx.speciesToInclude,
+            animalsToInclude: ctx.animalsToInclude,
+            itineraryMode: ctx.itineraryMode,
+         });
 
-            const animals = res?.animals ?? [];
-            const normalized = animals.map(a => ({ ...a, type: 'animal' }));
-            store.byType.animal = normalized;
-            return normalized;
-         },
-         cachePolicy: 'no-cache',
-      },
+         return normalizeTypedRows(animals, 'animal');
+      }),
 
-      pavilion: {
-         fetch: async () => {
-            const cache = store.cache.pavilion ?? store.cache.pavilions;
+      pavilion: createStaticTypedSource(store, 'pavilion', async () => {
+         return normalizeTypedRows(await getPavilions(), 'pavilion');
+      }),
 
-            if (!cache) {
-               const res = await getPavilions();
-               const rows = res?.pavilions ?? res?.results ?? res ?? [];
-               const normalized = rows.map(p => ({ ...p, type: 'pavilion' }));
-               store.byType.pavilion = normalized;
-               return normalized;
-            }
+      restaurant: createDynamicTypedSource(store, 'restaurant', async (ctx) => {
+         const restaurants = await getRestaurants({
+            month: ctx.month,
+            day: ctx.day,
+            includeClosedRestaurants: ctx.includeClosedRestaurants,
+            restaurantsToInclude: ctx.restaurantsToInclude,
+         });
 
-            if (cache.loaded) return store.byType.pavilion ?? store.byType.pavilions ?? [];
-            if (cache.inFlight) return cache.inFlight;
+         return normalizeTypedRows(restaurants, 'restaurant');
+      }),
 
-            cache.inFlight = getPavilions()
-               .then(res => {
-                  const rows = res?.pavilions ?? res?.results ?? res ?? [];
-                  const normalized = rows.map(p => ({ ...p, type: 'pavilion' }));
+      restroom: createStaticTypedSource(store, 'restroom', async () => {
+         return normalizeTypedRows(await getRestrooms(), 'restroom');
+      }),
 
-                  store.byType.pavilion = normalized;
-                  cache.loaded = true;
-                  cache.inFlight = null;
-                  return normalized;
-               })
-               .catch(err => {
-                  cache.inFlight = null;
-                  throw err;
-               });
+      giftShop: createDynamicTypedSource(store, 'giftShop', async (ctx) => {
+         const giftShops = await getGiftShops({
+            month: ctx.month,
+            day: ctx.day,
+            includeClosedGiftShops: ctx.includeClosedGiftShops,
+            giftShopsToInclude: ctx.giftShopsToInclude,
+         });
 
-            return cache.inFlight;
-         },
-         cachePolicy: 'static',
-      },
+         return normalizeTypedRows(giftShops, 'giftShop');
+      }),
 
-      restaurant: {
-         fetch: async (ctx) => {
-            const res = await getRestaurants({
-               month: ctx.month,
-               day: ctx.day,
-               includeClosedRestaurants: ctx.includeClosedRestaurants,
-               restaurantsToInclude: ctx.restaurantsToInclude,
-            });
+      attraction: createDynamicTypedSource(store, 'attraction', async (ctx) => {
+         const attractions = await getAttractions({
+            month: ctx.month,
+            day: ctx.day,
+            includeClosedAttractions: ctx.includeClosedAttractions,
+            attractionsToInclude: ctx.attractionsToInclude,
+            itineraryMode: ctx.itineraryMode,
+         });
 
-            const rows = res?.restaurants ?? res?.results ?? res ?? [];
-            const normalized = rows.map(r => ({ ...r, type: 'restaurant' }));
-
-            store.byType.restaurant = normalized;
-            return normalized;
-         },
-         cachePolicy: 'no-cache',
-      },
-
-      restroom: {
-         fetch: async () => {
-            const cache = store.cache.restroom ?? store.cache.restrooms;
-
-            if (!cache) {
-               const res = await getRestrooms();
-               const rows = res?.restrooms ?? res?.results ?? res ?? [];
-               const normalized = rows.map(p => ({ ...p, type: 'restroom' }));
-               store.byType.restroom = normalized;
-               return normalized;
-            }
-
-            if (cache.loaded) return store.byType.restroom ?? store.byType.restrooms ?? [];
-            if (cache.inFlight) return cache.inFlight;
-
-            cache.inFlight = getRestrooms()
-               .then(res => {
-                  const rows = res?.restrooms ?? res?.results ?? res ?? [];
-                  const normalized = rows.map(p => ({ ...p, type: 'restroom' }));
-
-                  store.byType.restroom = normalized;
-                  cache.loaded = true;
-                  cache.inFlight = null;
-                  return normalized;
-               })
-               .catch(err => {
-                  cache.inFlight = null;
-                  throw err;
-               });
-
-            return cache.inFlight;
-         },
-         cachePolicy: 'static',
-      },
-
-      giftShop: {
-         fetch: async (ctx) => {
-            const res = await getGiftShops({
-               month: ctx.month,
-               day: ctx.day,
-               includeClosedGiftShops: ctx.includeClosedGiftShops,
-               giftShopsToInclude: ctx.giftShopsToInclude,
-            });
-
-            const rows = res?.gift_shops ?? res?.results ?? res ?? [];
-            const normalized = rows.map(r => ({ ...r, type: 'giftShop' }));
-
-            store.byType.giftShop = normalized;
-            return normalized;
-         },
-         cachePolicy: 'no-cache',
-      },
-
-      attraction: {
-         fetch: async (ctx) => {
-            const res = await getAttractions({
-               month: ctx.month,
-               day: ctx.day,
-               includeClosedAttractions: ctx.includeClosedAttractions,
-               attractionsToInclude: ctx.attractionsToInclude,
-               itineraryMode: ctx.itineraryMode,
-            });
-
-            const rows = res?.attractions ?? res?.results ?? res ?? [];
-            const normalized = rows.map(r => ({ ...r, type: 'attraction' }));
-
-            store.byType.attraction = normalized;
-            return normalized;
-         },
-         cachePolicy: 'no-cache',
-      },
+         return normalizeTypedRows(attractions, 'attraction');
+      }),
 
       zoomobileRoute: {
          fetch: async (ctx) => {
-            const svgRoot = document.querySelector('#zooMapMount svg');
-
-            const hideAllRouteLayers = () => {
-               if (!svgRoot) return;
-
-               svgRoot.querySelector('#zoomobile-route-summer')?.style.setProperty('display', 'none');
-               svgRoot.querySelector('#zoomobile-route-winter')?.style.setProperty('display', 'none');
-            };
-
-            hideAllRouteLayers();
+            hideZoomobileRouteLayers();
 
             if (ctx.zoomobileRoute === 'none') {
-               store.byType.zoomobileStation = [];
-               store.byType.zoomobileRoute = [];
+               setSourceRows(store, 'zoomobileStation', []);
+               setSourceRows(store, 'zoomobileRoute', []);
                return [];
             }
 
-            const res = await getZoomobileRoute({
+            const {
+               route,
+               zoomobileStations,
+            } = await getZoomobileRoute({
                zoomobileRoute: ctx.zoomobileRoute,
                month: ctx.month,
                day: ctx.day,
                zoomobileStationsToInclude: ctx.zoomobileStationsToInclude,
             });
 
-            console.log(res);
+            showZoomobileRouteLayer(route);
 
-            const route = String(res?.route || '').trim().toLowerCase();
+            const stations = normalizeTypedRows(
+               zoomobileStations,
+               'zoomobileStation'
+            );
 
-            if (svgRoot) {
-               if (route === 'summer') {
-                  svgRoot.querySelector('#zoomobile-route-summer')?.style.setProperty('display', '');
-               } else if (route === 'winter') {
-                  svgRoot.querySelector('#zoomobile-route-winter')?.style.setProperty('display', '');
-               }
-            }
-
-            const stations = Array.isArray(res?.zoomobile_stations)
-               ? res.zoomobile_stations.map((station) => ({
-                  ...station,
-                  type: 'zoomobileStation',
-               }))
-               : [];
-
-            store.byType.zoomobileStation = stations;
-            store.byType.zoomobileRoute = [];
+            setSourceRows(store, 'zoomobileStation', stations);
+            setSourceRows(store, 'zoomobileRoute', []);
 
             return stations;
          },
          cachePolicy: 'no-cache',
       },
 
-      guardiansTalk: {
-         fetch: async (ctx) => {
-            const res = await getGuardiansTalks({
-               month: ctx.month,
-               day: ctx.day,
-               guardiansTalksToInclude: ctx.guardiansTalksToInclude,
-               itineraryMode: ctx.itineraryMode,
-            });
+      guardiansTalk: createDynamicTypedSource(store, 'guardiansTalk', async (ctx) => {
+         const guardiansTalks = await getGuardiansTalks({
+            month: ctx.month,
+            day: ctx.day,
+            guardiansTalksToInclude: ctx.guardiansTalksToInclude,
+            itineraryMode: ctx.itineraryMode,
+         });
 
-            const rows = res?.guardians_talks ?? res?.talks ?? res?.results ?? res ?? [];
-            const normalized = (Array.isArray(rows) ? rows : []).map(t => ({ ...t, type: 'guardiansTalk' }));
+         return normalizeTypedRows(guardiansTalks, 'guardiansTalk');
+      }),
 
-            store.byType.guardiansTalk = normalized;
-            return normalized;
-         },
-         cachePolicy: 'no-cache',
-      },
+      wildEncounter: createDynamicTypedSource(store, 'wildEncounter', async (ctx) => {
+         const wildEncounters = await getWildEncounters({
+            month: ctx.month,
+            day: ctx.day,
+            wildEncountersToInclude: ctx.wildEncountersToInclude,
+            itineraryMode: ctx.itineraryMode,
+         });
 
-      wildEncounter: {
-         fetch: async (ctx) => {
-            const res = await getWildEncounters({
-               month: ctx.month,
-               day: ctx.day,
-               wildEncountersToInclude: ctx.wildEncountersToInclude,
-               itineraryMode: ctx.itineraryMode,
-            });
+         return normalizeTypedRows(wildEncounters, 'wildEncounter');
+      }),
 
-            const rows = res?.wild_encounters ?? res?.results ?? res ?? [];
-            const normalized = (Array.isArray(rows) ? rows : []).map(w => ({ ...w, type: 'wildEncounter' }));
-
-            store.byType.wildEncounter = normalized;
-            return normalized;
-         },
-         cachePolicy: 'no-cache',
-      },
-
-      exhibit: {
-         fetch: async () => {
-            const cache = store.cache.exhibit ?? store.cache.exhibits;
-
-            if (!cache) {
-               const res = await getExhibits();
-               const rows = res?.exhibits ?? res?.results ?? res ?? [];
-               const normalized = rows.map(e => ({ ...e, type: 'exhibit' }));
-               store.byType.exhibit = normalized;
-               return normalized;
-            }
-
-            if (cache.loaded) return store.byType.exhibit ?? store.byType.exhibits ?? [];
-            if (cache.inFlight) return cache.inFlight;
-
-            cache.inFlight = getExhibits()
-               .then(res => {
-                  const rows = res?.exhibits ?? res?.results ?? res ?? [];
-                  const normalized = rows.map(e => ({ ...e, type: 'exhibit' }));
-
-                  store.byType.exhibit = normalized;
-                  cache.loaded = true;
-                  cache.inFlight = null;
-                  return normalized;
-               })
-               .catch(err => {
-                  cache.inFlight = null;
-                  throw err;
-               });
-
-            return cache.inFlight;
-         },
-         cachePolicy: 'static',
-      },
+      exhibit: createStaticTypedSource(store, 'exhibit', async () => {
+         return normalizeTypedRows(await getExhibits(), 'exhibit');
+      }),
 
       closedExhibit: {
          fetch: async (ctx) => {
-            const res = await getClosedExhibits({
+            return await getClosedExhibits({
                month: ctx.month,
                day: ctx.day,
                dayOfWeek: ctx.dayOfWeek,
             });
-
-            return Array.isArray(res?.closed_exhibits) ? res.closed_exhibits : [];
          },
          cachePolicy: 'no-cache',
       },

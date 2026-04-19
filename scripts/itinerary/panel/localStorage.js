@@ -88,12 +88,3 @@ export function clearItineraryStorage({ emitEvent = true } = {}) {
       }));
    }
 }
-
-export function clearStaleItineraryStorage() {
-   if (!isStoredItineraryStale()) {
-      return false;
-   }
-
-   clearItineraryStorage();
-   return true;
-}

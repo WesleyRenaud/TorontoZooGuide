@@ -1,44 +1,11 @@
-import { getMonth, getDay, isWithinNextNDays } from '../visitDates/visitDateRules.js';
-import { fetchForecastTemp } from '../api/weatherApi.js';
-import { uniq, isoDateToMonFirstDow } from '../itinerary/itineraryHelpers.js';
-
-function toTypedRows(items, type) {
-   if (!Array.isArray(items)) return [];
-
-   return items.map((item) => ({
-      ...item,
-      type: item?.type || type,
-   }));
-}
-
-function normalizeExhibitKey(value) {
-   return String(value || '')
-      .trim()
-      .toLowerCase()
-      .replace(/'/g, '')
-      .replace(/&/g, 'and')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-}
-
-function setClosedExhibitOverlaysVisible(closedExhibits) {
-   const overlays = document.querySelectorAll('[id^="closed-exhibit-overlay-"]');
-
-   overlays.forEach((overlay) => {
-      overlay.style.display = 'none';
-   });
-
-   (closedExhibits || []).forEach((exhibit) => {
-      const key = normalizeExhibitKey(exhibit);
-
-      if (!key) return;
-
-      const overlay = document.getElementById(`closed-exhibit-overlay-${key}`);
-      if (overlay) {
-         overlay.style.display = '';
-      }
-   });
-}
+import { buildMapDateContext } from './dateContext.js';
+import { buildLayerRequest, buildItineraryRows } from './layerRequest.js';
+import {
+   normalizeSearchFocusRequest,
+   resolveDeepLinkFocus,
+   scheduleFocusRequest,
+} from './focusRequest.js';
+import { syncClosedExhibitOverlays } from './closedExhibitOverlay.js';
 
 export function createMapUpdater({
    store,
@@ -66,58 +33,11 @@ export function createMapUpdater({
          pendingOptions = null;
       }
 
-      if (preset === 'summer') {
-         return run({ preset, month: 'JUL', day: 20, date: null, temp: null }, options);
-      }
-
-      if (preset === 'winter') {
-         return run({ preset, month: 'JAN', day: 30, date: null, temp: null }, options);
-      }
-
-      const month = getMonth(dateStr);
-      const day = getDay(dateStr);
-
-      if (isWithinNextNDays(dateStr, 7)) {
-         try {
-            const temp = await fetchForecastTemp(dateStr);
-            return run({ preset, month, day, date: dateStr, temp }, options);
-         } catch {
-            return run({ preset, month, day, date: dateStr, temp: null }, options);
-         }
-      }
-
-      return run({ preset, month, day, date: dateStr, temp: null }, options);
+      return run(await buildMapDateContext(preset, dateStr), options);
    }
 
    function focusIfRequested(options) {
-      if (!options?.focus?.row) return;
-
-      const row = options.focus.row;
-      const type = String(options.focus.type || row.type || '');
-
-      setTimeout(() => {
-         focus.focus({ row, type });
-      }, 0);
-   }
-
-   async function fetchClosedExhibits(ctx) {
-      const src = sources.closedExhibit;
-
-      if (!src?.fetch) {
-         setClosedExhibitOverlaysVisible([]);
-         return [];
-      }
-
-      try {
-         const rows = await src.fetch(ctx);
-         const closedExhibits = Array.isArray(rows) ? rows : [];
-
-         setClosedExhibitOverlaysVisible(closedExhibits);
-         return closedExhibits;
-      } catch {
-         setClosedExhibitOverlaysVisible([]);
-         return [];
-      }
+      scheduleFocusRequest(focus, options?.focus || null);
    }
 
    async function run(dateCtx, options = null) {
@@ -131,18 +51,9 @@ export function createMapUpdater({
       const itin = options?.itinerary || null;
       const itineraryOnly = !!itin;
 
-      const dayOfWeek = dateCtx?.date ? isoDateToMonFirstDow(dateCtx.date) : 1;
-
       if (itineraryOnly) {
          try {
-            const rows = [
-               ...toTypedRows(itin.animals, 'animal'),
-               ...toTypedRows(itin.attractions, 'attraction'),
-               ...toTypedRows(itin.guardiansTalks, 'guardiansTalk'),
-               ...toTypedRows(itin.wildEncounters, 'wildEncounter'),
-            ];
-
-            markers.render(rows);
+            markers.render(buildItineraryRows(itin));
             focusIfRequested(options);
             return;
          } catch (err) {
@@ -154,76 +65,22 @@ export function createMapUpdater({
 
       const focusRow = options?.focus?.row || null;
       const focusType = String(options?.focus?.type || focusRow?.type || '').trim();
-
-      let speciesToInclude = [];
-      let restaurantsToInclude = [];
-      let giftShopsToInclude = [];
-      let attractionsToInclude = [];
-      let zoomobileStationsToInclude = [];
-
-      if (focusRow) {
-         if (focusType === 'animal') {
-            const s = String(focusRow.species ?? focusRow.SPECIES ?? '').trim();
-            if (s) speciesToInclude = uniq([s, ...speciesToInclude]);
-         }
-
-         if (focusType === 'restaurant') {
-            const r = focusRow.name ?? focusRow.NAME ?? null;
-            if (r != null) restaurantsToInclude = uniq([r, ...restaurantsToInclude]);
-         }
-
-         if (focusType === 'giftShop') {
-            const g = focusRow.name ?? focusRow.NAME ?? null;
-            if (g != null) giftShopsToInclude = uniq([g, ...giftShopsToInclude]);
-         }
-
-         if (focusType === 'attraction') {
-            const a = focusRow.name ?? focusRow.NAME ?? null;
-            if (a != null) attractionsToInclude = uniq([a, ...attractionsToInclude]);
-         }
-
-         if (focusType === 'zoomobileStation') {
-            const z = focusRow.name ?? focusRow.NAME ?? null;
-            if (z != null) zoomobileStationsToInclude = uniq([z, ...zoomobileStationsToInclude]);
-         }
-      }
-
-      let selectedTypes = (getSelectedTypes() || []).map((t) => String(t).trim());
-
-      const routeActive = zoomobileRoute !== 'none';
-      const focusIsZoomobileStation = focusType === 'zoomobileStation';
-
-      if (
-         focusType &&
-         !selectedTypes.includes(focusType) &&
-         !(routeActive && focusIsZoomobileStation && selectedTypes.includes('zoomobileRoute'))
-      ) {
-         selectedTypes = [focusType, ...selectedTypes];
-      }
-
-      selectedTypes = uniq(selectedTypes);
-
-      const ctx = {
-         month: dateCtx.month,
-         day: dateCtx.day,
-         dayOfWeek,
-         temp: dateCtx.temp ?? null,
-
+      const {
+         ctx,
+         selectedTypes,
+      } = buildLayerRequest({
+         dateCtx,
+         selectedTypes: getSelectedTypes(),
+         zoomobileRoute,
+         focusRow,
+         focusType,
          includeOffDisplayAnimals,
          includeClosedRestaurants,
          includeClosedGiftShops,
          includeClosedAttractions,
+      });
 
-         zoomobileRoute,
-
-         speciesToInclude,
-         restaurantsToInclude,
-         giftShopsToInclude,
-         attractionsToInclude,
-         zoomobileStationsToInclude,
-      };
-
-      await fetchClosedExhibits(ctx);
+      await syncClosedExhibitOverlays(sources, ctx);
 
       if (selectedTypes.length === 0) {
          markers.render([]);
@@ -272,47 +129,28 @@ export function createMapUpdater({
    }
 
    function focusFromSearchRow(payload) {
-      if (!payload) return;
+      const focusRequest = normalizeSearchFocusRequest(payload);
 
-      const base = payload.row && typeof payload.row === 'object' ? payload.row : payload;
-      const type = String(payload.type || base.type || payload.TYPE || base.TYPE || '').trim();
+      if (!focusRequest) {
+         return;
+      }
 
-      const row = {
-         ...base,
-         type,
-         x_coord: base.x_coord ?? payload.x_coord ?? payload.x ?? base.x ?? null,
-         y_coord: base.y_coord ?? payload.y_coord ?? payload.y ?? base.y ?? null,
-      };
-
-      refetchWithCurrentControls({ focus: { type, row } });
+      refetchWithCurrentControls({ focus: focusRequest });
    }
 
    function focusFromDeepLink(payload) {
-      if (!payload) return;
+      const resolved = resolveDeepLinkFocus(payload);
 
-      if (payload && typeof payload === 'object' && payload.row) {
-         focus.focus({
-            row: payload.row,
-            type: payload.type || payload.row.type,
-         });
+      if (!resolved) {
          return;
       }
 
-      if (payload.species) {
-         const row = {
-            type: 'animal',
-            species: payload.species,
-            exhibit: payload.exhibit ?? null,
-         };
-
-         refetchWithCurrentControls({ focus: { type: 'animal', row } });
+      if (resolved.mode === 'direct') {
+         scheduleFocusRequest(focus, resolved.focusRequest);
          return;
       }
 
-      if (payload.row) {
-         const type = String(payload.type || payload.row.type || '').trim();
-         refetchWithCurrentControls({ focus: { type, row: payload.row } });
-      }
+      refetchWithCurrentControls({ focus: resolved.focusRequest });
    }
 
    return {
