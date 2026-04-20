@@ -1326,13 +1326,6 @@ enclosures =\
       'Year-round',                                # Seasonal viewing summary
       None                                         # Seasonal viewing information (for seasonal exhibits)
    ),
-   (
-      'Sumatran Tiger',
-      'Indo-Malaya Outdoor',
-      'Year-round',                                # Seasonal viewing summary
-      None                                         # Seasonal viewing information (for seasonal exhibits)
-   ),
-
    # Malayan Woods Pavilion
    (
       'Asian Giant Millipede',
@@ -1360,6 +1353,12 @@ enclosures =\
    ),
    (
       'Malayan Walking Stick',
+      'Malayan Woods Pavilion',
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
+      'Malaysian Stick Insect Jungle Wood Nymph',
       'Malayan Woods Pavilion',
       'Year-round',                                # Seasonal viewing summary
       None                                         # Seasonal viewing information (for seasonal exhibits)

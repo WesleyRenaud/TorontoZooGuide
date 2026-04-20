@@ -16,12 +16,6 @@ guardians_talks = [
       55.427                           # Y coordinate on map
    ),
    (
-      'Sumatran Tiger',                # Talk name
-      'Indo-Malaya Outdoor',           # Location
-      50.259,                          # X coordinate on map
-      71.641                           # Y coordinate on map
-   ),
-   (
       'Komodo Dragon',                 # Talk name
       'Australasia Pavilion',          # Location
       72.266,                          # X coordinate on map

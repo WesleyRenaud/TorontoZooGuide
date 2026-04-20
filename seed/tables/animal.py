@@ -6739,50 +6739,6 @@ animals = [
          25 years.'''.replace( '\n', ' ' ),
       None                                                           # Animals at the zoo
    ),
-   (
-      'Sumatran Tiger',
-      'Panthera Tigris Sumatrae',
-      -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      '''The Sumatran tigers can be viewed just outside the Indo-Malaya Pavilion, from the boardwalk connecting Indo-Malaya to
-         Africa and the Americas. There is one habitat on either side of the boardwalk, which each holds one tiger. You can also
-         view the habitat built off of the pavilion from inside the pavilion, just before you exit. Like most cat species, the
-         Sumatran tigers sleep quite a lot and are the most active when it is cooler. Your best chance to see them active is to
-         visit their habitat earlier or later in the day.'''.replace( '\n', ' ' ),
-      '''The Sumatran tigers are generally comfortable being outside year-round, but on cooler winter days they may choose to
-         retreat inside.'''.replace( '\n', ' ' ),
-      '''The Sumatran tiger is the smallest surviving tiger subspecies, yet still a powerful apex predator. Adult males weigh
-         100–140 kg and measure 2.4–2.8 m in body length, with a tail of 90–100 cm. Females are smaller, weighing 75–110 kg. Their
-         dense orange coat is patterned with narrow black stripes, which are unique to each individual, providing camouflage in
-         dense forests. A lighter underside and white facial markings enhance facial expression recognition during social
-         interactions. Their muscular build and large paws enable stealthy movement across rugged terrain.'''.replace( '\n', ' ' ),
-      '''Sumatran tigers are endemic to the Indonesian island of Sumatra, inhabiting lowland and montane tropical rainforests, peat
-         swamps, and grasslands. They require large territories with dense cover and access to water, as well as sufficient prey
-         populations. Habitat fragmentation and human encroachment have severely reduced their range, making them critically
-         endangered.'''.replace( '\n', ' ' ),
-      '''Sumatran tigers are carnivorous apex predators, feeding primarily on deer, wild pigs, primates, and occasionally smaller
-         mammals or birds. They are solitary hunters, relying on stealth and ambush tactics, approaching prey quietly before a
-         sudden, explosive attack. Tigers consume up to 15 kg of meat per day, though feeding intervals vary based on hunting
-         success. They also play a crucial ecological role in controlling herbivore populations and maintaining forest balance.'''
-         .replace( '\n', ' ' ),
-      '''Sumatran tigers are mostly solitary, except during mating or when a mother is raising cubs. Each individual maintains a
-         territory marked by scent, scratch marks, and vocalizations. They are nocturnal to crepuscular, active at dawn and dusk.
-         Mothers are highly protective of cubs, teaching them hunting and survival skills over a period of 18–24 months. Tigers are
-         powerful swimmers and climbers, capable of navigating rivers and steep terrain to access prey or avoid threats.'''
-         .replace( '\n', ' ' ),
-      '''The Sumatran tiger exhibits remarkable adaptations for stealthy predation in dense tropical forests. Its camouflaged
-         striped coat breaks up the outline of its body among shadows and vegetation. Powerful limbs, retractable claws, and sharp
-         teeth allow for capturing and subduing prey efficiently. Acute hearing and vision, especially at low light, enhance
-         hunting success. Large territorial ranges, strong swimming ability, and solitary behaviour reduce competition and ensure
-         access to prey. Cognitive adaptations support memory of territory, hunting strategies, and maternal care, making the tiger
-         highly efficient and adaptable in a complex ecosystem.'''.replace( '\n', ' ' ),
-      '''Sumatran tigers breed year-round, with a gestation of approximately 3.5 months, producing 2–4 cubs per litter. Cubs are
-         born blind and helpless, relying entirely on the mother for food, protection, and skill development. Juveniles remain with
-         the mother for up to 2 years, learning hunting and survival skills before dispersing to establish their own territories.
-         Sexual maturity is reached at 3–4 years, and tigers can live 15–20 years in the wild and up to 25 years in managed care.'''
-         .replace( '\n', ' ' ),
-      '''The Toronto Zoo is home to a female Sumatran tiger, Kemala.'''
-   ),
-
    # Malayan Woods Pavilion
    (
       'Asian Giant Millipede',
@@ -6907,6 +6863,34 @@ animals = [
       '''Females lay eggs that resemble seeds, dropping them to the forest floor or attaching them to leaves. Juveniles hatch fully
          formed, resembling miniature adults, and grow through successive molts. Adults typically live 1–2 years, with survival
          dependent on predator avoidance and habitat stability.'''.replace( '\n', ' ' ),
+      None                                                           # Animals at the zoo
+   ),
+   (
+      'Malaysian Stick Insect Jungle Wood Nymph',
+      'Heteropteryx Dilatata',
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      '''The Malaysian stick insect jungle wood nymph can be found in the bugs area of the Malayan Woods Pavilion, just before the
+         clouded leopards.'''.replace( '\n', ' ' ),
+      None,                                                          # Seasonal viewing tips
+      '''This species is one of the largest and heaviest stick insects in the world. Adult females are broad-bodied and usually
+         leaf-green, with a chunky, thorn-lined body, stout legs, and shortened wings that do not support flight. Males are much
+         slimmer, typically brown, and have longer wings than females. Both sexes have strong spines on the legs and body, giving
+         them a heavily armoured appearance.'''.replace( '\n', ' ' ),
+      '''Malaysian stick insect jungle wood nymphs are native to humid tropical forests of the Malay Peninsula and nearby parts of
+         Southeast Asia, where they live among shrubs and low tree branches. They depend on warm, moist environments with dense
+         vegetation that provides camouflage, food, and sheltered places to rest during the day.'''.replace( '\n', ' ' ),
+      '''These insects are herbivores that feed on leaves and tender plant growth. They usually browse quietly at night, using
+         strong jaws to chew foliage from host plants. In managed care, they are commonly offered a variety of leafy browse such as
+         bramble, oak, or other suitable leaves.'''.replace( '\n', ' ' ),
+      '''They are mostly nocturnal and spend daylight hours staying still to avoid detection. When threatened, they may sway, open
+         their wings in a warning display, stridulate, or use their spiny hind legs defensively. Juveniles may rest in small
+         groups, while older individuals are more often seen alone.'''.replace( '\n', ' ' ),
+      '''Its bulky, leaf-like form and natural colour provide excellent camouflage among rainforest vegetation. Strong grasping legs
+         help it cling to branches, while spines along the body and hind legs discourage predators. Females also have an adapted
+         egg-laying structure that allows eggs to be placed into soil, protecting them during development.'''.replace( '\n', ' ' ),
+      '''Females lay eggs individually in soil or loose substrate. Depending on temperature and humidity, eggs can take many months
+         to hatch. Nymphs resemble tiny adults and grow through a series of molts before reaching maturity, with males maturing
+         sooner than the larger females. Adults can live for well over a year in managed care.'''.replace( '\n', ' ' ),
       None                                                           # Animals at the zoo
    ),
    (

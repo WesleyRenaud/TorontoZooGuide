@@ -1951,15 +1951,6 @@ enclosure_viewings =\
       52.643,                 # X coordinate on map
       78.68                   # Y coordinate on map
    ),
-   (
-      'Sumatran Tiger',
-      'Indo-Malaya Outdoor',
-      'Outdoor',
-      '''The Sumatran tigers are most likely inside and off-display on this day due to particularly harsh conditions.''',
-      49.295,                 # X coordinate on map
-      71.958                  # Y coordinate on mpa
-   ),
-
    # Malayan Woods Pavilion
    (
       'Asian Giant Millipede',
@@ -1995,6 +1986,14 @@ enclosure_viewings =\
    ),
    (
       'Malayan Walking Stick',
+      'Malayan Woods Pavilion',
+      'Indoor',
+      None,                   # Seasonally off-display message
+      50.177,                 # X coordinate on map
+      81.571                  # Y coordinate on map
+   ),
+   (
+      'Malaysian Stick Insect Jungle Wood Nymph',
       'Malayan Woods Pavilion',
       'Indoor',
       None,                   # Seasonally off-display message

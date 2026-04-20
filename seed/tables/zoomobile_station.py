@@ -13,8 +13,8 @@ zoomobile_stations = [
       'Main Zoomobile Station',
       1,       # On winter route
       '''This stop is right beside the entrance and exit to the zoo. Located next door is the Peacock Café. This is also the closest
-         stop to Indo-Malaya where you can see Sumatran orangutans, white-handed gibbons, greater one-horned rhinos, Sumatran tigers,
-         clouded leopards, and so much more.'''.replace( '\n', ' ' ),
+         stop to Indo-Malaya where you can see Sumatran orangutans, white-handed gibbons, greater one-horned rhinos, clouded
+         leopards, and so much more.'''.replace( '\n', ' ' ),
       56.992,  # X coordinate on map
       80.918   # Y coordinate on map
    ),
