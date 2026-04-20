@@ -9,7 +9,6 @@ class Database():
    def __init__( self ):
       self.conn = sqlite3.connect( 'animals.db' )
       self.conn.row_factory = sqlite3.Row
-      self.zoo_util = zoo.Zoo_Util()
 
 
    # Returns all animals which may be viewable in the given month with their likelihoods (0 to 100)
@@ -24,13 +23,13 @@ class Database():
 
       exhibits_to_include = exhibits_to_include or []
 
-      month = self.zoo_util.get_month_abbreviation( month )
-      normalized_month = self.zoo_util.normalize_month( month=month )
+      month = zoo.ZooUtil.get_month_abbreviation( month )
+      normalized_month = zoo.ZooUtil.normalize_month( month=month )
       normalized_day = int( day )
       cur = self.conn.cursor()
 
       if temp is None:
-         temp = self.zoo_util.get_average_temperature( month=month, day=day )
+         temp = zoo.ZooUtil.get_average_temperature( month=month, day=day )
          sigma = 3
       else:
          sigma = 2
@@ -303,7 +302,7 @@ class Database():
          if min_temperature is None:
             temperature_likelihood = 1.0
          else:
-            temperature_likelihood = self.zoo_util.get_temperature_probability(
+            temperature_likelihood = zoo.ZooUtil.get_temperature_probability(
                mu=temp,
                sigma=sigma,
                min_temperature=min_temperature )
@@ -399,6 +398,56 @@ class Database():
       cur.close()
 
       return exhibits
+
+
+   def get_regions( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  r.NAME AS REGION_NAME,
+                  e.NAME AS EXHIBIT_NAME
+               FROM Region r
+               LEFT JOIN Exhibit e
+                  ON e.REGION = r.NAME
+               ORDER BY r.NAME, e.NAME;
+         """ )
+
+      rows = data.fetchall()
+      regions = []
+      current_region = None
+
+      for row in rows:
+         region_name = row[ 'REGION_NAME' ]
+         exhibit_name = row[ 'EXHIBIT_NAME' ]
+
+         if current_region == None or current_region[ 'name' ] != region_name:
+            current_region = {
+               'name': region_name,
+               'exhibits': [],
+            }
+            regions.append( current_region )
+
+         if exhibit_name != None:
+            current_region[ 'exhibits' ].append( exhibit_name )
+
+      cur.close()
+
+      regions = [
+         region for region in regions
+         if len( region[ 'exhibits' ] ) > 0
+      ]
+
+      return [
+         {
+            'name': region[ 'name' ],
+            'hasExhibits': not (
+               len( region[ 'exhibits' ] ) == 1
+               and region[ 'exhibits' ][ 0 ] == region[ 'name' ]
+            ),
+         }
+         for region in regions
+      ]
 
 
    def get_animals_in_exhibit( self, exhibit ):
@@ -505,14 +554,14 @@ class Database():
    def get_restaurants( self, month, day, include_closed_restaurants, restaurants_to_include=[] ):
       cur = self.conn.cursor()
 
-      normalized_month = self.zoo_util.normalize_month( month=month )
+      normalized_month = zoo.ZooUtil.normalize_month( month=month )
       normalized_day = int( day )
 
       target_date = date( datetime.now().year, normalized_month, normalized_day )
       weekday = target_date.weekday()
       is_weekend_or_holiday = (
          weekday >= 5
-         or self.zoo_util.is_holiday( d=target_date ) )
+         or zoo.ZooUtil.is_holiday( d=target_date ) )
 
       data = cur.execute(
          """   SELECT
@@ -617,7 +666,7 @@ class Database():
          if not is_active:
             continue
 
-         is_holiday = self.zoo_util.is_holiday( d=target_date ) if hasattr( self.zoo_util, 'is_holiday' ) else False
+         is_holiday = zoo.ZooUtil.is_holiday( d=target_date )
 
          open_on_day = False
 
@@ -688,14 +737,14 @@ class Database():
    def get_gift_shops( self, month, day, include_closed_gift_shops, gift_shops_to_include=[] ):
       cur = self.conn.cursor()
 
-      normalized_month = self.zoo_util.normalize_month( month )
+      normalized_month = zoo.ZooUtil.normalize_month( month )
       normalized_day = int( day )
 
       target_date = date( datetime.now().year, normalized_month, normalized_day )
       weekday = target_date.weekday()
       is_weekend_or_holiday = (
          weekday >= 5
-         or self.zoo_util.is_holiday( d=target_date ) )
+         or zoo.ZooUtil.is_holiday( d=target_date ) )
 
       data = cur.execute(
          """   SELECT
@@ -796,7 +845,7 @@ class Database():
          if not is_active:
             continue
 
-         is_holiday = self.zoo_util.is_holiday( d=target_date ) if hasattr( self.zoo_util, 'is_holiday' ) else False
+         is_holiday = zoo.ZooUtil.is_holiday( d=target_date )
 
          open_on_day = False
 
@@ -839,7 +888,7 @@ class Database():
 
    def get_attractions( self, month, day, include_closed_attractions=False ):
       cur = self.conn.cursor()
-      normalized_month = self.zoo_util.normalize_month( month )
+      normalized_month = zoo.ZooUtil.normalize_month( month )
       normalized_day = int( day )
 
       target_date = date(
@@ -850,7 +899,7 @@ class Database():
       weekday = target_date.weekday()
       is_weekend_or_holiday = (
          weekday >= 5
-         or self.zoo_util.is_holiday( d=target_date ) )
+         or zoo.ZooUtil.is_holiday( d=target_date ) )
 
       data = cur.execute(
          """   SELECT
@@ -962,7 +1011,7 @@ class Database():
          if not is_active:
             continue
 
-         is_holiday = self.zoo_util.is_holiday( d=target_date ) if hasattr( self.zoo_util, 'is_holiday' ) else False
+         is_holiday = zoo.ZooUtil.is_holiday( d=target_date )
 
          open_on_day = False
 
@@ -1016,7 +1065,7 @@ class Database():
 
       target_date = date(
          datetime.now().year,
-         self.zoo_util.normalize_month( month ),
+         zoo.ZooUtil.normalize_month( month ),
          int( day ) )
 
       cur = self.conn.cursor()
@@ -1098,7 +1147,7 @@ class Database():
       if zoomobile_stations_to_include is None:
          zoomobile_stations_to_include = []
 
-      normalized_month = self.zoo_util.normalize_month( month )
+      normalized_month = zoo.ZooUtil.normalize_month( month )
       normalized_day = int( day )
       target_date = date(
          datetime.now().year,
@@ -1193,7 +1242,7 @@ class Database():
 
       target_date = date(
          datetime.now().year,
-         self.zoo_util.normalize_month( month ),
+         zoo.ZooUtil.normalize_month( month ),
          int( day ) )
 
       target_weekday = target_date.weekday()
@@ -1308,7 +1357,7 @@ class Database():
 
       target_date = date(
          datetime.now().year,
-         self.zoo_util.normalize_month( month=month ),
+         zoo.ZooUtil.normalize_month( month=month ),
          int( day ) )
 
       target_weekday = target_date.weekday()
@@ -1422,7 +1471,7 @@ class Database():
 
       target_date = date(
          datetime.now().year,
-         self.zoo_util.normalize_month( month=month ),
+         zoo.ZooUtil.normalize_month( month=month ),
          int( day ) )
 
       data = cur.execute(
@@ -1996,7 +2045,7 @@ class Database():
 
       target_date = date(
          datetime.now().year,
-         self.zoo_util.normalize_month( month ),
+         zoo.ZooUtil.normalize_month( month ),
          int( day ) )
 
       data = cur.execute(

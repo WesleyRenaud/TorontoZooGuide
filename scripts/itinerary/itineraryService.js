@@ -4,58 +4,54 @@ import {
    setItineraryRequest,
 } from '../../api/itineraryApi.js';
 
+function emptyItinerary() {
+   return {
+      isActive: false,
+      date: '',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   };
+}
+
+function asArray(value) {
+   return Array.isArray(value) ? value : [];
+}
+
 export function isItineraryEmpty(itin) {
    if (!itin || typeof itin !== 'object') return true;
 
-   const animals = Array.isArray(itin.animals) ? itin.animals : [];
-   const attractions = Array.isArray(itin.attractions) ? itin.attractions : [];
-   const guardiansTalks = Array.isArray(itin.guardiansTalks)
-      ? itin.guardiansTalks
-      : Array.isArray(itin.guardians_talks)
-         ? itin.guardians_talks
-         : [];
-   const wildEncounters = Array.isArray(itin.wildEncounters)
-      ? itin.wildEncounters
-      : Array.isArray(itin.wild_encounters)
-         ? itin.wild_encounters
-         : [];
+   const animals = asArray(itin.animals);
+   const attractions = asArray(itin.attractions);
+   const guardiansTalks = asArray(itin.guardiansTalks);
+   const wildEncounters = asArray(itin.wildEncounters);
 
    return !animals.length && !attractions.length && !guardiansTalks.length && !wildEncounters.length;
 }
 
 export function normalizeItinerary(itin) {
    if (!itin || typeof itin !== 'object') {
-      return {
-         isActive: false,
-         date: '',
-         animals: [],
-         attractions: [],
-         guardiansTalks: [],
-         wildEncounters: [],
-      };
+      return emptyItinerary();
    }
 
+   const normalized = {
+      date: typeof itin.date === 'string' ? itin.date : '',
+      animals: asArray(itin.animals),
+      attractions: asArray(itin.attractions),
+      guardiansTalks: asArray(itin.guardiansTalks),
+      wildEncounters: asArray(itin.wildEncounters),
+   };
+
    return {
-      isActive: !isItineraryEmpty(itin),
-      date: itin.date || itin.date || '',
-      animals: Array.isArray(itin.animals) ? itin.animals : [],
-      attractions: Array.isArray(itin.attractions) ? itin.attractions : [],
-      guardiansTalks: Array.isArray(itin.guardiansTalks)
-         ? itin.guardiansTalks
-         : Array.isArray(itin.guardians_talks)
-            ? itin.guardians_talks
-            : [],
-      wildEncounters: Array.isArray(itin.wildEncounters)
-         ? itin.wildEncounters
-         : Array.isArray(itin.wild_encounters)
-            ? itin.wild_encounters
-            : [],
+      ...normalized,
+      isActive: !isItineraryEmpty(normalized),
    };
 }
 
 export async function getItinerary() {
    const result = await getItineraryRequest();
-   return normalizeItinerary(result?.itinerary);
+   return normalizeItinerary(result.itinerary);
 }
 
 export async function saveItinerary({
@@ -67,7 +63,7 @@ export async function saveItinerary({
    isActive = true,
 } = {}) {
    const result = await setItineraryRequest({
-      date: date,
+      date,
       animals,
       attractions,
       guardiansTalks,
@@ -75,7 +71,7 @@ export async function saveItinerary({
       isActive,
    });
 
-   const itinerary = normalizeItinerary(result?.itinerary);
+   const itinerary = normalizeItinerary(result.itinerary);
 
    window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {
       detail: { itinerary },
@@ -86,11 +82,11 @@ export async function saveItinerary({
 
 export async function clearItinerary() {
    const result = await clearItineraryRequest();
-   const emptyItinerary = normalizeItinerary(null);
+   const clearedItinerary = emptyItinerary();
 
    window.dispatchEvent(new CustomEvent('tzg:itineraryCleared'));
    window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {
-      detail: { itinerary: emptyItinerary },
+      detail: { itinerary: clearedItinerary },
    }));
 
    return result;

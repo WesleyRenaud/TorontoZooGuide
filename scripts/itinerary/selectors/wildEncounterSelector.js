@@ -1,31 +1,27 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
+import {
+   normalizeStoredLink,
+   normalizeStoredString,
+} from './base/storedSelection.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 
 const STORAGE_KEY = 'tzg.itineraryWildEncounters';
 
 function getName(row) {
-   return row.name ?? row.NAME ?? '';
+   return row.name ?? '';
 }
 
 function getMeetingSpot(row) {
-   return (
-      row.meeting_spot ??
-      row.MEETING_SPOT ??
-      row.meetingSpot ??
-      row.MEETINGSPOT ??
-      row.location ??
-      row.LOCATION ??
-      ''
-   );
+   return row.meeting_spot ?? '';
 }
 
 function getTimeOfDay(row) {
-   return row.time_of_day ?? row.TIME_OF_DAY ?? row.time ?? row.TIME ?? '';
+   return row.time_of_day ?? '';
 }
 
 function getLink(row) {
-   const v = row.link ?? row.LINK ?? row.info_link ?? row.INFO_LINK ?? null;
+   const v = row.link ?? null;
    const s = typeof v === 'string' ? v.trim() : '';
    return s ? s : null;
 }
@@ -40,36 +36,45 @@ function migrateIfNeeded(arr) {
    if (!Array.isArray(arr)) return [];
 
    return arr
-      .map(x => {
-         if (typeof x === 'string') {
+      .map((item) => {
+         if (typeof item === 'string') {
+            const name = item.trim();
+
+            if (!name) {
+               return null;
+            }
+
             return {
-               id: x,
-               name: x,
+               id: name,
+               name,
                meetingSpot: '',
                timeOfDay: '',
                link: null,
-               imageSrc: buildWildEncounterImageSrc(x),
+               imageSrc: buildWildEncounterImageSrc(name),
             };
          }
 
-         if (x && typeof x === 'object') {
-            const name = x.name ?? x.NAME ?? '';
-            const id = x.id ?? name;
+         if (item && typeof item === 'object') {
+            const name = normalizeStoredString(item.name);
+            const id = normalizeStoredString(item.id) || name;
+
+            if (!id) {
+               return null;
+            }
 
             return {
                id,
                name,
-               meetingSpot: x.meetingSpot ?? x.meeting_spot ?? x.MEETING_SPOT ?? '',
-               timeOfDay: x.timeOfDay ?? x.time_of_day ?? x.TIME_OF_DAY ?? '',
-               link: x.link ?? x.LINK ?? x.info_link ?? x.INFO_LINK ?? null,
-               imageSrc: x.imageSrc ?? x.image_src ?? x.image ?? buildWildEncounterImageSrc(name),
+               meetingSpot: normalizeStoredString(item.meetingSpot),
+               timeOfDay: normalizeStoredString(item.timeOfDay),
+               link: normalizeStoredLink(item.link),
+               imageSrc: normalizeStoredString(item.imageSrc) || buildWildEncounterImageSrc(name),
             };
          }
 
          return null;
       })
       .filter(Boolean)
-      .filter(x => x.id);
 }
 
 export function createItineraryWildEncounterSelectorController({
@@ -112,12 +117,7 @@ export function createItineraryWildEncounterSelectorController({
          includeWildEncounters: true,
       }),
 
-      extractRows: response =>
-         Array.isArray(response?.wildEncounters)
-            ? response.wildEncounters
-            : Array.isArray(response?.wild_encounters)
-            ? response.wild_encounters
-            : [],
+      extractRows: response => response.wild_encounters,
 
       getId: row => getName(row),
 

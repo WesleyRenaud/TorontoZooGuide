@@ -1,18 +1,4 @@
-import { CONFIG } from '../config/appConfig.js';
-import { createPanzoom } from '../map/panzoom.js';
-import { createMapStore } from '../map/store.js';
-import { createDataSources } from '../map/sources.js';
-import { createMapUpdater } from '../map/updater.js';
-import { createMarkerLayer } from '../markers/markers.js';
-import { createHoverTooltip } from '../markers/hoverTooltip.js';
-import { createTooltipController } from '../tooltips/tooltipController.js';
-import { createFocusController } from '../focus/focusController.js';
-import { createOffDisplayBanner } from '../banners/offDisplayBanner.js';
-import { createRestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
-import { createGiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
-import { createAttractionClosedBanner } from '../banners/attractionClosedBanner.js';
-import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
-import { initLabelVisibilityToggle } from '../map/labelVisibility.js';
+import { createMapRuntime } from '../map/mapRuntime.js';
 import { getItinerary, isItineraryEmpty } from './itineraryService.js';
 
 function todayISO() {
@@ -32,62 +18,15 @@ export function initItineraryMap() {
    const mapInner = document.getElementById('mapInner');
    const tooltipEl = document.getElementById('tooltip');
    const hoverTooltipEl = document.getElementById('hoverTooltip');
-   const viewportEl = mapInner?.parentElement;
    const urlParams = new URLSearchParams(window.location.search);
    const enableCoordinateEditing = urlParams.get('editCoords') === '1';
 
-   if (!mapInner || !tooltipEl || !viewportEl) return;
-
-   const panzoom = createPanzoom(mapInner, { contain: CONFIG.DEFAULT_CONTAIN });
-
-   const store = createMapStore();
-   const sources = createDataSources(store);
-
-   const hover = hoverTooltipEl ? createHoverTooltip(hoverTooltipEl) : null;
-
-   const offDisplay = createOffDisplayBanner();
-   const restaurantClosed = createRestaurantClosedBanner();
-   const giftShopClosed = createGiftShopClosedBanner();
-   const attractionClosed = createAttractionClosedBanner();
-   const speciesOverlay = initSpeciesOverlay();
-
-   const tooltip = createTooltipController({
-      tooltipEl,
-      onAnimalCardClick: item => {
-         if (!item || String(item.type || '') !== 'animal') return;
-         speciesOverlay.openFromAnimal(item);
-      },
-      offDisplayBanner: offDisplay,
-      restaurantClosedBanner: restaurantClosed,
-      giftShopClosedBanner: giftShopClosed,
-      attractionClosedBanner: attractionClosed,
-   });
-
-   initLabelVisibilityToggle({
-      checkboxEl: document.getElementById('showMapLabels'),
-      rootEl: document.body,
-   });
-
-   const markers = createMarkerLayer({
+   const runtime = createMapRuntime({
       mapInner,
-      tooltip,
-      hover,
+      tooltipEl,
+      hoverTooltipEl,
+      showMapLabelsCheckbox: document.getElementById('showMapLabels'),
       enableCoordinateEditing,
-   });
-
-   const focus = createFocusController({
-      panzoom,
-      getMarkerByCoord: key => markers.getMarkerByCoord(key),
-      getViewportEl: () => viewportEl,
-      tooltip,
-      getAllMarkers: () => markers.getAllMarkers(),
-   });
-
-   const updater = createMapUpdater({
-      store,
-      sources,
-      markers,
-      focus,
       getIncludeOffDisplay: () => false,
       getIncludeClosedRestaurants: () => false,
       getIncludeClosedGiftShops: () => false,
@@ -96,15 +35,13 @@ export function initItineraryMap() {
       getSelectedTypes: () => [],
    });
 
-   function repositionTooltips() {
-      if (typeof tooltip?.reposition === 'function') tooltip.reposition();
-      if (typeof hover?.reposition === 'function') hover.reposition();
+   if (!runtime) return;
 
-      requestAnimationFrame(() => {
-         if (typeof tooltip?.reposition === 'function') tooltip.reposition();
-         if (typeof hover?.reposition === 'function') hover.reposition();
-      });
-   }
+   const {
+      markers,
+      updater,
+      repositionTooltips,
+   } = runtime;
 
    mapInner.addEventListener('panzoomchange', repositionTooltips);
 

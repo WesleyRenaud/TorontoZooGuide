@@ -55,9 +55,9 @@ class Animal:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'likelihood': self.likelihood,
-         'has_limited_viewing_schedule': self.has_limited_viewing_schedule,
+         'has_limited_viewing_schedule': ZooUtil.as_boolean( self.has_limited_viewing_schedule ),
          'limited_viewing_message': self.limited_viewing_message,
-         'has_viewing_alert': self.has_viewing_alert,
+         'has_viewing_alert': ZooUtil.as_boolean( self.has_viewing_alert ),
          'viewing_alert_message': self.viewing_alert_message
       }
 
@@ -105,7 +105,7 @@ class Restaurant:
          'menu_link': self.menu_link,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'is_closed': self.is_closed,
+         'is_closed': ZooUtil.as_boolean( self.is_closed ),
          'closed_message': self.closed_message,
          'likelihood': self.likelihood
       }
@@ -146,7 +146,7 @@ class GiftShop:
          'description': self.description,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'is_closed': self.is_closed,
+         'is_closed': ZooUtil.as_boolean( self.is_closed ),
          'closed_message': self.closed_message,
          'likelihood': self.likelihood,
       }
@@ -170,13 +170,13 @@ class Attraction:
    def to_dict( self ):
       return {
          'name': self.name,
-         'free_with_admission': self.free_with_admission,
+         'free_with_admission': ZooUtil.as_boolean( self.free_with_admission ),
          'description': self.description,
          'info_link': self.info_link,
          'hyperlink_text': self.hyperlink_text,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'is_closed': self.is_closed,
+         'is_closed': ZooUtil.as_boolean( self.is_closed ),
          'closed_message': self.closed_message,
          'likelihood': self.likelihood
       }
@@ -232,7 +232,7 @@ class GuardiansTalk:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'time_of_day': self.time_of_day,
-         'is_available': self.is_available,
+         'is_available': ZooUtil.as_boolean( self.is_available ),
          'unavailable_message': self.unavailable_message
       }
 
@@ -257,7 +257,7 @@ class WildEncounter:
          'time_of_day': self.time_of_day,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'is_available': self.is_available,
+         'is_available': ZooUtil.as_boolean( self.is_available ),
          'unavailable_message': self.unavailable_message
       }
 
@@ -298,10 +298,22 @@ class Itinerary:
       return d
 
 
-class Zoo_Util:
-   def get_average_temperature( self, month, day ):
+class ZooUtil:
+   @staticmethod
+   def as_boolean( value ):
+      if isinstance( value, bool ):
+         return value
+
+      if isinstance( value, int ):
+         return value != 0
+
+      return False
+
+
+   @staticmethod
+   def get_average_temperature( month, day ):
       # Convert month/day to day-of-year
-      month = self.normalize_month( month )
+      month = ZooUtil.normalize_month( month )
       day_of_year = sum( calendar.monthrange( 2024, m )[ 1 ] for m in range( 1, month ) ) + day
 
       # Month start temperatures (°C)
@@ -341,7 +353,8 @@ class Zoo_Util:
       return round( temp, 1 )
 
 
-   def normalize_month( self, month ):
+   @staticmethod
+   def normalize_month( month ):
       if not month:
          return None
 
@@ -380,7 +393,8 @@ class Zoo_Util:
       return None
 
 
-   def get_month_abbreviation( self, month ):
+   @staticmethod
+   def get_month_abbreviation( month ):
       month_map = {
          1: 'Jan',
          2: 'Feb',
@@ -437,7 +451,8 @@ class Zoo_Util:
       raise ValueError( f'Invalid month: {month}' )
 
 
-   def get_day_of_year(self, month, day ):
+   @staticmethod
+   def get_day_of_year( month, day ):
       month_index = {
          "JAN":0, "FEB":1, "MAR":2, "APR":3, "MAY":4, "JUN":5,
          "JUL":6, "AUG":7, "SEP":8, "OCT":9, "NOV":10, "DEC":11
@@ -449,7 +464,8 @@ class Zoo_Util:
       return doy + (day - 1)
 
 
-   def get_next_month( self, month ):
+   @staticmethod
+   def get_next_month( month ):
       if month in ('JAN', 'Jan'):
          return 'Feb'
       elif month in ('FEB', 'Feb'):
@@ -476,7 +492,8 @@ class Zoo_Util:
          return 'Jan'
 
 
-   def get_number_of_days_in_month( self, month ):
+   @staticmethod
+   def get_number_of_days_in_month( month ):
       if month in ('JAN', 'Jan', 'MAR', 'Mar', 'MAY', 'May', 'JUL', 'Jul', 'AUG', 'Aug', 'OCT', 'Oct', 'DEC', 'Dec'):
          return 31
       elif month in ('APR', 'Apr', 'JUN', 'Jun', 'SEP', 'Sep', 'NOV', 'Nov'):
@@ -486,7 +503,8 @@ class Zoo_Util:
 
 
    # Returns probability (between 0 and 1) that temperature is >= min_temperature, assuming a normal distribution N(mu, sigma)
-   def get_temperature_probability( self, mu, sigma, min_temperature ):
+   @staticmethod
+   def get_temperature_probability( mu, sigma, min_temperature ):
       z = (min_temperature - mu) / sigma
 
       # Standard normal CDF via error function
@@ -495,8 +513,9 @@ class Zoo_Util:
       return round( 1.0 - cdf, 3 )
 
 
-   def is_peak_season_month( self, month ):
-      month = self.normalize_month( month )
+   @staticmethod
+   def is_peak_season_month( month ):
+      month = ZooUtil.normalize_month( month )
 
       if month >= 5 and month <= 10:
          return True
@@ -504,25 +523,27 @@ class Zoo_Util:
       return False
 
 
-   def is_holiday( self, d ):
+   @staticmethod
+   def is_holiday( d ):
       year = d.year
 
       holidays = {
          date( year, 1, 1 ),               # New Year's Day
-         self.get_family_day( year ),
-         self.get_good_friday( year ),
-         self.get_victoria_day( year ),
+         ZooUtil.get_family_day( year ),
+         ZooUtil.get_good_friday( year ),
+         ZooUtil.get_victoria_day( year ),
          date( year, 7, 1 ),               # Canada Day
-         self.get_civic_holiday( year ),
-         self.get_labour_day( year ),
-         self.get_thanksgiving( year ),
+         ZooUtil.get_civic_holiday( year ),
+         ZooUtil.get_labour_day( year ),
+         ZooUtil.get_thanksgiving( year ),
          date( year, 12, 25 )              # Christmas Day
       }
 
       return d in holidays
 
 
-   def get_family_day( self, year ):
+   @staticmethod
+   def get_family_day( year ):
       d = date( year, 2, 1 )
 
       while d.weekday() != 0:
@@ -531,12 +552,14 @@ class Zoo_Util:
       return d + timedelta( days=14 )
 
 
-   def get_good_friday( self, year ):
-      easter = self.get_easter_date( year )
+   @staticmethod
+   def get_good_friday( year ):
+      easter = ZooUtil.get_easter_date( year )
       return easter - timedelta( days=2 )
 
 
-   def get_easter_date( self, year ):
+   @staticmethod
+   def get_easter_date( year ):
       a = year % 19
       b = year // 100
       c = year % 100
@@ -555,7 +578,8 @@ class Zoo_Util:
       return date( year, month, day )
 
 
-   def get_victoria_day( self, year ):
+   @staticmethod
+   def get_victoria_day( year ):
       d = date( year, 5, 24 )
 
       while d.weekday() != 0:
@@ -564,7 +588,8 @@ class Zoo_Util:
       return d
 
 
-   def get_civic_holiday( self, year ):
+   @staticmethod
+   def get_civic_holiday( year ):
       d = date( year, 8, 1 )
 
       while d.weekday() != 0:
@@ -573,7 +598,8 @@ class Zoo_Util:
       return d
 
 
-   def get_labour_day( self, year ):
+   @staticmethod
+   def get_labour_day( year ):
       d = date( year, 9, 1 )
 
       while d.weekday() != 0:
@@ -582,7 +608,8 @@ class Zoo_Util:
       return d
 
 
-   def get_thanksgiving( self, year ):
+   @staticmethod
+   def get_thanksgiving( year ):
       d = date( year, 10, 1 )
 
       while d.weekday() != 0:

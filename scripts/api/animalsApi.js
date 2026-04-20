@@ -1,5 +1,10 @@
 import { postJson } from './apiClient.js';
 
+export async function getRegions() {
+   const result = await postJson('/get-regions', {});
+   return result?.regions ?? [];
+}
+
 export async function getExhibitsInRegion(region) {
    const result = await postJson('/get-exhibits-in-region', { region });
    return result?.exhibits ?? [];
@@ -17,6 +22,7 @@ export async function getAnimalInformation(species) {
 
 export function createAnimalsApi() {
    return {
+      getRegions,
       getExhibitsInRegion,
       getAnimalsInExhibit,
       getAnimalInformation

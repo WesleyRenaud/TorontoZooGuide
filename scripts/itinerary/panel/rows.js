@@ -14,6 +14,13 @@ import {
    buildWildRemovalReasonLine,
 } from './rowAlerts.js';
 
+function buildImageSrc(directory, name) {
+   if (!name) return null;
+
+   const normalizedName = normalizeAssetKey(name);
+   return `images/${directory}/${normalizedName}.png`;
+}
+
 function buildAnimalImageSrc(exhibit, species) {
    if (!exhibit || !species) return null;
 
@@ -23,149 +30,132 @@ function buildAnimalImageSrc(exhibit, species) {
    return `images/animals/${normalizedExhibit}/${normalizedSpecies}.png`;
 }
 
-function buildAttractionImageSrc(name) {
-   if (!name) return null;
+function mergeNormalizedItem(rawItem, normalizeItem) {
+   const normalizedItem = normalizeItem(rawItem);
 
-   const normalizedName = normalizeAssetKey(name);
-   return `images/attractions/${normalizedName}.png`;
+   return rawItem && typeof rawItem === 'object'
+      ? { ...rawItem, ...normalizedItem }
+      : normalizedItem;
 }
 
-function buildGuardiansTalkImageSrc(name) {
-   if (!name) return null;
+function buildLinkRowProps(link) {
+   if (!link) {
+      return {
+         linkText: null,
+         onLinkClick: null,
+      };
+   }
 
-   const normalizedName = normalizeAssetKey(name);
-   return `images/guardians-talks/${normalizedName}.png`;
+   return {
+      linkText: 'More Info',
+      onLinkClick: () => window.open(link, '_blank'),
+   };
 }
 
-function buildWildEncounterImageSrc(name) {
-   if (!name) return null;
+function buildRows(items = [], normalizeItem, buildRowProps) {
+   return items.map((rawItem) => {
+      const item = mergeNormalizedItem(rawItem, normalizeItem);
 
-   const normalizedName = normalizeAssetKey(name);
-   return `images/wild-encounters/${normalizedName}.png`;
+      return makeItemRow({
+         ...buildRowProps(item),
+      });
+   });
 }
 
-export function buildAnimalRows(animals = []) {
+function buildUniqueAnimals(animals = []) {
    const uniqueAnimals = [];
    const seenSpecies = new Set();
 
    animals.forEach((rawAnimal) => {
-      const a = normalizeAnimal(rawAnimal);
-
-      const name = a.species ?? a.SPECIES ?? a.name ?? a.species_name ?? 'Animal';
-      const speciesKey = String(name).trim().toLowerCase();
+      const animal = mergeNormalizedItem(rawAnimal, normalizeAnimal);
+      const speciesKey = String(animal.species || '').trim().toLowerCase();
 
       if (!speciesKey || seenSpecies.has(speciesKey)) {
          return;
       }
 
       seenSpecies.add(speciesKey);
-      uniqueAnimals.push({ ...rawAnimal, ...a });
+      uniqueAnimals.push(animal);
    });
 
-   return uniqueAnimals.map((a) => {
-      const name = a.species ?? a.SPECIES ?? a.name ?? a.species_name ?? 'Animal';
-      const exhibit = a.exhibit ?? a.EXHIBIT ?? a.exhibit_name ?? '';
-      const link = a.link ?? a.infoLink ?? a.INFO_LINK ?? null;
-      const imageSrc = buildAnimalImageSrc(exhibit, name);
-      const alert = buildAnimalAlert(a);
+   return uniqueAnimals;
+}
 
-      return makeItemRow({
+export function buildAnimalRows(animals = []) {
+   return buildRows(buildUniqueAnimals(animals), normalizeAnimal, (animal) => {
+      const name = animal.species || 'Animal';
+      const exhibit = animal.exhibit || '';
+      const alert = buildAnimalAlert(animal);
+
+      return {
          name,
-         imageSrc,
+         imageSrc: buildAnimalImageSrc(exhibit, name),
          metaLines: [
             exhibit ? `Exhibit: ${exhibit}` : '',
          ],
          alertLine: alert.line,
          alertTone: alert.tone,
-         linkText: link ? 'More Info' : null,
-         onLinkClick: link ? () => window.open(link, '_blank') : null,
-      });
+         ...buildLinkRowProps(animal.link || null),
+      };
    });
 }
 
 export function buildAttractionRows(attractions = []) {
-   return attractions.map((rawAttr) => {
-      const x = normalizeAttraction(rawAttr);
-      const attraction = { ...rawAttr, ...x };
-
-      const name = attraction.name ?? attraction.NAME ?? 'Attraction';
+   return buildRows(attractions, normalizeAttraction, (attraction) => {
+      const name = attraction.name || 'Attraction';
       const subtitle = attraction.subtitle ?? '';
-      const imageSrc = buildAttractionImageSrc(name);
-      const infoLink =
-         attraction.infoLink ??
-         attraction.info_link ??
-         attraction.link ??
-         attraction.LINK ??
-         null;
-
       const location = attraction.location ?? '';
       const price = attraction.price ?? '';
-      const alertLine = buildAttractionRemovalReasonLine(attraction);
+      const infoLink = attraction.infoLink || null;
 
-      return makeItemRow({
+      return {
          name,
-         imageSrc,
+         imageSrc: buildImageSrc('attractions', name),
          metaLines: [
             subtitle || '',
             location ? `Location: ${location}` : '',
             price ? `Price: ${price}` : '',
          ],
-         alertLine,
-         linkText: infoLink ? 'More Info' : null,
-         onLinkClick: infoLink ? () => window.open(infoLink, '_blank') : null,
-      });
+         alertLine: buildAttractionRemovalReasonLine(attraction),
+         ...buildLinkRowProps(infoLink),
+      };
    });
 }
 
 export function buildGuardiansRows(guardiansTalks = []) {
-   return guardiansTalks.map((rawTalk) => {
-      const t = normalizeTalk(rawTalk);
-      const talk = { ...rawTalk, ...t };
+   return buildRows(guardiansTalks, normalizeTalk, (talk) => {
+      const name = talk.name || 'Talk';
+      const location = talk.location || '';
+      const time = talk.time_of_day || '';
 
-      const name = talk.name ?? talk.NAME ?? 'Talk';
-      const location = talk.location ?? talk.LOCATION ?? '';
-      const time = talk.time_of_day ?? talk.TIME_OF_DAY ?? talk.time ?? talk.TIME ?? '';
-      const link = talk.link ?? talk.LINK ?? talk.infoLink ?? talk.info_link ?? null;
-      const imageSrc = buildGuardiansTalkImageSrc(name);
-      const alertLine = buildGuardiansRemovalReasonLine(talk);
-
-      return makeItemRow({
+      return {
          name,
-         imageSrc,
+         imageSrc: buildImageSrc('guardians-talks', name),
          metaLines: [
             location ? `Location: ${location}` : '',
             time ? `Time: ${time}` : '',
          ],
-         alertLine,
-         linkText: link ? 'More Info' : null,
-         onLinkClick: link ? () => window.open(link, '_blank') : null,
-      });
+         alertLine: buildGuardiansRemovalReasonLine(talk),
+         ...buildLinkRowProps(talk.link || null),
+      };
    });
 }
 
 export function buildWildRows(wildEncounters = []) {
-   return wildEncounters.map((rawWild) => {
-      const w = normalizeWild(rawWild);
-      const wild = { ...rawWild, ...w };
+   return buildRows(wildEncounters, normalizeWild, (wild) => {
+      const name = wild.name || 'Wild Encounter';
+      const meetingSpot = wild.meeting_spot || '';
+      const time = wild.time_of_day || '';
 
-      const name = wild.name ?? wild.NAME ?? 'Wild Encounter';
-      const meetingSpot =
-         wild.meeting_spot ?? wild.MEETING_SPOT ?? wild.meetingSpot ?? wild.location ?? wild.LOCATION ?? '';
-      const time = wild.time_of_day ?? wild.TIME_OF_DAY ?? wild.time ?? wild.TIME ?? '';
-      const link = wild.link ?? wild.LINK ?? wild.infoLink ?? wild.info_link ?? null;
-      const imageSrc = buildWildEncounterImageSrc(name);
-      const alertLine = buildWildRemovalReasonLine(wild);
-
-      return makeItemRow({
+      return {
          name,
-         imageSrc,
+         imageSrc: buildImageSrc('wild-encounters', name),
          metaLines: [
             meetingSpot ? `Meeting Spot: ${meetingSpot}` : '',
             time ? `Time: ${time}` : '',
          ],
-         alertLine,
-         linkText: link ? 'More Info' : null,
-         onLinkClick: link ? () => window.open(link, '_blank') : null,
-      });
+         alertLine: buildWildRemovalReasonLine(wild),
+         ...buildLinkRowProps(wild.link || null),
+      };
    });
 }

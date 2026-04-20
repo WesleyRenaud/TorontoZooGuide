@@ -25,6 +25,17 @@ export function getDay(dateStr) {
    return parseLocalDate(dateStr).getDate();
 }
 
+export function isoDateToMonFirstDow(iso) {
+   const date = iso ? parseLocalDate(iso) : new Date();
+
+   if (!Number.isFinite(date.getTime())) {
+      return 1;
+   }
+
+   const jsDay = date.getDay();
+   return jsDay === 0 ? 7 : jsDay;
+}
+
 export function toISODate(d) {
    const y = d.getFullYear();
    const m = String(d.getMonth() + 1).padStart(2, '0');

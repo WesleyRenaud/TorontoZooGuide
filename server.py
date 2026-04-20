@@ -103,6 +103,16 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-regions':
+         regions = self.database.get_regions()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { 'regions': regions }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/get-animal-names-by-exhibit':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -1726,6 +1736,37 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not set schedule for "{ talk }" at "{ location }".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/end-guardians-talk-schedule':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         talk = data.get( 'talk' )
+         location = data.get( 'location' )
+         schedule_end_date = data.get( 'endDate' )
+
+         success = self.database.end_guardians_talk_schedule(
+            talk=talk,
+            location=location,
+            schedule_end_date=schedule_end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'talk': talk,
+            'location': location,
+            'endDate': schedule_end_date
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not end schedule for "{ talk }" at "{ location }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

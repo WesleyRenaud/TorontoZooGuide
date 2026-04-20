@@ -1,10 +1,14 @@
 export function normalizeRegion(region) {
-   const name = region?.name ?? region?.NAME ?? '';
+   const name = typeof region?.name === 'string'
+      ? region.name.trim()
+      : '';
    const exhibits = Array.isArray(region?.exhibits) ? region.exhibits : [];
 
    return {
       name,
-      exhibits: exhibits.filter(Boolean),
+      exhibits: exhibits
+         .map((exhibit) => typeof exhibit === 'string' ? exhibit.trim() : '')
+         .filter(Boolean),
    };
 }
 
@@ -18,36 +22,56 @@ export function shouldHideDuplicateSingleExhibit(region) {
    return Boolean(regionName) && regionName === exhibitName;
 }
 
-export function getSpecies(animal) {
-   if (typeof animal === 'string') return animal;
-   return animal?.species ?? animal?.SPECIES ?? animal?.name ?? animal?.species_name ?? '';
-}
+export function normalizeSelectedAnimal(animal) {
+   if (!animal || typeof animal !== 'object') {
+      return null;
+   }
 
-export function getExhibit(animal) {
-   if (typeof animal === 'string') return '';
-   return animal?.exhibit ?? animal?.EXHIBIT ?? animal?.exhibit_name ?? '';
-}
+   const species = typeof animal.species === 'string'
+      ? animal.species.trim()
+      : '';
+   const exhibit = typeof animal.exhibit === 'string'
+      ? animal.exhibit.trim()
+      : '';
+   const imageSrc = typeof animal.imageSrc === 'string'
+      ? animal.imageSrc.trim()
+      : '';
 
-export function makeSelectedAnimal(fullAnimal) {
-   const species = getSpecies(fullAnimal);
-   const exhibit = getExhibit(fullAnimal);
+   if (!species) {
+      return null;
+   }
 
    return {
-      id: `${species}||${exhibit}`,
+      ...animal,
       species,
       exhibit,
-      imageSrc: fullAnimal?.imageSrc ?? fullAnimal?.image_src ?? null,
+      imageSrc: imageSrc || null,
+      id: typeof animal.id === 'string' && animal.id.trim()
+         ? animal.id.trim()
+         : `${species}||${exhibit}`,
    };
 }
 
-export function buildSelectedAnimalKey(animal) {
-   if (!animal || typeof animal !== 'object') return '';
+export function makeSelectedAnimal(fullAnimal) {
+   return normalizeSelectedAnimal({
+      species: fullAnimal?.species,
+      exhibit: fullAnimal?.exhibit,
+      imageSrc: fullAnimal?.imageSrc ?? null,
+   });
+}
 
-   const id = String(animal.id ?? '').trim().toLowerCase();
+export function buildSelectedAnimalKey(animal) {
+   const normalizedAnimal = normalizeSelectedAnimal(animal);
+
+   if (!normalizedAnimal) {
+      return '';
+   }
+
+   const id = normalizedAnimal.id.trim().toLowerCase();
    if (id) return id;
 
-   const species = getSpecies(animal).trim().toLowerCase();
-   const exhibit = getExhibit(animal).trim().toLowerCase();
+   const species = normalizedAnimal.species.trim().toLowerCase();
+   const exhibit = normalizedAnimal.exhibit.trim().toLowerCase();
 
    if (!species) return '';
 
@@ -59,11 +83,13 @@ export function mergeAnimals(existingAnimals = [], newAnimals = []) {
    const seen = new Set();
 
    [...existingAnimals, ...newAnimals].forEach((animal) => {
-      const key = buildSelectedAnimalKey(animal);
+      const normalizedAnimal = normalizeSelectedAnimal(animal);
+      const key = buildSelectedAnimalKey(normalizedAnimal);
+
       if (!key || seen.has(key)) return;
 
       seen.add(key);
-      merged.push(animal);
+      merged.push(normalizedAnimal);
    });
 
    return merged;
@@ -85,43 +111,4 @@ export function syncRegionSelection(region, selectedRegionNames, selectedExhibit
    } else {
       selectedRegionNames.delete(regionName);
    }
-}
-
-export function syncSelectionsFromCurrentAnimals(
-   regions,
-   selectedRegionNames,
-   selectedExhibitNames,
-   currentAnimals
-) {
-   selectedRegionNames.clear();
-   selectedExhibitNames.clear();
-
-   if (!regions.length || !currentAnimals.length) {
-      return;
-   }
-
-   const currentExhibits = new Set(
-      currentAnimals
-         .map((animal) => getExhibit(animal).trim())
-         .filter(Boolean)
-   );
-
-   regions.forEach((region) => {
-      const exhibits = Array.isArray(region?.exhibits) ? region.exhibits : [];
-      if (!exhibits.length) return;
-
-      let allExhibitsSelected = true;
-
-      exhibits.forEach((exhibitName) => {
-         if (currentExhibits.has(exhibitName)) {
-            selectedExhibitNames.add(exhibitName);
-         } else {
-            allExhibitsSelected = false;
-         }
-      });
-
-      if (allExhibitsSelected) {
-         selectedRegionNames.add(region.name);
-      }
-   });
 }

@@ -1,4 +1,3 @@
-import { getRegions } from './regions.js';
 import { createAnimalsApi } from '../api/animalsApi.js';
 import { createAnimalsListView } from './listView.js';
 import { createAnimalDetailView } from './animalDetailView.js';
@@ -9,7 +8,7 @@ export function createAnimalsRouter({ listEl }) {
    const detailView = createAnimalDetailView({ listEl });
 
    async function showRegions() {
-      const regions = getRegions();
+      const regions = await api.getRegions();
 
       listView.renderRegions(regions, {
          onRegionSelected: async (region) => {

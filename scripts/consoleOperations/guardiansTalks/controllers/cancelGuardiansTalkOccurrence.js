@@ -122,7 +122,7 @@ export function createCancelGuardiansTalkOccurrenceController({
          const occurrenceDates = [
             ...new Set(
                occurrences
-                  .map(occurrence => occurrence.date ?? occurrence.DATE ?? '')
+                  .map(occurrence => occurrence.date ?? '')
                   .filter(Boolean)
             )
          ];
@@ -146,8 +146,8 @@ export function createCancelGuardiansTalkOccurrenceController({
       const occurrenceTimes = [
          ...new Set(
             occurrences
-               .filter(occurrence => (occurrence.date ?? occurrence.DATE ?? '') === selectedDate)
-               .map(occurrence => occurrence.time ?? occurrence.TIME ?? '')
+               .filter(occurrence => (occurrence.date ?? '') === selectedDate)
+               .map(occurrence => occurrence.time ?? '')
                .filter(Boolean)
          )
       ];

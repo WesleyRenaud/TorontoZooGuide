@@ -5,9 +5,9 @@ export function buildHoverText(itemsAtPoint) {
 
    if (type === 'animal') {
       if (itemsAtPoint.length === 1) {
-         return itemsAtPoint[0].species ?? itemsAtPoint[0].SPECIES ?? 'Animal';
+         return itemsAtPoint[0].species || 'Animal';
       }
-      const first = itemsAtPoint[0].species ?? itemsAtPoint[0].SPECIES ?? 'Animal';
+      const first = itemsAtPoint[0].species || 'Animal';
       return `${first} + ${itemsAtPoint.length - 1}`;
    }
 
