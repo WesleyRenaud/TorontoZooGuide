@@ -67,6 +67,12 @@ enclosures =\
       None                                         # Seasonal viewing information (for seasonal exhibits)
    ),
    (
+      'Flame Angelfish',
+      'Australasia Pavilion',
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
+   (
       'Fly River Turtle',
       'Australasia Pavilion',
       'Year-round',                                # Seasonal viewing summary

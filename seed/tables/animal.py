@@ -278,6 +278,33 @@ animals = [
       None                                                           # Animals at the zoo
    ),
    (
+      'Flame Angelfish',
+      'Centropyge Loriculus',
+      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      '''The flame angelfish is part of the main tank habitat in the Great Barrier Reef exhibit in the Australasia pavilion.''',
+      None,                                                          # Seasonal viewing tips
+      '''The flame angelfish is a small, vividly coloured marine fish with a bright orange-red body crossed by several vertical black
+         bars. Its dorsal and anal fins are edged with electric blue, making it one of the most recognizable angelfish species in reef
+         aquariums. The species belongs to the pygmy angelfish group, which are smaller and more compact than the larger marine
+         angelfishes.'''.replace('\n', ' '),
+      '''Flame angelfish are native to the tropical Pacific Ocean, particularly around coral reefs in regions such as Hawaii, the
+         Marshall Islands, and other central Pacific island systems. They inhabit coral-rich reef slopes and lagoons where rockwork,
+         caves, and branching corals provide shelter and grazing surfaces.'''.replace('\n', ' '),
+      '''In the wild, flame angelfish feed on algae, detritus, and small benthic invertebrates found on reef surfaces. In aquariums,
+         they are typically offered a varied diet that can include marine algae, sponge-based angelfish preparations, and finely
+         chopped seafood. Frequent grazing opportunities help support their natural behaviour and coloration.'''.replace('\n', ' '),
+      '''Flame angelfish are active, alert reef fish that spend much of the day weaving through rockwork and coral structures. They can
+         be territorial toward similar fish, especially in confined spaces, but are generally curious and constantly on the move. Their
+         quick, darting movements make them visually striking additions to large reef displays.'''.replace('\n', ' '),
+      '''Their compact body and precise fin control allow them to move efficiently through narrow reef crevices while foraging. Bright
+         colouration may help with species recognition and territorial signalling on busy coral reefs. Like many reef fish, they are
+         well adapted to complex three-dimensional habitats where agility is more important than sustained speed.'''.replace('\n', ' '),
+      '''Flame angelfish reproduce by spawning in open water, typically near dusk. Eggs and sperm are released into the water column
+         where fertilization occurs externally. The larvae drift as plankton before settling onto reefs and gradually developing into
+         their adult coloration and form.'''.replace('\n', ' '),
+      None                                                           # Animals at the zoo
+   ),
+   (
       'Fly River Turtle',
       'Carettochelys Insculpta',
       None,                                                          # Minimum temperature (only for animals with outdoor viewing)

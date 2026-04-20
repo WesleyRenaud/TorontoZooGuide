@@ -79,6 +79,14 @@ enclosure_viewings =\
       67.782,                 # Y coordinate on map
    ),
    (
+      'Flame Angelfish',
+      'Australasia Pavilion',
+      'Indoor',
+      None,                   # Seasonally off-display message
+      72.869,                 # X coordinate on map
+      67.782,                 # Y coordinate on map
+   ),
+   (
       'Fly River Turtle',
       'Australasia Pavilion',
       'Indoor',
