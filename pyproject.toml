@@ -14,6 +14,7 @@ select = [
 ]
 
 [tool.tzg_python_style]
+blank_lines_between_methods = 2
 exclude = [
    "scripts/capture_readme_screenshots.py",
    "seed/tables/animal.py",
