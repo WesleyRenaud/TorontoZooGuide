@@ -1,3 +1,4 @@
+import ast
 from pathlib import Path
 from io import BytesIO
 from fnmatch import fnmatch
@@ -47,20 +48,69 @@ def get_display_path( path ):
       return path.as_posix()
 
 
-def load_excluded_paths():
+def load_style_config():
    pyproject_path = ROOT / 'pyproject.toml'
 
    if not pyproject_path.exists():
-      return []
-
-   pyproject_data = tomllib.loads( pyproject_path.read_text() )
+      return {}
 
    return (
-      pyproject_data
+      tomllib.loads( pyproject_path.read_text() )
       .get( 'tool', {} )
       .get( 'tzg_python_style', {} )
-      .get( 'exclude', [] )
    )
+
+
+def get_definition_start_line( node ):
+   if getattr( node, 'decorator_list', None ):
+      return min( decorator.lineno for decorator in node.decorator_list )
+
+   return node.lineno
+
+
+def check_method_spacing( path, file_text, blank_lines_between_methods ):
+   try:
+      tree = ast.parse( file_text )
+   except SyntaxError:
+      return []
+
+   lines = file_text.splitlines()
+   violations = []
+
+   for node in ast.walk( tree ):
+      if not isinstance( node, ast.ClassDef ):
+         continue
+
+      methods = [
+         item
+         for item in node.body
+         if isinstance( item, ( ast.FunctionDef, ast.AsyncFunctionDef ) )
+      ]
+
+      for previous, current in zip( methods, methods[ 1: ] ):
+         previous_end_line = previous.end_lineno or previous.lineno
+         current_start_line = get_definition_start_line( current )
+         blank_line_count = 0
+
+         for line_number in range( previous_end_line + 1, current_start_line ):
+            if lines[ line_number - 1 ].strip() == '':
+               blank_line_count += 1
+
+         if blank_line_count == blank_lines_between_methods:
+            continue
+
+         add_violation(
+            violations,
+            path,
+            current_start_line,
+            1,
+            (
+               f'Expected { blank_lines_between_methods } blank lines between method '
+               f'definitions, found { blank_line_count }.'
+            )
+         )
+
+   return violations
 
 
 def is_excluded_path( path, excluded_patterns ):
@@ -251,14 +301,14 @@ def check_f_string_token( path, token ):
    return violations
 
 
-def check_file( path ):
+def check_file( path, blank_lines_between_methods ):
    file_text = path.read_text()
    tokens = [
       token
       for token in tokenize.tokenize( BytesIO( file_text.encode() ).readline )
       if token.type != tokenize.ENDMARKER
    ]
-   violations = []
+   violations = check_method_spacing( path, file_text, blank_lines_between_methods )
 
    for index, token in enumerate( tokens ):
       if token.type == tokenize.STRING:
@@ -308,14 +358,16 @@ def check_file( path ):
 
 
 def main():
-   excluded_patterns = load_excluded_paths()
+   style_config = load_style_config()
+   excluded_patterns = style_config.get( 'exclude', [] )
+   blank_lines_between_methods = style_config.get( 'blank_lines_between_methods', 2 )
    violations = []
 
    for path in sorted( ROOT.rglob( '*.py' ) ):
       if is_excluded_path( path, excluded_patterns ):
          continue
 
-      violations.extend( check_file( path ) )
+      violations.extend( check_file( path, blank_lines_between_methods ) )
 
    if not violations:
       return 0

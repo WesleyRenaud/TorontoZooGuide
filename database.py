@@ -11,6 +11,14 @@ class Database():
       self.conn.row_factory = sqlite3.Row
 
 
+   def close( self ):
+      if self.conn is None:
+         return
+
+      self.conn.close()
+      self.conn = None
+
+
    # Returns all animals which may be viewable in the given month with their likelihoods (0 to 100)
    def get_animals_viewable_on_day(
          self,
@@ -383,6 +391,7 @@ class Database():
          pass
 
       raise ValueError( f'Unsupported date format: { value }' )
+
 
    def get_exhibits_in_region( self, region ):
       cur = self.conn.cursor()

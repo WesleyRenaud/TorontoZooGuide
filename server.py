@@ -1,4 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from functools import wraps
 import json
 import mimetypes
 import os
@@ -11,9 +12,23 @@ import database
 DEFAULT_PORT = 8000
 
 
-class MyHandler( BaseHTTPRequestHandler ):
-   database = database.Database()
+def with_database( handler ):
+   @wraps( handler )
+   def wrapped( self, *args, **kwargs ):
+      db = database.Database()
 
+      try:
+         self.database = db
+         return handler( self, *args, **kwargs )
+      finally:
+         self.database = None
+         db.close()
+
+   return wrapped
+
+
+class MyHandler( BaseHTTPRequestHandler ):
+   database = None
 
    def _send_file( self, filepath, content_type=None ):
       if not os.path.isfile( filepath ):
@@ -60,6 +75,7 @@ class MyHandler( BaseHTTPRequestHandler ):
       self.send_error( 404, "Not Found" )
 
 
+   @with_database
    def do_POST( self ):
       if self.path == '/get-visible-animals':
          content_length = int( self.headers[ 'Content-Length' ] )
