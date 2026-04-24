@@ -397,6 +397,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_off_display_animals = bool( data.get( 'includeOffDisplayAnimals' ) )
          include_closed_restaurants = bool( data.get( 'includeClosedRestaurants' ) )
          include_closed_attractions = bool( data.get( 'includeClosedAttractions' ) )
+         zoomobile_route = data.get( 'zoomobileRoute' )
 
          animals_json = []
          pavilions_json = []
@@ -464,7 +465,11 @@ class MyHandler( BaseHTTPRequestHandler ):
                   attractions_json.append( d )
 
          if include_zoomobile_stations:
-            zoomobile_stations = self.database.get_zoomobile_stations_matching_query( query=query ) or []
+            zoomobile_stations = self.database.get_zoomobile_stations_matching_query(
+               query=query,
+               route=zoomobile_route,
+               month=month,
+               day=day ) or []
             for zoomobile_station in zoomobile_stations:
                   d = zoomobile_station.to_dict()
                   d[ 'type' ] = d.get( 'type', 'zoomobileStation' )
@@ -1202,30 +1207,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
-      elif self.path == '/set-restaurant-open':
-         content_length = int( self.headers[ 'Content-Length' ] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
-         restaurant = data.get( 'restaurant' )
-
-         success = self.database.set_restaurant_as_open( restaurant=restaurant )
-
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'application/json' )
-         self.end_headers()
-
-         response = {
-            'success': success,
-            'restaurant': restaurant
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set "{ restaurant }" as open.'
-
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-
-
       elif self.path == '/set-restaurant-opening-schedule':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -1286,30 +1267,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
-      elif self.path == '/remove-restaurant-opening-schedule':
-         content_length = int( self.headers[ 'Content-Length' ] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
-         restaurant = data.get( 'restaurant' )
-
-         success = self.database.remove_restaurant_opening_schedule( restaurant=restaurant )
-
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'application/json' )
-         self.end_headers()
-
-         response = {
-            'success': success,
-            'restaurant': restaurant
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not remove schedule for "{ restaurant }".'
-
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-
-
       elif self.path == '/set-gift-shop-closed':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -1340,30 +1297,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not set "{ gift_shop }" as closed.'
-
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-
-
-      elif self.path == '/set-gift-shop-open':
-         content_length = int( self.headers[ 'Content-Length' ] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
-         gift_shop = data.get( 'giftShop' )
-
-         success = self.database.set_gift_shop_as_open( gift_shop=gift_shop )
-
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'application/json' )
-         self.end_headers()
-
-         response = {
-            'success': success,
-            'gift_shop': gift_shop
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set "{ gift_shop }" as open.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -1428,30 +1361,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
-      elif self.path == '/remove-gift-shop-opening-schedule':
-         content_length = int( self.headers[ 'Content-Length' ] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
-         gift_shop = data.get( 'giftShop' )
-
-         success = self.database.remove_gift_shop_opening_schedule( gift_shop=gift_shop )
-
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'application/json' )
-         self.end_headers()
-
-         response = {
-            'success': success,
-            'gift_shop': gift_shop
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not remove schedule for "{ gift_shop }".'
-
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-
-
       elif self.path == '/set-attraction-closed':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -1482,37 +1391,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not set "{ attraction }" as closed.'
-
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-
-
-      elif self.path == '/set-attraction-open':
-         content_length = int( self.headers[ 'Content-Length' ] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
-         attraction = data.get( 'attraction' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-
-         success = self.database.set_attraction_as_open(
-            attraction=attraction,
-            start_date=start_date,
-            end_date=end_date )
-
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'application/json' )
-         self.end_headers()
-
-         response = {
-            'success': success,
-            'attraction': attraction,
-            'startDate': start_date,
-            'endDate': end_date
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set "{ attraction }" as open.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -1573,30 +1451,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not set opening schedule for "{ attraction }".'
-
-         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
-
-
-      elif self.path == '/remove-attraction-opening-schedule':
-         content_length = int( self.headers[ 'Content-Length' ] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
-         attraction = data.get( 'attraction' )
-
-         success = self.database.remove_attraction_opening_schedule( attraction=attraction )
-
-         self.send_response( 200 )
-         self.send_header( 'Content-type', 'application/json' )
-         self.end_headers()
-
-         response = {
-            'success': success,
-            'attraction': attraction
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not remove schedule for "{ attraction }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

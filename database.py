@@ -6,8 +6,8 @@ from datetime import date, datetime, timedelta
 ################################################################################
 
 class Database():
-   def __init__( self ):
-      self.conn = sqlite3.connect( 'animals.db' )
+   def __init__( self, db_path='animals.db' ):
+      self.conn = sqlite3.connect( db_path )
       self.conn.row_factory = sqlite3.Row
 
 
@@ -1611,14 +1611,14 @@ class Database():
       ]
 
 
-   def get_zoomobile_stations_matching_query( self, query ):
+   def get_zoomobile_stations_matching_query( self, query, route, month, day ):
       if not query:
-         return self.get_zoomobile_stations()
+         return self.get_zoomobile_stations( route=route, month=month, day=day )
 
       query_lower = query.lower()
 
       return [
-         s for s in self.get_zoomobile_stations()
+         s for s in self.get_zoomobile_stations( route=route, month=month, day=day )
          if s.name and query_lower in s.name.lower()
       ]
 
@@ -2960,25 +2960,6 @@ class Database():
          message=message )
 
 
-   def set_restaurant_as_open( self, restaurant ):
-      if not restaurant:
-         return False
-
-      return self.set_restaurant_opening_schedule(
-         restaurant=restaurant,
-         start_date=None,
-         end_date=None,
-         monday=True,
-         tuesday=True,
-         wednesday=True,
-         thursday=True,
-         friday=True,
-         saturday=True,
-         sunday=True,
-         holidays_only=True,
-         message=None )
-
-
    def set_restaurant_opening_schedule(
          self,
          restaurant,
@@ -3058,24 +3039,6 @@ class Database():
       return updated > 0
 
 
-   def remove_restaurant_opening_schedule( self, restaurant ):
-      if not restaurant:
-         return False
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   DELETE FROM RestaurantOpeningSchedule
-               WHERE RESTAURANT = ?;
-         """, ( restaurant, ) )
-
-      self.conn.commit()
-      removed = cur.rowcount
-      cur.close()
-
-      return removed > 0
-
-
    def set_gift_shop_as_closed( self, gift_shop, start_date, end_date, message ):
       if not gift_shop:
          return False
@@ -3096,25 +3059,6 @@ class Database():
          sunday=False,
          holidays_only=False,
          message=message )
-
-
-   def set_gift_shop_as_open( self, gift_shop ):
-      if not gift_shop:
-         return False
-
-      return self.set_gift_shop_opening_schedule(
-         gift_shop=gift_shop,
-         start_date=None,
-         end_date=None,
-         monday=True,
-         tuesday=True,
-         wednesday=True,
-         thursday=True,
-         friday=True,
-         saturday=True,
-         sunday=True,
-         holidays_only=True,
-         message=None )
 
 
    def set_gift_shop_opening_schedule(
@@ -3196,24 +3140,6 @@ class Database():
       return updated > 0
 
 
-   def remove_gift_shop_opening_schedule( self, gift_shop ):
-      if not gift_shop:
-         return False
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   DELETE FROM GiftShopOpeningSchedule
-               WHERE GIFT_SHOP = ?;
-         """, ( gift_shop, ) )
-
-      self.conn.commit()
-      removed = cur.rowcount
-      cur.close()
-
-      return removed > 0
-
-
    def set_attraction_as_closed( self, attraction, start_date, end_date, message ):
       if not attraction:
          return False
@@ -3234,25 +3160,6 @@ class Database():
          sunday=False,
          holidays_only=False,
          message=message )
-
-
-   def set_attraction_as_open( self, attraction, start_date, end_date ):
-      if not attraction:
-         return False
-
-      return self.set_attraction_opening_schedule(
-         attraction=attraction,
-         start_date=start_date,
-         end_date=end_date,
-         monday=True,
-         tuesday=True,
-         wednesday=True,
-         thursday=True,
-         friday=True,
-         saturday=True,
-         sunday=True,
-         holidays_only=True,
-         message=None )
 
 
    def set_attraction_opening_schedule(
@@ -3332,24 +3239,6 @@ class Database():
       cur.close()
 
       return updated > 0
-
-
-   def remove_attraction_opening_schedule( self, attraction ):
-      if not attraction:
-         return False
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   DELETE FROM AttractionOpeningSchedule
-               WHERE ATTRACTION = ?;
-         """, ( attraction, ) )
-
-      self.conn.commit()
-      removed = cur.rowcount
-      cur.close()
-
-      return removed > 0
 
 
    def set_zoomobile_station_as_closed( self, zoomobile_station, start_date, end_date, message ):
