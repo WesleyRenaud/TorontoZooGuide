@@ -1,24 +1,57 @@
 import { getOptionItemName, sortNamedOptions } from './namedItems.js';
 
-function populateNamedDropdown(selectEl, items, emptyOptionLabel) {
-   if (!selectEl) return;
-
-   selectEl.innerHTML = '';
-
+function createPlaceholderOption(label) {
    const placeholder = document.createElement('option');
    placeholder.value = '';
-   placeholder.textContent = emptyOptionLabel;
-   selectEl.appendChild(placeholder);
+   placeholder.textContent = label;
+   return placeholder;
+}
 
-   sortNamedOptions(items).forEach(item => {
-      const name = getOptionItemName(item);
+function createNamedOption(name) {
+   const option = document.createElement('option');
+   option.value = name;
+   option.textContent = name;
+   return option;
+}
+
+export function populateDropdown(selectEl, items, {
+   emptyOptionLabel = 'Select an option',
+   getName = item => String(item ?? '').trim(),
+   sortItems = null,
+} = {}) {
+   if (selectEl?.tagName !== 'SELECT') {
+      return;
+   }
+
+   const fragment = document.createDocumentFragment();
+   fragment.appendChild(createPlaceholderOption(emptyOptionLabel));
+
+   const resolvedItems = typeof sortItems === 'function'
+      ? sortItems(items ?? [])
+      : items ?? [];
+
+   resolvedItems.forEach(item => {
+      const name = getName(item);
 
       if (!name) return;
 
-      const option = document.createElement('option');
-      option.value = name;
-      option.textContent = name;
-      selectEl.appendChild(option);
+      fragment.appendChild(createNamedOption(name));
+   });
+
+   selectEl.replaceChildren(fragment);
+}
+
+export function populateValueDropdown(selectEl, values, emptyOptionLabel) {
+   populateDropdown(selectEl, values, {
+      emptyOptionLabel,
+   });
+}
+
+function populateNamedDropdown(selectEl, items, emptyOptionLabel) {
+   populateDropdown(selectEl, items, {
+      emptyOptionLabel,
+      getName: getOptionItemName,
+      sortItems: sortNamedOptions,
    });
 }
 

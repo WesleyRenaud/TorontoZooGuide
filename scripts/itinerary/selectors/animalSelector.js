@@ -17,11 +17,59 @@ import {
 } from './animalSelector/view.js';
 
 const STORAGE_KEY = 'tzg.itineraryAnimals';
+const DEFAULT_ANIMAL_TITLE = 'Animal';
+const OFF_DISPLAY_CONFIRM_TITLE = 'Animal May Be Off Display';
+
+function getAnimalTitle(row) {
+   return getAnimalSpecies(row) || DEFAULT_ANIMAL_TITLE;
+}
+
+function buildAnimalSearchPayload(query, includeOffDisplayAnimals) {
+   return {
+      query,
+      includeAnimals: true,
+      includeOffDisplayAnimals,
+   };
+}
+
+function shouldConfirmOffDisplayAnimal({
+   row,
+   isSelected,
+   includeOffDisplayAnimals,
+} = {}) {
+   if (isSelected) {
+      return false;
+   }
+
+   if (!includeOffDisplayAnimals) {
+      return false;
+   }
+
+   return isLikelyOffDisplayAnimal(row);
+}
+
+function promptForOffDisplayAnimalSelection(row, proceed) {
+   showItineraryConfirmPopup({
+      title: OFF_DISPLAY_CONFIRM_TITLE,
+      message: buildOffDisplayWarningMessage(row),
+      confirmText: 'Add',
+      cancelText: 'Cancel',
+      onConfirm: proceed,
+   });
+}
+
+function renderOffDisplayAnimalControls({ bodyEl, rerunSearch, onChange }) {
+   renderIncludeOffDisplayToggle({
+      bodyEl,
+      rerunSearch,
+      onChange,
+   });
+}
 
 export function createItineraryAnimalSelectorController({ mountEl, onNext, onPrev, onFinish, onClose } = {}) {
    let includeOffDisplayAnimals = false;
 
-   const controller = createItinerarySelectorController({
+   return createItinerarySelectorController({
       mountEl,
       onNext,
       onPrev,
@@ -33,16 +81,12 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
 
       getContext: getItineraryDateSearchContext,
 
-      buildSearchPayload: query => ({
-         query,
-         includeAnimals: true,
-         includeOffDisplayAnimals,
-      }),
+      buildSearchPayload: query => buildAnimalSearchPayload(query, includeOffDisplayAnimals),
 
       extractRows: response => response.animals,
 
       getId: getAnimalId,
-      getTitle: row => getAnimalSpecies(row) || 'Animal',
+      getTitle: getAnimalTitle,
       getSubtitle: getAnimalSubtitle,
       getImageSrc: buildAnimalImageSrc,
 
@@ -56,33 +100,21 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
       renderRowLeft: renderAnimalSelectorRowLeft,
 
       onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
-         if (isSelected) {
+         if (!shouldConfirmOffDisplayAnimal({
+            row,
+            isSelected,
+            includeOffDisplayAnimals,
+         })) {
             proceed();
             return;
          }
 
-         if (!includeOffDisplayAnimals) {
-            proceed();
-            return;
-         }
-
-         if (!isLikelyOffDisplayAnimal(row)) {
-            proceed();
-            return;
-         }
-
-         showItineraryConfirmPopup({
-            title: 'Animal May Be Off Display',
-            message: buildOffDisplayWarningMessage(row),
-            confirmText: 'Add',
-            cancelText: 'Cancel',
-            onConfirm: proceed,
-         });
+         promptForOffDisplayAnimalSelection(row, proceed);
       },
 
       renderExtraControls: ({ bodyEl, rerunSearch }) => {
          includeOffDisplayAnimals = false;
-         renderIncludeOffDisplayToggle({
+         renderOffDisplayAnimalControls({
             bodyEl,
             rerunSearch,
             onChange: (checked) => {
@@ -91,6 +123,4 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
          });
       },
    });
-
-   return controller;
 }

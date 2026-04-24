@@ -1,20 +1,18 @@
 import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
-import { setStatus } from '../../shell/status.js';
 import { endGuardiansTalkSchedule } from '../../../api/consoleOperationsApi.js';
+import { resetFormFields } from '../../helpers/controllerUtils.js';
+import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
 
 export function createEndGuardiansTalkScheduleController({
-   showButtonEl,
-   panelEl,
-   cancelButtonEl,
-   submitButtonEl,
-   statusEl,
    talkNameEl,
    locationEl,
    endDateEl,
-   activatePanel,
-   hidePanels,
    talkLocationFilterController = null,
+   ...controllerOptions
 } = {}) {
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
+   }
 
    function resetTalkDropdown() {
       if (talkLocationFilterController?.clear) {
@@ -30,93 +28,47 @@ export function createEndGuardiansTalkScheduleController({
       }
    }
 
-   function resetForm() {
-      if (locationEl) locationEl.value = '';
-      if (talkNameEl) talkNameEl.value = '';
-      if (endDateEl) endDateEl.value = '';
-
-      resetTalkDropdown();
-   }
-
-   function show() {
-      setStatus(statusEl, '');
-      activatePanel?.(panelEl);
-   }
-
-   function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
-   }
-
-   async function onShowClick() {
-      setStatus(statusEl, '');
-
-      try {
-         resetForm();
-
-         if (talkLocationFilterController?.refreshLocations) {
-            await talkLocationFilterController.refreshLocations();
-         }
-
-         setStatus(statusEl, '');
-         activatePanel?.(panelEl);
-      }
-      catch(err) {
-         setStatus(statusEl, 'Failed to load locations.', 'is-error');
-         activatePanel?.(panelEl);
-      }
-   }
-
-   async function onSubmitClick() {
-      const talk = talkNameEl?.value.trim() ?? '';
-      const location = locationEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-
-      setStatus(statusEl, '');
-
+   function validateSelection({ talk, location }) {
       if (!location) {
-         setStatus(statusEl, 'Location is required.', 'is-error');
-         return;
+         return 'Location is required.';
       }
 
       if (!talk) {
-         setStatus(statusEl, 'Talk name is required.', 'is-error');
-         return;
+         return 'Talk name is required.';
       }
 
-      try {
+      return null;
+   }
 
-         const result = await endGuardiansTalkSchedule({
-            talk,
-            location,
-            endDate: endDate || null
-         });
-
-         if (result.success) {
-            setStatus(
-               statusEl,
-               `${result.talk} in ${result.location} schedule was ended.`,
-               'is-success'
-            );
-            resetForm();
-         }
-         else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
-         }
-
-      }
-      catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+   async function prepareForm() {
+      if (talkLocationFilterController?.refreshLocations) {
+         await talkLocationFilterController.refreshLocations();
       }
    }
 
-   showButtonEl?.addEventListener('click', onShowClick);
-   cancelButtonEl?.addEventListener('click', hide);
-   submitButtonEl?.addEventListener('click', onSubmitClick);
+   async function submitEndSchedule({ talk, location, endDate }) {
+      return endGuardiansTalkSchedule({
+         talk,
+         location,
+         endDate: endDate || null,
+      });
+   }
 
-   return {
-      show,
-      hide,
-   };
-
+   return createEndRecurringScheduleFormController({
+      ...controllerOptions,
+      endDateEl,
+      resetSelection: () => {
+         resetFormFields([locationEl]);
+         resetTalkDropdown();
+      },
+      getSelectionValues: () => ({
+         talk: getFieldValue(talkNameEl),
+         location: getFieldValue(locationEl),
+      }),
+      validateSelection,
+      prepareForm,
+      loadErrorMessage: 'Failed to load locations.',
+      submitEndSchedule,
+      successMessage: result => `${result.talk} in ${result.location} schedule was ended.`,
+   });
 }

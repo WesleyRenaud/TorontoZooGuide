@@ -1,3 +1,8 @@
+import {
+   createItineraryPopupLayout,
+   mountDismissablePopup,
+} from '../panel/components/popup.js';
+
 export function showItineraryWizardPopup({
    mountEl,
    title = 'Heads up',
@@ -6,48 +11,32 @@ export function showItineraryWizardPopup({
 } = {}) {
    if (!mountEl) return;
 
-   mountEl.querySelector('.tzg-popup')?.remove();
+   const existingPopup = mountEl.querySelector('.tzg-popup');
+   existingPopup?.__tzgPopupCleanup?.();
+   existingPopup?.remove();
 
-   const wrap = document.createElement('div');
-   wrap.className = 'tzg-popup';
-
-   wrap.innerHTML = `
-      <div class="itin-overlay">
-         <section class="itin-card tzg-popup-card" role="dialog" aria-modal="true">
-            <div class="itin-card-topbar">
-               <div class="itin-top-title">${title}</div>
-            </div>
-
-            <div class="itin-card-body tzg-popup-body">
-               <div class="tzg-popup-message">${message}</div>
-            </div>
-
-            <div class="itin-card-actions">
-               <div class="itin-actions-right">
-                  <button type="button" class="itin-next tzg-popup-ok">${buttonText}</button>
-               </div>
-            </div>
-         </section>
-      </div>
-   `;
-
-   const close = () => wrap.remove();
-
-   wrap.querySelector('.itin-overlay')?.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) close();
+   const {
+      root,
+      overlay,
+      buttonEls,
+   } = createItineraryPopupLayout({
+      title,
+      message,
+      actionButtons: [
+         {
+            key: 'ok',
+            className: 'itin-next tzg-popup-ok',
+            text: buttonText,
+         },
+      ],
    });
 
-   wrap.querySelector('.tzg-popup-ok')?.addEventListener('click', close);
+   const { close } = mountDismissablePopup({
+      mountEl,
+      root,
+      overlay,
+      initialFocusEl: buttonEls.ok,
+   });
 
-   const onKey = (e) => {
-      if (e.key === 'Escape') {
-         close();
-         document.removeEventListener('keydown', onKey);
-      }
-   };
-   document.addEventListener('keydown', onKey);
-
-   mountEl.appendChild(wrap);
-
-   setTimeout(() => wrap.querySelector('.tzg-popup-ok')?.focus?.(), 0);
+   buttonEls.ok?.addEventListener('click', close);
 }

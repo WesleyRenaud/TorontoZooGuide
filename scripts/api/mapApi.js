@@ -5,10 +5,16 @@ import {
    asTrimmedString,
 } from './normalizeValues.js';
 
+const EMPTY_PAYLOAD = Object.freeze({});
+
 function asStringArray(value) {
    return asArray(value)
       .map(asTrimmedString)
       .filter(Boolean);
+}
+
+function readResponseCollection(response, responseKey) {
+   return asArray(asObject(response)[responseKey]);
 }
 
 function normalizeRouteResponse(response) {
@@ -16,61 +22,60 @@ function normalizeRouteResponse(response) {
 
    return {
       route: asTrimmedString(source.route).toLowerCase(),
-      zoomobileStations: asArray(source.zoomobile_stations),
+      zoomobileStations: readResponseCollection(source, 'zoomobile_stations'),
    };
 }
 
-export async function getVisibleAnimals(payload) {
-   const response = await postJson('/get-visible-animals', payload);
-   return asArray(asObject(response).animals);
+async function fetchCollection(endpoint, responseKey, payload = EMPTY_PAYLOAD) {
+   const response = await postJson(endpoint, payload);
+   return readResponseCollection(response, responseKey);
+}
+
+async function fetchStringCollection(endpoint, responseKey, payload = EMPTY_PAYLOAD) {
+   return asStringArray(await fetchCollection(endpoint, responseKey, payload));
+}
+
+export async function getVisibleAnimals(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-visible-animals', 'animals', payload);
 }
 
 export async function getPavilions() {
-   const response = await postJson('/get-pavilions', {});
-   return asArray(asObject(response).pavilions);
+   return await fetchCollection('/get-pavilions', 'pavilions');
 }
 
-export async function getRestaurants(payload) {
-   const response = await postJson('/get-restaurants', payload);
-   return asArray(asObject(response).restaurants);
+export async function getRestaurants(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-restaurants', 'restaurants', payload);
 }
 
 export async function getRestrooms() {
-   const response = await postJson('/get-restrooms', {});
-   return asArray(asObject(response).restrooms);
+   return await fetchCollection('/get-restrooms', 'restrooms');
 }
 
-export async function getGiftShops(payload) {
-   const response = await postJson('/get-gift-shops', payload);
-   return asArray(asObject(response).gift_shops);
+export async function getGiftShops(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-gift-shops', 'gift_shops', payload);
 }
 
-export async function getAttractions(payload) {
-   const response = await postJson('/get-attractions', payload);
-   return asArray(asObject(response).attractions);
+export async function getAttractions(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-attractions', 'attractions', payload);
 }
 
-export async function getZoomobileRoute(payload) {
+export async function getZoomobileRoute(payload = EMPTY_PAYLOAD) {
    const response = await postJson('/get-zoomobile-route', payload);
    return normalizeRouteResponse(response);
 }
 
-export async function getGuardiansTalks(payload) {
-   const response = await postJson('/get-guardians-talks', payload);
-   return asArray(asObject(response).guardians_talks);
+export async function getGuardiansTalks(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-guardians-talks', 'guardians_talks', payload);
 }
 
-export async function getWildEncounters(payload) {
-   const response = await postJson('/get-wild-encounters', payload);
-   return asArray(asObject(response).wild_encounters);
+export async function getWildEncounters(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-wild-encounters', 'wild_encounters', payload);
 }
 
 export async function getExhibits() {
-   const response = await postJson('/get-exhibits', {});
-   return asArray(asObject(response).exhibits);
+   return await fetchCollection('/get-exhibits', 'exhibits');
 }
 
-export async function getClosedExhibits(payload) {
-   const response = await postJson('/get-closed-exhibits', payload);
-   return asStringArray(asObject(response).closed_exhibits);
+export async function getClosedExhibits(payload = EMPTY_PAYLOAD) {
+   return await fetchStringCollection('/get-closed-exhibits', 'closed_exhibits', payload);
 }

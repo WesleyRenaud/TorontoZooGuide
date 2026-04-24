@@ -13,8 +13,33 @@ import {
 } from './markerVisualUtils.js';
 
 const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
+const LIMITED_VIEWING_MARKER_CLASS = 'marker-has-limited-viewing';
 
-const ATTRACTION_MARKER_SCALE_OVERRIDES = {
+const GENERIC_ICON_PATHS = Object.freeze({
+   pavilion: '/images/generic-icons/pavilion-open.png',
+   restroom: '/images/generic-icons/restroom-open.png',
+   zoomobileStation: '/images/generic-icons/zoomobile-station.png',
+   guardiansTalk: '/images/generic-icons/guardians-talk.png',
+   wildEncounter: '/images/generic-icons/wild-encounter.png',
+});
+
+const MARKER_CLASS_BY_TYPE = Object.freeze({
+   restaurant: 'marker-restaurant',
+   restroom: 'marker-restroom',
+   giftShop: 'marker-gift-shop',
+   attraction: 'marker-attraction',
+   zoomobileStation: 'marker-zoomobile-station',
+   zoomobileRouteMarker: 'marker-zoomobile-route-marker',
+   guardiansTalk: 'marker-guardians-talk',
+   wildEncounter: 'marker-wild-encounter',
+});
+
+const ZOOMOBILE_ROUTE_COLORS = Object.freeze({
+   winter: '#003366',
+   default: '#556B2F',
+});
+
+const ATTRACTION_MARKER_SCALE_OVERRIDES = Object.freeze({
    'Greenhouse': 2.5,
    'Wildlife Health & Science Centre': 2.5,
    'Splash Island': 2.5,
@@ -22,7 +47,7 @@ const ATTRACTION_MARKER_SCALE_OVERRIDES = {
    'TundraAir Ride': 2.0,
    'Conservation Carousel': 2.5,
    'Zoomobile': 2.0,
-};
+});
 
 function shouldShowLimitedViewingIndicator(animal) {
    return Boolean(
@@ -44,26 +69,40 @@ function applyAttractionMarkerSize(markerEl, attractionName) {
    markerEl.style.height = `${size}px`;
 }
 
-function renderLikelihoodIconMarker(
-   markerEl,
-   item,
-   count,
-   { className, getIconUrl, applySize }
-) {
-   applyMarkerClass(markerEl, className);
-
+function applyOptionalSize(markerEl, item, applySize) {
    if (typeof applySize === 'function') {
       applySize(markerEl, item);
    }
+}
 
-   const { colour, iconToken } = getLikelihoodVisual(item?.likelihood);
+function createGenericIconMarkerRenderer(type) {
+   return (markerEl, items) => {
+      applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE[type]);
+      applyGenericIcon(markerEl, GENERIC_ICON_PATHS[type], items.length);
+   };
+}
 
-   if (count > 1) {
-      applyCountMarker(markerEl, count, colour);
-      return;
-   }
+function createLikelihoodIconMarkerRenderer({
+   type,
+   getIconUrl,
+   applySize = null,
+} = {}) {
+   return (markerEl, items) => {
+      const item = items[0];
+      const count = items.length;
 
-   applyBackgroundImage(markerEl, getIconUrl(item, iconToken));
+      applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE[type]);
+      applyOptionalSize(markerEl, item, applySize);
+
+      const { colour, iconToken } = getLikelihoodVisual(item?.likelihood);
+
+      if (count > 1) {
+         applyCountMarker(markerEl, count, colour);
+         return;
+      }
+
+      applyBackgroundImage(markerEl, getIconUrl(item, iconToken));
+   };
 }
 
 function renderAnimalMarker(markerEl, items) {
@@ -83,80 +122,46 @@ function renderAnimalMarker(markerEl, items) {
    }
 
    if (shouldShowLimitedViewingIndicator(animal)) {
-      applyMarkerClass(markerEl, 'marker-has-limited-viewing');
+      applyMarkerClass(markerEl, LIMITED_VIEWING_MARKER_CLASS);
    }
-}
-
-function renderPavilionMarker(markerEl, items) {
-   applyGenericIcon(markerEl, '/images/generic-icons/pavilion-open.png', items.length);
-}
-
-function renderRestaurantMarker(markerEl, items) {
-   renderLikelihoodIconMarker(markerEl, items[0], items.length, {
-      className: 'marker-restaurant',
-      getIconUrl: (_, iconToken) => getRestaurantIconUrl(iconToken),
-   });
-}
-
-function renderRestroomMarker(markerEl, items) {
-   applyMarkerClass(markerEl, 'marker-restroom');
-   applyGenericIcon(markerEl, '/images/generic-icons/restroom-open.png', items.length);
-}
-
-function renderGiftShopMarker(markerEl, items) {
-   renderLikelihoodIconMarker(markerEl, items[0], items.length, {
-      className: 'marker-gift-shop',
-      getIconUrl: (_, iconToken) => getGiftShopIconUrl(iconToken),
-   });
-}
-
-function renderAttractionMarker(markerEl, items) {
-   renderLikelihoodIconMarker(markerEl, items[0], items.length, {
-      className: 'marker-attraction',
-      getIconUrl: (attraction, iconToken) => getAttractionIconUrl(
-         attraction?.name,
-         iconToken
-      ),
-      applySize: (el, attraction) => applyAttractionMarkerSize(el, attraction?.name),
-   });
-}
-
-function renderZoomobileStationMarker(markerEl, items) {
-   applyMarkerClass(markerEl, 'marker-zoomobile-station');
-   applyGenericIcon(markerEl, '/images/generic-icons/zoomobile-station.png', items.length);
 }
 
 function renderZoomobileRouteMarker(markerEl, items) {
    const routeType = items[0]?.route_type;
+   const routeColor = ZOOMOBILE_ROUTE_COLORS[routeType]
+      || ZOOMOBILE_ROUTE_COLORS.default;
 
-   markerEl.style.backgroundColor = routeType === 'winter'
-      ? '#003366'
-      : '#556B2F';
-
-   applyMarkerClass(markerEl, 'marker-zoomobile-route-marker');
-}
-
-function renderGuardiansTalkMarker(markerEl, items) {
-   applyMarkerClass(markerEl, 'marker-guardians-talk');
-   applyGenericIcon(markerEl, '/images/generic-icons/guardians-talk.png', items.length);
-}
-
-function renderWildEncounterMarker(markerEl, items) {
-   applyMarkerClass(markerEl, 'marker-wild-encounter');
-   applyGenericIcon(markerEl, '/images/generic-icons/wild-encounter.png', items.length);
+   markerEl.style.backgroundColor = routeColor;
+   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.zoomobileRouteMarker);
 }
 
 const MARKER_TYPE_RENDERERS = {
    animal: renderAnimalMarker,
-   pavilion: renderPavilionMarker,
-   restaurant: renderRestaurantMarker,
-   restroom: renderRestroomMarker,
-   giftShop: renderGiftShopMarker,
-   attraction: renderAttractionMarker,
-   zoomobileStation: renderZoomobileStationMarker,
+   pavilion: createGenericIconMarkerRenderer('pavilion'),
+   restaurant: createLikelihoodIconMarkerRenderer({
+      type: 'restaurant',
+      getIconUrl: (_, iconToken) => getRestaurantIconUrl(iconToken),
+   }),
+   restroom: createGenericIconMarkerRenderer('restroom'),
+   giftShop: createLikelihoodIconMarkerRenderer({
+      type: 'giftShop',
+      getIconUrl: (_, iconToken) => getGiftShopIconUrl(iconToken),
+   }),
+   attraction: createLikelihoodIconMarkerRenderer({
+      type: 'attraction',
+      getIconUrl: (attraction, iconToken) => getAttractionIconUrl(
+         attraction?.name,
+         iconToken
+      ),
+      applySize: (markerEl, attraction) => applyAttractionMarkerSize(
+         markerEl,
+         attraction?.name
+      ),
+   }),
+   zoomobileStation: createGenericIconMarkerRenderer('zoomobileStation'),
    zoomobileRouteMarker: renderZoomobileRouteMarker,
-   guardiansTalk: renderGuardiansTalkMarker,
-   wildEncounter: renderWildEncounterMarker,
+   guardiansTalk: createGenericIconMarkerRenderer('guardiansTalk'),
+   wildEncounter: createGenericIconMarkerRenderer('wildEncounter'),
 };
 
 export function renderMarkerByType(markerEl, items) {

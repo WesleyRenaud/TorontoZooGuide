@@ -2,6 +2,11 @@ import { loadWildEncounters } from '../../options/loaders.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
 import { setStatus } from '../../shell/status.js';
 import { cancelWildEncounterOccurrence } from '../../../api/consoleOperationsApi.js';
+import {
+   hideConsolePanel,
+   loadOptionsAndShowPanel,
+   resetFormFields,
+} from '../../helpers/controllerUtils.js';
 
 export function createCancelWildEncounterOccurrenceController({
    showButtonEl,
@@ -13,26 +18,34 @@ export function createCancelWildEncounterOccurrenceController({
    dateEl,
    timeEl,
    activatePanel,
-   hidePanels,
    occurrenceFilterController = null,
 } = {}) {
+   const formFieldEls = [wildEncounterEl, dateEl, timeEl];
+
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
+   }
 
    function resetOccurrenceDropdowns() {
       if (occurrenceFilterController?.clear) {
          occurrenceFilterController.clear();
       }
       else {
-         if (dateEl) dateEl.value = '';
-         if (timeEl) timeEl.value = '';
+         resetFormFields([dateEl, timeEl]);
       }
    }
 
    function resetForm() {
-      if (wildEncounterEl) wildEncounterEl.value = '';
-      if (dateEl) dateEl.value = '';
-      if (timeEl) timeEl.value = '';
-
+      resetFormFields(formFieldEls);
       resetOccurrenceDropdowns();
+   }
+
+   function getFormValues() {
+      return {
+         wildEncounter: getFieldValue(wildEncounterEl),
+         date: getFieldValue(dateEl),
+         time: getFieldValue(timeEl),
+      };
    }
 
    function show() {
@@ -41,64 +54,78 @@ export function createCancelWildEncounterOccurrenceController({
    }
 
    function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
-   async function onShowClick() {
-      setStatus(statusEl, '');
-
-      try {
-         if (wildEncounterEl?.tagName === 'SELECT') {
-            const wildEncounters = await loadWildEncounters();
-            populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
-         }
-
-         resetForm();
-         activatePanel?.(panelEl);
-      }
-      catch(err) {
-         setStatus(statusEl, 'Failed to load Wild Encounters.', 'is-error');
-         activatePanel?.(panelEl);
-      }
-   }
-
-   async function onSubmitClick() {
-      const wildEncounter = wildEncounterEl?.value.trim() ?? '';
-      const date = dateEl?.value.trim() ?? '';
-      const time = timeEl?.value.trim() ?? '';
-
-      setStatus(statusEl, '');
-
+   function validateForm({ wildEncounter, date, time }) {
       if (!wildEncounter) {
-         setStatus(statusEl, 'Wild Encounter is required.', 'is-error');
-         return;
+         return 'Wild Encounter is required.';
       }
 
       if (!date) {
-         setStatus(statusEl, 'Date is required.', 'is-error');
-         return;
+         return 'Date is required.';
       }
 
       if (!time) {
-         setStatus(statusEl, 'Time is required.', 'is-error');
+         return 'Time is required.';
+      }
+
+      return null;
+   }
+
+   async function submitOccurrenceCancellation({ wildEncounter, date, time }) {
+      return cancelWildEncounterOccurrence({
+         wildEncounter,
+         date,
+         time,
+      });
+   }
+
+   function handleSubmitSuccess(result) {
+      setStatus(
+         statusEl,
+         `${result.wildEncounter} on ${result.date} at ${result.time} was cancelled.`,
+         'is-success'
+      );
+
+      resetForm();
+   }
+
+   async function onShowClick() {
+      await loadOptionsAndShowPanel({
+         statusEl,
+         setStatus,
+         loadOptions: loadWildEncounters,
+         populateOptions: populateWildEncounterDropdown,
+         targetEl: wildEncounterEl,
+         resetForm,
+         activatePanel,
+         panelEl,
+         errorMessage: 'Failed to load Wild Encounters.',
+      });
+   }
+
+   async function onSubmitClick() {
+      const formValues = getFormValues();
+
+      setStatus(statusEl, '');
+
+      const validationError = validateForm(formValues);
+
+      if (validationError) {
+         setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
       try {
-         const result = await cancelWildEncounterOccurrence({
-            wildEncounter,
-            date,
-            time
-         });
+         const result = await submitOccurrenceCancellation(formValues);
 
          if (result.success) {
-            setStatus(
-               statusEl,
-               `${result.wildEncounter} on ${result.date} at ${result.time} was cancelled.`,
-               'is-success'
-            );
-            resetForm();
+            handleSubmitSuccess(result);
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
@@ -110,8 +137,7 @@ export function createCancelWildEncounterOccurrenceController({
    }
 
    wildEncounterEl?.addEventListener('change', async () => {
-      if (dateEl) dateEl.value = '';
-      if (timeEl) timeEl.value = '';
+      resetFormFields([dateEl, timeEl]);
 
       if (occurrenceFilterController?.refresh) {
          await occurrenceFilterController.refresh();
@@ -119,7 +145,7 @@ export function createCancelWildEncounterOccurrenceController({
    });
 
    dateEl?.addEventListener('change', () => {
-      if (timeEl) timeEl.value = '';
+      resetFormFields([timeEl]);
 
       if (occurrenceFilterController?.refreshTimes) {
          occurrenceFilterController.refreshTimes();

@@ -18,22 +18,37 @@ export function createRemoveViewingAlertController({
    speciesEl,
    exhibitEl,
    activatePanel,
-   hidePanels,
 } = {}) {
+   const formFieldEls = [speciesEl, exhibitEl];
+
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
+   }
+
+   function getFormValues() {
+      return {
+         species: getFieldValue(speciesEl),
+         exhibit: getFieldValue(exhibitEl),
+      };
+   }
+
+   function validateForm({ species, exhibit }) {
+      if (!species) {
+         return 'Species name is required.';
+      }
+
+      if (!exhibit) {
+         return 'Exhibit is required.';
+      }
+
+      return null;
+   }
 
    function resetForm() {
-      resetFormFields([speciesEl, exhibitEl]);
+      resetFormFields(formFieldEls);
    }
 
-   function hide() {
-      hideConsolePanel({
-         panelEl,
-         statusEl,
-         setStatus,
-      });
-   }
-
-   async function onShowClick() {
+   async function show() {
       await loadOptionsAndShowPanel({
          statusEl,
          setStatus,
@@ -47,59 +62,66 @@ export function createRemoveViewingAlertController({
       });
    }
 
-   async function onSubmitClick() {
+   function hide() {
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
+   }
 
-      const species = speciesEl?.value.trim() ?? '';
-      const exhibit = exhibitEl?.value.trim() ?? '';
+   async function submitViewingAlertRemoval({ species, exhibit }) {
+      return removeAnimalViewingAlert({
+         species,
+         exhibit,
+      });
+   }
+
+   function handleSubmitSuccess(result) {
+      setStatus(
+         statusEl,
+         `Viewing alert removed for ${result.species} in ${result.exhibit}.`,
+         'is-success'
+      );
+
+      resetForm();
+   }
+
+   async function onSubmitClick() {
+      const formValues = getFormValues();
 
       setStatus(statusEl, '');
 
-      if (!species) {
-         setStatus(statusEl, 'Species name is required.', 'is-error');
-         return;
-      }
+      const validationError = validateForm(formValues);
 
-      if (!exhibit) {
-         setStatus(statusEl, 'Exhibit is required.', 'is-error');
+      if (validationError) {
+         setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
       try {
-
-         const result = await removeAnimalViewingAlert({
-            species,
-            exhibit
-         });
+         const result = await submitViewingAlertRemoval(formValues);
 
          if (result.success) {
-
-            setStatus(
-               statusEl,
-               `Viewing alert removed for ${result.species} in ${result.exhibit}.`,
-               'is-success'
-            );
-
-            resetForm();
-
+            handleSubmitSuccess(result);
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
-
       }
       catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
-
    }
 
    bindResetValueOnChange(exhibitEl, speciesEl);
 
-   showButtonEl?.addEventListener('click', onShowClick);
+   showButtonEl?.addEventListener('click', show);
    cancelButtonEl?.addEventListener('click', hide);
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
+      show,
       hide,
    };
 }

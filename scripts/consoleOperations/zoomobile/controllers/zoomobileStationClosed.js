@@ -1,111 +1,25 @@
 import { loadZoomobileStations } from '../../options/loaders.js';
 import { populateZoomobileStationDropdown } from '../../options/dropdowns.js';
-import { setStatus } from '../../shell/status.js';
 import { setZoomobileStationClosed } from '../../../api/consoleOperationsApi.js';
-import {
-   hideConsolePanel,
-   loadOptionsAndShowPanel,
-   resetFormFields,
-   validateOptionalDateRange,
-} from '../../helpers/controllerUtils.js';
+import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
 
 export function createZoomobileStationClosedController({
-   showButtonEl,
-   panelEl,
-   cancelButtonEl,
-   submitButtonEl,
-   statusEl,
    zoomobileStationEl,
-   startDateEl,
-   endDateEl,
-   messageEl,
-   activatePanel,
-   hidePanels,
+   ...controllerOptions
 } = {}) {
-
-   function resetForm() {
-      resetFormFields([zoomobileStationEl, startDateEl, endDateEl, messageEl]);
-   }
-
-   function show() {
-      setStatus(statusEl, '');
-      activatePanel?.(panelEl);
-   }
-
-   function hide() {
-      hideConsolePanel({
-         panelEl,
-         statusEl,
-         setStatus,
-      });
-   }
-
-   async function onShowClick() {
-      await loadOptionsAndShowPanel({
-         statusEl,
-         setStatus,
-         loadOptions: loadZoomobileStations,
-         populateOptions: populateZoomobileStationDropdown,
-         targetEl: zoomobileStationEl,
-         resetForm,
-         activatePanel,
-         panelEl,
-         errorMessage: 'Failed to load zoomobile stations.',
-      });
-   }
-
-   async function onSubmitClick() {
-      const zoomobileStation = zoomobileStationEl?.value.trim() ?? '';
-      const startDate = startDateEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-      const message = messageEl?.value.trim() ?? '';
-
-      setStatus(statusEl, '');
-
-      if (!zoomobileStation) {
-         setStatus(statusEl, 'Zoomobile station is required.', 'is-error');
-         return;
-      }
-
-      const dateError = validateOptionalDateRange(startDate, endDate);
-
-      if (dateError) {
-         setStatus(statusEl, dateError, 'is-error');
-         return;
-      }
-
-      try {
-         const result = await setZoomobileStationClosed({
-            zoomobileStation,
-            startDate: startDate || null,
-            endDate: endDate || null,
-            message
-         });
-
-         if (result.success) {
-            setStatus(
-               statusEl,
-               `${result.zoomobile_station} was set as closed.`,
-               'is-success'
-            );
-
-            resetForm();
-         }
-         else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
-         }
-      }
-      catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
-      }
-   }
-
-   showButtonEl?.addEventListener('click', onShowClick);
-   cancelButtonEl?.addEventListener('click', hide);
-   submitButtonEl?.addEventListener('click', onSubmitClick);
-
-   return {
-      show,
-      hide,
-   };
+   return createEntityClosedFormController({
+      ...controllerOptions,
+      entityEl: zoomobileStationEl,
+      loadOptions: loadZoomobileStations,
+      populateOptions: populateZoomobileStationDropdown,
+      submitClosedStatus: ({ entity, startDate, endDate, message }) => setZoomobileStationClosed({
+         zoomobileStation: entity,
+         startDate: startDate || null,
+         endDate: endDate || null,
+         message,
+      }),
+      entityLabel: 'Zoomobile station',
+      optionsLabel: 'zoomobile stations',
+      successMessage: result => `${result.zoomobile_station} was set as closed.`,
+   });
 }

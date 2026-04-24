@@ -1,32 +1,48 @@
-function normalizeExhibitKey(value) {
-   return String(value || '')
-      .trim()
-      .toLowerCase()
-      .replace(/'/g, '')
-      .replace(/&/g, 'and')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
+
+const CLOSED_EXHIBIT_OVERLAY_ID_PREFIX = 'closed-exhibit-overlay-';
+const CLOSED_EXHIBIT_OVERLAY_SELECTOR = `[id^="${CLOSED_EXHIBIT_OVERLAY_ID_PREFIX}"]`;
+
+function getClosedExhibitOverlays() {
+   return document.querySelectorAll(CLOSED_EXHIBIT_OVERLAY_SELECTOR);
 }
 
-export function setClosedExhibitOverlaysVisible(closedExhibits) {
-   const overlays = document.querySelectorAll('[id^="closed-exhibit-overlay-"]');
-
+function hideClosedExhibitOverlays(overlays) {
    overlays.forEach((overlay) => {
       overlay.style.display = 'none';
    });
+}
 
-   (closedExhibits || []).forEach((exhibit) => {
-      const key = normalizeExhibitKey(exhibit);
+function getClosedExhibitOverlayId(exhibitKey) {
+   return `${CLOSED_EXHIBIT_OVERLAY_ID_PREFIX}${exhibitKey}`;
+}
 
-      if (!key) {
-         return;
-      }
+function showClosedExhibitOverlay(exhibitKey) {
+   const overlay = document.getElementById(
+      getClosedExhibitOverlayId(exhibitKey)
+   );
 
-      const overlay = document.getElementById(`closed-exhibit-overlay-${key}`);
+   if (overlay) {
+      overlay.style.display = '';
+   }
+}
 
-      if (overlay) {
-         overlay.style.display = '';
-      }
+function normalizeClosedExhibitKeys(closedExhibits) {
+   return Array.isArray(closedExhibits)
+      ? closedExhibits
+         .map(normalizeAssetKey)
+         .filter(Boolean)
+      : [];
+}
+
+export function setClosedExhibitOverlaysVisible(closedExhibits) {
+   const overlays = getClosedExhibitOverlays();
+   const closedExhibitKeys = normalizeClosedExhibitKeys(closedExhibits);
+
+   hideClosedExhibitOverlays(overlays);
+
+   closedExhibitKeys.forEach((key) => {
+      showClosedExhibitOverlay(key);
    });
 }
 
@@ -40,7 +56,7 @@ export async function syncClosedExhibitOverlays(sources, ctx) {
 
    try {
       const rows = await src.fetch(ctx);
-      const closedExhibits = Array.isArray(rows) ? rows : [];
+      const closedExhibits = normalizeClosedExhibitKeys(rows);
 
       setClosedExhibitOverlaysVisible(closedExhibits);
       return closedExhibits;

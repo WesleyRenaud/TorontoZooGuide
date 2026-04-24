@@ -6,16 +6,117 @@ import {
 } from './base/resultRenderer.js';
 import { buildSelectorShell } from './base/shell.js';
 
+const SEARCH_DEBOUNCE_MS = 250;
+
 function debounce(fn, delay = 250) {
-   let t = null;
+   let timeoutId = null;
+
    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn(...args), delay);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fn(...args), delay);
    };
 }
 
-function defaultMigrate(arr) {
-   return Array.isArray(arr) ? arr : [];
+function defaultMigrate(items) {
+   return items;
+}
+
+function validateSelectorConfig({
+   storageKey,
+   getId,
+   extractRows,
+} = {}) {
+   if (!storageKey) {
+      throw new Error('createItinerarySelectorController: storageKey is required');
+   }
+
+   if (typeof getId !== 'function') {
+      throw new Error('createItinerarySelectorController: getId(row) is required');
+   }
+
+   if (typeof extractRows !== 'function') {
+      throw new Error('createItinerarySelectorController: extractRows(response) is required');
+   }
+}
+
+function createSelectorElements({
+   topTitle,
+   h1,
+   subtitle,
+   hideNextButton,
+} = {}) {
+   const shell = buildSelectorShell({
+      topTitle,
+      h1,
+      subtitle,
+      hideNextButton,
+   });
+
+   return {
+      rootEl: shell.root,
+      bodyEl: shell.bodyEl,
+      inputEl: shell.inputEl,
+      resultsEl: shell.resultsEl,
+      prevButtonEl: shell.prevButton,
+      nextButtonEl: shell.nextButton,
+      finishButtonEl: shell.finishButton,
+      closeButtonEl: shell.closeButton,
+   };
+}
+
+function createSelectorSearchRunner({
+   searchEndpoint,
+   buildSearchPayload,
+   extractRows,
+   getContext,
+   getQuery,
+   onRows,
+} = {}) {
+   let latestSearchRequestId = 0;
+
+   async function fetchRows(query) {
+      const context = typeof getContext === 'function'
+         ? await getContext()
+         : {};
+
+      const response = await searchItineraryItems(searchEndpoint, {
+         ...buildSearchPayload(query),
+         ...context,
+      });
+
+      return extractRows(response);
+   }
+
+   async function runCurrentQuery() {
+      const requestId = ++latestSearchRequestId;
+      const query = getQuery()?.trim() ?? '';
+
+      try {
+         const rows = await fetchRows(query);
+
+         if (requestId !== latestSearchRequestId) {
+            return;
+         }
+
+         onRows(rows);
+      }
+      catch {
+         if (requestId !== latestSearchRequestId) {
+            return;
+         }
+
+         onRows([]);
+      }
+   }
+
+   const scheduleCurrentQuery = debounce(() => {
+      void runCurrentQuery();
+   }, SEARCH_DEBOUNCE_MS);
+
+   return {
+      runCurrentQuery,
+      scheduleCurrentQuery,
+   };
 }
 
 export function createItinerarySelectorController({
@@ -31,7 +132,7 @@ export function createItinerarySelectorController({
    migrateSelected = defaultMigrate,
 
    searchEndpoint = '/search',
-   buildSearchPayload = (query) => ({ query }),
+   buildSearchPayload = query => ({ query }),
    extractRows,
 
    getContext = null,
@@ -42,7 +143,7 @@ export function createItinerarySelectorController({
    getImageSrc = () => null,
    getInfoLink = () => null,
 
-   makeSelection = (row) => ({ id: getId(row) }),
+   makeSelection = row => ({ id: getId(row) }),
 
    topTitle = 'Itinerary Builder',
    h1 = 'Add Items',
@@ -54,23 +155,13 @@ export function createItinerarySelectorController({
 
    onBeforeToggleAdd = null,
 } = {}) {
+   validateSelectorConfig({
+      storageKey,
+      getId,
+      extractRows,
+   });
 
-   if (!storageKey) {
-      throw new Error('createItinerarySelectorController: storageKey is required');
-   }
-
-   if (typeof getId !== 'function') {
-      throw new Error('createItinerarySelectorController: getId(row) is required');
-   }
-
-   if (typeof extractRows !== 'function') {
-      throw new Error('createItinerarySelectorController: extractRows(response) is required');
-   }
-
-   let root = null;
-   let inputEl = null;
-   let resultsEl = null;
-   let bodyEl = null;
+   let elements = null;
 
    const selectionState = createSelectorSelectionState({
       storageKey,
@@ -79,102 +170,139 @@ export function createItinerarySelectorController({
       makeSelection,
    });
 
-   const defaultRenderRowLeft = createDefaultSelectorRowLeftRenderer({
-      getTitle,
-      getSubtitle,
-      getImageSrc,
-      getInfoLink,
-   });
+   const resolvedRenderRowLeft = renderRowLeft
+      || createDefaultSelectorRowLeftRenderer({
+         getTitle,
+         getSubtitle,
+         getImageSrc,
+         getInfoLink,
+      });
 
-   function render(rows) {
+   function getSelectionSnapshot() {
+      return selectionState.getSelectedSnapshot();
+   }
+
+   function renderRows(rows) {
+      if (!elements?.resultsEl) {
+         return;
+      }
+
       renderSelectorResults({
-         resultsEl,
+         resultsEl: elements.resultsEl,
          rows,
          emptyText,
          getId,
          isSelected: selectionState.isSelected,
-         renderRowLeft: renderRowLeft || defaultRenderRowLeft,
+         renderRowLeft: resolvedRenderRowLeft,
          onToggle: selectionState.toggleRow,
          onBeforeToggleAdd,
       });
    }
 
-   async function runSearch() {
-      const query = (inputEl?.value ?? '').trim();
+   const searchRunner = createSelectorSearchRunner({
+      searchEndpoint,
+      buildSearchPayload,
+      extractRows,
+      getContext,
+      getQuery: () => elements?.inputEl?.value ?? '',
+      onRows: renderRows,
+   });
 
-      try {
-         const ctx =
-            typeof getContext === 'function'
-               ? await getContext()
-               : {};
-
-         const payload = {
-            ...buildSearchPayload(query),
-            ...ctx,
-         };
-
-         const response = await searchItineraryItems(searchEndpoint, payload);
-         const rows = extractRows(response);
-         render(rows);
-      } catch {
-         render([]);
-      }
+   function handlePrev() {
+      onPrev?.();
    }
 
-   function build() {
-      const shell = buildSelectorShell({
+   function handleNext() {
+      onNext?.(getSelectionSnapshot());
+   }
+
+   function handleFinish() {
+      onFinish?.(getSelectionSnapshot());
+   }
+
+   function handleClose() {
+      onClose?.();
+   }
+
+   function bindEvents() {
+      elements?.inputEl?.addEventListener('input', searchRunner.scheduleCurrentQuery);
+      elements?.prevButtonEl?.addEventListener('click', handlePrev);
+      elements?.nextButtonEl?.addEventListener('click', handleNext);
+      elements?.finishButtonEl?.addEventListener('click', handleFinish);
+      elements?.closeButtonEl?.addEventListener('click', handleClose);
+   }
+
+   function renderExtraUi() {
+      if (typeof renderExtraControls !== 'function' || !elements) {
+         return;
+      }
+
+      renderExtraControls({
+         rootEl: elements.rootEl,
+         bodyEl: elements.bodyEl,
+         inputEl: elements.inputEl,
+         resultsEl: elements.resultsEl,
+         rerunSearch: () => {
+            void searchRunner.runCurrentQuery();
+         },
+      });
+   }
+
+   function ensureBuilt() {
+      if (elements) {
+         return;
+      }
+
+      elements = createSelectorElements({
          topTitle,
          h1,
          subtitle,
          hideNextButton,
       });
 
-      root = shell.root;
-      bodyEl = shell.bodyEl;
-      inputEl = shell.inputEl;
-      resultsEl = shell.resultsEl;
+      renderExtraUi();
+      bindEvents();
+   }
 
-      if (typeof renderExtraControls === 'function') {
-         renderExtraControls({
-            rootEl: root,
-            bodyEl,
-            inputEl,
-            resultsEl,
-            rerunSearch: runSearch,
-         });
+   function resetInput() {
+      if (!elements?.inputEl) {
+         return;
       }
 
-      inputEl.addEventListener('input', debounce(runSearch, 250));
+      elements.inputEl.value = '';
+   }
 
-      shell.prevButton?.addEventListener('click', () => onPrev?.());
-      shell.nextButton?.addEventListener('click', () => onNext?.(selectionState.getSelectedSnapshot()));
-      shell.finishButton?.addEventListener('click', () => onFinish?.(selectionState.getSelectedSnapshot()));
-      shell.closeButton?.addEventListener('click', () => onClose?.());
+   function mountRoot() {
+      if (!mountEl || !elements?.rootEl) {
+         return;
+      }
+
+      mountEl.replaceChildren(elements.rootEl);
    }
 
    function show() {
-      if (!mountEl) return;
-
-      if (!root) {
-         build();
+      if (!mountEl) {
+         return;
       }
 
+      ensureBuilt();
       selectionState.reload();
-
-      mountEl.innerHTML = '';
-      mountEl.appendChild(root);
-
-      inputEl.value = '';
-      runSearch();
+      mountRoot();
+      resetInput();
+      void searchRunner.runCurrentQuery();
    }
 
    function hide() {
-      if (!mountEl) return;
-      mountEl.innerHTML = '';
+      if (!mountEl) {
+         return;
+      }
+
+      mountEl.replaceChildren();
    }
 
    return {
       show,
       hide,
+      getSelectionSnapshot,
    };
 }

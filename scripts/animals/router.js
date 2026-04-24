@@ -6,58 +6,86 @@ export function createAnimalsRouter({ listEl }) {
    const api = createAnimalsApi();
    const listView = createAnimalsListView({ listEl });
    const detailView = createAnimalDetailView({ listEl });
+   let latestNavigationId = 0;
+
+   function beginNavigation() {
+      latestNavigationId += 1;
+      return latestNavigationId;
+   }
+
+   function isLatestNavigation(navigationId) {
+      return navigationId === latestNavigationId;
+   }
+
+   async function runNavigation(task, render) {
+      const navigationId = beginNavigation();
+      const result = await task();
+
+      if (!isLatestNavigation(navigationId)) {
+         return;
+      }
+
+      render(result);
+   }
+
+   function shouldShowExhibits(region) {
+      return region?.hasExhibits === true;
+   }
+
+   function createAnimalsBackHandler(regionName, exhibitName) {
+      if (regionName === exhibitName) {
+         return showRegions;
+      }
+
+      return () => showExhibits(regionName);
+   }
+
+   function showRegionSelection(region) {
+      if (shouldShowExhibits(region)) {
+         return showExhibits(region.name);
+      }
+
+      return showAnimals(region.name, region.name);
+   }
 
    async function showRegions() {
-      const regions = await api.getRegions();
-
-      listView.renderRegions(regions, {
-         onRegionSelected: async (region) => {
-            if (region.hasExhibits) {
-               await showExhibits(region.name);
-            } else {
-               await showAnimals(region.name, region.name);
-            }
-         }
+      await runNavigation(() => api.getRegions(), (regions) => {
+         listView.renderRegions(regions, {
+            onRegionSelected: showRegionSelection,
+         });
       });
    }
 
    async function showExhibits(regionName) {
-      const exhibits = await api.getExhibitsInRegion(regionName);
-
-      listView.renderExhibits(regionName, exhibits, {
-         onBack: () => showRegions(),
-         onExhibitSelected: async (exhibitName) => {
-            await showAnimals(regionName, exhibitName);
-         }
+      await runNavigation(() => api.getExhibitsInRegion(regionName), (exhibits) => {
+         listView.renderExhibits(regionName, exhibits, {
+            onBack: showRegions,
+            onExhibitSelected: exhibitName => showAnimals(regionName, exhibitName),
+         });
       });
    }
 
    async function showAnimals(regionName, exhibitName) {
-      const animals = await api.getAnimalsInExhibit(exhibitName);
-
-      listView.renderAnimals(regionName, exhibitName, animals, {
-         onBack: () => {
-            if (regionName === exhibitName) showRegions();
-            else showExhibits(regionName);
-         },
-         onAnimalSelected: async (animalName) => {
-            await showAnimalDetail(regionName, exhibitName, animalName);
-         }
+      await runNavigation(() => api.getAnimalsInExhibit(exhibitName), (animals) => {
+         listView.renderAnimals(regionName, exhibitName, animals, {
+            onBack: createAnimalsBackHandler(regionName, exhibitName),
+            onAnimalSelected: animalName => showAnimalDetail(regionName, exhibitName, animalName),
+         });
       });
    }
 
    async function showAnimalDetail(regionName, exhibitName, animalName) {
-      const animalInfo = await api.getAnimalInformation(animalName);
-
-      detailView.render(animalInfo, {
-         regionName,
-         exhibitName,
-         onBack: () => showAnimals(regionName, exhibitName)
+      await runNavigation(() => api.getAnimalInformation(animalName), (animalInfo) => {
+         detailView.render(animalInfo, {
+            regionName,
+            exhibitName,
+            onBack: () => showAnimals(regionName, exhibitName),
+         });
       });
    }
 
    function start() {
-      showRegions();
+      return showRegions();
    }
 
    return { start };

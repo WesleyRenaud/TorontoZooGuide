@@ -1,9 +1,14 @@
-import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import {
+   populateGuardiansTalkDropdown,
+} from '../../options/dropdowns.js';
 import { setStatus } from '../../shell/status.js';
 import {
    cancelGuardiansTalkOccurrence,
-   getGuardiansTalkOccurrences,
 } from '../../../api/consoleOperationsApi.js';
+import {
+   hideConsolePanel,
+   resetFormFields,
+} from '../../helpers/controllerUtils.js';
 
 export function createCancelGuardiansTalkOccurrenceController({
    showButtonEl,
@@ -16,56 +21,22 @@ export function createCancelGuardiansTalkOccurrenceController({
    dateEl,
    timeEl,
    activatePanel,
-   hidePanels,
    talkLocationFilterController = null,
+   occurrenceFilterController = null,
 } = {}) {
+   const formFieldEls = [locationEl, talkNameEl, dateEl, timeEl];
 
-   let occurrences = [];
-
-   function populateDateDropdown(occurrenceDates) {
-      if (dateEl?.tagName !== 'SELECT') {
-         return;
-      }
-
-      dateEl.innerHTML = '';
-
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = 'Select a date';
-      dateEl.appendChild(placeholder);
-
-      occurrenceDates.forEach(date => {
-         const option = document.createElement('option');
-         option.value = date;
-         option.textContent = date;
-         dateEl.appendChild(option);
-      });
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
    }
 
-   function populateTimeDropdown(occurrenceTimes) {
-      if (timeEl?.tagName !== 'SELECT') {
-         return;
+   function resetOccurrenceDropdowns() {
+      if (occurrenceFilterController?.clear) {
+         occurrenceFilterController.clear();
       }
-
-      timeEl.innerHTML = '';
-
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = 'Select a time';
-      timeEl.appendChild(placeholder);
-
-      occurrenceTimes.forEach(time => {
-         const option = document.createElement('option');
-         option.value = time;
-         option.textContent = time;
-         timeEl.appendChild(option);
-      });
-   }
-
-   function clearOccurrenceDropdowns() {
-      occurrences = [];
-      populateDateDropdown([]);
-      populateTimeDropdown([]);
+      else {
+         resetFormFields([dateEl, timeEl]);
+      }
    }
 
    function resetTalkDropdown() {
@@ -79,16 +50,21 @@ export function createCancelGuardiansTalkOccurrenceController({
          talkNameEl.value = '';
       }
 
-      clearOccurrenceDropdowns();
+      resetOccurrenceDropdowns();
    }
 
    function resetForm() {
-      if (locationEl) locationEl.value = '';
-      if (talkNameEl) talkNameEl.value = '';
-      if (dateEl) dateEl.value = '';
-      if (timeEl) timeEl.value = '';
-
+      resetFormFields(formFieldEls);
       resetTalkDropdown();
+   }
+
+   function getFormValues() {
+      return {
+         talk: getFieldValue(talkNameEl),
+         location: getFieldValue(locationEl),
+         date: getFieldValue(dateEl),
+         time: getFieldValue(timeEl),
+      };
    }
 
    function show() {
@@ -97,62 +73,56 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
+      hideConsolePanel({
+         panelEl,
+         statusEl,
+         setStatus,
+      });
    }
 
-   async function loadOccurrencesForSelectedTalk() {
-      const talk = talkNameEl?.value.trim() ?? '';
-      const location = locationEl?.value.trim() ?? '';
-
-      clearOccurrenceDropdowns();
-
-      if (!talk || !location) {
-         return;
+   function validateForm({ talk, location, date, time }) {
+      if (!location) {
+         return 'Location is required.';
       }
 
-      try {
-         const result = await getGuardiansTalkOccurrences({
-            talk,
-            location
-         });
-
-         occurrences = result?.occurrences ?? [];
-
-         const occurrenceDates = [
-            ...new Set(
-               occurrences
-                  .map(occurrence => occurrence.date ?? '')
-                  .filter(Boolean)
-            )
-         ];
-
-         populateDateDropdown(occurrenceDates);
+      if (!talk) {
+         return 'Talk name is required.';
       }
-      catch(err) {
-         clearOccurrenceDropdowns();
+
+      if (!date) {
+         return 'Date is required.';
+      }
+
+      if (!time) {
+         return 'Time is required.';
+      }
+
+      return null;
+   }
+
+   async function refreshLocations() {
+      if (talkLocationFilterController?.refreshLocations) {
+         await talkLocationFilterController.refreshLocations();
       }
    }
 
-   function loadTimesForSelectedDate() {
-      const selectedDate = dateEl?.value.trim() ?? '';
+   async function submitOccurrenceCancellation({ talk, location, date, time }) {
+      return cancelGuardiansTalkOccurrence({
+         talk,
+         location,
+         date,
+         time,
+      });
+   }
 
-      populateTimeDropdown([]);
+   function handleSubmitSuccess(result) {
+      setStatus(
+         statusEl,
+         `${result.talk} in ${result.location} on ${result.date} at ${result.time} was cancelled.`,
+         'is-success'
+      );
 
-      if (!selectedDate) {
-         return;
-      }
-
-      const occurrenceTimes = [
-         ...new Set(
-            occurrences
-               .filter(occurrence => (occurrence.date ?? '') === selectedDate)
-               .map(occurrence => occurrence.time ?? '')
-               .filter(Boolean)
-         )
-      ];
-
-      populateTimeDropdown(occurrenceTimes);
+      resetForm();
    }
 
    async function onShowClick() {
@@ -160,64 +130,32 @@ export function createCancelGuardiansTalkOccurrenceController({
 
       try {
          resetForm();
-
-         if (talkLocationFilterController?.refreshLocations) {
-            await talkLocationFilterController.refreshLocations();
-         }
-
-         setStatus(statusEl, '');
-         activatePanel?.(panelEl);
+         await refreshLocations();
+         show();
       }
       catch(err) {
          setStatus(statusEl, 'Failed to load locations.', 'is-error');
-         activatePanel?.(panelEl);
+         show();
       }
    }
 
    async function onSubmitClick() {
-      const talk = talkNameEl?.value.trim() ?? '';
-      const location = locationEl?.value.trim() ?? '';
-      const date = dateEl?.value.trim() ?? '';
-      const time = timeEl?.value.trim() ?? '';
+      const formValues = getFormValues();
 
       setStatus(statusEl, '');
 
-      if (!location) {
-         setStatus(statusEl, 'Location is required.', 'is-error');
-         return;
-      }
+      const validationError = validateForm(formValues);
 
-      if (!talk) {
-         setStatus(statusEl, 'Talk name is required.', 'is-error');
-         return;
-      }
-
-      if (!date) {
-         setStatus(statusEl, 'Date is required.', 'is-error');
-         return;
-      }
-
-      if (!time) {
-         setStatus(statusEl, 'Time is required.', 'is-error');
+      if (validationError) {
+         setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
       try {
-
-         const result = await cancelGuardiansTalkOccurrence({
-            talk,
-            location,
-            date,
-            time
-         });
+         const result = await submitOccurrenceCancellation(formValues);
 
          if (result.success) {
-            setStatus(
-               statusEl,
-               `${result.talk} in ${result.location} on ${result.date} at ${result.time} was cancelled.`,
-               'is-success'
-            );
-            resetForm();
+            handleSubmitSuccess(result);
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
@@ -229,15 +167,26 @@ export function createCancelGuardiansTalkOccurrenceController({
       }
    }
 
+   locationEl?.addEventListener('change', () => {
+      resetOccurrenceDropdowns();
+   });
+
    talkNameEl?.addEventListener('change', async () => {
-      if (dateEl) dateEl.value = '';
-      if (timeEl) timeEl.value = '';
-      await loadOccurrencesForSelectedTalk();
+      if (occurrenceFilterController?.refresh) {
+         await occurrenceFilterController.refresh();
+      }
+      else {
+         resetOccurrenceDropdowns();
+      }
    });
 
    dateEl?.addEventListener('change', () => {
-      if (timeEl) timeEl.value = '';
-      loadTimesForSelectedDate();
+      if (occurrenceFilterController?.refreshTimes) {
+         occurrenceFilterController.refreshTimes();
+      }
+      else {
+         resetFormFields([timeEl]);
+      }
    });
 
    showButtonEl?.addEventListener('click', onShowClick);
@@ -248,5 +197,4 @@ export function createCancelGuardiansTalkOccurrenceController({
       show,
       hide,
    };
-
 }

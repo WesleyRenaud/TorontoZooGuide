@@ -2,26 +2,50 @@ export function createMessageBanner({
    getMessages = () => [],
 } = {}) {
    let element = null;
+   let textElement = null;
+
+   function createMessageElement(message) {
+      const messageElement = document.createElement('p');
+      messageElement.className = 'off-display-closed-message';
+      messageElement.textContent = message;
+      return messageElement;
+   }
+
+   function renderMessages(messages) {
+      textElement.replaceChildren(
+         ...messages.map(createMessageElement)
+      );
+   }
 
    function ensure() {
-      if (element) return element;
+      if (element) {
+         return element;
+      }
 
       element = document.createElement('div');
       element.className = 'off-display-closed-banner';
       element.style.display = 'none';
 
-      element.innerHTML = `
-         <div class="off-display-closed-icon">⚠</div>
-         <div class="off-display-closed-text"></div>
-         <button class="off-display-closed-close" type="button" aria-label="Close">×</button>
-      `;
+      const iconElement = document.createElement('div');
+      iconElement.className = 'off-display-closed-icon';
+      iconElement.textContent = '⚠';
+
+      textElement = document.createElement('div');
+      textElement.className = 'off-display-closed-text';
+
+      const closeButton = document.createElement('button');
+      closeButton.className = 'off-display-closed-close';
+      closeButton.type = 'button';
+      closeButton.setAttribute('aria-label', 'Close');
+      closeButton.textContent = '×';
 
       element.addEventListener('click', event => event.stopPropagation());
-      element.querySelector('.off-display-closed-close').addEventListener('click', event => {
+      closeButton.addEventListener('click', event => {
          event.stopPropagation();
          hide();
       });
 
+      element.append(iconElement, textElement, closeButton);
       document.body.appendChild(element);
 
       return element;
@@ -41,9 +65,18 @@ export function createMessageBanner({
       }
 
       const banner = ensure();
-      banner.querySelector('.off-display-closed-text').innerHTML = messages.join('<br><br>');
+      renderMessages(messages);
       banner.style.display = 'flex';
    }
 
    return { sync, hide };
+}
+
+export function createSingleMessageBanner(getMessage) {
+   return createMessageBanner({
+      getMessages: item => {
+         const message = getMessage(item);
+         return message ? [message] : [];
+      },
+   });
 }

@@ -1,7 +1,7 @@
-import { createMessageBanner } from './messageBanner.js';
+import { createSingleMessageBanner } from './messageBanner.js';
 
 export function createAttractionClosedBanner() {
-   return createMessageBanner({
-      getMessages: attraction => attraction?.closed_message ? [attraction.closed_message] : [],
-   });
+   return createSingleMessageBanner(
+      attraction => attraction?.closed_message
+   );
 }

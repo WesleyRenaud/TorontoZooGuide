@@ -16,84 +16,109 @@ import {
    isItineraryEmpty,
 } from '../itineraryService.js';
 
-import { clearItineraryStorage } from './localStorage.js';
+import { clearItineraryDraftStorage } from '../draftStorage.js';
 
 let latestRenderToken = 0;
 
+function destroyRenderedPanelChildren(bodyEl) {
+   Array.from(bodyEl?.children ?? []).forEach((child) => {
+      child.__tzgCleanup?.();
+   });
+}
+
+function clearRenderedPanel(bodyEl) {
+   destroyRenderedPanelChildren(bodyEl);
+   bodyEl?.replaceChildren();
+}
+
+async function clearStoredItinerary() {
+   try {
+      await clearItinerary();
+      clearItineraryDraftStorage();
+   }
+   catch (err) {
+      console.error('Failed to clear itinerary:', err);
+   }
+}
+
+function buildSectionConfigs({
+   animals = [],
+   attractions = [],
+   guardiansTalks = [],
+   wildEncounters = [],
+} = {}) {
+   return [
+      {
+         title: 'Animals',
+         count: animals.length,
+         children: buildAnimalRows(animals),
+         stepKey: 'animals',
+      },
+      {
+         title: 'Attractions',
+         count: attractions.length,
+         children: buildAttractionRows(attractions),
+         stepKey: 'attractions',
+      },
+      {
+         title: 'Meet the Guardians',
+         count: guardiansTalks.length,
+         children: buildGuardiansRows(guardiansTalks),
+         stepKey: 'guardiansTalks',
+      },
+      {
+         title: 'Wild Encounters',
+         count: wildEncounters.length,
+         children: buildWildRows(wildEncounters),
+         stepKey: 'wildEncounters',
+      },
+   ];
+}
+
+function buildItineraryPanelContent(itinerary) {
+   const fragment = document.createDocumentFragment();
+
+   fragment.appendChild(
+      makeActionsBar({
+         onAfterClear: clearStoredItinerary,
+      })
+   );
+
+   const dateCard = makeDateCard(itinerary);
+
+   if (dateCard) {
+      fragment.appendChild(dateCard);
+   }
+
+   buildSectionConfigs(itinerary).forEach((sectionConfig) => {
+      fragment.appendChild(
+         makeSection(sectionConfig)
+      );
+   });
+
+   return fragment;
+}
+
 export async function renderItineraryPanelInto(bodyEl) {
-   if (!bodyEl) return;
+   if (!bodyEl) {
+      return;
+   }
 
    const renderToken = ++latestRenderToken;
-   const itin = await getItinerary();
+   const itinerary = await getItinerary();
 
-   if (renderToken !== latestRenderToken) return;
+   if (renderToken !== latestRenderToken) {
+      return;
+   }
 
-   bodyEl.innerHTML = '';
+   clearRenderedPanel(bodyEl);
 
-   if (!itin || isItineraryEmpty(itin)) {
+   if (!itinerary || isItineraryEmpty(itinerary)) {
       renderBuildOnly(bodyEl);
       return;
    }
 
-   const animals = Array.isArray(itin.animals) ? itin.animals : [];
-   const attractions = Array.isArray(itin.attractions) ? itin.attractions : [];
-   const guardiansTalks = Array.isArray(itin.guardiansTalks) ? itin.guardiansTalks : [];
-   const wildEncounters = Array.isArray(itin.wildEncounters) ? itin.wildEncounters : [];
-
-   bodyEl.appendChild(makeActionsBar({
-      onAfterClear: async () => {
-         try {
-            await clearItinerary();
-            clearItineraryStorage();
-
-            await renderItineraryPanelInto(bodyEl);
-         } catch (err) {
-            console.error('Failed to clear itinerary:', err);
-         }
-      },
-   }));
-
-   const dateCard = makeDateCard(itin);
-   if (dateCard) bodyEl.appendChild(dateCard);
-
-   const animalRows = buildAnimalRows(animals);
-   const attractionRows = buildAttractionRows(attractions);
-   const guardiansRows = buildGuardiansRows(guardiansTalks);
-   const wildRows = buildWildRows(wildEncounters);
-
    bodyEl.appendChild(
-      makeSection({
-         title: 'Animals',
-         count: animals.length,
-         children: animalRows,
-         stepKey: 'animals',
-      })
-   );
-
-   bodyEl.appendChild(
-      makeSection({
-         title: 'Attractions',
-         count: attractions.length,
-         children: attractionRows,
-         stepKey: 'attractions',
-      })
-   );
-
-   bodyEl.appendChild(
-      makeSection({
-         title: 'Meet the Guardians',
-         count: guardiansTalks.length,
-         children: guardiansRows,
-         stepKey: 'guardiansTalks',
-      })
-   );
-
-   bodyEl.appendChild(
-      makeSection({
-         title: 'Wild Encounters',
-         count: wildEncounters.length,
-         children: wildRows,
-         stepKey: 'wildEncounters',
-      })
+      buildItineraryPanelContent(itinerary)
    );
 }

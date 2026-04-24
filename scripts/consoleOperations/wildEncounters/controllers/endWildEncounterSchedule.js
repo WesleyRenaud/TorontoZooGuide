@@ -1,93 +1,53 @@
 import { loadWildEncounters } from '../../options/loaders.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
-import { setStatus } from '../../shell/status.js';
 import { endWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
+import { resetFormFields } from '../../helpers/controllerUtils.js';
+import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
 
 export function createEndWildEncounterScheduleController({
-   showButtonEl,
-   panelEl,
-   cancelButtonEl,
-   submitButtonEl,
-   statusEl,
    wildEncounterEl,
    endDateEl,
-   activatePanel,
-   hidePanels,
+   ...controllerOptions
 } = {}) {
-
-   function resetForm() {
-      if (wildEncounterEl) wildEncounterEl.value = '';
-      if (endDateEl) endDateEl.value = '';
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
    }
 
-   function show() {
-      setStatus(statusEl, '');
-      activatePanel?.(panelEl);
-   }
-
-   function hide() {
-      panelEl?.classList.remove('active');
-      setStatus(statusEl, '');
-   }
-
-   async function onShowClick() {
-      setStatus(statusEl, '');
-
-      try {
-         if (wildEncounterEl?.tagName === 'SELECT') {
-            const wildEncounters = await loadWildEncounters();
-            populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
-         }
-
-         resetForm();
-         activatePanel?.(panelEl);
-      }
-      catch(err) {
-         setStatus(statusEl, 'Failed to load Wild Encounters.', 'is-error');
-         activatePanel?.(panelEl);
-      }
-   }
-
-   async function onSubmitClick() {
-      const wildEncounter = wildEncounterEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-
-      setStatus(statusEl, '');
-
+   function validateSelection({ wildEncounter }) {
       if (!wildEncounter) {
-         setStatus(statusEl, 'Wild Encounter is required.', 'is-error');
-         return;
+         return 'Wild Encounter is required.';
       }
 
-      try {
-         const result = await endWildEncounterSchedule({
-            wildEncounter,
-            endDate: endDate || null
-         });
+      return null;
+   }
 
-         if (result.success) {
-            setStatus(
-               statusEl,
-               `${result.wildEncounter} schedule was ended.`,
-               'is-success'
-            );
-            resetForm();
-         }
-         else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
-         }
-      }
-      catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+   async function submitEndSchedule({ wildEncounter, endDate }) {
+      return endWildEncounterSchedule({
+         wildEncounter,
+         endDate: endDate || null,
+      });
+   }
+
+   async function prepareForm() {
+      if (wildEncounterEl?.tagName === 'SELECT') {
+         const wildEncounters = await loadWildEncounters();
+         populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
       }
    }
 
-   showButtonEl?.addEventListener('click', onShowClick);
-   cancelButtonEl?.addEventListener('click', hide);
-   submitButtonEl?.addEventListener('click', onSubmitClick);
-
-   return {
-      show,
-      hide,
-   };
+   return createEndRecurringScheduleFormController({
+      ...controllerOptions,
+      endDateEl,
+      resetSelection: () => {
+         resetFormFields([wildEncounterEl]);
+      },
+      getSelectionValues: () => ({
+         wildEncounter: getFieldValue(wildEncounterEl),
+      }),
+      validateSelection,
+      prepareForm,
+      loadErrorMessage: 'Failed to load Wild Encounters.',
+      submitEndSchedule,
+      successMessage: result => `${result.wildEncounter} schedule was ended.`,
+   });
 }

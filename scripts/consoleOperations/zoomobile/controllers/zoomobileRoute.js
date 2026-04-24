@@ -16,15 +16,53 @@ export function createZoomobileRouteController({
    summerRouteEl,
    winterRouteEl,
    activatePanel,
-   hidePanels
 } = {}) {
+   const formFieldEls = [startDateEl, endDateEl, summerRouteEl, winterRouteEl];
+
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
+   }
+
+   function getSelectedRoute() {
+      if (summerRouteEl?.checked) {
+         return 'summer';
+      }
+
+      if (winterRouteEl?.checked) {
+         return 'winter';
+      }
+
+      return '';
+   }
+
+   function getFormValues() {
+      return {
+         route: getSelectedRoute(),
+         startDate: getFieldValue(startDateEl),
+         endDate: getFieldValue(endDateEl),
+      };
+   }
+
+   function validateForm({ route, startDate, endDate }) {
+      if (!route) {
+         return 'Zoomobile route is required.';
+      }
+
+      return validateOptionalDateRange(startDate, endDate);
+   }
 
    function resetForm() {
-      resetFormFields([startDateEl, endDateEl, summerRouteEl, winterRouteEl]);
+      resetFormFields(formFieldEls);
 
       if (summerRouteEl) {
          summerRouteEl.checked = true;
       }
+   }
+
+   function show() {
+      setStatus(statusEl, '');
+      resetForm();
+      activatePanel?.(panelEl);
    }
 
    function hide() {
@@ -35,32 +73,30 @@ export function createZoomobileRouteController({
       });
    }
 
-   async function onShowClick() {
-      setStatus(statusEl, '');
+   async function submitRouteChange({ route, startDate, endDate }) {
+      return setCurrentZoomobileRoute({
+         route,
+         startDate: startDate || null,
+         endDate: endDate || null,
+      });
+   }
+
+   function handleSubmitSuccess(result) {
+      setStatus(
+         statusEl,
+         `Zoomobile route was set to ${result.route}.`,
+         'is-success'
+      );
+
       resetForm();
-      activatePanel?.(panelEl);
    }
 
    async function onSubmitClick() {
-      let route = '';
-      const startDate = startDateEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-
-      if (summerRouteEl?.checked) {
-         route = 'summer';
-      }
-      else if (winterRouteEl?.checked) {
-         route = 'winter';
-      }
+      const formValues = getFormValues();
 
       setStatus(statusEl, '');
 
-      if (!route) {
-         setStatus(statusEl, 'Zoomobile route is required.', 'is-error');
-         return;
-      }
-
-      const dateError = validateOptionalDateRange(startDate, endDate);
+      const dateError = validateForm(formValues);
 
       if (dateError) {
          setStatus(statusEl, dateError, 'is-error');
@@ -68,38 +104,25 @@ export function createZoomobileRouteController({
       }
 
       try {
-
-         const result = await setCurrentZoomobileRoute({
-            route,
-            startDate: startDate || null,
-            endDate: endDate || null
-         });
+         const result = await submitRouteChange(formValues);
 
          if (result.success) {
-
-            setStatus(
-               statusEl,
-               `Zoomobile route was set to ${result.route}.`,
-               'is-success'
-            );
-
-            resetForm();
+            handleSubmitSuccess(result);
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
          }
-
       }
       catch(err) {
          setStatus(statusEl, 'Request failed.', 'is-error');
       }
    }
 
-   showButtonEl?.addEventListener('click', onShowClick);
+   showButtonEl?.addEventListener('click', show);
    submitButtonEl?.addEventListener('click', onSubmitClick);
 
    return {
+      show,
       hide,
-      resetForm,
    };
 }

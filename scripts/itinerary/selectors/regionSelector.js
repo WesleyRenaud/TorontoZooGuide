@@ -8,6 +8,19 @@ import {
    renderRegionSelectionView,
 } from './regionSelector/view.js';
 
+function createRegionSelectorElements() {
+   const shell = buildRegionSelectorShell();
+
+   return {
+      rootEl: shell.root,
+      resultsEl: shell.resultsEl,
+      prevButtonEl: shell.prevButton,
+      nextButtonEl: shell.nextButton,
+      finishButtonEl: shell.finishButton,
+      closeButtonEl: shell.closeButton,
+   };
+}
+
 export function createItineraryRegionSelectorController({
    mountEl,
    onPrev,
@@ -15,94 +28,112 @@ export function createItineraryRegionSelectorController({
    onFinish,
    onClose,
 } = {}) {
-   let root = null;
-   let resultsEl = null;
-
+   let elements = null;
    const state = createRegionSelectorState();
 
+   function getSelectionSnapshot() {
+      return state.buildUpdatedAnimalsFromSelection();
+   }
+
    function renderRegions() {
+      if (!elements?.resultsEl) {
+         return;
+      }
+
       renderRegionSelectionView(
-         resultsEl,
+         elements.resultsEl,
          state.getRegions(),
          state.getSelectedExhibitNamesSet()
       );
    }
 
-   async function loadRegions() {
-      const fetchedRegions = await getExhibitsByRegion();
-      state.setRegions(fetchedRegions);
+   function rerenderIfChanged(changed) {
+      if (!changed) {
+         return;
+      }
+
+      renderRegions();
    }
 
-   function build() {
-      const shell = buildRegionSelectorShell();
+   function handleRegionToggle(regionName) {
+      rerenderIfChanged(state.toggleRegion(regionName));
+   }
 
-      root = shell.root;
-      resultsEl = shell.resultsEl;
+   function handleExhibitToggle(regionName, exhibitName) {
+      rerenderIfChanged(state.toggleExhibit(regionName, exhibitName));
+   }
 
-      bindRegionSelectionEvents(resultsEl, {
-         onToggleRegion: (regionName) => {
-            if (state.toggleRegion(regionName)) {
-               renderRegions();
-            }
-         },
-         onToggleExhibit: (regionName, exhibitName) => {
-            if (state.toggleExhibit(regionName, exhibitName)) {
-               renderRegions();
-            }
-         },
+   async function commitSelection(callback) {
+      callback?.(await getSelectionSnapshot());
+   }
+
+   function bindEvents() {
+      bindRegionSelectionEvents(elements?.resultsEl, {
+         onToggleRegion: handleRegionToggle,
+         onToggleExhibit: handleExhibitToggle,
       });
 
-      shell.closeButton?.addEventListener('click', () => {
+      elements?.closeButtonEl?.addEventListener('click', () => {
          onClose?.();
       });
 
-      shell.prevButton?.addEventListener('click', () => {
+      elements?.prevButtonEl?.addEventListener('click', () => {
          onPrev?.();
       });
 
-      shell.nextButton?.addEventListener('click', async () => {
-         const animals = await state.buildUpdatedAnimalsFromSelection();
-         onNext?.(animals);
+      elements?.nextButtonEl?.addEventListener('click', async () => {
+         await commitSelection(onNext);
       });
 
-      shell.finishButton?.addEventListener('click', async () => {
-         const animals = await state.buildUpdatedAnimalsFromSelection();
-         onFinish?.(animals);
+      elements?.finishButtonEl?.addEventListener('click', async () => {
+         await commitSelection(onFinish);
       });
+   }
+
+   function ensureBuilt() {
+      if (elements) {
+         return;
+      }
+
+      elements = createRegionSelectorElements();
+      bindEvents();
+   }
+
+   async function refreshRegions() {
+      state.setRegions(await getExhibitsByRegion());
+      state.hydrateSelectionsFromStorage();
+      renderRegions();
+   }
+
+   function mountRoot() {
+      if (!mountEl || !elements?.rootEl) {
+         return;
+      }
+
+      mountEl.replaceChildren(elements.rootEl);
    }
 
    async function show() {
-      if (!mountEl) return;
-
-      if (!root) {
-         build();
+      if (!mountEl) {
+         return;
       }
 
-      await loadRegions();
-      state.hydrateSelectionsFromStorage();
-      renderRegions();
-
-      mountEl.innerHTML = '';
-      mountEl.appendChild(root);
+      ensureBuilt();
+      await refreshRegions();
+      mountRoot();
    }
 
    function hide() {
-      if (!mountEl) return;
-      mountEl.innerHTML = '';
-   }
+      if (!mountEl) {
+         return;
+      }
 
-   function getSelectedRegions() {
-      return state.getSelectedRegions();
-   }
-
-   function getSelectedExhibits() {
-      return state.getSelectedExhibits();
+      mountEl.replaceChildren();
    }
 
    return {
       show,
       hide,
-      getSelectedRegions,
-      getSelectedExhibits,
+      getSelectionSnapshot,
    };
 }

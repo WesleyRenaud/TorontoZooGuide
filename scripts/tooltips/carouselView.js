@@ -4,10 +4,36 @@ export function createTooltipCarouselView({
    onIndexChange,
 }) {
    let carouselEl = null;
+   let itemsForCarousel = [];
+   let renderedItemIndices = [];
+
+   function getCards() {
+      return Array.from(carouselEl?.children ?? []);
+   }
+
+   function getCardCount() {
+      return getCards().length;
+   }
+
+   function getCurrentPosition() {
+      const position = Number(carouselEl?.dataset.position ?? 0);
+      return Number.isFinite(position) ? position : 0;
+   }
+
+   function setCurrentPosition(position) {
+      if (!carouselEl) {
+         return;
+      }
+
+      carouselEl.dataset.position = String(position);
+   }
 
    function clear() {
-      tooltipEl.innerHTML = '';
+      tooltipEl.replaceChildren();
+      tooltipEl.classList.add('no-arrows');
       carouselEl = null;
+      itemsForCarousel = [];
+      renderedItemIndices = [];
    }
 
    function createArrow(symbol, onClick) {
@@ -37,104 +63,112 @@ export function createTooltipCarouselView({
       return nav;
    }
 
+   function createCardEntries(items) {
+      return items.flatMap((item, index) => {
+         const renderer = getRendererForItem(item);
+
+         if (!renderer) {
+            return [];
+         }
+
+         return [{
+            itemIndex: index,
+            card: renderer.createCard(item, index),
+         }];
+      });
+   }
+
    function render(items) {
       clear();
-
-      const first = items?.[0] || null;
-      const firstRenderer = first ? getRendererForItem(first) : null;
-
-      if (!firstRenderer) {
-         return false;
-      }
+      itemsForCarousel = Array.isArray(items) ? items : [];
 
       const content = document.createElement('div');
       content.className = 'tooltip-content';
 
       carouselEl = document.createElement('div');
       carouselEl.className = 'tooltip-carousel';
-      carouselEl.dataset.index = '0';
+      setCurrentPosition(0);
 
-      items.forEach((item, index) => {
-         const renderer = getRendererForItem(item);
+      const entries = createCardEntries(itemsForCarousel);
+      renderedItemIndices = entries.map(({ itemIndex }) => itemIndex);
 
-         if (!renderer) {
-            return;
-         }
-
-         carouselEl.appendChild(renderer.createCard(item, index));
+      entries.forEach(({ card }) => {
+         carouselEl.appendChild(card);
       });
+
+      if (getCardCount() === 0) {
+         clear();
+         return false;
+      }
 
       content.appendChild(carouselEl);
       tooltipEl.appendChild(content);
 
-      if (items.length > 1) {
+      if (getCardCount() > 1) {
          tooltipEl.classList.remove('no-arrows');
          tooltipEl.appendChild(createNav());
       } else {
          tooltipEl.classList.add('no-arrows');
       }
 
-      return carouselEl.children.length > 0;
+      return true;
    }
 
-   function showIndex(newIndex) {
+   function showIndex(position) {
       if (!carouselEl) {
          return;
       }
 
-      const cards = Array.from(carouselEl.children);
+      const cards = getCards();
 
-      if (cards.length === 0) {
+      if (cards.length === 0 || renderedItemIndices.length === 0) {
          return;
       }
 
-      const safeIndex = Math.max(0, Math.min(cards.length - 1, newIndex));
+      const safePosition = Math.max(0, Math.min(cards.length - 1, position));
 
       cards.forEach((card) => {
          card.style.display = 'none';
       });
 
-      if (cards[safeIndex]) {
-         cards[safeIndex].style.display = 'flex';
+      if (cards[safePosition]) {
+         cards[safePosition].style.display = 'flex';
       }
 
-      carouselEl.dataset.index = String(safeIndex);
-      onIndexChange?.(safeIndex);
+      setCurrentPosition(safePosition);
+      onIndexChange?.(renderedItemIndices[safePosition] ?? 0);
+   }
+
+   function showFirst() {
+      showIndex(0);
    }
 
    function step(delta) {
-      if (!carouselEl) {
+      if (!carouselEl || renderedItemIndices.length === 0) {
          return;
       }
 
-      const cards = Array.from(carouselEl.children);
+      const nextPosition = (
+         getCurrentPosition() + delta + renderedItemIndices.length
+      ) % renderedItemIndices.length;
 
-      if (cards.length === 0) {
-         return;
-      }
-
-      let index = Number(carouselEl.dataset.index || 0);
-
-      if (!Number.isFinite(index)) {
-         index = 0;
-      }
-
-      index = (index + delta + cards.length) % cards.length;
-      showIndex(index);
+      showIndex(nextPosition);
    }
 
-   function jumpTo(items, matchFn) {
+   function jumpTo(matchFn) {
       if (!carouselEl) {
          return;
       }
 
-      const index = items.findIndex(matchFn);
-      showIndex(index >= 0 ? index : 0);
+      const itemIndex = itemsForCarousel.findIndex(matchFn);
+      const position = renderedItemIndices.indexOf(itemIndex);
+      showIndex(position >= 0 ? position : 0);
    }
 
    return {
       clear,
       render,
+      showFirst,
       showIndex,
       step,
       jumpTo,

@@ -1,12 +1,27 @@
-export function initFocusFromQuery({ onFocus }) {
-   const focus = new URLSearchParams(window.location.search).get('focus');
-   if (!focus) return;
+function getFocusRequestFromQuery(search = window.location.search) {
+   const params = new URLSearchParams(search);
+   const species = params.get('focus')?.trim() ?? '';
 
-   const species = decodeURIComponent(focus);
-   const exParam = new URLSearchParams(window.location.search).get('exhibit');
-   const exhibit = exParam ? decodeURIComponent(exParam) : null;
+   if (!species) {
+      return null;
+   }
 
-   onFocus({ species, exhibit });
+   const exhibit = params.get('exhibit')?.trim() || null;
 
-   history.replaceState({}, '', 'map.html');
+   return {
+      species,
+      exhibit,
+   };
+}
+
+export function initFocusFromQuery({ onFocus } = {}) {
+   const focusRequest = getFocusRequestFromQuery();
+
+   if (!focusRequest || typeof onFocus !== 'function') {
+      return;
+   }
+
+   onFocus(focusRequest);
+
+   history.replaceState({}, '', window.location.pathname);
 }

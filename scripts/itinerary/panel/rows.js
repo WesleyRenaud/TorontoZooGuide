@@ -14,148 +14,166 @@ import {
    buildWildRemovalReasonLine,
 } from './rowAlerts.js';
 
-function buildImageSrc(directory, name) {
-   if (!name) return null;
+const MORE_INFO_LINK_TEXT = 'More Info';
 
-   const normalizedName = normalizeAssetKey(name);
-   return `images/${directory}/${normalizedName}.png`;
+function buildImageSrc(...pathParts) {
+   const normalizedParts = pathParts
+      .map((part) => normalizeAssetKey(part))
+      .filter(Boolean);
+
+   if (normalizedParts.length !== pathParts.length) {
+      return null;
+   }
+
+   return `images/${normalizedParts.join('/')}.png`;
 }
 
-function buildAnimalImageSrc(exhibit, species) {
-   if (!exhibit || !species) return null;
-
-   const normalizedExhibit = normalizeAssetKey(exhibit);
-   const normalizedSpecies = normalizeAssetKey(species);
-
-   return `images/animals/${normalizedExhibit}/${normalizedSpecies}.png`;
+function buildFieldLine(label, value) {
+   return value ? `${label}: ${value}` : '';
 }
 
-function mergeNormalizedItem(rawItem, normalizeItem) {
-   const normalizedItem = normalizeItem(rawItem);
-
-   return rawItem && typeof rawItem === 'object'
-      ? { ...rawItem, ...normalizedItem }
-      : normalizedItem;
+function buildMetaLines(lines = []) {
+   return lines.filter(Boolean);
 }
 
 function buildLinkRowProps(link) {
    if (!link) {
-      return {
-         linkText: null,
-         onLinkClick: null,
-      };
+      return {};
    }
 
    return {
-      linkText: 'More Info',
+      linkText: MORE_INFO_LINK_TEXT,
       onLinkClick: () => window.open(link, '_blank'),
    };
 }
 
-function buildRows(items = [], normalizeItem, buildRowProps) {
-   return items.map((rawItem) => {
-      const item = mergeNormalizedItem(rawItem, normalizeItem);
+function normalizeItems(items = [], normalizeItem) {
+   return items.map((item) => normalizeItem(item));
+}
 
-      return makeItemRow({
-         ...buildRowProps(item),
-      });
-   });
+function buildRows(
+   items = [],
+   {
+      normalizeItem,
+      prepareItems = (normalizedItems) => normalizedItems,
+      buildRowProps,
+   } = {}
+) {
+   const preparedItems = prepareItems(
+      normalizeItems(items, normalizeItem)
+   );
+
+   return preparedItems.map((item) => makeItemRow(buildRowProps(item)));
 }
 
 function buildUniqueAnimals(animals = []) {
-   const uniqueAnimals = [];
-   const seenSpecies = new Set();
+   const uniqueAnimalsBySpecies = new Map();
 
-   animals.forEach((rawAnimal) => {
-      const animal = mergeNormalizedItem(rawAnimal, normalizeAnimal);
+   animals.forEach((animal) => {
       const speciesKey = String(animal.species || '').trim().toLowerCase();
 
-      if (!speciesKey || seenSpecies.has(speciesKey)) {
+      if (!speciesKey || uniqueAnimalsBySpecies.has(speciesKey)) {
          return;
       }
 
-      seenSpecies.add(speciesKey);
-      uniqueAnimals.push(animal);
+      uniqueAnimalsBySpecies.set(speciesKey, animal);
    });
 
-   return uniqueAnimals;
+   return Array.from(uniqueAnimalsBySpecies.values());
+}
+
+function buildNamedRows(
+   items = [],
+   {
+      normalizeItem,
+      defaultName,
+      imageDirectory,
+      getName,
+      getMetaLines = () => [],
+      getAlertLine = () => '',
+      getLink = () => null,
+   } = {}
+) {
+   return buildRows(items, {
+      normalizeItem,
+      buildRowProps: (item) => {
+         const name = getName(item) || defaultName;
+
+         return {
+            name,
+            imageSrc: buildImageSrc(imageDirectory, name),
+            metaLines: buildMetaLines(getMetaLines(item)),
+            alertLine: getAlertLine(item),
+            ...buildLinkRowProps(getLink(item)),
+         };
+      },
+   });
 }
 
 export function buildAnimalRows(animals = []) {
-   return buildRows(buildUniqueAnimals(animals), normalizeAnimal, (animal) => {
-      const name = animal.species || 'Animal';
-      const exhibit = animal.exhibit || '';
-      const alert = buildAnimalAlert(animal);
+   return buildRows(animals, {
+      normalizeItem: normalizeAnimal,
+      prepareItems: buildUniqueAnimals,
+      buildRowProps: (animal) => {
+         const name = animal.species || 'Animal';
+         const alert = buildAnimalAlert(animal);
 
-      return {
-         name,
-         imageSrc: buildAnimalImageSrc(exhibit, name),
-         metaLines: [
-            exhibit ? `Exhibit: ${exhibit}` : '',
-         ],
-         alertLine: alert.line,
-         alertTone: alert.tone,
-         ...buildLinkRowProps(animal.link || null),
-      };
+         return {
+            name,
+            imageSrc: buildImageSrc('animals', animal.exhibit, name),
+            metaLines: buildMetaLines([
+               buildFieldLine('Exhibit', animal.exhibit),
+            ]),
+            alertLine: alert.line,
+            alertTone: alert.tone,
+            ...buildLinkRowProps(animal.link),
+         };
+      },
    });
 }
 
 export function buildAttractionRows(attractions = []) {
-   return buildRows(attractions, normalizeAttraction, (attraction) => {
-      const name = attraction.name || 'Attraction';
-      const subtitle = attraction.subtitle ?? '';
-      const location = attraction.location ?? '';
-      const price = attraction.price ?? '';
-      const infoLink = attraction.infoLink || null;
-
-      return {
-         name,
-         imageSrc: buildImageSrc('attractions', name),
-         metaLines: [
-            subtitle || '',
-            location ? `Location: ${location}` : '',
-            price ? `Price: ${price}` : '',
-         ],
-         alertLine: buildAttractionRemovalReasonLine(attraction),
-         ...buildLinkRowProps(infoLink),
-      };
+   return buildNamedRows(attractions, {
+      normalizeItem: normalizeAttraction,
+      defaultName: 'Attraction',
+      imageDirectory: 'attractions',
+      getName: (attraction) => attraction.name,
+      getMetaLines: (attraction) => [
+         attraction.subtitle,
+         buildFieldLine('Location', attraction.location),
+         buildFieldLine('Price', attraction.price),
+      ],
+      getAlertLine: buildAttractionRemovalReasonLine,
+      getLink: (attraction) => attraction.infoLink,
    });
 }
 
 export function buildGuardiansRows(guardiansTalks = []) {
-   return buildRows(guardiansTalks, normalizeTalk, (talk) => {
-      const name = talk.name || 'Talk';
-      const location = talk.location || '';
-      const time = talk.time_of_day || '';
-
-      return {
-         name,
-         imageSrc: buildImageSrc('guardians-talks', name),
-         metaLines: [
-            location ? `Location: ${location}` : '',
-            time ? `Time: ${time}` : '',
-         ],
-         alertLine: buildGuardiansRemovalReasonLine(talk),
-         ...buildLinkRowProps(talk.link || null),
-      };
+   return buildNamedRows(guardiansTalks, {
+      normalizeItem: normalizeTalk,
+      defaultName: 'Talk',
+      imageDirectory: 'guardians-talks',
+      getName: (talk) => talk.name,
+      getMetaLines: (talk) => [
+         buildFieldLine('Location', talk.location),
+         buildFieldLine('Time', talk.time_of_day),
+      ],
+      getAlertLine: buildGuardiansRemovalReasonLine,
+      getLink: (talk) => talk.link,
    });
 }
 
 export function buildWildRows(wildEncounters = []) {
-   return buildRows(wildEncounters, normalizeWild, (wild) => {
-      const name = wild.name || 'Wild Encounter';
-      const meetingSpot = wild.meeting_spot || '';
-      const time = wild.time_of_day || '';
-
-      return {
-         name,
-         imageSrc: buildImageSrc('wild-encounters', name),
-         metaLines: [
-            meetingSpot ? `Meeting Spot: ${meetingSpot}` : '',
-            time ? `Time: ${time}` : '',
-         ],
-         alertLine: buildWildRemovalReasonLine(wild),
-         ...buildLinkRowProps(wild.link || null),
-      };
+   return buildNamedRows(wildEncounters, {
+      normalizeItem: normalizeWild,
+      defaultName: 'Wild Encounter',
+      imageDirectory: 'wild-encounters',
+      getName: (wild) => wild.name,
+      getMetaLines: (wild) => [
+         buildFieldLine('Meeting Spot', wild.meeting_spot),
+         buildFieldLine('Time', wild.time_of_day),
+      ],
+      getAlertLine: buildWildRemovalReasonLine,
+      getLink: (wild) => wild.link,
    });
 }

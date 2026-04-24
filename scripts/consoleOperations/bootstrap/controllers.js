@@ -5,47 +5,186 @@ import { createRemoveVisibilityScheduleController } from '../animals/controllers
 import { createAnimalViewingAlertController } from '../animals/controllers/animalViewingAlert.js';
 import { createRemoveViewingAlertController } from '../animals/controllers/removeViewingAlert.js';
 import { createAnimalSpeciesAutocompleteController } from '../animals/controllers/animalSpeciesAutocomplete.js';
-
 import { createExhibitClosedController } from '../exhibits/controllers/exhibitClosed.js';
 import { createExhibitOpenController } from '../exhibits/controllers/exhibitOpen.js';
-
 import { createRestaurantClosedController } from '../restaurants/controllers/restaurantClosed.js';
 import { createRestaurantOpenController } from '../restaurants/controllers/restaurantOpen.js';
-
 import { createGiftShopClosedController } from '../giftShops/controllers/giftShopClosed.js';
 import { createGiftShopOpenController } from '../giftShops/controllers/giftShopOpen.js';
-
 import { createAttractionClosedController } from '../attractions/controllers/attractionClosed.js';
 import { createAttractionOpenController } from '../attractions/controllers/attractionOpen.js';
-
 import { createZoomobileStationClosedController } from '../zoomobile/controllers/zoomobileStationClosed.js';
 import { createZoomobileStationOpenController } from '../zoomobile/controllers/zoomobileStationOpen.js';
 import { createZoomobileRouteController } from '../zoomobile/controllers/zoomobileRoute.js';
-
 import { createGuardiansTalkScheduleController } from '../guardiansTalks/controllers/guardiansTalkSchedule.js';
 import { createEndGuardiansTalkScheduleController } from '../guardiansTalks/controllers/endGuardiansTalkSchedule.js';
 import { createCancelGuardiansTalkOccurrenceController } from '../guardiansTalks/controllers/cancelGuardiansTalkOccurrence.js';
+import { createGuardiansTalkOccurrenceFilterController } from '../guardiansTalks/controllers/guardiansTalkOccurrenceFilter.js';
 import { createGuardiansTalkLocationFilterController } from '../guardiansTalks/controllers/guardiansTalkLocationFilter.js';
-
 import { createWildEncounterScheduleController } from '../wildEncounters/controllers/wildEncounterSchedule.js';
 import { createEndWildEncounterScheduleController } from '../wildEncounters/controllers/endWildEncounterSchedule.js';
 import { createCancelWildEncounterOccurrenceController } from '../wildEncounters/controllers/cancelWildEncounterOccurrence.js';
 import { createWildEncounterOccurrenceFilterController } from '../wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
 
+const ANIMAL_SPECIES_AUTOCOMPLETE_KEYS = [
+   'offDisplay',
+   'onDisplay',
+   'visibilitySchedule',
+   'removeVisibilitySchedule',
+   'viewingAlert',
+   'removeViewingAlert',
+];
+
+const CONTROLLER_BINDINGS = [
+   {
+      createController: createAnimalOffDisplayController,
+      getRefs: refs => refs.animals.offDisplay,
+   },
+   {
+      createController: createAnimalOnDisplayController,
+      getRefs: refs => refs.animals.onDisplay,
+   },
+   {
+      createController: createAnimalVisibilityScheduleController,
+      getRefs: refs => refs.animals.visibilitySchedule,
+   },
+   {
+      createController: createRemoveVisibilityScheduleController,
+      getRefs: refs => refs.animals.removeVisibilitySchedule,
+   },
+   {
+      createController: createAnimalViewingAlertController,
+      getRefs: refs => refs.animals.viewingAlert,
+   },
+   {
+      createController: createRemoveViewingAlertController,
+      getRefs: refs => refs.animals.removeViewingAlert,
+   },
+   {
+      createController: createExhibitClosedController,
+      getRefs: refs => refs.exhibits.closed,
+   },
+   {
+      createController: createExhibitOpenController,
+      getRefs: refs => refs.exhibits.open,
+   },
+   {
+      createController: createRestaurantClosedController,
+      getRefs: refs => refs.restaurants.closed,
+   },
+   {
+      createController: createRestaurantOpenController,
+      getRefs: refs => refs.restaurants.open,
+   },
+   {
+      createController: createGiftShopClosedController,
+      getRefs: refs => refs.giftShops.closed,
+   },
+   {
+      createController: createGiftShopOpenController,
+      getRefs: refs => refs.giftShops.open,
+   },
+   {
+      createController: createAttractionClosedController,
+      getRefs: refs => refs.attractions.closed,
+   },
+   {
+      createController: createAttractionOpenController,
+      getRefs: refs => refs.attractions.open,
+   },
+   {
+      createController: createZoomobileStationClosedController,
+      getRefs: refs => refs.zoomobile.stationClosed,
+   },
+   {
+      createController: createZoomobileStationOpenController,
+      getRefs: refs => refs.zoomobile.stationOpen,
+   },
+   {
+      createController: createZoomobileRouteController,
+      getRefs: refs => refs.zoomobile.route,
+   },
+   {
+      createController: createGuardiansTalkScheduleController,
+      getRefs: refs => refs.guardiansTalks.schedule,
+      getExtraOptions: ({ guardiansTalkScheduleLocationFilterController }) => ({
+         talkLocationFilterController: guardiansTalkScheduleLocationFilterController,
+      }),
+   },
+   {
+      createController: createEndGuardiansTalkScheduleController,
+      getRefs: refs => refs.guardiansTalks.endSchedule,
+      getExtraOptions: ({ endGuardiansTalkScheduleLocationFilterController }) => ({
+         talkLocationFilterController: endGuardiansTalkScheduleLocationFilterController,
+      }),
+   },
+   {
+      createController: createCancelGuardiansTalkOccurrenceController,
+      getRefs: refs => refs.guardiansTalks.cancelOccurrence,
+      getExtraOptions: ({
+         cancelGuardiansTalkOccurrenceLocationFilterController,
+         cancelGuardiansTalkOccurrenceFilterController,
+      }) => ({
+         talkLocationFilterController: cancelGuardiansTalkOccurrenceLocationFilterController,
+         occurrenceFilterController: cancelGuardiansTalkOccurrenceFilterController,
+      }),
+   },
+   {
+      createController: createWildEncounterScheduleController,
+      getRefs: refs => refs.wildEncounters.schedule,
+   },
+   {
+      createController: createEndWildEncounterScheduleController,
+      getRefs: refs => refs.wildEncounters.endSchedule,
+   },
+   {
+      createController: createCancelWildEncounterOccurrenceController,
+      getRefs: refs => refs.wildEncounters.cancelOccurrence,
+      getExtraOptions: ({ wildEncounterOccurrenceFilterController }) => ({
+         occurrenceFilterController: wildEncounterOccurrenceFilterController,
+      }),
+   },
+];
+
 function initAnimalSpeciesAutocompletes(animals) {
-   [
-      animals.offDisplay,
-      animals.onDisplay,
-      animals.visibilitySchedule,
-      animals.removeVisibilitySchedule,
-      animals.viewingAlert,
-      animals.removeViewingAlert,
-   ].forEach(({ speciesEl, speciesResultsEl, exhibitEl }) => {
+   ANIMAL_SPECIES_AUTOCOMPLETE_KEYS.forEach(key => {
+      const { speciesEl, speciesResultsEl, exhibitEl } = animals[key];
+
       createAnimalSpeciesAutocompleteController({
          inputEl: speciesEl,
          resultsEl: speciesResultsEl,
          exhibitEl,
       });
+   });
+}
+
+function createControllerOptions({
+   refs,
+   activatePanel,
+   getExtraOptions,
+   specialControllers,
+} = {}) {
+   return {
+      ...refs,
+      activatePanel,
+      ...(getExtraOptions ? getExtraOptions(specialControllers) : {}),
+   };
+}
+
+function wireControllerBindings({
+   refs,
+   activatePanel,
+   specialControllers,
+} = {}) {
+   CONTROLLER_BINDINGS.forEach(({ createController, getRefs, getExtraOptions }) => {
+      createController(
+         createControllerOptions({
+            refs: getRefs(refs),
+            activatePanel,
+            getExtraOptions,
+            specialControllers,
+         })
+      );
    });
 }
 
@@ -66,6 +205,13 @@ export function createConsoleSpecialControllers({ guardiansTalks, wildEncounters
             locationEl: guardiansTalks.cancelOccurrence.locationEl,
             talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
          }),
+      cancelGuardiansTalkOccurrenceFilterController:
+         createGuardiansTalkOccurrenceFilterController({
+            locationEl: guardiansTalks.cancelOccurrence.locationEl,
+            talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
+            dateEl: guardiansTalks.cancelOccurrence.dateEl,
+            timeEl: guardiansTalks.cancelOccurrence.timeEl,
+         }),
       wildEncounterOccurrenceFilterController:
          createWildEncounterOccurrenceFilterController({
             wildEncounterEl: wildEncounters.cancelOccurrence.wildEncounterEl,
@@ -78,164 +224,23 @@ export function createConsoleSpecialControllers({ guardiansTalks, wildEncounters
 export function wireConsoleOperationControllers({
    refs,
    activatePanel,
-   hidePanels,
    guardiansTalkScheduleLocationFilterController,
    endGuardiansTalkScheduleLocationFilterController,
    cancelGuardiansTalkOccurrenceLocationFilterController,
+   cancelGuardiansTalkOccurrenceFilterController,
    wildEncounterOccurrenceFilterController,
 }) {
-   const {
-      animals,
-      exhibits,
-      restaurants,
-      giftShops,
-      attractions,
-      zoomobile,
-      guardiansTalks,
-      wildEncounters,
-   } = refs;
+   initAnimalSpeciesAutocompletes(refs.animals);
 
-   initAnimalSpeciesAutocompletes(animals);
-
-   createAnimalOffDisplayController({
-      ...animals.offDisplay,
+   wireControllerBindings({
+      refs,
       activatePanel,
-      hidePanels,
-   });
-
-   createAnimalOnDisplayController({
-      ...animals.onDisplay,
-      activatePanel,
-      hidePanels,
-   });
-
-   createAnimalVisibilityScheduleController({
-      ...animals.visibilitySchedule,
-      activatePanel,
-      hidePanels,
-   });
-
-   createRemoveVisibilityScheduleController({
-      ...animals.removeVisibilitySchedule,
-      activatePanel,
-      hidePanels,
-   });
-
-   createAnimalViewingAlertController({
-      ...animals.viewingAlert,
-      activatePanel,
-      hidePanels,
-   });
-
-   createRemoveViewingAlertController({
-      ...animals.removeViewingAlert,
-      activatePanel,
-      hidePanels,
-   });
-
-   createExhibitClosedController({
-      ...exhibits.closed,
-      activatePanel,
-      hidePanels,
-   });
-
-   createExhibitOpenController({
-      ...exhibits.open,
-      activatePanel,
-      hidePanels,
-   });
-
-   createRestaurantClosedController({
-      ...restaurants.closed,
-      activatePanel,
-      hidePanels,
-   });
-
-   createRestaurantOpenController({
-      ...restaurants.open,
-      activatePanel,
-      hidePanels,
-   });
-
-   createGiftShopClosedController({
-      ...giftShops.closed,
-      activatePanel,
-      hidePanels,
-   });
-
-   createGiftShopOpenController({
-      ...giftShops.open,
-      activatePanel,
-      hidePanels,
-   });
-
-   createAttractionClosedController({
-      ...attractions.closed,
-      activatePanel,
-      hidePanels,
-   });
-
-   createAttractionOpenController({
-      ...attractions.open,
-      activatePanel,
-      hidePanels,
-   });
-
-   createZoomobileStationClosedController({
-      ...zoomobile.stationClosed,
-      activatePanel,
-      hidePanels,
-   });
-
-   createZoomobileStationOpenController({
-      ...zoomobile.stationOpen,
-      activatePanel,
-      hidePanels,
-   });
-
-   createZoomobileRouteController({
-      ...zoomobile.route,
-      activatePanel,
-      hidePanels,
-   });
-
-   createGuardiansTalkScheduleController({
-      ...guardiansTalks.schedule,
-      activatePanel,
-      hidePanels,
-      talkLocationFilterController: guardiansTalkScheduleLocationFilterController,
-   });
-
-   createEndGuardiansTalkScheduleController({
-      ...guardiansTalks.endSchedule,
-      activatePanel,
-      hidePanels,
-      talkLocationFilterController: endGuardiansTalkScheduleLocationFilterController,
-   });
-
-   createCancelGuardiansTalkOccurrenceController({
-      ...guardiansTalks.cancelOccurrence,
-      activatePanel,
-      hidePanels,
-      talkLocationFilterController: cancelGuardiansTalkOccurrenceLocationFilterController,
-   });
-
-   createWildEncounterScheduleController({
-      ...wildEncounters.schedule,
-      activatePanel,
-      hidePanels,
-   });
-
-   createEndWildEncounterScheduleController({
-      ...wildEncounters.endSchedule,
-      activatePanel,
-      hidePanels,
-   });
-
-   createCancelWildEncounterOccurrenceController({
-      ...wildEncounters.cancelOccurrence,
-      activatePanel,
-      hidePanels,
-      occurrenceFilterController: wildEncounterOccurrenceFilterController,
+      specialControllers: {
+         guardiansTalkScheduleLocationFilterController,
+         endGuardiansTalkScheduleLocationFilterController,
+         cancelGuardiansTalkOccurrenceLocationFilterController,
+         cancelGuardiansTalkOccurrenceFilterController,
+         wildEncounterOccurrenceFilterController,
+      },
    });
 }

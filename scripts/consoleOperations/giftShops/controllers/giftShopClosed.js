@@ -1,111 +1,25 @@
 import { loadGiftShops } from '../../options/loaders.js';
 import { populateGiftShopDropdown } from '../../options/dropdowns.js';
-import { setStatus } from '../../shell/status.js';
 import { setGiftShopClosed } from '../../../api/consoleOperationsApi.js';
-import {
-   hideConsolePanel,
-   loadOptionsAndShowPanel,
-   resetFormFields,
-   validateOptionalDateRange,
-} from '../../helpers/controllerUtils.js';
+import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
 
 export function createGiftShopClosedController({
-   showButtonEl,
-   panelEl,
-   cancelButtonEl,
-   submitButtonEl,
-   statusEl,
    giftShopEl,
-   startDateEl,
-   endDateEl,
-   messageEl,
-   activatePanel,
-   hidePanels,
+   ...controllerOptions
 } = {}) {
-
-   function resetForm() {
-      resetFormFields([giftShopEl, startDateEl, endDateEl, messageEl]);
-   }
-
-   function hide() {
-      hideConsolePanel({
-         panelEl,
-         statusEl,
-         setStatus,
-      });
-   }
-
-   async function onShowClick() {
-      await loadOptionsAndShowPanel({
-         statusEl,
-         setStatus,
-         loadOptions: loadGiftShops,
-         populateOptions: populateGiftShopDropdown,
-         targetEl: giftShopEl,
-         resetForm,
-         activatePanel,
-         panelEl,
-         errorMessage: 'Failed to load gift shops.',
-      });
-   }
-
-   async function onSubmitClick() {
-
-      const giftShop = giftShopEl?.value.trim() ?? '';
-      const startDate = startDateEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-      const message = messageEl?.value.trim() ?? '';
-
-      setStatus(statusEl, '');
-
-      if (!giftShop) {
-         setStatus(statusEl, 'Gift shop is required.', 'is-error');
-         return;
-      }
-
-      const dateError = validateOptionalDateRange(startDate, endDate);
-
-      if (dateError) {
-         setStatus(statusEl, dateError, 'is-error');
-         return;
-      }
-
-      try {
-
-         const result = await setGiftShopClosed({
-            giftShop,
-            startDate: startDate || null,
-            endDate: endDate || null,
-            message
-         });
-
-         if (result.success) {
-
-            setStatus(
-               statusEl,
-               `${result.gift_shop} was set as closed.`,
-               'is-success'
-            );
-
-            resetForm();
-
-         }
-         else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
-         }
-
-      }
-      catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
-      }
-
-   }
-
-   showButtonEl?.addEventListener('click', onShowClick);
-   cancelButtonEl?.addEventListener('click', hide);
-   submitButtonEl?.addEventListener('click', onSubmitClick);
-
-   return {
-      hide,
-   };
+   return createEntityClosedFormController({
+      ...controllerOptions,
+      entityEl: giftShopEl,
+      loadOptions: loadGiftShops,
+      populateOptions: populateGiftShopDropdown,
+      submitClosedStatus: ({ entity, startDate, endDate, message }) => setGiftShopClosed({
+         giftShop: entity,
+         startDate: startDate || null,
+         endDate: endDate || null,
+         message,
+      }),
+      entityLabel: 'Gift shop',
+      optionsLabel: 'gift shops',
+      successMessage: result => `${result.gift_shop} was set as closed.`,
+   });
 }

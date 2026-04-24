@@ -24,24 +24,58 @@ export function createAnimalVisibilityScheduleController({
    dailyEndTimeEl,
    messageEl,
    activatePanel,
-   hidePanels,
 } = {}) {
+   const formFieldEls = [
+      speciesEl,
+      exhibitEl,
+      startDateEl,
+      endDateEl,
+      dailyStartTimeEl,
+      dailyEndTimeEl,
+      messageEl,
+   ];
 
-   function resetForm() {
-      resetFormFields([
-         speciesEl,
-         exhibitEl,
-         startDateEl,
-         endDateEl,
-         dailyStartTimeEl,
-         dailyEndTimeEl,
-         messageEl,
-      ]);
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
    }
 
-   function show() {
-      setStatus(statusEl, '');
-      activatePanel?.(panelEl);
+   function getFormValues() {
+      return {
+         species: getFieldValue(speciesEl),
+         exhibit: getFieldValue(exhibitEl),
+         startDate: getFieldValue(startDateEl),
+         endDate: getFieldValue(endDateEl),
+         dailyStartTime: getFieldValue(dailyStartTimeEl),
+         dailyEndTime: getFieldValue(dailyEndTimeEl),
+         message: getFieldValue(messageEl),
+      };
+   }
+
+   function validateForm({
+      species,
+      exhibit,
+      startDate,
+      endDate,
+      dailyStartTime,
+      dailyEndTime,
+   }) {
+      if (!species) {
+         return 'Species name is required.';
+      }
+
+      if (!exhibit) {
+         return 'Exhibit is required.';
+      }
+
+      if (!dailyStartTime || !dailyEndTime) {
+         return 'Daily viewing start and end times are required.';
+      }
+
+      return validateOptionalDateRange(startDate, endDate);
+   }
+
+   function resetForm() {
+      resetFormFields(formFieldEls);
    }
 
    function hide() {
@@ -52,7 +86,37 @@ export function createAnimalVisibilityScheduleController({
       });
    }
 
-   async function onShowClick() {
+   async function submitVisibilitySchedule({
+      species,
+      exhibit,
+      startDate,
+      endDate,
+      dailyStartTime,
+      dailyEndTime,
+      message,
+   }) {
+      return setAnimalVisibilitySchedule({
+         species,
+         exhibit,
+         startDate: startDate || null,
+         endDate: endDate || null,
+         dailyStartTime,
+         dailyEndTime,
+         message,
+      });
+   }
+
+   function handleSubmitSuccess(result) {
+      setStatus(
+         statusEl,
+         `${result.species} in ${result.exhibit} viewing schedule updated.`,
+         'is-success'
+      );
+
+      resetForm();
+   }
+
+   async function show() {
       await loadOptionsAndShowPanel({
          statusEl,
          setStatus,
@@ -67,79 +131,35 @@ export function createAnimalVisibilityScheduleController({
    }
 
    async function onSubmitClick() {
-
-      const species = speciesEl?.value.trim() ?? '';
-      const exhibit = exhibitEl?.value.trim() ?? '';
-      const startDate = startDateEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-      const dailyStartTime = dailyStartTimeEl?.value.trim() ?? '';
-      const dailyEndTime = dailyEndTimeEl?.value.trim() ?? '';
-      const message = messageEl?.value.trim() ?? '';
+      const formValues = getFormValues();
 
       setStatus(statusEl, '');
 
-      if (!species) {
-         setStatus(statusEl, 'Species name is required.', 'is-error');
-         return;
-      }
+      const validationError = validateForm(formValues);
 
-      if (!exhibit) {
-         setStatus(statusEl, 'Exhibit is required.', 'is-error');
-         return;
-      }
-
-      if (!dailyStartTime || !dailyEndTime) {
-         setStatus(statusEl, 'Daily viewing start and end times are required.', 'is-error');
-         return;
-      }
-
-      const dateError = validateOptionalDateRange(startDate, endDate);
-
-      if (dateError) {
-         setStatus(statusEl, dateError, 'is-error');
+      if (validationError) {
+         setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
       try {
-
-         const result = await setAnimalVisibilitySchedule({
-            species,
-            exhibit,
-            startDate: startDate || null,
-            endDate: endDate || null,
-            dailyStartTime,
-            dailyEndTime,
-            message
-         });
+         const result = await submitVisibilitySchedule(formValues);
 
          if (result.success) {
-
-            setStatus(
-               statusEl,
-               `${result.species} in ${result.exhibit} viewing schedule updated.`,
-               'is-success'
-            );
-
-            resetForm();
-
+            handleSubmitSuccess(result);
          }
          else {
-
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
-
          }
-
       }
       catch(err) {
-
          setStatus(statusEl, 'Request failed.', 'is-error');
-
       }
    }
 
    bindResetValueOnChange(exhibitEl, speciesEl);
 
-   showButtonEl?.addEventListener('click', onShowClick);
+   showButtonEl?.addEventListener('click', show);
    cancelButtonEl?.addEventListener('click', hide);
    submitButtonEl?.addEventListener('click', onSubmitClick);
 

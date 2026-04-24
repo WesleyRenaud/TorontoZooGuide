@@ -2,38 +2,60 @@ import { enableMarkerCoordinateEditing } from './coordinateEditing.js';
 import { createMarkerElement, bindMarkerInteractions } from './markerElement.js';
 import { groupMarkersByCoordinate } from './markerGroups.js';
 
+const MARKER_SELECTOR = '.marker';
+
+function removeRenderedMarkers(mapInner) {
+   mapInner.querySelectorAll(MARKER_SELECTOR).forEach((markerEl) => {
+      markerEl.remove();
+   });
+}
+
+function shouldRenderMarkerGroup(group) {
+   return group.items.length > 0;
+}
+
 export function createMarkerLayer({ mapInner, tooltip, hover, enableCoordinateEditing = false }) {
    const markerElsByCoord = new Map();
 
    function clear() {
-      mapInner.querySelectorAll('.marker').forEach((m) => m.remove());
+      removeRenderedMarkers(mapInner);
       markerElsByCoord.clear();
+   }
+
+   function createMarkerGroupElement(group) {
+      const markerEl = createMarkerElement(group);
+
+      markerElsByCoord.set(group.key, markerEl);
+
+      bindMarkerInteractions({
+         markerEl,
+         group,
+         mapInner,
+         tooltip,
+         hover,
+         enableCoordinateEditing,
+         enableMarkerCoordinateEditing,
+      });
+
+      return markerEl;
+   }
+
+   function buildMarkerFragment(items) {
+      const fragment = document.createDocumentFragment();
+      const markerMap = groupMarkersByCoordinate(items);
+
+      markerMap.forEach((group) => {
+         if (shouldRenderMarkerGroup(group)) {
+            fragment.appendChild(createMarkerGroupElement(group));
+         }
+      });
+
+      return fragment;
    }
 
    function render(items) {
       clear();
-
-      const markerMap = groupMarkersByCoordinate(items);
-
-      markerMap.forEach((group) => {
-         if (!group.items.length) {
-            return;
-         }
-
-         const markerEl = createMarkerElement(group);
-         markerElsByCoord.set(group.key, markerEl);
-         mapInner.appendChild(markerEl);
-
-         bindMarkerInteractions({
-            markerEl,
-            group,
-            mapInner,
-            tooltip,
-            hover,
-            enableCoordinateEditing,
-            enableMarkerCoordinateEditing,
-         });
-      });
+      mapInner.appendChild(buildMarkerFragment(items));
    }
 
    function getMarkerByCoord(key) {

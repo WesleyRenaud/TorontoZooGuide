@@ -1,3 +1,8 @@
+const EDIT_CURSOR = 'grab';
+const DRAG_CURSOR = 'grabbing';
+const COORDINATE_LOG_KEY = '__TZG_LAST_MARKER_COORDS';
+const COORDINATE_LOG_LABEL = '[marker-coordinate-editor]';
+
 function clampPercent(value) {
    return Math.max(0, Math.min(100, value));
 }
@@ -17,105 +22,164 @@ function getMarkerItemName(item) {
    );
 }
 
-function logDraggedMarkerCoordinates(itemsAtPoint, x, y) {
-   const formattedX = formatCoordinate(x);
-   const formattedY = formatCoordinate(y);
+function stopMarkerEvent(event) {
+   event.preventDefault();
+   event.stopPropagation();
+}
 
-   const coordinateRows = (itemsAtPoint || []).map((item) => ({
+function applyMarkerEditingStyles(markerEl) {
+   markerEl.style.cursor = EDIT_CURSOR;
+   markerEl.style.touchAction = 'none';
+}
+
+function createDragState() {
+   return {
+      activePointerId: null,
+      didDrag: false,
+   };
+}
+
+function isActivePointer(state, event) {
+   return state.activePointerId === event.pointerId;
+}
+
+function getPointerPositionPercent(event, mapInner) {
+   const rect = mapInner.getBoundingClientRect();
+
+   if (!rect.width || !rect.height) {
+      return null;
+   }
+
+   return {
+      x: clampPercent(((event.clientX - rect.left) / rect.width) * 100),
+      y: clampPercent(((event.clientY - rect.top) / rect.height) * 100),
+   };
+}
+
+function applyMarkerPosition(markerEl, position) {
+   markerEl.style.left = `${position.x}%`;
+   markerEl.style.top = `${position.y}%`;
+}
+
+function updateMarkerPosition(markerEl, mapInner, event) {
+   const position = getPointerPositionPercent(event, mapInner);
+
+   if (!position) {
+      return null;
+   }
+
+   applyMarkerPosition(markerEl, position);
+   return position;
+}
+
+function buildDraggedMarkerCoordinateRows(itemsAtPoint, position) {
+   const formattedX = formatCoordinate(position.x);
+   const formattedY = formatCoordinate(position.y);
+
+   return (itemsAtPoint || []).map((item) => ({
       type: String(item?.type || ''),
       name: getMarkerItemName(item),
       x_coord: formattedX,
       y_coord: formattedY,
    }));
+}
 
-   window.__TZG_LAST_MARKER_COORDS = coordinateRows;
+function logDraggedMarkerCoordinates(itemsAtPoint, position) {
+   const coordinateRows = buildDraggedMarkerCoordinateRows(
+      itemsAtPoint,
+      position
+   );
 
-   console.log('[marker-coordinate-editor]', coordinateRows);
+   window[COORDINATE_LOG_KEY] = coordinateRows;
+
+   console.log(COORDINATE_LOG_LABEL, coordinateRows);
 
    if (typeof console.table === 'function') {
       console.table(coordinateRows);
    }
 }
 
-export function enableMarkerCoordinateEditing(markerEl, itemsAtPoint, mapInner) {
-   let activePointerId = null;
-   let didDrag = false;
+function beginDragging(markerEl, state, event) {
+   state.activePointerId = event.pointerId;
+   state.didDrag = false;
+   markerEl.style.cursor = DRAG_CURSOR;
+   markerEl.setPointerCapture?.(event.pointerId);
+   stopMarkerEvent(event);
+}
 
-   markerEl.style.cursor = 'grab';
-   markerEl.style.touchAction = 'none';
-
-   function updateMarkerPosition(event) {
-      const rect = mapInner.getBoundingClientRect();
-
-      if (!rect.width || !rect.height) {
-         return null;
-      }
-
-      const x = clampPercent(((event.clientX - rect.left) / rect.width) * 100);
-      const y = clampPercent(((event.clientY - rect.top) / rect.height) * 100);
-
-      markerEl.style.left = `${x}%`;
-      markerEl.style.top = `${y}%`;
-
-      return { x, y };
+function finishDragging({
+   markerEl,
+   mapInner,
+   itemsAtPoint,
+   state,
+   event,
+} = {}) {
+   if (!isActivePointer(state, event)) {
+      return;
    }
+
+   const finalPosition = updateMarkerPosition(markerEl, mapInner, event);
+
+   markerEl.releasePointerCapture?.(event.pointerId);
+   markerEl.style.cursor = EDIT_CURSOR;
+   state.activePointerId = null;
+
+   if (state.didDrag && finalPosition) {
+      logDraggedMarkerCoordinates(itemsAtPoint, finalPosition);
+   }
+
+   stopMarkerEvent(event);
+}
+
+export function enableMarkerCoordinateEditing(markerEl, itemsAtPoint, mapInner) {
+   const state = createDragState();
+
+   applyMarkerEditingStyles(markerEl);
 
    markerEl.addEventListener('pointerdown', (event) => {
       if (event.button !== 0) {
          return;
       }
 
-      activePointerId = event.pointerId;
-      didDrag = false;
-      markerEl.style.cursor = 'grabbing';
-
-      markerEl.setPointerCapture?.(event.pointerId);
-
-      event.preventDefault();
-      event.stopPropagation();
+      beginDragging(markerEl, state, event);
    });
 
    markerEl.addEventListener('pointermove', (event) => {
-      if (activePointerId !== event.pointerId) {
+      if (!isActivePointer(state, event)) {
          return;
       }
 
-      const nextPosition = updateMarkerPosition(event);
+      const nextPosition = updateMarkerPosition(markerEl, mapInner, event);
 
       if (!nextPosition) {
          return;
       }
 
-      didDrag = true;
-
-      event.preventDefault();
-      event.stopPropagation();
+      state.didDrag = true;
+      stopMarkerEvent(event);
    });
 
-   function finishDragging(event) {
-      if (activePointerId !== event.pointerId) {
-         return;
-      }
+   markerEl.addEventListener('pointerup', (event) => {
+      finishDragging({
+         markerEl,
+         mapInner,
+         itemsAtPoint,
+         state,
+         event,
+      });
+   });
 
-      const finalPosition = updateMarkerPosition(event);
-
-      markerEl.releasePointerCapture?.(event.pointerId);
-      markerEl.style.cursor = 'grab';
-      activePointerId = null;
-
-      if (didDrag && finalPosition) {
-         logDraggedMarkerCoordinates(itemsAtPoint, finalPosition.x, finalPosition.y);
-      }
-
-      event.preventDefault();
-      event.stopPropagation();
-   }
-
-   markerEl.addEventListener('pointerup', finishDragging);
-   markerEl.addEventListener('pointercancel', finishDragging);
+   markerEl.addEventListener('pointercancel', (event) => {
+      finishDragging({
+         markerEl,
+         mapInner,
+         itemsAtPoint,
+         state,
+         event,
+      });
+   });
 
    markerEl.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
+      stopMarkerEvent(event);
    });
 }

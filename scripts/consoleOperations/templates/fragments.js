@@ -1,91 +1,171 @@
-function createHelpTextHtml(helpText = '') {
-   if (!helpText) {
-      return '';
+function appendChild(parentEl, child) {
+   if (!child) {
+      return;
    }
 
-   return `
-      <div class="console-operations-help">
-         ${helpText}
-      </div>
-   `;
+   if (Array.isArray(child)) {
+      child.forEach((item) => appendChild(parentEl, item));
+      return;
+   }
+
+   parentEl.appendChild(child);
 }
 
-export function createPanelShellHtml({
+function appendChildren(parentEl, children = []) {
+   children.forEach((child) => appendChild(parentEl, child));
+   return parentEl;
+}
+
+function createFragment(children = []) {
+   const fragment = document.createDocumentFragment();
+   appendChildren(fragment, children);
+   return fragment;
+}
+
+function createFieldWrapper() {
+   const fieldEl = document.createElement('div');
+   fieldEl.className = 'console-operations-field';
+   return fieldEl;
+}
+
+function createLabel({
+   text,
+   htmlFor = '',
+} = {}) {
+   const labelEl = document.createElement('label');
+   labelEl.className = 'console-operations-label';
+
+   if (htmlFor) {
+      labelEl.htmlFor = htmlFor;
+   }
+
+   labelEl.textContent = text;
+   return labelEl;
+}
+
+function createOption({
+   value = '',
+   label = '',
+} = {}) {
+   const optionEl = document.createElement('option');
+   optionEl.value = value;
+   optionEl.textContent = label;
+   return optionEl;
+}
+
+function createInput({
+   inputId,
+   type = 'text',
+   className,
+   placeholder = '',
+   autocomplete = 'off',
+   value = '',
+} = {}) {
+   const inputEl = document.createElement('input');
+   inputEl.id = inputId;
+   inputEl.type = type;
+   inputEl.className = className;
+   inputEl.autocomplete = autocomplete;
+
+   if (placeholder) {
+      inputEl.placeholder = placeholder;
+   }
+
+   if (value) {
+      inputEl.value = value;
+   }
+
+   return inputEl;
+}
+
+function createHelpText(helpText = '') {
+   if (!helpText) {
+      return null;
+   }
+
+   const helpEl = document.createElement('div');
+   helpEl.className = 'console-operations-help';
+   helpEl.textContent = helpText;
+   return helpEl;
+}
+
+export function createPanelShell({
    panelId,
    title,
-   bodyHtml,
+   bodyChildren = [],
 } = {}) {
-   return `
-      <section
-         id="${panelId}"
-         class="console-operations-panel"
-      >
+   const panelEl = document.createElement('section');
+   panelEl.id = panelId;
+   panelEl.className = 'console-operations-panel';
 
-         <div class="console-operations-panel-header">
-            <h2 class="console-operations-panel-title">
-               ${title}
-            </h2>
-         </div>
+   const headerEl = document.createElement('div');
+   headerEl.className = 'console-operations-panel-header';
 
-         <div class="console-operations-panel-body">
-${bodyHtml}
-         </div>
+   const titleEl = document.createElement('h2');
+   titleEl.className = 'console-operations-panel-title';
+   titleEl.textContent = title;
 
-      </section>
-   `;
+   const bodyEl = document.createElement('div');
+   bodyEl.className = 'console-operations-panel-body';
+
+   headerEl.appendChild(titleEl);
+   appendChildren(bodyEl, bodyChildren);
+   panelEl.append(headerEl, bodyEl);
+
+   return panelEl;
 }
 
-export function createSelectFieldHtml({
+export function createSelectField({
    label,
    inputId,
    emptyOptionLabel,
 } = {}) {
-   return `
-            <div class="console-operations-field">
-               <label
-                  class="console-operations-label"
-                  for="${inputId}"
-               >
-                  ${label}
-               </label>
+   const fieldEl = createFieldWrapper();
+   const labelEl = createLabel({
+      text: label,
+      htmlFor: inputId,
+   });
 
-               <select
-                  id="${inputId}"
-                  class="console-operations-input console-operations-select"
-               >
-                  <option value="">${emptyOptionLabel}</option>
-               </select>
-            </div>
-   `;
+   const selectEl = document.createElement('select');
+   selectEl.id = inputId;
+   selectEl.className = 'console-operations-input console-operations-select';
+   selectEl.appendChild(createOption({
+      value: '',
+      label: emptyOptionLabel,
+   }));
+
+   fieldEl.append(labelEl, selectEl);
+   return fieldEl;
 }
 
-export function createSchedulePresetFieldHtml({
+export function createSchedulePresetField({
    inputId,
    label = 'Schedule preset',
 } = {}) {
-   return `
-            <div class="console-operations-field">
-               <label
-                  class="console-operations-label"
-                  for="${inputId}"
-               >
-                  ${label}
-               </label>
+   const fieldEl = createFieldWrapper();
+   const labelEl = createLabel({
+      text: label,
+      htmlFor: inputId,
+   });
 
-               <select
-                  id="${inputId}"
-                  class="console-operations-input console-operations-select"
-               >
-                  <option value="everyDay">Every day</option>
-                  <option value="custom">Custom</option>
-                  <option value="weekendsOnly">Weekends only</option>
-                  <option value="weekendsAndHolidays">Weekends + holidays only</option>
-               </select>
-            </div>
-   `;
+   const selectEl = document.createElement('select');
+   selectEl.id = inputId;
+   selectEl.className = 'console-operations-input console-operations-select';
+
+   [
+      { value: 'everyDay', label: 'Every day' },
+      { value: 'custom', label: 'Custom' },
+      { value: 'weekendsOnly', label: 'Weekends only' },
+      { value: 'weekendsAndHolidays', label: 'Weekends + holidays only' },
+   ].forEach((option) => {
+      selectEl.appendChild(createOption(option));
+   });
+
+   fieldEl.append(labelEl, selectEl);
+   return fieldEl;
 }
 
-export function createTextInputFieldHtml({
+export function createTextInputField({
    label,
    inputId,
    placeholder,
@@ -94,35 +174,33 @@ export function createTextInputFieldHtml({
    type = 'text',
    autocomplete = 'off',
 } = {}) {
-   return `
-            <div class="console-operations-field">
-               <label
-                  class="console-operations-label"
-                  for="${inputId}"
-               >
-                  ${label}
-               </label>
+   const fieldEl = createFieldWrapper();
+   const labelEl = createLabel({
+      text: label,
+      htmlFor: inputId,
+   });
 
-               <input
-                  id="${inputId}"
-                  type="${type}"
-                  class="${inputClass}"
-                  placeholder="${placeholder}"
-                  autocomplete="${autocomplete}"
-               >
+   const inputEl = createInput({
+      inputId,
+      type,
+      className: inputClass,
+      placeholder,
+      autocomplete,
+   });
 
-${createHelpTextHtml(helpText)}
-            </div>
-   `;
+   fieldEl.append(labelEl, inputEl);
+   appendChild(fieldEl, createHelpText(helpText));
+
+   return fieldEl;
 }
 
-export function createDateFieldHtml({
+export function createDateField({
    label,
    inputId,
    placeholder,
    helpText = '',
 } = {}) {
-   return createTextInputFieldHtml({
+   return createTextInputField({
       label,
       inputId,
       placeholder,
@@ -131,7 +209,7 @@ export function createDateFieldHtml({
    });
 }
 
-export function createDateRangeFieldsHtml({
+export function createDateRangeFields({
    startDateId,
    startLabel = 'Start date',
    startPlaceholder = 'Select a start date',
@@ -141,104 +219,109 @@ export function createDateRangeFieldsHtml({
    endPlaceholder = 'Select an end date',
    endHelpText = '',
 } = {}) {
-   return `
-${createDateFieldHtml({
-   label: startLabel,
-   inputId: startDateId,
-   placeholder: startPlaceholder,
-   helpText: startHelpText,
-})}
-${createDateFieldHtml({
-   label: endLabel,
-   inputId: endDateId,
-   placeholder: endPlaceholder,
-   helpText: endHelpText,
-})}
-   `;
+   return createFragment([
+      createDateField({
+         label: startLabel,
+         inputId: startDateId,
+         placeholder: startPlaceholder,
+         helpText: startHelpText,
+      }),
+      createDateField({
+         label: endLabel,
+         inputId: endDateId,
+         placeholder: endPlaceholder,
+         helpText: endHelpText,
+      }),
+   ]);
 }
 
-export function createTextareaFieldHtml({
+export function createTextareaField({
    label,
    inputId,
    placeholder,
 } = {}) {
-   return `
-            <div class="console-operations-field">
-               <label
-                  class="console-operations-label"
-                  for="${inputId}"
-               >
-                  ${label}
-               </label>
+   const fieldEl = createFieldWrapper();
+   const labelEl = createLabel({
+      text: label,
+      htmlFor: inputId,
+   });
 
-               <textarea
-                  id="${inputId}"
-                  class="console-operations-textarea"
-                  placeholder="${placeholder}"
-               ></textarea>
-            </div>
-   `;
+   const textareaEl = document.createElement('textarea');
+   textareaEl.id = inputId;
+   textareaEl.className = 'console-operations-textarea';
+
+   if (placeholder) {
+      textareaEl.placeholder = placeholder;
+   }
+
+   fieldEl.append(labelEl, textareaEl);
+   return fieldEl;
 }
 
-export function createAutocompleteFieldHtml({
+export function createAutocompleteField({
    label,
    inputId,
    resultsId,
    placeholder,
 } = {}) {
-   return `
-            <div class="console-operations-field">
-               <label
-                  class="console-operations-label"
-                  for="${inputId}"
-               >
-                  ${label}
-               </label>
+   const fieldEl = createFieldWrapper();
+   const labelEl = createLabel({
+      text: label,
+      htmlFor: inputId,
+   });
 
-               <input
-                  id="${inputId}"
-                  type="text"
-                  class="console-operations-input"
-                  autocomplete="off"
-                  placeholder="${placeholder}"
-               >
+   const inputEl = createInput({
+      inputId,
+      className: 'console-operations-input',
+      placeholder,
+      autocomplete: 'off',
+   });
 
-               <div
-                  id="${resultsId}"
-                  class="console-operations-autocomplete"
-               ></div>
-            </div>
-   `;
+   const resultsEl = document.createElement('div');
+   resultsEl.id = resultsId;
+   resultsEl.className = 'console-operations-autocomplete';
+
+   fieldEl.append(labelEl, inputEl, resultsEl);
+   return fieldEl;
 }
 
-export function createCheckboxGridFieldHtml({
+export function createCheckboxGridField({
    label,
    options = [],
 } = {}) {
-   return `
-            <div class="console-operations-field">
-               <label class="console-operations-label">
-                  ${label}
-               </label>
+   const fieldEl = createFieldWrapper();
+   const labelEl = createLabel({
+      text: label,
+   });
 
-               <div class="console-operations-checkbox-grid">
-${options.map(option => `
-                  <label class="console-operations-checkbox-option">
-                     <input
-                        id="${option.id}"
-                        type="${option.type || 'checkbox'}"
-                     >
-                     <span>${option.label}</span>
-                  </label>
-`).join('')}
-               </div>
-            </div>
-   `;
+   const gridEl = document.createElement('div');
+   gridEl.className = 'console-operations-checkbox-grid';
+
+   options.forEach((option) => {
+      const optionLabelEl = document.createElement('label');
+      optionLabelEl.className = 'console-operations-checkbox-option';
+
+      const inputEl = createInput({
+         inputId: option.id,
+         type: option.type || 'checkbox',
+         className: '',
+         autocomplete: '',
+      });
+
+      const textEl = document.createElement('span');
+      textEl.textContent = option.label;
+
+      optionLabelEl.append(inputEl, textEl);
+      gridEl.appendChild(optionLabelEl);
+   });
+
+   fieldEl.append(labelEl, gridEl);
+   return fieldEl;
 }
 
-export function createWeeklyScheduleCheckboxesHtml({
+export function createWeeklyScheduleCheckboxes({
    label = 'Open on these days',
-   dayIds,
+   dayIds = {},
    includeHolidays = true,
 } = {}) {
    const options = [
@@ -255,65 +338,72 @@ export function createWeeklyScheduleCheckboxesHtml({
       options.push({ id: dayIds.holidays, label: 'Holidays' });
    }
 
-   return createCheckboxGridFieldHtml({
+   return createCheckboxGridField({
       label,
       options,
    });
 }
 
-export function createRadioGroupFieldHtml({
+export function createRadioGroupField({
    label,
    name,
    options = [],
 } = {}) {
-   return `
-            <div class="console-operations-field">
-               <label class="console-operations-label">
-                  ${label}
-               </label>
+   const fieldEl = createFieldWrapper();
+   const labelEl = createLabel({
+      text: label,
+   });
 
-               <div class="console-operations-radio-group">
-${options.map(option => `
-                  <label class="console-operations-radio-option">
-                     <input
-                        id="${option.id}"
-                        name="${name}"
-                        type="radio"
-                        value="${option.value}"
-                     >
-                     <span>${option.label}</span>
-                  </label>
-`).join('')}
-               </div>
-            </div>
-   `;
+   const groupEl = document.createElement('div');
+   groupEl.className = 'console-operations-radio-group';
+
+   options.forEach((option) => {
+      const optionLabelEl = document.createElement('label');
+      optionLabelEl.className = 'console-operations-radio-option';
+
+      const inputEl = createInput({
+         inputId: option.id,
+         type: 'radio',
+         className: '',
+         autocomplete: '',
+         value: option.value,
+      });
+      inputEl.name = name;
+
+      const textEl = document.createElement('span');
+      textEl.textContent = option.label;
+
+      optionLabelEl.append(inputEl, textEl);
+      groupEl.appendChild(optionLabelEl);
+   });
+
+   fieldEl.append(labelEl, groupEl);
+   return fieldEl;
 }
 
-export function createActionsHtml({
+export function createActions({
    submitId,
    submitLabel = 'Save',
 } = {}) {
-   return `
-            <div class="console-operations-actions">
-               <button
-                  id="${submitId}"
-                  type="button"
-                  class="console-operations-primary-btn"
-               >
-                  ${submitLabel}
-               </button>
-            </div>
-   `;
+   const actionsEl = document.createElement('div');
+   actionsEl.className = 'console-operations-actions';
+
+   const submitButtonEl = document.createElement('button');
+   submitButtonEl.id = submitId;
+   submitButtonEl.type = 'button';
+   submitButtonEl.className = 'console-operations-primary-btn';
+   submitButtonEl.textContent = submitLabel;
+
+   actionsEl.appendChild(submitButtonEl);
+   return actionsEl;
 }
 
-export function createStatusHtml({
+export function createStatus({
    statusId,
 } = {}) {
-   return `
-            <div
-               id="${statusId}"
-               class="console-operations-status"
-               aria-live="polite"
-            ></div>
-   `;
+   const statusEl = document.createElement('div');
+   statusEl.id = statusId;
+   statusEl.className = 'console-operations-status';
+   statusEl.setAttribute('aria-live', 'polite');
+   return statusEl;
 }

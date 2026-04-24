@@ -1,4 +1,5 @@
 import { likelihoodToColor } from '../likelihood/likelihoodColors.js';
+import { clampLikelihood } from '../likelihood/likelihoodScale.js';
 
 const DEFAULT_STACK_MARKER_COLOR = 'rgba(94,150,0,0.95)';
 
@@ -67,9 +68,7 @@ export function applyGenericIcon(markerEl, iconUrl, count) {
    applyBackgroundImage(markerEl, iconUrl);
 }
 
-export function clampLikelihood(value) {
-   return Math.max(0, Math.min(100, Number(value) || 0));
-}
+export { clampLikelihood };
 
 export function getLikelihoodVisual(likelihood) {
    const clampedLikelihood = clampLikelihood(likelihood);

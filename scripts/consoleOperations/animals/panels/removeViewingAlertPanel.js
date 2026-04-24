@@ -1,34 +1,34 @@
 import {
-   createActionsHtml,
-   createAutocompleteFieldHtml,
-   createPanelShellHtml,
-   createSelectFieldHtml,
-   createStatusHtml,
+   createActions,
+   createAutocompleteField,
+   createPanelShell,
+   createSelectField,
+   createStatus,
 } from '../../templates/fragments.js';
 
-export function createRemoveViewingAlertPanelHtml() {
-   return createPanelShellHtml({
+export function createRemoveViewingAlertPanel() {
+   return createPanelShell({
       panelId: 'removeViewingAlertPanel',
       title: 'Remove animal viewing alert',
-      bodyHtml: `
-${createSelectFieldHtml({
-   label: 'Exhibit',
-   inputId: 'removeViewingAlertExhibit',
-   emptyOptionLabel: 'Select an exhibit',
-})}
-${createAutocompleteFieldHtml({
-   label: 'Species',
-   inputId: 'removeViewingAlertSpecies',
-   resultsId: 'removeViewingAlertSpeciesResults',
-   placeholder: 'Search for a species',
-})}
-${createActionsHtml({
-   submitId: 'submitRemoveViewingAlert',
-   submitLabel: 'Remove alert',
-})}
-${createStatusHtml({
-   statusId: 'removeViewingAlertStatus',
-})}
-      `,
+      bodyChildren: [
+         createSelectField({
+            label: 'Exhibit',
+            inputId: 'removeViewingAlertExhibit',
+            emptyOptionLabel: 'Select an exhibit',
+         }),
+         createAutocompleteField({
+            label: 'Species',
+            inputId: 'removeViewingAlertSpecies',
+            resultsId: 'removeViewingAlertSpeciesResults',
+            placeholder: 'Search for a species',
+         }),
+         createActions({
+            submitId: 'submitRemoveViewingAlert',
+            submitLabel: 'Remove alert',
+         }),
+         createStatus({
+            statusId: 'removeViewingAlertStatus',
+         }),
+      ],
    });
 }

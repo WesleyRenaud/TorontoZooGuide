@@ -1,34 +1,68 @@
 import { normalizeAssetKey } from './normalizeAssetKey.js';
 
-export function getAnimalIconUrl(exhibit, species, backgroundColourForUrl) {
+function buildCssUrl(path) {
+   return `url("${path}")`;
+}
+
+function normalizeIconVariantToken(token = '') {
+   return typeof token === 'string'
+      ? token.trim().toLowerCase()
+      : '';
+}
+
+function isOpenIconVariant(token) {
+   const variantToken = normalizeIconVariantToken(token);
+   return !variantToken || variantToken === 'open';
+}
+
+function buildAnimalIconPath(exhibit, species, variantToken) {
    const normalizedExhibit = normalizeAssetKey(exhibit);
    const normalizedAnimal = normalizeAssetKey(species);
+   const normalizedVariant = normalizeIconVariantToken(variantToken);
 
-   return `url("/images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${backgroundColourForUrl}.png")`;
+   return `/images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${normalizedVariant}.png`;
+}
+
+function buildAttractionIconPath(attractionName, variantToken) {
+   const normalizedAttraction = normalizeAssetKey(attractionName);
+
+   if (isOpenIconVariant(variantToken)) {
+      return `/images/attraction-icons/${normalizedAttraction}-open.png`;
+   }
+
+   const normalizedVariant = normalizeIconVariantToken(variantToken);
+   return `/images/attraction-icons/${normalizedAttraction}/${normalizedAttraction}-${normalizedVariant}.png`;
+}
+
+function buildGenericIconPath(iconName, variantToken) {
+   if (isOpenIconVariant(variantToken)) {
+      return `/images/generic-icons/${iconName}-open.png`;
+   }
+
+   const normalizedVariant = normalizeIconVariantToken(variantToken);
+   return `/images/generic-icons/${iconName}/${iconName}-${normalizedVariant}.png`;
+}
+
+export function getAnimalIconUrl(exhibit, species, backgroundColourForUrl) {
+   return buildCssUrl(
+      buildAnimalIconPath(exhibit, species, backgroundColourForUrl)
+   );
 }
 
 export function getAttractionIconUrl(attractionName, backgroundColourForUrl) {
-   const normalizedAttraction = normalizeAssetKey(attractionName);
-
-   if (!backgroundColourForUrl || backgroundColourForUrl == 'open') {
-      return `url("/images/attraction-icons/${normalizedAttraction}-open.png")`;
-   }
-
-   return `url("/images/attraction-icons/${normalizedAttraction}/${normalizedAttraction}-${backgroundColourForUrl}.png")`;
+   return buildCssUrl(
+      buildAttractionIconPath(attractionName, backgroundColourForUrl)
+   );
 }
 
 export function getRestaurantIconUrl(backgroundColourForUrl) {
-   if (!backgroundColourForUrl || backgroundColourForUrl == 'open') {
-      return 'url("/images/generic-icons/restaurant-open.png")';
-   }
-
-   return `url("/images/generic-icons/restaurant/restaurant-${backgroundColourForUrl}.png")`;
+   return buildCssUrl(
+      buildGenericIconPath('restaurant', backgroundColourForUrl)
+   );
 }
 
 export function getGiftShopIconUrl(backgroundColourForUrl) {
-   if (!backgroundColourForUrl || backgroundColourForUrl == 'open') {
-      return 'url("/images/generic-icons/gift-shop-open.png")';
-   }
-
-   return `url("/images/generic-icons/gift-shop/gift-shop-${backgroundColourForUrl}.png")`;
+   return buildCssUrl(
+      buildGenericIconPath('gift-shop', backgroundColourForUrl)
+   );
 }
