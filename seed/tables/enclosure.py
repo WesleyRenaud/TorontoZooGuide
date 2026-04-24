@@ -1326,6 +1326,12 @@ enclosures =\
       'Year-round',                                # Seasonal viewing summary
       None                                         # Seasonal viewing information (for seasonal exhibits)
    ),
+   (
+      'Domestic Goat',
+      'Indo-Malaya Outdoor',
+      'Year-round',                                # Seasonal viewing summary
+      None                                         # Seasonal viewing information (for seasonal exhibits)
+   ),
    # Malayan Woods Pavilion
    (
       'Asian Giant Millipede',

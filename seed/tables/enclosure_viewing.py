@@ -1951,6 +1951,14 @@ enclosure_viewings =\
       52.643,                 # X coordinate on map
       78.68                   # Y coordinate on map
    ),
+   (
+      'Domestic Goat',
+      'Indo-Malaya Outdoor',
+      'Outdoor',
+      None,                   # Seasonally off-display message
+      49.295,                 # X coordinate on map
+      71.958                  # Y coordinate on map
+   ),
    # Malayan Woods Pavilion
    (
       'Asian Giant Millipede',

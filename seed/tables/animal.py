@@ -6959,7 +6959,8 @@ animals = [
       'Domestic Goat',
       'Capra Hircus',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      '''The domestic goats can be seen across from the Discovery Zone.''',
+      '''The domestic goats can be seen across from the Discovery Zone in the Goat World habitat, and in the Indo-Malaya Outdoor
+         exhibit, at the old Sumatran tiger habitat.'''.replace( '\n', ' ' ),
       '''Goats can stand very cold temperatures, and are viewable outside year-round.''',
       '''The domestic goat is a small-to-medium herbivore, typically weighing 45–90 kg, depending on breed and sex. Males (bucks)
          are generally larger than females (does). Goats have cloven hooves, a short tail, and curved horns that vary in shape and
