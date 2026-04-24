@@ -1,0 +1,125 @@
+from datetime import date
+
+
+def test_get_animals_viewable_on_day_returns_animals_from_seeded_database( db ):
+   animals = db.get_animals_viewable_on_day( month='June', day=15, temp=22 )
+
+   assert animals
+   assert all( animal.species for animal in animals )
+   assert all( animal.likelihood > 0 for animal in animals )
+
+
+def test_get_animals_viewable_on_day_filters_by_exhibit( db ):
+   animals = db.get_animals_viewable_on_day(
+      month='June',
+      day=15,
+      temp=22,
+      exhibits_to_include=[ 'Africa Savanna' ]
+   )
+
+   assert animals
+   assert { animal.exhibit for animal in animals } == { 'Africa Savanna' }
+
+
+def test_off_display_animals_are_excluded_or_included_by_flag( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   db.set_animal_as_off_display(
+      species='African Lion',
+      exhibit='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      message='Lions are resting.'
+   )
+
+   without_closed = db.get_animals_viewable_on_day(
+      month='June',
+      day=15,
+      temp=22,
+      include_off_display_animals=False
+   )
+   with_closed = db.get_animals_viewable_on_day(
+      month='June',
+      day=15,
+      temp=22,
+      include_off_display_animals=True
+   )
+
+   assert all( animal.species != 'African Lion' for animal in without_closed )
+   lion = next( animal for animal in with_closed if animal.species == 'African Lion' )
+   assert lion.likelihood == 0
+   assert lion.off_display_message == 'Lions are resting.'
+
+
+def test_limited_viewing_and_alert_messages_are_returned( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   assert db.set_animal_limited_viewing_schedule(
+      species='African Penguin',
+      exhibit='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      daily_start_time='09:00',
+      daily_end_time='11:00',
+      message='Morning viewing only.'
+   )
+   assert db.set_animal_viewing_alert(
+      species='African Penguin',
+      exhibit='Africa Savanna',
+      alert_start_date='2026-06-01',
+      alert_end_date='2026-06-30',
+      message='Penguins may be harder to spot.'
+   )
+
+   animals = db.get_animals_viewable_on_day( month='June', day=15, temp=22 )
+   penguin = next( animal for animal in animals if animal.species == 'African Penguin' )
+
+   assert penguin.has_limited_viewing_schedule is True
+   assert penguin.limited_viewing_message == 'Morning viewing only.'
+   assert penguin.has_viewing_alert is True
+   assert penguin.viewing_alert_message == 'Penguins may be harder to spot.'
+
+
+def test_exhibit_closure_sets_animal_likelihood_to_zero( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   db.set_exhibit_as_closed(
+      exhibit='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      message='Savanna is closed.'
+   )
+
+   animals = db.get_animals_viewable_on_day(
+      month='June',
+      day=15,
+      temp=22,
+      include_off_display_animals=True,
+      exhibits_to_include=[ 'Africa Savanna' ]
+   )
+
+   assert animals
+   assert all( animal.likelihood == 0 for animal in animals )
+   assert all( animal.off_display_message == 'Savanna is closed.' for animal in animals )
+
+
+def test_animal_query_helpers_dedupe_and_sort( db ):
+   animals = db.get_animals_matching_query(
+      query='african',
+      month='June',
+      day=15,
+      temp=22,
+      include_off_display_animals=True
+   )
+
+   species = [ animal.species for animal in animals ]
+
+   assert species == sorted( species, key=str.lower )
+   assert len( species ) == len( set( species ) )
+   assert all( 'african' in name.lower() for name in species )
+
+
+def test_basic_animal_lookup_methods( db ):
+   assert 'African Lion' in db.get_animals_in_exhibit( 'Africa Savanna' )
+
+   information = db.get_animal_information( 'African Lion' )
+
+   assert information.species == 'African Lion'
+   assert information.exhibit == 'Africa Savanna'
