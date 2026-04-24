@@ -1,10 +1,15 @@
-import { loadArray, saveArray } from '../../panel/localStorage.js';
-import { ANIMALS_KEY } from '../../storageKeys.js';
+import { loadArray, saveArray } from '../../draftStorage.js';
+import {
+   ANIMALS_KEY,
+   SELECTED_EXHIBITS_KEY,
+   SELECTED_REGIONS_KEY,
+} from '../../storageKeys.js';
 import { getAnimalsByExhibit } from '../../../api/itinerarySelectorApi.js';
 
 import {
-   normalizeRegion,
+   getRegionExhibits,
    normalizeSelectedAnimal,
+   normalizeRegions,
    makeSelectedAnimal,
    buildSelectedAnimalKey,
    mergeAnimals,
@@ -13,8 +18,6 @@ import {
 } from './regionSelection.js';
 
 import {
-   SELECTED_EXHIBITS_KEY,
-   SELECTED_REGIONS_KEY,
    loadSelectedNames,
    saveSelectedNames,
 } from './regionStorage.js';
@@ -34,9 +37,7 @@ export function createRegionSelectorState() {
       selectedRegionNames.clear();
 
       regions.forEach((region) => {
-         if (isRegionFullySelected(region, selectedExhibitNames)) {
-            selectedRegionNames.add(region.name);
-         }
+         syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
       });
    }
 
@@ -44,10 +45,8 @@ export function createRegionSelectorState() {
       return regions.find((region) => region.name === regionName) ?? null;
    }
 
-   function setRegions(nextRegions) {
-      regions = (Array.isArray(nextRegions) ? nextRegions : [])
-         .map(normalizeRegion)
-         .filter((region) => region.name);
+   function setRegions(nextRegions = []) {
+      regions = normalizeRegions(nextRegions);
 
       return regions.slice();
    }
@@ -59,7 +58,7 @@ export function createRegionSelectorState() {
       const storedExhibits = new Set(loadSelectedNames(SELECTED_EXHIBITS_KEY));
 
       regions.forEach((region) => {
-         const exhibits = Array.isArray(region.exhibits) ? region.exhibits : [];
+         const exhibits = getRegionExhibits(region);
 
          exhibits.forEach((exhibitName) => {
             if (storedExhibits.has(exhibitName)) {
@@ -74,9 +73,13 @@ export function createRegionSelectorState() {
 
    function toggleRegion(regionName) {
       const region = findRegion(regionName);
-      const exhibits = Array.isArray(region?.exhibits) ? region.exhibits : [];
+      if (!region) {
+         return false;
+      }
 
-      if (!region?.name || !exhibits.length) {
+      const exhibits = getRegionExhibits(region);
+
+      if (!exhibits.length) {
          return false;
       }
 
@@ -117,14 +120,15 @@ export function createRegionSelectorState() {
 
    async function buildUpdatedAnimalsFromSelection() {
       const selectedExhibits = Array.from(selectedExhibitNames);
-      const currentAnimals = loadArray(ANIMALS_KEY)
-         .map(normalizeSelectedAnimal)
-         .filter(Boolean);
 
       if (!selectedExhibits.length) {
          saveArray(ANIMALS_KEY, []);
          return [];
       }
+
+      const currentAnimals = loadArray(ANIMALS_KEY)
+         .map(normalizeSelectedAnimal)
+         .filter(Boolean);
 
       const fullAnimals = await getAnimalsByExhibit(selectedExhibits);
       const selectedAnimals = fullAnimals
@@ -163,14 +167,6 @@ export function createRegionSelectorState() {
       return regions.slice();
    }
 
-   function getSelectedRegions() {
-      return Array.from(selectedRegionNames);
-   }
-
-   function getSelectedExhibits() {
-      return Array.from(selectedExhibitNames);
-   }
-
    return {
       setRegions,
       hydrateSelectionsFromStorage,
@@ -178,8 +174,6 @@ export function createRegionSelectorState() {
       toggleExhibit,
       buildUpdatedAnimalsFromSelection,
       getRegions,
-      getSelectedRegions,
-      getSelectedExhibits,
       getSelectedExhibitNamesSet: () => selectedExhibitNames,
    };
 }

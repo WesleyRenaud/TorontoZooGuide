@@ -1,4 +1,7 @@
-import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import {
+   populateGuardiansTalkDropdown,
+   populateValueDropdown,
+} from '../../options/dropdowns.js';
 import {
    getGuardiansTalkLocations,
    getGuardiansTalkNamesAtLocation,
@@ -8,47 +11,27 @@ export function createGuardiansTalkLocationFilterController({
    locationEl,
    talkNameEl,
 } = {}) {
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
+   }
+
+   function getLocationName(location) {
+      return typeof location === 'string'
+         ? location.trim()
+         : String(location?.location ?? location?.name ?? '').trim();
+   }
 
    function populateLocationDropdown(locations) {
-      if (locationEl?.tagName !== 'SELECT') {
-         return;
-      }
+      const locationNames = (locations ?? [])
+         .map(getLocationName)
+         .filter(Boolean)
+         .sort((a, b) => a.localeCompare(b));
 
-      locationEl.innerHTML = '';
-
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = 'Select a location';
-      locationEl.appendChild(placeholder);
-
-      locations
-         .slice()
-         .sort((a, b) => {
-            const aName =
-               typeof a === 'string'
-                  ? a
-                  : String(a.location ?? a.name ?? '');
-
-            const bName =
-               typeof b === 'string'
-                  ? b
-                  : String(b.location ?? b.name ?? '');
-
-            return aName.localeCompare(bName);
-         })
-         .forEach(location => {
-            const name =
-               typeof location === 'string'
-                  ? location
-                  : location.location ?? location.name ?? '';
-
-            if (!name) return;
-
-            const option = document.createElement('option');
-            option.value = name;
-            option.textContent = name;
-            locationEl.appendChild(option);
-         });
+      populateValueDropdown(
+         locationEl,
+         locationNames,
+         'Select a location'
+      );
    }
 
    function clearTalkDropdown() {
@@ -60,7 +43,7 @@ export function createGuardiansTalkLocationFilterController({
       }
    }
 
-   async function loadLocations() {
+   async function refreshLocations() {
       if (locationEl?.tagName !== 'SELECT') {
          return;
       }
@@ -74,8 +57,8 @@ export function createGuardiansTalkLocationFilterController({
       }
    }
 
-   async function loadTalksForSelectedLocation() {
-      const location = locationEl?.value.trim() ?? '';
+   async function refreshTalks() {
+      const location = getFieldValue(locationEl);
 
       clearTalkDropdown();
 
@@ -103,12 +86,12 @@ export function createGuardiansTalkLocationFilterController({
          talkNameEl.value = '';
       }
 
-      loadTalksForSelectedLocation();
+      refreshTalks();
    });
 
    return {
-      refreshLocations: loadLocations,
-      refresh: loadTalksForSelectedLocation,
+      refreshLocations,
+      refresh: refreshTalks,
       clear() {
          clearTalkDropdown();
       }

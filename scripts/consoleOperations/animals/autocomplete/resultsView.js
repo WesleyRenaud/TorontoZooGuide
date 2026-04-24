@@ -2,8 +2,12 @@ export function createAnimalSpeciesResultsView({ inputEl, resultsEl } = {}) {
    let currentMatches = [];
    let highlightedIndex = -1;
 
+   function renderResults(children = []) {
+      resultsEl.replaceChildren(...children);
+   }
+
    function clear() {
-      resultsEl.innerHTML = '';
+      renderResults();
       resultsEl.classList.remove('active');
       currentMatches = [];
       highlightedIndex = -1;
@@ -27,7 +31,6 @@ export function createAnimalSpeciesResultsView({ inputEl, resultsEl } = {}) {
    }
 
    function render(matches) {
-      resultsEl.innerHTML = '';
       currentMatches = matches;
       highlightedIndex = -1;
 
@@ -35,10 +38,12 @@ export function createAnimalSpeciesResultsView({ inputEl, resultsEl } = {}) {
          const empty = document.createElement('div');
          empty.className = 'console-operations-autocomplete-empty';
          empty.textContent = 'No matches';
-         resultsEl.appendChild(empty);
+         renderResults([empty]);
          resultsEl.classList.add('active');
          return;
       }
+
+      const fragment = document.createDocumentFragment();
 
       matches.forEach((species) => {
          const item = document.createElement('button');
@@ -54,9 +59,10 @@ export function createAnimalSpeciesResultsView({ inputEl, resultsEl } = {}) {
             selectSpecies(species);
          });
 
-         resultsEl.appendChild(item);
+         fragment.appendChild(item);
       });
 
+      renderResults([fragment]);
       resultsEl.classList.add('active');
    }
 

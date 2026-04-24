@@ -1,33 +1,50 @@
-import { buildSpeciesContentHTML } from './speciesOverlayContent.js';
+import { buildSpeciesContent } from './speciesOverlayContent.js';
+
+function createCloseButton(onClose) {
+   const button = document.createElement('button');
+   button.className = 'species-close';
+   button.type = 'button';
+   button.setAttribute('aria-label', 'Close');
+   button.textContent = '×';
+   button.addEventListener('click', onClose);
+   return button;
+}
+
+function createOverlayHeader(onClose) {
+   const header = document.createElement('div');
+   header.className = 'species-overlay-header';
+   header.appendChild(createCloseButton(onClose));
+   return header;
+}
+
+function createOverlayScrollContent(animal) {
+   const scroll = document.createElement('div');
+   scroll.className = 'species-overlay-scroll';
+   scroll.appendChild(buildSpeciesContent(animal));
+   return scroll;
+}
+
+function renderSpeciesOverlayContent(contentEl, animal, onClose) {
+   contentEl.replaceChildren(
+      createOverlayHeader(onClose),
+      createOverlayScrollContent(animal)
+   );
+}
 
 export function initSpeciesOverlay() {
    const speciesOverlay = document.getElementById('speciesOverlay');
    const speciesOverlayContent = speciesOverlay?.querySelector('.species-overlay-content') ?? null;
 
    if (speciesOverlay) {
-      speciesOverlay.addEventListener('click', e => {
-         if (e.target === speciesOverlay) close();
+      speciesOverlay.addEventListener('click', (event) => {
+         if (event.target === speciesOverlay) close();
       });
    }
 
    function openFromAnimal(animal) {
       if (!speciesOverlay || !speciesOverlayContent || !animal) return;
 
-      const contentHTML = buildSpeciesContentHTML(animal);
-
-      speciesOverlayContent.innerHTML = `
-         <div class="species-overlay-header">
-         <button class="species-close" type="button" aria-label="Close">×</button>
-         </div>
-         <div class="species-overlay-scroll">
-         ${contentHTML}
-         </div>
-      `;
-
-      speciesOverlayContent
-         .querySelector('.species-close')
-         .addEventListener('click', close);
-
+      renderSpeciesOverlayContent(speciesOverlayContent, animal, close);
       speciesOverlay.classList.remove('hidden');
    }
 

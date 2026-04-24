@@ -1,5 +1,7 @@
 import { normalizeAssetKey } from '../../../assets/normalizeAssetKey.js';
 import {
+   migrateStoredSelectionItems,
+   normalizeStoredId,
    normalizeStoredLink,
    normalizeStoredString,
 } from '../base/storedSelection.js';
@@ -83,10 +85,25 @@ function normalizeLegacyStoredImageSrc(item) {
       || normalizeStoredLink(item.image);
 }
 
-function migrateLegacyStoredAnimal(item) {
+function createStoredAnimalFromString(item) {
+   const species = normalizeStoredString(item);
+
+   if (!species) {
+      return null;
+   }
+
+   return {
+      id: `${species}||`,
+      species,
+      exhibit: '',
+      imageSrc: null,
+   };
+}
+
+function createStoredAnimalFromObject(item) {
    const species = normalizeLegacyStoredSpecies(item);
    const exhibit = normalizeLegacyStoredExhibit(item);
-   const id = normalizeStoredString(item.id) || `${species}||${exhibit}`;
+   const id = normalizeStoredId(item.id, `${species}||${exhibit}`);
 
    if (!id) {
       return null;
@@ -101,34 +118,10 @@ function migrateLegacyStoredAnimal(item) {
 }
 
 export function migrateStoredAnimals(items) {
-   if (!Array.isArray(items)) {
-      return [];
-   }
-
-   return items
-      .map((item) => {
-         if (typeof item === 'string') {
-            const species = item.trim();
-
-            if (!species) {
-               return null;
-            }
-
-            return {
-               id: `${species}||`,
-               species,
-               exhibit: '',
-               imageSrc: null,
-            };
-         }
-
-         if (item && typeof item === 'object') {
-            return migrateLegacyStoredAnimal(item);
-         }
-
-         return null;
-      })
-      .filter(Boolean);
+   return migrateStoredSelectionItems(items, {
+      fromString: createStoredAnimalFromString,
+      fromObject: createStoredAnimalFromObject,
+   });
 }
 
 export function makeAnimalSelection(row) {

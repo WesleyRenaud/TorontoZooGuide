@@ -1,20 +1,51 @@
-export function normalizeRegion(region) {
-   const name = typeof region?.name === 'string'
-      ? region.name.trim()
+function normalizeRegionName(name = '') {
+   return typeof name === 'string'
+      ? name.trim()
       : '';
-   const exhibits = Array.isArray(region?.exhibits) ? region.exhibits : [];
+}
 
+function normalizeRegionExhibits(exhibits = []) {
+   return exhibits
+      .map((exhibit) => normalizeRegionName(exhibit))
+      .filter(Boolean);
+}
+
+export function createEmptyRegion() {
    return {
-      name,
-      exhibits: exhibits
-         .map((exhibit) => typeof exhibit === 'string' ? exhibit.trim() : '')
-         .filter(Boolean),
+      name: '',
+      exhibits: [],
    };
 }
 
+export function normalizeRegion(region = createEmptyRegion()) {
+   const {
+      name = '',
+      exhibits = [],
+   } = region;
+
+   return {
+      name: normalizeRegionName(name),
+      exhibits: normalizeRegionExhibits(exhibits),
+   };
+}
+
+export function normalizeRegions(regions = []) {
+   return regions
+      .map(normalizeRegion)
+      .filter((region) => region.name);
+}
+
+export function getRegionName(region = createEmptyRegion()) {
+   return region.name;
+}
+
+export function getRegionExhibits(region = createEmptyRegion()) {
+   return region.exhibits;
+}
+
 export function shouldHideDuplicateSingleExhibit(region) {
-   const regionName = String(region?.name ?? '').trim().toLowerCase();
-   const exhibits = Array.isArray(region?.exhibits) ? region.exhibits : [];
+   const regionName = getRegionName(region).toLowerCase();
+   const exhibits = getRegionExhibits(region);
 
    if (exhibits.length !== 1) return false;
 
@@ -96,14 +127,14 @@ export function mergeAnimals(existingAnimals = [], newAnimals = []) {
 }
 
 export function isRegionFullySelected(region, selectedExhibitNames) {
-   const exhibits = Array.isArray(region?.exhibits) ? region.exhibits : [];
+   const exhibits = getRegionExhibits(region);
    if (!exhibits.length) return false;
 
    return exhibits.every((exhibit) => selectedExhibitNames.has(exhibit));
 }
 
 export function syncRegionSelection(region, selectedRegionNames, selectedExhibitNames) {
-   const regionName = region?.name;
+   const regionName = getRegionName(region);
    if (!regionName) return;
 
    if (isRegionFullySelected(region, selectedExhibitNames)) {

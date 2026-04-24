@@ -22,16 +22,42 @@ export function createAnimalOffDisplayController({
    endDateEl,
    messageEl,
    activatePanel,
-   hidePanels,
 } = {}) {
+   const formFieldEls = [speciesEl, exhibitEl, startDateEl, endDateEl, messageEl];
 
-   function resetForm() {
-      resetFormFields([speciesEl, exhibitEl, startDateEl, endDateEl, messageEl]);
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
    }
 
-   function show() {
-      setStatus(statusEl, '');
-      activatePanel?.(panelEl);
+   function getFormValues() {
+      return {
+         species: getFieldValue(speciesEl),
+         exhibit: getFieldValue(exhibitEl),
+         startDate: getFieldValue(startDateEl),
+         endDate: getFieldValue(endDateEl),
+         message: getFieldValue(messageEl),
+      };
+   }
+
+   function validateForm({
+      species,
+      exhibit,
+      startDate,
+      endDate,
+   }) {
+      if (!species) {
+         return 'Species name is required.';
+      }
+
+      if (!exhibit) {
+         return 'Exhibit is required.';
+      }
+
+      return validateOptionalDateRange(startDate, endDate);
+   }
+
+   function resetForm() {
+      resetFormFields(formFieldEls);
    }
 
    function hide() {
@@ -42,7 +68,33 @@ export function createAnimalOffDisplayController({
       });
    }
 
-   async function onShowClick() {
+   async function submitOffDisplayStatus({
+      species,
+      exhibit,
+      startDate,
+      endDate,
+      message,
+   }) {
+      return setAnimalOffDisplay({
+         species,
+         exhibit,
+         startDate: startDate || null,
+         endDate: endDate || null,
+         message,
+      });
+   }
+
+   function handleSubmitSuccess(result) {
+      setStatus(
+         statusEl,
+         `${result.species} in ${result.exhibit} was set as off display.`,
+         'is-success'
+      );
+
+      resetForm();
+   }
+
+   async function show() {
       await loadOptionsAndShowPanel({
          statusEl,
          setStatus,
@@ -57,25 +109,11 @@ export function createAnimalOffDisplayController({
    }
 
    async function onSubmitClick() {
-      const species = speciesEl?.value.trim() ?? '';
-      const exhibit = exhibitEl?.value.trim() ?? '';
-      const startDate = startDateEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-      const message = messageEl?.value.trim() ?? '';
+      const formValues = getFormValues();
 
       setStatus(statusEl, '');
 
-      if (!species) {
-         setStatus(statusEl, 'Species name is required.', 'is-error');
-         return;
-      }
-
-      if (!exhibit) {
-         setStatus(statusEl, 'Exhibit is required.', 'is-error');
-         return;
-      }
-
-      const dateError = validateOptionalDateRange(startDate, endDate);
+      const dateError = validateForm(formValues);
 
       if (dateError) {
          setStatus(statusEl, dateError, 'is-error');
@@ -83,21 +121,10 @@ export function createAnimalOffDisplayController({
       }
 
       try {
-         const result = await setAnimalOffDisplay({
-            species,
-            exhibit,
-            startDate: startDate || null,
-            endDate: endDate || null,
-            message
-         });
+         const result = await submitOffDisplayStatus(formValues);
 
          if (result.success) {
-            setStatus(
-               statusEl,
-               `${result.species} in ${result.exhibit} was set as off display.`,
-               'is-success'
-            );
-            resetForm();
+            handleSubmitSuccess(result);
          }
          else {
             setStatus(statusEl, result.error || 'Failed.', 'is-error');
@@ -111,7 +138,7 @@ export function createAnimalOffDisplayController({
 
    bindResetValueOnChange(exhibitEl, speciesEl);
 
-   showButtonEl?.addEventListener('click', onShowClick);
+   showButtonEl?.addEventListener('click', show);
    cancelButtonEl?.addEventListener('click', hide);
    submitButtonEl?.addEventListener('click', onSubmitClick);
 

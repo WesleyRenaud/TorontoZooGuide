@@ -13,8 +13,37 @@ export function createTooltipController({
    giftShopClosedBanner,
    attractionClosedBanner }) {
 
-   let openMarker = null;
-   let itemsForOpen = [];
+   let openState = createEmptyOpenState();
+
+   function createEmptyOpenState() {
+      return {
+         marker: null,
+         items: [],
+      };
+   }
+
+   function getOpenMarker() {
+      return openState.marker;
+   }
+
+   function getOpenItems() {
+      return openState.items;
+   }
+
+   function getOpenItem(index) {
+      return getOpenItems()[index] || null;
+   }
+
+   function setOpenState(marker, items) {
+      openState = {
+         marker,
+         items: Array.isArray(items) ? items : [],
+      };
+   }
+
+   function resetOpenState() {
+      openState = createEmptyOpenState();
+   }
 
    const banners = createTooltipBannerSync({
       offDisplayBanner,
@@ -28,7 +57,7 @@ export function createTooltipController({
       getRendererForItem,
       onIndexChange: (index) => {
          syncMarkerToIndex(index);
-         banners.sync(itemsForOpen[index] || null);
+         banners.sync(getOpenItem(index));
       },
    });
 
@@ -37,7 +66,7 @@ export function createTooltipController({
       isOpen,
       close,
       step: (delta) => carousel.step(delta),
-      getItemAtIndex: (index) => itemsForOpen[index] || null,
+      getItemAtIndex: getOpenItem,
       onAnimalCardClick,
    });
 
@@ -45,89 +74,125 @@ export function createTooltipController({
       return tooltipEl && tooltipEl.style.display === 'flex';
    }
 
+   function setTooltipVisibility(isVisible) {
+      if (!tooltipEl) {
+         return;
+      }
+
+      tooltipEl.style.display = isVisible ? 'flex' : 'none';
+      tooltipEl.style.pointerEvents = isVisible ? 'auto' : 'none';
+   }
+
+   function restoreOpenMarkerVisual() {
+      const marker = getOpenMarker();
+
+      if (!marker) {
+         return;
+      }
+
+      applyMarkerVisual(marker, getOpenItems() || marker.__items || []);
+   }
+
+   function addMarkerClickHandler(markerEl, items, clickable) {
+      if (!clickable) {
+         return;
+      }
+
+      markerEl.addEventListener('click', (event) => {
+         event.stopPropagation();
+         toggle(markerEl, items);
+      });
+   }
+
+   function addMarkerHoverHandlers(markerEl, hover) {
+      markerEl.addEventListener('mouseenter', (event) => {
+         hover.show(markerEl.dataset.hover || '', event);
+      });
+      markerEl.addEventListener('mousemove', (event) => {
+         hover.move(event);
+      });
+      markerEl.addEventListener('mouseleave', () => {
+         hover.hide();
+      });
+   }
+
    function attachToMarker(markerEl, items, hover, opts = {}) {
       const clickable = opts.clickable !== false;
 
-      if (clickable) {
-         markerEl.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggle(markerEl, items);
-         });
-      }
-
-      markerEl.addEventListener('mouseenter', (e) => hover.show(markerEl.dataset.hover || '', e));
-      markerEl.addEventListener('mousemove', (e) => hover.move(e));
-      markerEl.addEventListener('mouseleave', () => hover.hide());
+      addMarkerClickHandler(markerEl, items, clickable);
+      addMarkerHoverHandlers(markerEl, hover);
    }
 
    function toggle(markerEl, items) {
-      if (isOpen() && openMarker === markerEl) close();
-      else open(markerEl, items);
+      if (isOpen() && getOpenMarker() === markerEl) {
+         close();
+         return;
+      }
+
+      open(markerEl, items);
    }
 
    function open(markerEl, items) {
-      if (!tooltipEl) return;
-      if (isOpen()) close();
-
-      openMarker = markerEl;
-      itemsForOpen = items || [];
-
-      if (!carousel.render(itemsForOpen)) {
-         openMarker = null;
-         itemsForOpen = [];
+      if (!tooltipEl || !markerEl) {
          return;
       }
 
-      tooltipEl.style.display = 'flex';
-      tooltipEl.style.pointerEvents = 'auto';
-      positionTooltip(tooltipEl, markerEl);
+      close();
+      setOpenState(markerEl, items);
 
+      if (!carousel.render(getOpenItems())) {
+         resetOpenState();
+         return;
+      }
+
+      setTooltipVisibility(true);
       globalListeners.install();
-      carousel.showIndex(0);
+      carousel.showFirst();
+      positionTooltip(tooltipEl, markerEl);
    }
 
    function close() {
-      if (!tooltipEl || !isOpen()) return;
-
-      banners.hideAll();
-
-      if (openMarker) {
-         applyMarkerVisual(openMarker, itemsForOpen || openMarker.__items || []);
-      }
-
-      tooltipEl.style.display = 'none';
-      tooltipEl.style.pointerEvents = 'none';
-      carousel.clear();
-      openMarker = null;
-      itemsForOpen = [];
-   }
-
-   function syncMarkerToIndex(index) {
-      if (!openMarker) return;
-
-      const item = itemsForOpen[index] || null;
-      if (!item) return;
-
-      const type = String(item.type || '');
-      if (type !== 'animal') return;
-
-      setMarkerToAnimalIcon(openMarker, item);
-   }
-
-   function jumpTo(matchFn) {
-      carousel.jumpTo(itemsForOpen, matchFn);
-   }
-
-   function getOpenItems() {
-      return itemsForOpen;
-   }
-
-   function reposition() {
-      if (!tooltipEl || !isOpen() || !openMarker) {
+      if (!tooltipEl) {
+         resetOpenState();
          return;
       }
 
-      positionTooltip(tooltipEl, openMarker);
+      globalListeners.uninstall();
+      banners.hideAll();
+      restoreOpenMarkerVisual();
+      setTooltipVisibility(false);
+      carousel.clear();
+      resetOpenState();
+   }
+
+   function syncMarkerToIndex(index) {
+      const marker = getOpenMarker();
+      const item = getOpenItem(index);
+
+      if (!marker || !item) {
+         return;
+      }
+
+      const type = String(item.type || '');
+      if (type !== 'animal') {
+         return;
+      }
+
+      setMarkerToAnimalIcon(marker, item);
+   }
+
+   function jumpTo(matchFn) {
+      carousel.jumpTo(matchFn);
+   }
+
+   function reposition() {
+      const marker = getOpenMarker();
+
+      if (!tooltipEl || !isOpen() || !marker) {
+         return;
+      }
+
+      positionTooltip(tooltipEl, marker);
    }
 
    return {

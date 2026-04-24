@@ -1,9 +1,9 @@
 import { el } from '../dom.js';
-import { DATE_KEY } from '../localStorage.js';
+import { getStoredItineraryDate } from '../../draftStorage.js';
 import { formatISODateLong } from '../format.js';
 
 export function makeDateCard(itin = {}) {
-   const date = itin.date || localStorage.getItem(DATE_KEY) || '';
+   const date = itin.date || getStoredItineraryDate();
    const prettyDate = formatISODateLong(date);
 
    if (!prettyDate) return null;

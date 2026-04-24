@@ -1,3 +1,8 @@
+import {
+   createItineraryPopupLayout,
+   mountDismissablePopup,
+} from './popup.js';
+
 export function showItineraryConfirmPopup({
    title = 'Heads up',
    message = '',
@@ -6,60 +11,44 @@ export function showItineraryConfirmPopup({
    onConfirm,
    onCancel,
 } = {}) {
-   document.querySelector('.tzg-popup.tzg-confirm')?.remove();
+   const existingPopup = document.querySelector('.tzg-popup.tzg-confirm');
+   existingPopup?.__tzgPopupCleanup?.();
+   existingPopup?.remove();
 
-   const wrap = document.createElement('div');
-   wrap.className = 'tzg-popup tzg-confirm';
-
-   wrap.innerHTML = `
-      <div class="itin-overlay">
-         <section class="itin-card tzg-popup-card" role="dialog" aria-modal="true">
-            <div class="itin-card-topbar">
-               <div class="itin-top-title">${title}</div>
-            </div>
-
-            <div class="itin-card-body tzg-popup-body">
-               <div class="tzg-popup-message">${message}</div>
-            </div>
-
-            <div class="itin-card-actions">
-               <div class="itin-actions-right tzg-popup-actions">
-                  <button type="button" class="itin-prev tzg-popup-cancel">${cancelText}</button>
-                  <button type="button" class="itin-next tzg-popup-confirm">${confirmText}</button>
-               </div>
-            </div>
-         </section>
-      </div>
-   `;
-
-   const close = () => wrap.remove();
-
-   const cancel = () => {
-      onCancel?.();
-      close();
-   };
-
-   const confirm = () => {
-      onConfirm?.();
-      close();
-   };
-
-   wrap.querySelector('.itin-overlay')?.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) cancel();
+   const {
+      root,
+      overlay,
+      buttonEls,
+   } = createItineraryPopupLayout({
+      popupClassName: 'tzg-confirm',
+      title,
+      message,
+      actionsClassName: 'tzg-popup-actions',
+      actionButtons: [
+         {
+            key: 'cancel',
+            className: 'itin-prev tzg-popup-cancel',
+            text: cancelText,
+         },
+         {
+            key: 'confirm',
+            className: 'itin-next tzg-popup-confirm',
+            text: confirmText,
+         },
+      ],
    });
 
-   wrap.querySelector('.tzg-popup-cancel')?.addEventListener('click', cancel);
-   wrap.querySelector('.tzg-popup-confirm')?.addEventListener('click', confirm);
+   const { close, dismiss } = mountDismissablePopup({
+      mountEl: document.body,
+      root,
+      overlay,
+      initialFocusEl: buttonEls.confirm,
+      onDismiss: onCancel,
+   });
 
-   const onKey = (e) => {
-      if (e.key === 'Escape') {
-         cancel();
-         document.removeEventListener('keydown', onKey);
-      }
-   };
-   document.addEventListener('keydown', onKey);
-
-   document.body.appendChild(wrap);
-
-   setTimeout(() => wrap.querySelector('.tzg-popup-confirm')?.focus?.(), 0);
+   buttonEls.cancel?.addEventListener('click', dismiss);
+   buttonEls.confirm?.addEventListener('click', () => {
+      onConfirm?.();
+      close();
+   });
 }

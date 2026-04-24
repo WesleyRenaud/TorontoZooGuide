@@ -12,7 +12,36 @@ export function createFocusController({
    tooltip,
    getAllMarkers,
 }) {
-   function focusByCoord(x, y, matchFn) {
+   function getViewport() {
+      return typeof getViewportEl === 'function'
+         ? getViewportEl()
+         : null;
+   }
+
+   function getMarkers() {
+      return (
+         typeof getAllMarkers === 'function'
+            ? getAllMarkers()
+            : []
+      ) || [];
+   }
+
+   function focusResolvedTarget(target, matchFn, viewportEl) {
+      if (!target?.marker || !viewportEl) {
+         return;
+      }
+
+      focusMarker({
+         panzoom,
+         marker: target.marker,
+         viewportEl,
+         tooltip,
+         matchFn,
+         items: target.items,
+      });
+   }
+
+   function resolveTargetByCoordinates(x, y) {
       const marker = findMarkerByCoordinates({
          x,
          y,
@@ -20,79 +49,60 @@ export function createFocusController({
       });
 
       if (!marker) {
-         return;
+         return null;
       }
 
-      const viewportEl = getViewportEl();
-
-      if (!viewportEl) {
-         return;
-      }
-
-      focusMarker({
-         panzoom,
+      return {
          marker,
-         viewportEl,
-         tooltip,
-         matchFn,
          items: marker.__items || [],
-      });
+      };
    }
 
-   function focusByScan(typeKey, matchFn) {
-      const viewportEl = getViewportEl();
+   function resolveTargetByScan(typeKey, matchFn, viewportEl) {
+      const markers = getMarkers();
 
-      if (!viewportEl) {
-         return;
+      if (!markers.length || !viewportEl) {
+         return null;
       }
 
-      const markers = (
-         typeof getAllMarkers === 'function'
-            ? getAllMarkers()
-            : []
-      ) || [];
-
-      if (!markers.length) {
-         return;
-      }
-
-      const best = findBestMarkerByScan({
+      return findBestMarkerByScan({
          typeKey,
          matchFn,
          markers,
          viewportEl,
       });
-
-      if (!best) {
-         return;
-      }
-
-      focusMarker({
-         panzoom,
-         marker: best.marker,
-         viewportEl,
-         tooltip,
-         matchFn,
-         items: best.items,
-      });
    }
 
-   async function focus({ row, type }) {
+   function resolveFocusTarget(row, typeKey, matchFn, viewportEl) {
+      const x = row.x_coord ?? null;
+      const y = row.y_coord ?? null;
+
+      if (x != null && y != null) {
+         return resolveTargetByCoordinates(x, y);
+      }
+
+      return resolveTargetByScan(typeKey, matchFn, viewportEl);
+   }
+
+   function focus({ row, type }) {
       if (!row) {
          return;
       }
 
-      const x = row.x_coord ?? null;
-      const y = row.y_coord ?? null;
+      const viewportEl = getViewport();
 
-      const { typeKey, matchFn } = createFocusMatch(row, type);
-
-      if (x != null && y != null) {
-         focusByCoord(x, y, matchFn);
+      if (!viewportEl) {
          return;
       }
 
-      focusByScan(typeKey, matchFn);
+      const { typeKey, matchFn } = createFocusMatch(row, type);
+      const target = resolveFocusTarget(row, typeKey, matchFn, viewportEl);
+
+      if (!target) {
+         return;
+      }
+
+      focusResolvedTarget(target, matchFn, viewportEl);
    }
 
    return { focus };

@@ -1,8 +1,11 @@
-import { CONFIG } from '../config/appConfig.js';
+import {
+   OPEN_WEATHER_API_KEY,
+   TORONTO_ZOO_COORDINATES,
+} from '../config/appConfig.js';
 
 export function fetchForecastTemp(dateStr) {
    return fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${CONFIG.lat}&lon=${CONFIG.lon}&units=metric&appid=${CONFIG.apiKey}`
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${TORONTO_ZOO_COORDINATES.lat}&lon=${TORONTO_ZOO_COORDINATES.lon}&units=metric&appid=${OPEN_WEATHER_API_KEY}`
    )
       .then(res => res.json())
       .then(data => {

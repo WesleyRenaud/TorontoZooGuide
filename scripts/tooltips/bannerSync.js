@@ -4,49 +4,27 @@ export function createTooltipBannerSync({
    giftShopClosedBanner,
    attractionClosedBanner,
 }) {
+   const bannersByType = {
+      animal: offDisplayBanner,
+      restaurant: restaurantClosedBanner,
+      giftShop: giftShopClosedBanner,
+      attraction: attractionClosedBanner,
+   };
+
+   const allBanners = Object.values(bannersByType);
+
    function hideAll() {
-      offDisplayBanner?.hide?.();
-      restaurantClosedBanner?.hide?.();
-      giftShopClosedBanner?.hide?.();
-      attractionClosedBanner?.hide?.();
+      allBanners.forEach((banner) => {
+         banner?.hide?.();
+      });
    }
 
    function sync(item) {
       const type = String(item?.type || '');
-
-      if (type === 'animal') {
-         offDisplayBanner?.sync?.(item);
-         restaurantClosedBanner?.hide?.();
-         giftShopClosedBanner?.hide?.();
-         attractionClosedBanner?.hide?.();
-         return;
-      }
-
-      if (type === 'restaurant') {
-         restaurantClosedBanner?.sync?.(item);
-         offDisplayBanner?.hide?.();
-         giftShopClosedBanner?.hide?.();
-         attractionClosedBanner?.hide?.();
-         return;
-      }
-
-      if (type === 'giftShop') {
-         giftShopClosedBanner?.sync?.(item);
-         offDisplayBanner?.hide?.();
-         restaurantClosedBanner?.hide?.();
-         attractionClosedBanner?.hide?.();
-         return;
-      }
-
-      if (type === 'attraction') {
-         attractionClosedBanner?.sync?.(item);
-         offDisplayBanner?.hide?.();
-         restaurantClosedBanner?.hide?.();
-         giftShopClosedBanner?.hide?.();
-         return;
-      }
+      const activeBanner = bannersByType[type] ?? null;
 
       hideAll();
+      activeBanner?.sync?.(item);
    }
 
    return {

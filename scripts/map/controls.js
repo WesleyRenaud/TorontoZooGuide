@@ -1,123 +1,169 @@
 import { initVisitDateFlatpickr } from '../visitDates/visitDateFlatpickr.js';
 
-export function initMapControls(
-   {
-      mapPreset,
-      mapDateInput,
-      includeOffDisplayCheckbox,
-      includeClosedRestaurantsCheckbox,
-      includeClosedGiftShopsCheckbox,
-      includeClosedAttractionsCheckbox,
-      zoomobileRouteRadios,
-      onUpdate
-   }
-) {
-   if (!mapPreset || !mapDateInput || !onUpdate) {
-      console.warn('[controls] missing elements:', { mapPreset, mapDateInput, onUpdate });
+function blurMapDateInput(mapDateInput) {
+   mapDateInput?.blur();
+   document.activeElement?.blur?.();
+}
+
+function closeMapDatePicker(fp, mapDateInput) {
+   fp?.close();
+   blurMapDateInput(mapDateInput);
+}
+
+function isSpecificDayPreset(mapPreset) {
+   return mapPreset?.value === 'specific-day';
+}
+
+function getCurrentDateStr(mapDateInput, fp) {
+   return mapDateInput?.value || fp?.input?.value || '';
+}
+
+function syncDateInputVisibility(mapPreset, mapDateInput) {
+   mapDateInput.style.display = isSpecificDayPreset(mapPreset)
+      ? 'inline-block'
+      : 'none';
+}
+
+function updateMapForCurrentControls({
+   mapPreset,
+   mapDateInput,
+   fp,
+   onUpdate,
+} = {}) {
+   const preset = mapPreset?.value || '';
+
+   if (!preset) {
       return;
    }
 
-   const fp = initVisitDateFlatpickr(mapDateInput, {
+   if (isSpecificDayPreset(mapPreset)) {
+      const dateStr = getCurrentDateStr(mapDateInput, fp);
+
+      if (!dateStr) {
+         return;
+      }
+
+      onUpdate('specific-day', dateStr);
+      return;
+   }
+
+   onUpdate(preset, null);
+}
+
+function bindChangeListeners(inputs, onChange) {
+   Array.from(inputs || [])
+      .filter(Boolean)
+      .forEach((input) => {
+         input.addEventListener('change', onChange);
+      });
+}
+
+function initMapDatePicker(mapDateInput, {
+   mapPreset,
+   onSpecificDayChange,
+} = {}) {
+   return initVisitDateFlatpickr(mapDateInput, {
       defaultDate: new Date(),
       clickOpens: false,
       onChange: (_safeDate, isoDate, instance) => {
          instance.close();
-         mapDateInput.blur();
-         document.activeElement?.blur?.();
+         blurMapDateInput(mapDateInput);
 
-         if (mapPreset.value === 'specific-day') {
-            onUpdate('specific-day', isoDate);
+         if (isSpecificDayPreset(mapPreset)) {
+            onSpecificDayChange(isoDate);
          }
       },
       onClose: () => {
-         mapDateInput.blur();
-         document.activeElement?.blur?.();
-      }
+         blurMapDateInput(mapDateInput);
+      },
+   });
+}
+
+function handlePresetChange({
+   mapPreset,
+   mapDateInput,
+   fp,
+   onUpdate,
+} = {}) {
+   syncDateInputVisibility(mapPreset, mapDateInput);
+   closeMapDatePicker(fp, mapDateInput);
+
+   if (!mapPreset?.value) {
+      return;
+   }
+
+   updateMapForCurrentControls({
+      mapPreset,
+      mapDateInput,
+      fp,
+      onUpdate,
+   });
+}
+
+export function initMapControls({
+   mapPreset,
+   mapDateInput,
+   includeOffDisplayCheckbox,
+   includeClosedRestaurantsCheckbox,
+   includeClosedGiftShopsCheckbox,
+   includeClosedAttractionsCheckbox,
+   zoomobileRouteRadios,
+   onUpdate,
+} = {}) {
+   if (!mapPreset || !mapDateInput || !onUpdate) {
+      console.warn('[controls] missing elements:', { mapPreset, mapDateInput, onUpdate });
+      return null;
+   }
+
+   const fp = initMapDatePicker(mapDateInput, {
+      mapPreset,
+      onSpecificDayChange: (dateStr) => {
+         onUpdate('specific-day', dateStr);
+      },
    });
 
-   function currentDateStr() {
-      return mapDateInput.value || fp?.input?.value || '';
-   }
-
-   function refetch() {
-      const preset = mapPreset.value;
-
-      if (!preset) return;
-
-      if (preset === 'specific-day') {
-         const dateStr = currentDateStr();
-         if (!dateStr) return;
-         onUpdate('specific-day', dateStr);
-      }
-      else {
-         onUpdate(preset, null);
-      }
-   }
+   const refetch = () => updateMapForCurrentControls({
+      mapPreset,
+      mapDateInput,
+      fp,
+      onUpdate,
+   });
 
    mapPreset.addEventListener('change', () => {
-      const preset = mapPreset.value;
-
-      if (!preset) {
-         mapDateInput.style.display = 'none';
-         fp?.close();
-         mapDateInput.blur();
-         return;
-      }
-
-      if (preset === 'specific-day') {
-         mapDateInput.style.display = 'inline-block';
-         fp?.close();
-         mapDateInput.blur();
-         onUpdate('specific-day', currentDateStr());
-      }
-      else {
-         mapDateInput.style.display = 'none';
-         fp?.close();
-         mapDateInput.blur();
-         onUpdate(preset, null);
-      }
+      handlePresetChange({
+         mapPreset,
+         mapDateInput,
+         fp,
+         onUpdate,
+      });
    });
 
-   mapDateInput.addEventListener('mousedown', event => {
-      if (mapPreset.value !== 'specific-day') return;
+   mapDateInput.addEventListener('mousedown', (event) => {
+      if (!isSpecificDayPreset(mapPreset)) {
+         return;
+      }
 
       event.preventDefault();
       fp?.open();
    });
 
    mapDateInput.addEventListener('focus', () => {
-      mapDateInput.blur();
+      blurMapDateInput(mapDateInput);
    });
 
-   if (includeOffDisplayCheckbox) {
-      includeOffDisplayCheckbox.addEventListener('change', () => {
-         refetch();
-      });
-   }
+   bindChangeListeners([
+      includeOffDisplayCheckbox,
+      includeClosedRestaurantsCheckbox,
+      includeClosedGiftShopsCheckbox,
+      includeClosedAttractionsCheckbox,
+   ], refetch);
 
-   if (includeClosedRestaurantsCheckbox) {
-      includeClosedRestaurantsCheckbox.addEventListener('change', () => {
-         refetch();
-      });
-   }
+   bindChangeListeners(zoomobileRouteRadios, refetch);
 
-   if (includeClosedGiftShopsCheckbox) {
-      includeClosedGiftShopsCheckbox.addEventListener('change', () => {
-         refetch();
-      });
-   }
+   syncDateInputVisibility(mapPreset, mapDateInput);
 
-   if (includeClosedAttractionsCheckbox) {
-      includeClosedAttractionsCheckbox.addEventListener('change', () => {
-         refetch();
-      });
-   }
-
-   if (zoomobileRouteRadios) {
-      Array.from(zoomobileRouteRadios || []).forEach(r => {
-         r.addEventListener('change', () => {
-            refetch();
-         });
-      });
-   }
+   return {
+      flatpickr: fp,
+      refetch,
+   };
 }

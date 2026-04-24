@@ -1,106 +1,213 @@
-export function initExploreTypeFilter({ onChange, onAnimalsUnchecked }) {
-   const multiSelect = document.getElementById('typeFilter');
-   if (!multiSelect) {
-      return {
-         getSelectedTypes: () => ['animal'],
-         buildSearchIncludeFlags:
-            () => ({
-               includeAnimals: true,
-               includePavilions: false,
-               includeRestaurants: false,
-               includeRestrooms: false,
-               includeGiftShops: false,
-               includeAttractions: false,
-               includeZoomobileStations: false,
-               includeGuardiansTalks: false,
-               includeWildEncounters: false,
-            }),
+const TYPE_FILTER_ID = 'typeFilter';
+const ZOOMOBILE_ROUTE_SELECTOR = 'input[name="zoomobileRoute"]:checked';
+const DEFAULT_SELECTED_TYPES = ['animal'];
 
+const SEARCH_INCLUDE_FLAGS = [
+   ['includeAnimals', 'animal'],
+   ['includePavilions', 'pavilion'],
+   ['includeRestaurants', 'restaurant'],
+   ['includeRestrooms', 'restroom'],
+   ['includeGiftShops', 'giftShop'],
+   ['includeAttractions', 'attraction'],
+   ['includeGuardiansTalks', 'guardiansTalk'],
+   ['includeWildEncounters', 'wildEncounter'],
+];
+
+function getSelectedZoomobileRoute() {
+   const checked = document.querySelector(ZOOMOBILE_ROUTE_SELECTOR);
+   return checked?.value ?? 'none';
+}
+
+function hasZoomobileRoute(zoomobileRoute) {
+   return zoomobileRoute !== 'none';
+}
+
+function buildSearchIncludeFlags(selectedTypes, zoomobileRoute) {
+   const selectedTypeSet = new Set(selectedTypes);
+
+   return {
+      ...Object.fromEntries(
+         SEARCH_INCLUDE_FLAGS.map(([flag, type]) => [
+            flag,
+            selectedTypeSet.has(type),
+         ])
+      ),
+      includeZoomobileStations: hasZoomobileRoute(zoomobileRoute),
+   };
+}
+
+function createFallbackExploreFilter() {
+   return {
+      getSelectedTypes: () => [...DEFAULT_SELECTED_TYPES],
+      buildSearchIncludeFlags: () => buildSearchIncludeFlags(DEFAULT_SELECTED_TYPES, 'none'),
+   };
+}
+
+function getFilterRefs(multiSelect) {
+   const dropdown = multiSelect.querySelector('.multi-select-dropdown');
+
+   return {
+      button: multiSelect.querySelector('.multi-select-button'),
+      dropdown,
+      checkboxes: Array.from(dropdown?.querySelectorAll('input[type="checkbox"]') ?? []),
+      chipContainer: multiSelect.querySelector('.selected-values'),
+   };
+}
+
+function getCheckboxLabel(checkbox) {
+   return checkbox.closest('label')?.textContent?.trim() || checkbox.value;
+}
+
+function createNoSelectionChip() {
+   const chip = document.createElement('span');
+   chip.className = 'filter-none';
+   chip.textContent = 'None';
+   return chip;
+}
+
+function createFilterChip(label) {
+   const chip = document.createElement('span');
+   chip.className = 'filter-chip';
+   chip.textContent = label;
+   return chip;
+}
+
+function getSelectedCheckboxes(checkboxes) {
+   return checkboxes.filter((checkbox) => checkbox.checked);
+}
+
+function getSelectedTypeValues(checkboxes, zoomobileRoute) {
+   const selected = getSelectedCheckboxes(checkboxes)
+      .map((checkbox) => String(checkbox.value || ''));
+
+   if (hasZoomobileRoute(zoomobileRoute) && !selected.includes('zoomobileRoute')) {
+      selected.push('zoomobileRoute');
+   }
+
+   return selected;
+}
+
+function renderSelectedChips(chipContainer, checkboxes) {
+   if (!chipContainer) {
+      return;
+   }
+
+   const selectedLabels = getSelectedCheckboxes(checkboxes)
+      .map(getCheckboxLabel);
+
+   if (selectedLabels.length === 0) {
+      chipContainer.replaceChildren(createNoSelectionChip());
+      return;
+   }
+
+   chipContainer.replaceChildren(...selectedLabels.map(createFilterChip));
+}
+
+function createExploreFilterState({
+   checkboxes,
+   getZoomobileRoute,
+} = {}) {
+   function getCurrentSelection() {
+      const zoomobileRoute = getZoomobileRoute();
+
+      return {
+         zoomobileRoute,
+         selectedTypes: getSelectedTypeValues(checkboxes, zoomobileRoute),
       };
    }
 
-   const button = multiSelect.querySelector('.multi-select-button');
-   const dropdown = multiSelect.querySelector('.multi-select-dropdown');
-   const checkboxes = dropdown?.querySelectorAll('input[type="checkbox"]') || [];
-   const chipContainer = multiSelect.querySelector('.selected-values');
-
-   function getZoomobileRoute() {
-      const checked = document.querySelector('input[name="zoomobileRoute"]:checked');
-      return checked?.value ?? 'none';
-   }
-
    function getSelectedTypes() {
-      const selected = Array.from(checkboxes)
-         .filter(cb => cb.checked)
-         .map(cb => String(cb.value || ''));
-
-      if (getZoomobileRoute() !== 'none' && !selected.includes('zoomobileRoute')) {
-         selected.push('zoomobileRoute');
-      }
-
-      return selected;
+      return getCurrentSelection().selectedTypes;
    }
 
-   function updateSelectedText() {
-      if (!chipContainer) return;
-      chipContainer.innerHTML = '';
-
-      const selectedLabels = Array.from(checkboxes)
-         .filter(cb => cb.checked)
-         .map(cb => cb.parentElement.textContent.trim());
-
-      if (selectedLabels.length === 0) {
-         chipContainer.innerHTML = '<span class="filter-none">None</span>';
-         return;
-      }
-
-      selectedLabels.forEach(label => {
-         const chip = document.createElement('span');
-         chip.className = 'filter-chip';
-         chip.textContent = label;
-         chipContainer.appendChild(chip);
-      });
+   function buildSearchIncludeFlags() {
+      const { selectedTypes, zoomobileRoute } = getCurrentSelection();
+      return buildSearchIncludeFlags(selectedTypes, zoomobileRoute);
    }
 
-   button?.addEventListener('click', (e) => {
-      e.stopPropagation();
+   return { getSelectedTypes, buildSearchIncludeFlags };
+}
+
+function bindDropdownEvents({
+   multiSelect,
+   button,
+   dropdown,
+} = {}) {
+   button?.addEventListener('click', (event) => {
+      event.stopPropagation();
       multiSelect.classList.toggle('open');
    });
 
-   dropdown?.addEventListener('click', (e) => e.stopPropagation());
+   dropdown?.addEventListener('click', (event) => {
+      event.stopPropagation();
+   });
 
    document.addEventListener('click', () => {
       multiSelect.classList.remove('open');
    });
+}
 
-   checkboxes.forEach(cb => {
-      cb.addEventListener('change', () => {
-         updateSelectedText();
+function bindCheckboxEvents({
+   checkboxes,
+   getSelectedTypes,
+   onAnimalsUnchecked,
+   onChange,
+   onSelectionChanged,
+} = {}) {
+   checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener('change', () => {
+         onSelectionChanged?.();
 
-         const selected = getSelectedTypes();
-         if (!selected.includes('animal')) onAnimalsUnchecked?.();
+         if (!getSelectedTypes().includes('animal')) {
+            onAnimalsUnchecked?.();
+         }
 
          onChange?.();
       });
    });
+}
 
-   updateSelectedText();
-
-   function buildSearchIncludeFlags() {
-      const selected = getSelectedTypes();
-      const zoomobileRoute = getZoomobileRoute();
-      return {
-         includeAnimals: selected.includes('animal'),
-         includePavilions: selected.includes('pavilion'),
-         includeRestaurants: selected.includes('restaurant'),
-         includeRestrooms: selected.includes('restroom'),
-         includeGiftShops: selected.includes('giftShop'),
-         includeAttractions: selected.includes('attraction'),
-         includeZoomobileStations: zoomobileRoute !== 'none',
-         includeGuardiansTalks: selected.includes('guardiansTalk'),
-         includeWildEncounters: selected.includes('wildEncounter'),
-      };
+export function initExploreTypeFilter({
+   onChange,
+   onAnimalsUnchecked,
+   multiSelect = document.getElementById(TYPE_FILTER_ID),
+   getZoomobileRoute = getSelectedZoomobileRoute,
+} = {}) {
+   if (!multiSelect) {
+      return createFallbackExploreFilter();
    }
 
-   return { getSelectedTypes, buildSearchIncludeFlags };
+   const {
+      button,
+      dropdown,
+      checkboxes,
+      chipContainer,
+   } = getFilterRefs(multiSelect);
+
+   const state = createExploreFilterState({
+      checkboxes,
+      getZoomobileRoute,
+   });
+
+   const updateSelectedChips = () => {
+      renderSelectedChips(chipContainer, checkboxes);
+   };
+
+   bindDropdownEvents({
+      multiSelect,
+      button,
+      dropdown,
+   });
+
+   bindCheckboxEvents({
+      checkboxes,
+      getSelectedTypes: state.getSelectedTypes,
+      onAnimalsUnchecked,
+      onChange,
+      onSelectionChanged: updateSelectedChips,
+   });
+
+   updateSelectedChips();
+
+   return state;
 }

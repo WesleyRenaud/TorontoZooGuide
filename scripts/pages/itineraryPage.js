@@ -6,60 +6,85 @@ import { blockMapWheelWhileWizardOpen } from '../itinerary/wizard/wheelBlocker.j
 import { openItineraryWizard } from '../itinerary/wizard/wizardController.js';
 import { getItinerary, isItineraryEmpty } from '../itinerary/itineraryService.js';
 
+const DEFAULT_WIZARD_STEP = 'date';
+
+function hasEmbeddedMap() {
+   return Boolean(document.getElementById('mapInner'));
+}
+
+function createPanelRefresh() {
+   return () => renderItineraryPanel();
+}
+
+function createWizardOpener(mountEl, onDone) {
+   return ({ startAt = null } = {}) => {
+      openItineraryWizard({
+         mountEl,
+         startAt,
+         onDone,
+      });
+   };
+}
+
+function bindWizardEvents(openWizard) {
+   window.addEventListener('tzg:editItinerarySection', (event) => {
+      openWizard({
+         startAt: event?.detail?.step || DEFAULT_WIZARD_STEP,
+      });
+   });
+
+   window.addEventListener('tzg:editItinerary', () => {
+      openWizard();
+   });
+
+   window.addEventListener('tzg:buildItinerary', () => {
+      openWizard();
+   });
+}
+
+function bindPanelRefreshEvents(refreshPanel) {
+   window.addEventListener('tzg:itineraryUpdated', () => {
+      refreshPanel();
+   });
+}
+
+async function initEmbeddedItineraryMap() {
+   if (!hasEmbeddedMap()) {
+      return;
+   }
+
+   try {
+      await loadInlineZooMap();
+      initItineraryMap();
+   } catch (err) {
+      console.warn('initItineraryMap() failed:', err);
+   }
+}
+
+async function shouldOpenWizardOnLoad() {
+   const itinerary = await getItinerary();
+   return !itinerary || isItineraryEmpty(itinerary);
+}
+
+async function initItineraryPageContent(openWizard, refreshPanel) {
+   await initEmbeddedItineraryMap();
+   await refreshPanel();
+
+   if (await shouldOpenWizardOnLoad()) {
+      openWizard();
+   }
+}
+
 export function initItineraryPage() {
    const mountEl = document.getElementById('itineraryFlow');
    if (!mountEl) return;
 
-   window.addEventListener('tzg:editItinerarySection', (e) => {
-      const step = e?.detail?.step || 'date';
-
-      openItineraryWizard({
-         mountEl,
-         startAt: step,
-         onDone: () => renderItineraryPanel(),
-      });
-   });
+   const refreshPanel = createPanelRefresh();
+   const openWizard = createWizardOpener(mountEl, refreshPanel);
 
    blockMapWheelWhileWizardOpen(mountEl);
+   bindWizardEvents(openWizard);
+   bindPanelRefreshEvents(refreshPanel);
 
-   window.addEventListener('tzg:editItinerary', () => {
-      openItineraryWizard({
-         mountEl,
-         onDone: () => renderItineraryPanel(),
-      });
-   });
-
-   window.addEventListener('tzg:buildItinerary', () => {
-      openItineraryWizard({
-         mountEl,
-         onDone: () => renderItineraryPanel(),
-      });
-   });
-
-   window.addEventListener('tzg:itineraryUpdated', () => {
-      renderItineraryPanel();
-   });
-
-   (async () => {
-      if (document.getElementById('mapInner')) {
-         try {
-            await loadInlineZooMap();
-            initItineraryMap();
-         } catch (err) {
-            console.warn('initItineraryMap() failed:', err);
-         }
-      }
-
-      await renderItineraryPanel();
-
-      const itin = await getItinerary();
-      const shouldAutoOpen = !itin || isItineraryEmpty(itin);
-
-      if (shouldAutoOpen) {
-         openItineraryWizard({
-            mountEl,
-            onDone: () => renderItineraryPanel(),
-         });
-      }
-   })();
+   void initItineraryPageContent(openWizard, refreshPanel);
 }

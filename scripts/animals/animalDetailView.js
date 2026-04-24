@@ -1,55 +1,144 @@
 import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
 
+const DETAIL_SECTIONS = [
+   ['Seasonal Viewing Summary', 'seasonal_viewing_summary'],
+   ['Seasonal Viewing Information', 'seasonal_viewing_information'],
+   ['General Viewing Tips', 'general_viewing_tips'],
+   ['Seasonal Viewing Tips', 'seasonal_viewing_tips'],
+   ['Identification', 'identification'],
+   ['Habitat And Range', 'habitat_and_range'],
+   ['Diet And Feeding', 'diet_and_feeding'],
+   ['Behaviour And Life Cycle', 'behaviour_and_life_cycle'],
+   ['Adaptations', 'adaptations'],
+   ['Reproduction And Life Cycle', 'reproduction_and_life_cycle'],
+   ['Animals At The Zoo', 'animals_at_the_zoo'],
+];
+
+function readText(value = '') {
+   return typeof value === 'string'
+      ? value.trim()
+      : '';
+}
+
+function buildBackButton(onBack) {
+   const button = document.createElement('button');
+   button.className = 'animal-info-back-button';
+   button.type = 'button';
+   button.textContent = '← Back';
+   button.addEventListener('click', () => onBack?.());
+   return button;
+}
+
+function buildDetailSection(title, value) {
+   const text = readText(value);
+
+   if (!text) {
+      return null;
+   }
+
+   const section = document.createElement('div');
+   section.className = 'section';
+
+   const titleEl = document.createElement('strong');
+   titleEl.textContent = `${title}:`;
+
+   const bodyEl = document.createElement('p');
+   bodyEl.textContent = text;
+
+   section.appendChild(titleEl);
+   section.appendChild(bodyEl);
+
+   return section;
+}
+
+function buildAnimalImage(animal) {
+   const exhibitFile = normalizeAssetKey(readText(animal?.exhibit));
+   const species = readText(animal?.species);
+   const speciesFile = normalizeAssetKey(species);
+
+   if (!exhibitFile || !speciesFile) {
+      return null;
+   }
+
+   const image = document.createElement('img');
+   image.src = `../images/animals/${exhibitFile}/${speciesFile}.png`;
+   image.className = 'new-animal-image';
+   image.alt = species;
+
+   return image;
+}
+
+function buildHeading(tagName, className, text) {
+   const value = readText(text);
+
+   if (!value) {
+      return null;
+   }
+
+   const heading = document.createElement(tagName);
+   heading.className = className;
+   heading.textContent = value;
+   return heading;
+}
+
+function buildViewOnMapButton(animal, exhibitName) {
+   const species = readText(animal?.species);
+   const exhibit = readText(exhibitName) || readText(animal?.exhibit);
+
+   const button = document.createElement('button');
+   button.className = 'view-on-map-button';
+   button.type = 'button';
+   button.textContent = 'View on Map';
+
+   button.addEventListener('click', () => {
+      const url = new URL('map.html', window.location.href);
+      url.searchParams.set('focus', species);
+      url.searchParams.set('exhibit', exhibit);
+      window.location.href = url.toString();
+   });
+
+   return button;
+}
+
+function buildAnimalDetailContent(animal, { exhibitName } = {}) {
+   const fragment = document.createDocumentFragment();
+   const image = buildAnimalImage(animal);
+   const speciesHeading = buildHeading('h2', 'animal-species-name', animal?.species);
+   const latinHeading = buildHeading('h6', 'latin-name', animal?.latin_name);
+   const exhibitHeading = buildHeading('h4', 'animal-exhibit', animal?.exhibit);
+
+   if (image) {
+      fragment.appendChild(image);
+   }
+
+   if (speciesHeading) {
+      fragment.appendChild(speciesHeading);
+   }
+
+   if (latinHeading) {
+      fragment.appendChild(latinHeading);
+   }
+
+   if (exhibitHeading) {
+      fragment.appendChild(exhibitHeading);
+      fragment.appendChild(buildViewOnMapButton(animal, exhibitName));
+   }
+
+   DETAIL_SECTIONS.forEach(([title, field]) => {
+      const section = buildDetailSection(title, animal?.[field]);
+
+      if (section) {
+         fragment.appendChild(section);
+      }
+   });
+
+   return fragment;
+}
+
 export function createAnimalDetailView({ listEl }) {
    function clear() {
-      listEl.innerHTML = '';
+      listEl.replaceChildren();
       listEl.scrollTop = 0;
-   }
-
-   function buildBackButtonHTML() {
-      return `
-         <button class="animal-info-back-button" type="button">
-            ← Back
-         </button>
-      `;
-   }
-
-   function buildSpeciesContentHTML(animal) {
-      const section = (title, value) => {
-         if (!value || !String(value).trim()) return '';
-         return `
-            <div class="section">
-               <strong>${title}:</strong>
-               <p>${value}</p>
-            </div>
-         `;
-      };
-
-      const exhibitFile = normalizeAssetKey(animal.exhibit || '');
-      const speciesFile = normalizeAssetKey(animal.species || '');
-
-      return `
-         <img
-            src="../images/animals/${exhibitFile}/${speciesFile}.png"
-            class="new-animal-image"
-         >
-
-         <h2 class="animal-species-name">${animal.species || ''}</h2>
-         ${animal.latin_name ? `<h6 class="latin-name">${animal.latin_name}</h6>` : ''}
-         <h4 class="animal-exhibit">${animal.exhibit || ''}</h4>
-
-         ${section('Seasonal Viewing Summary', animal.seasonal_viewing_summary)}
-         ${section('Seasonal Viewing Information', animal.seasonal_viewing_information)}
-         ${section('General Viewing Tips', animal.general_viewing_tips)}
-         ${section('Seasonal Viewing Tips', animal.seasonal_viewing_tips)}
-         ${section('Identification', animal.identification)}
-         ${section('Habitat And Range', animal.habitat_and_range)}
-         ${section('Diet And Feeding', animal.diet_and_feeding)}
-         ${section('Behaviour And Life Cycle', animal.behaviour_and_life_cycle)}
-         ${section('Adaptations', animal.adaptations)}
-         ${section('Reproduction And Life Cycle', animal.reproduction_and_life_cycle)}
-         ${section('Animals At The Zoo', animal.animals_at_the_zoo)}
-      `;
    }
 
    function render(animalInfo, { exhibitName, onBack }) {
@@ -57,27 +146,8 @@ export function createAnimalDetailView({ listEl }) {
 
       if (!animalInfo) return;
 
-      listEl.innerHTML = buildBackButtonHTML() + buildSpeciesContentHTML(animalInfo);
-
-      const backBtn = listEl.querySelector('.animal-info-back-button');
-      if (backBtn) backBtn.addEventListener('click', onBack);
-
-      const exhibitHeading = listEl.querySelector('.animal-exhibit');
-      if (exhibitHeading) {
-         const viewBtn = document.createElement('button');
-         viewBtn.className = 'view-on-map-button';
-         viewBtn.textContent = 'View on Map';
-         viewBtn.type = 'button';
-
-         viewBtn.addEventListener('click', () => {
-            const url = new URL('map.html', window.location.href);
-            url.searchParams.set('focus', animalInfo.species || '');
-            url.searchParams.set('exhibit', exhibitName || animalInfo.exhibit || '');
-            window.location.href = url.toString();
-         });
-
-         exhibitHeading.insertAdjacentElement('afterend', viewBtn);
-      }
+      listEl.appendChild(buildBackButton(onBack));
+      listEl.appendChild(buildAnimalDetailContent(animalInfo, { exhibitName }));
    }
 
    return { render };

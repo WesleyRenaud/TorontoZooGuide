@@ -98,6 +98,10 @@ export function makeSection({ title, count, children = [], stepKey }) {
 
    const resizeHandler = () => applyHeight();
    window.addEventListener('resize', resizeHandler, { passive: true });
+   section.__tzgCleanup = () => {
+      window.removeEventListener('resize', resizeHandler);
+      delete section.__tzgCleanup;
+   };
 
    return section;
 }

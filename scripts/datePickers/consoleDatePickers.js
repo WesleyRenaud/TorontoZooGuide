@@ -1,95 +1,97 @@
 import { initFlatpickr } from './flatpickr.js';
 
-/* ============================================================
-   OFF DISPLAY DATE PICKERS
-============================================================ */
+const DATE_PICKER_OPTIONS = {
+   enableTime: false,
+   dateFormat: 'Y-m-d',
+};
 
-export function initOffDisplayDatePickers(
-   offDisplayStartDateEl,
-   offDisplayEndDateEl
-) {
+const TIME_PICKER_OPTIONS = {
+   enableTime: true,
+   noCalendar: true,
+   dateFormat: 'h:i K',
+   time_24hr: false,
+};
 
-   const startPicker = initFlatpickr(offDisplayStartDateEl, {
-      enableTime: false,
-      dateFormat: 'Y-m-d',
-      minDate: 'today'
+function initDatePicker(inputEl, options = {}) {
+   return initFlatpickr(inputEl, {
+      ...DATE_PICKER_OPTIONS,
+      ...options,
    });
-
-   const endPicker = initFlatpickr(offDisplayEndDateEl, {
-      enableTime: false,
-      dateFormat: 'Y-m-d',
-      minDate: 'today'
-   });
-
-   if (offDisplayStartDateEl && endPicker) {
-      offDisplayStartDateEl.addEventListener('change', () => {
-
-         const startValue = offDisplayStartDateEl.value?.trim();
-
-         if (startValue) {
-            endPicker.set('minDate', startValue);
-         }
-         else {
-            endPicker.set('minDate', 'today');
-         }
-      });
-   }
-
-   return { startPicker, endPicker };
 }
 
+function initTimePicker(inputEl, options = {}) {
+   return initFlatpickr(inputEl, {
+      ...TIME_PICKER_OPTIONS,
+      ...options,
+   });
+}
 
-/* ============================================================
-   VISIBILITY SCHEDULE PICKERS
-============================================================ */
+function bindEndDateMinDate(
+   startDateEl,
+   endDatePicker,
+   {
+      emptyMinDate = null,
+   } = {}
+) {
+   if (!startDateEl || !endDatePicker) {
+      return;
+   }
 
-export function initVisibilityScheduleDateTimePickers(
+   function syncMinDate() {
+      const startValue = startDateEl.value?.trim() ?? '';
+
+      endDatePicker.set('minDate', startValue || emptyMinDate);
+   }
+
+   startDateEl.addEventListener('change', syncMinDate);
+   syncMinDate();
+}
+
+export function initDateRangePickers(
+   startDateEl,
+   endDateEl,
+   {
+      minDate = 'today',
+   } = {}
+) {
+   const startPicker = initDatePicker(startDateEl, {
+      minDate,
+   });
+
+   const endPicker = initDatePicker(endDateEl, {
+      minDate,
+   });
+
+   bindEndDateMinDate(startDateEl, endPicker, {
+      emptyMinDate: minDate,
+   });
+
+   return {
+      startPicker,
+      endPicker,
+   };
+}
+
+export function initScheduleDateTimePickers(
    startDateEl,
    endDateEl,
    dailyStartTimeEl,
    dailyEndTimeEl
 ) {
-   const startDatePicker = initFlatpickr(startDateEl, {
-      enableTime: false,
-      dateFormat: 'Y-m-d'
-   });
+   const startDatePicker = initDatePicker(startDateEl);
 
-   const endDatePicker = initFlatpickr(endDateEl, {
-      enableTime: false,
-      dateFormat: 'Y-m-d'
-   });
+   const endDatePicker = initDatePicker(endDateEl);
 
-   const dailyStartTimePicker = initFlatpickr(dailyStartTimeEl, {
-      enableTime: true,
-      noCalendar: true,
-      dateFormat: 'h:i K',
-      time_24hr: false
-   });
+   const dailyStartTimePicker = initTimePicker(dailyStartTimeEl);
 
-   const dailyEndTimePicker = initFlatpickr(dailyEndTimeEl, {
-      enableTime: true,
-      noCalendar: true,
-      dateFormat: 'h:i K',
-      time_24hr: false
-   });
+   const dailyEndTimePicker = initTimePicker(dailyEndTimeEl);
 
-   if (startDateEl && endDatePicker) {
-      startDateEl.addEventListener('change', () => {
-         const startValue = startDateEl.value?.trim();
-
-         if (startValue) {
-            endDatePicker.set('minDate', startValue);
-         }
-         else {
-            endDatePicker.set('minDate', null);
-         }
-      });
-   }
+   bindEndDateMinDate(startDateEl, endDatePicker);
 
    return {
       startDatePicker,
       endDatePicker,
       dailyStartTimePicker,
-      dailyEndTimePicker
+      dailyEndTimePicker,
    };
 }

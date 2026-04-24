@@ -2,11 +2,100 @@ import { searchZoo } from '../api/searchApi.js';
 import { renderSearchResults } from './resultsView.js';
 import { flattenSearchRows } from './searchRows.js';
 
-function debounce(fn, delay = 250) {
-   let t = null;
+const DEFAULT_DEBOUNCE_MS = 250;
+
+function createNoopSearch() {
+   return { refresh: () => {} };
+}
+
+function debounce(fn, delay = DEFAULT_DEBOUNCE_MS) {
+   let timeoutId = null;
+
    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn(...args), delay);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fn(...args), delay);
+   };
+}
+
+function getSearchQuery(inputEl) {
+   return (inputEl.value || '').trim();
+}
+
+function shouldClearForEmptyQuery(query, allowEmptyQuery) {
+   return !query && !allowEmptyQuery;
+}
+
+function clearSearchResults(resultsEl) {
+   resultsEl.replaceChildren();
+}
+
+function createRequestTracker() {
+   let latestRequestId = 0;
+
+   return {
+      nextRequestId: () => {
+         latestRequestId += 1;
+         return latestRequestId;
+      },
+      isCurrentRequest: (requestId) => requestId === latestRequestId,
+   };
+}
+
+async function buildSearchRequest({
+   query,
+   getIncludeFlags,
+   getContext,
+} = {}) {
+   return {
+      query,
+      ...(getIncludeFlags?.() ?? {}),
+      ...((await getContext?.()) ?? {}),
+   };
+}
+
+function logSearchError(error) {
+   console.warn('[search] failed to fetch results:', error);
+}
+
+function createSearchRunner({
+   inputEl,
+   resultsEl,
+   getIncludeFlags,
+   getContext,
+   onFocusRow,
+   allowEmptyQuery,
+   onError,
+} = {}) {
+   const requestTracker = createRequestTracker();
+
+   return async function runSearch() {
+      const requestId = requestTracker.nextRequestId();
+      const query = getSearchQuery(inputEl);
+
+      if (shouldClearForEmptyQuery(query, allowEmptyQuery)) {
+         clearSearchResults(resultsEl);
+         return;
+      }
+
+      try {
+         const response = await searchZoo(
+            await buildSearchRequest({
+               query,
+               getIncludeFlags,
+               getContext,
+            })
+         );
+
+         if (!requestTracker.isCurrentRequest(requestId)) {
+            return;
+         }
+
+         renderSearchResults(resultsEl, flattenSearchRows(response), onFocusRow);
+      } catch (error) {
+         if (requestTracker.isCurrentRequest(requestId)) {
+            onError(error);
+         }
+      }
    };
 }
 
@@ -17,46 +106,23 @@ export function initSearch({
    onFocusRow,
    resultsEl = null,
    allowEmptyQuery = false,
+   onError = logSearchError,
 } = {}) {
-   if (!inputEl) {
-      return { refresh: () => {} };
+   if (!inputEl || !resultsEl) {
+      return createNoopSearch();
    }
 
-   let latestRequestId = 0;
+   const run = createSearchRunner({
+      inputEl,
+      resultsEl,
+      getIncludeFlags,
+      getContext,
+      onFocusRow,
+      allowEmptyQuery,
+      onError,
+   });
 
-   async function run() {
-      const requestId = ++latestRequestId;
-      const query = (inputEl.value || '').trim();
-
-      const target = resultsEl || document.getElementById('animalSearchResults');
-      if (!target) return;
-
-      if (!query && !allowEmptyQuery) {
-         target.innerHTML = '';
-         return;
-      }
-
-      const flags = getIncludeFlags?.() ?? {};
-      const ctx = (await getContext?.()) ?? {};
-
-      try {
-         const response = await searchZoo({
-            query,
-            ...flags,
-            ...ctx,
-         });
-
-         if (requestId !== latestRequestId) {
-            return;
-         }
-
-         renderSearchResults(target, flattenSearchRows(response), onFocusRow);
-      } catch {
-         // ignore
-      }
-   }
-
-   const onChange = debounce(run, 250);
+   const onChange = debounce(run);
    inputEl.addEventListener('input', onChange);
 
    function refresh() {

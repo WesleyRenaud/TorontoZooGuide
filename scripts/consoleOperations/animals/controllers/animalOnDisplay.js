@@ -19,9 +19,33 @@ export function createAnimalOnDisplayController({
    exhibitEl,
    activatePanel,
 } = {}) {
+   const formFieldEls = [speciesEl, exhibitEl];
+
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
+   }
+
+   function getFormValues() {
+      return {
+         species: getFieldValue(speciesEl),
+         exhibit: getFieldValue(exhibitEl),
+      };
+   }
+
+   function validateForm({ species, exhibit }) {
+      if (!species) {
+         return 'Species name is required.';
+      }
+
+      if (!exhibit) {
+         return 'Exhibit is required.';
+      }
+
+      return null;
+   }
 
    function resetForm() {
-      resetFormFields([speciesEl, exhibitEl]);
+      resetFormFields(formFieldEls);
    }
 
    function hide() {
@@ -30,6 +54,23 @@ export function createAnimalOnDisplayController({
          statusEl,
          setStatus,
       });
+   }
+
+   async function submitOnDisplayStatus({ species, exhibit }) {
+      return setAnimalOnDisplay({
+         species,
+         exhibit,
+      });
+   }
+
+   function handleSubmitSuccess(result) {
+      setStatus(
+         statusEl,
+         `${result.species} in ${result.exhibit} was set as on display.`,
+         'is-success'
+      );
+
+      resetForm();
    }
 
    async function show() {
@@ -47,34 +88,22 @@ export function createAnimalOnDisplayController({
    }
 
    async function onSubmitClick() {
-      const species = speciesEl?.value.trim() ?? '';
-      const exhibit = exhibitEl?.value.trim() ?? '';
+      const formValues = getFormValues();
 
       setStatus(statusEl, '');
 
-      if (!species) {
-         setStatus(statusEl, 'Species name is required.', 'is-error');
-         return;
-      }
+      const validationError = validateForm(formValues);
 
-      if (!exhibit) {
-         setStatus(statusEl, 'Exhibit is required.', 'is-error');
+      if (validationError) {
+         setStatus(statusEl, validationError, 'is-error');
          return;
       }
 
       try {
-         const result = await setAnimalOnDisplay({
-            species,
-            exhibit
-         });
+         const result = await submitOnDisplayStatus(formValues);
 
          if (result.success) {
-            setStatus(
-               statusEl,
-               `${result.species} in ${result.exhibit} was set as on display.`,
-               'is-success'
-            );
-            resetForm();
+            handleSubmitSuccess(result);
          }
          else {
             setStatus(

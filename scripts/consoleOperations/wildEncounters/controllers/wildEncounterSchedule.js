@@ -1,20 +1,12 @@
 import { loadWildEncounters } from '../../options/loaders.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
-import { setStatus } from '../../shell/status.js';
 import { setWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
 import {
-   hasCheckedField,
-   hideConsolePanel,
    resetFormFields,
-   validateOptionalDateRange,
 } from '../../helpers/controllerUtils.js';
+import { createRecurringScheduleFormController } from '../../forms/recurringScheduleFormController.js';
 
 export function createWildEncounterScheduleController({
-   showButtonEl,
-   panelEl,
-   cancelButtonEl,
-   submitButtonEl,
-   statusEl,
    wildEncounterEl,
    startDateEl,
    endDateEl,
@@ -27,140 +19,80 @@ export function createWildEncounterScheduleController({
    saturdayEl,
    sundayEl,
    messageEl,
-   activatePanel,
-   hidePanels,
+   ...controllerOptions
 } = {}) {
+   const dayFieldEls = [
+      mondayEl,
+      tuesdayEl,
+      wednesdayEl,
+      thursdayEl,
+      fridayEl,
+      saturdayEl,
+      sundayEl,
+   ];
 
-   function resetForm() {
-      resetFormFields([
-         wildEncounterEl,
-         startDateEl,
-         endDateEl,
-         timeEl,
-         messageEl,
-         mondayEl,
-         tuesdayEl,
-         wednesdayEl,
-         thursdayEl,
-         fridayEl,
-         saturdayEl,
-         sundayEl,
-      ]);
+   function getFieldValue(fieldEl) {
+      return fieldEl?.value.trim() ?? '';
    }
 
-   function show() {
-      setStatus(statusEl, '');
-      activatePanel?.(panelEl);
+   function validateSelection({
+      wildEncounter,
+   }) {
+      if (!wildEncounter) {
+         return 'Wild Encounter is required.';
+      }
+
+      return null;
    }
 
-   function hide() {
-      hideConsolePanel({
-         panelEl,
-         statusEl,
-         setStatus,
+   async function submitSchedule({
+      wildEncounter,
+      startDate,
+      endDate,
+      time,
+      message,
+   }) {
+      return setWildEncounterSchedule({
+         wildEncounter,
+         startDate: startDate || null,
+         endDate: endDate || null,
+         time,
+         monday: Boolean(mondayEl?.checked),
+         tuesday: Boolean(tuesdayEl?.checked),
+         wednesday: Boolean(wednesdayEl?.checked),
+         thursday: Boolean(thursdayEl?.checked),
+         friday: Boolean(fridayEl?.checked),
+         saturday: Boolean(saturdayEl?.checked),
+         sunday: Boolean(sundayEl?.checked),
+         message,
       });
    }
 
-   function hasAtLeastOneDaySelected() {
-      return hasCheckedField([
-         mondayEl,
-         tuesdayEl,
-         wednesdayEl,
-         thursdayEl,
-         fridayEl,
-         saturdayEl,
-         sundayEl,
-      ]);
-   }
-
-   async function onShowClick() {
-      setStatus(statusEl, '');
-
-      try {
-         if (wildEncounterEl?.tagName === 'SELECT') {
-            const wildEncounters = await loadWildEncounters();
-            populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
-         }
-
-         resetForm();
-         activatePanel?.(panelEl);
-      }
-      catch(err) {
-         setStatus(statusEl, 'Failed to load Wild Encounters.', 'is-error');
-         activatePanel?.(panelEl);
+   async function prepareForm() {
+      if (wildEncounterEl?.tagName === 'SELECT') {
+         const wildEncounters = await loadWildEncounters();
+         populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
       }
    }
 
-   async function onSubmitClick() {
-      const wildEncounter = wildEncounterEl?.value.trim() ?? '';
-      const startDate = startDateEl?.value.trim() ?? '';
-      const endDate = endDateEl?.value.trim() ?? '';
-      const time = timeEl?.value.trim() ?? '';
-      const message = messageEl?.value.trim() ?? '';
-
-      setStatus(statusEl, '');
-
-      if (!wildEncounter) {
-         setStatus(statusEl, 'Wild Encounter is required.', 'is-error');
-         return;
-      }
-
-      if (!time) {
-         setStatus(statusEl, 'Encounter time is required.', 'is-error');
-         return;
-      }
-
-      if (!hasAtLeastOneDaySelected()) {
-         setStatus(statusEl, 'At least one day must be selected.', 'is-error');
-         return;
-      }
-
-      const dateError = validateOptionalDateRange(startDate, endDate);
-
-      if (dateError) {
-         setStatus(statusEl, dateError, 'is-error');
-         return;
-      }
-
-      try {
-         const result = await setWildEncounterSchedule({
-            wildEncounter,
-            startDate: startDate || null,
-            endDate: endDate || null,
-            time,
-            monday: Boolean(mondayEl?.checked),
-            tuesday: Boolean(tuesdayEl?.checked),
-            wednesday: Boolean(wednesdayEl?.checked),
-            thursday: Boolean(thursdayEl?.checked),
-            friday: Boolean(fridayEl?.checked),
-            saturday: Boolean(saturdayEl?.checked),
-            sunday: Boolean(sundayEl?.checked),
-            message
-         });
-
-         if (result.success) {
-            setStatus(
-               statusEl,
-               `${result.wildEncounter} schedule was saved.`,
-               'is-success'
-            );
-            resetForm();
-         }
-         else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
-         }
-      }
-      catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
-      }
-   }
-
-   showButtonEl?.addEventListener('click', onShowClick);
-   cancelButtonEl?.addEventListener('click', hide);
-   submitButtonEl?.addEventListener('click', onSubmitClick);
-
-   return {
-      show,
-      hide,
-   };
+   return createRecurringScheduleFormController({
+      ...controllerOptions,
+      startDateEl,
+      endDateEl,
+      timeEl,
+      messageEl,
+      dayFieldEls,
+      resetSelection: () => {
+         resetFormFields([wildEncounterEl]);
+      },
+      getSelectionValues: () => ({
+         wildEncounter: getFieldValue(wildEncounterEl),
+      }),
+      validateSelection,
+      prepareForm,
+      loadErrorMessage: 'Failed to load Wild Encounters.',
+      submitSchedule,
+      successMessage: result => `${result.wildEncounter} schedule was saved.`,
+      timeRequiredMessage: 'Encounter time is required.',
+   });
 }

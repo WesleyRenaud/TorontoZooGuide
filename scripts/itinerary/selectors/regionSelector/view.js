@@ -1,20 +1,33 @@
 import { buildRegionRows } from './regionRenderer.js';
 
+function createEmptyState(message) {
+   const emptyEl = document.createElement('div');
+   emptyEl.className = 'itin-empty';
+   emptyEl.textContent = message;
+   return emptyEl;
+}
+
 export function renderRegionSelectionView(resultsEl, regions, selectedExhibitNames) {
    if (!resultsEl) {
       return;
    }
 
-   if (!Array.isArray(regions) || regions.length === 0) {
-      resultsEl.innerHTML = `
-         <div class="itin-empty">No regions available right now.</div>
-      `;
+   if (regions.length === 0) {
+      resultsEl.replaceChildren(
+         createEmptyState('No regions available right now.')
+      );
       return;
    }
 
-   resultsEl.innerHTML = regions
-      .map((region) => buildRegionRows(region, selectedExhibitNames))
-      .join('');
+   const fragment = document.createDocumentFragment();
+
+   regions.forEach((region) => {
+      buildRegionRows(region, selectedExhibitNames).forEach((row) => {
+         fragment.appendChild(row);
+      });
+   });
+
+   resultsEl.replaceChildren(fragment);
 }
 
 export function bindRegionSelectionEvents(resultsEl, {

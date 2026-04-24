@@ -1,33 +1,33 @@
 import {
-   createActionsHtml,
-   createAutocompleteFieldHtml,
-   createPanelShellHtml,
-   createSelectFieldHtml,
-   createStatusHtml,
+   createActions,
+   createAutocompleteField,
+   createPanelShell,
+   createSelectField,
+   createStatus,
 } from '../../templates/fragments.js';
 
-export function createOnDisplayPanelHtml() {
-   return createPanelShellHtml({
+export function createOnDisplayPanel() {
+   return createPanelShell({
       panelId: 'onDisplayPanel',
       title: 'Set animal as on display',
-      bodyHtml: `
-${createSelectFieldHtml({
-   label: 'Exhibit',
-   inputId: 'onDisplayExhibit',
-   emptyOptionLabel: 'Select an exhibit',
-})}
-${createAutocompleteFieldHtml({
-   label: 'Species',
-   inputId: 'onDisplaySpecies',
-   resultsId: 'onDisplaySpeciesResults',
-   placeholder: 'Search for a species',
-})}
-${createActionsHtml({
-   submitId: 'submitOnDisplay',
-})}
-${createStatusHtml({
-   statusId: 'onDisplayStatus',
-})}
-      `,
+      bodyChildren: [
+         createSelectField({
+            label: 'Exhibit',
+            inputId: 'onDisplayExhibit',
+            emptyOptionLabel: 'Select an exhibit',
+         }),
+         createAutocompleteField({
+            label: 'Species',
+            inputId: 'onDisplaySpecies',
+            resultsId: 'onDisplaySpeciesResults',
+            placeholder: 'Search for a species',
+         }),
+         createActions({
+            submitId: 'submitOnDisplay',
+         }),
+         createStatus({
+            statusId: 'onDisplayStatus',
+         }),
+      ],
    });
 }

@@ -1,32 +1,53 @@
+const PANZOOM_SCALE_RANGE = Object.freeze({
+   minScale: 1,
+   maxScale: 10,
+});
+
+const LABEL_VISIBILITY_RULES = Object.freeze([
+   {
+      selector: '.map-label-primary-svg',
+      hideAboveScale: 2,
+   },
+   {
+      selector: '.map-label-secondary-svg',
+      hideAboveScale: 2.5,
+   },
+]);
+
+function setLabelVisibility(labels, shouldHide) {
+   labels.forEach((label) => {
+      label.style.display = shouldHide ? 'none' : '';
+   });
+}
+
+function syncSvgLabelVisibility(mapInner, scale) {
+   LABEL_VISIBILITY_RULES.forEach((rule) => {
+      setLabelVisibility(
+         mapInner.querySelectorAll(rule.selector),
+         scale > rule.hideAboveScale
+      );
+   });
+}
+
+function createSvgLabelVisibilityHandler(mapInner, panzoom) {
+   return () => {
+      syncSvgLabelVisibility(mapInner, panzoom.getScale());
+   };
+}
+
 export function createPanzoom(mapInner, { contain }) {
    const panzoom = Panzoom(mapInner, {
-      maxScale: 10,
-      minScale: 1,
+      ...PANZOOM_SCALE_RANGE,
       contain,
    });
 
    mapInner.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
-
-   const primaryLabelHideZoomScale = 2;
-   const secondaryLabelHideZoomScale = 2.5;
-
-   function updateSvgLabelVisibility() {
-      const currentScale = panzoom.getScale();
-
-      const primaryLabels = mapInner.querySelectorAll('.map-label-primary-svg');
-      const secondaryLabels = mapInner.querySelectorAll('.map-label-secondary-svg');
-
-      primaryLabels.forEach((label) => {
-         label.style.display = currentScale > primaryLabelHideZoomScale ? 'none' : '';
-      });
-
-      secondaryLabels.forEach((label) => {
-         label.style.display = currentScale > secondaryLabelHideZoomScale ? 'none' : '';
-      });
-   }
+   const updateSvgLabelVisibility = createSvgLabelVisibilityHandler(
+      mapInner,
+      panzoom
+   );
 
    mapInner.addEventListener('panzoomchange', updateSvgLabelVisibility);
-
    updateSvgLabelVisibility();
 
    return panzoom;

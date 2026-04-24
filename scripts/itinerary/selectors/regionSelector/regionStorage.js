@@ -1,16 +1,20 @@
-export const SELECTED_EXHIBITS_KEY = 'tzg.itinerarySelectedExhibits';
-export const SELECTED_REGIONS_KEY = 'tzg.itinerarySelectedRegions';
+import { loadArray, saveArray } from '../../draftStorage.js';
+export {
+   SELECTED_EXHIBITS_KEY,
+   SELECTED_REGIONS_KEY,
+} from '../../storageKeys.js';
 
 export function loadSelectedNames(storageKey) {
-   try {
-      const raw = localStorage.getItem(storageKey);
-      const parsed = JSON.parse(raw || '[]');
-      return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
-   } catch {
-      return [];
-   }
+   return loadArray(storageKey)
+      .map((name) => typeof name === 'string' ? name.trim() : '')
+      .filter(Boolean);
 }
 
 export function saveSelectedNames(storageKey, names) {
-   localStorage.setItem(storageKey, JSON.stringify(Array.from(names)));
+   saveArray(
+      storageKey,
+      Array.from(names)
+         .map((name) => typeof name === 'string' ? name.trim() : '')
+         .filter(Boolean)
+   );
 }

@@ -1305,6 +1305,17 @@ nav ul li a:hover {
    text-decoration: underline;
 }
 
+.off-display-closed-text {
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+}
+
+.off-display-closed-message {
+   margin: 0;
+   white-space: pre-line;
+}
+
 .off-display-closed-close {
    margin-left: auto;
 

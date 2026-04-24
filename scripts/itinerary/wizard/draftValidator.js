@@ -1,15 +1,5 @@
 import { validateItineraryDraftRequest } from '../../api/itineraryApi.js';
-import {
-   loadArray,
-   saveArray,
-   setStoredItineraryDate,
-} from '../panel/localStorage.js';
-import {
-   ANIMALS_KEY,
-   ATTRACTIONS_KEY,
-   GUARDIANS_KEY,
-   WILD_KEY,
-} from '../storageKeys.js';
+import { normalizeItineraryDraft } from '../draftStorage.js';
 import {
    buildItineraryDiff,
 } from './itineraryDiff.js';
@@ -46,12 +36,14 @@ function extractNamedItems(items = []) {
       .filter(Boolean);
 }
 
-function loadDraftSelections() {
+function normalizeDraftSelections(draft = {}) {
+   const normalizedDraft = normalizeItineraryDraft(draft);
+
    return {
-      animals: loadArray(ANIMALS_KEY),
-      attractions: loadArray(ATTRACTIONS_KEY),
-      guardiansTalks: loadArray(GUARDIANS_KEY),
-      wildEncounters: loadArray(WILD_KEY),
+      animals: normalizedDraft.animals,
+      attractions: normalizedDraft.attractions,
+      guardiansTalks: normalizedDraft.guardiansTalks,
+      wildEncounters: normalizedDraft.wildEncounters,
    };
 }
 
@@ -67,20 +59,12 @@ function buildValidationPayload({ date, dateObj, draftState }) {
    };
 }
 
-function persistValidatedDraft(date, validated) {
-   setStoredItineraryDate(date);
-   saveArray(ANIMALS_KEY, validated.animals);
-   saveArray(ATTRACTIONS_KEY, validated.attractions);
-   saveArray(GUARDIANS_KEY, validated.guardiansTalks);
-   saveArray(WILD_KEY, validated.wildEncounters);
-}
-
-export async function validateItineraryDraft({ date, dateObj } = {}) {
+export async function validateItineraryDraft({ date, dateObj, draft } = {}) {
    if (!date || !(dateObj instanceof Date) || !Number.isFinite(dateObj.getTime())) {
       return null;
    }
 
-   const draftState = loadDraftSelections();
+   const draftState = normalizeDraftSelections(draft);
    const result = await validateItineraryDraftRequest(
       buildValidationPayload({ date, dateObj, draftState })
    );
@@ -88,8 +72,6 @@ export async function validateItineraryDraft({ date, dateObj } = {}) {
    const previous = result.previous;
    const validated = result.validated;
    const diff = buildItineraryDiff(previous, validated, result.removed);
-
-   persistValidatedDraft(date, validated);
 
    return {
       previous,

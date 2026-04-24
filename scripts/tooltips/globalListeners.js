@@ -8,6 +8,64 @@ export function createTooltipGlobalListeners({
 }) {
    let installed = false;
 
+   function getClosest(target, selector) {
+      return target?.closest?.(selector) ?? null;
+   }
+
+   function handleSpeciesLinkClick(speciesLink, event) {
+      event.stopPropagation();
+
+      const index = Number(speciesLink.dataset.index);
+      const item = getItemAtIndex(index);
+
+      if (item) {
+         onAnimalCardClick?.(item);
+      }
+   }
+
+   function handleDocumentClick(event) {
+      const speciesLink = getClosest(event.target, '.species-link');
+
+      if (speciesLink) {
+         handleSpeciesLinkClick(speciesLink, event);
+         return;
+      }
+
+      if (!isOpen()) {
+         return;
+      }
+
+      const clickedMarker = getClosest(event.target, '.marker');
+      const clickedTooltip = tooltipEl?.contains?.(event.target) ?? false;
+
+      if (!clickedMarker && !clickedTooltip) {
+         close();
+      }
+   }
+
+   function handleDocumentKeydown(event) {
+      if (!isOpen()) {
+         return;
+      }
+
+      if (event.key === 'Escape') {
+         event.preventDefault();
+         close();
+         return;
+      }
+
+      if (event.key === 'ArrowRight') {
+         event.preventDefault();
+         step(+1);
+         return;
+      }
+
+      if (event.key === 'ArrowLeft') {
+         event.preventDefault();
+         step(-1);
+      }
+   }
+
    function install() {
       if (installed) {
          return;
@@ -15,52 +73,23 @@ export function createTooltipGlobalListeners({
 
       installed = true;
 
-      document.addEventListener('click', (e) => {
-         const speciesLink = e.target.closest('.species-link');
-
-         if (speciesLink) {
-            e.stopPropagation();
-
-            const index = Number(speciesLink.dataset.index);
-            const item = getItemAtIndex(index);
-
-            if (item) {
-               onAnimalCardClick?.(item);
-            }
-
-            return;
-         }
-
-         if (!isOpen()) {
-            return;
-         }
-
-         const clickedMarker = e.target.closest('.marker');
-         const clickedTooltip = tooltipEl.contains(e.target);
-
-         if (!clickedMarker && !clickedTooltip) {
-            close();
-         }
-      });
-
-      document.addEventListener('keydown', (e) => {
-         if (!isOpen()) {
-            return;
-         }
-
-         if (e.key === 'Escape') {
-            close();
-         }
-
-         if (e.key === 'ArrowRight') {
-            step(+1);
-         }
-
-         if (e.key === 'ArrowLeft') {
-            step(-1);
-         }
-      });
+      document.addEventListener('click', handleDocumentClick);
+      document.addEventListener('keydown', handleDocumentKeydown);
    }
 
-   return { install };
+   function uninstall() {
+      if (!installed) {
+         return;
+      }
+
+      installed = false;
+
+      document.removeEventListener('click', handleDocumentClick);
+      document.removeEventListener('keydown', handleDocumentKeydown);
+   }
+
+   return {
+      install,
+      uninstall,
+   };
 }

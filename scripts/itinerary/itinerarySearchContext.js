@@ -1,7 +1,7 @@
 import { buildDateSearchContext } from '../search/searchContext.js';
-import { DATE_KEY } from './storageKeys.js';
+import { getStoredItineraryDate } from './draftStorage.js';
 
 export async function getItineraryDateSearchContext({ includeTemp = true } = {}) {
-   const date = localStorage.getItem(DATE_KEY) || '';
+   const date = getStoredItineraryDate();
    return await buildDateSearchContext(date, { includeTemp });
 }

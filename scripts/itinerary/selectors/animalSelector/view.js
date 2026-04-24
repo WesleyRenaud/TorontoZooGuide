@@ -4,6 +4,50 @@ import {
    getAnimalSpecies,
    getAnimalSubtitle,
 } from './model.js';
+import {
+   createSelectorRowContent,
+   createSelectorTextColumn,
+} from '../base/resultRenderer.js';
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function createSvgNode(tagName, attributes = {}) {
+   const node = document.createElementNS(SVG_NS, tagName);
+
+   Object.entries(attributes).forEach(([key, value]) => {
+      node.setAttribute(key, String(value));
+   });
+
+   return node;
+}
+
+function createWarningIcon() {
+   const svg = createSvgNode('svg', {
+      viewBox: '0 0 24 24',
+      class: 'itin-warning-icon',
+   });
+
+   svg.append(
+      createSvgNode('path', {
+         d: 'M12 2L1 21h22L12 2z',
+      }),
+      createSvgNode('rect', {
+         x: '11',
+         y: '9',
+         width: '2',
+         height: '6',
+         fill: 'black',
+      }),
+      createSvgNode('circle', {
+         cx: '12',
+         cy: '18',
+         r: '1.6',
+         fill: 'black',
+      })
+   );
+
+   return svg;
+}
 
 function createLikelihoodWarning(level) {
    if (!level) {
@@ -12,13 +56,7 @@ function createLikelihoodWarning(level) {
 
    const warning = document.createElement('span');
    warning.className = `itin-likelihood-warning ${level}`;
-   warning.innerHTML = `
-      <svg viewBox="0 0 24 24" class="itin-warning-icon">
-         <path d="M12 2L1 21h22L12 2z"></path>
-         <rect x="11" y="9" width="2" height="6" fill="black"></rect>
-         <circle cx="12" cy="18" r="1.6" fill="black"></circle>
-      </svg>
-   `;
+   warning.appendChild(createWarningIcon());
    warning.title = level === 'low'
       ? 'Very low chance of seeing this animal'
       : 'This animal may be off display';
@@ -30,32 +68,6 @@ export function renderAnimalSelectorRowLeft(row) {
    const species = getAnimalSpecies(row) || 'Animal';
    const subtitle = getAnimalSubtitle(row);
    const imageSrc = buildAnimalImageSrc(row);
-
-   const content = document.createElement('div');
-   content.className = 'itin-animal-content';
-
-   const thumbWrap = document.createElement('div');
-   thumbWrap.className = 'itin-animal-thumb';
-
-   if (imageSrc) {
-      const img = document.createElement('img');
-      img.className = 'itin-animal-thumb-img';
-      img.loading = 'lazy';
-      img.alt = `${species} photo`;
-      img.src = imageSrc;
-
-      img.addEventListener('error', () => {
-         thumbWrap.classList.add('is-placeholder');
-         img.remove();
-      });
-
-      thumbWrap.appendChild(img);
-   } else {
-      thumbWrap.classList.add('is-placeholder');
-   }
-
-   const left = document.createElement('div');
-   left.className = 'animal-result-left';
 
    const titleWrap = document.createElement('div');
    titleWrap.className = 'itin-animal-title-wrap';
@@ -72,19 +84,14 @@ export function renderAnimalSelectorRowLeft(row) {
       titleWrap.appendChild(warning);
    }
 
-   left.appendChild(titleWrap);
-
-   if (subtitle) {
-      const subtitleEl = document.createElement('div');
-      subtitleEl.className = 'animal-result-exhibit';
-      subtitleEl.textContent = subtitle;
-      left.appendChild(subtitleEl);
-   }
-
-   content.appendChild(thumbWrap);
-   content.appendChild(left);
-
-   return content;
+   return createSelectorRowContent({
+      imageSrc,
+      imageAlt: `${species} photo`,
+      textColumnEl: createSelectorTextColumn({
+         subtitle,
+         titleNode: titleWrap,
+      }),
+   });
 }
 
 export function renderIncludeOffDisplayToggle({ bodyEl, rerunSearch, onChange }) {

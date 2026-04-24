@@ -6,89 +6,177 @@ import { initFocusFromQuery } from '../focus/focusFromQuery.js';
 import { buildMapDateContext } from '../map/dateContext.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
 
-export async function initMapPage() {
-   const mapInner = document.getElementById('mapInner');
-   const mapPreset = document.getElementById('mapPreset');
-   const mapDateInput = document.getElementById('mapDate');
-   const showMapLabelsCheckbox = document.getElementById('showMapLabels');
-   const includeOffDisplayCheckbox = document.getElementById('includeOffDisplayAnimals');
-   const includeClosedRestaurantsCheckbox = document.getElementById('includeClosedRestaurants');
-   const includeClosedGiftShopsCheckbox = document.getElementById('includeClosedGiftShops');
-   const includeClosedAttractionsCheckbox = document.getElementById('includeClosedAttractions');
-   const zoomobileRouteRadios = document.querySelectorAll?.('input[name="zoomobileRoute"]');
-   const animalSearchInput = document.getElementById('animalSearch');
+function getMapPageElements() {
+   return {
+      mapInner: document.getElementById('mapInner'),
+      mapPreset: document.getElementById('mapPreset'),
+      mapDateInput: document.getElementById('mapDate'),
+      showMapLabelsCheckbox: document.getElementById('showMapLabels'),
+      includeOffDisplayCheckbox: document.getElementById('includeOffDisplayAnimals'),
+      includeClosedRestaurantsCheckbox: document.getElementById('includeClosedRestaurants'),
+      includeClosedGiftShopsCheckbox: document.getElementById('includeClosedGiftShops'),
+      includeClosedAttractionsCheckbox: document.getElementById('includeClosedAttractions'),
+      zoomobileRouteRadios: document.querySelectorAll?.('input[name="zoomobileRoute"]') ?? [],
+      animalSearchInput: document.getElementById('animalSearch'),
+      animalSearchResultsEl: document.getElementById('animalSearchResults'),
+      tooltipEl: document.getElementById('tooltip'),
+      hoverTooltipEl: document.getElementById('hoverTooltip'),
+   };
+}
 
-   const tooltipEl = document.getElementById('tooltip');
-   const hoverTooltipEl = document.getElementById('hoverTooltip');
+function hasRequiredMapPageElements({
+   mapInner,
+   mapPreset,
+   mapDateInput,
+   tooltipEl,
+} = {}) {
+   return Boolean(mapInner && mapPreset && mapDateInput && tooltipEl);
+}
+
+function isCoordinateEditingEnabled() {
    const urlParams = new URLSearchParams(window.location.search);
-   const enableCoordinateEditing = urlParams.get('editCoords') === '1';
+   return urlParams.get('editCoords') === '1';
+}
 
-   if (!mapInner || !mapPreset || !mapDateInput || !tooltipEl) return;
+function getSelectedZoomobileRoute(zoomobileRouteRadios) {
+   return Array.from(zoomobileRouteRadios)
+      .find((radio) => radio.checked)
+      ?.value ?? 'none';
+}
+
+function clearAnimalSearchResults(resultsEl) {
+   resultsEl?.replaceChildren();
+}
+
+function createMapDateContextGetter({
+   mapPreset,
+   mapDateInput,
+} = {}) {
+   return async () => {
+      const preset = mapPreset?.value || '';
+      const dateStr = mapDateInput?.value?.trim?.() || '';
+      return await buildMapDateContext(preset, dateStr);
+   };
+}
+
+function createRuntimeOptions(elements, {
+   getSelectedTypes,
+} = {}) {
+   return {
+      mapInner: elements.mapInner,
+      tooltipEl: elements.tooltipEl,
+      hoverTooltipEl: elements.hoverTooltipEl,
+      showMapLabelsCheckbox: elements.showMapLabelsCheckbox,
+      enableCoordinateEditing: isCoordinateEditingEnabled(),
+      getIncludeOffDisplay: () => elements.includeOffDisplayCheckbox?.checked ?? false,
+      getIncludeClosedRestaurants: () => elements.includeClosedRestaurantsCheckbox?.checked ?? false,
+      getIncludeClosedGiftShops: () => elements.includeClosedGiftShopsCheckbox?.checked ?? false,
+      getIncludeClosedAttractions: () => elements.includeClosedAttractionsCheckbox?.checked ?? false,
+      getZoomobileRoute: () => getSelectedZoomobileRoute(elements.zoomobileRouteRadios),
+      getSelectedTypes,
+   };
+}
+
+function initMapExploreFilter({
+   updater,
+   getSearch,
+   animalSearchResultsEl,
+} = {}) {
+   return initExploreTypeFilter({
+      onChange: () => {
+         updater.refetchWithCurrentControls(null);
+         getSearch()?.refresh?.();
+      },
+      onAnimalsUnchecked: () => {
+         clearAnimalSearchResults(animalSearchResultsEl);
+      },
+   });
+}
+
+function initMapSearch({
+   elements,
+   explore,
+   updater,
+} = {}) {
+   return initSearch({
+      inputEl: elements.animalSearchInput,
+      resultsEl: elements.animalSearchResultsEl,
+      getIncludeFlags: () => explore.buildSearchIncludeFlags(),
+      getContext: createMapDateContextGetter(elements),
+      onFocusRow: (row) => updater.focusFromSearchRow(row),
+   });
+}
+
+function initMapPageControls({
+   elements,
+   updater,
+   getSearch,
+} = {}) {
+   initMapControls({
+      mapPreset: elements.mapPreset,
+      mapDateInput: elements.mapDateInput,
+      includeOffDisplayCheckbox: elements.includeOffDisplayCheckbox,
+      includeClosedRestaurantsCheckbox: elements.includeClosedRestaurantsCheckbox,
+      includeClosedGiftShopsCheckbox: elements.includeClosedGiftShopsCheckbox,
+      includeClosedAttractionsCheckbox: elements.includeClosedAttractionsCheckbox,
+      zoomobileRouteRadios: elements.zoomobileRouteRadios,
+      onUpdate: (preset, dateStr) => {
+         updater.updateMap(preset, dateStr, null);
+         getSearch()?.refresh?.();
+      },
+   });
+}
+
+function initMapDeepLinkFocus(updater) {
+   initFocusFromQuery({
+      onFocus: (rowOrSpec) => {
+         updater.focusFromDeepLink(rowOrSpec);
+      },
+   });
+}
+
+function triggerInitialMapUpdate(mapPreset) {
+   mapPreset.dispatchEvent(new Event('change'));
+}
+
+export async function initMapPage() {
+   const elements = getMapPageElements();
+
+   if (!hasRequiredMapPageElements(elements)) return;
 
    await loadInlineZooMap();
 
    let explore = null;
    let search = null;
 
-   const runtime = createMapRuntime({
-      mapInner,
-      tooltipEl,
-      hoverTooltipEl,
-      showMapLabelsCheckbox,
-      enableCoordinateEditing,
-      getIncludeOffDisplay: () => includeOffDisplayCheckbox?.checked ?? false,
-      getIncludeClosedRestaurants: () => includeClosedRestaurantsCheckbox?.checked ?? false,
-      getIncludeClosedGiftShops: () => includeClosedGiftShopsCheckbox?.checked ?? false,
-      getIncludeClosedAttractions: () => includeClosedAttractionsCheckbox?.checked ?? false,
-      getZoomobileRoute: () => Array.from(zoomobileRouteRadios).find((r) => r.checked)?.value ?? 'none',
+   const runtime = createMapRuntime(createRuntimeOptions(elements, {
       getSelectedTypes: () => explore?.getSelectedTypes?.() || [],
-   });
+   }));
 
    if (!runtime) return;
 
    const { updater } = runtime;
+   const getSearch = () => search;
 
-   explore = initExploreTypeFilter({
-      onChange: () => {
-         updater.refetchWithCurrentControls(null);
-         search?.refresh?.();
-      },
-      onAnimalsUnchecked: () => {
-         const resultsEl = document.getElementById('animalSearchResults');
-         if (resultsEl) resultsEl.innerHTML = '';
-      },
+   explore = initMapExploreFilter({
+      updater,
+      getSearch,
+      animalSearchResultsEl: elements.animalSearchResultsEl,
    });
 
-   search = initSearch({
-      inputEl: animalSearchInput,
-      getIncludeFlags: () => explore.buildSearchIncludeFlags(),
-      getContext: async () => {
-         const preset = mapPreset?.value || '';
-         const dateStr = mapDateInput?.value?.trim?.() || '';
-         return await buildMapDateContext(preset, dateStr);
-      },
-      onFocusRow: (row) => updater.focusFromSearchRow(row),
+   search = initMapSearch({
+      elements,
+      explore,
+      updater,
    });
 
-   initMapControls({
-      mapPreset,
-      mapDateInput,
-      includeOffDisplayCheckbox,
-      includeClosedRestaurantsCheckbox,
-      includeClosedGiftShopsCheckbox,
-      includeClosedAttractionsCheckbox,
-      zoomobileRouteRadios,
-      onUpdate: (preset, dateStr) => {
-         updater.updateMap(preset, dateStr, null);
-         search?.refresh?.();
-      },
+   initMapPageControls({
+      elements,
+      updater,
+      getSearch,
    });
 
-   initFocusFromQuery({
-      onFocus: (rowOrSpec) => {
-         updater.focusFromDeepLink(rowOrSpec);
-      },
-   });
+   initMapDeepLinkFocus(updater);
 
-   mapPreset.dispatchEvent(new Event('change'));
+   triggerInitialMapUpdate(elements.mapPreset);
 }

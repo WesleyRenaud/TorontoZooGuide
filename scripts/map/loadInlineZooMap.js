@@ -1,18 +1,65 @@
-export async function loadInlineZooMap() {
-   const mount = document.getElementById('zooMapMount');
-   if (!mount) return null;
+const ZOO_MAP_SVG_URL = '../images/map/zoo-map.svg';
 
-   const response = await fetch('../images/map/zoo-map.svg');
-   const svgText = await response.text();
+let cachedSvgTextPromise = null;
 
-   mount.innerHTML = svgText;
+function getZooMapMount() {
+   return document.getElementById('zooMapMount');
+}
 
-   const svg = mount.querySelector('svg');
-   if (!svg) return null;
+function getMountedSvg(mount) {
+   return mount?.querySelector('svg') ?? null;
+}
 
+function configureInlineSvg(svg) {
    svg.setAttribute('width', '100%');
    svg.setAttribute('height', '100%');
    svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
 
    return svg;
+}
+
+async function fetchZooMapSvgText() {
+   if (!cachedSvgTextPromise) {
+      cachedSvgTextPromise = fetch(ZOO_MAP_SVG_URL)
+         .then((response) => {
+            if (!response.ok) {
+               throw new Error(`Failed to load zoo map SVG: ${response.status}`);
+            }
+
+            return response.text();
+         })
+         .catch((error) => {
+            cachedSvgTextPromise = null;
+            throw error;
+         });
+   }
+
+   return await cachedSvgTextPromise;
+}
+
+async function mountInlineSvg(mount) {
+   mount.innerHTML = await fetchZooMapSvgText();
+   return getMountedSvg(mount);
+}
+
+export async function loadInlineZooMap() {
+   const mount = getZooMapMount();
+
+   if (!mount) {
+      return null;
+   }
+
+   const existingSvg = getMountedSvg(mount);
+
+   if (existingSvg) {
+      return configureInlineSvg(existingSvg);
+   }
+
+   const svg = await mountInlineSvg(mount);
+
+   if (!svg) {
+      return null;
+   }
+
+   return configureInlineSvg(svg);
 }

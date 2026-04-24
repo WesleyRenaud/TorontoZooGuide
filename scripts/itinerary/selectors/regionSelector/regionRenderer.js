@@ -1,75 +1,81 @@
 import {
+   getRegionExhibits,
+   getRegionName,
    isRegionFullySelected,
    shouldHideDuplicateSingleExhibit,
 } from './regionSelection.js';
 
-function escapeHtml(value = '') {
-   return String(value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
+function createChoiceIndicator(isSelected) {
+   const indicator = document.createElement('div');
+   indicator.className = isSelected
+      ? 'itin-add-btn is-added'
+      : 'itin-add-btn';
+   indicator.textContent = isSelected ? '−' : '+';
+
+   return indicator;
 }
 
-function buildChoiceRow({
+function createChoiceRow({
    label,
    isSelected,
    action,
    regionName,
    exhibitName = '',
 }) {
-   const safeLabel = escapeHtml(label);
-   const safeRegionName = escapeHtml(regionName);
-   const safeExhibitName = escapeHtml(exhibitName);
+   const button = document.createElement('button');
+   button.type = 'button';
+   button.className = 'itin-panel-item itin-region-choice-row';
+   button.dataset.action = action;
+   button.dataset.region = regionName;
 
-   return `
-      <button
-         type="button"
-         class="itin-panel-item itin-region-choice-row"
-         data-action="${action}"
-         data-region="${safeRegionName}"
-         ${exhibitName ? `data-exhibit="${safeExhibitName}"` : ''}
-      >
-         <div class="itin-panel-item-left">
-            <div class="itin-panel-text">
-               <div class="itin-panel-name">${safeLabel}</div>
-            </div>
-         </div>
+   if (exhibitName) {
+      button.dataset.exhibit = exhibitName;
+   }
 
-         <div class="itin-add-btn ${isSelected ? 'is-added' : ''}">
-            ${isSelected ? '−' : '+'}
-         </div>
-      </button>
-   `;
+   const left = document.createElement('div');
+   left.className = 'itin-panel-item-left';
+
+   const text = document.createElement('div');
+   text.className = 'itin-panel-text';
+
+   const name = document.createElement('div');
+   name.className = 'itin-panel-name';
+   name.textContent = label;
+
+   text.appendChild(name);
+   left.appendChild(text);
+   button.append(left, createChoiceIndicator(isSelected));
+
+   return button;
 }
 
 export function buildRegionRows(region, selectedExhibitNames) {
-   const exhibits = Array.isArray(region.exhibits) ? region.exhibits : [];
+   const exhibits = getRegionExhibits(region);
+   const regionName = getRegionName(region);
    const regionSelected = isRegionFullySelected(region, selectedExhibitNames);
 
    const rows = [
-      buildChoiceRow({
-         label: region.name,
+      createChoiceRow({
+         label: regionName,
          isSelected: regionSelected,
          action: 'toggle-region',
-         regionName: region.name,
+         regionName,
       }),
    ];
 
    if (!shouldHideDuplicateSingleExhibit(region)) {
       exhibits.forEach((exhibitName) => {
          rows.push(
-            buildChoiceRow({
+            createChoiceRow({
                label: exhibitName,
                isSelected: selectedExhibitNames.has(exhibitName),
                action: 'toggle-exhibit',
-               regionName: region.name,
+               regionName,
                exhibitName,
             })
          );
       });
    }
 
-   return rows.join('');
+   return rows;
 }

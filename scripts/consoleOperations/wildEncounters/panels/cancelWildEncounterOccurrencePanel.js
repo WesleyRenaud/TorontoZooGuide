@@ -1,36 +1,36 @@
 import {
-   createActionsHtml,
-   createPanelShellHtml,
-   createSelectFieldHtml,
-   createStatusHtml,
+   createActions,
+   createPanelShell,
+   createSelectField,
+   createStatus,
 } from '../../templates/fragments.js';
 
-export function createCancelWildEncounterOccurrencePanelHtml() {
-   return createPanelShellHtml({
+export function createCancelWildEncounterOccurrencePanel() {
+   return createPanelShell({
       panelId: 'cancelWildEncounterOccurrencePanel',
       title: 'Cancel Wild Encounter occurrence',
-      bodyHtml: `
-${createSelectFieldHtml({
-   label: 'Wild Encounter',
-   inputId: 'cancelWildEncounterOccurrenceName',
-   emptyOptionLabel: 'Select a Wild Encounter',
-})}
-${createSelectFieldHtml({
-   label: 'Date',
-   inputId: 'cancelWildEncounterOccurrenceDate',
-   emptyOptionLabel: 'Select a date',
-})}
-${createSelectFieldHtml({
-   label: 'Time',
-   inputId: 'cancelWildEncounterOccurrenceTime',
-   emptyOptionLabel: 'Select a time',
-})}
-${createActionsHtml({
-   submitId: 'submitCancelWildEncounterOccurrence',
-})}
-${createStatusHtml({
-   statusId: 'cancelWildEncounterOccurrenceStatus',
-})}
-      `,
+      bodyChildren: [
+         createSelectField({
+            label: 'Wild Encounter',
+            inputId: 'cancelWildEncounterOccurrenceName',
+            emptyOptionLabel: 'Select a Wild Encounter',
+         }),
+         createSelectField({
+            label: 'Date',
+            inputId: 'cancelWildEncounterOccurrenceDate',
+            emptyOptionLabel: 'Select a date',
+         }),
+         createSelectField({
+            label: 'Time',
+            inputId: 'cancelWildEncounterOccurrenceTime',
+            emptyOptionLabel: 'Select a time',
+         }),
+         createActions({
+            submitId: 'submitCancelWildEncounterOccurrence',
+         }),
+         createStatus({
+            statusId: 'cancelWildEncounterOccurrenceStatus',
+         }),
+      ],
    });
 }

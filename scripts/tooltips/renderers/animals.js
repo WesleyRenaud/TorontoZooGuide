@@ -1,5 +1,6 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { getLikelihoodPhrase } from '../../likelihood/likelihoodPresentation.js';
+import { createTooltipCard } from './cardFactory.js';
 
 export const animalRenderer = {
    key: 'animal',
@@ -15,35 +16,30 @@ export const animalRenderer = {
    },
 
    createCard(a, index) {
-      const card = document.createElement('div');
-      card.className = 'tooltip-card';
-      card.dataset.index = index;
-      card.style.display = index === 0 ? 'flex' : 'none';
-
       const exhibit = normalizeAssetKey(a.exhibit);
       const species = normalizeAssetKey(a.species);
 
-      card.innerHTML = `
-         <div class="tooltip-image-frame">
-         <img
-            src="images/animals/${exhibit}/${species}.png"
-            alt="${a.species}"
-            class="tooltip-image"
-         >
-         </div>
-
-         <strong class="species-link"
-         data-index="${index}"
-         data-species="${a.species}"
-         data-exhibit="${a.exhibit}"
-         data-enclosure="${a.enclosure_type}">
-         ${a.species}
-         </strong>
-
-         <span>Exhibit: ${a.exhibit}</span>
-         <span>Enclosure Type: ${a.enclosure_type}</span>
-         <span>Likelihood: ${getLikelihoodPhrase(a.likelihood)} (~${a.likelihood}%)</span>
-      `;
-      return card;
+      return createTooltipCard({
+         index,
+         image: {
+            src: `images/animals/${exhibit}/${species}.png`,
+            alt: a.species,
+         },
+         title: {
+            text: a.species,
+            className: 'species-link',
+            dataset: {
+               index,
+               species: a.species,
+               exhibit: a.exhibit,
+               enclosure: a.enclosure_type,
+            },
+         },
+         details: [
+            `Exhibit: ${a.exhibit}`,
+            `Enclosure Type: ${a.enclosure_type}`,
+            `Likelihood: ${getLikelihoodPhrase(a.likelihood)} (~${a.likelihood}%)`,
+         ],
+      });
    },
 };

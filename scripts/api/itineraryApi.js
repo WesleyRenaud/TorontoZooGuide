@@ -1,18 +1,41 @@
 import { postJson } from './apiClient.js';
 import {
    asArray,
+   asNullableString,
    asObject,
+   asTrimmedString,
 } from './normalizeValues.js';
+
+const ITINERARY_COLLECTION_FIELDS = [
+   ['animals', 'animals'],
+   ['attractions', 'attractions'],
+   ['guardiansTalks', 'guardiansTalks'],
+   ['wildEncounters', 'wildEncounters'],
+];
+
+function readCollectionField(source, camelKey, snakeKey = camelKey) {
+   return asArray(source[camelKey] ?? source[snakeKey]);
+}
+
+function normalizeItineraryCollections(source = {}) {
+   return Object.fromEntries(
+      ITINERARY_COLLECTION_FIELDS.map(([camelKey, snakeKey]) => [
+         camelKey,
+         readCollectionField(source, camelKey, snakeKey),
+      ])
+   );
+}
 
 function normalizeItineraryModel(itinerary) {
    const source = asObject(itinerary);
 
    return {
-      date: typeof source.date === 'string' ? source.date : '',
-      animals: asArray(source.animals),
-      attractions: asArray(source.attractions),
-      guardiansTalks: asArray(source.guardians_talks),
-      wildEncounters: asArray(source.wild_encounters),
+      date: asTrimmedString(source.date),
+      ...normalizeItineraryCollections({
+         ...source,
+         guardiansTalks: source.guardiansTalks ?? source.guardians_talks,
+         wildEncounters: source.wildEncounters ?? source.wild_encounters,
+      }),
    };
 }
 
@@ -21,9 +44,13 @@ function normalizeItineraryResponse(response) {
 
    return {
       success: source.success !== false,
-      error: source.error ?? null,
+      error: asNullableString(source.error),
       itinerary: normalizeItineraryModel(source.itinerary),
    };
+}
+
+function normalizeValidationBucket(bucket) {
+   return normalizeItineraryCollections(asObject(bucket));
 }
 
 function normalizeValidatedItineraryResponse(response) {
@@ -31,25 +58,10 @@ function normalizeValidatedItineraryResponse(response) {
 
    return {
       success: source.success !== false,
-      error: source.error ?? null,
-      previous: {
-         animals: asArray(source.previous?.animals),
-         attractions: asArray(source.previous?.attractions),
-         guardiansTalks: asArray(source.previous?.guardiansTalks),
-         wildEncounters: asArray(source.previous?.wildEncounters),
-      },
-      validated: {
-         animals: asArray(source.validated?.animals),
-         attractions: asArray(source.validated?.attractions),
-         guardiansTalks: asArray(source.validated?.guardiansTalks),
-         wildEncounters: asArray(source.validated?.wildEncounters),
-      },
-      removed: {
-         animals: asArray(source.removed?.animals),
-         attractions: asArray(source.removed?.attractions),
-         guardiansTalks: asArray(source.removed?.guardiansTalks),
-         wildEncounters: asArray(source.removed?.wildEncounters),
-      },
+      error: asNullableString(source.error),
+      previous: normalizeValidationBucket(source.previous),
+      validated: normalizeValidationBucket(source.validated),
+      removed: normalizeValidationBucket(source.removed),
    };
 }
 

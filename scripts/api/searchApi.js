@@ -43,10 +43,12 @@ function normalizeWildEncounterRow(row) {
    };
 }
 
+const SEARCH_RESPONSE_NORMALIZERS = {
+   '/search': normalizeSearchResponse,
+};
+
 export function normalizeSearchResponse(response) {
-   const source = response && typeof response === 'object'
-      ? response
-      : {};
+   const source = asObject(response);
 
    return {
       animals: asArray(source.animals),
@@ -61,17 +63,21 @@ export function normalizeSearchResponse(response) {
    };
 }
 
-export async function searchZoo(payload) {
-   const response = await postJson('/search', payload);
-   return normalizeSearchResponse(response);
+function normalizeSearchEndpointResponse(endpoint, response) {
+   const normalizer = SEARCH_RESPONSE_NORMALIZERS[endpoint] ?? null;
+
+   if (typeof normalizer !== 'function') {
+      return response;
+   }
+
+   return normalizer(response);
 }
 
 export async function searchItineraryItems(endpoint, payload) {
    const response = await postJson(endpoint, payload);
+   return normalizeSearchEndpointResponse(endpoint, response);
+}
 
-   if (endpoint === '/search') {
-      return normalizeSearchResponse(response);
-   }
-
-   return response;
+export async function searchZoo(payload) {
+   return await searchItineraryItems('/search', payload);
 }

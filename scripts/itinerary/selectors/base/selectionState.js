@@ -1,68 +1,98 @@
-function safeParse(raw, fallback) {
-   try {
-      return JSON.parse(raw);
-   } catch {
-      return fallback;
+import { loadArray, saveArray } from '../../draftStorage.js';
+
+function identity(items) {
+   return items;
+}
+
+function cloneSelectedItems(items) {
+   return items.slice();
+}
+
+function loadSelectedItems(storageKey, migrateSelected = identity) {
+   return migrateSelected(loadArray(storageKey));
+}
+
+function persistSelectedItems(storageKey, selectedItems) {
+   saveArray(storageKey, selectedItems);
+}
+
+function getSelectedIndexById(selectedItems, id) {
+   return selectedItems.findIndex((item) => item?.id === id);
+}
+
+function buildSelectionItem(row, {
+   getId,
+   makeSelection,
+} = {}) {
+   const id = getId(row);
+
+   if (!id) {
+      return null;
    }
-}
 
-function defaultMigrate(arr) {
-   return Array.isArray(arr) ? arr : [];
-}
+   const selection = makeSelection(row);
+   const selectionItem = selection && typeof selection === 'object'
+      ? selection
+      : {};
 
-function loadSelected(storageKey, migrate = defaultMigrate) {
-   const raw = localStorage.getItem(storageKey);
-   const arr = safeParse(raw || '[]', []);
-   return migrate(arr);
-}
-
-function saveSelected(storageKey, selected) {
-   localStorage.setItem(storageKey, JSON.stringify(selected));
+   return {
+      ...selectionItem,
+      id: selectionItem.id || id,
+   };
 }
 
 export function createSelectorSelectionState({
    storageKey,
-   migrateSelected = defaultMigrate,
+   migrateSelected = identity,
    getId,
-   makeSelection,
+   makeSelection = (row) => ({ id: getId(row) }),
 } = {}) {
-   let selected = loadSelected(storageKey, migrateSelected);
+   let selectedItems = loadSelectedItems(storageKey, migrateSelected);
+
+   function getSelectedSnapshot() {
+      return cloneSelectedItems(selectedItems);
+   }
+
+   function replaceSelectedItems(nextSelectedItems) {
+      selectedItems = nextSelectedItems;
+      persistSelectedItems(storageKey, selectedItems);
+      return getSelectedSnapshot();
+   }
 
    function reload() {
-      selected = loadSelected(storageKey, migrateSelected);
-      return selected;
+      selectedItems = loadSelectedItems(storageKey, migrateSelected);
+      return getSelectedSnapshot();
    }
 
    function isSelected(id) {
-      return selected.some((item) => item?.id === id);
+      return getSelectedIndexById(selectedItems, id) !== -1;
    }
 
    function toggleRow(row) {
-      const id = getId(row);
+      const selectionItem = buildSelectionItem(row, {
+         getId,
+         makeSelection,
+      });
 
-      if (!id) {
-         return selected.slice();
+      if (!selectionItem) {
+         return getSelectedSnapshot();
       }
 
-      if (isSelected(id)) {
-         selected = selected.filter((item) => item?.id !== id);
-      } else {
-         const next = makeSelection(row) || {};
-         selected = [
-            ...selected,
-            {
-               ...next,
-               id: next.id || id,
-            },
-         ];
+      const selectedIndex = getSelectedIndexById(
+         selectedItems,
+         selectionItem.id
+      );
+
+      if (selectedIndex === -1) {
+         return replaceSelectedItems([
+            ...selectedItems,
+            selectionItem,
+         ]);
       }
 
-      saveSelected(storageKey, selected);
-      return selected.slice();
-   }
-
-   function getSelectedSnapshot() {
-      return selected.slice();
+      return replaceSelectedItems(
+         selectedItems.filter((_, index) => index !== selectedIndex)
+      );
    }
 
    return {

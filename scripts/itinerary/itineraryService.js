@@ -3,91 +3,84 @@ import {
    getItineraryRequest,
    setItineraryRequest,
 } from '../../api/itineraryApi.js';
+import {
+   createEmptyItineraryDraft,
+   isItineraryEmptyDraft,
+   normalizeItineraryDraft,
+} from './itineraryShape.js';
 
-function emptyItinerary() {
+function createEmptyItinerary() {
    return {
+      ...createEmptyItineraryDraft(),
       isActive: false,
-      date: '',
-      animals: [],
-      attractions: [],
-      guardiansTalks: [],
-      wildEncounters: [],
    };
 }
 
-function asArray(value) {
-   return Array.isArray(value) ? value : [];
+function normalizeItineraryItems(items) {
+   return Array.isArray(items) ? items : [];
 }
 
-export function isItineraryEmpty(itin) {
-   if (!itin || typeof itin !== 'object') return true;
-
-   const animals = asArray(itin.animals);
-   const attractions = asArray(itin.attractions);
-   const guardiansTalks = asArray(itin.guardiansTalks);
-   const wildEncounters = asArray(itin.wildEncounters);
-
-   return !animals.length && !attractions.length && !guardiansTalks.length && !wildEncounters.length;
-}
-
-export function normalizeItinerary(itin) {
-   if (!itin || typeof itin !== 'object') {
-      return emptyItinerary();
-   }
-
-   const normalized = {
-      date: typeof itin.date === 'string' ? itin.date : '',
-      animals: asArray(itin.animals),
-      attractions: asArray(itin.attractions),
-      guardiansTalks: asArray(itin.guardiansTalks),
-      wildEncounters: asArray(itin.wildEncounters),
-   };
+function normalizeItinerarySource(itinerary) {
+   const source = itinerary && typeof itinerary === 'object'
+      ? itinerary
+      : {};
 
    return {
-      ...normalized,
-      isActive: !isItineraryEmpty(normalized),
+      date: typeof source.date === 'string' ? source.date : '',
+      animals: normalizeItineraryItems(source.animals),
+      attractions: normalizeItineraryItems(source.attractions),
+      guardiansTalks: normalizeItineraryItems(source.guardiansTalks),
+      wildEncounters: normalizeItineraryItems(source.wildEncounters),
+   };
+}
+
+function dispatchItineraryUpdated(itinerary) {
+   window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {
+      detail: { itinerary },
+   }));
+}
+
+export function isItineraryEmpty(itinerary) {
+   return isItineraryEmptyDraft(
+      normalizeItinerarySource(itinerary)
+   );
+}
+
+export function normalizeItinerary(itinerary) {
+   const normalizedDraft = normalizeItineraryDraft(
+      normalizeItinerarySource(itinerary)
+   );
+
+   return {
+      ...normalizedDraft,
+      isActive: !isItineraryEmptyDraft(normalizedDraft),
    };
 }
 
 export async function getItinerary() {
    const result = await getItineraryRequest();
-   return normalizeItinerary(result.itinerary);
+   return normalizeItinerary(result?.itinerary);
 }
 
-export async function saveItinerary({
-   date = '',
-   animals = [],
-   attractions = [],
-   guardiansTalks = [],
-   wildEncounters = [],
-   isActive = true,
-} = {}) {
+export async function saveItinerary(itinerary = {}) {
+   const normalizedDraft = normalizeItineraryDraft(itinerary);
    const result = await setItineraryRequest({
-      date,
-      animals,
-      attractions,
-      guardiansTalks,
-      wildEncounters,
-      isActive,
+      ...normalizedDraft,
+      isActive: itinerary.isActive !== false,
    });
 
-   const itinerary = normalizeItinerary(result.itinerary);
+   const normalizedItinerary = normalizeItinerary(result?.itinerary);
+   dispatchItineraryUpdated(normalizedItinerary);
 
-   window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {
-      detail: { itinerary },
-   }));
-
-   return itinerary;
+   return normalizedItinerary;
 }
 
 export async function clearItinerary() {
    const result = await clearItineraryRequest();
-   const clearedItinerary = emptyItinerary();
+   const clearedItinerary = createEmptyItinerary();
 
    window.dispatchEvent(new CustomEvent('tzg:itineraryCleared'));
-   window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {
-      detail: { itinerary: clearedItinerary },
-   }));
+   dispatchItineraryUpdated(clearedItinerary);
 
    return result;
 }

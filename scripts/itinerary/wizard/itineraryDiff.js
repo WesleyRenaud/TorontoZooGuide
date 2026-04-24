@@ -11,18 +11,14 @@ import {
 
 function buildRemovedItems(previous, validated, backendRemoved = {}) {
    return {
-      animals: Array.isArray(backendRemoved?.animals)
-         ? backendRemoved.animals
-         : findRemovedItemsByField(previous.animals, validated.animals, 'species'),
-      attractions: Array.isArray(backendRemoved?.attractions)
-         ? backendRemoved.attractions
-         : findRemovedItemsByField(previous.attractions, validated.attractions, 'name'),
-      guardiansTalks: Array.isArray(backendRemoved?.guardiansTalks)
-         ? backendRemoved.guardiansTalks
-         : findRemovedItemsByField(previous.guardiansTalks, validated.guardiansTalks, 'name'),
-      wildEncounters: Array.isArray(backendRemoved?.wildEncounters)
-         ? backendRemoved.wildEncounters
-         : findRemovedItemsByField(previous.wildEncounters, validated.wildEncounters, 'name'),
+      animals: backendRemoved.animals
+         ?? findRemovedItemsByField(previous.animals, validated.animals, 'species'),
+      attractions: backendRemoved.attractions
+         ?? findRemovedItemsByField(previous.attractions, validated.attractions, 'name'),
+      guardiansTalks: backendRemoved.guardiansTalks
+         ?? findRemovedItemsByField(previous.guardiansTalks, validated.guardiansTalks, 'name'),
+      wildEncounters: backendRemoved.wildEncounters
+         ?? findRemovedItemsByField(previous.wildEncounters, validated.wildEncounters, 'name'),
    };
 }
 
