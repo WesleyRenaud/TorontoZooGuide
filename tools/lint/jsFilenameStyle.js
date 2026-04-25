@@ -1,5 +1,6 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
 
 const rootDir = path.resolve('scripts');
 const violations = [];

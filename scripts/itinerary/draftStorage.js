@@ -103,7 +103,16 @@ export function writeStoredItineraryDraft(draft = createEmptyItineraryDraft()) {
 export function normalizeDateToLocalMidnight(dateValue) {
    if (!dateValue) return null;
 
-   const date = new Date(dateValue);
+   const isoDateParts = typeof dateValue === 'string'
+      ? dateValue.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+      : null;
+   const date = isoDateParts
+      ? new Date(
+         Number(isoDateParts[1]),
+         Number(isoDateParts[2]) - 1,
+         Number(isoDateParts[3])
+      )
+      : new Date(dateValue);
 
    if (Number.isNaN(date.getTime())) {
       return null;
