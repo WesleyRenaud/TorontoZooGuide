@@ -9,21 +9,32 @@ import {
 const ITINERARY_COLLECTION_FIELDS = [
    ['animals', 'animals'],
    ['attractions', 'attractions'],
+   ['guardiansTalks', 'guardians_talks'],
+   ['wildEncounters', 'wild_encounters'],
+];
+
+const VALIDATION_COLLECTION_FIELDS = [
+   ['animals', 'animals'],
+   ['attractions', 'attractions'],
    ['guardiansTalks', 'guardiansTalks'],
    ['wildEncounters', 'wildEncounters'],
 ];
 
-function readCollectionField(source, camelKey, snakeKey = camelKey) {
-   return asArray(source[camelKey] ?? source[snakeKey]);
+function normalizeCollectionFields(source = {}, fields) {
+   return Object.fromEntries(
+      fields.map(([targetKey, responseKey]) => [
+         targetKey,
+         asArray(source[responseKey]),
+      ])
+   );
 }
 
 function normalizeItineraryCollections(source = {}) {
-   return Object.fromEntries(
-      ITINERARY_COLLECTION_FIELDS.map(([camelKey, snakeKey]) => [
-         camelKey,
-         readCollectionField(source, camelKey, snakeKey),
-      ])
-   );
+   return normalizeCollectionFields(source, ITINERARY_COLLECTION_FIELDS);
+}
+
+function normalizeValidationCollections(source = {}) {
+   return normalizeCollectionFields(source, VALIDATION_COLLECTION_FIELDS);
 }
 
 function normalizeItineraryModel(itinerary) {
@@ -31,11 +42,7 @@ function normalizeItineraryModel(itinerary) {
 
    return {
       date: asTrimmedString(source.date),
-      ...normalizeItineraryCollections({
-         ...source,
-         guardiansTalks: source.guardiansTalks ?? source.guardians_talks,
-         wildEncounters: source.wildEncounters ?? source.wild_encounters,
-      }),
+      ...normalizeItineraryCollections(source),
    };
 }
 
@@ -50,7 +57,7 @@ function normalizeItineraryResponse(response) {
 }
 
 function normalizeValidationBucket(bucket) {
-   return normalizeItineraryCollections(asObject(bucket));
+   return normalizeValidationCollections(asObject(bucket));
 }
 
 function normalizeValidatedItineraryResponse(response) {
