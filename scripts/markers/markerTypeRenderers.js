@@ -3,6 +3,7 @@ import {
    getAttractionIconUrl,
    getGiftShopIconUrl,
    getRestaurantIconUrl,
+   getRestroomIconUrl,
 } from '../assets/iconUrls.js';
 import {
    applyBackgroundImage,
@@ -14,6 +15,7 @@ import {
 
 const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
 const LIMITED_VIEWING_MARKER_CLASS = 'marker-has-limited-viewing';
+const CLOSED_RESTROOM_ICON_TOKEN = 'closed';
 
 const GENERIC_ICON_PATHS = Object.freeze({
    pavilion: '/images/generic-icons/pavilion-open.png',
@@ -59,6 +61,14 @@ function shouldShowLimitedViewingIndicator(animal) {
    );
 }
 
+function shouldShowRestroomAlertIndicator(restroom) {
+   return Boolean(
+      !restroom?.is_closed
+      && restroom?.has_alert
+      && restroom?.alert_message
+   );
+}
+
 function applyAttractionMarkerSize(markerEl, attractionName) {
    const scale = ATTRACTION_MARKER_SCALE_OVERRIDES[attractionName];
 
@@ -86,6 +96,7 @@ function createLikelihoodIconMarkerRenderer({
    type,
    getIconUrl,
    applySize = null,
+   getLikelihood = item => item?.likelihood,
 } = {}) {
    return (markerEl, items) => {
       const item = items[0];
@@ -94,7 +105,7 @@ function createLikelihoodIconMarkerRenderer({
       applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE[type]);
       applyOptionalSize(markerEl, item, applySize);
 
-      const { colour, iconToken } = getLikelihoodVisual(item?.likelihood);
+      const { colour, iconToken } = getLikelihoodVisual(getLikelihood(item));
 
       if (count > 1) {
          applyCountMarker(markerEl, count, colour);
@@ -126,6 +137,30 @@ function renderAnimalMarker(markerEl, items) {
    }
 }
 
+function renderRestroomMarker(markerEl, items) {
+   const restroom = items[0];
+   const count = items.length;
+   const likelihood = restroom?.is_closed ? 0 : 100;
+   const { colour, iconToken } = getLikelihoodVisual(likelihood);
+
+   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.restroom);
+
+   if (count > 1) {
+      applyCountMarker(markerEl, count, colour);
+   } else {
+      applyBackgroundImage(
+         markerEl,
+         getRestroomIconUrl(
+            restroom?.is_closed ? CLOSED_RESTROOM_ICON_TOKEN : iconToken
+         )
+      );
+   }
+
+   if (items.some(shouldShowRestroomAlertIndicator)) {
+      applyMarkerClass(markerEl, LIMITED_VIEWING_MARKER_CLASS);
+   }
+}
+
 function renderZoomobileRouteMarker(markerEl, items) {
    const routeType = items[0]?.route_type;
    const routeColor = ZOOMOBILE_ROUTE_COLORS[routeType]
@@ -142,7 +177,7 @@ const MARKER_TYPE_RENDERERS = {
       type: 'restaurant',
       getIconUrl: (_, iconToken) => getRestaurantIconUrl(iconToken),
    }),
-   restroom: createGenericIconMarkerRenderer('restroom'),
+   restroom: renderRestroomMarker,
    giftShop: createLikelihoodIconMarkerRenderer({
       type: 'giftShop',
       getIconUrl: (_, iconToken) => getGiftShopIconUrl(iconToken),

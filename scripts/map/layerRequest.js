@@ -83,6 +83,7 @@ export function buildLayerRequest({
    focusType,
    includeOffDisplayAnimals,
    includeClosedRestaurants,
+   includeClosedRestrooms,
    includeClosedGiftShops,
    includeClosedAttractions,
 }) {
@@ -97,6 +98,7 @@ export function buildLayerRequest({
          temp: dateCtx.temp ?? null,
          includeOffDisplayAnimals,
          includeClosedRestaurants,
+         includeClosedRestrooms,
          includeClosedGiftShops,
          includeClosedAttractions,
          zoomobileRoute,

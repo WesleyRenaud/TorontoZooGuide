@@ -105,6 +105,7 @@ export function initMapControls({
    mapDateInput,
    includeOffDisplayCheckbox,
    includeClosedRestaurantsCheckbox,
+   includeClosedRestroomsCheckbox,
    includeClosedGiftShopsCheckbox,
    includeClosedAttractionsCheckbox,
    zoomobileRouteRadios,
@@ -154,6 +155,7 @@ export function initMapControls({
    bindChangeListeners([
       includeOffDisplayCheckbox,
       includeClosedRestaurantsCheckbox,
+      includeClosedRestroomsCheckbox,
       includeClosedGiftShopsCheckbox,
       includeClosedAttractionsCheckbox,
    ], refetch);

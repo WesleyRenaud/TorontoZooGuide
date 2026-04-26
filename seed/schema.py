@@ -155,6 +155,66 @@ def create_schema( cursor ):
          'ALTER TABLE ExhibitStatus ADD COLUMN CLOSED_END DATE;'
       )
 
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS RestroomStatus
+                     (  RESTROOM          VARCHAR(64) NOT NULL,
+                        IS_CLOSED         BOOL        NOT NULL DEFAULT 0,
+                        CLOSED_MESSAGE    TEXT,
+                        CLOSED_START      DATE,
+                        CLOSED_END        DATE,
+                        PRIMARY KEY (RESTROOM),
+                        FOREIGN KEY (RESTROOM) REFERENCES Restroom(TITLE) ); ''' )
+
+   restroom_status_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( RestroomStatus );' ).fetchall()
+   }
+
+   if 'IS_CLOSED' not in restroom_status_columns:
+      cursor.execute(
+         'ALTER TABLE RestroomStatus ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 0;'
+      )
+
+   if 'CLOSED_MESSAGE' not in restroom_status_columns:
+      cursor.execute(
+         'ALTER TABLE RestroomStatus ADD COLUMN CLOSED_MESSAGE TEXT;'
+      )
+
+   if 'CLOSED_START' not in restroom_status_columns:
+      cursor.execute(
+         'ALTER TABLE RestroomStatus ADD COLUMN CLOSED_START DATE;'
+      )
+
+   if 'CLOSED_END' not in restroom_status_columns:
+      cursor.execute(
+         'ALTER TABLE RestroomStatus ADD COLUMN CLOSED_END DATE;'
+      )
+
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS RestroomAlert
+                     (  RESTROOM             VARCHAR(64) NOT NULL,
+                        ALERT_MESSAGE       TEXT        NOT NULL,
+                        ALERT_START_DATE    DATE,
+                        ALERT_END_DATE      DATE,
+                        PRIMARY KEY (RESTROOM),
+                        FOREIGN KEY (RESTROOM) REFERENCES Restroom(TITLE) ); ''' )
+
+   restroom_alert_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( RestroomAlert );' ).fetchall()
+   }
+
+   if 'ALERT_MESSAGE' not in restroom_alert_columns:
+      cursor.execute(
+         'ALTER TABLE RestroomAlert ADD COLUMN ALERT_MESSAGE TEXT;'
+      )
+
+   if 'ALERT_START_DATE' not in restroom_alert_columns:
+      cursor.execute(
+         'ALTER TABLE RestroomAlert ADD COLUMN ALERT_START_DATE DATE;'
+      )
+
+   if 'ALERT_END_DATE' not in restroom_alert_columns:
+      cursor.execute(
+         'ALTER TABLE RestroomAlert ADD COLUMN ALERT_END_DATE DATE;'
+      )
+
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS RestaurantOpeningSchedule
                      (  RESTAURANT            VARCHAR(64) NOT NULL,

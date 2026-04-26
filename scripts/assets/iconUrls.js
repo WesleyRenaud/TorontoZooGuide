@@ -66,3 +66,15 @@ export function getGiftShopIconUrl(backgroundColourForUrl) {
       buildGenericIconPath('gift-shop', backgroundColourForUrl)
    );
 }
+
+export function getRestroomIconUrl(backgroundColourForUrl) {
+   const variantToken = normalizeIconVariantToken(backgroundColourForUrl);
+
+   if (variantToken === 'closed') {
+      return buildCssUrl('/images/generic-icons/restroom/restroom-closed.png');
+   }
+
+   return buildCssUrl(
+      buildGenericIconPath('restroom', backgroundColourForUrl)
+   );
+}

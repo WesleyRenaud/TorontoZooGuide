@@ -716,15 +716,34 @@ class Database():
       return max( round( likelihood * 100 ), 0 )
 
 
-   def get_restrooms( self ):
+   def get_restrooms( self, month=None, day=None, include_closed_restrooms=False ):
       cur = self.conn.cursor()
+
+      if month is not None and day is not None:
+         target_date = date(
+            datetime.now().year,
+            zoo.ZooUtil.normalize_month( month=month ),
+            int( day ) )
+      else:
+         target_date = datetime.now().date()
 
       data = cur.execute(
          """   SELECT
                   r.TITLE,
                   r.X_COORD,
-                  r.Y_COORD
-               FROM Restroom r;
+                  r.Y_COORD,
+                  s.IS_CLOSED,
+                  s.CLOSED_MESSAGE,
+                  s.CLOSED_START,
+                  s.CLOSED_END,
+                  a.ALERT_MESSAGE,
+                  a.ALERT_START_DATE,
+                  a.ALERT_END_DATE
+               FROM Restroom r
+               LEFT JOIN RestroomStatus s
+                  ON s.RESTROOM = r.TITLE
+               LEFT JOIN RestroomAlert a
+                  ON a.RESTROOM = r.TITLE;
          """ )
 
       restroom_data = data.fetchall()
@@ -732,11 +751,45 @@ class Database():
       restrooms = []
 
       for restroom in restroom_data:
+         is_closed = False
+         closed_message = None
+         has_alert = False
+         alert_message = None
+
+         if restroom[ 'IS_CLOSED' ] != None:
+            status_is_active = self.is_date_in_range(
+               target_date=target_date,
+               start_date_value=restroom[ 'CLOSED_START' ],
+               end_date_value=restroom[ 'CLOSED_END' ] )
+
+            is_closed = bool( restroom[ 'IS_CLOSED' ] ) and status_is_active
+
+            if is_closed:
+               closed_message = restroom[ 'CLOSED_MESSAGE' ]
+
+         if restroom[ 'ALERT_MESSAGE' ] != None:
+            alert_is_active = self.is_date_in_range(
+               target_date=target_date,
+               start_date_value=restroom[ 'ALERT_START_DATE' ],
+               end_date_value=restroom[ 'ALERT_END_DATE' ] )
+
+            has_alert = alert_is_active
+
+            if has_alert:
+               alert_message = restroom[ 'ALERT_MESSAGE' ]
+
+         if is_closed and not include_closed_restrooms:
+            continue
+
          restrooms.append(
             zoo.Restroom(
                title=restroom[ 'TITLE' ],
                x_coord=restroom[ 'X_COORD' ],
-               y_coord=restroom[ 'Y_COORD' ] ) )
+               y_coord=restroom[ 'Y_COORD' ],
+               is_closed=is_closed,
+               closed_message=closed_message,
+               has_alert=has_alert,
+               alert_message=alert_message ) )
 
       cur.close()
 
@@ -1575,14 +1628,20 @@ class Database():
       ]
 
 
-   def get_restrooms_matching_query( self, query ):
+   def get_restrooms_matching_query( self, query, month=None, day=None, include_closed_restrooms=True ):
       if not query:
-         return self.get_restrooms()
+         return self.get_restrooms(
+            month=month,
+            day=day,
+            include_closed_restrooms=include_closed_restrooms )
 
       query_lower = query.lower()
 
       return [
-         r for r in self.get_restrooms()
+         r for r in self.get_restrooms(
+            month=month,
+            day=day,
+            include_closed_restrooms=include_closed_restrooms )
          if r.title and query_lower in r.title.lower()
       ]
 
@@ -2149,6 +2208,21 @@ class Database():
       cur.close()
 
       return restaurants
+
+
+   def get_restroom_names( self ):
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         f"""  SELECT
+                  r.TITLE
+               FROM Restroom r;
+         """ )
+
+      restrooms = [ row[ 0 ] for row in data.fetchall() ]
+      cur.close()
+
+      return restrooms
 
 
    def get_gift_shop_names( self ):
@@ -2936,6 +3010,130 @@ class Database():
       cur.close()
 
       return updated > 0
+
+
+   def set_restroom_as_closed( self, restroom, start_date, end_date, message ):
+      if not restroom:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      if not message:
+         message = f'The { restroom } is temporarily closed.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO RestroomStatus (
+                  RESTROOM,
+                  IS_CLOSED,
+                  CLOSED_MESSAGE,
+                  CLOSED_START,
+                  CLOSED_END
+               )
+               VALUES (?, 1, ?, ?, ?)
+               ON CONFLICT(RESTROOM) DO UPDATE SET
+                  IS_CLOSED = 1,
+                  CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
+                  CLOSED_START = excluded.CLOSED_START,
+                  CLOSED_END = excluded.CLOSED_END;
+         """, ( restroom, message, start_date, end_date ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def set_restroom_as_open( self, restroom, start_date, end_date ):
+      if not restroom:
+         return False
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      if not end_date:
+         end_date = None
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO RestroomStatus (
+                  RESTROOM,
+                  IS_CLOSED,
+                  CLOSED_MESSAGE,
+                  CLOSED_START,
+                  CLOSED_END
+               )
+               VALUES (?, 0, NULL, ?, ?)
+               ON CONFLICT(RESTROOM) DO UPDATE SET
+                  IS_CLOSED = 0,
+                  CLOSED_MESSAGE = NULL,
+                  CLOSED_START = excluded.CLOSED_START,
+                  CLOSED_END = excluded.CLOSED_END;
+         """, ( restroom, start_date, end_date ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def set_restroom_alert( self, restroom, alert_start_date, alert_end_date, message ):
+      if not restroom or not message:
+         return False
+
+      if not alert_start_date:
+         alert_start_date = datetime.now().date().isoformat()
+
+      if not alert_end_date:
+         alert_end_date = None
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """   INSERT INTO RestroomAlert (
+                  RESTROOM,
+                  ALERT_MESSAGE,
+                  ALERT_START_DATE,
+                  ALERT_END_DATE
+               )
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(RESTROOM) DO UPDATE SET
+                  ALERT_MESSAGE = excluded.ALERT_MESSAGE,
+                  ALERT_START_DATE = excluded.ALERT_START_DATE,
+                  ALERT_END_DATE = excluded.ALERT_END_DATE;
+         """, ( restroom, message, alert_start_date, alert_end_date ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def remove_restroom_alert( self, restroom ):
+      if not restroom:
+         return False
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """ DELETE FROM RestroomAlert
+             WHERE RESTROOM = ?;
+         """, ( restroom, ) )
+
+      self.conn.commit()
+      removed = cur.rowcount
+      cur.close()
+
+      return removed > 0
 
 
    def set_restaurant_as_closed( self, restaurant, start_date, end_date, message ):

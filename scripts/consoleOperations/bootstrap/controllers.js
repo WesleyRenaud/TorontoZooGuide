@@ -9,6 +9,10 @@ import { createExhibitClosedController } from '../exhibits/controllers/exhibitCl
 import { createExhibitOpenController } from '../exhibits/controllers/exhibitOpen.js';
 import { createRestaurantClosedController } from '../restaurants/controllers/restaurantClosed.js';
 import { createRestaurantOpenController } from '../restaurants/controllers/restaurantOpen.js';
+import { createRestroomClosedController } from '../restrooms/controllers/restroomClosed.js';
+import { createRestroomOpenController } from '../restrooms/controllers/restroomOpen.js';
+import { createRestroomAlertController } from '../restrooms/controllers/restroomAlert.js';
+import { createRemoveRestroomAlertController } from '../restrooms/controllers/removeRestroomAlert.js';
 import { createGiftShopClosedController } from '../giftShops/controllers/giftShopClosed.js';
 import { createGiftShopOpenController } from '../giftShops/controllers/giftShopOpen.js';
 import { createAttractionClosedController } from '../attractions/controllers/attractionClosed.js';
@@ -75,6 +79,22 @@ const CONTROLLER_BINDINGS = [
    {
       createController: createRestaurantOpenController,
       getRefs: refs => refs.restaurants.open,
+   },
+   {
+      createController: createRestroomClosedController,
+      getRefs: refs => refs.restrooms.closed,
+   },
+   {
+      createController: createRestroomOpenController,
+      getRefs: refs => refs.restrooms.open,
+   },
+   {
+      createController: createRestroomAlertController,
+      getRefs: refs => refs.restrooms.alert,
+   },
+   {
+      createController: createRemoveRestroomAlertController,
+      getRefs: refs => refs.restrooms.removeAlert,
    },
    {
       createController: createGiftShopClosedController,

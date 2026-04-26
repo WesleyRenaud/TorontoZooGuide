@@ -63,6 +63,10 @@ export function populateRestaurantDropdown(selectEl, restaurants) {
    populateNamedDropdown(selectEl, restaurants, 'Select a restaurant');
 }
 
+export function populateRestroomDropdown(selectEl, restrooms) {
+   populateNamedDropdown(selectEl, restrooms, 'Select a restroom');
+}
+
 export function populateGiftShopDropdown(selectEl, giftShops) {
    populateNamedDropdown(selectEl, giftShops, 'Select a gift shop');
 }

@@ -231,7 +231,18 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-restrooms':
-         restrooms = self.database.get_restrooms()
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+         include_closed_restrooms = data.get( 'includeClosedRestrooms' ) or False
+
+         restrooms = self.database.get_restrooms(
+            month=month,
+            day=day,
+            include_closed_restrooms=include_closed_restrooms )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -396,6 +407,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          include_off_display_animals = bool( data.get( 'includeOffDisplayAnimals' ) )
          include_closed_restaurants = bool( data.get( 'includeClosedRestaurants' ) )
+         include_closed_restrooms = bool( data.get( 'includeClosedRestrooms' ) )
          include_closed_attractions = bool( data.get( 'includeClosedAttractions' ) )
          zoomobile_route = data.get( 'zoomobileRoute' )
 
@@ -440,7 +452,11 @@ class MyHandler( BaseHTTPRequestHandler ):
                   restaurants_json.append( d )
 
          if include_restrooms:
-            restrooms = self.database.get_restrooms_matching_query( query=query ) or []
+            restrooms = self.database.get_restrooms_matching_query(
+               query=query,
+               month=month,
+               day=day,
+               include_closed_restrooms=include_closed_restrooms ) or []
             for restroom in restrooms:
                   d = restroom.to_dict()
                   d[ 'type' ] = d.get( 'type', 'restroom' )
@@ -763,6 +779,16 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
          response = { "restaurants": restaurants }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-restroom-names':
+         restrooms = self.database.get_restroom_names()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "restrooms": restrooms }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
@@ -1169,6 +1195,130 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not set "{ exhibit }" as open.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-restroom-closed':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restroom = data.get( 'restroom' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+         message = data.get( 'message' )
+
+         success = self.database.set_restroom_as_closed(
+            restroom=restroom,
+            start_date=start_date,
+            end_date=end_date,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restroom': restroom,
+            'startDate': start_date,
+            'endDate': end_date,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not set "{ restroom }" as closed.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-restroom-open':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restroom = data.get( 'restroom' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+
+         success = self.database.set_restroom_as_open(
+            restroom=restroom,
+            start_date=start_date,
+            end_date=end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restroom': restroom,
+            'startDate': start_date,
+            'endDate': end_date
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not set "{ restroom }" as open.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-restroom-alert':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restroom = data.get( 'restroom' )
+         alert_start_date = data.get( 'alertStartDate' )
+         alert_end_date = data.get( 'alertEndDate' )
+         message = data.get( 'message' )
+
+         success = self.database.set_restroom_alert(
+            restroom=restroom,
+            alert_start_date=alert_start_date,
+            alert_end_date=alert_end_date,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restroom': restroom,
+            'alertStartDate': alert_start_date,
+            'alertEndDate': alert_end_date,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not set alert for "{ restroom }".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/remove-restroom-alert':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restroom = data.get( 'restroom' )
+
+         success = self.database.remove_restroom_alert(
+            restroom=restroom )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restroom': restroom
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not remove alert for "{ restroom }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

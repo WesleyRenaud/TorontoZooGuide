@@ -10,6 +10,7 @@ export function createTooltipController({
    onAnimalCardClick,
    offDisplayBanner,
    restaurantClosedBanner,
+   restroomMessageBanner,
    giftShopClosedBanner,
    attractionClosedBanner }) {
 
@@ -48,6 +49,7 @@ export function createTooltipController({
    const banners = createTooltipBannerSync({
       offDisplayBanner,
       restaurantClosedBanner,
+      restroomMessageBanner,
       giftShopClosedBanner,
       attractionClosedBanner,
    });
@@ -141,6 +143,7 @@ export function createTooltipController({
       setOpenState(markerEl, items);
 
       if (!carousel.render(getOpenItems())) {
+         banners.sync(getOpenItem(0));
          resetOpenState();
          return;
       }

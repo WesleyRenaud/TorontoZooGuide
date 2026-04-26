@@ -1,12 +1,14 @@
 export function createTooltipBannerSync({
    offDisplayBanner,
    restaurantClosedBanner,
+   restroomMessageBanner,
    giftShopClosedBanner,
    attractionClosedBanner,
 }) {
    const bannersByType = {
       animal: offDisplayBanner,
       restaurant: restaurantClosedBanner,
+      restroom: restroomMessageBanner,
       giftShop: giftShopClosedBanner,
       attraction: attractionClosedBanner,
    };

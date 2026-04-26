@@ -47,8 +47,8 @@ export async function getRestaurants(payload = EMPTY_PAYLOAD) {
    return await fetchCollection('/get-restaurants', 'restaurants', payload);
 }
 
-export async function getRestrooms() {
-   return await fetchCollection('/get-restrooms', 'restrooms');
+export async function getRestrooms(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-restrooms', 'restrooms', payload);
 }
 
 export async function getGiftShops(payload = EMPTY_PAYLOAD) {

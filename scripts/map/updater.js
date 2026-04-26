@@ -19,6 +19,7 @@ export function createMapUpdater({
    focus,
    getIncludeOffDisplay,
    getIncludeClosedRestaurants,
+   getIncludeClosedRestrooms,
    getIncludeClosedGiftShops,
    getIncludeClosedAttractions,
    getZoomobileRoute,
@@ -59,6 +60,7 @@ export function createMapUpdater({
       return {
          includeOffDisplayAnimals: getIncludeOffDisplay(),
          includeClosedRestaurants: getIncludeClosedRestaurants(),
+         includeClosedRestrooms: getIncludeClosedRestrooms(),
          includeClosedGiftShops: getIncludeClosedGiftShops(),
          includeClosedAttractions: getIncludeClosedAttractions(),
          zoomobileRoute: getZoomobileRoute(),
@@ -91,6 +93,7 @@ export function createMapUpdater({
          focusType,
          includeOffDisplayAnimals: controls.includeOffDisplayAnimals,
          includeClosedRestaurants: controls.includeClosedRestaurants,
+         includeClosedRestrooms: controls.includeClosedRestrooms,
          includeClosedGiftShops: controls.includeClosedGiftShops,
          includeClosedAttractions: controls.includeClosedAttractions,
       });

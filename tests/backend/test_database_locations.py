@@ -103,6 +103,62 @@ def test_gift_shop_schedule_controls_open_and_closed_results( db, freeze_databas
    assert shop.closed_message == 'Closed for testing.'
 
 
+def test_restroom_status_controls_open_and_closed_results( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   assert db.set_restroom_as_closed(
+      restroom='Entrance Restroom',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      message='Closed for testing.'
+   )
+
+   open_only = db.get_restrooms( month='June', day=15, include_closed_restrooms=False )
+   with_closed = db.get_restrooms( month='June', day=15, include_closed_restrooms=True )
+
+   assert all( restroom.title != 'Entrance Restroom' for restroom in open_only )
+   restroom = next( item for item in with_closed if item.title == 'Entrance Restroom' )
+   assert restroom.is_closed is True
+   assert restroom.closed_message == 'Closed for testing.'
+
+   assert db.set_restroom_as_open(
+      restroom='Entrance Restroom',
+      start_date='2026-06-15',
+      end_date=None
+   )
+
+   reopened = db.get_restrooms( month='June', day=15, include_closed_restrooms=False )
+
+   assert any( restroom.title == 'Entrance Restroom' for restroom in reopened )
+
+
+def test_restroom_alert_controls_guest_message( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   assert db.set_restroom_alert(
+      restroom='Entrance Restroom',
+      alert_start_date='2026-06-01',
+      alert_end_date='2026-06-30',
+      message='Women\'s restroom is temporarily unavailable.'
+   )
+
+   restroom = next(
+      item for item in db.get_restrooms( month='June', day=15 )
+      if item.title == 'Entrance Restroom'
+   )
+
+   assert restroom.has_alert is True
+   assert restroom.alert_message == 'Women\'s restroom is temporarily unavailable.'
+
+   assert db.remove_restroom_alert( restroom='Entrance Restroom' )
+
+   restroom = next(
+      item for item in db.get_restrooms( month='June', day=15 )
+      if item.title == 'Entrance Restroom'
+   )
+
+   assert restroom.has_alert is False
+   assert restroom.alert_message is None
+
+
 def test_attraction_schedule_controls_open_and_closed_results( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
    assert db.set_attraction_opening_schedule(
