@@ -33,6 +33,7 @@ def test_parse_date_value( db, value, expected ):
 @pytest.mark.parametrize(
    'value, expected',
    [
+      ( None, None ),
       ( '2026-06-15 09:30 AM', datetime( 2026, 6, 15, 9, 30 ) ),
       ( '2026-06-15 17:45:00', datetime( 2026, 6, 15, 17, 45 ) ),
       ( '2026-06-15 17:45', datetime( 2026, 6, 15, 17, 45 ) )
@@ -108,6 +109,15 @@ def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs( db ):
       exhibit_day_seasonal_availability_multiplier=0.5
    ) == 12
 
+   assert db.calculate_animal_likelihood(
+      temp=None,
+      sigma=2,
+      enclosure_type='Outdoor',
+      min_temperature=None,
+      day_seasonal_multiplier=None,
+      exhibit_day_seasonal_availability_multiplier=None
+   ) == 100
+
 
 def test_active_status_helpers( db ):
    active_row = make_row(
@@ -136,3 +146,58 @@ def test_active_status_helpers( db ):
    assert db.get_active_limited_viewing_status( active_row, target_date ) == ( True, 'Morning only.' )
    assert db.get_active_viewing_alert_status( active_row, target_date ) == ( True, 'Low visibility.' )
    assert db.get_active_exhibit_status( active_row, target_date ) == ( 'closed', 'Closed.' )
+
+
+def test_active_status_helpers_return_inactive_defaults( db ):
+   inactive_row = make_row(
+      {
+         'IS_OFF_DISPLAY': 0,
+         'OFF_DISPLAY_MESSAGE': 'Temporarily hidden.',
+         'OFF_DISPLAY_START': '2026-06-01',
+         'OFF_DISPLAY_END': '2026-06-30',
+         'SCHEDULE_START_DATE': '2026-06-01',
+         'SCHEDULE_END_DATE': '2026-06-30',
+         'DAILY_START_TIME': None,
+         'DAILY_END_TIME': '11:00',
+         'VIEWING_MESSAGE': 'Morning only.',
+         'ALERT_MESSAGE': None,
+         'ALERT_START_DATE': '2026-06-01',
+         'ALERT_END_DATE': '2026-06-30',
+         'IS_CLOSED': None,
+         'CLOSED_MESSAGE': 'Closed.',
+         'CLOSED_START': '2026-06-01',
+         'CLOSED_END': '2026-06-30'
+      }
+   )
+   expired_row = make_row(
+      {
+         'IS_OFF_DISPLAY': 1,
+         'OFF_DISPLAY_MESSAGE': 'Temporarily hidden.',
+         'OFF_DISPLAY_START': '2026-06-01',
+         'OFF_DISPLAY_END': '2026-06-30',
+         'SCHEDULE_START_DATE': '2026-06-01',
+         'SCHEDULE_END_DATE': '2026-06-30',
+         'DAILY_START_TIME': '09:00',
+         'DAILY_END_TIME': '11:00',
+         'VIEWING_MESSAGE': 'Morning only.',
+         'ALERT_MESSAGE': 'Low visibility.',
+         'ALERT_START_DATE': '2026-06-01',
+         'ALERT_END_DATE': '2026-06-30',
+         'IS_CLOSED': 0,
+         'CLOSED_MESSAGE': 'Closed.',
+         'CLOSED_START': '2026-06-01',
+         'CLOSED_END': '2026-06-30'
+      }
+   )
+   target_date = date( 2026, 7, 15 )
+
+   assert db.get_active_off_display_status( inactive_row, target_date ) == ( False, None )
+   assert db.get_active_limited_viewing_status( inactive_row, target_date ) == ( False, None )
+   assert db.get_active_viewing_alert_status( inactive_row, target_date ) == ( False, None )
+   assert db.get_active_exhibit_status( inactive_row, target_date ) == ( 'unknown', None )
+
+   assert db.get_active_off_display_status( expired_row, target_date ) == ( False, None )
+   assert db.get_active_limited_viewing_status( expired_row, target_date ) == ( False, None )
+   assert db.get_active_viewing_alert_status( expired_row, target_date ) == ( False, None )
+   assert db.get_active_exhibit_status( expired_row, target_date ) == ( 'unknown', None )
+   assert db.get_active_exhibit_status( expired_row, date( 2026, 6, 15 ) ) == ( 'open', None )

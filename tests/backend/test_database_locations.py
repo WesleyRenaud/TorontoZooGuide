@@ -1,5 +1,7 @@
 from datetime import date
 
+import pytest
+
 
 def test_region_and_static_location_queries( db ):
    regions = db.get_regions()
@@ -185,6 +187,131 @@ def test_attraction_schedule_controls_open_and_closed_results( db, freeze_databa
    assert attraction.closed_message == 'Closed for testing.'
 
 
+@pytest.mark.parametrize(
+   'method_name, setter_name, item_kw, item_name',
+   [
+      (
+         'get_active_restaurant_schedule_status',
+         'set_restaurant_opening_schedule',
+         'restaurant',
+         'Africa Restaurant'
+      ),
+      (
+         'get_active_gift_shop_schedule_status',
+         'set_gift_shop_opening_schedule',
+         'gift_shop',
+         'Zootique'
+      ),
+      (
+         'get_active_attraction_schedule_status',
+         'set_attraction_opening_schedule',
+         'attraction',
+         'Conservation Carousel'
+      )
+   ]
+)
+@pytest.mark.parametrize(
+   'target_date, weekday_flag',
+   [
+      ( date( 2026, 6, 15 ), 'monday' ),
+      ( date( 2026, 6, 16 ), 'tuesday' ),
+      ( date( 2026, 6, 17 ), 'wednesday' ),
+      ( date( 2026, 6, 18 ), 'thursday' ),
+      ( date( 2026, 6, 19 ), 'friday' ),
+      ( date( 2026, 6, 20 ), 'saturday' ),
+      ( date( 2026, 6, 21 ), 'sunday' )
+   ]
+)
+def test_amenity_schedule_status_opens_on_each_weekday(
+      db,
+      method_name,
+      setter_name,
+      item_kw,
+      item_name,
+      target_date,
+      weekday_flag ):
+   schedule = {
+      item_kw: item_name,
+      'start_date': '2026-06-01',
+      'end_date': '2026-06-30',
+      'monday': False,
+      'tuesday': False,
+      'wednesday': False,
+      'thursday': False,
+      'friday': False,
+      'saturday': False,
+      'sunday': False,
+      'holidays_only': False,
+      'message': 'Closed for testing.'
+   }
+   schedule[ weekday_flag ] = True
+
+   assert getattr( db, setter_name )( **schedule )
+
+   assert getattr( db, method_name )( item_name, target_date, target_date.weekday() ) == ( 'open', None )
+
+
+@pytest.mark.parametrize(
+   'method_name, setter_name, item_kw, item_name',
+   [
+      (
+         'get_active_restaurant_schedule_status',
+         'set_restaurant_opening_schedule',
+         'restaurant',
+         'Africa Restaurant'
+      ),
+      (
+         'get_active_gift_shop_schedule_status',
+         'set_gift_shop_opening_schedule',
+         'gift_shop',
+         'Zootique'
+      ),
+      (
+         'get_active_attraction_schedule_status',
+         'set_attraction_opening_schedule',
+         'attraction',
+         'Conservation Carousel'
+      )
+   ]
+)
+def test_amenity_schedule_status_handles_unknown_inactive_closed_and_holiday(
+      db,
+      method_name,
+      setter_name,
+      item_kw,
+      item_name ):
+   method = getattr( db, method_name )
+
+   assert method( item_name, date( 2026, 5, 15 ), 4 ) == ( 'unknown', None )
+
+   schedule = {
+      item_kw: item_name,
+      'start_date': '2026-06-01',
+      'end_date': '2026-06-30',
+      'monday': False,
+      'tuesday': False,
+      'wednesday': False,
+      'thursday': False,
+      'friday': False,
+      'saturday': False,
+      'sunday': False,
+      'holidays_only': False,
+      'message': 'Closed for testing.'
+   }
+
+   assert getattr( db, setter_name )( **schedule )
+
+   assert method( item_name, date( 2026, 5, 15 ), 4 ) == ( 'unknown', None )
+   assert method( item_name, date( 2026, 6, 15 ), 0 ) == ( 'closed', 'Closed for testing.' )
+
+   schedule[ 'start_date' ] = '2026-01-01'
+   schedule[ 'end_date' ] = '2026-12-31'
+   schedule[ 'holidays_only' ] = True
+   assert getattr( db, setter_name )( **schedule )
+
+   assert method( item_name, date( 2026, 12, 25 ), 4 ) == ( 'open', None )
+
+
 def test_zoomobile_route_selection_and_station_filtering( db, freeze_database_today ):
    freeze_database_today( date( 2026, 1, 15 ) )
 
@@ -233,6 +360,50 @@ def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
 
    assert all( not ( talk.name == 'African Lion' and talk.time_of_day == '10:00' ) for talk in talks_after_cancel )
 
+   assert db.get_guardians_talks( month='June', day=16 ) == []
+
+
+def test_guardians_talk_occurrences_cover_all_weekdays_and_cancellations( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   assert db.set_guardians_talk_schedule(
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-15',
+      end_date='2026-06-21',
+      talk_time='10:00',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      message=None
+   )
+   assert db.cancel_guardians_talk_occurrence(
+      talk='African Lion',
+      location='Africa Savanna',
+      date='2026-06-18',
+      time='10:00'
+   )
+
+   occurrences = db.get_guardians_talk_occurrences(
+      talk='African Lion',
+      location='Africa Savanna',
+      days_ahead=6
+   )
+
+   assert { occurrence[ 'date' ] for occurrence in occurrences } == {
+      '2026-06-15',
+      '2026-06-16',
+      '2026-06-17',
+      '2026-06-19',
+      '2026-06-20',
+      '2026-06-21'
+   }
+   assert db.get_guardians_talk_occurrences( talk='', location='Africa Savanna' ) == []
+   assert db.get_guardians_talk_occurrences( talk='Bad Talk', location='Bad Location' ) == []
+
 
 def test_wild_encounter_schedule_and_cancellation( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
@@ -263,6 +434,56 @@ def test_wild_encounter_schedule_and_cancellation( db, freeze_database_today ):
    encounters_after_cancel = db.get_wild_encounters( month='June', day=15 )
    cancelled = next( item for item in encounters_after_cancel if item.name == 'African Rainforest' and item.time_of_day == '14:00' )
    assert cancelled.is_available is False
+
+   weekday_unavailable = next(
+      item for item in db.get_wild_encounters( month='June', day=16 )
+      if item.name == 'African Rainforest' and item.time_of_day == '14:00'
+   )
+   out_of_range = next(
+      item for item in db.get_wild_encounters( month='July', day=1 )
+      if item.name == 'African Rainforest' and item.time_of_day == '14:00'
+   )
+   assert weekday_unavailable.unavailable_message == 'African Rainforest is not offered on this day of the week.'
+   assert out_of_range.unavailable_message == 'African Rainforest is not scheduled on July 1.'
+
+
+def test_wild_encounter_occurrences_cover_all_weekdays_and_cancellations( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   assert db.set_wild_encounter_schedule(
+      wild_encounter='African Rainforest',
+      start_date='2026-06-15',
+      end_date='2026-06-21',
+      encounter_time='14:00',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      message=None
+   )
+   assert db.cancel_wild_encounter_occurrence(
+      wild_encounter='African Rainforest',
+      date='2026-06-18',
+      time='14:00'
+   )
+
+   occurrences = db.get_wild_encounter_occurrences(
+      wild_encounter='African Rainforest',
+      days_ahead=6
+   )
+
+   assert { occurrence[ 'date' ] for occurrence in occurrences } == {
+      '2026-06-15',
+      '2026-06-16',
+      '2026-06-17',
+      '2026-06-19',
+      '2026-06-20',
+      '2026-06-21'
+   }
+   assert db.get_wild_encounter_occurrences( wild_encounter='' ) == []
+   assert db.get_wild_encounter_occurrences( wild_encounter='Bad Encounter' ) == []
 
 
 def test_search_helpers_filter_case_insensitively( db ):
