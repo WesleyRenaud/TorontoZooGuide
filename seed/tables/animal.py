@@ -4919,7 +4919,8 @@ animals = [
          quickly learn to swim and forage. Sexual maturity occurs at 3–5 years, and pygmy hippos can live 30–35 years in managed
          care, slightly less in the wild due to predation and habitat pressures.'''.replace( '\n', ' ' ),
       '''The zoo is home to a breeding pair of pygmy hippos, a male Harvey and a female Kindia. Unless they are being put together
-         for breeding, they can each be seen in on of their two habitats in the African Rainforest Pavilion.'''.replace( '\n', ' ' )
+         for breeding, they can each be seen in on of their two habitats in the African Rainforest Pavilion. Female, Kindia, is
+         pregnant and expecting a calf in late July.'''.replace( '\n', ' ' )
    ),
    (
       'Radiated Tortoise',
