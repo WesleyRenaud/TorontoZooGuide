@@ -1258,49 +1258,67 @@ nav ul li a:hover {
 ============================================================ */
 
 .off-display-closed-banner {
+   --alert-banner-transform: translate(-50%, -50%);
+
    position: fixed;
    top: 50%;
    left: 50%;
-   transform: translate(-50%, -50%);
+   transform: var(--alert-banner-transform);
    z-index: 9999;
 
-   display: flex;
-   align-items: center;
-   gap: 60px;
+   display: block;
 
-   width: min(1700px, 96vw);
-   padding: 80px 120px;
+   width: min(1180px, calc(100vw - 48px));
+   padding: 0.42em 0.55em 0.55em;
 
-   background: linear-gradient(180deg, #5d8f2a, #4f7e22);
+   background: #4b7526;
    color: #ffffff;
 
-   border-radius: 30px;
-   box-shadow: 0 40px 120px rgba(0,0,0,0.55);
+   border: 1px solid rgba(255,255,255,0.22);
+   border-radius: 22px;
+   box-shadow: 0 26px 80px rgba(0,0,0,0.44);
 
-   font-size: 64px;
-   font-weight: 900;
-   line-height: 1.1;
+   font-size: clamp(28px, 4vw, 56px);
+   font-weight: 850;
+   line-height: 1.12;
 
    animation: massiveFade 0.35s ease;
 }
 
 .off-display-closed-icon {
-   width: 200px;
-   height: 150px;
+   position: absolute;
+   top: 0.32em;
+   left: 0.4em;
+
+   width: 1.6em;
+   aspect-ratio: 4 / 3;
    display: grid;
    place-items: center;
+   flex: 0 0 auto;
 
-   border-radius: 24px;
+   border-radius: 0.28em;
    background: #ffd54d;
    color: #2f2f2f;
 
-   font-size: 90px;
-   font-weight: 900;
-
-   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+   box-shadow: inset 0 0 0 0.04em rgba(47,47,47,0.22), 0 0.12em 0.3em rgba(0,0,0,0.28);
 }
 
-.off-display-closed-text strong{
+.off-display-warning-icon {
+   width: 78%;
+   height: 78%;
+   display: block;
+}
+
+.off-display-warning-icon path {
+   fill: currentColor;
+}
+
+.off-display-warning-icon rect,
+.off-display-warning-icon circle {
+   fill: #ffd54d;
+}
+
+.off-display-closed-text strong {
    font-weight: 1000;
    text-decoration: underline;
 }
@@ -1308,48 +1326,93 @@ nav ul li a:hover {
 .off-display-closed-text {
    display: flex;
    flex-direction: column;
-   gap: 24px;
+   gap: 0.28em;
+   min-width: 0;
+
+   margin-top: 1.35em;
+   padding: 0.55em 0.7em;
+
+   background: #5f9232;
+   border: 1px solid rgba(255,255,255,0.18);
+   border-radius: 16px;
+   box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
 }
 
 .off-display-closed-message {
    margin: 0;
    white-space: pre-line;
+   overflow-wrap: anywhere;
 }
 
 .off-display-closed-close {
-   margin-left: auto;
+   position: absolute;
+   top: 0.32em;
+   right: 0.4em;
 
-   width: 160px;
-   height: 120px;
+   width: 2.65em;
+   height: 1.45em;
 
    display: grid;
    place-items: center;
+   flex: 0 0 auto;
 
-   background: rgba(255,255,255,0.15);
-   border: none;
-   border-radius: 24px;
+   background: rgba(255,255,255,0.14);
+   border: 1px solid rgba(255,255,255,0.2);
+   border-radius: 0.28em;
 
    color: #ffffff;
-   font-size: 70px;
+   font-size: 0.9em;
    font-weight: 700;
 
    cursor: pointer;
    transition: background 0.2s ease, transform 0.15s ease;
 }
 
-.off-display-close:hover, .attraction-closed-close:hover {
+.off-display-closed-close:hover {
    background: rgba(255,255,255,0.3);
-   transform: scale(1.08);
+   transform: translateY(-1px);
+}
+
+@media (max-width: 720px) {
+   .off-display-closed-banner {
+      top: auto;
+      bottom: 20px;
+      --alert-banner-transform: translateX(-50%);
+      width: min(520px, calc(100vw - 24px));
+      padding: 18px;
+      border-radius: 18px;
+      font-size: 24px;
+   }
+
+   .off-display-closed-icon {
+      top: 14px;
+      left: 16px;
+      width: 48px;
+   }
+
+   .off-display-closed-text {
+      margin-top: 58px;
+      padding: 16px;
+      border-radius: 14px;
+   }
+
+   .off-display-closed-close {
+      top: 14px;
+      right: 16px;
+      width: 56px;
+      height: 44px;
+      font-size: 28px;
+   }
 }
 
 @keyframes massiveFade {
    from {
       opacity: 0;
-      transform: translate(-50%, calc(-50% - 40px)) scale(0.95);
+      transform: var(--alert-banner-transform) scale(0.96);
    }
    to {
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      transform: var(--alert-banner-transform) scale(1);
    }
 }
 
