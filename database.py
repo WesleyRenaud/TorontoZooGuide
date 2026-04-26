@@ -2901,6 +2901,13 @@ class Database():
       cur = self.conn.cursor()
 
       cur.execute(
+         """ DELETE FROM AnimalViewingAlert
+             WHERE SPECIES = ?
+             AND EXHIBIT = ?;
+         """,
+         ( species, exhibit ) )
+
+      cur.execute(
          """   INSERT INTO AnimalViewingAlert (
                   SPECIES,
                   EXHIBIT,
@@ -2909,10 +2916,6 @@ class Database():
                   ALERT_END_DATE
                )
                VALUES (?, ?, ?, ?, ?)
-               ON CONFLICT(SPECIES, EXHIBIT) DO UPDATE SET
-                  ALERT_MESSAGE = excluded.ALERT_MESSAGE,
-                  ALERT_START_DATE = excluded.ALERT_START_DATE,
-                  ALERT_END_DATE = excluded.ALERT_END_DATE;
          """, ( species, exhibit, message, alert_start_date, alert_end_date ) )
 
       self.conn.commit()
@@ -3098,6 +3101,11 @@ class Database():
       cur = self.conn.cursor()
 
       cur.execute(
+         """ DELETE FROM RestroomAlert
+             WHERE RESTROOM = ?;
+         """, ( restroom, ) )
+
+      cur.execute(
          """   INSERT INTO RestroomAlert (
                   RESTROOM,
                   ALERT_MESSAGE,
@@ -3105,10 +3113,6 @@ class Database():
                   ALERT_END_DATE
                )
                VALUES (?, ?, ?, ?)
-               ON CONFLICT(RESTROOM) DO UPDATE SET
-                  ALERT_MESSAGE = excluded.ALERT_MESSAGE,
-                  ALERT_START_DATE = excluded.ALERT_START_DATE,
-                  ALERT_END_DATE = excluded.ALERT_END_DATE;
          """, ( restroom, message, alert_start_date, alert_end_date ) )
 
       self.conn.commit()
