@@ -1,5 +1,7 @@
 from datetime import date
 
+import zoo
+
 
 def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
@@ -103,6 +105,103 @@ def test_validate_attractions_removes_closed_entries( db, freeze_database_today 
    assert [ attraction.name for attraction in result[ 'removed_attractions' ] ] == [ 'Conservation Carousel' ]
 
 
+def test_validate_guardians_talks_splits_available_and_unavailable_entries( db, monkeypatch ):
+   def get_guardians_talks_for_itinerary( **kwargs ):
+      return [
+         zoo.GuardiansTalk(
+            name='African Lion',
+            location='Africa Savanna',
+            x_coord=51.138,
+            y_coord=41.279,
+            time_of_day='10:00',
+            is_available=True ),
+         zoo.GuardiansTalk(
+            name='Amur Tiger',
+            location='Eurasia Wilds',
+            x_coord=75.979,
+            y_coord=74.707,
+            time_of_day='11:00',
+            is_available=False,
+            unavailable_message='Cancelled.' ),
+         zoo.GuardiansTalk(
+            name='African Lion',
+            location='Africa Savanna',
+            x_coord=51.138,
+            y_coord=41.279,
+            time_of_day='09:00',
+            is_available=True )
+      ]
+
+   monkeypatch.setattr( db, 'get_guardians_talks_for_itinerary', get_guardians_talks_for_itinerary )
+
+   result = db.validate_guardians_talks(
+      month='June',
+      day=15,
+      guardians_talks_to_include=[ 'African Lion', 'Amur Tiger' ]
+   )
+
+   assert [
+      ( talk.name, talk.time_of_day )
+      for talk in result[ 'valid_guardians_talks' ]
+   ] == [
+      ( 'African Lion', '09:00' ),
+      ( 'African Lion', '10:00' )
+   ]
+   assert [
+      ( talk.name, talk.unavailable_message )
+      for talk in result[ 'removed_guardians_talks' ]
+   ] == [
+      ( 'Amur Tiger', 'Cancelled.' )
+   ]
+
+
+def test_validate_wild_encounters_splits_available_and_unavailable_entries( db, monkeypatch ):
+   def get_wild_encounters_for_itinerary( **kwargs ):
+      return [
+         zoo.WildEncounter(
+            name='Kangaroo',
+            meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+            link='https://www.torontozoo.com/tickets/wekangaroo',
+            time_of_day='13:00',
+            is_available=True ),
+         zoo.WildEncounter(
+            name='African Rainforest',
+            meeting_spot='Wild Encounter - Africa Meeting Spot',
+            link='https://www.torontozoo.com/tickets/weafricarainforest',
+            time_of_day='14:00',
+            is_available=False,
+            unavailable_message='Unavailable.' ),
+         zoo.WildEncounter(
+            name='Kangaroo',
+            meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+            link='https://www.torontozoo.com/tickets/wekangaroo',
+            time_of_day='09:00',
+            is_available=True )
+      ]
+
+   monkeypatch.setattr( db, 'get_wild_encounters_for_itinerary', get_wild_encounters_for_itinerary )
+
+   result = db.validate_wild_encounters(
+      month='June',
+      day=15,
+      wild_encounters_to_include=[ 'African Rainforest', 'Kangaroo' ]
+   )
+
+   assert [
+      ( encounter.name, encounter.time_of_day )
+      for encounter in result[ 'valid_wild_encounters' ]
+   ] == [
+      ( 'Kangaroo', '09:00' ),
+      ( 'Kangaroo', '13:00' )
+   ]
+   assert [
+      ( encounter.name, encounter.unavailable_message )
+      for encounter in result[ 'removed_wild_encounters' ]
+   ] == [
+      ( 'African Rainforest', 'Unavailable.' )
+   ]
+
+
 def test_itinerary_filter_helpers_ignore_invalid_input_and_sort( db ):
    animals = db.get_animals_for_itinerary(
       month='June',
@@ -126,3 +225,120 @@ def test_itinerary_filter_helpers_ignore_invalid_input_and_sort( db ):
    )
    assert { animal.species for animal in animals } == { 'African Lion', 'African Penguin' }
    assert [ attraction.name for attraction in attractions ] == [ 'Conservation Carousel', 'Greenhouse' ]
+
+
+def test_itinerary_filter_helpers_return_empty_without_valid_filters( db ):
+   assert db.get_animals_for_itinerary(
+      month='June',
+      day=15,
+      temp=22,
+      species_exhibit_pairs=[
+         None,
+         {},
+         { 'species': 'African Lion' },
+         { 'exhibit': 'Africa Savanna' }
+      ]
+   ) == []
+   assert db.get_attractions_for_itinerary(
+      month='June',
+      day=15,
+      attractions_to_include=[ None, '', '   ' ]
+   ) == []
+   assert db.get_guardians_talks_for_itinerary(
+      month='June',
+      day=15,
+      guardians_talks_to_include=[ None, '', '   ' ]
+   ) == []
+   assert db.get_wild_encounters_for_itinerary(
+      month='June',
+      day=15,
+      wild_encounters_to_include=[ None, '', '   ' ]
+   ) == []
+
+
+def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   assert db.set_guardians_talk_schedule(
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      talk_time='10:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+   assert db.set_guardians_talk_schedule(
+      talk='Amur Tiger',
+      location='Eurasia Wilds',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      talk_time='09:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+   assert db.set_wild_encounter_schedule(
+      wild_encounter='African Rainforest',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='14:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+   assert db.set_wild_encounter_schedule(
+      wild_encounter='Kangaroo',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='09:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+
+   talks = db.get_guardians_talks_for_itinerary(
+      month='June',
+      day=15,
+      guardians_talks_to_include=[ ' african lion ', 'AMUR TIGER', None ]
+   )
+   encounters = db.get_wild_encounters_for_itinerary(
+      month='June',
+      day=15,
+      wild_encounters_to_include=[ ' kangaroo ', 'AFRICAN RAINFOREST', None ]
+   )
+
+   assert [
+      ( talk.name, talk.time_of_day )
+      for talk in talks
+   ] == [
+      ( 'African Lion', '10:00' ),
+      ( 'Amur Tiger', '09:00' )
+   ]
+   assert [
+      ( encounter.name, encounter.time_of_day )
+      for encounter in encounters
+   ] == [
+      ( 'African Rainforest', '14:00' ),
+      ( 'Kangaroo', '09:00' )
+   ]

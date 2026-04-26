@@ -8,6 +8,22 @@ import zoo
 from conftest import FakeHandler
 
 
+ANIMAL_NAME = 'African Lion'
+ANIMAL_EXHIBIT = 'Africa Savanna'
+ATTRACTION_NAME = 'Conservation Carousel'
+REMOVED_ATTRACTION_NAME = 'TundraAir Ride'
+PAVILION_NAME = 'African Rainforest Pavilion'
+RESTAURANT_NAME = 'Africa Restaurant'
+RESTROOM_NAME = 'Entrance Restroom'
+GIFT_SHOP_NAME = 'Zootique'
+ZOOMOBILE_STATION_NAME = 'Main Zoomobile Station'
+GUARDIANS_TALK_NAME = 'African Lion'
+GUARDIANS_TALK_LOCATION = 'Africa Savanna'
+WILD_ENCOUNTER_NAME = 'African Rainforest'
+WILD_ENCOUNTER_MEETING_SPOT = 'Wild Encounter - Africa Meeting Spot'
+WILD_ENCOUNTER_LINK = 'https://www.torontozoo.com/tickets/weafricarainforest'
+
+
 def make_handler( path='/', body=None ):
    encoded = json.dumps( body or {} ).encode( 'utf-8' )
    handler = server.MyHandler.__new__( server.MyHandler )
@@ -47,52 +63,52 @@ class StubDatabase:
 
    def get_animals_viewable_on_day( self, **kwargs ):
       self.calls.append( ( 'get_animals_viewable_on_day', kwargs ) )
-      return [ zoo.Animal( species='African Lion', exhibit='Africa Savanna', likelihood=100 ) ]
+      return [ zoo.Animal( species=ANIMAL_NAME, exhibit=ANIMAL_EXHIBIT, likelihood=100 ) ]
 
 
    def get_exhibits_in_region( self, region ):
       self.calls.append( ( 'get_exhibits_in_region', { 'region': region } ) )
-      return [ 'Africa Savanna' ]
+      return [ ANIMAL_EXHIBIT ]
 
 
    def get_regions( self ):
       self.calls.append( ( 'get_regions', {} ) )
-      return [ { 'name': 'Africa Savanna', 'hasExhibits': True } ]
+      return [ { 'name': 'Africa', 'hasExhibits': True } ]
 
 
    def get_animals_in_exhibit( self, exhibit ):
       self.calls.append( ( 'get_animals_in_exhibit', { 'exhibit': exhibit } ) )
-      return [ 'African Lion' ]
+      return [ ANIMAL_NAME ]
 
 
    def get_animal_information( self, species ):
       self.calls.append( ( 'get_animal_information', { 'species': species } ) )
-      return zoo.Animal( species=species, exhibit='Africa Savanna' )
+      return zoo.Animal( species=species, exhibit=ANIMAL_EXHIBIT )
 
 
    def get_pavilions( self ):
       self.calls.append( ( 'get_pavilions', {} ) )
-      return [ zoo.Pavilion( name='Pavilion', region='Region' ) ]
+      return [ zoo.Pavilion( name=PAVILION_NAME, region='Africa' ) ]
 
 
    def get_restaurants( self, **kwargs ):
       self.calls.append( ( 'get_restaurants', kwargs ) )
-      return [ zoo.Restaurant( name='Cafe', location='Region', sub_location='Inside' ) ]
+      return [ zoo.Restaurant( name=RESTAURANT_NAME, location='Africa', sub_location=None ) ]
 
 
    def get_restrooms( self, **kwargs ):
       self.calls.append( ( 'get_restrooms', kwargs ) )
-      return [ zoo.Restroom( title='Restroom' ) ]
+      return [ zoo.Restroom( title=RESTROOM_NAME ) ]
 
 
    def get_gift_shops( self, **kwargs ):
       self.calls.append( ( 'get_gift_shops', kwargs ) )
-      return [ zoo.GiftShop( name='Shop', location='Gate' ) ]
+      return [ zoo.GiftShop( name=GIFT_SHOP_NAME, location='Learning & Engagement Centre' ) ]
 
 
    def get_attractions( self, **kwargs ):
       self.calls.append( ( 'get_attractions', kwargs ) )
-      return [ zoo.Attraction( name='Carousel', free_with_admission=1 ) ]
+      return [ zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ]
 
 
    def get_zoomobile_route( self, **kwargs ):
@@ -100,68 +116,78 @@ class StubDatabase:
       return {
          'route': 'summer',
          'route_source': 'manual',
-         'zoomobile_stations': [ zoo.ZoomobileStation( name='Main Station' ) ]
+         'zoomobile_stations': [ zoo.ZoomobileStation( name=ZOOMOBILE_STATION_NAME ) ]
       }
 
 
    def get_guardians_talks( self, **kwargs ):
       self.calls.append( ( 'get_guardians_talks', kwargs ) )
-      return [ zoo.GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ) ]
+      return [ zoo.GuardiansTalk( name=GUARDIANS_TALK_NAME, location=GUARDIANS_TALK_LOCATION, x_coord=51.138, y_coord=41.279 ) ]
 
 
    def get_wild_encounters( self, **kwargs ):
       self.calls.append( ( 'get_wild_encounters', kwargs ) )
-      return [ zoo.WildEncounter( name='Encounter', meeting_spot='Spot', link='link' ) ]
+      return [
+         zoo.WildEncounter(
+            name=WILD_ENCOUNTER_NAME,
+            meeting_spot=WILD_ENCOUNTER_MEETING_SPOT,
+            link=WILD_ENCOUNTER_LINK )
+      ]
 
 
    def get_closed_exhibits( self, **kwargs ):
       self.calls.append( ( 'get_closed_exhibits', kwargs ) )
-      return [ 'Africa Savanna' ]
+      return [ ANIMAL_EXHIBIT ]
 
 
    def get_animals_matching_query( self, **kwargs ):
       self.calls.append( ( 'get_animals_matching_query', kwargs ) )
-      return [ zoo.Animal( species='African Lion', exhibit='Africa Savanna', likelihood=100 ) ]
+      return [ zoo.Animal( species=ANIMAL_NAME, exhibit=ANIMAL_EXHIBIT, likelihood=100 ) ]
 
 
    def get_pavilions_matching_query( self, query ):
       self.calls.append( ( 'get_pavilions_matching_query', { 'query': query } ) )
-      return [ zoo.Pavilion( name='Pavilion', region='Region' ) ]
+      return [ zoo.Pavilion( name=PAVILION_NAME, region='Africa' ) ]
 
 
    def get_restaurants_matching_query( self, **kwargs ):
       self.calls.append( ( 'get_restaurants_matching_query', kwargs ) )
-      return [ zoo.Restaurant( name='Cafe', location='Region', sub_location='Inside' ) ]
+      return [ zoo.Restaurant( name=RESTAURANT_NAME, location='Africa', sub_location=None ) ]
 
 
    def get_restrooms_matching_query( self, **kwargs ):
       self.calls.append( ( 'get_restrooms_matching_query', kwargs ) )
-      return [ zoo.Restroom( title='Restroom' ) ]
+      return [ zoo.Restroom( title=RESTROOM_NAME ) ]
 
 
    def get_gift_shops_matching_query( self, **kwargs ):
       self.calls.append( ( 'get_gift_shops_matching_query', kwargs ) )
-      return [ zoo.GiftShop( name='Shop', location='Gate' ) ]
+      return [ zoo.GiftShop( name=GIFT_SHOP_NAME, location='Learning & Engagement Centre' ) ]
 
 
    def get_attractions_matching_query( self, **kwargs ):
       self.calls.append( ( 'get_attractions_matching_query', kwargs ) )
-      return [ zoo.Attraction( name='Carousel', free_with_admission=1 ) ]
+      return [ zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ]
 
 
    def get_zoomobile_stations_matching_query( self, **kwargs ):
       self.calls.append( ( 'get_zoomobile_stations_matching_query', kwargs ) )
-      return [ zoo.ZoomobileStation( name='Main Station' ) ]
+      return [ zoo.ZoomobileStation( name=ZOOMOBILE_STATION_NAME ) ]
 
 
    def get_guardians_talks_matching_query( self, **kwargs ):
       self.calls.append( ( 'get_guardians_talks_matching_query', kwargs ) )
-      return [ zoo.GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ) ]
+      return [ zoo.GuardiansTalk( name=GUARDIANS_TALK_NAME, location=GUARDIANS_TALK_LOCATION, x_coord=51.138, y_coord=41.279 ) ]
 
 
    def get_wild_encounters_matching_query( self, **kwargs ):
       self.calls.append( ( 'get_wild_encounters_matching_query', kwargs ) )
-      return [ zoo.WildEncounter( name='Encounter', meeting_spot='Spot', link='link' ) ]
+      return [
+         zoo.WildEncounter(
+            name=WILD_ENCOUNTER_NAME,
+            meeting_spot=WILD_ENCOUNTER_MEETING_SPOT,
+            link=WILD_ENCOUNTER_LINK )
+      ]
 
 
    def set_itinerary( self, **kwargs ):
@@ -179,14 +205,72 @@ class StubDatabase:
       return True
 
 
+   def validate_animals( self, **kwargs ):
+      self.calls.append( ( 'validate_animals', kwargs ) )
+      return {
+         'valid_animals': [ zoo.Animal( species=ANIMAL_NAME, exhibit=ANIMAL_EXHIBIT ) ],
+         'removed_animals': [ zoo.Animal( species='Amur Tiger', off_display_message='Unavailable.' ) ]
+      }
+
+
+   def validate_attractions( self, **kwargs ):
+      self.calls.append( ( 'validate_attractions', kwargs ) )
+      return {
+         'valid_attractions': [ zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ],
+         'removed_attractions': [
+            zoo.Attraction( name=REMOVED_ATTRACTION_NAME, free_with_admission=0, closed_message='Closed.' )
+         ]
+      }
+
+
+   def validate_guardians_talks( self, **kwargs ):
+      self.calls.append( ( 'validate_guardians_talks', kwargs ) )
+      return {
+         'valid_guardians_talks': [
+            zoo.GuardiansTalk(
+               name=GUARDIANS_TALK_NAME,
+               location=GUARDIANS_TALK_LOCATION,
+               x_coord=51.138,
+               y_coord=41.279 )
+         ],
+         'removed_guardians_talks': [
+            zoo.GuardiansTalk(
+               name='Amur Tiger',
+               location='Eurasia Wilds',
+               x_coord=75.979,
+               y_coord=74.707,
+               unavailable_message='Cancelled.' )
+         ]
+      }
+
+
+   def validate_wild_encounters( self, **kwargs ):
+      self.calls.append( ( 'validate_wild_encounters', kwargs ) )
+      return {
+         'valid_wild_encounters': [
+            zoo.WildEncounter(
+               name=WILD_ENCOUNTER_NAME,
+               meeting_spot=WILD_ENCOUNTER_MEETING_SPOT,
+               link=WILD_ENCOUNTER_LINK )
+         ],
+         'removed_wild_encounters': [
+            zoo.WildEncounter(
+               name='Kangaroo',
+               meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+               link='https://www.torontozoo.com/tickets/wekangaroo',
+               unavailable_message='Unavailable.' )
+         ]
+      }
+
+
    def get_species( self ):
       self.calls.append( ( 'get_species', {} ) )
-      return [ 'African Lion', 'Amur Tiger' ]
+      return [ ANIMAL_NAME, 'Amur Tiger' ]
 
 
    def get_exhibits( self ):
       self.calls.append( ( 'get_exhibits', {} ) )
-      return [ 'Africa Savanna', 'Eurasia Wilds' ]
+      return [ ANIMAL_EXHIBIT, 'Eurasia Wilds' ]
 
 
    def get_regions_with_exhibits( self, **kwargs ):
@@ -194,49 +278,49 @@ class StubDatabase:
       return [
          {
             'name': 'Africa',
-            'exhibits': [ 'Africa Savanna' ]
+            'exhibits': [ ANIMAL_EXHIBIT ]
          }
       ]
 
 
    def get_restaurant_names( self ):
       self.calls.append( ( 'get_restaurant_names', {} ) )
-      return [ 'Africa Restaurant' ]
+      return [ RESTAURANT_NAME ]
 
 
    def get_restroom_names( self ):
       self.calls.append( ( 'get_restroom_names', {} ) )
-      return [ 'Entrance Restroom' ]
+      return [ RESTROOM_NAME ]
 
 
    def get_gift_shop_names( self ):
       self.calls.append( ( 'get_gift_shop_names', {} ) )
-      return [ 'Zootique' ]
+      return [ GIFT_SHOP_NAME ]
 
 
    def get_attraction_names( self ):
       self.calls.append( ( 'get_attraction_names', {} ) )
-      return [ 'Conservation Carousel' ]
+      return [ ATTRACTION_NAME ]
 
 
    def get_zoomobile_station_names( self ):
       self.calls.append( ( 'get_zoomobile_station_names', {} ) )
-      return [ 'Main Zoomobile Station' ]
+      return [ ZOOMOBILE_STATION_NAME ]
 
 
    def get_guardians_talk_locations( self ):
       self.calls.append( ( 'get_guardians_talk_locations', {} ) )
-      return [ 'Africa Savanna' ]
+      return [ GUARDIANS_TALK_LOCATION ]
 
 
    def get_guardians_talk_names( self ):
       self.calls.append( ( 'get_guardians_talk_names', {} ) )
-      return [ 'African Lion' ]
+      return [ GUARDIANS_TALK_NAME ]
 
 
    def get_guardians_talk_names_at_location( self, location ):
       self.calls.append( ( 'get_guardians_talk_names_at_location', { 'location': location } ) )
-      return [ 'African Lion' ]
+      return [ GUARDIANS_TALK_NAME ]
 
 
    def get_guardians_talk_occurrences( self, **kwargs ):
@@ -251,7 +335,7 @@ class StubDatabase:
 
    def get_wild_encounter_names( self ):
       self.calls.append( ( 'get_wild_encounter_names', {} ) )
-      return [ 'African Rainforest' ]
+      return [ WILD_ENCOUNTER_NAME ]
 
 
    def get_wild_encounter_occurrences( self, **kwargs ):
@@ -308,21 +392,67 @@ def test_send_file_returns_404_for_missing_file():
    assert handler.errors == [ ( 404, 'Not Found' ) ]
 
 
-def test_get_static_routes_and_unknown_route():
+@pytest.mark.parametrize(
+   'path',
+   [
+      '/map.html',
+      '/animals.html',
+      '/itinerary.html',
+      '/console-operations.html',
+      '/styles/site.css',
+      '/scripts/app.js',
+      '/images/icon%20name.png'
+   ]
+)
+def test_get_static_routes( path ):
    handler = server.MyHandler.__new__( server.MyHandler )
-   handler.path = '/map.html'
+   handler.path = path
    handler.statuses = []
-   handler.errors = []
-   handler._send_file = lambda filepath, content_type=None: handler.statuses.append( 200 )
-   server.MyHandler.do_GET( handler )
-   assert handler.statuses == [ 200 ]
+   handler.files = []
+   handler._send_file = lambda filepath, content_type=None: handler.files.append( ( filepath, content_type ) )
 
+   server.MyHandler.do_GET( handler )
+
+   assert len( handler.files ) == 1
+
+
+def test_get_unknown_route_returns_404():
    missing = server.MyHandler.__new__( server.MyHandler )
    missing.path = '/unknown'
    missing.errors = []
    missing.send_error = lambda code, message=None: missing.errors.append( ( code, message ) )
    server.MyHandler.do_GET( missing )
    assert missing.errors == [ ( 404, 'Not Found' ) ]
+
+
+def test_get_animals_by_exhibit_endpoint_adds_type_and_maps_payload( stub_database ):
+   handler = make_handler(
+      '/get-animals-by-exhibit',
+      {
+         'month': 'June',
+         'day': 15,
+         'temp': 22,
+         'exhibitsToInclude': [ 'Africa Savanna' ]
+      }
+   )
+
+   server.MyHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert result[ 'animals' ][ 0 ][ 'type' ] == 'animal'
+   assert StubDatabase.instances[ 0 ].calls[ 0 ] == (
+      'get_animals_viewable_on_day',
+      {
+         'month': 'June',
+         'day': 15,
+         'temp': 22,
+         'include_off_display_animals': False,
+         'threshold': 0,
+         'exhibits_to_include': [ 'Africa Savanna' ]
+      }
+   )
 
 
 def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database ):
@@ -378,6 +508,30 @@ def test_read_endpoints_return_json_keys( stub_database, path, body, response_ke
 
    assert handler.statuses == [ 200 ]
    assert response_key in response_json( handler )
+
+
+def test_get_restrooms_endpoint_maps_closed_toggle( stub_database ):
+   handler = make_handler(
+      '/get-restrooms',
+      {
+         'month': 'June',
+         'day': 15,
+         'includeClosedRestrooms': True
+      }
+   )
+
+   server.MyHandler.do_POST( handler )
+
+   assert StubDatabase.instances[ 0 ].calls == [
+      (
+         'get_restrooms',
+         {
+            'month': 'June',
+            'day': 15,
+            'include_closed_restrooms': True
+         }
+      )
+   ]
 
 
 @pytest.mark.parametrize(
@@ -565,6 +719,49 @@ def test_search_endpoint_adds_type_fields( stub_database ):
    assert result[ 'zoomobile_stations' ][ 0 ][ 'type' ] == 'zoomobileStation'
    assert result[ 'guardians_talks' ][ 0 ][ 'type' ] == 'guardiansTalk'
    assert result[ 'wild_encounters' ][ 0 ][ 'type' ] == 'wildEncounter'
+   assert (
+      'get_restrooms_matching_query',
+      {
+         'query': 'a',
+         'month': 'June',
+         'day': 15,
+         'include_closed_restrooms': False
+      }
+   ) in StubDatabase.instances[ 0 ].calls
+
+
+def test_search_endpoint_skips_unselected_types( stub_database ):
+   handler = make_handler(
+      '/search',
+      {
+         'query': 'a',
+         'includeAnimals': False,
+         'includePavilions': False,
+         'includeRestaurants': False,
+         'includeRestrooms': False,
+         'includeGiftShops': False,
+         'includeAttractions': False,
+         'includeZoomobileStations': False,
+         'includeGuardiansTalks': False,
+         'includeWildEncounters': False
+      }
+   )
+
+   server.MyHandler.do_POST( handler )
+   result = response_json( handler )
+
+   assert result == {
+      'animals': [],
+      'pavilions': [],
+      'restaurants': [],
+      'restrooms': [],
+      'gift_shops': [],
+      'attractions': [],
+      'zoomobile_stations': [],
+      'wild_encounters': [],
+      'guardians_talks': []
+   }
+   assert StubDatabase.instances[ 0 ].calls == []
 
 
 def test_itinerary_endpoints_return_success_payloads( stub_database ):
@@ -589,6 +786,51 @@ def test_itinerary_endpoints_return_success_payloads( stub_database ):
    assert response_json( set_handler )[ 'success' ] is True
    assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
    assert response_json( clear_handler )[ 'success' ] is True
+
+
+def test_validate_itinerary_endpoint_returns_previous_validated_and_removed_payloads( stub_database ):
+   handler = make_handler(
+      '/validate-itinerary',
+      {
+         'date': '2026-06-15',
+         'month': 'June',
+         'day': 15,
+         'temp': 22,
+         'animals': [ 'African Lion' ],
+         'attractions': [ 'Conservation Carousel' ],
+         'guardiansTalks': [ 'African Lion' ],
+         'wildEncounters': [ 'African Rainforest' ]
+      }
+   )
+
+   server.MyHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is True
+   assert result[ 'previous' ][ 'animals' ] == []
+   assert result[ 'validated' ][ 'animals' ][ 0 ][ 'type' ] == 'animal'
+   assert result[ 'validated' ][ 'attractions' ][ 0 ][ 'type' ] == 'attraction'
+   assert result[ 'validated' ][ 'guardiansTalks' ][ 0 ][ 'type' ] == 'guardiansTalk'
+   assert result[ 'validated' ][ 'wildEncounters' ][ 0 ][ 'type' ] == 'wildEncounter'
+   assert result[ 'removed' ][ 'animals' ][ 0 ][ 'removalReason' ] == 'Unavailable.'
+   assert result[ 'removed' ][ 'attractions' ][ 0 ][ 'removalReason' ] == 'Closed.'
+   assert result[ 'removed' ][ 'guardiansTalks' ][ 0 ][ 'removalReason' ] == 'Cancelled.'
+   assert result[ 'removed' ][ 'wildEncounters' ][ 0 ][ 'removalReason' ] == 'Unavailable.'
+   assert StubDatabase.instances[ 0 ].calls[ -2: ] == [
+      ( 'clear_itinerary', {} ),
+      (
+         'set_itinerary',
+         {
+            'date': '2026-06-15',
+            'animals': result[ 'validated' ][ 'animals' ],
+            'attractions': result[ 'validated' ][ 'attractions' ],
+            'guardians_talks': result[ 'validated' ][ 'guardiansTalks' ],
+            'wild_encounters': result[ 'validated' ][ 'wildEncounters' ],
+            'is_active': True
+         }
+      )
+   ]
 
 
 @pytest.mark.parametrize(

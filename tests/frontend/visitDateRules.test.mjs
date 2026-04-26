@@ -2,9 +2,16 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+   clampToAllowedVisitDate,
    getDay,
+   getMaxDate,
    getMonth,
+   getToday,
    isoDateToMonFirstDow,
+   isAfterMaxDate,
+   isBeforeToday,
+   isWithinNextNDays,
+   normalizeDate,
    parseLocalDate,
    toISODate,
 } from '../../scripts/visitDates/visitDateRules.js';
@@ -29,6 +36,46 @@ test('formats visit dates for API and calendar display', () => {
    assert.equal(toISODate(new Date(2026, 5, 15, 23, 59)), '2026-06-15');
    assert.equal(getMonth('2026-06-15'), 'JUN');
    assert.equal(getDay('2026-06-15'), 15);
+   assert.equal(getMonth('bad-date'), null);
+   assert.equal(getDay('bad-date'), null);
    assert.equal(isoDateToMonFirstDow('2026-06-15'), 1);
    assert.equal(isoDateToMonFirstDow('2026-06-21'), 7);
+   assert.equal(isoDateToMonFirstDow('bad-date'), 1);
+   assert.equal(isoDateToMonFirstDow(), isoDateToMonFirstDow(toISODate(getToday())));
+});
+
+test('normalizes and validates visit date range boundaries', () => {
+   const today = getToday();
+   const tomorrow = new Date(today);
+   tomorrow.setDate(today.getDate() + 1);
+   const yesterday = new Date(today);
+   yesterday.setDate(today.getDate() - 1);
+   const afterMax = new Date(getMaxDate(2));
+   afterMax.setDate(afterMax.getDate() + 1);
+
+   assert.equal(toISODate(normalizeDate(new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59))), toISODate(today));
+   assert.equal(normalizeDate('bad-date'), null);
+   assert.equal(isBeforeToday(yesterday), true);
+   assert.equal(isBeforeToday('bad-date'), false);
+   assert.equal(isAfterMaxDate(afterMax, 2), true);
+   assert.equal(isAfterMaxDate('bad-date', 2), false);
+   assert.equal(isWithinNextNDays(toISODate(tomorrow), 2), true);
+   assert.equal(isWithinNextNDays(toISODate(afterMax), 2), false);
+   assert.equal(isWithinNextNDays('bad-date', 2), false);
+});
+
+test('clamps visit dates to the allowed range', () => {
+   const today = getToday();
+   const yesterday = new Date(today);
+   yesterday.setDate(today.getDate() - 1);
+   const maxDate = getMaxDate(2);
+   const afterMax = new Date(maxDate);
+   afterMax.setDate(maxDate.getDate() + 1);
+   const tomorrow = new Date(today);
+   tomorrow.setDate(today.getDate() + 1);
+
+   assert.equal(toISODate(clampToAllowedVisitDate('bad-date', 2)), toISODate(today));
+   assert.equal(toISODate(clampToAllowedVisitDate(yesterday, 2)), toISODate(today));
+   assert.equal(toISODate(clampToAllowedVisitDate(afterMax, 2)), toISODate(maxDate));
+   assert.equal(toISODate(clampToAllowedVisitDate(tomorrow, 2)), toISODate(tomorrow));
 });
