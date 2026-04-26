@@ -161,6 +161,46 @@ def test_restroom_alert_controls_guest_message( db, freeze_database_today ):
    assert restroom.alert_message is None
 
 
+def test_setting_restroom_alert_twice_updates_existing_alert( db, cursor, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   assert db.set_restroom_alert(
+      restroom='Entrance Restroom',
+      alert_start_date='2026-06-01',
+      alert_end_date='2026-06-30',
+      message='Women\'s restroom is temporarily unavailable.'
+   )
+   assert db.set_restroom_alert(
+      restroom='Entrance Restroom',
+      alert_start_date='2026-06-15',
+      alert_end_date='2026-07-15',
+      message='Family restroom is temporarily unavailable.'
+   )
+
+   alert_rows = cursor.execute(
+      """ SELECT
+             ALERT_MESSAGE,
+             ALERT_START_DATE,
+             ALERT_END_DATE
+          FROM RestroomAlert
+          WHERE RESTROOM = ?;
+      """,
+      ( 'Entrance Restroom', )
+   ).fetchall()
+   restroom = next(
+      item for item in db.get_restrooms( month='June', day=15 )
+      if item.title == 'Entrance Restroom'
+   )
+
+   assert len( alert_rows ) == 1
+   assert dict( alert_rows[ 0 ] ) == {
+      'ALERT_MESSAGE': 'Family restroom is temporarily unavailable.',
+      'ALERT_START_DATE': '2026-06-15',
+      'ALERT_END_DATE': '2026-07-15'
+   }
+   assert restroom.has_alert is True
+   assert restroom.alert_message == 'Family restroom is temporarily unavailable.'
+
+
 def test_attraction_schedule_controls_open_and_closed_results( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
    assert db.set_attraction_opening_schedule(
