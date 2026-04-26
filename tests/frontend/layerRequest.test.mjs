@@ -43,6 +43,7 @@ test('builds layer request context with focused row includes', () => {
       focusRow: { name: '  Zootique  ' },
       includeOffDisplayAnimals: false,
       includeClosedRestaurants: false,
+      includeClosedRestrooms: false,
       includeClosedGiftShops: true,
       includeClosedAttractions: false,
    }), {
@@ -54,6 +55,7 @@ test('builds layer request context with focused row includes', () => {
          temp: 22,
          includeOffDisplayAnimals: false,
          includeClosedRestaurants: false,
+         includeClosedRestrooms: false,
          includeClosedGiftShops: true,
          includeClosedAttractions: false,
          zoomobileRoute: 'summer',

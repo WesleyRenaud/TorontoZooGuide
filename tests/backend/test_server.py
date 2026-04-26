@@ -80,8 +80,8 @@ class StubDatabase:
       return [ zoo.Restaurant( name='Cafe', location='Region', sub_location='Inside' ) ]
 
 
-   def get_restrooms( self ):
-      self.calls.append( ( 'get_restrooms', {} ) )
+   def get_restrooms( self, **kwargs ):
+      self.calls.append( ( 'get_restrooms', kwargs ) )
       return [ zoo.Restroom( title='Restroom' ) ]
 
 
@@ -134,8 +134,8 @@ class StubDatabase:
       return [ zoo.Restaurant( name='Cafe', location='Region', sub_location='Inside' ) ]
 
 
-   def get_restrooms_matching_query( self, query ):
-      self.calls.append( ( 'get_restrooms_matching_query', { 'query': query } ) )
+   def get_restrooms_matching_query( self, **kwargs ):
+      self.calls.append( ( 'get_restrooms_matching_query', kwargs ) )
       return [ zoo.Restroom( title='Restroom' ) ]
 
 
@@ -202,6 +202,11 @@ class StubDatabase:
    def get_restaurant_names( self ):
       self.calls.append( ( 'get_restaurant_names', {} ) )
       return [ 'Africa Restaurant' ]
+
+
+   def get_restroom_names( self ):
+      self.calls.append( ( 'get_restroom_names', {} ) )
+      return [ 'Entrance Restroom' ]
 
 
    def get_gift_shop_names( self ):
@@ -414,6 +419,12 @@ def test_read_endpoints_return_json_keys( stub_database, path, body, response_ke
          {},
          ( 'get_restaurant_names', {} ),
          { 'restaurants': [ 'Africa Restaurant' ] }
+      ),
+      (
+         '/get-restroom-names',
+         {},
+         ( 'get_restroom_names', {} ),
+         { 'restrooms': [ 'Entrance Restroom' ] }
       ),
       (
          '/get-gift-shop-names',
@@ -800,6 +811,94 @@ def test_itinerary_endpoints_return_success_payloads( stub_database ):
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
             'message': 'Closed.'
+         }
+      ),
+      (
+         '/set-restroom-closed',
+         {
+            'restroom': 'Entrance Restroom',
+            'startDate': '2026-06-01',
+            'endDate': '2026-06-30',
+            'message': 'Closed.'
+         },
+         (
+            'set_restroom_as_closed',
+            {
+               'restroom': 'Entrance Restroom',
+               'start_date': '2026-06-01',
+               'end_date': '2026-06-30',
+               'message': 'Closed.'
+            }
+         ),
+         {
+            'success': True,
+            'restroom': 'Entrance Restroom',
+            'startDate': '2026-06-01',
+            'endDate': '2026-06-30',
+            'message': 'Closed.'
+         }
+      ),
+      (
+         '/set-restroom-open',
+         {
+            'restroom': 'Entrance Restroom',
+            'startDate': '2026-06-01',
+            'endDate': None
+         },
+         (
+            'set_restroom_as_open',
+            {
+               'restroom': 'Entrance Restroom',
+               'start_date': '2026-06-01',
+               'end_date': None
+            }
+         ),
+         {
+            'success': True,
+            'restroom': 'Entrance Restroom',
+            'startDate': '2026-06-01',
+            'endDate': None
+         }
+      ),
+      (
+         '/set-restroom-alert',
+         {
+            'restroom': 'Entrance Restroom',
+            'alertStartDate': '2026-06-01',
+            'alertEndDate': '2026-06-30',
+            'message': 'Women\'s restroom is temporarily unavailable.'
+         },
+         (
+            'set_restroom_alert',
+            {
+               'restroom': 'Entrance Restroom',
+               'alert_start_date': '2026-06-01',
+               'alert_end_date': '2026-06-30',
+               'message': 'Women\'s restroom is temporarily unavailable.'
+            }
+         ),
+         {
+            'success': True,
+            'restroom': 'Entrance Restroom',
+            'alertStartDate': '2026-06-01',
+            'alertEndDate': '2026-06-30',
+            'message': 'Women\'s restroom is temporarily unavailable.'
+         }
+      ),
+      (
+         '/remove-restroom-alert',
+         {
+            'restroom': 'Entrance Restroom'
+         },
+         (
+            'remove_restroom_alert',
+            {
+               'restroom': 'Entrance Restroom'
+            }
+         ),
+         {
+            'success': True,
+            'restroom': 'Entrance Restroom'
          }
       ),
       (

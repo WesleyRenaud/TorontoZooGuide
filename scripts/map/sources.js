@@ -123,7 +123,14 @@ export function createDataSources(store) {
          })
       ),
 
-      restroom: createTypedStaticApiSource(store, 'restroom', getRestrooms),
+      restroom: createTypedDynamicApiSource(
+         store,
+         'restroom',
+         getRestrooms,
+         (ctx) => buildDatePayload(ctx, {
+            includeClosedRestrooms: ctx.includeClosedRestrooms,
+         })
+      ),
 
       giftShop: createTypedDynamicApiSource(
          store,

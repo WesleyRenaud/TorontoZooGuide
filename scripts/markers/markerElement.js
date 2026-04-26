@@ -29,8 +29,5 @@ export function bindMarkerInteractions({
       return;
    }
 
-   const type = String(group.items[0]?.type || '');
-   const clickable = type !== 'restroom';
-
-   tooltip.attachToMarker(markerEl, group.items, hover, { clickable });
+   tooltip.attachToMarker(markerEl, group.items, hover);
 }

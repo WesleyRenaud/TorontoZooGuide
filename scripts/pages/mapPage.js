@@ -14,6 +14,7 @@ function getMapPageElements() {
       showMapLabelsCheckbox: document.getElementById('showMapLabels'),
       includeOffDisplayCheckbox: document.getElementById('includeOffDisplayAnimals'),
       includeClosedRestaurantsCheckbox: document.getElementById('includeClosedRestaurants'),
+      includeClosedRestroomsCheckbox: document.getElementById('includeClosedRestrooms'),
       includeClosedGiftShopsCheckbox: document.getElementById('includeClosedGiftShops'),
       includeClosedAttractionsCheckbox: document.getElementById('includeClosedAttractions'),
       zoomobileRouteRadios: document.querySelectorAll?.('input[name="zoomobileRoute"]') ?? [],
@@ -70,6 +71,7 @@ function createRuntimeOptions(elements, {
       enableCoordinateEditing: isCoordinateEditingEnabled(),
       getIncludeOffDisplay: () => elements.includeOffDisplayCheckbox?.checked ?? false,
       getIncludeClosedRestaurants: () => elements.includeClosedRestaurantsCheckbox?.checked ?? false,
+      getIncludeClosedRestrooms: () => elements.includeClosedRestroomsCheckbox?.checked ?? false,
       getIncludeClosedGiftShops: () => elements.includeClosedGiftShopsCheckbox?.checked ?? false,
       getIncludeClosedAttractions: () => elements.includeClosedAttractionsCheckbox?.checked ?? false,
       getZoomobileRoute: () => getSelectedZoomobileRoute(elements.zoomobileRouteRadios),
@@ -101,7 +103,13 @@ function initMapSearch({
    return initSearch({
       inputEl: elements.animalSearchInput,
       resultsEl: elements.animalSearchResultsEl,
-      getIncludeFlags: () => explore.buildSearchIncludeFlags(),
+      getIncludeFlags: () => ({
+         ...explore.buildSearchIncludeFlags(),
+         includeClosedRestaurants: elements.includeClosedRestaurantsCheckbox?.checked ?? false,
+         includeClosedRestrooms: elements.includeClosedRestroomsCheckbox?.checked ?? false,
+         includeClosedGiftShops: elements.includeClosedGiftShopsCheckbox?.checked ?? false,
+         includeClosedAttractions: elements.includeClosedAttractionsCheckbox?.checked ?? false,
+      }),
       getContext: createMapDateContextGetter(elements),
       onFocusRow: (row) => updater.focusFromSearchRow(row),
    });
@@ -117,6 +125,7 @@ function initMapPageControls({
       mapDateInput: elements.mapDateInput,
       includeOffDisplayCheckbox: elements.includeOffDisplayCheckbox,
       includeClosedRestaurantsCheckbox: elements.includeClosedRestaurantsCheckbox,
+      includeClosedRestroomsCheckbox: elements.includeClosedRestroomsCheckbox,
       includeClosedGiftShopsCheckbox: elements.includeClosedGiftShopsCheckbox,
       includeClosedAttractionsCheckbox: elements.includeClosedAttractionsCheckbox,
       zoomobileRouteRadios: elements.zoomobileRouteRadios,

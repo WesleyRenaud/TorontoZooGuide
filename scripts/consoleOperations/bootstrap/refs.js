@@ -84,6 +84,37 @@ const CONSOLE_OPERATION_REF_CONFIG = {
          },
       },
    },
+   restrooms: {
+      closed: {
+         operationName: 'restroomClosed',
+         includeDateRange: true,
+         fieldSuffixes: {
+            restroomEl: 'Restroom',
+            messageEl: 'Message',
+         },
+      },
+      open: {
+         operationName: 'restroomOpen',
+         includeDateRange: true,
+         fieldSuffixes: {
+            restroomEl: 'Restroom',
+         },
+      },
+      alert: {
+         operationName: 'restroomAlert',
+         includeDateRange: true,
+         fieldSuffixes: {
+            restroomEl: 'Restroom',
+            messageEl: 'Message',
+         },
+      },
+      removeAlert: {
+         operationName: 'removeRestroomAlert',
+         fieldSuffixes: {
+            restroomEl: 'Restroom',
+         },
+      },
+   },
    giftShops: {
       closed: {
          operationName: 'giftShopClosed',

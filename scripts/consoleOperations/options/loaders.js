@@ -4,6 +4,7 @@ import {
    getGiftShopNameOptions,
    getGuardiansTalkNameOptions,
    getRestaurantNameOptions,
+   getRestroomNameOptions,
    getSpeciesOptions,
    getWildEncounterNameOptions,
    getZoomobileStationNameOptions,
@@ -14,6 +15,7 @@ const cachedOptionSets = {
    species: null,
    exhibits: null,
    restaurants: null,
+   restrooms: null,
    giftShops: null,
    attractions: null,
    zoomobileStations: null,
@@ -60,6 +62,14 @@ export async function loadRestaurants() {
       cacheKey: 'restaurants',
       fetchOptions: getRestaurantNameOptions,
       resultKey: 'restaurants',
+   });
+}
+
+export async function loadRestrooms() {
+   return loadCachedOptions({
+      cacheKey: 'restrooms',
+      fetchOptions: getRestroomNameOptions,
+      resultKey: 'restrooms',
    });
 }
 

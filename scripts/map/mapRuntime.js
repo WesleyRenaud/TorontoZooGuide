@@ -9,6 +9,7 @@ import { createTooltipController } from '../tooltips/tooltipController.js';
 import { createFocusController } from '../focus/focusController.js';
 import { createOffDisplayBanner } from '../banners/offDisplayBanner.js';
 import { createRestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
+import { createRestroomMessageBanner } from '../banners/restroomMessageBanner.js';
 import { createGiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
 import { createAttractionClosedBanner } from '../banners/attractionClosedBanner.js';
 import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
@@ -26,6 +27,7 @@ function createMapBannerSet() {
    return {
       offDisplayBanner: createOffDisplayBanner(),
       restaurantClosedBanner: createRestaurantClosedBanner(),
+      restroomMessageBanner: createRestroomMessageBanner(),
       giftShopClosedBanner: createGiftShopClosedBanner(),
       attractionClosedBanner: createAttractionClosedBanner(),
    };
@@ -97,6 +99,7 @@ export function createMapRuntime({
    enableCoordinateEditing = false,
    getIncludeOffDisplay = () => false,
    getIncludeClosedRestaurants = () => false,
+   getIncludeClosedRestrooms = () => false,
    getIncludeClosedGiftShops = () => false,
    getIncludeClosedAttractions = () => false,
    getZoomobileRoute = () => 'none',
@@ -142,6 +145,7 @@ export function createMapRuntime({
       focus,
       getIncludeOffDisplay,
       getIncludeClosedRestaurants,
+      getIncludeClosedRestrooms,
       getIncludeClosedGiftShops,
       getIncludeClosedAttractions,
       getZoomobileRoute,

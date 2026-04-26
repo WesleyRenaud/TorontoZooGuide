@@ -12,6 +12,10 @@ export function getRestaurantNameOptions() {
    return postJson('/get-restaurant-names', {});
 }
 
+export function getRestroomNameOptions() {
+   return postJson('/get-restroom-names', {});
+}
+
 export function getGiftShopNameOptions() {
    return postJson('/get-gift-shop-names', {});
 }
@@ -70,6 +74,22 @@ export function setRestaurantOpeningSchedule(payload) {
 
 export function setRestaurantClosed(payload) {
    return postJson('/set-restaurant-closed', payload);
+}
+
+export function setRestroomOpen(payload) {
+   return postJson('/set-restroom-open', payload);
+}
+
+export function setRestroomClosed(payload) {
+   return postJson('/set-restroom-closed', payload);
+}
+
+export function setRestroomAlert(payload) {
+   return postJson('/set-restroom-alert', payload);
+}
+
+export function removeRestroomAlert(payload) {
+   return postJson('/remove-restroom-alert', payload);
 }
 
 export function setGiftShopOpeningSchedule(payload) {

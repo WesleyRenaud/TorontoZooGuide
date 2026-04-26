@@ -8,6 +8,10 @@ import { createExhibitClosedPanel } from '../exhibits/panels/exhibitClosedPanel.
 import { createExhibitOpenPanel } from '../exhibits/panels/exhibitOpenPanel.js';
 import { createRestaurantClosedPanel } from '../restaurants/panels/restaurantClosedPanel.js';
 import { createRestaurantOpenPanel } from '../restaurants/panels/restaurantOpenPanel.js';
+import { createRestroomClosedPanel } from '../restrooms/panels/restroomClosedPanel.js';
+import { createRestroomOpenPanel } from '../restrooms/panels/restroomOpenPanel.js';
+import { createRestroomAlertPanel } from '../restrooms/panels/restroomAlertPanel.js';
+import { createRemoveRestroomAlertPanel } from '../restrooms/panels/removeRestroomAlertPanel.js';
 import { createGiftShopClosedPanel } from '../giftShops/panels/giftShopClosedPanel.js';
 import { createGiftShopOpenPanel } from '../giftShops/panels/giftShopOpenPanel.js';
 import { createAttractionClosedPanel } from '../attractions/panels/attractionClosedPanel.js';
@@ -38,6 +42,12 @@ const PANEL_CREATORS = {
    restaurants: [
       createRestaurantClosedPanel,
       createRestaurantOpenPanel,
+   ],
+   restrooms: [
+      createRestroomClosedPanel,
+      createRestroomOpenPanel,
+      createRestroomAlertPanel,
+      createRemoveRestroomAlertPanel,
    ],
    giftShops: [
       createGiftShopClosedPanel,
