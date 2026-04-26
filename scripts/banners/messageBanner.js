@@ -1,3 +1,43 @@
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function createSvgNode(tagName, attributes = {}) {
+   const node = document.createElementNS(SVG_NS, tagName);
+
+   Object.entries(attributes).forEach(([key, value]) => {
+      node.setAttribute(key, String(value));
+   });
+
+   return node;
+}
+
+function createWarningIcon() {
+   const svg = createSvgNode('svg', {
+      class: 'off-display-warning-icon',
+      viewBox: '0 0 24 24',
+      'aria-hidden': 'true',
+      focusable: 'false',
+   });
+
+   svg.append(
+      createSvgNode('path', {
+         d: 'M12 2L1 21h22L12 2z',
+      }),
+      createSvgNode('rect', {
+         x: '11',
+         y: '8',
+         width: '2',
+         height: '7',
+      }),
+      createSvgNode('circle', {
+         cx: '12',
+         cy: '18',
+         r: '1.5',
+      })
+   );
+
+   return svg;
+}
+
 export function createMessageBanner({
    getMessages = () => [],
 } = {}) {
@@ -28,7 +68,7 @@ export function createMessageBanner({
 
       const iconElement = document.createElement('div');
       iconElement.className = 'off-display-closed-icon';
-      iconElement.textContent = '⚠';
+      iconElement.appendChild(createWarningIcon());
 
       textElement = document.createElement('div');
       textElement.className = 'off-display-closed-text';
