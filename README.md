@@ -1,14 +1,16 @@
 # Toronto Zoo Guide
 
-Version 0.1
+Version 1.0
 
-Toronto Zoo Guide is a customer-facing web app designed to help guests plan and navigate a day at the Toronto Zoo. Version 0.1 focuses on three core experiences:
+Toronto Zoo Guide is a customer-facing web app designed to help guests plan and navigate a day at the Toronto Zoo. Version 1.0 focuses on three core experiences:
 
 - an interactive map for live exploration of the zoo grounds
 - an animals section for browsing exhibits and species details
 - an itinerary builder for planning a visit around a specific date
 
 This README covers the guest-facing functionality in those three areas. It intentionally does not document internal console or operations tools.
+
+For release history, see [CHANGELOG.md](CHANGELOG.md).
 
 ## What the App Helps Visitors Do
 
@@ -327,7 +329,7 @@ The visitor can move forward step by step, go back, or finish early once they ar
 
 The first step asks the visitor to choose a visit date.
 
-Date behavior in version 0.1 includes:
+Date behavior in version 1.0 includes:
 
 - calendar-based selection
 - no manual text entry required
@@ -428,7 +430,7 @@ This reduces accidental loss of planning work.
 
 ### Date-change validation
 
-One of the most important itinerary features in version 0.1 is date-based validation.
+One of the most important itinerary features in version 1.0 is date-based validation.
 
 When the visit date changes, the app re-checks the existing itinerary against the newly selected day. It can then:
 
@@ -530,9 +532,9 @@ That includes:
 
 After clearing, the page returns to its empty planning state.
 
-## Version 0.1 Scope
+## Current Scope
 
-Version 0.1 already delivers a strong planning and exploration workflow, with an emphasis on date-aware guest guidance.
+Toronto Zoo Guide delivers a strong planning and exploration workflow, with an emphasis on date-aware guest guidance.
 
 The current release is especially focused on:
 
