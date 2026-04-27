@@ -22,7 +22,7 @@ function hasZoomobileRoute(zoomobileRoute) {
    return zoomobileRoute !== 'none';
 }
 
-function buildSearchIncludeFlags(selectedTypes, zoomobileRoute) {
+export function buildExploreSearchIncludeFlags(selectedTypes, zoomobileRoute) {
    const selectedTypeSet = new Set(selectedTypes);
 
    return {
@@ -39,7 +39,7 @@ function buildSearchIncludeFlags(selectedTypes, zoomobileRoute) {
 function createFallbackExploreFilter() {
    return {
       getSelectedTypes: () => [...DEFAULT_SELECTED_TYPES],
-      buildSearchIncludeFlags: () => buildSearchIncludeFlags(DEFAULT_SELECTED_TYPES, 'none'),
+      buildSearchIncludeFlags: () => buildExploreSearchIncludeFlags(DEFAULT_SELECTED_TYPES, 'none'),
    };
 }
 
@@ -122,7 +122,7 @@ function createExploreFilterState({
 
    function buildSearchIncludeFlags() {
       const { selectedTypes, zoomobileRoute } = getCurrentSelection();
-      return buildSearchIncludeFlags(selectedTypes, zoomobileRoute);
+      return buildExploreSearchIncludeFlags(selectedTypes, zoomobileRoute);
    }
 
    return { getSelectedTypes, buildSearchIncludeFlags };

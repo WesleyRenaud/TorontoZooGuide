@@ -1,5 +1,6 @@
 import './apiClient.test.mjs';
 import './apiNormalizeValues.test.mjs';
+import './exploreFilter.test.mjs';
 import './searchResponse.test.mjs';
 import './searchRows.test.mjs';
 import './visitDateRules.test.mjs';
