@@ -8,21 +8,21 @@
    --map-menu-width: clamp(980px, 60vw, 1620px);
 
    /* Explore control (dropdown + search input) */
-   --explore-control-font: 4em;
+   --explore-control-font: 2.4em;
    --explore-control-weight: 700;
-   --explore-control-pad-y: 28px;
-   --explore-control-pad-x: 32px;
-   --explore-control-radius: 22px;
+   --explore-control-pad-y: 17px;
+   --explore-control-pad-x: 19px;
+   --explore-control-radius: 13px;
 
-   --explore-control-border: 6px;
+   --explore-control-border: 4px;
    --explore-control-border-color: rgba(94, 150, 0, 0.5);
    --explore-control-border-color-focus: rgba(94, 150, 0, 0.95);
 
    --explore-control-bg: rgba(255, 255, 255, 0.92);
    --explore-control-fg: rgba(20, 35, 10, 0.95);
 
-   --explore-control-shadow: 0 10px 24px rgba(0,0,0,0.18);
-   --explore-control-shadow-focus: 0 14px 34px rgba(0,0,0,0.28);
+   --explore-control-shadow: 0 6px 14px rgba(0,0,0,0.18);
+   --explore-control-shadow-focus: 0 8px 20px rgba(0,0,0,0.28);
 }
 
 /* ============================================================
@@ -166,10 +166,10 @@ html.home-page {
 ============================================================ */
 
 .side-panel-toggle {
-   padding: 10px 4px;
+   padding: 6px 2px;
    display: flex;
    flex-direction: column;
-   gap: 96px; /* vertical space between checkboxes */
+   gap: 58px; /* vertical space between checkboxes */
 }
 
 .toggle-row {
@@ -187,6 +187,16 @@ html.home-page {
    height: 64px;
    accent-color: #5e9600;
    cursor: pointer;
+}
+
+.side-panel-toggle .toggle-row {
+   gap: 19px;
+   font-size: 2.4em;
+}
+
+.side-panel-toggle .toggle-row input[type="checkbox"] {
+   width: 38px;
+   height: 38px;
 }
 
 /* ============================================================
@@ -296,7 +306,7 @@ html.home-page {
 
 .multi-select-dropdown {
    position: absolute;
-   top: calc(100% + 18px);
+   top: calc(100% + 11px);
    left: 0;
    right: 0;
 
@@ -304,8 +314,8 @@ html.home-page {
    border-radius: var(--explore-control-radius);
    border: var(--explore-control-border) solid rgba(94, 150, 0, 0.35);
 
-   box-shadow: 0 14px 34px rgba(0,0,0,0.22);
-   padding: 18px 22px;
+   box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+   padding: 11px 13px;
 
    display: none;
    z-index: 1000;
@@ -318,18 +328,18 @@ html.home-page {
 .multi-select-dropdown label {
    display: flex;
    align-items: center;
-   padding: 18px 8px;
+   padding: 11px 5px;
    cursor: pointer;
 
    font-family: 'Poppins', sans-serif;
-   font-size: 3.4em;
+   font-size: 2.04em;
    font-weight: 700;
    color: rgba(20, 35, 10, 0.95);
 }
 
 .multi-select-dropdown input[type="checkbox"] {
-   width: 64px;
-   height: 64px;
+   width: 38px;
+   height: 38px;
    accent-color: #5e9600;
    cursor: pointer;
 }
@@ -341,20 +351,20 @@ html.home-page {
 
 .selected-values {
    display: flex;
-   gap: 16px;
+   gap: 10px;
    flex-wrap: wrap;
 }
 
 .filter-chip {
    background-color: #5e9600;
    color: #ffffff;
-   padding: 12px 22px;
+   padding: 7px 13px;
    border-radius: 999px;
 
    font-size: 0.75em;
    font-weight: 700;
 
-   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .filter-none {
@@ -375,17 +385,17 @@ html.home-page {
    box-sizing: border-box;
 
    font-family: 'Poppins', sans-serif;
-   font-size: 4em;
+   font-size: 2.4em;
    font-weight: 700;
 
-   padding: 28px 32px;
-   border-radius: 22px;
+   padding: 17px 19px;
+   border-radius: 13px;
 
-   border: 6px solid rgba(94, 150, 0, 0.5);
+   border: 4px solid rgba(94, 150, 0, 0.5);
    background: rgba(255, 255, 255, 0.92);
    color: rgba(20, 35, 10, 0.95);
 
-   box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+   box-shadow: 0 6px 14px rgba(0,0,0,0.18);
    outline: none;
 }
 
@@ -396,7 +406,7 @@ html.home-page {
 
 .animal-search:focus {
    border-color: rgba(94, 150, 0, 0.95);
-   box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+   box-shadow: 0 8px 20px rgba(0,0,0,0.28);
 }
 
 /* ============================================================
@@ -404,19 +414,19 @@ html.home-page {
 ============================================================ */
 
 .animal-search-results {
-   margin-top: 40px;
+   margin-top: 24px;
    display: flex;
    flex-direction: column;
-   gap: 28px;
+   gap: 17px;
 
    overflow-y: auto;
-   padding-right: 14px;
+   padding-right: 8px;
    max-height: 100%;
 }
 
 /* Nice scrollbar */
 .animal-search-results::-webkit-scrollbar {
-   width: 32px;
+   width: 19px;
 }
 
 .animal-search-results::-webkit-scrollbar-track {
@@ -427,7 +437,7 @@ html.home-page {
 .animal-search-results::-webkit-scrollbar-thumb {
    background: rgba(94, 150, 0, 0.55);
    border-radius: 999px;
-   border: 4px solid rgba(255,255,255,0.7);
+   border: 2px solid rgba(255,255,255,0.7);
 }
 
 .animal-search-results::-webkit-scrollbar-thumb:hover {
@@ -436,27 +446,27 @@ html.home-page {
 
 .animal-result {
    background-color: rgba(94, 150, 0, 0.95);
-   border-radius: 18px;
-   padding: 28px 28px;
+   border-radius: 11px;
+   padding: 17px 17px;
 
    display: flex;
    align-items: center;
    justify-content: space-between;
-   gap: 28px;
+   gap: 17px;
 
-   box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+   box-shadow: 0 6px 15px rgba(0,0,0,0.18);
 }
 
 .animal-result-left {
    display: flex;
    flex-direction: column;
-   gap: 12px;
+   gap: 7px;
    min-width: 0;
    flex: 1 1 auto;
 }
 
 .animal-result-species {
-   font-size: 4em;
+   font-size: 2.4em;
    font-weight: 800;
    color: #ffffff;
 
@@ -468,7 +478,7 @@ html.home-page {
 }
 
 .animal-result-exhibit {
-   font-size: 2.8em;
+   font-size: 1.68em;
    font-weight: 600;
    color: rgba(255,255,255,0.9);
 
@@ -482,18 +492,18 @@ html.home-page {
 .animal-result-map-btn {
    flex: 0 0 auto;
 
-   padding: 22px 34px;
-   border-radius: 18px;
+   padding: 13px 20px;
+   border-radius: 11px;
    border: none;
 
    background-color: #77B800;
    color: #ffffff;
 
-   font-size: 2.8em;
+   font-size: 1.68em;
    font-weight: 800;
 
    cursor: pointer;
-   box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+   box-shadow: 0 6px 13px rgba(0,0,0,0.22);
    transition: transform 0.15s ease, background-color 0.2s ease;
 }
 
@@ -503,10 +513,10 @@ html.home-page {
 }
 
 .animal-result-empty {
-   font-size: 3em;
+   font-size: 1.8em;
    font-weight: 700;
    color: rgba(20, 35, 10, 0.75);
-   padding: 18px 8px;
+   padding: 11px 5px;
 }
 
 /* ============================================================
