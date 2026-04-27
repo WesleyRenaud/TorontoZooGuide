@@ -1268,7 +1268,9 @@ nav ul li a:hover {
 
    display: block;
 
-   width: min(1180px, calc(100vw - 48px));
+   width: var(--alert-banner-width, min(1600px, calc(100vw - 48px)));
+   min-width: min(560px, calc(100vw - 48px));
+   max-width: calc(100vw - 48px);
    padding: 0.42em 0.55em 0.55em;
 
    background: #4b7526;
@@ -1379,6 +1381,8 @@ nav ul li a:hover {
       bottom: 20px;
       --alert-banner-transform: translateX(-50%);
       width: min(520px, calc(100vw - 24px));
+      min-width: 0;
+      max-width: calc(100vw - 24px);
       padding: 18px;
       border-radius: 18px;
       font-size: 24px;
