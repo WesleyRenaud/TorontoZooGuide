@@ -721,6 +721,10 @@ nav ul li a:hover {
       0 0 0 11px rgba(255,221,0,0.98);
 }
 
+.marker.marker-restroom.marker-has-limited-viewing {
+   box-shadow: 0 0 0 6px rgba(255,221,0,0.98);
+}
+
 /* ============================================================
    HOVER TOOLTIP
 ============================================================ */
