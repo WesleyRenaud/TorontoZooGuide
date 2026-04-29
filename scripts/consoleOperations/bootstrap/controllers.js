@@ -29,6 +29,8 @@ import { createWildEncounterScheduleController } from '../wildEncounters/control
 import { createEndWildEncounterScheduleController } from '../wildEncounters/controllers/endWildEncounterSchedule.js';
 import { createCancelWildEncounterOccurrenceController } from '../wildEncounters/controllers/cancelWildEncounterOccurrence.js';
 import { createWildEncounterOccurrenceFilterController } from '../wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
+import { createDrinkingFountainsClosedController } from '../drinkingFountains/controllers/drinkingFountainsClosed.js';
+import { createDrinkingFountainsOpenController } from '../drinkingFountains/controllers/drinkingFountainsOpen.js';
 
 const ANIMAL_SPECIES_AUTOCOMPLETE_KEYS = [
    'offDisplay',
@@ -163,6 +165,14 @@ const CONTROLLER_BINDINGS = [
       getExtraOptions: ({ wildEncounterOccurrenceFilterController }) => ({
          occurrenceFilterController: wildEncounterOccurrenceFilterController,
       }),
+   },
+   {
+      createController: createDrinkingFountainsClosedController,
+      getRefs: refs => refs.drinkingFountains.closed,
+   },
+   {
+      createController: createDrinkingFountainsOpenController,
+      getRefs: refs => refs.drinkingFountains.open,
    },
 ];
 

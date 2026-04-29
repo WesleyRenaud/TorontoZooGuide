@@ -9,6 +9,7 @@ import {
    getRestrooms,
    getVisibleAnimals,
    getWildEncounters,
+   getDrinkingFountains,
    getZoomobileRoute,
 } from '../api/mapApi.js';
 import {
@@ -141,6 +142,13 @@ export function createDataSources(store) {
             wildEncountersToInclude: ctx.wildEncountersToInclude,
             itineraryMode: ctx.itineraryMode,
          })
+      ),
+
+      drinkingFountain: createTypedDynamicApiSource(
+         store,
+         'drinkingFountain',
+         getDrinkingFountains,
+         (ctx) => buildDatePayload(ctx)
       ),
 
       exhibit: createTypedStaticApiSource(store, 'exhibit', getExhibits),

@@ -24,8 +24,8 @@ zoomobile_stations = [
       '''This stop gives you direct access to the Canadian Domain, home to raccoons, bald eagles, wood bison, cougars, and grizzly
          bears. Please note that this station is located at the top of the domain hill, and if you wish to venture down to see the
          Canadian animals you will have to come back up the hill on foot.'''.replace( '\n', ' ' ),
-      35.356,  # X coordinate on map
-      25.491   # Y coordinate on map
+      35.293,  # X coordinate on map
+      26.083   # Y coordinate on map
    ),
    (
       'Africa Zoomobile Station',

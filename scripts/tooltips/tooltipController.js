@@ -12,7 +12,8 @@ export function createTooltipController({
    restaurantClosedBanner,
    restroomMessageBanner,
    giftShopClosedBanner,
-   attractionClosedBanner }) {
+   attractionClosedBanner,
+   drinkingFountainClosedBanner }) {
 
    let openState = createEmptyOpenState();
 
@@ -52,6 +53,7 @@ export function createTooltipController({
       restroomMessageBanner,
       giftShopClosedBanner,
       attractionClosedBanner,
+      drinkingFountainClosedBanner,
    });
 
    const carousel = createTooltipCarouselView({
@@ -73,6 +75,10 @@ export function createTooltipController({
    });
 
    function isOpen() {
+      return Boolean(getOpenMarker()) || isTooltipVisible();
+   }
+
+   function isTooltipVisible() {
       return tooltipEl && tooltipEl.style.display === 'flex';
    }
 
@@ -144,7 +150,7 @@ export function createTooltipController({
 
       if (!carousel.render(getOpenItems())) {
          banners.sync(getOpenItem(0));
-         resetOpenState();
+         globalListeners.install();
          return;
       }
 
@@ -191,7 +197,7 @@ export function createTooltipController({
    function reposition() {
       const marker = getOpenMarker();
 
-      if (!tooltipEl || !isOpen() || !marker) {
+      if (!tooltipEl || !isTooltipVisible() || !marker) {
          return;
       }
 

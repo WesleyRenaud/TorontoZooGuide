@@ -18,6 +18,10 @@ from .tables.zoomobile_day_route import zoomobile_day_routes
 from .tables.meet_the_guardians_talk import guardians_talks
 from .tables.wild_encounter_meeting_spot import wild_encounter_meeting_spots
 from .tables.wild_encounter import wild_encounters
+from .tables.drinking_fountain_day_seasonal_availability_multiplier import (
+   drinking_fountain_day_seasonal_availability_multipliers
+)
+from .tables.drinking_fountain import drinking_fountains
 
 __all__ = [
    'regions',
@@ -40,4 +44,6 @@ __all__ = [
    'guardians_talks',
    'wild_encounter_meeting_spots',
    'wild_encounters',
+   'drinking_fountain_day_seasonal_availability_multipliers',
+   'drinking_fountains',
 ]

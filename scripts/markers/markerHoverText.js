@@ -66,6 +66,10 @@ const HOVER_FORMATTERS = Object.freeze({
    ),
    guardiansTalk: formatGuardiansTalkHoverText,
    wildEncounter: formatWildEncounterHoverText,
+   drinkingFountain: (items) => formatCountedHoverText(
+      items,
+      () => 'Drinking Fountain'
+   ),
 });
 
 export function buildHoverText(itemsAtPoint) {

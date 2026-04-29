@@ -72,6 +72,10 @@ export async function getWildEncounters(payload = EMPTY_PAYLOAD) {
    return await fetchCollection('/get-wild-encounters', 'wild_encounters', payload);
 }
 
+export async function getDrinkingFountains(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-drinking-fountains', 'drinking_fountains', payload);
+}
+
 export async function getExhibits() {
    return await fetchCollection('/get-exhibits', 'exhibits');
 }

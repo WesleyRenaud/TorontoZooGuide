@@ -78,3 +78,15 @@ export function getRestroomIconUrl(backgroundColourForUrl) {
       buildGenericIconPath('restroom', backgroundColourForUrl)
    );
 }
+
+export function getDrinkingFountainIconUrl(backgroundColourForUrl) {
+   const variantToken = normalizeIconVariantToken(backgroundColourForUrl);
+
+   if (variantToken === 'closed') {
+      return buildCssUrl('/images/generic-icons/drinking-fountain/drinking-fountain-closed.png');
+   }
+
+   return buildCssUrl(
+      buildGenericIconPath('drinking-fountain', backgroundColourForUrl)
+   );
+}

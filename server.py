@@ -361,6 +361,23 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-drinking-fountains':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+
+         drinking_fountains = self.database.get_drinking_fountains( month=month, day=day )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "drinking_fountains": [ drinking_fountain.to_dict() for drinking_fountain in drinking_fountains ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/get-closed-exhibits':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -1940,6 +1957,65 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not cancel "{ wild_encounter }" on { date } at { time }.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-drinking-fountains-closed':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+         message = data.get( 'message' )
+
+         success = self.database.set_drinking_fountains_as_closed(
+            start_date=start_date,
+            end_date=end_date,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'startDate': start_date,
+            'endDate': end_date,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not set drinking fountains as closed.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-drinking-fountains-open':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+
+         success = self.database.set_drinking_fountains_as_open(
+            start_date=start_date,
+            end_date=end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'startDate': start_date,
+            'endDate': end_date
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not set drinking fountains as open.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

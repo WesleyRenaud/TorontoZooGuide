@@ -276,13 +276,13 @@ class Database():
       if animal[ 'IS_CLOSED' ] == None:
          return 'unknown', None
 
-      status_start = animal[ 'CLOSED_START' ]
-      status_end = animal[ 'CLOSED_END' ]
+      start_date = animal[ 'CLOSED_START' ]
+      end_date = animal[ 'CLOSED_END' ]
 
       is_active = self.is_date_in_range(
          target_date=target_date,
-         start_date_value=status_start,
-         end_date_value=status_end )
+         start_date_value=start_date,
+         end_date_value=end_date )
 
       if not is_active:
          return 'unknown', None
@@ -1526,6 +1526,104 @@ class Database():
       cur.close()
 
       return wild_encounters
+
+
+   def get_drinking_fountain_status( self, month=None, day=None ):
+      if month is not None and day is not None:
+         target_date = date(
+            datetime.now().year,
+            zoo.ZooUtil.normalize_month( month=month ),
+            int( day ) )
+      else:
+         target_date = datetime.now().date()
+
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  IS_CLOSED,
+                  START_DATE,
+                  END_DATE,
+                  CLOSED_MESSAGE
+               FROM DrinkingFountainStatus
+               LIMIT 1;
+         """ )
+
+      status = data.fetchone()
+      cur.close()
+
+      if status is None:
+         return self.get_drinking_fountain_seasonal_status(
+            target_date=target_date )
+
+      if not self.is_date_in_range(
+            target_date=target_date,
+            start_date_value=status[ 'START_DATE' ],
+            end_date_value=status[ 'END_DATE' ] ):
+         return self.get_drinking_fountain_seasonal_status(
+            target_date=target_date )
+
+      is_closed = bool( status[ 'IS_CLOSED' ] )
+      closed_message = status[ 'CLOSED_MESSAGE' ]
+      likelihood = 0.0 if is_closed else 1.0
+
+      return is_closed, closed_message, likelihood
+
+
+   def get_drinking_fountain_seasonal_status( self, target_date ):
+      likelihood = self.get_drinking_fountain_seasonal_likelihood(
+         target_date=target_date )
+      is_closed = likelihood <= 0
+
+      return is_closed, None, likelihood
+
+
+   def get_drinking_fountain_seasonal_likelihood( self, target_date ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  LIKELIHOOD
+               FROM DrinkingFountainDaySeasonalAvailabilityMultiplier
+               WHERE MONTH = ?
+                  AND DAY = ?;
+         """,
+         (
+            target_date.month,
+            target_date.day
+         ) )
+
+      row = data.fetchone()
+      cur.close()
+
+      return row[ 'LIKELIHOOD' ] if row else 1.0
+
+
+   def get_drinking_fountains( self, month=None, day=None ):
+      is_closed, closed_message, likelihood = self.get_drinking_fountain_status(
+         month=month,
+         day=day )
+
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  X_COORD,
+                  Y_COORD
+               FROM DrinkingFountain;
+         """ )
+
+      drinking_fountains = [
+         zoo.DrinkingFountain(
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ],
+            is_closed=is_closed,
+            closed_message=closed_message if is_closed else None,
+            likelihood=likelihood )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return drinking_fountains
 
 
    def get_closed_exhibits( self, month, day ):
@@ -3811,6 +3909,64 @@ class Database():
             wild_encounter,
             date,
             time
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def set_drinking_fountains_as_closed( self, start_date=None, end_date=None, message=None ):
+      if not message:
+         message = 'The drinking fountains are closed for the season.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """ DELETE FROM DrinkingFountainStatus;
+         """ )
+
+      cur.execute(
+         """   INSERT INTO DrinkingFountainStatus (
+                  IS_CLOSED,
+                  START_DATE,
+                  END_DATE,
+                  CLOSED_MESSAGE
+               )
+               VALUES (1, ?, ?, ?);
+         """, (
+            start_date,
+            end_date,
+            message
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def set_drinking_fountains_as_open( self, start_date=None, end_date=None ):
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """ DELETE FROM DrinkingFountainStatus;
+         """ )
+
+      cur.execute(
+         """   INSERT INTO DrinkingFountainStatus (
+                  IS_CLOSED,
+                  START_DATE,
+                  END_DATE,
+                  CLOSED_MESSAGE
+               )
+               VALUES (0, ?, ?, NULL);
+         """, (
+            start_date,
+            end_date
          ) )
 
       self.conn.commit()
