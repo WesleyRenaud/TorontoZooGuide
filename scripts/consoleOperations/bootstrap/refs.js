@@ -236,6 +236,23 @@ const CONSOLE_OPERATION_REF_CONFIG = {
          },
       },
    },
+   drinkingFountains: {
+      closed: {
+         operationName: 'drinkingFountainsClosed',
+         fieldSuffixes: {
+            startDateEl: 'StartDate',
+            endDateEl: 'EndDate',
+            messageEl: 'Message',
+         },
+      },
+      open: {
+         operationName: 'drinkingFountainsOpen',
+         fieldSuffixes: {
+            startDateEl: 'StartDate',
+            endDateEl: 'EndDate',
+         },
+      },
+   },
 };
 
 function getById(doc, id) {

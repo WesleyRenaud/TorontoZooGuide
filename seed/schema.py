@@ -713,6 +713,36 @@ def create_schema( cursor ):
          'ALTER TABLE WildEncounterCancellation ADD COLUMN ENCOUNTER_TIME TEXT NOT NULL DEFAULT "";'
       )
 
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS DrinkingFountainStatus
+                     (  IS_CLOSED         BOOL        NOT NULL DEFAULT 0,
+                        START_DATE        DATE,
+                        END_DATE          DATE,
+                        CLOSED_MESSAGE    TEXT ); ''' )
+
+   drinking_fountain_status_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( DrinkingFountainStatus );' ).fetchall()
+   }
+
+   if 'IS_CLOSED' not in drinking_fountain_status_columns:
+      cursor.execute(
+         'ALTER TABLE DrinkingFountainStatus ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 0;'
+      )
+
+   if 'START_DATE' not in drinking_fountain_status_columns:
+      cursor.execute(
+         'ALTER TABLE DrinkingFountainStatus ADD COLUMN START_DATE DATE;'
+      )
+
+   if 'END_DATE' not in drinking_fountain_status_columns:
+      cursor.execute(
+         'ALTER TABLE DrinkingFountainStatus ADD COLUMN END_DATE DATE;'
+      )
+
+   if 'CLOSED_MESSAGE' not in drinking_fountain_status_columns:
+      cursor.execute(
+         'ALTER TABLE DrinkingFountainStatus ADD COLUMN CLOSED_MESSAGE TEXT;'
+      )
+
    # Itinerary tables
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS Itinerary

@@ -22,6 +22,8 @@ GUARDIANS_TALK_LOCATION = 'Africa Savanna'
 WILD_ENCOUNTER_NAME = 'African Rainforest'
 WILD_ENCOUNTER_MEETING_SPOT = 'Wild Encounter - Africa Meeting Spot'
 WILD_ENCOUNTER_LINK = 'https://www.torontozoo.com/tickets/weafricarainforest'
+DRINKING_FOUNTAIN_X_COORD = 18.191
+DRINKING_FOUNTAIN_Y_COORD = 12.561
 
 
 def make_handler( path='/', body=None ):
@@ -132,6 +134,15 @@ class StubDatabase:
             name=WILD_ENCOUNTER_NAME,
             meeting_spot=WILD_ENCOUNTER_MEETING_SPOT,
             link=WILD_ENCOUNTER_LINK )
+      ]
+
+
+   def get_drinking_fountains( self, **kwargs ):
+      self.calls.append( ( 'get_drinking_fountains', kwargs ) )
+      return [
+         zoo.DrinkingFountain(
+            x_coord=DRINKING_FOUNTAIN_X_COORD,
+            y_coord=DRINKING_FOUNTAIN_Y_COORD )
       ]
 
 
@@ -498,6 +509,7 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
       ( '/get-zoomobile-route', { 'zoomobileRoute': 'summer', 'month': 'June', 'day': 15 }, 'route' ),
       ( '/get-guardians-talks', { 'month': 'June', 'day': 15 }, 'guardians_talks' ),
       ( '/get-wild-encounters', { 'month': 'June', 'day': 15 }, 'wild_encounters' ),
+      ( '/get-drinking-fountains', { 'month': 'June', 'day': 15 }, 'drinking_fountains' ),
       ( '/get-closed-exhibits', { 'month': 'June', 'day': 15 }, 'closed_exhibits' )
    ]
 )
@@ -1232,6 +1244,47 @@ def test_validate_itinerary_endpoint_returns_previous_validated_and_removed_payl
          {
             'success': True,
             'zoomobile_station': 'Africa Zoomobile Station'
+         }
+      ),
+      (
+         '/set-drinking-fountains-closed',
+         {
+            'startDate': '2026-06-01',
+            'endDate': '2026-06-30',
+            'message': 'Closed.'
+         },
+         (
+            'set_drinking_fountains_as_closed',
+            {
+               'start_date': '2026-06-01',
+               'end_date': '2026-06-30',
+               'message': 'Closed.'
+            }
+         ),
+         {
+            'success': True,
+            'startDate': '2026-06-01',
+            'endDate': '2026-06-30',
+            'message': 'Closed.'
+         }
+      ),
+      (
+         '/set-drinking-fountains-open',
+         {
+            'startDate': '2026-07-01',
+            'endDate': None
+         },
+         (
+            'set_drinking_fountains_as_open',
+            {
+               'start_date': '2026-07-01',
+               'end_date': None
+            }
+         ),
+         {
+            'success': True,
+            'startDate': '2026-07-01',
+            'endDate': None
          }
       )
    ]

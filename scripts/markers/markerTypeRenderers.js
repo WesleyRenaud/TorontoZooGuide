@@ -1,6 +1,7 @@
 import {
    getAnimalIconUrl,
    getAttractionIconUrl,
+   getDrinkingFountainIconUrl,
    getGiftShopIconUrl,
    getRestaurantIconUrl,
    getRestroomIconUrl,
@@ -34,6 +35,7 @@ const MARKER_CLASS_BY_TYPE = Object.freeze({
    zoomobileRouteMarker: 'marker-zoomobile-route-marker',
    guardiansTalk: 'marker-guardians-talk',
    wildEncounter: 'marker-wild-encounter',
+   drinkingFountain: 'marker-drinking-fountain',
 });
 
 const ZOOMOBILE_ROUTE_COLORS = Object.freeze({
@@ -170,6 +172,27 @@ function renderZoomobileRouteMarker(markerEl, items) {
    applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.zoomobileRouteMarker);
 }
 
+function renderDrinkingFountainMarker(markerEl, items) {
+   const drinkingFountain = items[0];
+   const count = items.length;
+   const likelihood = Number.isFinite(Number(drinkingFountain?.likelihood))
+      ? Number(drinkingFountain.likelihood) * 100
+      : (drinkingFountain?.is_closed ? 0 : 100);
+   const { colour, iconToken } = getLikelihoodVisual(likelihood);
+
+   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.drinkingFountain);
+
+   if (count > 1) {
+      applyCountMarker(markerEl, count, colour);
+      return;
+   }
+
+   applyBackgroundImage(
+      markerEl,
+      getDrinkingFountainIconUrl(iconToken)
+   );
+}
+
 const MARKER_TYPE_RENDERERS = {
    animal: renderAnimalMarker,
    pavilion: createGenericIconMarkerRenderer('pavilion'),
@@ -197,6 +220,7 @@ const MARKER_TYPE_RENDERERS = {
    zoomobileRouteMarker: renderZoomobileRouteMarker,
    guardiansTalk: createGenericIconMarkerRenderer('guardiansTalk'),
    wildEncounter: createGenericIconMarkerRenderer('wildEncounter'),
+   drinkingFountain: renderDrinkingFountainMarker,
 };
 
 export function renderMarkerByType(markerEl, items) {

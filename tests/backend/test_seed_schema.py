@@ -32,6 +32,8 @@ def test_seed_data_exports_all_static_table_rows():
    assert data.guardians_talks
    assert data.wild_encounter_meeting_spots
    assert data.wild_encounters
+   assert data.drinking_fountain_day_seasonal_availability_multipliers
+   assert data.drinking_fountains
 
 
 def test_create_schema_migrates_partial_dynamic_tables():

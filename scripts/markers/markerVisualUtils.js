@@ -12,6 +12,7 @@ const MARKER_TYPE_CLASSES = [
    'marker-zoomobile-route-marker',
    'marker-guardians-talk',
    'marker-wild-encounter',
+   'marker-drinking-fountain',
    'marker-has-limited-viewing',
 ];
 

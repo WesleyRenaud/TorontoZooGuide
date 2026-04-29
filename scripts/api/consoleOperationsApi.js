@@ -159,3 +159,11 @@ export function getWildEncounterOccurrences(payload) {
 export function cancelWildEncounterOccurrence(payload) {
    return postJson('/cancel-wild-encounter-occurrence', payload);
 }
+
+export function setDrinkingFountainsClosed(payload) {
+   return postJson('/set-drinking-fountains-closed', payload);
+}
+
+export function setDrinkingFountainsOpen(payload) {
+   return postJson('/set-drinking-fountains-open', payload);
+}
