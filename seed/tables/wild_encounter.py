@@ -67,6 +67,31 @@ wild_encounters = [
       '''The Tiny Tour''',                                           # Name
       '''Wild Encounter - Discovery Zone Meeting Spot''',            # Meeting spot
       '''https://www.torontozoo.com/tickets/wetiny'''
+   ),
+   (
+      '''Capybara''',                                                # Name
+      '''Wild Encounter - Mayan Temple Meeting Spot''',              # Meeting spot
+      '''https://www.torontozoo.com/tickets/wecapybara'''
+   ),
+   (
+      '''Guardians of Gorillas''',                                   # Name
+      '''Wild Encounter - Penguin Meeting Spot''',                   # Meeting spot
+      '''https://www.torontozoo.com/tickets/wegorilla'''
+   ),
+   (
+      '''Great Barrier Reef''',                                      # Name
+      '''Wild Encounter - Eurasia Meeting Spot''',                   # Meeting spot
+      '''https://www.torontozoo.com/tickets/wegbr'''
+   ),
+   (
+      '''Mischievious Meerkats''',                                   # Name
+      '''Wild Encounter - Africa Meeting Spot''',                    # Meeting spot
+      '''https://www.torontozoo.com/tickets/wemeerkats'''
+   ),
+   (
+      '''Savanna Safari''',                                          # Name
+      '''Wild Encounter - Penguin Meeting Spot''',                   # Meeting spot
+      '''https://www.torontozoo.com/tickets/wesavannasafarI'''
    )
 ]
 
