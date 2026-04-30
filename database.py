@@ -1528,6 +1528,14 @@ class Database():
       return wild_encounters
 
 
+   def get_available_wild_encounters( self, month, day ):
+      return [
+         wild_encounter
+         for wild_encounter in self.get_wild_encounters( month=month, day=day )
+         if getattr( wild_encounter, 'is_available', True )
+      ]
+
+
    def get_drinking_fountain_status( self, month=None, day=None ):
       if month is not None and day is not None:
          target_date = date(
@@ -1798,7 +1806,7 @@ class Database():
 
 
    def get_wild_encounters_matching_query( self, query, month, day ):
-      wild_encounters = self.get_wild_encounters( month=month, day=day )
+      wild_encounters = self.get_available_wild_encounters( month=month, day=day )
 
       if not query:
          return wild_encounters

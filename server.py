@@ -352,7 +352,9 @@ class MyHandler( BaseHTTPRequestHandler ):
          month = data.get( 'month' )
          day = data.get( 'day' )
 
-         wild_encounters = self.database.get_wild_encounters( month=month, day=day )
+         wild_encounters = self.database.get_available_wild_encounters(
+            month=month,
+            day=day )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
