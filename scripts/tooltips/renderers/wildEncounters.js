@@ -11,9 +11,9 @@ export const wildEncounterRenderer = {
       return createTooltipCard({
          index,
          image: {
-            src: `images/wild-encounters/${normalizedName}.png`,
+            src: `images/details/wild-encounters/${normalizedName}.png`,
             alt: name,
-            fallbackSrc: 'images/generic-icons/wild-encounter.png',
+            fallbackSrc: 'images/icons/wild-encounter/wild-encounter.png',
          },
          title: { text: name },
          details: [

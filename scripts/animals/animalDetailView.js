@@ -61,7 +61,7 @@ function buildAnimalImage(animal) {
    }
 
    const image = document.createElement('img');
-   image.src = `../images/animals/${exhibitFile}/${speciesFile}.png`;
+   image.src = `../images/details/animals/${exhibitFile}/${speciesFile}.png`;
    image.className = 'new-animal-image';
    image.alt = species;
 

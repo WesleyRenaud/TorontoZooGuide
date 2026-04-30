@@ -19,11 +19,11 @@ const LIMITED_VIEWING_MARKER_CLASS = 'marker-has-limited-viewing';
 const CLOSED_RESTROOM_ICON_TOKEN = 'closed';
 
 const GENERIC_ICON_PATHS = Object.freeze({
-   pavilion: '/images/generic-icons/pavilion-open.png',
-   restroom: '/images/generic-icons/restroom-open.png',
-   zoomobileStation: '/images/generic-icons/zoomobile-station.png',
-   guardiansTalk: '/images/generic-icons/guardians-talk.png',
-   wildEncounter: '/images/generic-icons/wild-encounter.png',
+   pavilion: '/images/icons/pavilion/pavilion-open.png',
+   restroom: '/images/icons/restroom/restroom-open.png',
+   zoomobileStation: '/images/icons/zoomobile-station/zoomobile-station.png',
+   guardiansTalk: '/images/icons/guardians-talk/guardians-talk.png',
+   wildEncounter: '/images/icons/wild-encounter/wild-encounter.png',
 });
 
 const MARKER_CLASS_BY_TYPE = Object.freeze({

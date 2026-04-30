@@ -18,9 +18,9 @@ export const guardiansTalkRenderer = {
       return createTooltipCard({
          index,
          image: {
-            src: `images/guardians-talks/${normalizedName}.png`,
+            src: `images/details/guardians-talks/${normalizedName}.png`,
             alt: t.name || name,
-            fallbackSrc: 'images/generic-icons/guardians-talk.png',
+            fallbackSrc: 'images/icons/guardians-talk/guardians-talk.png',
          },
          title: { text: name },
          details: [

@@ -11,9 +11,9 @@ export const zoomobileStationRenderer = {
       return createTooltipCard({
          index,
          image: {
-            src: `images/zoomobile-stations/${normalizedName}.png`,
+            src: `images/details/zoomobile-stations/${normalizedName}.png`,
             alt: name,
-            fallbackSrc: 'images/generic-icons/zoomobile-station.png',
+            fallbackSrc: 'images/icons/zoomobile-station/zoomobile-station.png',
          },
          title: { text: name },
          details: [

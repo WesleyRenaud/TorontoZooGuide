@@ -32,7 +32,7 @@ export function createAnimalsListView({ listEl }) {
          const fileName = normalizeAssetKey(r.name);
          renderButton({
             label: r.name,
-            imageSrc: `../images/regions/${fileName}.png`,
+            imageSrc: `../images/details/regions/${fileName}.png`,
             onClick: () => onRegionSelected(r)
          });
       });
@@ -51,7 +51,7 @@ export function createAnimalsListView({ listEl }) {
          const fileName = normalizeAssetKey(exhibit);
          renderButton({
             label: exhibit,
-            imageSrc: `../images/exhibits/${fileName}.png`,
+            imageSrc: `../images/details/exhibits/${fileName}.png`,
             onClick: () => onExhibitSelected(exhibit)
          });
       });
@@ -72,7 +72,7 @@ export function createAnimalsListView({ listEl }) {
 
          renderButton({
             label: animalName,
-            imageSrc: `../images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}.png`,
+            imageSrc: `../images/icons/animals/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}.png`,
             onClick: () => onAnimalSelected(animalName)
          });
       });
