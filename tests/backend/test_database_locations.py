@@ -599,6 +599,40 @@ def test_wild_encounter_schedule_and_cancellation( db, freeze_database_today ):
    assert out_of_range.unavailable_message == 'African Rainforest is not scheduled on July 1.'
 
 
+def test_wild_encounter_search_only_returns_available_schedule_days( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   assert db.set_wild_encounter_schedule(
+      wild_encounter='Mischevious Meerkats',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='14:00',
+      monday=True,
+      tuesday=False,
+      wednesday=True,
+      thursday=True,
+      friday=False,
+      saturday=True,
+      sunday=False,
+      message=None
+   )
+
+   monday_results = db.get_wild_encounters_matching_query(
+      query='Mischevious Meerkats',
+      month='June',
+      day=15 )
+   sunday_results = db.get_wild_encounters_matching_query(
+      query='Mischevious Meerkats',
+      month='June',
+      day=21 )
+   sunday_available = db.get_available_wild_encounters(
+      month='June',
+      day=21 )
+
+   assert [ item.name for item in monday_results ] == [ 'Mischevious Meerkats' ]
+   assert sunday_results == []
+   assert all( item.name != 'Mischevious Meerkats' for item in sunday_available )
+
+
 def test_wild_encounter_occurrences_cover_all_weekdays_and_cancellations( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
    assert db.set_wild_encounter_schedule(

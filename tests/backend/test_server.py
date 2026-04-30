@@ -137,6 +137,16 @@ class StubDatabase:
       ]
 
 
+   def get_available_wild_encounters( self, **kwargs ):
+      self.calls.append( ( 'get_available_wild_encounters', kwargs ) )
+      return [
+         zoo.WildEncounter(
+            name=WILD_ENCOUNTER_NAME,
+            meeting_spot=WILD_ENCOUNTER_MEETING_SPOT,
+            link=WILD_ENCOUNTER_LINK )
+      ]
+
+
    def get_drinking_fountains( self, **kwargs ):
       self.calls.append( ( 'get_drinking_fountains', kwargs ) )
       return [
@@ -543,6 +553,24 @@ def test_get_restrooms_endpoint_maps_closed_toggle( stub_database ):
             'include_closed_restrooms': True
          }
       )
+   ]
+
+
+def test_get_wild_encounters_endpoint_uses_available_database_results( stub_database ):
+   handler = make_handler(
+      '/get-wild-encounters',
+      { 'month': 'June', 'day': 21 } )
+
+   server.MyHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert StubDatabase.instances[ 0 ].calls == [
+      ( 'get_available_wild_encounters', { 'month': 'June', 'day': 21 } )
+   ]
+   assert [ item[ 'name' ] for item in result[ 'wild_encounters' ] ] == [
+      WILD_ENCOUNTER_NAME
    ]
 
 

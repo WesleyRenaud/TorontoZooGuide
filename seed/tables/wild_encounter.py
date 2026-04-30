@@ -84,7 +84,7 @@ wild_encounters = [
       '''https://www.torontozoo.com/tickets/wegbr'''
    ),
    (
-      '''Mischievious Meerkats''',                                   # Name
+      '''Mischevious Meerkats''',                                    # Name
       '''Wild Encounter - Africa Meeting Spot''',                    # Meeting spot
       '''https://www.torontozoo.com/tickets/wemeerkats'''
    ),
