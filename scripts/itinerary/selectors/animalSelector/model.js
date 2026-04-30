@@ -66,7 +66,7 @@ export function buildAnimalImageSrc(row) {
       return null;
    }
 
-   return `../images/animals/${exhibitFile}/${speciesFile}.png`;
+   return `../images/details/animals/${exhibitFile}/${speciesFile}.png`;
 }
 
 function normalizeLegacyStoredSpecies(item) {

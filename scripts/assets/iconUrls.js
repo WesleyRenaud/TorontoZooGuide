@@ -20,27 +20,26 @@ function buildAnimalIconPath(exhibit, species, variantToken) {
    const normalizedAnimal = normalizeAssetKey(species);
    const normalizedVariant = normalizeIconVariantToken(variantToken);
 
-   return `/images/animal-icons/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${normalizedVariant}.png`;
+   return `/images/icons/animals/${normalizedExhibit}/${normalizedAnimal}/${normalizedAnimal}-${normalizedVariant}.png`;
 }
 
 function buildAttractionIconPath(attractionName, variantToken) {
    const normalizedAttraction = normalizeAssetKey(attractionName);
 
    if (isOpenIconVariant(variantToken)) {
-      return `/images/attraction-icons/${normalizedAttraction}-open.png`;
+      return `/images/icons/attractions/${normalizedAttraction}-open.png`;
    }
 
    const normalizedVariant = normalizeIconVariantToken(variantToken);
-   return `/images/attraction-icons/${normalizedAttraction}/${normalizedAttraction}-${normalizedVariant}.png`;
+   return `/images/icons/attractions/${normalizedAttraction}/${normalizedAttraction}-${normalizedVariant}.png`;
 }
 
 function buildGenericIconPath(iconName, variantToken) {
-   if (isOpenIconVariant(variantToken)) {
-      return `/images/generic-icons/${iconName}-open.png`;
-   }
+   const normalizedVariant = isOpenIconVariant(variantToken)
+      ? 'open'
+      : normalizeIconVariantToken(variantToken);
 
-   const normalizedVariant = normalizeIconVariantToken(variantToken);
-   return `/images/generic-icons/${iconName}/${iconName}-${normalizedVariant}.png`;
+   return `/images/icons/${iconName}/${iconName}-${normalizedVariant}.png`;
 }
 
 export function getAnimalIconUrl(exhibit, species, backgroundColourForUrl) {
@@ -71,7 +70,7 @@ export function getRestroomIconUrl(backgroundColourForUrl) {
    const variantToken = normalizeIconVariantToken(backgroundColourForUrl);
 
    if (variantToken === 'closed') {
-      return buildCssUrl('/images/generic-icons/restroom/restroom-closed.png');
+      return buildCssUrl('/images/icons/restroom/restroom-closed.png');
    }
 
    return buildCssUrl(
@@ -83,7 +82,7 @@ export function getDrinkingFountainIconUrl(backgroundColourForUrl) {
    const variantToken = normalizeIconVariantToken(backgroundColourForUrl);
 
    if (variantToken === 'closed') {
-      return buildCssUrl('/images/generic-icons/drinking-fountain/drinking-fountain-closed.png');
+      return buildCssUrl('/images/icons/drinking-fountain/drinking-fountain-closed.png');
    }
 
    return buildCssUrl(

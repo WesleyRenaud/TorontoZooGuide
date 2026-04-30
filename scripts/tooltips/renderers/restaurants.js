@@ -11,9 +11,9 @@ export const restaurantRenderer = {
       return createTooltipCard({
          index,
          image: {
-            src: `images/restaurants/${normalizedName}.png`,
+            src: `images/details/restaurants/${normalizedName}.png`,
             alt: name,
-            fallbackSrc: 'images/generic-icons/restaurant-open.png',
+            fallbackSrc: 'images/icons/restaurant/restaurant-open.png',
          },
          title: { text: name },
          details: [

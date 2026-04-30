@@ -55,7 +55,7 @@ export function buildAttractionImageSrc(row) {
       return null;
    }
 
-   return `../images/attractions/${attractionFile}.png`;
+   return `../images/details/attractions/${attractionFile}.png`;
 }
 
 function createStoredAttractionFromString(item) {

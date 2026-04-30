@@ -11,9 +11,9 @@ export const pavilionRenderer = {
       return createTooltipCard({
          index,
          image: {
-            src: `images/pavilions/${normalizedName}.png`,
+            src: `images/details/pavilions/${normalizedName}.png`,
             alt: name,
-            fallbackSrc: 'images/generic-icons/pavilion-open.png',
+            fallbackSrc: 'images/icons/pavilion/pavilion-open.png',
          },
          title: { text: name },
          details: [
