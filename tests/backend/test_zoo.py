@@ -36,6 +36,10 @@ def test_domain_objects_serialize_to_frontend_shapes():
       'closed_message': None,
       'likelihood': 0.0
    }
+   assert zoo.Defibrillator( x_coord=5, y_coord=6 ).to_dict() == {
+      'x_coord': 5,
+      'y_coord': 6
+   }
 
 
 def test_animal_to_dict_converts_boolean_flags():

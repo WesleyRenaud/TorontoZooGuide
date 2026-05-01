@@ -10,11 +10,13 @@ export function createMapStore() {
          zoomobileStation: [],
          guardiansTalk: [],
          wildEncounter: [],
+         defibrillator: [],
       },
       cache: {
          pavilion: { loaded: false, inFlight: null },
          restroom: { loaded: false, inFlight: null },
          exhibit: { loaded: false, inFlight: null },
+         defibrillator: { loaded: false, inFlight: null },
       },
    };
 }

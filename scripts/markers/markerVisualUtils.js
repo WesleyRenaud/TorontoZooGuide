@@ -13,6 +13,7 @@ const MARKER_TYPE_CLASSES = [
    'marker-guardians-talk',
    'marker-wild-encounter',
    'marker-drinking-fountain',
+   'marker-defibrillator',
    'marker-has-limited-viewing',
 ];
 

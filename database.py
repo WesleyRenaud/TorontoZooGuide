@@ -1634,6 +1634,27 @@ class Database():
       return drinking_fountains
 
 
+   def get_defibrillators( self ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  X_COORD,
+                  Y_COORD
+               FROM Defibrillator;
+         """ )
+
+      defibrillators = [
+         zoo.Defibrillator(
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return defibrillators
+
+
    def get_closed_exhibits( self, month, day ):
       cur = self.conn.cursor()
 

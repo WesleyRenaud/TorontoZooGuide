@@ -1,6 +1,7 @@
 import {
    getAttractions,
    getClosedExhibits,
+   getDefibrillators,
    getExhibits,
    getGiftShops,
    getGuardiansTalks,
@@ -150,6 +151,8 @@ export function createDataSources(store) {
          getDrinkingFountains,
          (ctx) => buildDatePayload(ctx)
       ),
+
+      defibrillator: createTypedStaticApiSource(store, 'defibrillator', getDefibrillators),
 
       exhibit: createTypedStaticApiSource(store, 'exhibit', getExhibits),
 
