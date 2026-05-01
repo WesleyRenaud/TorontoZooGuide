@@ -70,6 +70,10 @@ const HOVER_FORMATTERS = Object.freeze({
       items,
       () => 'Drinking Fountain'
    ),
+   defibrillator: (items) => formatCountedHoverText(
+      items,
+      () => 'Defibrillator'
+   ),
 });
 
 export function buildHoverText(itemsAtPoint) {

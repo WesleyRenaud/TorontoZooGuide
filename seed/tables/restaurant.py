@@ -18,8 +18,8 @@ restaurants = [
       None,                                                                                              # Sub-location
       '''Enjoy Tim Hortons fresh coffee, hot and cold beverages, breakfast sandwiches, pastries and more.''',
       '''https://www.torontozoo.com/!/pdfs/food/peacockcafemenu.pdf''',                                  # Menu link
-      56.865,                                                                                            # X coordinate on map
-      83.603                                                                                             # Y coordinate on map
+      57.079,                                                                                            # X coordinate on map
+      83.618                                                                                             # Y coordinate on map
    ),
    (
       'Africa Restaurant',                                                                               # Name
@@ -100,8 +100,8 @@ restaurants = [
       None,                                                                                              # Sub-location
       '''Located next to the arctic wolves, outside of Caribou Café!''',
       'https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf',                                         # Menu link
-      71.618,                                                                                            # X coordinate on map
-      57.279                                                                                             # Y coordinate on map
+      71.344,                                                                                            # X coordinate on map
+      56.601                                                                                             # Y coordinate on map
    ),
    (
       'Polar Patio',                                                                                     # Name

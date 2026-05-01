@@ -57,6 +57,14 @@ def test_region_and_static_location_queries( db ):
    assert all( drinking_fountain.is_closed is False for drinking_fountain in drinking_fountains )
 
 
+def test_defibrillators_have_coordinates( db ):
+   defibrillators = db.get_defibrillators()
+
+   assert len( defibrillators ) > 0
+   assert all( 0 <= defibrillator.x_coord <= 100 for defibrillator in defibrillators )
+   assert all( 0 <= defibrillator.y_coord <= 100 for defibrillator in defibrillators )
+
+
 def test_drinking_fountain_seasonal_fallback_controls_open_and_closed_results( db, cursor ):
    summer_fountains = db.get_drinking_fountains( month='June', day=15 )
    winter_fountains = db.get_drinking_fountains( month='January', day=15 )

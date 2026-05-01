@@ -20,6 +20,7 @@ from . import wild_encounter_meeting_spot
 from . import wild_encounter
 from . import drinking_fountain_day_seasonal_availability_multiplier
 from . import drinking_fountain
+from . import defibrillator
 
 
 static_tables = [
@@ -45,4 +46,5 @@ static_tables = [
    wild_encounter,
    drinking_fountain_day_seasonal_availability_multiplier,
    drinking_fountain,
+   defibrillator,
 ]

@@ -27,8 +27,8 @@ pavilions = [
          America. Next venture through a number of aquatic habitats, and into the everglades wing where you can spot a number of
          invertebrates and the American Alligators. Move through the Costa Rican wing, and enjoy the playful river otters. Finally
          see a variety of North American reptiles, including the native Blanding's turtle.'''.replace( '\n', ' ' ),
-      69.606,                                   # X coordinate on map
-      48.712                                    # Y coordinate on map
+      67.517,                                   # X coordinate on map
+      49.129                                    # Y coordinate on map
    ),
    (
       'African Rainforest Pavilion',
