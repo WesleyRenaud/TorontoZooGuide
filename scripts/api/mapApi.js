@@ -92,6 +92,10 @@ export async function getPicnicSites() {
    return await fetchCollection('/get-picnic-sites', 'picnic_sites');
 }
 
+export async function getEventSites() {
+   return await fetchCollection('/get-event-sites', 'event_sites');
+}
+
 export async function getExhibits() {
    return await fetchCollection('/get-exhibits', 'exhibits');
 }

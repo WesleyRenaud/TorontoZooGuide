@@ -107,6 +107,22 @@ def test_picnic_sites_have_coordinates( db ):
    assert all( 0 <= picnic_site.y_coord <= 100 for picnic_site in picnic_sites )
 
 
+def test_event_sites_have_names_and_coordinates( db ):
+   event_sites = db.get_event_sites()
+   event_site_names = { event_site.name for event_site in event_sites }
+
+   assert event_site_names == {
+      'Special Events Center',
+      'Wildlife Marquee',
+      'Conservation Clubhouse',
+      'Learning & Engagement Auditorium',
+      'Canopy Classroom',
+      'Serengeti Bush Camp'
+   }
+   assert all( 0 <= event_site.x_coord <= 100 for event_site in event_sites )
+   assert all( 0 <= event_site.y_coord <= 100 for event_site in event_sites )
+
+
 def test_drinking_fountain_seasonal_fallback_controls_open_and_closed_results( db, cursor ):
    summer_fountains = db.get_drinking_fountains( month='June', day=15 )
    winter_fountains = db.get_drinking_fountains( month='January', day=15 )

@@ -185,6 +185,16 @@ class StubDatabase:
       ]
 
 
+   def get_event_sites( self ):
+      self.calls.append( ( 'get_event_sites', {} ) )
+      return [
+         zoo.EventSite(
+            name='Special Events Center',
+            x_coord=56.789,
+            y_coord=12.345 )
+      ]
+
+
    def get_closed_exhibits( self, **kwargs ):
       self.calls.append( ( 'get_closed_exhibits', kwargs ) )
       return [ ANIMAL_EXHIBIT ]
@@ -553,6 +563,7 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
       ( '/get-emergency-intercoms', {}, 'emergency_intercoms' ),
       ( '/get-guest-services', {}, 'guest_services' ),
       ( '/get-picnic-sites', {}, 'picnic_sites' ),
+      ( '/get-event-sites', {}, 'event_sites' ),
       ( '/get-closed-exhibits', { 'month': 'June', 'day': 15 }, 'closed_exhibits' )
    ]
 )

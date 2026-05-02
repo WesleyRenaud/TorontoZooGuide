@@ -86,6 +86,10 @@ const HOVER_FORMATTERS = Object.freeze({
       items,
       () => 'Picnic Site'
    ),
+   eventSite: (items) => formatCountedHoverText(
+      items,
+      (item) => readItemText(item, 'name', 'Event Site')
+   ),
 });
 
 export function buildHoverText(itemsAtPoint) {

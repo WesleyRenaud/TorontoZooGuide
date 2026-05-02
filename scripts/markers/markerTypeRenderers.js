@@ -2,6 +2,7 @@ import {
    getAnimalIconUrl,
    getAttractionIconUrl,
    getDrinkingFountainIconUrl,
+   getEventSiteIconUrl,
    getGiftShopIconUrl,
    getGuestServiceIconUrl,
    getRestaurantIconUrl,
@@ -46,6 +47,7 @@ const MARKER_CLASS_BY_TYPE = Object.freeze({
    guestService: 'marker-guest-service',
    firstAidGuestService: 'marker-guest-service-first-aid',
    picnicSite: 'marker-picnic-site',
+   eventSite: 'marker-event-site',
 });
 
 const ZOOMOBILE_ROUTE_COLORS = Object.freeze({
@@ -224,6 +226,22 @@ function renderGuestServiceMarker(markerEl, items) {
    );
 }
 
+function renderEventSiteMarker(markerEl, items) {
+   const eventSite = items[0];
+
+   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.eventSite);
+
+   if (items.length > 1) {
+      applyCountMarker(markerEl, items.length);
+      return;
+   }
+
+   applyBackgroundImage(
+      markerEl,
+      getEventSiteIconUrl(eventSite?.name)
+   );
+}
+
 const MARKER_TYPE_RENDERERS = {
    animal: renderAnimalMarker,
    pavilion: createGenericIconMarkerRenderer('pavilion'),
@@ -256,6 +274,7 @@ const MARKER_TYPE_RENDERERS = {
    emergencyIntercom: createGenericIconMarkerRenderer('emergencyIntercom'),
    guestService: renderGuestServiceMarker,
    picnicSite: createGenericIconMarkerRenderer('picnicSite'),
+   eventSite: renderEventSiteMarker,
 };
 
 export function renderMarkerByType(markerEl, items) {

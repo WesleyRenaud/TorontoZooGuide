@@ -44,8 +44,8 @@ pavilions = [
       '''Walk through this expansive pavilion which captures the beauty and scale of the beautiful Indonesian rainforest pavilions.
          Watch orangutans and gibbons swing through the tree canopy, listen to the calls of the tropical birds, and watch a number
          of species of reptile scurry across the forest floor.'''.replace( '\n', ' ' ),
-      47.879,                                   # X coordinate on map
-      76.223                                    # Y coordinate on map
+      47.560,                                   # X coordinate on map
+      75.430                                    # Y coordinate on map
    ),
    (
       'Malayan Woods Pavilion',

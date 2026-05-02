@@ -24,6 +24,7 @@ from . import defibrillator
 from . import emergency_intercom
 from . import guest_service
 from . import picnic_site
+from . import event_site
 
 
 static_tables = [
@@ -53,4 +54,5 @@ static_tables = [
    emergency_intercom,
    guest_service,
    picnic_site,
+   event_site,
 ]
