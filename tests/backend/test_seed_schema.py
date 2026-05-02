@@ -35,6 +35,7 @@ def test_seed_data_exports_all_static_table_rows():
    assert data.drinking_fountain_day_seasonal_availability_multipliers
    assert data.drinking_fountains
    assert data.defibrillators
+   assert data.emergency_intercoms
 
 
 def test_create_schema_migrates_partial_dynamic_tables():

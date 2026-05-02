@@ -23,6 +23,7 @@ from .tables.drinking_fountain_day_seasonal_availability_multiplier import (
 )
 from .tables.drinking_fountain import drinking_fountains
 from .tables.defibrillator import defibrillators
+from .tables.emergency_intercom import emergency_intercoms
 
 __all__ = [
    'regions',
@@ -48,4 +49,5 @@ __all__ = [
    'drinking_fountain_day_seasonal_availability_multipliers',
    'drinking_fountains',
    'defibrillators',
+   'emergency_intercoms',
 ]

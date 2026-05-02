@@ -74,6 +74,10 @@ const HOVER_FORMATTERS = Object.freeze({
       items,
       () => 'Defibrillator'
    ),
+   emergencyIntercom: (items) => formatCountedHoverText(
+      items,
+      () => 'Emergency Intercom'
+   ),
 });
 
 export function buildHoverText(itemsAtPoint) {

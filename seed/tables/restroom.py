@@ -46,9 +46,17 @@ restrooms = [
       'Splash Island Restroom',
       67.201,  # X coordinate on map
       75.854   # Y coordinate on map
+   ),
+   (
+      'Zootique Restroom',
+      62.467,  # X coordinate on map
+      72.934   # Y coordinate on map
+   ),
+   (
+      'African Rainforest Restroom',
+      46.313,  # X coordinate on map
+      68.117   # Y coordinate on map
    )
-
-   # TO-DO: Add Zootique restroom
 ]
 
 def insert_rows( cursor ):

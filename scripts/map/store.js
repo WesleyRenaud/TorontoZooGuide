@@ -11,12 +11,14 @@ export function createMapStore() {
          guardiansTalk: [],
          wildEncounter: [],
          defibrillator: [],
+         emergencyIntercom: [],
       },
       cache: {
          pavilion: { loaded: false, inFlight: null },
          restroom: { loaded: false, inFlight: null },
          exhibit: { loaded: false, inFlight: null },
          defibrillator: { loaded: false, inFlight: null },
+         emergencyIntercom: { loaded: false, inFlight: null },
       },
    };
 }

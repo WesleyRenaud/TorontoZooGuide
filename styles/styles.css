@@ -703,7 +703,7 @@ nav ul li a:hover {
    height: 32px;   
 }
 
-.marker.marker-restaurant, .marker.marker-restroom, .marker.marker-gift-shop, .marker.marker-guardians-talk, .marker.marker-drinking-fountain, .marker.marker-defibrillator {
+.marker.marker-restaurant, .marker.marker-restroom, .marker.marker-gift-shop, .marker.marker-guardians-talk, .marker.marker-drinking-fountain, .marker.marker-defibrillator, .marker.marker-emergency-intercom {
    width: 24px;
    height: 24px;
 }

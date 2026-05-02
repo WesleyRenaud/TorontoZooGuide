@@ -65,6 +65,14 @@ def test_defibrillators_have_coordinates( db ):
    assert all( 0 <= defibrillator.y_coord <= 100 for defibrillator in defibrillators )
 
 
+def test_emergency_intercoms_have_coordinates( db ):
+   emergency_intercoms = db.get_emergency_intercoms()
+
+   assert len( emergency_intercoms ) > 0
+   assert all( 0 <= emergency_intercom.x_coord <= 100 for emergency_intercom in emergency_intercoms )
+   assert all( 0 <= emergency_intercom.y_coord <= 100 for emergency_intercom in emergency_intercoms )
+
+
 def test_drinking_fountain_seasonal_fallback_controls_open_and_closed_results( db, cursor ):
    summer_fountains = db.get_drinking_fountains( month='June', day=15 )
    winter_fountains = db.get_drinking_fountains( month='January', day=15 )
