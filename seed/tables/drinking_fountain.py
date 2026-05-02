@@ -44,8 +44,8 @@ drinking_fountains = [
       87.915   # Y coordinate on map
    ),
    (
-      69.556,  # X coordinate on map
-      50.206   # Y coordinate on map
+      69.631,  # X coordinate on map
+      50.523   # Y coordinate on map
    ),
    (
       53.395,  # X coordinate on map

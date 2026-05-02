@@ -40,8 +40,8 @@ defibrillators = [
       71.970   # Y coordinate on map
    ),
    (
-      69.491,  # X coordinate on map
-      49.007   # Y coordinate on map
+      69.496,  # X coordinate on map
+      49.609   # Y coordinate on map
    ),
    (
       71.613,  # X coordinate on map

@@ -14,8 +14,8 @@ gift_shops = [
       'Learning & Engagement Centre',
       '''Our largest main boutique with the widest variety of souvenirs, toys, plush, apparel, books, jewelry, and more! Something
          for everyone, from every region of the Zoo.'''.replace( '\n', ' ' ),
-      62.365,  # X coordinate on map
-      73.1     # Y coordinate on map
+      61.894,  # X coordinate on map
+      73.443   # Y coordinate on map
    ),
    (
       'Courtyard Kiosk',
