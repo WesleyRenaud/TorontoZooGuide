@@ -99,6 +99,14 @@ def test_guest_services_have_types_and_coordinates( db, cursor ):
    assert all( 0 <= service.y_coord <= 100 for service in guest_services )
 
 
+def test_picnic_sites_have_coordinates( db ):
+   picnic_sites = db.get_picnic_sites()
+
+   assert len( picnic_sites ) > 0
+   assert all( 0 <= picnic_site.x_coord <= 100 for picnic_site in picnic_sites )
+   assert all( 0 <= picnic_site.y_coord <= 100 for picnic_site in picnic_sites )
+
+
 def test_drinking_fountain_seasonal_fallback_controls_open_and_closed_results( db, cursor ):
    summer_fountains = db.get_drinking_fountains( month='June', day=15 )
    winter_fountains = db.get_drinking_fountains( month='January', day=15 )

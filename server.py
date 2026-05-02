@@ -410,6 +410,16 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-picnic-sites':
+         picnic_sites = self.database.get_picnic_sites()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "picnic_sites": [ picnic_site.to_dict() for picnic_site in picnic_sites ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/get-closed-exhibits':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )

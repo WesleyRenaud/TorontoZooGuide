@@ -88,6 +88,10 @@ export async function getGuestServices() {
    return await fetchCollection('/get-guest-services', 'guest_services');
 }
 
+export async function getPicnicSites() {
+   return await fetchCollection('/get-picnic-sites', 'picnic_sites');
+}
+
 export async function getExhibits() {
    return await fetchCollection('/get-exhibits', 'exhibits');
 }

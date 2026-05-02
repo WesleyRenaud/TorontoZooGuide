@@ -53,6 +53,13 @@ def test_domain_objects_serialize_to_frontend_shapes():
       'x_coord': 9,
       'y_coord': 10
    }
+   assert zoo.PicnicSite(
+      x_coord=11,
+      y_coord=12
+   ).to_dict() == {
+      'x_coord': 11,
+      'y_coord': 12
+   }
 
 
 def test_animal_to_dict_converts_boolean_flags():
