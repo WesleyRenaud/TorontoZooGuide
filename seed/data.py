@@ -25,6 +25,7 @@ from .tables.drinking_fountain import drinking_fountains
 from .tables.defibrillator import defibrillators
 from .tables.emergency_intercom import emergency_intercoms
 from .tables.guest_service import guest_services
+from .tables.picnic_site import picnic_sites
 
 __all__ = [
    'regions',
@@ -52,4 +53,5 @@ __all__ = [
    'defibrillators',
    'emergency_intercoms',
    'guest_services',
+   'picnic_sites',
 ]

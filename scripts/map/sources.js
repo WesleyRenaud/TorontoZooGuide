@@ -7,6 +7,7 @@ import {
    getGiftShops,
    getGuestServices,
    getGuardiansTalks,
+   getPicnicSites,
    getPavilions,
    getRestaurants,
    getRestrooms,
@@ -166,6 +167,12 @@ export function createDataSources(store) {
          store,
          'guestService',
          getGuestServices
+      ),
+
+      picnicSite: createTypedStaticApiSource(
+         store,
+         'picnicSite',
+         getPicnicSites
       ),
 
       exhibit: createTypedStaticApiSource(store, 'exhibit', getExhibits),

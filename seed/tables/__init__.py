@@ -23,6 +23,7 @@ from . import drinking_fountain
 from . import defibrillator
 from . import emergency_intercom
 from . import guest_service
+from . import picnic_site
 
 
 static_tables = [
@@ -51,4 +52,5 @@ static_tables = [
    defibrillator,
    emergency_intercom,
    guest_service,
+   picnic_site,
 ]

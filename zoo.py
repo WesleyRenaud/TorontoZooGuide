@@ -344,6 +344,19 @@ class GuestService:
       }
 
 
+class PicnicSite:
+   def __init__( self, x_coord, y_coord ):
+      self.x_coord = x_coord
+      self.y_coord = y_coord
+
+
+   def to_dict( self ):
+      return {
+         'x_coord': self.x_coord,
+         'y_coord': self.y_coord
+      }
+
+
 class Itinerary:
    def __init__( self, date, animals=[], attractions=[], guardians_talks=[], wild_encounters=[] ):
       self.date = date

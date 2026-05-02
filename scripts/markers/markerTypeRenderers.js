@@ -28,6 +28,7 @@ const GENERIC_ICON_PATHS = Object.freeze({
    wildEncounter: '/images/icons/wild-encounter/wild-encounter.png',
    defibrillator: '/images/icons/defibrillator/defibrillator.png',
    emergencyIntercom: '/images/icons/emergency-intercom/emergency-intercom.png',
+   picnicSite: '/images/icons/picnic-site/picnic-site.png',
 });
 
 const MARKER_CLASS_BY_TYPE = Object.freeze({
@@ -44,6 +45,7 @@ const MARKER_CLASS_BY_TYPE = Object.freeze({
    emergencyIntercom: 'marker-emergency-intercom',
    guestService: 'marker-guest-service',
    firstAidGuestService: 'marker-guest-service-first-aid',
+   picnicSite: 'marker-picnic-site',
 });
 
 const ZOOMOBILE_ROUTE_COLORS = Object.freeze({
@@ -253,6 +255,7 @@ const MARKER_TYPE_RENDERERS = {
    defibrillator: createGenericIconMarkerRenderer('defibrillator'),
    emergencyIntercom: createGenericIconMarkerRenderer('emergencyIntercom'),
    guestService: renderGuestServiceMarker,
+   picnicSite: createGenericIconMarkerRenderer('picnicSite'),
 };
 
 export function renderMarkerByType(markerEl, items) {

@@ -17,6 +17,7 @@ const MARKER_TYPE_CLASSES = [
    'marker-emergency-intercom',
    'marker-guest-service',
    'marker-guest-service-first-aid',
+   'marker-picnic-site',
    'marker-has-limited-viewing',
 ];
 
