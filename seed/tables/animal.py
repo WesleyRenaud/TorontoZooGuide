@@ -1331,7 +1331,8 @@ animals = [
       '''Breeding typically occurs in winter or early spring. After a gestation period of about 13 months, a single calf is born and
          is able to stand within hours. Calves remain with their mothers for extended periods and mature slowly. Bactrian camels can
          live 30–40 years, particularly in managed care.'''.replace( '\n', ' ' ),
-      None                                                           # Animals at the zoo
+      '''Female camel, Suria, recently gave birth to a calf, fathered by male camel, Zip. The mother and calf are currently spending
+         time with another female camel, Jozy, and they may be viewable periodically throughout the day.'''.replace( '\n', ' ' ),
    ),
    (
       'Domestic Yak',
@@ -2866,9 +2867,9 @@ animals = [
          juveniles remain with the mother for 6–12 months. Lifespan is typically 8–9 years in the wild but can exceed 20 years in
          captivity.'''.replace( '\n', ' ' ),
       '''The Toronto Zoo recently celebrated the birth of three river otter pups. The Toronto Zoo is also home to a pair of adult
-         otters, female, Maybelle, and male, RJ. First-time mom, Maybelle is currently spending time behind the scenes, bonding
-         with the pups. During this time only RJ is viewing in the Americas Pavilion. The zoo hopes than the pups can make their
-         public debut along Maybelle sometime in May.'''.replace( '\n', ' ' )
+         otters, female, Maybelle, and male, RJ. First-time mom, Maybelle is currently spending most of her time behind the scenes,
+         bonding with the pups, and recently teaching them how to swim. She may be viewable occasionally in her habitat. RJ is also
+         viewing in the Americas Pavilion in the outdoor otter habitat.'''.replace( '\n', ' ' )
    ),
    (
       'Opal-Rumped Tanager',
