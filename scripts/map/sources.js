@@ -3,6 +3,7 @@ import {
    getClosedExhibits,
    getDefibrillators,
    getEmergencyIntercoms,
+   getEventSites,
    getExhibits,
    getGiftShops,
    getGuestServices,
@@ -173,6 +174,12 @@ export function createDataSources(store) {
          store,
          'picnicSite',
          getPicnicSites
+      ),
+
+      eventSite: createTypedStaticApiSource(
+         store,
+         'eventSite',
+         getEventSites
       ),
 
       exhibit: createTypedStaticApiSource(store, 'exhibit', getExhibits),

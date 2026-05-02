@@ -60,6 +60,15 @@ def test_domain_objects_serialize_to_frontend_shapes():
       'x_coord': 11,
       'y_coord': 12
    }
+   assert zoo.EventSite(
+      name='Special Events Center',
+      x_coord=13,
+      y_coord=14
+   ).to_dict() == {
+      'name': 'Special Events Center',
+      'x_coord': 13,
+      'y_coord': 14
+   }
 
 
 def test_animal_to_dict_converts_boolean_flags():

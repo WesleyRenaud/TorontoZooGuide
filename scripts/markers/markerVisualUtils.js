@@ -18,6 +18,7 @@ const MARKER_TYPE_CLASSES = [
    'marker-guest-service',
    'marker-guest-service-first-aid',
    'marker-picnic-site',
+   'marker-event-site',
    'marker-has-limited-viewing',
 ];
 

@@ -97,3 +97,11 @@ export function getGuestServiceIconUrl(serviceType) {
       `/images/icons/guest-services/${normalizedServiceType}.png`
    );
 }
+
+export function getEventSiteIconUrl(eventSiteName) {
+   const normalizedEventSiteName = normalizeAssetKey(eventSiteName);
+
+   return buildCssUrl(
+      `/images/icons/event-center/${normalizedEventSiteName}.png`
+   );
+}

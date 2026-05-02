@@ -1720,6 +1720,29 @@ class Database():
       return picnic_sites
 
 
+   def get_event_sites( self ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  NAME,
+                  X_COORD,
+                  Y_COORD
+               FROM EventSite;
+         """ )
+
+      event_sites = [
+         zoo.EventSite(
+            name=row[ 'NAME' ],
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return event_sites
+
+
    def get_closed_exhibits( self, month, day ):
       cur = self.conn.cursor()
 
