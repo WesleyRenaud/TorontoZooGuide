@@ -78,6 +78,10 @@ const HOVER_FORMATTERS = Object.freeze({
       items,
       () => 'Emergency Intercom'
    ),
+   guestService: (items) => formatCountedHoverText(
+      items,
+      (item) => readItemText(item, 'service_type', 'Guest Service')
+   ),
 });
 
 export function buildHoverText(itemsAtPoint) {

@@ -12,6 +12,7 @@ export function createMapStore() {
          wildEncounter: [],
          defibrillator: [],
          emergencyIntercom: [],
+         guestService: [],
       },
       cache: {
          pavilion: { loaded: false, inFlight: null },
@@ -19,6 +20,7 @@ export function createMapStore() {
          exhibit: { loaded: false, inFlight: null },
          defibrillator: { loaded: false, inFlight: null },
          emergencyIntercom: { loaded: false, inFlight: null },
+         guestService: { loaded: false, inFlight: null },
       },
    };
 }

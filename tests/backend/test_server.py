@@ -166,6 +166,16 @@ class StubDatabase:
       return [ zoo.EmergencyIntercom( x_coord=23.456, y_coord=78.901 ) ]
 
 
+   def get_guest_services( self ):
+      self.calls.append( ( 'get_guest_services', {} ) )
+      return [
+         zoo.GuestService(
+            service_type='Information',
+            x_coord=34.567,
+            y_coord=89.012 )
+      ]
+
+
    def get_closed_exhibits( self, **kwargs ):
       self.calls.append( ( 'get_closed_exhibits', kwargs ) )
       return [ ANIMAL_EXHIBIT ]
@@ -532,6 +542,7 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
       ( '/get-drinking-fountains', { 'month': 'June', 'day': 15 }, 'drinking_fountains' ),
       ( '/get-defibrillators', {}, 'defibrillators' ),
       ( '/get-emergency-intercoms', {}, 'emergency_intercoms' ),
+      ( '/get-guest-services', {}, 'guest_services' ),
       ( '/get-closed-exhibits', { 'month': 'June', 'day': 15 }, 'closed_exhibits' )
    ]
 )

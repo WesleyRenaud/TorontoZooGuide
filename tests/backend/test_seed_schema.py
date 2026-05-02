@@ -36,6 +36,7 @@ def test_seed_data_exports_all_static_table_rows():
    assert data.drinking_fountains
    assert data.defibrillators
    assert data.emergency_intercoms
+   assert data.guest_services
 
 
 def test_create_schema_migrates_partial_dynamic_tables():

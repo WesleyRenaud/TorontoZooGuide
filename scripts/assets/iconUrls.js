@@ -89,3 +89,11 @@ export function getDrinkingFountainIconUrl(backgroundColourForUrl) {
       buildGenericIconPath('drinking-fountain', backgroundColourForUrl)
    );
 }
+
+export function getGuestServiceIconUrl(serviceType) {
+   const normalizedServiceType = normalizeAssetKey(serviceType);
+
+   return buildCssUrl(
+      `/images/icons/guest-services/${normalizedServiceType}.png`
+   );
+}

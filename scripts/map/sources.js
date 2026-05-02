@@ -5,6 +5,7 @@ import {
    getEmergencyIntercoms,
    getExhibits,
    getGiftShops,
+   getGuestServices,
    getGuardiansTalks,
    getPavilions,
    getRestaurants,
@@ -159,6 +160,12 @@ export function createDataSources(store) {
          store,
          'emergencyIntercom',
          getEmergencyIntercoms
+      ),
+
+      guestService: createTypedStaticApiSource(
+         store,
+         'guestService',
+         getGuestServices
       ),
 
       exhibit: createTypedStaticApiSource(store, 'exhibit', getExhibits),

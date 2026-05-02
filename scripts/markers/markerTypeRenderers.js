@@ -3,6 +3,7 @@ import {
    getAttractionIconUrl,
    getDrinkingFountainIconUrl,
    getGiftShopIconUrl,
+   getGuestServiceIconUrl,
    getRestaurantIconUrl,
    getRestroomIconUrl,
 } from '../assets/iconUrls.js';
@@ -17,6 +18,7 @@ import {
 const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
 const LIMITED_VIEWING_MARKER_CLASS = 'marker-has-limited-viewing';
 const CLOSED_RESTROOM_ICON_TOKEN = 'closed';
+const FIRST_AID_AND_FAMILY_CENTER_TYPE = 'First Aid & Family Center';
 
 const GENERIC_ICON_PATHS = Object.freeze({
    pavilion: '/images/icons/pavilion/pavilion-open.png',
@@ -40,6 +42,8 @@ const MARKER_CLASS_BY_TYPE = Object.freeze({
    drinkingFountain: 'marker-drinking-fountain',
    defibrillator: 'marker-defibrillator',
    emergencyIntercom: 'marker-emergency-intercom',
+   guestService: 'marker-guest-service',
+   firstAidGuestService: 'marker-guest-service-first-aid',
 });
 
 const ZOOMOBILE_ROUTE_COLORS = Object.freeze({
@@ -197,6 +201,27 @@ function renderDrinkingFountainMarker(markerEl, items) {
    );
 }
 
+function renderGuestServiceMarker(markerEl, items) {
+   const guestService = items[0];
+   const serviceType = String(guestService?.service_type || '').trim();
+
+   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.guestService);
+
+   if (serviceType === FIRST_AID_AND_FAMILY_CENTER_TYPE) {
+      applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.firstAidGuestService);
+   }
+
+   if (items.length > 1) {
+      applyCountMarker(markerEl, items.length);
+      return;
+   }
+
+   applyBackgroundImage(
+      markerEl,
+      getGuestServiceIconUrl(serviceType)
+   );
+}
+
 const MARKER_TYPE_RENDERERS = {
    animal: renderAnimalMarker,
    pavilion: createGenericIconMarkerRenderer('pavilion'),
@@ -227,6 +252,7 @@ const MARKER_TYPE_RENDERERS = {
    drinkingFountain: renderDrinkingFountainMarker,
    defibrillator: createGenericIconMarkerRenderer('defibrillator'),
    emergencyIntercom: createGenericIconMarkerRenderer('emergencyIntercom'),
+   guestService: renderGuestServiceMarker,
 };
 
 export function renderMarkerByType(markerEl, items) {

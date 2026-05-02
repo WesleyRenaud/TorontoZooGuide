@@ -703,9 +703,14 @@ nav ul li a:hover {
    height: 32px;   
 }
 
-.marker.marker-restaurant, .marker.marker-restroom, .marker.marker-gift-shop, .marker.marker-guardians-talk, .marker.marker-drinking-fountain, .marker.marker-defibrillator, .marker.marker-emergency-intercom {
+.marker.marker-restaurant, .marker.marker-restroom, .marker.marker-gift-shop, .marker.marker-guardians-talk, .marker.marker-drinking-fountain, .marker.marker-defibrillator, .marker.marker-emergency-intercom, .marker.marker-guest-service {
    width: 24px;
    height: 24px;
+}
+
+.marker.marker-guest-service.marker-guest-service-first-aid {
+   width: 32px;
+   height: 32px;
 }
 
 .marker.marker-zoomobile-route-marker {

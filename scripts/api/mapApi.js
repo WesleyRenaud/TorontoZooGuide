@@ -84,6 +84,10 @@ export async function getEmergencyIntercoms() {
    return await fetchCollection('/get-emergency-intercoms', 'emergency_intercoms');
 }
 
+export async function getGuestServices() {
+   return await fetchCollection('/get-guest-services', 'guest_services');
+}
+
 export async function getExhibits() {
    return await fetchCollection('/get-exhibits', 'exhibits');
 }
