@@ -40,6 +40,10 @@ def test_domain_objects_serialize_to_frontend_shapes():
       'x_coord': 5,
       'y_coord': 6
    }
+   assert zoo.EmergencyIntercom( x_coord=7, y_coord=8 ).to_dict() == {
+      'x_coord': 7,
+      'y_coord': 8
+   }
 
 
 def test_animal_to_dict_converts_boolean_flags():

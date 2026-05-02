@@ -1655,6 +1655,27 @@ class Database():
       return defibrillators
 
 
+   def get_emergency_intercoms( self ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  X_COORD,
+                  Y_COORD
+               FROM EmergencyIntercom;
+         """ )
+
+      emergency_intercoms = [
+         zoo.EmergencyIntercom(
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return emergency_intercoms
+
+
    def get_closed_exhibits( self, month, day ):
       cur = self.conn.cursor()
 

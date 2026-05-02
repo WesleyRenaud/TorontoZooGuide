@@ -80,6 +80,10 @@ export async function getDefibrillators() {
    return await fetchCollection('/get-defibrillators', 'defibrillators');
 }
 
+export async function getEmergencyIntercoms() {
+   return await fetchCollection('/get-emergency-intercoms', 'emergency_intercoms');
+}
+
 export async function getExhibits() {
    return await fetchCollection('/get-exhibits', 'exhibits');
 }
