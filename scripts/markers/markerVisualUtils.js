@@ -15,6 +15,8 @@ const MARKER_TYPE_CLASSES = [
    'marker-drinking-fountain',
    'marker-defibrillator',
    'marker-emergency-intercom',
+   'marker-guest-service',
+   'marker-guest-service-first-aid',
    'marker-has-limited-viewing',
 ];
 

@@ -1676,6 +1676,29 @@ class Database():
       return emergency_intercoms
 
 
+   def get_guest_services( self ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  SERVICE_TYPE,
+                  X_COORD,
+                  Y_COORD
+               FROM GuestService;
+         """ )
+
+      guest_services = [
+         zoo.GuestService(
+            service_type=row[ 'SERVICE_TYPE' ],
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return guest_services
+
+
    def get_closed_exhibits( self, month, day ):
       cur = self.conn.cursor()
 

@@ -44,6 +44,15 @@ def test_domain_objects_serialize_to_frontend_shapes():
       'x_coord': 7,
       'y_coord': 8
    }
+   assert zoo.GuestService(
+      service_type='Information',
+      x_coord=9,
+      y_coord=10
+   ).to_dict() == {
+      'service_type': 'Information',
+      'x_coord': 9,
+      'y_coord': 10
+   }
 
 
 def test_animal_to_dict_converts_boolean_flags():

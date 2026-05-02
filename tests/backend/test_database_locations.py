@@ -73,6 +73,32 @@ def test_emergency_intercoms_have_coordinates( db ):
    assert all( 0 <= emergency_intercom.y_coord <= 100 for emergency_intercom in emergency_intercoms )
 
 
+def test_guest_services_have_types_and_coordinates( db, cursor ):
+   guest_services = db.get_guest_services()
+   service_types = { service.service_type for service in guest_services }
+   primary_key_columns = cursor.execute(
+      """ SELECT
+             NAME
+          FROM PRAGMA_TABLE_INFO( 'GuestService' )
+          WHERE PK > 0
+          ORDER BY PK;
+      """ ).fetchall()
+
+   assert service_types == {
+      'First Aid & Family Center',
+      'Information',
+      'Rentals & Accessibility',
+      'Wheelchairs'
+   }
+   assert [ row[ 'name' ] for row in primary_key_columns ] == [
+      'SERVICE_TYPE',
+      'X_COORD',
+      'Y_COORD'
+   ]
+   assert all( 0 <= service.x_coord <= 100 for service in guest_services )
+   assert all( 0 <= service.y_coord <= 100 for service in guest_services )
+
+
 def test_drinking_fountain_seasonal_fallback_controls_open_and_closed_results( db, cursor ):
    summer_fountains = db.get_drinking_fountains( month='June', day=15 )
    winter_fountains = db.get_drinking_fountains( month='January', day=15 )

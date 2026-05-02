@@ -22,6 +22,7 @@ from . import drinking_fountain_day_seasonal_availability_multiplier
 from . import drinking_fountain
 from . import defibrillator
 from . import emergency_intercom
+from . import guest_service
 
 
 static_tables = [
@@ -49,4 +50,5 @@ static_tables = [
    drinking_fountain,
    defibrillator,
    emergency_intercom,
+   guest_service,
 ]
