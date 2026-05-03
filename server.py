@@ -430,6 +430,26 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-updates':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+
+         updates = self.database.get_updates(
+            month=month,
+            day=day
+         )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "updates": [ update.to_dict() for update in updates ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/get-closed-exhibits':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -981,6 +1001,16 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-active-update-options':
+         updates = self.database.get_active_update_options()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { 'updates': updates }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/get-exhibits-by-region':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -1388,6 +1418,111 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not remove alert for "{ restroom }".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/create-update':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         title = data.get( 'title' )
+         description = data.get( 'description' )
+         update_type = data.get( 'type' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+
+         success = self.database.create_update(
+            title=title,
+            description=description,
+            update_type=update_type,
+            start_date=start_date,
+            end_date=end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'title': title,
+            'description': description,
+            'type': update_type,
+            'startDate': start_date,
+            'endDate': end_date
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not create update.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/end-update':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         title = data.get( 'title' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+
+         success = self.database.end_update(
+            title=title,
+            start_date=start_date,
+            end_date=end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'title': title,
+            'startDate': start_date,
+            'endDate': end_date
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not end update.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/edit-update':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         title = data.get( 'title' )
+         start_date = data.get( 'startDate' )
+         description = data.get( 'description' )
+         update_type = data.get( 'type' )
+         end_date = data.get( 'endDate' )
+
+         success = self.database.edit_update(
+            title=title,
+            start_date=start_date,
+            description=description,
+            update_type=update_type,
+            end_date=end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'title': title,
+            'startDate': start_date,
+            'description': description,
+            'type': update_type,
+            'endDate': end_date
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not edit update.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

@@ -24,10 +24,13 @@ const DATE_PICKER_BINDINGS = {
       ['wildEncounters', 'schedule'],
       ['drinkingFountains', 'closed'],
       ['drinkingFountains', 'open'],
+      ['updates', 'create'],
    ],
    singleDates: [
       ['guardiansTalks', 'endSchedule', 'endDateEl'],
       ['wildEncounters', 'endSchedule', 'endDateEl'],
+      ['updates', 'end', 'endDateEl'],
+      ['updates', 'edit', 'endDateEl'],
    ],
    dateTimes: [
       {

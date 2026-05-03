@@ -189,7 +189,7 @@ def create_schema( cursor ):
       )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS RestroomAlert
-                     (  RESTROOM             VARCHAR(64) NOT NULL,
+                     (  RESTROOM            VARCHAR(64) NOT NULL,
                         ALERT_MESSAGE       TEXT        NOT NULL,
                         ALERT_START_DATE    DATE,
                         ALERT_END_DATE      DATE,
@@ -214,6 +214,48 @@ def create_schema( cursor ):
       cursor.execute(
          'ALTER TABLE RestroomAlert ADD COLUMN ALERT_END_DATE DATE;'
       )
+
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS ZooUpdate
+                     (  TITLE          VARCHAR(128) NOT NULL,
+                        DESCRIPTION    TEXT         NOT NULL,
+                        UPDATE_TYPE    VARCHAR(32)  NOT NULL,
+                        START_DATE     DATE         NOT NULL,
+                        END_DATE       DATE,
+                        PRIMARY KEY (TITLE, START_DATE) ); ''' )
+
+   zoo_update_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( ZooUpdate );' ).fetchall()
+   }
+
+   if 'TITLE' not in zoo_update_columns:
+      cursor.execute(
+         'ALTER TABLE ZooUpdate ADD COLUMN TITLE VARCHAR(128);'
+      )
+
+   if 'DESCRIPTION' not in zoo_update_columns:
+      cursor.execute(
+         'ALTER TABLE ZooUpdate ADD COLUMN DESCRIPTION TEXT;'
+      )
+
+   if 'UPDATE_TYPE' not in zoo_update_columns:
+      cursor.execute(
+         'ALTER TABLE ZooUpdate ADD COLUMN UPDATE_TYPE VARCHAR(32);'
+      )
+
+   if 'START_DATE' not in zoo_update_columns:
+      cursor.execute(
+         'ALTER TABLE ZooUpdate ADD COLUMN START_DATE DATE;'
+      )
+
+   if 'END_DATE' not in zoo_update_columns:
+      cursor.execute(
+         'ALTER TABLE ZooUpdate ADD COLUMN END_DATE DATE;'
+      )
+
+   cursor.execute(
+      ''' CREATE UNIQUE INDEX IF NOT EXISTS ZooUpdateTitleStartDateIndex
+          ON ZooUpdate (TITLE, START_DATE); '''
+   )
 
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS RestaurantOpeningSchedule

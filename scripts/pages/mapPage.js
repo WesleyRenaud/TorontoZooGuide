@@ -5,6 +5,7 @@ import { initSearch } from '../search/search.js';
 import { initFocusFromQuery } from '../focus/focusFromQuery.js';
 import { buildMapDateContext } from '../map/dateContext.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
+import { createExploreUpdates } from '../updates/exploreUpdates.js';
 
 function getMapPageElements() {
    return {
@@ -20,6 +21,7 @@ function getMapPageElements() {
       zoomobileRouteRadios: document.querySelectorAll?.('input[name="zoomobileRoute"]') ?? [],
       animalSearchInput: document.getElementById('animalSearch'),
       animalSearchResultsEl: document.getElementById('animalSearchResults'),
+      exploreUpdatesListEl: document.getElementById('exploreUpdatesList'),
       tooltipEl: document.getElementById('tooltip'),
       hoverTooltipEl: document.getElementById('hoverTooltip'),
    };
@@ -62,6 +64,7 @@ function createMapDateContextGetter({
 
 function createRuntimeOptions(elements, {
    getSelectedTypes,
+   updates,
 } = {}) {
    return {
       mapInner: elements.mapInner,
@@ -76,6 +79,7 @@ function createRuntimeOptions(elements, {
       getIncludeClosedAttractions: () => elements.includeClosedAttractionsCheckbox?.checked ?? false,
       getZoomobileRoute: () => getSelectedZoomobileRoute(elements.zoomobileRouteRadios),
       getSelectedTypes,
+      onDateContextChange: (dateCtx) => updates?.refresh?.(dateCtx),
    };
 }
 
@@ -157,9 +161,13 @@ export async function initMapPage() {
 
    let explore = null;
    let search = null;
+   const updates = createExploreUpdates({
+      listEl: elements.exploreUpdatesListEl,
+   });
 
    const runtime = createMapRuntime(createRuntimeOptions(elements, {
       getSelectedTypes: () => explore?.getSelectedTypes?.() || [],
+      updates,
    }));
 
    if (!runtime) return;

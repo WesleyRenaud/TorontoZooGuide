@@ -106,6 +106,7 @@ export function createMapRuntime({
    getIncludeClosedAttractions = () => false,
    getZoomobileRoute = () => 'none',
    getSelectedTypes = () => [],
+   onDateContextChange = null,
 } = {}) {
    const viewportEl = mapInner?.parentElement;
 
@@ -152,6 +153,7 @@ export function createMapRuntime({
       getIncludeClosedAttractions,
       getZoomobileRoute,
       getSelectedTypes,
+      onDateContextChange,
    });
 
    return {

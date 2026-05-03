@@ -119,6 +119,7 @@ export function createSelectField({
    label,
    inputId,
    emptyOptionLabel,
+   options = [],
 } = {}) {
    const fieldEl = createFieldWrapper();
    const labelEl = createLabel({
@@ -133,6 +134,10 @@ export function createSelectField({
       value: '',
       label: emptyOptionLabel,
    }));
+
+   options.forEach((option) => {
+      selectEl.appendChild(createOption(option));
+   });
 
    fieldEl.append(labelEl, selectEl);
    return fieldEl;
