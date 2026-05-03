@@ -34,8 +34,16 @@ function getHeaderEl(listEl) {
    return listEl.closest('.explore-updates')?.querySelector('.explore-updates-header') ?? null;
 }
 
+function getSectionEl(listEl) {
+   return listEl.closest('.explore-updates') ?? null;
+}
+
+function getToggleEl(listEl) {
+   return getSectionEl(listEl)?.querySelector('.explore-updates-toggle') ?? null;
+}
+
 function setSectionVisibility(listEl, isVisible) {
-   const sectionEl = listEl.closest('.explore-updates');
+   const sectionEl = getSectionEl(listEl);
 
    if (!sectionEl) {
       return;
@@ -110,9 +118,24 @@ export function createExploreUpdates({
 
    let updates = [];
    let currentIndex = 0;
+   let isCollapsed = false;
 
    function getSafeIndex() {
       return Math.max(0, Math.min(updates.length - 1, currentIndex));
+   }
+
+   function syncCollapsedState() {
+      const sectionEl = getSectionEl(listEl);
+      const toggleEl = getToggleEl(listEl);
+
+      sectionEl?.classList.toggle('is-collapsed', isCollapsed);
+
+      if (!toggleEl) {
+         return;
+      }
+
+      toggleEl.setAttribute('aria-label', isCollapsed ? 'Show updates' : 'Hide updates');
+      toggleEl.setAttribute('aria-expanded', String(!isCollapsed));
    }
 
    function renderCurrentUpdate() {
@@ -133,6 +156,7 @@ export function createExploreUpdates({
          updates,
          onStep: step,
       });
+      syncCollapsedState();
    }
 
    function renderUpdates(nextUpdates = []) {
@@ -148,6 +172,11 @@ export function createExploreUpdates({
 
       currentIndex = (currentIndex + delta + updates.length) % updates.length;
       renderCurrentUpdate();
+   }
+
+   function toggleCollapsed() {
+      isCollapsed = !isCollapsed;
+      syncCollapsedState();
    }
 
    async function refresh(dateCtx) {
@@ -167,6 +196,7 @@ export function createExploreUpdates({
    }
 
    renderUpdates([]);
+   getToggleEl(listEl)?.addEventListener('click', toggleCollapsed);
 
    return { refresh };
 }
