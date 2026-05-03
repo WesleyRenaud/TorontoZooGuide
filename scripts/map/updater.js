@@ -24,6 +24,7 @@ export function createMapUpdater({
    getIncludeClosedAttractions,
    getZoomobileRoute,
    getSelectedTypes,
+   onDateContextChange = null,
 }) {
    let lastPreset = null;
    let lastDateStr = null;
@@ -183,6 +184,7 @@ export function createMapUpdater({
 
       const resolvedOptions = resolvePendingUpdateOptions(options);
       const dateContext = await buildMapDateContext(preset, dateStr);
+      onDateContextChange?.(dateContext);
 
       return run(dateContext, resolvedOptions);
    }

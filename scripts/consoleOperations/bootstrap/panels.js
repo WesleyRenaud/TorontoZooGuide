@@ -27,6 +27,9 @@ import { createEndWildEncounterSchedulePanel } from '../wildEncounters/panels/en
 import { createCancelWildEncounterOccurrencePanel } from '../wildEncounters/panels/cancelWildEncounterOccurrencePanel.js';
 import { createDrinkingFountainsClosedPanel } from '../drinkingFountains/panels/drinkingFountainsClosedPanel.js';
 import { createDrinkingFountainsOpenPanel } from '../drinkingFountains/panels/drinkingFountainsOpenPanel.js';
+import { createCreateUpdatePanel } from '../updates/panels/createUpdatePanel.js';
+import { createEndUpdatePanel } from '../updates/panels/endUpdatePanel.js';
+import { createEditUpdatePanel } from '../updates/panels/editUpdatePanel.js';
 
 const PANEL_CREATORS = {
    animals: [
@@ -77,6 +80,11 @@ const PANEL_CREATORS = {
    drinkingFountains: [
       createDrinkingFountainsClosedPanel,
       createDrinkingFountainsOpenPanel,
+   ],
+   updates: [
+      createCreateUpdatePanel,
+      createEndUpdatePanel,
+      createEditUpdatePanel,
    ],
 };
 

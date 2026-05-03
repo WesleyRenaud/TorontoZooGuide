@@ -69,6 +69,19 @@ def test_domain_objects_serialize_to_frontend_shapes():
       'x_coord': 13,
       'y_coord': 14
    }
+   assert zoo.Update(
+      title='New baby giraffe',
+      description='Come meet the new calf.',
+      update_type='New Arrival',
+      start_date='2026-06-01',
+      end_date='2026-06-30'
+   ).to_dict() == {
+      'title': 'New baby giraffe',
+      'description': 'Come meet the new calf.',
+      'type': 'New Arrival',
+      'start_date': '2026-06-01',
+      'end_date': '2026-06-30'
+   }
 
 
 def test_animal_to_dict_converts_boolean_flags():

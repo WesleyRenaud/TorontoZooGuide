@@ -1743,6 +1743,58 @@ class Database():
       return event_sites
 
 
+   def get_updates( self, month=None, day=None ):
+      if month != None and day != None:
+         target_date = date(
+            datetime.now().year,
+            zoo.ZooUtil.normalize_month( month=month ),
+            int( day ) )
+      else:
+         target_date = datetime.now().date()
+
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  TITLE,
+                  DESCRIPTION,
+                  UPDATE_TYPE,
+                  START_DATE,
+                  END_DATE
+               FROM ZooUpdate
+               WHERE START_DATE <= ?
+                  AND (
+                     END_DATE IS NULL
+                     OR END_DATE >= ?
+                  )
+               ORDER BY START_DATE DESC, TITLE ASC;
+         """,
+         (
+            target_date.isoformat(),
+            target_date.isoformat()
+         ) )
+
+      updates = [
+         zoo.Update(
+            title=row[ 'TITLE' ],
+            description=row[ 'DESCRIPTION' ],
+            update_type=row[ 'UPDATE_TYPE' ],
+            start_date=row[ 'START_DATE' ],
+            end_date=row[ 'END_DATE' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return updates
+
+
+   def get_active_update_options( self ):
+      return [
+         update.to_dict()
+         for update in self.get_updates()
+      ]
+
+
    def get_closed_exhibits( self, month, day ):
       cur = self.conn.cursor()
 
@@ -3353,6 +3405,192 @@ class Database():
       cur.close()
 
       return removed > 0
+
+
+   def normalize_update_type( self, update_type ):
+      update_type_labels = {
+         'animal birth': 'Animal Birth',
+         'animal_birth': 'Animal Birth',
+         'animal passing': 'Animal Passing',
+         'animal_passing': 'Animal Passing',
+         'closure': 'Closure',
+         'new arrival': 'New Arrival',
+         'new_arrival': 'New Arrival',
+         'departure': 'Departure'
+      }
+
+      normalized_key = str( update_type or '' ).strip().lower()
+
+      return update_type_labels.get( normalized_key )
+
+
+   def create_update( self, title, description, update_type, start_date, end_date ):
+      title = str( title or '' ).strip()
+      description = str( description or '' ).strip()
+      normalized_update_type = self.normalize_update_type( update_type )
+
+      if not title or not description or normalized_update_type == None:
+         return None
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      parsed_end_date = None
+
+      try:
+         parsed_start_date = self.parse_date_value( start_date )
+
+         if end_date:
+            parsed_end_date = self.parse_date_value( end_date )
+      except ValueError:
+         return None
+
+      if parsed_end_date != None and parsed_end_date < parsed_start_date:
+         return None
+
+      cur = self.conn.cursor()
+      cur.execute(
+         """   INSERT INTO ZooUpdate (
+                  TITLE,
+                  DESCRIPTION,
+                  UPDATE_TYPE,
+                  START_DATE,
+                  END_DATE
+               )
+               VALUES (?, ?, ?, ?, ?)
+               ON CONFLICT(TITLE, START_DATE) DO NOTHING;
+         """,
+         (
+            title,
+            description,
+            normalized_update_type,
+            parsed_start_date.isoformat(),
+            parsed_end_date.isoformat() if parsed_end_date != None else None
+         ) )
+
+      self.conn.commit()
+      created = cur.rowcount
+      cur.close()
+
+      return created > 0
+
+
+   def end_update( self, title, start_date, end_date ):
+      if not title or not start_date:
+         return False
+
+      if not end_date:
+         end_date = datetime.now().date().isoformat()
+
+      try:
+         parsed_end_date = self.parse_date_value( end_date )
+      except ValueError:
+         return False
+
+      cur = self.conn.cursor()
+      cur.execute(
+         """   UPDATE ZooUpdate
+               SET END_DATE = ?
+               WHERE TITLE = ?
+                  AND START_DATE = ?;
+         """,
+         (
+            parsed_end_date.isoformat(),
+            title,
+            start_date
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def edit_update( self, title, start_date, description=None, update_type=None, end_date=None ):
+      if not title or not start_date:
+         return False
+
+      parsed_end_date = None
+      should_update_end_date = end_date is not None
+      normalized_update_type = None
+
+      if update_type:
+         normalized_update_type = self.normalize_update_type( update_type )
+
+         if normalized_update_type == None:
+            return False
+
+      if should_update_end_date and end_date:
+         try:
+            parsed_end_date = self.parse_date_value( end_date )
+         except ValueError:
+            return False
+
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  START_DATE,
+                  END_DATE
+               FROM ZooUpdate
+               WHERE TITLE = ?
+                  AND START_DATE = ?;
+         """,
+         (
+            title,
+            start_date
+         ) )
+      current_update = data.fetchone()
+
+      if current_update == None:
+         cur.close()
+         return False
+
+      current_start_date = self.parse_date_value( current_update[ 'START_DATE' ] )
+
+      if should_update_end_date and parsed_end_date == None:
+         next_end_date = None
+      else:
+         next_end_date = parsed_end_date.isoformat() if parsed_end_date != None else current_update[ 'END_DATE' ]
+
+      if parsed_end_date != None and parsed_end_date < current_start_date:
+         cur.close()
+         return False
+
+      update_fields = []
+      update_values = []
+
+      if description != None and str( description ).strip():
+         update_fields.append( 'DESCRIPTION = ?' )
+         update_values.append( str( description ).strip() )
+
+      if normalized_update_type != None:
+         update_fields.append( 'UPDATE_TYPE = ?' )
+         update_values.append( normalized_update_type )
+
+      if should_update_end_date:
+         update_fields.append( 'END_DATE = ?' )
+         update_values.append( next_end_date )
+
+      if not update_fields:
+         cur.close()
+         return False
+
+      update_values.extend( [ title, start_date ] )
+
+      cur.execute(
+         f"""  UPDATE ZooUpdate
+               SET { ', '.join( update_fields ) }
+               WHERE TITLE = ?
+                  AND START_DATE = ?;
+         """,
+         tuple( update_values ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
 
 
    def set_restaurant_as_closed( self, restaurant, start_date, end_date, message ):

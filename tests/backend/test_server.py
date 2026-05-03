@@ -24,6 +24,7 @@ WILD_ENCOUNTER_MEETING_SPOT = 'Wild Encounter - Africa Meeting Spot'
 WILD_ENCOUNTER_LINK = 'https://www.torontozoo.com/tickets/weafricarainforest'
 DRINKING_FOUNTAIN_X_COORD = 18.191
 DRINKING_FOUNTAIN_Y_COORD = 12.561
+UPDATE_TITLE = 'New baby giraffe'
 
 
 def make_handler( path='/', body=None ):
@@ -192,6 +193,18 @@ class StubDatabase:
             name='Special Events Center',
             x_coord=56.789,
             y_coord=12.345 )
+      ]
+
+
+   def get_updates( self, **kwargs ):
+      self.calls.append( ( 'get_updates', kwargs ) )
+      return [
+         zoo.Update(
+            title=UPDATE_TITLE,
+            description='Come meet the new calf.',
+            update_type='New Arrival',
+            start_date='2026-06-01',
+            end_date='2026-06-30' )
       ]
 
 
@@ -408,11 +421,26 @@ class StubDatabase:
       ]
 
 
+   def get_active_update_options( self ):
+      self.calls.append( ( 'get_active_update_options', {} ) )
+      return [
+         {
+            'title': UPDATE_TITLE,
+            'description': 'Come meet the new calf.',
+            'type': 'New Arrival',
+            'start_date': '2026-06-01',
+            'end_date': '2026-06-30'
+         }
+      ]
+
+
    def __getattr__( self, name ):
       mutation_prefixes = (
+         'create_',
          'set_',
          'remove_',
          'end_',
+         'edit_',
          'cancel_'
       )
 
@@ -564,6 +592,7 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
       ( '/get-guest-services', {}, 'guest_services' ),
       ( '/get-picnic-sites', {}, 'picnic_sites' ),
       ( '/get-event-sites', {}, 'event_sites' ),
+      ( '/get-updates', { 'month': 'June', 'day': 15 }, 'updates' ),
       ( '/get-closed-exhibits', { 'month': 'June', 'day': 15 }, 'closed_exhibits' )
    ]
 )
@@ -748,6 +777,22 @@ def test_get_wild_encounters_endpoint_uses_available_database_results( stub_data
                }
             ],
             'wildEncounter': 'African Rainforest'
+         }
+      ),
+      (
+         '/get-active-update-options',
+         {},
+         ( 'get_active_update_options', {} ),
+         {
+            'updates': [
+               {
+                  'title': 'New baby giraffe',
+                  'description': 'Come meet the new calf.',
+                  'type': 'New Arrival',
+                  'start_date': '2026-06-01',
+                  'end_date': '2026-06-30'
+               }
+            ]
          }
       )
    ]
@@ -1225,6 +1270,84 @@ def test_validate_itinerary_endpoint_returns_previous_validated_and_removed_payl
          {
             'success': True,
             'restroom': 'Entrance Restroom'
+         }
+      ),
+      (
+         '/create-update',
+         {
+            'title': 'New baby giraffe',
+            'description': 'Come meet the new calf.',
+            'type': 'New Arrival',
+            'startDate': '2026-06-01',
+            'endDate': '2026-06-30'
+         },
+         (
+            'create_update',
+            {
+               'title': 'New baby giraffe',
+               'description': 'Come meet the new calf.',
+               'update_type': 'New Arrival',
+               'start_date': '2026-06-01',
+               'end_date': '2026-06-30'
+            }
+         ),
+         {
+            'success': True,
+            'title': 'New baby giraffe',
+            'description': 'Come meet the new calf.',
+            'type': 'New Arrival',
+            'startDate': '2026-06-01',
+            'endDate': '2026-06-30'
+         }
+      ),
+      (
+         '/end-update',
+         {
+            'title': 'New baby giraffe',
+            'startDate': '2026-06-01',
+            'endDate': '2026-06-15'
+         },
+         (
+            'end_update',
+            {
+               'title': 'New baby giraffe',
+               'start_date': '2026-06-01',
+               'end_date': '2026-06-15'
+            }
+         ),
+         {
+            'success': True,
+            'title': 'New baby giraffe',
+            'startDate': '2026-06-01',
+            'endDate': '2026-06-15'
+         }
+      ),
+      (
+         '/edit-update',
+         {
+            'title': 'New baby giraffe',
+            'startDate': '2026-06-01',
+            'description': 'Updated calf details.',
+            'type': 'Closure',
+            'endDate': '2026-07-15'
+         },
+         (
+            'edit_update',
+            {
+               'title': 'New baby giraffe',
+               'start_date': '2026-06-01',
+               'description': 'Updated calf details.',
+               'update_type': 'Closure',
+               'end_date': '2026-07-15'
+            }
+         ),
+         {
+            'success': True,
+            'title': 'New baby giraffe',
+            'startDate': '2026-06-01',
+            'description': 'Updated calf details.',
+            'type': 'Closure',
+            'endDate': '2026-07-15'
          }
       ),
       (

@@ -253,6 +253,33 @@ const CONSOLE_OPERATION_REF_CONFIG = {
          },
       },
    },
+   updates: {
+      create: {
+         operationName: 'createUpdate',
+         includeDateRange: true,
+         fieldSuffixes: {
+            titleEl: 'Title',
+            descriptionEl: 'Description',
+            typeEl: 'Type',
+         },
+      },
+      end: {
+         operationName: 'endUpdate',
+         fieldSuffixes: {
+            updateEl: 'Key',
+            endDateEl: 'EndDate',
+         },
+      },
+      edit: {
+         operationName: 'editUpdate',
+         fieldSuffixes: {
+            updateEl: 'Key',
+            descriptionEl: 'Description',
+            typeEl: 'Type',
+            endDateEl: 'EndDate',
+         },
+      },
+   },
 };
 
 function getById(doc, id) {
