@@ -1,26 +1,32 @@
 import {
    getAttractions,
    getClosedExhibits,
+   getDefibrillators,
+   getEmergencyIntercoms,
+   getEventSites,
    getExhibits,
    getGiftShops,
+   getGuestServices,
    getGuardiansTalks,
+   getPicnicSites,
    getPavilions,
    getRestaurants,
    getRestrooms,
    getVisibleAnimals,
    getWildEncounters,
+   getDrinkingFountains,
    getZoomobileRoute,
 } from '../api/mapApi.js';
 import {
    createDynamicTypedSource,
    createStaticTypedSource,
    normalizeTypedRows,
-   setSourceRows,
 } from './sourceHelpers.js';
 import {
    hideZoomobileRouteLayers,
    showZoomobileRouteLayer,
 } from './zoomobileRouteOverlay.js';
+import { createZoomobileRouteSource } from './zoomobileRouteSource.js';
 
 function createNoCacheSource(fetchRows) {
    return {
@@ -48,42 +54,6 @@ function createTypedStaticApiSource(store, type, fetchRows) {
    return createStaticTypedSource(store, type, async () => (
       normalizeTypedRows(await fetchRows(), type)
    ));
-}
-
-function clearZoomobileRouteRows(store) {
-   setSourceRows(store, 'zoomobileStation', []);
-   setSourceRows(store, 'zoomobileRoute', []);
-}
-
-function normalizeZoomobileStations(zoomobileStations) {
-   return normalizeTypedRows(zoomobileStations, 'zoomobileStation');
-}
-
-function createZoomobileRouteSource(store) {
-   return createNoCacheSource(async (ctx) => {
-      hideZoomobileRouteLayers();
-
-      if (ctx.zoomobileRoute === 'none') {
-         clearZoomobileRouteRows(store);
-         return [];
-      }
-
-      const {
-         route,
-         zoomobileStations,
-      } = await getZoomobileRoute(buildDatePayload(ctx, {
-         zoomobileRoute: ctx.zoomobileRoute,
-         zoomobileStationsToInclude: ctx.zoomobileStationsToInclude,
-      }));
-
-      showZoomobileRouteLayer(route);
-
-      const stations = normalizeZoomobileStations(zoomobileStations);
-      setSourceRows(store, 'zoomobileStation', stations);
-      setSourceRows(store, 'zoomobileRoute', []);
-
-      return stations;
-   });
 }
 
 function createClosedExhibitSource() {
@@ -153,7 +123,11 @@ export function createDataSources(store) {
          })
       ),
 
-      zoomobileRoute: createZoomobileRouteSource(store),
+      zoomobileRoute: createZoomobileRouteSource(store, {
+         fetchZoomobileRoute: getZoomobileRoute,
+         hideRouteLayers: hideZoomobileRouteLayers,
+         showRouteLayer: showZoomobileRouteLayer,
+      }),
 
       guardiansTalk: createTypedDynamicApiSource(
          store,
@@ -173,6 +147,39 @@ export function createDataSources(store) {
             wildEncountersToInclude: ctx.wildEncountersToInclude,
             itineraryMode: ctx.itineraryMode,
          })
+      ),
+
+      drinkingFountain: createTypedDynamicApiSource(
+         store,
+         'drinkingFountain',
+         getDrinkingFountains,
+         (ctx) => buildDatePayload(ctx)
+      ),
+
+      defibrillator: createTypedStaticApiSource(store, 'defibrillator', getDefibrillators),
+
+      emergencyIntercom: createTypedStaticApiSource(
+         store,
+         'emergencyIntercom',
+         getEmergencyIntercoms
+      ),
+
+      guestService: createTypedStaticApiSource(
+         store,
+         'guestService',
+         getGuestServices
+      ),
+
+      picnicSite: createTypedStaticApiSource(
+         store,
+         'picnicSite',
+         getPicnicSites
+      ),
+
+      eventSite: createTypedStaticApiSource(
+         store,
+         'eventSite',
+         getEventSites
       ),
 
       exhibit: createTypedStaticApiSource(store, 'exhibit', getExhibits),

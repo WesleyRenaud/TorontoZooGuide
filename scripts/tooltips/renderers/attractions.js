@@ -11,9 +11,9 @@ export const attractionRenderer = {
       return createTooltipCard({
          index,
          image: {
-            src: `images/attractions/${normalizedName}.png`,
+            src: `images/details/attractions/${normalizedName}.png`,
             alt: name,
-            fallbackSrc: `images/attraction-icons/${normalizedName}-open.png`,
+            fallbackSrc: `images/icons/attractions/${normalizedName}-open.png`,
          },
          title: { text: name },
          details: [

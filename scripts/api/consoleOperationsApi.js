@@ -36,6 +36,10 @@ export function getWildEncounterNameOptions() {
    return postJson('/get-wild-encounter-names', {});
 }
 
+export function getActiveUpdateOptions() {
+   return postJson('/get-active-update-options', {});
+}
+
 export function setAnimalOffDisplay(payload) {
    return postJson('/set-animal-off-display', payload);
 }
@@ -90,6 +94,18 @@ export function setRestroomAlert(payload) {
 
 export function removeRestroomAlert(payload) {
    return postJson('/remove-restroom-alert', payload);
+}
+
+export function createUpdate(payload) {
+   return postJson('/create-update', payload);
+}
+
+export function endUpdate(payload) {
+   return postJson('/end-update', payload);
+}
+
+export function editUpdate(payload) {
+   return postJson('/edit-update', payload);
 }
 
 export function setGiftShopOpeningSchedule(payload) {
@@ -158,4 +174,12 @@ export function getWildEncounterOccurrences(payload) {
 
 export function cancelWildEncounterOccurrence(payload) {
    return postJson('/cancel-wild-encounter-occurrence', payload);
+}
+
+export function setDrinkingFountainsClosed(payload) {
+   return postJson('/set-drinking-fountains-closed', payload);
+}
+
+export function setDrinkingFountainsOpen(payload) {
+   return postJson('/set-drinking-fountains-open', payload);
 }

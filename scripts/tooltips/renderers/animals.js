@@ -22,7 +22,7 @@ export const animalRenderer = {
       return createTooltipCard({
          index,
          image: {
-            src: `images/animals/${exhibit}/${species}.png`,
+            src: `images/details/animals/${exhibit}/${species}.png`,
             alt: a.species,
          },
          title: {

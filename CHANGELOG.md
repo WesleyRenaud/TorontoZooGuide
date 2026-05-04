@@ -1,5 +1,41 @@
 # Changelog
 
+## Release 1.1
+
+Release 1.1 covers the git history from `8fc78b6 Merge pull request #30 from WesleyRenaud/release/1.0` through `256e675 Merge pull request #50 from WesleyRenaud/improvement/make-updates-collapsable`.
+
+### Guest-facing map updates
+
+- Added an `Updates` module to the Explore panel for date-based guest notices such as closures, new arrivals, departures, animal births, and animal passings.
+- Made the Updates module collapsible, with carousel arrows for browsing multiple active updates and additional spacing from search results.
+- Added new map data types for drinking fountains, defibrillators, emergency intercoms, guest services, picnic sites, and event sites.
+- Added guest-service subtypes for wheelchairs, information, the First Aid & Family Center, and rentals/accessibility.
+- Added event-site names for Special Events Center, Wildlife Marquee, Conservation Clubhouse, Learning & Engagement Auditorium, and Canopy Classroom.
+- Added picnic and event site markers, map legend entries, and search/filter integration.
+- Updated the Toronto Zoo map SVG, legend, icon styling, and restroom icon variants.
+- Added Eurasia construction map updates, including partial loop closure messaging and Highland cattle marker updates.
+- Fixed Zoomobile route display behavior and Wild Encounter map filtering so unavailable or unscheduled items are not shown for the selected date.
+
+### Wild Encounters, data, and content
+
+- Refreshed stale `release/1.0` data so current map services, Wild Encounters, construction impacts, animal notes, and location alerts better match the latest operating context.
+- Added new Wild Encounter data and schedule handling.
+- Added Wild Encounter images and date-aware schedule filtering.
+- Updated animal and location content, including snow leopard, camel, otter, restaurant alert, and Eurasia construction-related information.
+
+### Console operations and update management
+
+- Added console workflows for creating, ending, and editing date-based updates.
+- Added support for update types: `Closure`, `New Arrival`, `Departure`, `Animal Birth`, and `Animal Passing`.
+- Added update schema migration from the old ID-based table to a title-and-start-date primary key.
+- Added console and backend support for new map services and site types.
+
+### Reliability and polish
+
+- Improved map icon asset organization and standardized marker/icon styling.
+- Improved Explore menu component sizing and map marker border treatment.
+- Added backend and frontend test coverage for new update, map service, event site, and schedule behaviors.
+
 ## Release 1.0
 
 Release 1.0 covers the git history from `0f9bf68 Release/0.1 Complete` through `039d6dd Merge pull request #29 from WesleyRenaud/bug-fix/search-not-working`.

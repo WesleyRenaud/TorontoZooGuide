@@ -29,6 +29,59 @@ def test_domain_objects_serialize_to_frontend_shapes():
    assert zoo.ZoomobileRouteMarker( route_type='summer', x_coord=1, y_coord=2 ).to_dict()[ 'route_type' ] == 'summer'
    assert zoo.GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_available' ] is True
    assert zoo.WildEncounter( name='Encounter', meeting_spot='Spot', link='https://example.test' ).to_dict()[ 'is_available' ] is True
+   assert zoo.DrinkingFountain( x_coord=1, y_coord=2, is_closed=1, likelihood=0.0 ).to_dict() == {
+      'x_coord': 1,
+      'y_coord': 2,
+      'is_closed': True,
+      'closed_message': None,
+      'likelihood': 0.0
+   }
+   assert zoo.Defibrillator( x_coord=5, y_coord=6 ).to_dict() == {
+      'x_coord': 5,
+      'y_coord': 6
+   }
+   assert zoo.EmergencyIntercom( x_coord=7, y_coord=8 ).to_dict() == {
+      'x_coord': 7,
+      'y_coord': 8
+   }
+   assert zoo.GuestService(
+      service_type='Information',
+      x_coord=9,
+      y_coord=10
+   ).to_dict() == {
+      'service_type': 'Information',
+      'x_coord': 9,
+      'y_coord': 10
+   }
+   assert zoo.PicnicSite(
+      x_coord=11,
+      y_coord=12
+   ).to_dict() == {
+      'x_coord': 11,
+      'y_coord': 12
+   }
+   assert zoo.EventSite(
+      name='Special Events Center',
+      x_coord=13,
+      y_coord=14
+   ).to_dict() == {
+      'name': 'Special Events Center',
+      'x_coord': 13,
+      'y_coord': 14
+   }
+   assert zoo.Update(
+      title='New baby giraffe',
+      description='Come meet the new calf.',
+      update_type='New Arrival',
+      start_date='2026-06-01',
+      end_date='2026-06-30'
+   ).to_dict() == {
+      'title': 'New baby giraffe',
+      'description': 'Come meet the new calf.',
+      'type': 'New Arrival',
+      'start_date': '2026-06-01',
+      'end_date': '2026-06-30'
+   }
 
 
 def test_animal_to_dict_converts_boolean_flags():

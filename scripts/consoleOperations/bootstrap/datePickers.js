@@ -22,10 +22,15 @@ const DATE_PICKER_BINDINGS = {
       ['zoomobile', 'route'],
       ['guardiansTalks', 'schedule'],
       ['wildEncounters', 'schedule'],
+      ['drinkingFountains', 'closed'],
+      ['drinkingFountains', 'open'],
+      ['updates', 'create'],
    ],
    singleDates: [
       ['guardiansTalks', 'endSchedule', 'endDateEl'],
       ['wildEncounters', 'endSchedule', 'endDateEl'],
+      ['updates', 'end', 'endDateEl'],
+      ['updates', 'edit', 'endDateEl'],
    ],
    dateTimes: [
       {

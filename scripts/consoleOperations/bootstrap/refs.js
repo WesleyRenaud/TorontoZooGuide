@@ -236,6 +236,50 @@ const CONSOLE_OPERATION_REF_CONFIG = {
          },
       },
    },
+   drinkingFountains: {
+      closed: {
+         operationName: 'drinkingFountainsClosed',
+         fieldSuffixes: {
+            startDateEl: 'StartDate',
+            endDateEl: 'EndDate',
+            messageEl: 'Message',
+         },
+      },
+      open: {
+         operationName: 'drinkingFountainsOpen',
+         fieldSuffixes: {
+            startDateEl: 'StartDate',
+            endDateEl: 'EndDate',
+         },
+      },
+   },
+   updates: {
+      create: {
+         operationName: 'createUpdate',
+         includeDateRange: true,
+         fieldSuffixes: {
+            titleEl: 'Title',
+            descriptionEl: 'Description',
+            typeEl: 'Type',
+         },
+      },
+      end: {
+         operationName: 'endUpdate',
+         fieldSuffixes: {
+            updateEl: 'Key',
+            endDateEl: 'EndDate',
+         },
+      },
+      edit: {
+         operationName: 'editUpdate',
+         fieldSuffixes: {
+            updateEl: 'Key',
+            descriptionEl: 'Description',
+            typeEl: 'Type',
+            endDateEl: 'EndDate',
+         },
+      },
+   },
 };
 
 function getById(doc, id) {

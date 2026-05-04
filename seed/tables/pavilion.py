@@ -27,8 +27,8 @@ pavilions = [
          America. Next venture through a number of aquatic habitats, and into the everglades wing where you can spot a number of
          invertebrates and the American Alligators. Move through the Costa Rican wing, and enjoy the playful river otters. Finally
          see a variety of North American reptiles, including the native Blanding's turtle.'''.replace( '\n', ' ' ),
-      69.606,                                   # X coordinate on map
-      48.712                                    # Y coordinate on map
+      67.517,                                   # X coordinate on map
+      49.129                                    # Y coordinate on map
    ),
    (
       'African Rainforest Pavilion',
@@ -44,8 +44,8 @@ pavilions = [
       '''Walk through this expansive pavilion which captures the beauty and scale of the beautiful Indonesian rainforest pavilions.
          Watch orangutans and gibbons swing through the tree canopy, listen to the calls of the tropical birds, and watch a number
          of species of reptile scurry across the forest floor.'''.replace( '\n', ' ' ),
-      47.879,                                   # X coordinate on map
-      76.223                                    # Y coordinate on map
+      47.560,                                   # X coordinate on map
+      75.430                                    # Y coordinate on map
    ),
    (
       'Malayan Woods Pavilion',

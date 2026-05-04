@@ -1,14 +1,15 @@
 # Toronto Zoo Guide
 
-Version 1.0
+Version 1.1
 
-Toronto Zoo Guide is a customer-facing web app designed to help guests plan and navigate a day at the Toronto Zoo. Version 1.0 focuses on three core experiences:
+Toronto Zoo Guide is a customer-facing web app designed to help guests plan and navigate a day at the Toronto Zoo. Version 1.1 focuses on four core experiences:
 
 - an interactive map for live exploration of the zoo grounds
+- date-based updates for guest-facing notices and closures
 - an animals section for browsing exhibits and species details
 - an itinerary builder for planning a visit around a specific date
 
-This README covers the guest-facing functionality in those three areas. It intentionally does not document internal console or operations tools.
+This README covers the guest-facing functionality in those areas. It intentionally does not document internal console or operations tools.
 
 For release history, see [CHANGELOG.md](CHANGELOG.md).
 
@@ -19,6 +20,7 @@ Toronto Zoo Guide is built to answer the main questions a guest has before or du
 - What animals, buildings, restaurants, attractions, and events can I find today?
 - Where are they on the map?
 - Which experiences are available on my visit date?
+- Are there current updates, closures, arrivals, or animal notices I should know about?
 - Which animals are more likely to be visible on a given day?
 - How can I save a shortlist of things I want to see?
 
@@ -72,9 +74,11 @@ Depending on the chosen day, the app can adjust:
 - restaurant availability
 - gift shop availability
 - attraction availability
+- drinking fountain availability
 - Meet the Guardians talk availability
 - Wild Encounter availability
 - Zoomobile route selection
+- active guest updates
 
 For dates within the near-term forecast window, the app also attempts to account for forecast temperature so animal visibility can be more relevant to actual conditions.
 
@@ -87,10 +91,25 @@ Available toggles include:
 - `Show region/pavilion text` to show or hide map label text
 - `Include off display animals`
 - `Include closed restaurants`
+- `Include closed restrooms`
 - `Include closed gift shops`
 - `Include closed attractions`
 
 These controls let the user decide whether the map should show only currently available options or also include items that may not be open or visible.
+
+### Updates
+
+The Explore panel can show an `Updates` module when there are active notices for the selected date.
+
+Updates can include:
+
+- closures
+- new arrivals
+- departures
+- animal births
+- animal passings
+
+If more than one update is active, visitors can step through them with arrow controls. The Updates module can also be collapsed to keep the Explore panel compact while preserving the current map context.
 
 ### Zoomobile route controls
 
@@ -117,6 +136,13 @@ Available categories include:
 - Attractions
 - Meet The Guardians Talks
 - Wild Encounters
+- Zoomobile Stations
+- Drinking Fountains
+- Defibrillators
+- Emergency Intercoms
+- Guest Services
+- Picnic Sites
+- Event Sites
 
 This makes the map usable for both broad exploration and narrow task-based searches, such as finding only restaurants or only talks.
 
@@ -182,6 +208,16 @@ Wild Encounter markers can show:
 - time of day
 - an external details link
 
+The map can also show service and site markers for:
+
+- Zoomobile stations
+- drinking fountains
+- defibrillators
+- emergency intercoms
+- guest services such as wheelchairs, information, First Aid & Family Center, and rentals/accessibility
+- picnic sites
+- event sites
+
 ### Animal detail overlay from the map
 
 When a visitor clicks an animal name inside a map tooltip, the app opens a dedicated species overlay without leaving the page.
@@ -214,6 +250,7 @@ This includes messaging for:
 - closed restaurants
 - closed gift shops
 - closed attractions
+- active guest updates
 
 ### Closed exhibit overlays
 
@@ -329,7 +366,7 @@ The visitor can move forward step by step, go back, or finish early once they ar
 
 The first step asks the visitor to choose a visit date.
 
-Date behavior in version 1.0 includes:
+Date behavior in version 1.1 includes:
 
 - calendar-based selection
 - no manual text entry required
@@ -430,7 +467,7 @@ This reduces accidental loss of planning work.
 
 ### Date-change validation
 
-One of the most important itinerary features in version 1.0 is date-based validation.
+One of the most important itinerary features in version 1.1 is date-based validation.
 
 When the visit date changes, the app re-checks the existing itinerary against the newly selected day. It can then:
 
@@ -539,6 +576,7 @@ Toronto Zoo Guide delivers a strong planning and exploration workflow, with an e
 The current release is especially focused on:
 
 - helping guests discover what is available on a given day
+- surfacing important date-based updates in the Explore panel
 - connecting species education with navigation
 - keeping planning practical through availability checks and visibility guidance
 - making saved plans easy to review and revise

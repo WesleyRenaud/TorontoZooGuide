@@ -11,6 +11,14 @@ def column_names( cursor, table ):
    }
 
 
+def column_info( cursor, table, column ):
+   return next(
+      row
+      for row in cursor.execute( f'PRAGMA table_info( { table } );' ).fetchall()
+      if row[ 1 ] == column
+   )
+
+
 def test_seed_data_exports_all_static_table_rows():
    assert data.regions
    assert data.exhibits
@@ -32,6 +40,13 @@ def test_seed_data_exports_all_static_table_rows():
    assert data.guardians_talks
    assert data.wild_encounter_meeting_spots
    assert data.wild_encounters
+   assert data.drinking_fountain_day_seasonal_availability_multipliers
+   assert data.drinking_fountains
+   assert data.defibrillators
+   assert data.emergency_intercoms
+   assert data.guest_services
+   assert data.picnic_sites
+   assert data.event_sites
 
 
 def test_create_schema_migrates_partial_dynamic_tables():
@@ -45,6 +60,7 @@ def test_create_schema_migrates_partial_dynamic_tables():
       'ExhibitStatus': 'EXHIBIT TEXT',
       'RestroomStatus': 'RESTROOM TEXT',
       'RestroomAlert': 'RESTROOM TEXT',
+      'ZooUpdate': 'TITLE TEXT, START_DATE DATE',
       'RestaurantOpeningSchedule': 'RESTAURANT TEXT',
       'GiftShopOpeningSchedule': 'GIFT_SHOP TEXT',
       'AppSetting': 'ID INTEGER',
@@ -108,6 +124,13 @@ def test_create_schema_migrates_partial_dynamic_tables():
          'ALERT_MESSAGE',
          'ALERT_START_DATE',
          'ALERT_END_DATE'
+      },
+      'ZooUpdate': {
+         'TITLE',
+         'DESCRIPTION',
+         'UPDATE_TYPE',
+         'START_DATE',
+         'END_DATE'
       },
       'RestaurantOpeningSchedule': {
          'RESTAURANT',
@@ -222,6 +245,8 @@ def test_create_schema_migrates_partial_dynamic_tables():
 
    for table, expected in expected_columns.items():
       assert expected <= column_names( cursor, table )
+
+   assert column_info( cursor, 'ZooUpdate', 'END_DATE' )[ 3 ] == 0
 
    assert cursor.execute( 'SELECT COUNT(*) FROM Itinerary WHERE ID = 1;' ).fetchone()[ 0 ] == 1
 

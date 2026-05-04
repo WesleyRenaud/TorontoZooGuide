@@ -24,8 +24,8 @@ restrooms = [
    ),
    (
       'Canadian Domain Zoomobile Stop Restroom',
-      35.98,   # X coordinate on map
-      26.384   # Y coordinate on map
+      36.066,  # X coordinate on map
+      25.484   # Y coordinate on map
    ),
    (
       'Canadian Domain Restroom',
@@ -46,6 +46,16 @@ restrooms = [
       'Splash Island Restroom',
       67.201,  # X coordinate on map
       75.854   # Y coordinate on map
+   ),
+   (
+      'Zootique Restroom',
+      62.467,  # X coordinate on map
+      72.934   # Y coordinate on map
+   ),
+   (
+      'African Rainforest Restroom',
+      46.313,  # X coordinate on map
+      68.117   # Y coordinate on map
    )
 ]
 

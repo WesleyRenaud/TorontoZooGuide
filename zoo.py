@@ -278,6 +278,119 @@ class WildEncounter:
       }
 
 
+class DrinkingFountain:
+   def __init__(
+         self,
+         x_coord,
+         y_coord,
+         is_closed=False,
+         closed_message=None,
+         likelihood=None ):
+      self.x_coord = x_coord
+      self.y_coord = y_coord
+      self.is_closed = is_closed
+      self.closed_message = closed_message
+      self.likelihood = likelihood
+
+
+   def to_dict( self ):
+      return {
+         'x_coord': self.x_coord,
+         'y_coord': self.y_coord,
+         'is_closed': ZooUtil.as_boolean( self.is_closed ),
+         'closed_message': self.closed_message,
+         'likelihood': self.likelihood
+      }
+
+
+class Defibrillator:
+   def __init__( self, x_coord, y_coord ):
+      self.x_coord = x_coord
+      self.y_coord = y_coord
+
+
+   def to_dict( self ):
+      return {
+         'x_coord': self.x_coord,
+         'y_coord': self.y_coord
+      }
+
+
+class EmergencyIntercom:
+   def __init__( self, x_coord, y_coord ):
+      self.x_coord = x_coord
+      self.y_coord = y_coord
+
+
+   def to_dict( self ):
+      return {
+         'x_coord': self.x_coord,
+         'y_coord': self.y_coord
+      }
+
+
+class GuestService:
+   def __init__( self, service_type, x_coord, y_coord ):
+      self.service_type = service_type
+      self.x_coord = x_coord
+      self.y_coord = y_coord
+
+
+   def to_dict( self ):
+      return {
+         'service_type': self.service_type,
+         'x_coord': self.x_coord,
+         'y_coord': self.y_coord
+      }
+
+
+class PicnicSite:
+   def __init__( self, x_coord, y_coord ):
+      self.x_coord = x_coord
+      self.y_coord = y_coord
+
+
+   def to_dict( self ):
+      return {
+         'x_coord': self.x_coord,
+         'y_coord': self.y_coord
+      }
+
+
+class EventSite:
+   def __init__( self, name, x_coord, y_coord ):
+      self.name = name
+      self.x_coord = x_coord
+      self.y_coord = y_coord
+
+
+   def to_dict( self ):
+      return {
+         'name': self.name,
+         'x_coord': self.x_coord,
+         'y_coord': self.y_coord
+      }
+
+
+class Update:
+   def __init__( self, title, description, update_type, start_date, end_date ):
+      self.title = title
+      self.description = description
+      self.update_type = update_type
+      self.start_date = start_date
+      self.end_date = end_date
+
+
+   def to_dict( self ):
+      return {
+         'title': self.title,
+         'description': self.description,
+         'type': self.update_type,
+         'start_date': self.start_date,
+         'end_date': self.end_date
+      }
+
+
 class Itinerary:
    def __init__( self, date, animals=[], attractions=[], guardians_talks=[], wild_encounters=[] ):
       self.date = date

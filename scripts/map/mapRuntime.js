@@ -12,6 +12,7 @@ import { createRestaurantClosedBanner } from '../banners/restaurantClosedBanner.
 import { createRestroomMessageBanner } from '../banners/restroomMessageBanner.js';
 import { createGiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
 import { createAttractionClosedBanner } from '../banners/attractionClosedBanner.js';
+import { createDrinkingFountainClosedBanner } from '../banners/drinkingFountainClosedBanner.js';
 import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { initLabelVisibilityToggle } from './labelVisibility.js';
 
@@ -30,6 +31,7 @@ function createMapBannerSet() {
       restroomMessageBanner: createRestroomMessageBanner(),
       giftShopClosedBanner: createGiftShopClosedBanner(),
       attractionClosedBanner: createAttractionClosedBanner(),
+      drinkingFountainClosedBanner: createDrinkingFountainClosedBanner(),
    };
 }
 
@@ -104,6 +106,7 @@ export function createMapRuntime({
    getIncludeClosedAttractions = () => false,
    getZoomobileRoute = () => 'none',
    getSelectedTypes = () => [],
+   onDateContextChange = null,
 } = {}) {
    const viewportEl = mapInner?.parentElement;
 
@@ -150,6 +153,7 @@ export function createMapRuntime({
       getIncludeClosedAttractions,
       getZoomobileRoute,
       getSelectedTypes,
+      onDateContextChange,
    });
 
    return {

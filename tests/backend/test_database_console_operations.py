@@ -259,6 +259,65 @@ def test_set_zoomobile_station_closed_and_open_changes_route_results( db, freeze
    assert any( station.name == 'Africa Zoomobile Station' for station in route[ 'zoomobile_stations' ] )
 
 
+def test_create_end_and_edit_updates_change_active_update_results( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   created = db.create_update(
+      title='New baby giraffe',
+      description='Come meet the new calf.',
+      update_type='new arrival',
+      start_date='',
+      end_date='' )
+
+   assert created is True
+
+   updates = db.get_updates( month='June', day=15 )
+
+   assert len( updates ) == 1
+   assert updates[ 0 ].to_dict() == {
+      'title': 'New baby giraffe',
+      'description': 'Come meet the new calf.',
+      'type': 'New Arrival',
+      'start_date': '2026-06-15',
+      'end_date': None
+   }
+
+   assert db.edit_update(
+      title='New baby giraffe',
+      start_date='2026-06-15',
+      description='Updated calf details.',
+      update_type='Closure',
+      end_date='2026-07-15' ) is True
+
+   updates = db.get_updates( month='July', day=1 )
+
+   assert len( updates ) == 1
+   assert updates[ 0 ].to_dict() == {
+      'title': 'New baby giraffe',
+      'description': 'Updated calf details.',
+      'type': 'Closure',
+      'start_date': '2026-06-15',
+      'end_date': '2026-07-15'
+   }
+
+   assert db.edit_update(
+      title='New baby giraffe',
+      start_date='2026-06-15',
+      end_date='' ) is True
+
+   updates = db.get_updates( month='August', day=1 )
+
+   assert updates[ 0 ].end_date is None
+
+   assert db.edit_update(
+      title='New baby giraffe',
+      start_date='2026-06-15',
+      update_type='invalid' ) is False
+
+   assert db.end_update( 'New baby giraffe', '2026-06-15', '2026-06-14' ) is True
+   assert db.get_updates( month='June', day=15 ) == []
+
+
 def test_set_current_zoomobile_route_changes_current_route_result( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
 
@@ -387,3 +446,19 @@ def test_console_status_and_schedule_guards( db ):
    assert db.set_attraction_as_closed( '', None, None, None ) is False
    assert db.set_zoomobile_station_as_closed( '', None, None, None ) is False
    assert db.set_current_zoomobile_route( 'bad', None, None ) is False
+   assert db.create_update( '', '', 'Closure', '2026-06-01', '2026-06-30' ) is None
+   assert db.create_update( 'Title', 'Description', 'Bad', '2026-06-01', '2026-06-30' ) is None
+   assert db.create_update(
+      'Animal birth',
+      'A new animal was born.',
+      'animal birth',
+      '2026-06-01',
+      '2026-06-30'
+   ) is True
+   assert db.create_update(
+      'Animal passing',
+      'An animal has passed.',
+      'animal_passing',
+      '2026-06-01',
+      '2026-06-30'
+   ) is True

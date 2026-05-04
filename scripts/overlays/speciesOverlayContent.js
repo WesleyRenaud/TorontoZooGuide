@@ -30,7 +30,7 @@ function createTextElement(tagName, className, text) {
 function createSpeciesImage(animal) {
    const image = document.createElement('img');
    image.className = 'new-animal-image';
-   image.src = `images/animals/${normalizeAssetKey(animal.exhibit)}/${normalizeAssetKey(animal.species)}.png`;
+   image.src = `images/details/animals/${normalizeAssetKey(animal.exhibit)}/${normalizeAssetKey(animal.species)}.png`;
    image.alt = readText(animal.species);
    return image;
 }

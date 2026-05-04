@@ -66,6 +66,30 @@ const HOVER_FORMATTERS = Object.freeze({
    ),
    guardiansTalk: formatGuardiansTalkHoverText,
    wildEncounter: formatWildEncounterHoverText,
+   drinkingFountain: (items) => formatCountedHoverText(
+      items,
+      () => 'Drinking Fountain'
+   ),
+   defibrillator: (items) => formatCountedHoverText(
+      items,
+      () => 'Defibrillator'
+   ),
+   emergencyIntercom: (items) => formatCountedHoverText(
+      items,
+      () => 'Emergency Intercom'
+   ),
+   guestService: (items) => formatCountedHoverText(
+      items,
+      (item) => readItemText(item, 'service_type', 'Guest Service')
+   ),
+   picnicSite: (items) => formatCountedHoverText(
+      items,
+      () => 'Picnic Site'
+   ),
+   eventSite: (items) => formatCountedHoverText(
+      items,
+      (item) => readItemText(item, 'name', 'Event Site')
+   ),
 });
 
 export function buildHoverText(itemsAtPoint) {

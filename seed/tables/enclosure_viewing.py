@@ -2035,6 +2035,7 @@ enclosure_viewings =\
       72.611                  # Y coordinate on map
    ),
 
+   # TO-DO: Add individual coordinates for each Kid's Zoo animal
    # Kids Zoo
    (
       'Abyssinian Ground Hornbill',

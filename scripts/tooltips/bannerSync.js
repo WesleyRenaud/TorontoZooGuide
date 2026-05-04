@@ -4,6 +4,7 @@ export function createTooltipBannerSync({
    restroomMessageBanner,
    giftShopClosedBanner,
    attractionClosedBanner,
+   drinkingFountainClosedBanner,
 }) {
    const bannersByType = {
       animal: offDisplayBanner,
@@ -11,6 +12,7 @@ export function createTooltipBannerSync({
       restroom: restroomMessageBanner,
       giftShop: giftShopClosedBanner,
       attraction: attractionClosedBanner,
+      drinkingFountain: drinkingFountainClosedBanner,
    };
 
    const allBanners = Object.values(bannersByType);

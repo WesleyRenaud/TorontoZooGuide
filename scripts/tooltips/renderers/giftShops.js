@@ -11,9 +11,9 @@ export const giftShopRenderer = {
       return createTooltipCard({
          index,
          image: {
-            src: `images/gift-shops/${normalizedName}.png`,
+            src: `images/details/gift-shops/${normalizedName}.png`,
             alt: name,
-            fallbackSrc: 'images/generic-icons/gift-shop-open.png',
+            fallbackSrc: 'images/icons/gift-shop/gift-shop-open.png',
          },
          title: { text: name },
          details: [

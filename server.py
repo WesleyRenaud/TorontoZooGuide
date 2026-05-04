@@ -352,12 +352,101 @@ class MyHandler( BaseHTTPRequestHandler ):
          month = data.get( 'month' )
          day = data.get( 'day' )
 
-         wild_encounters = self.database.get_wild_encounters( month=month, day=day )
+         wild_encounters = self.database.get_available_wild_encounters(
+            month=month,
+            day=day )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
          response = { "wild_encounters": [ wild_encounter.to_dict() for wild_encounter in wild_encounters ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-drinking-fountains':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+
+         drinking_fountains = self.database.get_drinking_fountains( month=month, day=day )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "drinking_fountains": [ drinking_fountain.to_dict() for drinking_fountain in drinking_fountains ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-defibrillators':
+         defibrillators = self.database.get_defibrillators()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "defibrillators": [ defibrillator.to_dict() for defibrillator in defibrillators ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-emergency-intercoms':
+         emergency_intercoms = self.database.get_emergency_intercoms()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "emergency_intercoms": [ emergency_intercom.to_dict() for emergency_intercom in emergency_intercoms ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-guest-services':
+         guest_services = self.database.get_guest_services()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "guest_services": [ guest_service.to_dict() for guest_service in guest_services ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-picnic-sites':
+         picnic_sites = self.database.get_picnic_sites()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "picnic_sites": [ picnic_site.to_dict() for picnic_site in picnic_sites ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-event-sites':
+         event_sites = self.database.get_event_sites()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "event_sites": [ event_site.to_dict() for event_site in event_sites ] }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-updates':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         month = data.get( 'month' )
+         day = data.get( 'day' )
+
+         updates = self.database.get_updates(
+            month=month,
+            day=day
+         )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { "updates": [ update.to_dict() for update in updates ] }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
@@ -912,6 +1001,16 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-active-update-options':
+         updates = self.database.get_active_update_options()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = { 'updates': updates }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/get-exhibits-by-region':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -1319,6 +1418,111 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not remove alert for "{ restroom }".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/create-update':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         title = data.get( 'title' )
+         description = data.get( 'description' )
+         update_type = data.get( 'type' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+
+         success = self.database.create_update(
+            title=title,
+            description=description,
+            update_type=update_type,
+            start_date=start_date,
+            end_date=end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'title': title,
+            'description': description,
+            'type': update_type,
+            'startDate': start_date,
+            'endDate': end_date
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not create update.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/end-update':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         title = data.get( 'title' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+
+         success = self.database.end_update(
+            title=title,
+            start_date=start_date,
+            end_date=end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'title': title,
+            'startDate': start_date,
+            'endDate': end_date
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not end update.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/edit-update':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         title = data.get( 'title' )
+         start_date = data.get( 'startDate' )
+         description = data.get( 'description' )
+         update_type = data.get( 'type' )
+         end_date = data.get( 'endDate' )
+
+         success = self.database.edit_update(
+            title=title,
+            start_date=start_date,
+            description=description,
+            update_type=update_type,
+            end_date=end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'title': title,
+            'startDate': start_date,
+            'description': description,
+            'type': update_type,
+            'endDate': end_date
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not edit update.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -1940,6 +2144,65 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not cancel "{ wild_encounter }" on { date } at { time }.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-drinking-fountains-closed':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+         message = data.get( 'message' )
+
+         success = self.database.set_drinking_fountains_as_closed(
+            start_date=start_date,
+            end_date=end_date,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'startDate': start_date,
+            'endDate': end_date,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not set drinking fountains as closed.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-drinking-fountains-open':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+
+         success = self.database.set_drinking_fountains_as_open(
+            start_date=start_date,
+            end_date=end_date )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'startDate': start_date,
+            'endDate': end_date
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not set drinking fountains as open.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

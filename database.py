@@ -276,13 +276,13 @@ class Database():
       if animal[ 'IS_CLOSED' ] == None:
          return 'unknown', None
 
-      status_start = animal[ 'CLOSED_START' ]
-      status_end = animal[ 'CLOSED_END' ]
+      start_date = animal[ 'CLOSED_START' ]
+      end_date = animal[ 'CLOSED_END' ]
 
       is_active = self.is_date_in_range(
          target_date=target_date,
-         start_date_value=status_start,
-         end_date_value=status_end )
+         start_date_value=start_date,
+         end_date_value=end_date )
 
       if not is_active:
          return 'unknown', None
@@ -1528,6 +1528,273 @@ class Database():
       return wild_encounters
 
 
+   def get_available_wild_encounters( self, month, day ):
+      return [
+         wild_encounter
+         for wild_encounter in self.get_wild_encounters( month=month, day=day )
+         if getattr( wild_encounter, 'is_available', True )
+      ]
+
+
+   def get_drinking_fountain_status( self, month=None, day=None ):
+      if month is not None and day is not None:
+         target_date = date(
+            datetime.now().year,
+            zoo.ZooUtil.normalize_month( month=month ),
+            int( day ) )
+      else:
+         target_date = datetime.now().date()
+
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  IS_CLOSED,
+                  START_DATE,
+                  END_DATE,
+                  CLOSED_MESSAGE
+               FROM DrinkingFountainStatus
+               LIMIT 1;
+         """ )
+
+      status = data.fetchone()
+      cur.close()
+
+      if status is None:
+         return self.get_drinking_fountain_seasonal_status(
+            target_date=target_date )
+
+      if not self.is_date_in_range(
+            target_date=target_date,
+            start_date_value=status[ 'START_DATE' ],
+            end_date_value=status[ 'END_DATE' ] ):
+         return self.get_drinking_fountain_seasonal_status(
+            target_date=target_date )
+
+      is_closed = bool( status[ 'IS_CLOSED' ] )
+      closed_message = status[ 'CLOSED_MESSAGE' ]
+      likelihood = 0.0 if is_closed else 1.0
+
+      return is_closed, closed_message, likelihood
+
+
+   def get_drinking_fountain_seasonal_status( self, target_date ):
+      likelihood = self.get_drinking_fountain_seasonal_likelihood(
+         target_date=target_date )
+      is_closed = likelihood <= 0
+
+      return is_closed, None, likelihood
+
+
+   def get_drinking_fountain_seasonal_likelihood( self, target_date ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  LIKELIHOOD
+               FROM DrinkingFountainDaySeasonalAvailabilityMultiplier
+               WHERE MONTH = ?
+                  AND DAY = ?;
+         """,
+         (
+            target_date.month,
+            target_date.day
+         ) )
+
+      row = data.fetchone()
+      cur.close()
+
+      return row[ 'LIKELIHOOD' ] if row else 1.0
+
+
+   def get_drinking_fountains( self, month=None, day=None ):
+      is_closed, closed_message, likelihood = self.get_drinking_fountain_status(
+         month=month,
+         day=day )
+
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  X_COORD,
+                  Y_COORD
+               FROM DrinkingFountain;
+         """ )
+
+      drinking_fountains = [
+         zoo.DrinkingFountain(
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ],
+            is_closed=is_closed,
+            closed_message=closed_message if is_closed else None,
+            likelihood=likelihood )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return drinking_fountains
+
+
+   def get_defibrillators( self ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  X_COORD,
+                  Y_COORD
+               FROM Defibrillator;
+         """ )
+
+      defibrillators = [
+         zoo.Defibrillator(
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return defibrillators
+
+
+   def get_emergency_intercoms( self ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  X_COORD,
+                  Y_COORD
+               FROM EmergencyIntercom;
+         """ )
+
+      emergency_intercoms = [
+         zoo.EmergencyIntercom(
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return emergency_intercoms
+
+
+   def get_guest_services( self ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  SERVICE_TYPE,
+                  X_COORD,
+                  Y_COORD
+               FROM GuestService;
+         """ )
+
+      guest_services = [
+         zoo.GuestService(
+            service_type=row[ 'SERVICE_TYPE' ],
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return guest_services
+
+
+   def get_picnic_sites( self ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  X_COORD,
+                  Y_COORD
+               FROM PicnicSite;
+         """ )
+
+      picnic_sites = [
+         zoo.PicnicSite(
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return picnic_sites
+
+
+   def get_event_sites( self ):
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  NAME,
+                  X_COORD,
+                  Y_COORD
+               FROM EventSite;
+         """ )
+
+      event_sites = [
+         zoo.EventSite(
+            name=row[ 'NAME' ],
+            x_coord=row[ 'X_COORD' ],
+            y_coord=row[ 'Y_COORD' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return event_sites
+
+
+   def get_updates( self, month=None, day=None ):
+      if month != None and day != None:
+         target_date = date(
+            datetime.now().year,
+            zoo.ZooUtil.normalize_month( month=month ),
+            int( day ) )
+      else:
+         target_date = datetime.now().date()
+
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  TITLE,
+                  DESCRIPTION,
+                  UPDATE_TYPE,
+                  START_DATE,
+                  END_DATE
+               FROM ZooUpdate
+               WHERE START_DATE <= ?
+                  AND (
+                     END_DATE IS NULL
+                     OR END_DATE >= ?
+                  )
+               ORDER BY START_DATE DESC, TITLE ASC;
+         """,
+         (
+            target_date.isoformat(),
+            target_date.isoformat()
+         ) )
+
+      updates = [
+         zoo.Update(
+            title=row[ 'TITLE' ],
+            description=row[ 'DESCRIPTION' ],
+            update_type=row[ 'UPDATE_TYPE' ],
+            start_date=row[ 'START_DATE' ],
+            end_date=row[ 'END_DATE' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
+      return updates
+
+
+   def get_active_update_options( self ):
+      return [
+         update.to_dict()
+         for update in self.get_updates()
+      ]
+
+
    def get_closed_exhibits( self, month, day ):
       cur = self.conn.cursor()
 
@@ -1700,7 +1967,7 @@ class Database():
 
 
    def get_wild_encounters_matching_query( self, query, month, day ):
-      wild_encounters = self.get_wild_encounters( month=month, day=day )
+      wild_encounters = self.get_available_wild_encounters( month=month, day=day )
 
       if not query:
          return wild_encounters
@@ -3140,6 +3407,192 @@ class Database():
       return removed > 0
 
 
+   def normalize_update_type( self, update_type ):
+      update_type_labels = {
+         'animal birth': 'Animal Birth',
+         'animal_birth': 'Animal Birth',
+         'animal passing': 'Animal Passing',
+         'animal_passing': 'Animal Passing',
+         'closure': 'Closure',
+         'new arrival': 'New Arrival',
+         'new_arrival': 'New Arrival',
+         'departure': 'Departure'
+      }
+
+      normalized_key = str( update_type or '' ).strip().lower()
+
+      return update_type_labels.get( normalized_key )
+
+
+   def create_update( self, title, description, update_type, start_date, end_date ):
+      title = str( title or '' ).strip()
+      description = str( description or '' ).strip()
+      normalized_update_type = self.normalize_update_type( update_type )
+
+      if not title or not description or normalized_update_type == None:
+         return None
+
+      if not start_date:
+         start_date = datetime.now().date().isoformat()
+
+      parsed_end_date = None
+
+      try:
+         parsed_start_date = self.parse_date_value( start_date )
+
+         if end_date:
+            parsed_end_date = self.parse_date_value( end_date )
+      except ValueError:
+         return None
+
+      if parsed_end_date != None and parsed_end_date < parsed_start_date:
+         return None
+
+      cur = self.conn.cursor()
+      cur.execute(
+         """   INSERT INTO ZooUpdate (
+                  TITLE,
+                  DESCRIPTION,
+                  UPDATE_TYPE,
+                  START_DATE,
+                  END_DATE
+               )
+               VALUES (?, ?, ?, ?, ?)
+               ON CONFLICT(TITLE, START_DATE) DO NOTHING;
+         """,
+         (
+            title,
+            description,
+            normalized_update_type,
+            parsed_start_date.isoformat(),
+            parsed_end_date.isoformat() if parsed_end_date != None else None
+         ) )
+
+      self.conn.commit()
+      created = cur.rowcount
+      cur.close()
+
+      return created > 0
+
+
+   def end_update( self, title, start_date, end_date ):
+      if not title or not start_date:
+         return False
+
+      if not end_date:
+         end_date = datetime.now().date().isoformat()
+
+      try:
+         parsed_end_date = self.parse_date_value( end_date )
+      except ValueError:
+         return False
+
+      cur = self.conn.cursor()
+      cur.execute(
+         """   UPDATE ZooUpdate
+               SET END_DATE = ?
+               WHERE TITLE = ?
+                  AND START_DATE = ?;
+         """,
+         (
+            parsed_end_date.isoformat(),
+            title,
+            start_date
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def edit_update( self, title, start_date, description=None, update_type=None, end_date=None ):
+      if not title or not start_date:
+         return False
+
+      parsed_end_date = None
+      should_update_end_date = end_date is not None
+      normalized_update_type = None
+
+      if update_type:
+         normalized_update_type = self.normalize_update_type( update_type )
+
+         if normalized_update_type == None:
+            return False
+
+      if should_update_end_date and end_date:
+         try:
+            parsed_end_date = self.parse_date_value( end_date )
+         except ValueError:
+            return False
+
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  START_DATE,
+                  END_DATE
+               FROM ZooUpdate
+               WHERE TITLE = ?
+                  AND START_DATE = ?;
+         """,
+         (
+            title,
+            start_date
+         ) )
+      current_update = data.fetchone()
+
+      if current_update == None:
+         cur.close()
+         return False
+
+      current_start_date = self.parse_date_value( current_update[ 'START_DATE' ] )
+
+      if should_update_end_date and parsed_end_date == None:
+         next_end_date = None
+      else:
+         next_end_date = parsed_end_date.isoformat() if parsed_end_date != None else current_update[ 'END_DATE' ]
+
+      if parsed_end_date != None and parsed_end_date < current_start_date:
+         cur.close()
+         return False
+
+      update_fields = []
+      update_values = []
+
+      if description != None and str( description ).strip():
+         update_fields.append( 'DESCRIPTION = ?' )
+         update_values.append( str( description ).strip() )
+
+      if normalized_update_type != None:
+         update_fields.append( 'UPDATE_TYPE = ?' )
+         update_values.append( normalized_update_type )
+
+      if should_update_end_date:
+         update_fields.append( 'END_DATE = ?' )
+         update_values.append( next_end_date )
+
+      if not update_fields:
+         cur.close()
+         return False
+
+      update_values.extend( [ title, start_date ] )
+
+      cur.execute(
+         f"""  UPDATE ZooUpdate
+               SET { ', '.join( update_fields ) }
+               WHERE TITLE = ?
+                  AND START_DATE = ?;
+         """,
+         tuple( update_values ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
    def set_restaurant_as_closed( self, restaurant, start_date, end_date, message ):
       if not restaurant:
          return False
@@ -3811,6 +4264,64 @@ class Database():
             wild_encounter,
             date,
             time
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def set_drinking_fountains_as_closed( self, start_date=None, end_date=None, message=None ):
+      if not message:
+         message = 'The drinking fountains are closed for the season.'
+
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """ DELETE FROM DrinkingFountainStatus;
+         """ )
+
+      cur.execute(
+         """   INSERT INTO DrinkingFountainStatus (
+                  IS_CLOSED,
+                  START_DATE,
+                  END_DATE,
+                  CLOSED_MESSAGE
+               )
+               VALUES (1, ?, ?, ?);
+         """, (
+            start_date,
+            end_date,
+            message
+         ) )
+
+      self.conn.commit()
+      updated = cur.rowcount
+      cur.close()
+
+      return updated > 0
+
+
+   def set_drinking_fountains_as_open( self, start_date=None, end_date=None ):
+      cur = self.conn.cursor()
+
+      cur.execute(
+         """ DELETE FROM DrinkingFountainStatus;
+         """ )
+
+      cur.execute(
+         """   INSERT INTO DrinkingFountainStatus (
+                  IS_CLOSED,
+                  START_DATE,
+                  END_DATE,
+                  CLOSED_MESSAGE
+               )
+               VALUES (0, ?, ?, NULL);
+         """, (
+            start_date,
+            end_date
          ) )
 
       self.conn.commit()

@@ -72,6 +72,34 @@ export async function getWildEncounters(payload = EMPTY_PAYLOAD) {
    return await fetchCollection('/get-wild-encounters', 'wild_encounters', payload);
 }
 
+export async function getDrinkingFountains(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-drinking-fountains', 'drinking_fountains', payload);
+}
+
+export async function getDefibrillators() {
+   return await fetchCollection('/get-defibrillators', 'defibrillators');
+}
+
+export async function getEmergencyIntercoms() {
+   return await fetchCollection('/get-emergency-intercoms', 'emergency_intercoms');
+}
+
+export async function getGuestServices() {
+   return await fetchCollection('/get-guest-services', 'guest_services');
+}
+
+export async function getPicnicSites() {
+   return await fetchCollection('/get-picnic-sites', 'picnic_sites');
+}
+
+export async function getEventSites() {
+   return await fetchCollection('/get-event-sites', 'event_sites');
+}
+
+export async function getUpdates(payload = EMPTY_PAYLOAD) {
+   return await fetchCollection('/get-updates', 'updates', payload);
+}
+
 export async function getExhibits() {
    return await fetchCollection('/get-exhibits', 'exhibits');
 }

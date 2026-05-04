@@ -1,7 +1,10 @@
 import {
    getAnimalIconUrl,
    getAttractionIconUrl,
+   getDrinkingFountainIconUrl,
+   getEventSiteIconUrl,
    getGiftShopIconUrl,
+   getGuestServiceIconUrl,
    getRestaurantIconUrl,
    getRestroomIconUrl,
 } from '../assets/iconUrls.js';
@@ -16,13 +19,17 @@ import {
 const DEFAULT_ATTRACTION_MARKER_SIZE = 32;
 const LIMITED_VIEWING_MARKER_CLASS = 'marker-has-limited-viewing';
 const CLOSED_RESTROOM_ICON_TOKEN = 'closed';
+const FIRST_AID_AND_FAMILY_CENTER_TYPE = 'First Aid & Family Center';
 
 const GENERIC_ICON_PATHS = Object.freeze({
-   pavilion: '/images/generic-icons/pavilion-open.png',
-   restroom: '/images/generic-icons/restroom-open.png',
-   zoomobileStation: '/images/generic-icons/zoomobile-station.png',
-   guardiansTalk: '/images/generic-icons/guardians-talk.png',
-   wildEncounter: '/images/generic-icons/wild-encounter.png',
+   pavilion: '/images/icons/pavilion/pavilion-open.png',
+   restroom: '/images/icons/restroom/restroom-open.png',
+   zoomobileStation: '/images/icons/zoomobile-station/zoomobile-station.png',
+   guardiansTalk: '/images/icons/guardians-talk/guardians-talk.png',
+   wildEncounter: '/images/icons/wild-encounter/wild-encounter.png',
+   defibrillator: '/images/icons/defibrillator/defibrillator.png',
+   emergencyIntercom: '/images/icons/emergency-intercom/emergency-intercom.png',
+   picnicSite: '/images/icons/picnic-site/picnic-site.png',
 });
 
 const MARKER_CLASS_BY_TYPE = Object.freeze({
@@ -34,6 +41,13 @@ const MARKER_CLASS_BY_TYPE = Object.freeze({
    zoomobileRouteMarker: 'marker-zoomobile-route-marker',
    guardiansTalk: 'marker-guardians-talk',
    wildEncounter: 'marker-wild-encounter',
+   drinkingFountain: 'marker-drinking-fountain',
+   defibrillator: 'marker-defibrillator',
+   emergencyIntercom: 'marker-emergency-intercom',
+   guestService: 'marker-guest-service',
+   firstAidGuestService: 'marker-guest-service-first-aid',
+   picnicSite: 'marker-picnic-site',
+   eventSite: 'marker-event-site',
 });
 
 const ZOOMOBILE_ROUTE_COLORS = Object.freeze({
@@ -170,6 +184,64 @@ function renderZoomobileRouteMarker(markerEl, items) {
    applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.zoomobileRouteMarker);
 }
 
+function renderDrinkingFountainMarker(markerEl, items) {
+   const drinkingFountain = items[0];
+   const count = items.length;
+   const likelihood = Number.isFinite(Number(drinkingFountain?.likelihood))
+      ? Number(drinkingFountain.likelihood) * 100
+      : (drinkingFountain?.is_closed ? 0 : 100);
+   const { colour, iconToken } = getLikelihoodVisual(likelihood);
+
+   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.drinkingFountain);
+
+   if (count > 1) {
+      applyCountMarker(markerEl, count, colour);
+      return;
+   }
+
+   applyBackgroundImage(
+      markerEl,
+      getDrinkingFountainIconUrl(iconToken)
+   );
+}
+
+function renderGuestServiceMarker(markerEl, items) {
+   const guestService = items[0];
+   const serviceType = String(guestService?.service_type || '').trim();
+
+   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.guestService);
+
+   if (serviceType === FIRST_AID_AND_FAMILY_CENTER_TYPE) {
+      applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.firstAidGuestService);
+   }
+
+   if (items.length > 1) {
+      applyCountMarker(markerEl, items.length);
+      return;
+   }
+
+   applyBackgroundImage(
+      markerEl,
+      getGuestServiceIconUrl(serviceType)
+   );
+}
+
+function renderEventSiteMarker(markerEl, items) {
+   const eventSite = items[0];
+
+   applyMarkerClass(markerEl, MARKER_CLASS_BY_TYPE.eventSite);
+
+   if (items.length > 1) {
+      applyCountMarker(markerEl, items.length);
+      return;
+   }
+
+   applyBackgroundImage(
+      markerEl,
+      getEventSiteIconUrl(eventSite?.name)
+   );
+}
+
 const MARKER_TYPE_RENDERERS = {
    animal: renderAnimalMarker,
    pavilion: createGenericIconMarkerRenderer('pavilion'),
@@ -197,6 +269,12 @@ const MARKER_TYPE_RENDERERS = {
    zoomobileRouteMarker: renderZoomobileRouteMarker,
    guardiansTalk: createGenericIconMarkerRenderer('guardiansTalk'),
    wildEncounter: createGenericIconMarkerRenderer('wildEncounter'),
+   drinkingFountain: renderDrinkingFountainMarker,
+   defibrillator: createGenericIconMarkerRenderer('defibrillator'),
+   emergencyIntercom: createGenericIconMarkerRenderer('emergencyIntercom'),
+   guestService: renderGuestServiceMarker,
+   picnicSite: createGenericIconMarkerRenderer('picnicSite'),
+   eventSite: renderEventSiteMarker,
 };
 
 export function renderMarkerByType(markerEl, items) {

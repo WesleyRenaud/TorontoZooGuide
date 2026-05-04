@@ -17,8 +17,8 @@ attractions = [
       '''All Aboard for a Wild Ride! Climb aboard the Zoomobile for a fun ride through your Toronto Zoo!''',
       '''https://www.torontozoo.com/tickets/zoomobile''',                     # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
-      56.246,                                                                 # X coordinate on map
-      81.096                                                                  # Y coordinate on map
+      56.068,                                                                 # X coordinate on map
+      83.343                                                                  # Y coordinate on map
    ),
    (
       'Conservation Carousel',

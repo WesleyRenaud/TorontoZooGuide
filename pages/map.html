@@ -137,6 +137,30 @@
                               <input type="checkbox" value="wildEncounter">
                               Wild Encounters
                            </label>
+                           <label>
+                              <input type="checkbox" value="drinkingFountain">
+                              Drinking Fountains
+                           </label>
+                           <label>
+                              <input type="checkbox" value="defibrillator">
+                              Defibrillators
+                           </label>
+                           <label>
+                              <input type="checkbox" value="emergencyIntercom">
+                              Emergency Intercoms
+                           </label>
+                           <label>
+                              <input type="checkbox" value="guestService">
+                              Guest Services
+                           </label>
+                           <label>
+                              <input type="checkbox" value="picnicSite">
+                              Picnic Sites
+                           </label>
+                           <label>
+                              <input type="checkbox" value="eventSite">
+                              Event Sites
+                           </label>
                         </div>
                      </div>
                   </div>
@@ -155,6 +179,22 @@
 
                   <!-- Results -->
                   <div id="animalSearchResults" class="animal-search-results" aria-live="polite"></div>
+
+                  <section class="explore-updates" aria-labelledby="exploreUpdatesTitle" hidden>
+                     <div class="explore-updates-header">
+                        <h3 id="exploreUpdatesTitle" class="explore-updates-title">Updates</h3>
+                        <button
+                           type="button"
+                           id="exploreUpdatesToggle"
+                           class="explore-updates-toggle"
+                           aria-controls="exploreUpdatesList"
+                           aria-label="Hide updates"
+                           aria-expanded="true"
+                        >
+                        </button>
+                     </div>
+                     <div id="exploreUpdatesList" class="explore-updates-list" aria-live="polite"></div>
+                  </section>
                </div>
             </aside>
 
