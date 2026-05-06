@@ -3,7 +3,7 @@
    <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Toronto Zoo Operations Console</title>
+      <title>{{ site.titles.operationsConsole }}</title>
 
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,24 +23,24 @@
       <div class="console-operations-page">
 
          <div class="top-bar">
-            <span class="top-bar-title">Toronto Zoo Operations Console</span>
+            <span class="top-bar-title">{{ site.titles.operationsConsole }}</span>
             <img
                src="../images/logos/toronto-zoo-logo.png"
-               alt="Toronto Zoo Logo"
+               alt="{{ site.logoAlt }}"
                class="top-bar-logo"
             >
          </div>
 
          <main>
 
-            <aside class="side-panel left" aria-label="Operations menu">
+            <aside class="side-panel left" aria-label="{{ site.consoleOperations.menuAria }}">
                <div class="side-panel-header">
-                  <h2 class="side-panel-title">Operations</h2>
+                  <h2 class="side-panel-title">{{ site.consoleOperations.operations }}</h2>
                </div>
 
                <div class="side-panel-body">
                   <p class="console-operations-side-panel-text">
-                     Choose an operation to manage animal visibility, exhibits, restaurants, attractions, and scheduled zoo experiences.
+                     {{ site.consoleOperations.description }}
                   </p>
 
                   <section class="console-operations-menu">
@@ -52,7 +52,7 @@
                      >
                         <span class="console-operations-menu-btn-number">1</span>
                         <span class="console-operations-menu-btn-label">
-                           Set animal as off display
+                           {{ panelTitles.offDisplay }}
                         </span>
                      </button>
 
@@ -64,7 +64,7 @@
                      >
                         <span class="console-operations-menu-btn-number">2</span>
                         <span class="console-operations-menu-btn-label">
-                           Set animal as on display
+                           {{ panelTitles.onDisplay }}
                         </span>
                      </button>
 
@@ -76,7 +76,7 @@
                      >
                         <span class="console-operations-menu-btn-number">3</span>
                         <span class="console-operations-menu-btn-label">
-                           Set animal visibility schedule
+                           {{ panelTitles.visibilitySchedule }}
                         </span>
                      </button>
 
@@ -88,7 +88,7 @@
                      >
                         <span class="console-operations-menu-btn-number">4</span>
                         <span class="console-operations-menu-btn-label">
-                           Remove animal visibility schedule
+                           {{ panelTitles.removeVisibilitySchedule }}
                         </span>
                      </button>
 
@@ -100,7 +100,7 @@
                      >
                         <span class="console-operations-menu-btn-number">5</span>
                         <span class="console-operations-menu-btn-label">
-                           Set animal viewing alert
+                           {{ panelTitles.viewingAlert }}
                         </span>
                      </button>
 
@@ -112,7 +112,7 @@
                      >
                         <span class="console-operations-menu-btn-number">6</span>
                         <span class="console-operations-menu-btn-label">
-                           Remove animal viewing alert
+                           {{ panelTitles.removeViewingAlert }}
                         </span>
                      </button>
 
@@ -124,7 +124,7 @@
                      >
                         <span class="console-operations-menu-btn-number">7</span>
                         <span class="console-operations-menu-btn-label">
-                           Set exhibit as closed
+                           {{ panelTitles.exhibitClosed }}
                         </span>
                      </button>
 
@@ -136,7 +136,7 @@
                      >
                         <span class="console-operations-menu-btn-number">8</span>
                         <span class="console-operations-menu-btn-label">
-                           Set exhibit as open
+                           {{ panelTitles.exhibitOpen }}
                         </span>
                      </button>
 
@@ -148,7 +148,7 @@
                      >
                         <span class="console-operations-menu-btn-number">9</span>
                         <span class="console-operations-menu-btn-label">
-                           Set restaurant as closed
+                           {{ panelTitles.restaurantClosed }}
                         </span>
                      </button>
 
@@ -160,7 +160,7 @@
                      >
                         <span class="console-operations-menu-btn-number">10</span>
                         <span class="console-operations-menu-btn-label">
-                           Set restaurant as open
+                           {{ panelTitles.restaurantOpen }}
                         </span>
                      </button>
 
@@ -172,7 +172,7 @@
                      >
                         <span class="console-operations-menu-btn-number">11</span>
                         <span class="console-operations-menu-btn-label">
-                           Set restroom as closed
+                           {{ panelTitles.restroomClosed }}
                         </span>
                      </button>
 
@@ -184,7 +184,7 @@
                      >
                         <span class="console-operations-menu-btn-number">12</span>
                         <span class="console-operations-menu-btn-label">
-                           Set restroom as open
+                           {{ panelTitles.restroomOpen }}
                         </span>
                      </button>
 
@@ -196,7 +196,7 @@
                      >
                         <span class="console-operations-menu-btn-number">13</span>
                         <span class="console-operations-menu-btn-label">
-                           Set restroom alert
+                           {{ panelTitles.restroomAlert }}
                         </span>
                      </button>
 
@@ -208,7 +208,7 @@
                      >
                         <span class="console-operations-menu-btn-number">14</span>
                         <span class="console-operations-menu-btn-label">
-                           Remove restroom alert
+                           {{ panelTitles.removeRestroomAlert }}
                         </span>
                      </button>
 
@@ -220,7 +220,7 @@
                      >
                         <span class="console-operations-menu-btn-number">15</span>
                         <span class="console-operations-menu-btn-label">
-                           Set gift shop as closed
+                           {{ panelTitles.giftShopClosed }}
                         </span>
                      </button>
 
@@ -232,7 +232,7 @@
                      >
                         <span class="console-operations-menu-btn-number">16</span>
                         <span class="console-operations-menu-btn-label">
-                           Set gift shop as open
+                           {{ panelTitles.giftShopOpen }}
                         </span>
                      </button>
 
@@ -244,7 +244,7 @@
                      >
                         <span class="console-operations-menu-btn-number">17</span>
                         <span class="console-operations-menu-btn-label">
-                           Set attraction as closed
+                           {{ panelTitles.attractionClosed }}
                         </span>
                      </button>
 
@@ -256,7 +256,7 @@
                      >
                         <span class="console-operations-menu-btn-number">18</span>
                         <span class="console-operations-menu-btn-label">
-                           Set attraction as open
+                           {{ panelTitles.attractionOpen }}
                         </span>
                      </button>
 
@@ -268,7 +268,7 @@
                      >
                         <span class="console-operations-menu-btn-number">19</span>
                         <span class="console-operations-menu-btn-label">
-                           Set zoomobile station as closed
+                           {{ panelTitles.zoomobileStationClosed }}
                         </span>
                      </button>
 
@@ -280,7 +280,7 @@
                      >
                         <span class="console-operations-menu-btn-number">20</span>
                         <span class="console-operations-menu-btn-label">
-                           Set zoomobile station as open
+                           {{ panelTitles.zoomobileStationOpen }}
                         </span>
                      </button>
 
@@ -292,7 +292,7 @@
                      >
                         <span class="console-operations-menu-btn-number">21</span>
                         <span class="console-operations-menu-btn-label">
-                           Set current Zoomobile route
+                           {{ panelTitles.zoomobileRoute }}
                         </span>
                      </button>
 
@@ -304,7 +304,7 @@
                      >
                         <span class="console-operations-menu-btn-number">22</span>
                         <span class="console-operations-menu-btn-label">
-                           Set Meet the Guardians talk schedule
+                           {{ panelTitles.guardiansTalkSchedule }}
                         </span>
                      </button>
 
@@ -316,7 +316,7 @@
                      >
                         <span class="console-operations-menu-btn-number">23</span>
                         <span class="console-operations-menu-btn-label">
-                           End Meet the Guardians talk schedule
+                           {{ panelTitles.endGuardiansTalkSchedule }}
                         </span>
                      </button>
 
@@ -328,7 +328,7 @@
                      >
                         <span class="console-operations-menu-btn-number">24</span>
                         <span class="console-operations-menu-btn-label">
-                           Cancel Meet the Guardians talk occurrence
+                           {{ panelTitles.cancelGuardiansTalkOccurrence }}
                         </span>
                      </button>
 
@@ -340,7 +340,7 @@
                      >
                         <span class="console-operations-menu-btn-number">25</span>
                         <span class="console-operations-menu-btn-label">
-                           Set Wild Encounter schedule
+                           {{ panelTitles.wildEncounterSchedule }}
                         </span>
                      </button>
 
@@ -352,7 +352,7 @@
                      >
                         <span class="console-operations-menu-btn-number">26</span>
                         <span class="console-operations-menu-btn-label">
-                           End Wild Encounter schedule
+                           {{ panelTitles.endWildEncounterSchedule }}
                         </span>
                      </button>
 
@@ -364,7 +364,7 @@
                      >
                         <span class="console-operations-menu-btn-number">27</span>
                         <span class="console-operations-menu-btn-label">
-                           Cancel Wild Encounter occurrence
+                           {{ panelTitles.cancelWildEncounterOccurrence }}
                         </span>
                      </button>
 
@@ -376,7 +376,7 @@
                      >
                         <span class="console-operations-menu-btn-number">28</span>
                         <span class="console-operations-menu-btn-label">
-                           Close drinking fountains
+                           {{ panelTitles.drinkingFountainsClosed }}
                         </span>
                      </button>
 
@@ -388,7 +388,7 @@
                      >
                         <span class="console-operations-menu-btn-number">29</span>
                         <span class="console-operations-menu-btn-label">
-                           Open drinking fountains
+                           {{ panelTitles.drinkingFountainsOpen }}
                         </span>
                      </button>
 
@@ -400,7 +400,7 @@
                      >
                         <span class="console-operations-menu-btn-number">30</span>
                         <span class="console-operations-menu-btn-label">
-                           Create update
+                           {{ panelTitles.createUpdate }}
                         </span>
                      </button>
 
@@ -412,7 +412,7 @@
                      >
                         <span class="console-operations-menu-btn-number">31</span>
                         <span class="console-operations-menu-btn-label">
-                           End update
+                           {{ panelTitles.endUpdate }}
                         </span>
                      </button>
 
@@ -424,7 +424,7 @@
                      >
                         <span class="console-operations-menu-btn-number">32</span>
                         <span class="console-operations-menu-btn-label">
-                           Edit update
+                           {{ panelTitles.editUpdate }}
                         </span>
                      </button>
                   </section>
@@ -439,7 +439,7 @@
             <img
                class="side-image right"
                src="../images/map/right-side.png"
-               alt="Right decoration"
+               alt="{{ site.decorations.rightAlt }}"
             >
 
          </main>

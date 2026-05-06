@@ -2,7 +2,7 @@
 <html lang="en" class="home-page">
    <head>
       <meta charset="utf-8">
-      <title>Toronto Zoo Guide</title>
+      <title>{{ site.titles.guide }}</title>
 
       <!-- Google Fonts -->
       <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,31 +28,31 @@
 
          <!-- Top bar with title + logo -->
          <div class="top-bar">
-            <span class="top-bar-title">Toronto Zoo Guide</span>
+            <span class="top-bar-title">{{ site.titles.guide }}</span>
             <img 
                src="../images/logos/toronto-zoo-logo.png"
-               alt="Toronto Zoo Logo"
+               alt="{{ site.logoAlt }}"
                class="top-bar-logo"
             >
          </div>
 
          <!-- Main content -->
          <main>
-            <img class="side-image left" src="../images/map/left-side.png" alt="Left decoration">
+            <img class="side-image left" src="../images/map/left-side.png" alt="{{ site.decorations.leftAlt }}">
 
             <div class="list"></div>
 
-            <img class="side-image right" src="../images/map/right-side.png" alt="Right decoration">
+            <img class="side-image right" src="../images/map/right-side.png" alt="{{ site.decorations.rightAlt }}">
          </main>
 
          <!-- Bottom navigation menu -->
          <nav>
             <ul>
-               <li><a href="map.html">Map</a></li>
-               <li><a href="animals.html">Animals</a></li>
-               <li><a href="https://www.torontozoo.com/wildencounters">Wild Encounters</a></li>
-               <li><a href="https://www.torontozoo.com/meettheguardians">Meet The Guardians</a></li>
-               <li><a href="itinerary.html">Itinerary</a></li>
+               <li><a href="map.html">{{ site.nav.map }}</a></li>
+               <li><a href="animals.html">{{ site.nav.animals }}</a></li>
+               <li><a href="https://www.torontozoo.com/wildencounters">{{ site.nav.wildEncounters }}</a></li>
+               <li><a href="https://www.torontozoo.com/meettheguardians">{{ site.nav.meetTheGuardians }}</a></li>
+               <li><a href="itinerary.html">{{ site.nav.itinerary }}</a></li>
             </ul>
          </nav>
 

@@ -472,6 +472,29 @@ def test_send_file_serves_existing_static_page():
    assert handler.wfile.getvalue().startswith( b'<!DOCTYPE html>' )
 
 
+def test_send_file_renders_shared_html_strings():
+   handler = FakeHandler( path='/animals.html' )
+
+   server.MyHandler._send_file( handler, './pages/animals.html', 'text/html' )
+
+   content = handler.wfile.getvalue().decode( 'utf-8' )
+
+   assert '<title>Toronto Zoo Guide</title>' in content
+   assert '{{ site.titles.guide }}' not in content
+
+
+def test_send_file_renders_console_operation_strings():
+   handler = FakeHandler( path='/console-operations.html' )
+
+   server.MyHandler._send_file( handler, './pages/console-operations.html', 'text/html' )
+
+   content = handler.wfile.getvalue().decode( 'utf-8' )
+
+   assert 'Operations menu' in content
+   assert 'Set animal as off display' in content
+   assert '{{ panelTitles.offDisplay }}' not in content
+
+
 def test_send_file_returns_404_for_missing_file():
    handler = FakeHandler( path='/missing.html' )
 
