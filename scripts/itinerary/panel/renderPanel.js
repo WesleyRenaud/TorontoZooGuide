@@ -1,23 +1,20 @@
 import { makeActionsBar } from './components/actionsBar.js';
-import { makeSection } from './components/section.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
-import { APP_STRINGS } from '../../strings.js';
-
+import { makeSection } from './components/section.js';
+import { clearItineraryDraftStorage } from '../draftStorage.js';
+import {
+   clearItinerary,
+   getItinerary,
+   isItineraryEmpty,
+} from '../itineraryService.js';
 import {
    buildAnimalRows,
    buildAttractionRows,
    buildGuardiansRows,
    buildWildRows,
 } from './rows.js';
-
-import {
-   clearItinerary,
-   getItinerary,
-   isItineraryEmpty,
-} from '../itineraryService.js';
-
-import { clearItineraryDraftStorage } from '../draftStorage.js';
+import { APP_STRINGS } from '../../strings.js';
 
 let latestRenderToken = 0;
 

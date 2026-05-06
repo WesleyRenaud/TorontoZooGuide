@@ -1,11 +1,14 @@
+import { syncClosedExhibitOverlays } from './closedExhibitOverlay.js';
 import { buildMapDateContext } from './dateContext.js';
-import { buildLayerRequest, buildItineraryRows } from './layerRequest.js';
 import {
    normalizeSearchFocusRequest,
    resolveDeepLinkFocus,
    scheduleFocusRequest,
 } from './focusRequest.js';
-import { syncClosedExhibitOverlays } from './closedExhibitOverlay.js';
+import {
+   buildItineraryRows,
+   buildLayerRequest,
+} from './layerRequest.js';
 import { setSourceRows } from './sourceHelpers.js';
 
 function buildUniqueTypes(types = []) {

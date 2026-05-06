@@ -1,19 +1,14 @@
 import { setRestroomAlert } from '../../../api/consoleOperationsApi.js';
-import { APP_STRINGS } from '../../../strings.js';
-// TO-DO: Enforce rule for how to write imports in terms of the number of lines the brackets spread across
-import {
-   loadRestrooms,
-} from '../../options/loaders.js';
-import {
-   populateRestroomDropdown,
-} from '../../options/dropdowns.js';
-import { setStatus } from '../../shell/status.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
    validateOptionalDateRange,
 } from '../../helpers/controllerUtils.js';
+import { populateRestroomDropdown } from '../../options/dropdowns.js';
+import { loadRestrooms } from '../../options/loaders.js';
+import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestroomAlertController({
    showButtonEl,

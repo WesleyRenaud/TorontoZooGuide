@@ -1,10 +1,12 @@
-import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
-import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { initItineraryMap } from '../itinerary/itineraryMapController.js';
-
+import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
+import {
+   getItinerary,
+   isItineraryEmpty,
+} from '../itinerary/itineraryService.js';
 import { blockMapWheelWhileWizardOpen } from '../itinerary/wizard/wheelBlocker.js';
 import { openItineraryWizard } from '../itinerary/wizard/wizardController.js';
-import { getItinerary, isItineraryEmpty } from '../itinerary/itineraryService.js';
+import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
 
 const DEFAULT_WIZARD_STEP = 'date';
 

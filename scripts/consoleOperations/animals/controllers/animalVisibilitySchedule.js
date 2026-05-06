@@ -1,7 +1,3 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadExhibits } from '../../options/loaders.js';
-import { populateExhibitDropdown } from '../../options/dropdowns.js';
-import { setStatus } from '../../shell/status.js';
 import { setAnimalVisibilitySchedule } from '../../../api/consoleOperationsApi.js';
 import {
    bindResetValueOnChange,
@@ -10,6 +6,10 @@ import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../../helpers/controllerUtils.js';
+import { populateExhibitDropdown } from '../../options/dropdowns.js';
+import { loadExhibits } from '../../options/loaders.js';
+import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createAnimalVisibilityScheduleController({
    showButtonEl,

@@ -1,11 +1,11 @@
 import { searchItineraryItems } from '../../api/searchApi.js';
-import { APP_STRINGS } from '../../strings.js';
-import { createSelectorSelectionState } from './base/selectionState.js';
 import {
    createDefaultSelectorRowLeftRenderer,
    renderSelectorResults,
 } from './base/resultRenderer.js';
+import { createSelectorSelectionState } from './base/selectionState.js';
 import { buildSelectorShell } from './base/shell.js';
+import { APP_STRINGS } from '../../strings.js';
 
 const SEARCH_DEBOUNCE_MS = 250;
 

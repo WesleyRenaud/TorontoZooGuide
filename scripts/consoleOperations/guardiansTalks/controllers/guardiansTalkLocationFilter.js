@@ -1,11 +1,11 @@
 import {
-   populateGuardiansTalkDropdown,
-   populateValueDropdown,
-} from '../../options/dropdowns.js';
-import {
    getGuardiansTalkLocations,
    getGuardiansTalkNamesAtLocation,
 } from '../../../api/consoleOperationsApi.js';
+import {
+   populateGuardiansTalkDropdown,
+   populateValueDropdown,
+} from '../../options/dropdowns.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export function createGuardiansTalkLocationFilterController({

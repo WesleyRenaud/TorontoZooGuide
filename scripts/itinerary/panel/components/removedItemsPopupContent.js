@@ -1,11 +1,11 @@
 import { el } from '../dom.js';
-import { APP_STRINGS } from '../../../strings.js';
 import {
    buildAnimalRows,
    buildAttractionRows,
    buildGuardiansRows,
    buildWildRows,
 } from '../rows.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 function addAlternativesButton(rowNode, stepKey, onViewAlternatives, removePopupOnly) {
    if (!rowNode) return null;

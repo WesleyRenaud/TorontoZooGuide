@@ -1,8 +1,8 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadRestrooms } from '../../options/loaders.js';
-import { populateRestroomDropdown } from '../../options/dropdowns.js';
 import { setRestroomOpen } from '../../../api/consoleOperationsApi.js';
 import { createEntityOpenFormController } from '../../forms/entityOpenFormController.js';
+import { populateRestroomDropdown } from '../../options/dropdowns.js';
+import { loadRestrooms } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestroomOpenController({
    restroomEl,

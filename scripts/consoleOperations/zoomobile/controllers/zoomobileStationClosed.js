@@ -1,8 +1,8 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadZoomobileStations } from '../../options/loaders.js';
-import { populateZoomobileStationDropdown } from '../../options/dropdowns.js';
 import { setZoomobileStationClosed } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
+import { populateZoomobileStationDropdown } from '../../options/dropdowns.js';
+import { loadZoomobileStations } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createZoomobileStationClosedController({
    zoomobileStationEl,

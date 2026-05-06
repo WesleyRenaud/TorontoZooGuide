@@ -1,8 +1,8 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadExhibits } from '../../options/loaders.js';
-import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { setExhibitClosed } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
+import { populateExhibitDropdown } from '../../options/dropdowns.js';
+import { loadExhibits } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createExhibitClosedController({
    exhibitEl,

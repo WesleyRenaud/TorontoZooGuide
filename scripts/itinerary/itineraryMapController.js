@@ -1,5 +1,8 @@
+import {
+   getItinerary,
+   isItineraryEmpty,
+} from './itineraryService.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
-import { getItinerary, isItineraryEmpty } from './itineraryService.js';
 
 const ITINERARY_MAP_FILTERS = Object.freeze({
    getIncludeOffDisplay: () => false,

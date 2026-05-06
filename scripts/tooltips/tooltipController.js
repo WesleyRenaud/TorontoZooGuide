@@ -1,9 +1,12 @@
-import { getRendererForItem } from './tooltipRenderers.js';
-import { positionTooltip } from './positionTooltip.js';
-import { setMarkerToAnimalIcon, applyMarkerVisual } from '../markers/markerVisuals.js';
 import { createTooltipBannerSync } from './bannerSync.js';
 import { createTooltipCarouselView } from './carouselView.js';
 import { createTooltipGlobalListeners } from './globalListeners.js';
+import {
+   applyMarkerVisual,
+   setMarkerToAnimalIcon,
+} from '../markers/markerVisuals.js';
+import { positionTooltip } from './positionTooltip.js';
+import { getRendererForItem } from './tooltipRenderers.js';
 
 export function createTooltipController({
    tooltipEl,

@@ -1,14 +1,14 @@
 import {
+   createSelectorRowContent,
+   createSelectorTextColumn,
+} from '../base/resultRenderer.js';
+import {
    buildAnimalImageSrc,
    getAnimalLikelihoodLevel,
    getAnimalSpecies,
    getAnimalSubtitle,
 } from './model.js';
 import { APP_STRINGS } from '../../../strings.js';
-import {
-   createSelectorRowContent,
-   createSelectorTextColumn,
-} from '../base/resultRenderer.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 

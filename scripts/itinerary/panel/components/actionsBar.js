@@ -1,6 +1,6 @@
+import { showItineraryConfirmPopup } from './confirmPopup.js';
 import { el } from '../dom.js';
 import { APP_STRINGS } from '../../../strings.js';
-import { showItineraryConfirmPopup } from './confirmPopup.js';
 
 export function makeActionsBar({ onAfterClear } = {}) {
    const actionsWrap = el('div', 'itin-panel-actions-wrap');

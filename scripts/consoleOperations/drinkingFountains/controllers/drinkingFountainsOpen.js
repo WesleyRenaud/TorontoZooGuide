@@ -1,10 +1,10 @@
 import { setDrinkingFountainsOpen } from '../../../api/consoleOperationsApi.js';
-import { APP_STRINGS } from '../../../strings.js';
 import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../../helpers/controllerUtils.js';
 import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createDrinkingFountainsOpenController({
    showButtonEl,

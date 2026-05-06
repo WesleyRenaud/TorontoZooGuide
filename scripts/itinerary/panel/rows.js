@@ -1,19 +1,18 @@
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { makeItemRow } from './components/itemRow.js';
 import {
    normalizeAnimal,
    normalizeAttraction,
    normalizeTalk,
    normalizeWild,
 } from './format.js';
-
-import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
-import { makeItemRow } from './components/itemRow.js';
-import { APP_STRINGS } from '../../strings.js';
 import {
    buildAnimalAlert,
    buildAttractionRemovalReasonLine,
    buildGuardiansRemovalReasonLine,
    buildWildRemovalReasonLine,
 } from './rowAlerts.js';
+import { APP_STRINGS } from '../../strings.js';
 
 function buildImageSrc(...pathParts) {
    const normalizedParts = pathParts

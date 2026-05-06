@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createAutocompleteField,
@@ -7,7 +8,6 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
-import { APP_STRINGS } from '../../../strings.js';
 
 export function createViewingAlertPanel() {
    return createPanelShell({

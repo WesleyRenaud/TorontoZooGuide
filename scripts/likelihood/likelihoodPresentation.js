@@ -1,5 +1,5 @@
-import { APP_STRINGS } from '../strings.js';
 import { clampLikelihood } from './likelihoodScale.js';
+import { APP_STRINGS } from '../strings.js';
 
 const LIKELIHOOD_PHRASES = Object.freeze([
    { minimum: 95, label: APP_STRINGS.likelihood.veryHigh },

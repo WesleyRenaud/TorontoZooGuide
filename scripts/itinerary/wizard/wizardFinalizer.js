@@ -1,5 +1,8 @@
-import { isItineraryEmpty, saveItinerary } from '../itineraryService.js';
 import { normalizeItineraryDraft } from '../draftStorage.js';
+import {
+   isItineraryEmpty,
+   saveItinerary,
+} from '../itineraryService.js';
 import { APP_STRINGS } from '../../strings.js';
 import { showItineraryWizardPopup } from './wizardPopup.js';
 

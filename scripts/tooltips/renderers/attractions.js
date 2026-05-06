@@ -1,6 +1,6 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
-import { APP_STRINGS } from '../../strings.js';
 import { createTooltipCard } from './cardFactory.js';
+import { APP_STRINGS } from '../../strings.js';
 
 export const attractionRenderer = {
    key: 'attraction',

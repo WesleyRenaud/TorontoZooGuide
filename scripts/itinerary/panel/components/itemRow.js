@@ -1,4 +1,7 @@
-import { el, safeImg } from '../dom.js';
+import {
+   el,
+   safeImg,
+} from '../dom.js';
 
 export function makeItemRow({
    name,

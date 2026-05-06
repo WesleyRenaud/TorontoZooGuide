@@ -1,20 +1,20 @@
-import { DEFAULT_MAP_CONTAIN } from '../config/appConfig.js';
-import { createPanzoom } from './panzoom.js';
-import { createMapStore } from './store.js';
-import { createDataSources } from './sources.js';
-import { createMapUpdater } from './updater.js';
-import { createMarkerLayer } from '../markers/markers.js';
-import { createHoverTooltip } from '../markers/hoverTooltip.js';
-import { createTooltipController } from '../tooltips/tooltipController.js';
-import { createFocusController } from '../focus/focusController.js';
+import { createAttractionClosedBanner } from '../banners/attractionClosedBanner.js';
+import { createDrinkingFountainClosedBanner } from '../banners/drinkingFountainClosedBanner.js';
+import { createGiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
 import { createOffDisplayBanner } from '../banners/offDisplayBanner.js';
 import { createRestaurantClosedBanner } from '../banners/restaurantClosedBanner.js';
 import { createRestroomMessageBanner } from '../banners/restroomMessageBanner.js';
-import { createGiftShopClosedBanner } from '../banners/giftShopClosedBanner.js';
-import { createAttractionClosedBanner } from '../banners/attractionClosedBanner.js';
-import { createDrinkingFountainClosedBanner } from '../banners/drinkingFountainClosedBanner.js';
-import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
+import { DEFAULT_MAP_CONTAIN } from '../config/appConfig.js';
+import { createFocusController } from '../focus/focusController.js';
 import { initLabelVisibilityToggle } from './labelVisibility.js';
+import { createHoverTooltip } from '../markers/hoverTooltip.js';
+import { createMarkerLayer } from '../markers/markers.js';
+import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
+import { createPanzoom } from './panzoom.js';
+import { createDataSources } from './sources.js';
+import { createMapStore } from './store.js';
+import { createTooltipController } from '../tooltips/tooltipController.js';
+import { createMapUpdater } from './updater.js';
 
 function hasRequiredRuntimeElements({
    mapInner,

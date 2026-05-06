@@ -1,14 +1,14 @@
+import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createAutocompleteField,
-   createDateRangeFields,
    createDateField,
+   createDateRangeFields,
    createPanelShell,
    createSelectField,
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
-import { APP_STRINGS } from '../../../strings.js';
 
 export function createVisibilitySchedulePanel() {
    return createPanelShell({

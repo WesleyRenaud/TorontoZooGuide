@@ -1,8 +1,8 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadGiftShops } from '../../options/loaders.js';
-import { populateGiftShopDropdown } from '../../options/dropdowns.js';
 import { setGiftShopClosed } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
+import { populateGiftShopDropdown } from '../../options/dropdowns.js';
+import { loadGiftShops } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createGiftShopClosedController({
    giftShopEl,
