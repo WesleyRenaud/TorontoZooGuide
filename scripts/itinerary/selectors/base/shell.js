@@ -1,8 +1,4 @@
-const CLOSE_BUTTON_LABEL = 'Close itinerary builder';
-const SEARCH_PLACEHOLDER = 'Search...';
-const PREVIOUS_BUTTON_TEXT = 'Previous';
-const NEXT_BUTTON_TEXT = 'Next';
-const FINISH_BUTTON_TEXT = 'Finish';
+import { APP_STRINGS } from '../../../strings.js';
 
 function createButton({
    className,
@@ -44,8 +40,8 @@ export function buildSelectorShell({
 
    const closeButton = createButton({
       className: 'itin-close',
-      text: '×',
-      ariaLabel: CLOSE_BUTTON_LABEL,
+      text: APP_STRINGS.common.closeSymbol,
+      ariaLabel: APP_STRINGS.itinerary.aria.closeBuilder,
    });
 
    topbar.append(topTitleEl, closeButton);
@@ -64,7 +60,7 @@ export function buildSelectorShell({
    const inputEl = document.createElement('input');
    inputEl.className = 'itin-search-input';
    inputEl.type = 'text';
-   inputEl.placeholder = SEARCH_PLACEHOLDER;
+   inputEl.placeholder = APP_STRINGS.itinerary.searchPlaceholder;
    inputEl.autocomplete = 'off';
 
    const resultsEl = document.createElement('div');
@@ -78,7 +74,7 @@ export function buildSelectorShell({
 
    const prevButton = createButton({
       className: 'itin-prev',
-      text: PREVIOUS_BUTTON_TEXT,
+      text: APP_STRINGS.itinerary.actions.previous,
    });
 
    const actionsRight = document.createElement('div');
@@ -89,14 +85,14 @@ export function buildSelectorShell({
    if (!hideNextButton) {
       nextButton = createButton({
          className: 'itin-next',
-         text: NEXT_BUTTON_TEXT,
+         text: APP_STRINGS.itinerary.actions.next,
       });
       actionsRight.appendChild(nextButton);
    }
 
    const finishButton = createButton({
       className: 'itin-finish',
-      text: FINISH_BUTTON_TEXT,
+      text: APP_STRINGS.itinerary.actions.finish,
    });
 
    actionsRight.appendChild(finishButton);

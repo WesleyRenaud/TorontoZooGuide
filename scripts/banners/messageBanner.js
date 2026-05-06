@@ -1,3 +1,5 @@
+import { APP_STRINGS } from '../strings.js';
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const ALERT_WIDTH_TO_HEIGHT_RATIO = 2;
 const ALERT_MIN_WIDTH = 560;
@@ -174,8 +176,8 @@ export function createMessageBanner({
       const closeButton = document.createElement('button');
       closeButton.className = 'off-display-closed-close';
       closeButton.type = 'button';
-      closeButton.setAttribute('aria-label', 'Close');
-      closeButton.textContent = '×';
+      closeButton.setAttribute('aria-label', APP_STRINGS.common.close);
+      closeButton.textContent = APP_STRINGS.common.closeSymbol;
 
       element.addEventListener('click', event => event.stopPropagation());
       closeButton.addEventListener('click', event => {

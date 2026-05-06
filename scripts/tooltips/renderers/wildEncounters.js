@@ -1,11 +1,12 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { APP_STRINGS } from '../../strings.js';
 import { createTooltipCard } from './cardFactory.js';
 
 export const wildEncounterRenderer = {
    key: 'wildEncounter',
 
    createCard(w, index) {
-      const name = w.name || 'Wild Encounter';
+      const name = w.name || APP_STRINGS.entityLabels.wildEncounter;
       const normalizedName = normalizeAssetKey(name);
 
       return createTooltipCard({
@@ -23,7 +24,7 @@ export const wildEncounterRenderer = {
          links: w.link
             ? [{
                href: w.link,
-               text: 'More Info',
+               text: APP_STRINGS.common.moreInfo,
                className: 'gift-shop-link',
             }]
             : [],

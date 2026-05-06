@@ -1,5 +1,4 @@
-const ADD_BUTTON_LABEL = '+';
-const REMOVE_BUTTON_LABEL = '−';
+import { APP_STRINGS } from '../../../strings.js';
 
 function createSelectorInfoLink(infoLink) {
    if (!infoLink) {
@@ -11,7 +10,7 @@ function createSelectorInfoLink(infoLink) {
    linkEl.href = infoLink;
    linkEl.target = '_blank';
    linkEl.rel = 'noopener noreferrer';
-   linkEl.textContent = 'More Info';
+   linkEl.textContent = APP_STRINGS.common.moreInfo;
 
    linkEl.addEventListener('click', (event) => {
       event.stopPropagation();
@@ -49,7 +48,7 @@ export function createSelectorThumb({
 }
 
 export function createSelectorTextColumn({
-   title = 'Item',
+   title = APP_STRINGS.entityLabels.item,
    subtitle = '',
    infoLink = null,
    titleNode = null,
@@ -109,14 +108,14 @@ export function createDefaultSelectorRowLeftRenderer({
    getInfoLink,
 } = {}) {
    return function renderDefaultRowLeft(row) {
-      const title = getTitle(row) || 'Item';
+      const title = getTitle(row) || APP_STRINGS.entityLabels.item;
       const subtitle = getSubtitle(row);
       const imageSrc = getImageSrc(row);
       const infoLink = getInfoLink(row);
 
       return createSelectorRowContent({
          imageSrc,
-         imageAlt: title ? `${title} image` : '',
+         imageAlt: title ? APP_STRINGS.itinerary.itemImage(title) : '',
          textColumnEl: createSelectorTextColumn({
             title,
             subtitle,
@@ -154,12 +153,16 @@ function createToggleButton({
 
    function updateButtonState() {
       const added = isRowSelected();
-      button.textContent = added ? REMOVE_BUTTON_LABEL : ADD_BUTTON_LABEL;
+      button.textContent = added
+         ? APP_STRINGS.itinerary.actions.remove
+         : APP_STRINGS.itinerary.actions.addSymbol;
       button.classList.toggle('is-added', added);
       button.setAttribute('aria-pressed', String(added));
       button.setAttribute(
          'aria-label',
-         added ? 'Remove from itinerary' : 'Add to itinerary'
+         added
+            ? APP_STRINGS.itinerary.aria.removeFromItinerary
+            : APP_STRINGS.itinerary.aria.addToItinerary
       );
    }
 

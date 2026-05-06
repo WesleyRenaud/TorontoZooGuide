@@ -12,6 +12,7 @@ import { getItinerary } from '../itineraryService.js';
 import { finalizeItineraryWizard } from './wizardFinalizer.js';
 import { validateItineraryDraft } from './draftValidator.js';
 import { createItineraryWizardState } from './state.js';
+import { APP_STRINGS } from '../../strings.js';
 import { showWizardValidationPopupIfNeeded } from './validationPopup.js';
 
 const DEFAULT_START_STEP = 'date';
@@ -251,10 +252,10 @@ export async function openItineraryWizard({
       }
 
       showItineraryConfirmPopup({
-         title: 'Save Changes?',
-         message: 'You have unsaved itinerary changes. Would you like to save them before closing?',
-         confirmText: 'Save',
-         cancelText: 'Discard',
+         title: APP_STRINGS.itinerary.confirmation.saveChangesTitle,
+         message: APP_STRINGS.itinerary.confirmation.saveChangesMessage,
+         confirmText: APP_STRINGS.actions.save,
+         cancelText: APP_STRINGS.itinerary.actions.discard,
          onConfirm: () => {
             void finish();
          },

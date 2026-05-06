@@ -1,11 +1,12 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { APP_STRINGS } from '../../strings.js';
 import { createTooltipCard } from './cardFactory.js';
 
 export const giftShopRenderer = {
    key: 'giftShop',
 
    createCard(g, index) {
-      const name = g.name || 'Gift Shop';
+      const name = g.name || APP_STRINGS.entityLabels.giftShop;
       const normalizedName = normalizeAssetKey(name);
 
       return createTooltipCard({
@@ -17,7 +18,7 @@ export const giftShopRenderer = {
          },
          title: { text: name },
          details: [
-            g.description ? `Description: ${g.description}` : '',
+            g.description ? APP_STRINGS.tooltips.description(g.description) : '',
          ],
       });
    },

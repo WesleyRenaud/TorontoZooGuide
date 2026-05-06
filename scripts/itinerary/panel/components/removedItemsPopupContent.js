@@ -1,4 +1,5 @@
 import { el } from '../dom.js';
+import { APP_STRINGS } from '../../../strings.js';
 import {
    buildAnimalRows,
    buildAttractionRows,
@@ -11,7 +12,11 @@ function addAlternativesButton(rowNode, stepKey, onViewAlternatives, removePopup
 
    rowNode.classList.add('itin-removed-row');
 
-   const btn = el('button', 'itin-removed-alt-btn', 'View Alternatives');
+   const btn = el(
+      'button',
+      'itin-removed-alt-btn',
+      APP_STRINGS.itinerary.removedItems.viewAlternatives
+   );
    btn.type = 'button';
 
    btn.addEventListener('click', (e) => {
@@ -66,43 +71,43 @@ function getSectionSpecs({
    return [
       {
          items: removed.animals ?? [],
-         title: 'Animals Removed',
-         subtitle: 'The following animals are unavailable on your new date for the reasons listed below.',
+         title: APP_STRINGS.itinerary.removedItems.animalsRemovedTitle,
+         subtitle: APP_STRINGS.itinerary.removedItems.animalsRemovedSubtitle,
          rowBuilder: buildAnimalRows,
          stepKey: 'animals',
       },
       {
          items: reducedVisibility.animals ?? [],
-         title: 'Reduced Animal Visibility',
-         subtitle: 'The following animals remain on your itinerary, but are expected to be less visible on your new date.',
+         title: APP_STRINGS.itinerary.removedItems.reducedAnimalVisibilityTitle,
+         subtitle: APP_STRINGS.itinerary.removedItems.reducedAnimalVisibilitySubtitle,
          rowBuilder: buildAnimalRows,
          stepKey: 'animals',
       },
       {
          items: improvedVisibility.animals ?? [],
-         title: 'Improved Animal Visibility',
-         subtitle: 'The following animals remain on your itinerary and are expected to be easier to see on your new date.',
+         title: APP_STRINGS.itinerary.removedItems.improvedAnimalVisibilityTitle,
+         subtitle: APP_STRINGS.itinerary.removedItems.improvedAnimalVisibilitySubtitle,
          rowBuilder: buildAnimalRows,
          stepKey: 'animals',
       },
       {
          items: removed.attractions ?? [],
-         title: 'Attractions',
-         subtitle: 'The following attractions are unavailable on your new date.',
+         title: APP_STRINGS.map.filter.attractions,
+         subtitle: APP_STRINGS.itinerary.removedItems.attractionsSubtitle,
          rowBuilder: buildAttractionRows,
          stepKey: 'attractions',
       },
       {
          items: removed.guardiansTalks ?? [],
-         title: 'Meet the Guardians',
-         subtitle: 'The following talks are not scheduled on your new date.',
+         title: APP_STRINGS.site.nav.meetTheGuardians,
+         subtitle: APP_STRINGS.itinerary.removedItems.talksSubtitle,
          rowBuilder: buildGuardiansRows,
          stepKey: 'guardiansTalks',
       },
       {
          items: removed.wildEncounters ?? [],
-         title: 'Wild Encounters',
-         subtitle: 'The following encounters are not available on your new date.',
+         title: APP_STRINGS.site.nav.wildEncounters,
+         subtitle: APP_STRINGS.itinerary.removedItems.wildEncountersSubtitle,
          rowBuilder: buildWildRows,
          stepKey: 'wildEncounters',
       },

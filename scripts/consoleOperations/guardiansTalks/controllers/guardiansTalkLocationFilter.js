@@ -6,6 +6,7 @@ import {
    getGuardiansTalkLocations,
    getGuardiansTalkNamesAtLocation,
 } from '../../../api/consoleOperationsApi.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createGuardiansTalkLocationFilterController({
    locationEl,
@@ -30,7 +31,7 @@ export function createGuardiansTalkLocationFilterController({
       populateValueDropdown(
          locationEl,
          locationNames,
-         'Select a location'
+         APP_STRINGS.placeholders.location
       );
    }
 

@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import { loadZoomobileStations } from '../../options/loaders.js';
 import { populateZoomobileStationDropdown } from '../../options/dropdowns.js';
 import { setZoomobileStationClosed } from '../../../api/consoleOperationsApi.js';
@@ -18,8 +19,8 @@ export function createZoomobileStationClosedController({
          endDate: endDate || null,
          message,
       }),
-      entityLabel: 'Zoomobile station',
-      optionsLabel: 'zoomobile stations',
-      successMessage: result => `${result.zoomobile_station} was set as closed.`,
+      entityLabel: APP_STRINGS.entityLabels.zoomobileStation,
+      optionsLabel: APP_STRINGS.entityLabels.zoomobileStations,
+      successMessage: result => APP_STRINGS.status.closed(result.zoomobile_station),
    });
 }

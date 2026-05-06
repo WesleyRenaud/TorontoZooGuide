@@ -8,25 +8,26 @@ import {
    createTextareaField,
    createWeeklyScheduleCheckboxes,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createAttractionOpenPanel() {
    return createPanelShell({
       panelId: 'attractionOpenPanel',
-      title: 'Set attraction as open',
+      title: APP_STRINGS.panelTitles.attractionOpen,
       bodyChildren: [
          createSelectField({
-            label: 'Attraction',
+            label: APP_STRINGS.entityLabels.attraction,
             inputId: 'attractionOpenAttraction',
-            emptyOptionLabel: 'Select an attraction',
+            emptyOptionLabel: APP_STRINGS.placeholders.attraction,
          }),
          createSchedulePresetField({
             inputId: 'attractionOpenPreset',
          }),
          createDateRangeFields({
             startDateId: 'attractionOpenStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'attractionOpenEndDate',
-            endHelpText: 'Leave blank to keep this schedule active until it is changed.',
+            endHelpText: APP_STRINGS.help.keepScheduleUntilChanged,
          }),
          createWeeklyScheduleCheckboxes({
             dayIds: {
@@ -41,9 +42,9 @@ export function createAttractionOpenPanel() {
             },
          }),
          createTextareaField({
-            label: 'Schedule message',
+            label: APP_STRINGS.labels.scheduleMessage,
             inputId: 'attractionOpenMessage',
-            placeholder: 'Enter the message shown when the attraction is closed outside this schedule',
+            placeholder: APP_STRINGS.textareas.scheduledClosedMessage('attraction'),
          }),
          createActions({
             submitId: 'submitAttractionOpen',

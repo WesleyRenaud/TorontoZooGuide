@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import { loadGiftShops } from '../../options/loaders.js';
 import { populateGiftShopDropdown } from '../../options/dropdowns.js';
 import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
@@ -13,8 +14,8 @@ export function createGiftShopOpenController({
       loadOptions: loadGiftShops,
       populateOptions: populateGiftShopDropdown,
       submitSchedule: setGiftShopOpeningSchedule,
-      entityLabel: 'Gift shop',
-      optionsLabel: 'gift shops',
+      entityLabel: APP_STRINGS.entityLabels.giftShop,
+      optionsLabel: APP_STRINGS.entityLabels.giftShops,
       payloadKey: 'giftShop',
       resultName: result => result.gift_shop,
    });

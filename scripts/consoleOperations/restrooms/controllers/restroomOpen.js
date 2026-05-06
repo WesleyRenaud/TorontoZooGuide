@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import { loadRestrooms } from '../../options/loaders.js';
 import { populateRestroomDropdown } from '../../options/dropdowns.js';
 import { setRestroomOpen } from '../../../api/consoleOperationsApi.js';
@@ -17,8 +18,8 @@ export function createRestroomOpenController({
          startDate: startDate || null,
          endDate: endDate || null,
       }),
-      entityLabel: 'Restroom',
-      optionsLabel: 'restrooms',
-      successMessage: result => `${result.restroom} was set as explicitly open.`,
+      entityLabel: APP_STRINGS.entityLabels.restroom,
+      optionsLabel: APP_STRINGS.entityLabels.restrooms,
+      successMessage: result => APP_STRINGS.status.explicitlyOpen(result.restroom),
    });
 }

@@ -1,4 +1,5 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { APP_STRINGS } from '../../strings.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 import {
    migrateStoredSelectionItems,
@@ -198,7 +199,7 @@ export function createScheduledOccurrenceSelectorController({
       getInfoLink: getLink || undefined,
       makeSelection,
 
-      topTitle: 'Itinerary Builder',
+      topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
       h1: heading,
       subtitle,
       emptyText,

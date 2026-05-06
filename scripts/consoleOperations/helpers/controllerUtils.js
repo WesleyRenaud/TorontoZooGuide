@@ -1,3 +1,5 @@
+import { APP_STRINGS } from '../../strings.js';
+
 export function resetFieldValue(fieldEl) {
    if (!fieldEl) {
       return;
@@ -65,11 +67,11 @@ export function validateOptionalDateRange(startDate, endDate) {
    const endMs = new Date(endDate).getTime();
 
    if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
-      return 'Invalid start or end date.';
+      return APP_STRINGS.validation.dateRangeInvalid;
    }
 
    if (endMs < startMs) {
-      return 'End date cannot be before the start date.';
+      return APP_STRINGS.validation.endDateBeforeStartDate;
    }
 
    return null;

@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import { loadExhibits } from '../../options/loaders.js';
 import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { setExhibitClosed } from '../../../api/consoleOperationsApi.js';
@@ -18,8 +19,8 @@ export function createExhibitClosedController({
          endDate: endDate || null,
          message,
       }),
-      entityLabel: 'Exhibit',
-      optionsLabel: 'exhibits',
-      successMessage: result => `${result.exhibit} was set as closed.`,
+      entityLabel: APP_STRINGS.entityLabels.exhibit,
+      optionsLabel: APP_STRINGS.entityLabels.exhibits,
+      successMessage: result => APP_STRINGS.status.closed(result.exhibit),
    });
 }

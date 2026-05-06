@@ -5,22 +5,23 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestroomOpenPanel() {
    return createPanelShell({
       panelId: 'restroomOpenPanel',
-      title: 'Set restroom as open',
+      title: APP_STRINGS.panelTitles.restroomOpen,
       bodyChildren: [
          createSelectField({
-            label: 'Restroom',
+            label: APP_STRINGS.entityLabels.restroom,
             inputId: 'restroomOpenRestroom',
-            emptyOptionLabel: 'Select a restroom',
+            emptyOptionLabel: APP_STRINGS.placeholders.restroom,
          }),
          createDateRangeFields({
             startDateId: 'restroomOpenStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'restroomOpenEndDate',
-            endHelpText: 'Leave blank to keep the restroom explicitly open until it is changed.',
+            endHelpText: APP_STRINGS.help.keepExplicitlyOpenUntilChanged('restroom'),
          }),
          createActions({
             submitId: 'submitRestroomOpen',

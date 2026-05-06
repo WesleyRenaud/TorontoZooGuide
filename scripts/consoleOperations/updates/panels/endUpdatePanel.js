@@ -5,22 +5,23 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createEndUpdatePanel() {
    return createPanelShell({
       panelId: 'endUpdatePanel',
-      title: 'End update',
+      title: APP_STRINGS.panelTitles.endUpdate,
       bodyChildren: [
          createSelectField({
-            label: 'Update',
+            label: APP_STRINGS.labels.update,
             inputId: 'endUpdateKey',
-            emptyOptionLabel: 'Select an update',
+            emptyOptionLabel: APP_STRINGS.placeholders.update,
          }),
          createDateField({
-            label: 'End date',
+            label: APP_STRINGS.labels.endDate,
             inputId: 'endUpdateEndDate',
-            placeholder: 'Select an end date',
-            helpText: 'Leave blank to end the update today.',
+            placeholder: APP_STRINGS.placeholders.endDate,
+            helpText: APP_STRINGS.help.endUpdateToday,
          }),
          createActions({
             submitId: 'submitEndUpdate',

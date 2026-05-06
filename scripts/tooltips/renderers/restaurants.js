@@ -1,11 +1,12 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { APP_STRINGS } from '../../strings.js';
 import { createTooltipCard } from './cardFactory.js';
 
 export const restaurantRenderer = {
    key: 'restaurant',
 
    createCard(r, index) {
-      const name = r.name || 'Restaurant';
+      const name = r.name || APP_STRINGS.entityLabels.restaurant;
       const normalizedName = normalizeAssetKey(name);
 
       return createTooltipCard({
@@ -18,16 +19,16 @@ export const restaurantRenderer = {
          title: { text: name },
          details: [
             r.sub_location
-               ? `Location: ${r.sub_location}`
+               ? APP_STRINGS.search.location(r.sub_location)
                : r.location
-                  ? `Location: ${r.location}`
+                  ? APP_STRINGS.search.location(r.location)
                   : '',
-            r.description ? `Description: ${r.description}` : '',
+            r.description ? APP_STRINGS.tooltips.description(r.description) : '',
          ],
          links: r.menu_link
             ? [{
                href: r.menu_link,
-               text: 'MENU',
+               text: APP_STRINGS.tooltips.menu,
                className: 'restaurant-menu-link',
             }]
             : [],

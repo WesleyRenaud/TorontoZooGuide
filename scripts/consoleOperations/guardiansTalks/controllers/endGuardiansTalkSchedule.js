@@ -1,4 +1,5 @@
 import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import { APP_STRINGS } from '../../../strings.js';
 import { endGuardiansTalkSchedule } from '../../../api/consoleOperationsApi.js';
 import { resetFormFields } from '../../helpers/controllerUtils.js';
 import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
@@ -30,11 +31,11 @@ export function createEndGuardiansTalkScheduleController({
 
    function validateSelection({ talk, location }) {
       if (!location) {
-         return 'Location is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.location);
       }
 
       if (!talk) {
-         return 'Talk name is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkName);
       }
 
       return null;
@@ -67,8 +68,8 @@ export function createEndGuardiansTalkScheduleController({
       }),
       validateSelection,
       prepareForm,
-      loadErrorMessage: 'Failed to load locations.',
+      loadErrorMessage: APP_STRINGS.loadErrors.locations,
       submitEndSchedule,
-      successMessage: result => `${result.talk} in ${result.location} schedule was ended.`,
+      successMessage: result => APP_STRINGS.status.guardiansTalkScheduleEnded(result),
    });
 }

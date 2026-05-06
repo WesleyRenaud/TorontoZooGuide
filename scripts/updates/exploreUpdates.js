@@ -1,11 +1,12 @@
 import { getUpdates } from '../api/mapApi.js';
+import { APP_STRINGS } from '../strings.js';
 
 function createUpdateTypeEl(update) {
    const typeEl = document.createElement('span');
    typeEl.className = `explore-update-type explore-update-type-${String(update.type || '')
       .toLowerCase()
       .replaceAll(' ', '-')}`;
-   typeEl.textContent = update.type || 'Update';
+   typeEl.textContent = update.type || APP_STRINGS.labels.update;
    return typeEl;
 }
 
@@ -20,7 +21,7 @@ function createUpdateCard(update, isActive = false) {
 
    const titleEl = document.createElement('h4');
    titleEl.className = 'explore-update-title';
-   titleEl.textContent = update.title || 'Update';
+   titleEl.textContent = update.title || APP_STRINGS.labels.update;
 
    const descriptionEl = document.createElement('p');
    descriptionEl.className = 'explore-update-description';
@@ -88,13 +89,13 @@ function renderNav({
 
    navEl.append(
       createArrowButton({
-         label: 'Previous update',
-         symbol: '<',
+         label: APP_STRINGS.map.previousUpdate,
+         symbol: APP_STRINGS.common.previousSymbol,
          onClick: () => onStep(-1),
       }),
       createArrowButton({
-         label: 'Next update',
-         symbol: '>',
+         label: APP_STRINGS.map.nextUpdate,
+         symbol: APP_STRINGS.common.nextSymbol,
          onClick: () => onStep(1),
       })
    );
@@ -134,7 +135,10 @@ export function createExploreUpdates({
          return;
       }
 
-      toggleEl.setAttribute('aria-label', isCollapsed ? 'Show updates' : 'Hide updates');
+      toggleEl.setAttribute(
+         'aria-label',
+         isCollapsed ? APP_STRINGS.map.showUpdates : APP_STRINGS.map.hideUpdates
+      );
       toggleEl.setAttribute('aria-expanded', String(!isCollapsed));
    }
 

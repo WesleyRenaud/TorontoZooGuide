@@ -5,25 +5,26 @@ import {
    createRadioGroupField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createZoomobileRoutePanel() {
    return createPanelShell({
       panelId: 'zoomobileRoutePanel',
-      title: 'Set current Zoomobile route',
+      title: APP_STRINGS.panelTitles.zoomobileRoute,
       bodyChildren: [
          createRadioGroupField({
-            label: 'Route',
+            label: APP_STRINGS.labels.route,
             name: 'zoomobileRoute',
             options: [
-               { id: 'zoomobileRouteSummer', value: 'summer', label: 'Summer' },
-               { id: 'zoomobileRouteWinter', value: 'winter', label: 'Winter' },
+               { id: 'zoomobileRouteSummer', value: 'summer', label: APP_STRINGS.schedule.routeLabels.summer },
+               { id: 'zoomobileRouteWinter', value: 'winter', label: APP_STRINGS.schedule.routeLabels.winter },
             ],
          }),
          createDateRangeFields({
             startDateId: 'zoomobileRouteStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'zoomobileRouteEndDate',
-            endHelpText: 'Leave blank to keep this route until it is changed again.',
+            endHelpText: APP_STRINGS.help.keepRouteUntilChanged,
          }),
          createActions({
             submitId: 'submitZoomobileRoute',

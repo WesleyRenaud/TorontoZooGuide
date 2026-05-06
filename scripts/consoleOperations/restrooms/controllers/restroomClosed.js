@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import { loadRestrooms } from '../../options/loaders.js';
 import { populateRestroomDropdown } from '../../options/dropdowns.js';
 import { setRestroomClosed } from '../../../api/consoleOperationsApi.js';
@@ -18,8 +19,8 @@ export function createRestroomClosedController({
          endDate: endDate || null,
          message,
       }),
-      entityLabel: 'Restroom',
-      optionsLabel: 'restrooms',
-      successMessage: result => `${result.restroom} was set as closed.`,
+      entityLabel: APP_STRINGS.entityLabels.restroom,
+      optionsLabel: APP_STRINGS.entityLabels.restrooms,
+      successMessage: result => APP_STRINGS.status.closed(result.restroom),
    });
 }

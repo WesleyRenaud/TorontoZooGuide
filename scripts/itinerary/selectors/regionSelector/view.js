@@ -1,4 +1,5 @@
 import { buildRegionRows } from './regionRenderer.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 function createEmptyState(message) {
    const emptyEl = document.createElement('div');
@@ -14,7 +15,7 @@ export function renderRegionSelectionView(resultsEl, regions, selectedExhibitNam
 
    if (regions.length === 0) {
       resultsEl.replaceChildren(
-         createEmptyState('No regions available right now.')
+         createEmptyState(APP_STRINGS.itinerary.emptyText.regions)
       );
       return;
    }

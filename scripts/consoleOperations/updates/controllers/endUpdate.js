@@ -1,4 +1,4 @@
-import { endUpdate } from '../../../api/consoleOperationsApi.js';
+import { APP_STRINGS } from '../../../strings.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
@@ -41,7 +41,7 @@ export function createEndUpdateController({
          resetForm,
          activatePanel,
          panelEl,
-         errorMessage: 'Failed to load updates.',
+         errorMessage: APP_STRINGS.loadErrors.updates,
       });
    }
 
@@ -50,7 +50,7 @@ export function createEndUpdateController({
    }
 
    function validateForm({ title, startDate }) {
-      if (!title || !startDate) return 'Update is required.';
+      if (!title || !startDate) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.update);
       return null;
    }
 
@@ -72,15 +72,15 @@ export function createEndUpdateController({
          const result = await endUpdate(values);
 
          if (result.success) {
-            setStatus(statusEl, 'Update was ended.', 'is-success');
+            setStatus(statusEl, APP_STRINGS.status.updateEnded, 'is-success');
             resetForm();
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

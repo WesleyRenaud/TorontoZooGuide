@@ -1,3 +1,5 @@
+import { APP_STRINGS } from '../../../strings.js';
+
 export function createAnimalSpeciesResultsView({ inputEl, resultsEl } = {}) {
    let currentMatches = [];
    let highlightedIndex = -1;
@@ -37,7 +39,7 @@ export function createAnimalSpeciesResultsView({ inputEl, resultsEl } = {}) {
       if (!matches.length) {
          const empty = document.createElement('div');
          empty.className = 'console-operations-autocomplete-empty';
-         empty.textContent = 'No matches';
+         empty.textContent = APP_STRINGS.common.noMatches;
          renderResults([empty]);
          resultsEl.classList.add('active');
          return;

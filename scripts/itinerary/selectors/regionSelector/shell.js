@@ -1,10 +1,4 @@
-const DIALOG_LABEL = 'Select regions and exhibits';
-const TOP_TITLE = 'Itinerary Builder';
-const CLOSE_BUTTON_LABEL = 'Close itinerary builder';
-const TITLE = 'Add Animals by Region';
-const PREVIOUS_BUTTON_TEXT = 'Back';
-const NEXT_BUTTON_TEXT = 'Next';
-const FINISH_BUTTON_TEXT = 'Finish';
+import { APP_STRINGS } from '../../../strings.js';
 
 function createButton({
    className,
@@ -31,19 +25,19 @@ export function buildRegionSelectorShell() {
    card.className = 'itin-card itin-card-tall';
    card.setAttribute('role', 'dialog');
    card.setAttribute('aria-modal', 'true');
-   card.setAttribute('aria-label', DIALOG_LABEL);
+   card.setAttribute('aria-label', APP_STRINGS.itinerary.aria.selectRegionsAndExhibits);
 
    const topbar = document.createElement('div');
    topbar.className = 'itin-card-topbar itin-card-topbar-with-close';
 
    const topTitleEl = document.createElement('div');
    topTitleEl.className = 'itin-top-title';
-   topTitleEl.textContent = TOP_TITLE;
+   topTitleEl.textContent = APP_STRINGS.itinerary.selectors.builderTitle;
 
    const closeButton = createButton({
       className: 'itin-close',
-      text: '×',
-      ariaLabel: CLOSE_BUTTON_LABEL,
+      text: APP_STRINGS.common.closeSymbol,
+      ariaLabel: APP_STRINGS.itinerary.aria.closeBuilder,
    });
 
    topbar.append(topTitleEl, closeButton);
@@ -53,7 +47,7 @@ export function buildRegionSelectorShell() {
 
    const heading = document.createElement('h1');
    heading.className = 'itin-h1';
-   heading.textContent = TITLE;
+   heading.textContent = APP_STRINGS.itinerary.selectors.titleRegions;
 
    const resultsEl = document.createElement('div');
    resultsEl.className = 'itin-region-results itin-results';
@@ -65,7 +59,7 @@ export function buildRegionSelectorShell() {
 
    const prevButton = createButton({
       className: 'itin-prev',
-      text: PREVIOUS_BUTTON_TEXT,
+      text: APP_STRINGS.animalsPage.back,
    });
 
    const actionsRight = document.createElement('div');
@@ -73,12 +67,12 @@ export function buildRegionSelectorShell() {
 
    const nextButton = createButton({
       className: 'itin-next',
-      text: NEXT_BUTTON_TEXT,
+      text: APP_STRINGS.itinerary.actions.next,
    });
 
    const finishButton = createButton({
       className: 'itin-next itin-finish',
-      text: FINISH_BUTTON_TEXT,
+      text: APP_STRINGS.itinerary.actions.finish,
    });
 
    actionsRight.append(nextButton, finishButton);

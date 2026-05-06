@@ -5,26 +5,27 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRemoveViewingAlertPanel() {
    return createPanelShell({
       panelId: 'removeViewingAlertPanel',
-      title: 'Remove animal viewing alert',
+      title: APP_STRINGS.panelTitles.removeViewingAlert,
       bodyChildren: [
          createSelectField({
-            label: 'Exhibit',
+            label: APP_STRINGS.entityLabels.exhibit,
             inputId: 'removeViewingAlertExhibit',
-            emptyOptionLabel: 'Select an exhibit',
+            emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
          }),
          createAutocompleteField({
-            label: 'Species',
+            label: APP_STRINGS.labels.species,
             inputId: 'removeViewingAlertSpecies',
             resultsId: 'removeViewingAlertSpeciesResults',
-            placeholder: 'Search for a species',
+            placeholder: APP_STRINGS.placeholders.speciesSearch,
          }),
          createActions({
             submitId: 'submitRemoveViewingAlert',
-            submitLabel: 'Remove alert',
+            submitLabel: APP_STRINGS.actions.removeAlert,
          }),
          createStatus({
             statusId: 'removeViewingAlertStatus',

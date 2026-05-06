@@ -6,27 +6,28 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createAttractionClosedPanel() {
    return createPanelShell({
       panelId: 'attractionClosedPanel',
-      title: 'Set attraction as closed',
+      title: APP_STRINGS.panelTitles.attractionClosed,
       bodyChildren: [
          createSelectField({
-            label: 'Attraction',
+            label: APP_STRINGS.entityLabels.attraction,
             inputId: 'attractionClosedAttraction',
-            emptyOptionLabel: 'Select an attraction',
+            emptyOptionLabel: APP_STRINGS.placeholders.attraction,
          }),
          createDateRangeFields({
             startDateId: 'attractionClosedStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'attractionClosedEndDate',
-            endHelpText: 'Leave blank to keep the attraction closed until it is manually reopened.',
+            endHelpText: APP_STRINGS.help.keepClosedUntilManuallyReopened('attraction'),
          }),
          createTextareaField({
-            label: 'Closure message',
+            label: APP_STRINGS.labels.closureMessage,
             inputId: 'attractionClosedMessage',
-            placeholder: 'Enter the closure message shown to guests',
+            placeholder: APP_STRINGS.textareas.closureMessage,
          }),
          createActions({
             submitId: 'submitAttractionClosed',

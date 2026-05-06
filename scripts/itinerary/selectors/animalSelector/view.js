@@ -4,6 +4,7 @@ import {
    getAnimalSpecies,
    getAnimalSubtitle,
 } from './model.js';
+import { APP_STRINGS } from '../../../strings.js';
 import {
    createSelectorRowContent,
    createSelectorTextColumn,
@@ -58,8 +59,8 @@ function createLikelihoodWarning(level) {
    warning.className = `itin-likelihood-warning ${level}`;
    warning.appendChild(createWarningIcon());
    warning.title = level === 'low'
-      ? 'Very low chance of seeing this animal'
-      : 'This animal may be off display';
+      ? APP_STRINGS.itinerary.selectors.lowVisibilityHint
+      : APP_STRINGS.itinerary.confirmation.animalMayBeOffDisplay;
 
    return warning;
 }
@@ -86,7 +87,7 @@ export function renderAnimalSelectorRowLeft(row) {
 
    return createSelectorRowContent({
       imageSrc,
-      imageAlt: `${species} photo`,
+      imageAlt: APP_STRINGS.itinerary.itemPhoto(species),
       textColumnEl: createSelectorTextColumn({
          subtitle,
          titleNode: titleWrap,
@@ -106,7 +107,7 @@ export function renderIncludeOffDisplayToggle({ bodyEl, rerunSearch, onChange })
    checkbox.checked = false;
 
    const text = document.createElement('span');
-   text.textContent = 'Include off-display animals';
+   text.textContent = APP_STRINGS.itinerary.selectors.includeOffDisplayAnimals;
 
    checkbox.addEventListener('change', () => {
       onChange?.(checkbox.checked);

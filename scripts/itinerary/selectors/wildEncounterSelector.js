@@ -3,6 +3,7 @@ import {
    normalizeStoredString,
 } from './base/storedSelection.js';
 import { createScheduledOccurrenceSelectorController } from './createScheduledOccurrenceSelector.js';
+import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryWildEncounters';
 
@@ -35,12 +36,12 @@ export function createItineraryWildEncounterSelectorController({
       responseKey: 'wild_encounters',
       searchFlag: 'includeWildEncounters',
       imageDirectory: 'wild-encounters',
-      defaultTitle: 'Wild Encounter',
-      heading: 'Wild Encounters',
-      subtitle: 'Search and add wild encounters to your plan.',
-      emptyText: 'No wild encounters found for this day',
+      defaultTitle: APP_STRINGS.entityLabels.wildEncounter,
+      heading: APP_STRINGS.site.nav.wildEncounters,
+      subtitle: APP_STRINGS.itinerary.selectors.wildEncounterSubtitle,
+      emptyText: APP_STRINGS.itinerary.emptyText.wildEncounters,
 
-      primaryLabel: 'Meeting Spot',
+      primaryLabel: APP_STRINGS.itinerary.selectors.meetingSpot,
       getPrimaryValue: getWildEncounterMeetingSpot,
       getTimeOfDay: getWildEncounterTimeOfDay,
       getLink: getWildEncounterLink,

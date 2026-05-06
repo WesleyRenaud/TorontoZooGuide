@@ -1,4 +1,5 @@
 import { setStatus } from '../shell/status.js';
+import { APP_STRINGS } from '../../strings.js';
 import {
    hasCheckedField,
    hideConsolePanel,
@@ -30,8 +31,8 @@ export function createWeeklyAvailabilityFormController({
    loadOptions,
    populateOptions,
    submitSchedule,
-   entityLabel = 'Item',
-   optionsLabel = 'items',
+   entityLabel = APP_STRINGS.entityLabels.item,
+   optionsLabel = APP_STRINGS.entityLabels.items,
    payloadKey = 'item',
    resultName = result => result?.[payloadKey] ?? '',
 } = {}) {
@@ -181,7 +182,7 @@ export function createWeeklyAvailabilityFormController({
          resetForm,
          activatePanel,
          panelEl,
-         errorMessage: `Failed to load ${optionsLabel}.`,
+         errorMessage: APP_STRINGS.loadErrors.entityOptions(optionsLabel),
       });
    }
 
@@ -194,12 +195,12 @@ export function createWeeklyAvailabilityFormController({
       setStatus(statusEl, '');
 
       if (!entity) {
-         setStatus(statusEl, `${entityLabel} is required.`, 'is-error');
+         setStatus(statusEl, APP_STRINGS.validation.entityRequired(entityLabel), 'is-error');
          return;
       }
 
       if (!hasAtLeastOneOpenDay()) {
-         setStatus(statusEl, 'At least one day or holidays must be selected.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.validation.weeklyAvailability, 'is-error');
          return;
       }
 
@@ -232,19 +233,19 @@ export function createWeeklyAvailabilityFormController({
             setStatus(
                statusEl,
                isEveryDaySchedule()
-                  ? `${name} was set as open.`
-                  : `${name} opening schedule was saved.`,
+                  ? APP_STRINGS.status.open(name)
+                  : APP_STRINGS.status.openingScheduleSaved(name),
                'is-success'
             );
 
             resetForm();
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

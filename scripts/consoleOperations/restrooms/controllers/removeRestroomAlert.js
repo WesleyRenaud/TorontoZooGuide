@@ -1,4 +1,5 @@
 import { removeRestroomAlert } from '../../../api/consoleOperationsApi.js';
+import { APP_STRINGS } from '../../../strings.js';
 import { loadRestrooms } from '../../options/loaders.js';
 import { populateRestroomDropdown } from '../../options/dropdowns.js';
 import { setStatus } from '../../shell/status.js';
@@ -37,7 +38,7 @@ export function createRemoveRestroomAlertController({
          resetForm,
          activatePanel,
          panelEl,
-         errorMessage: 'Failed to load restrooms.',
+         errorMessage: APP_STRINGS.loadErrors.restrooms,
       });
    }
 
@@ -65,7 +66,7 @@ export function createRemoveRestroomAlertController({
       setStatus(statusEl, '');
 
       if (!restroom) {
-         setStatus(statusEl, 'Restroom is required.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.restroom), 'is-error');
          return;
       }
 
@@ -76,11 +77,11 @@ export function createRemoveRestroomAlertController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

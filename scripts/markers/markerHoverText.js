@@ -1,3 +1,5 @@
+import { APP_STRINGS } from '../strings.js';
+
 const HIDDEN_HOVER_TYPES = new Set([
    'zoomobileRouteMarker',
 ]);
@@ -19,7 +21,9 @@ function formatCountedHoverText(itemsAtPoint, getTitle) {
 function formatGuardiansTalkHoverText(itemsAtPoint) {
    return formatCountedHoverText(itemsAtPoint, (item) => {
       const name = item?.name || '';
-      return name ? `${name} Meet The Guardians Talk` : 'Meet The Guardians Talk';
+      return name
+         ? APP_STRINGS.entityLabels.guardiansTalkWithName(name)
+         : APP_STRINGS.entityLabels.guardiansTalk;
    });
 }
 
@@ -27,68 +31,68 @@ function formatWildEncounterHoverText(itemsAtPoint) {
    if (itemsAtPoint.length === 1) {
       const name = itemsAtPoint[0]?.name || '';
       return name
-         ? `Wild Encounter • ${name} - Meeting Spot`
-         : 'Wild Encounter Meeting Spot';
+         ? APP_STRINGS.map.hover.wildEncounterMeetingSpotWithName(name)
+         : APP_STRINGS.map.hover.wildEncounterMeetingSpot;
    }
 
-   const first = itemsAtPoint[0]?.name || 'Wild Encounter Meeting Spot';
-   return `Wild Encounter • ${first} + ${itemsAtPoint.length - 1} more - Meeting Spot`;
+   const first = itemsAtPoint[0]?.name || APP_STRINGS.map.hover.wildEncounterMeetingSpot;
+   return APP_STRINGS.map.hover.wildEncounterMultiple(first, itemsAtPoint.length - 1);
 }
 
 const HOVER_FORMATTERS = Object.freeze({
    animal: (items) => formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'species', 'Animal')
+      (item) => readItemText(item, 'species', APP_STRINGS.entityLabels.animal)
    ),
    pavilion: (items) => formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', 'Pavilion')
+      (item) => readItemText(item, 'name', APP_STRINGS.entityLabels.pavilion)
    ),
    restaurant: (items) => formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', 'Restaurant')
+      (item) => readItemText(item, 'name', APP_STRINGS.entityLabels.restaurant)
    ),
    restroom: (items) => formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'title', 'Restroom')
+      (item) => readItemText(item, 'title', APP_STRINGS.entityLabels.restroom)
    ),
    giftShop: (items) => formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', 'Gift Shop')
+      (item) => readItemText(item, 'name', APP_STRINGS.entityLabels.giftShop)
    ),
    attraction: (items) => formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', 'Attraction')
+      (item) => readItemText(item, 'name', APP_STRINGS.entityLabels.attraction)
    ),
    zoomobileStation: (items) => formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', 'Zoomobile Station')
+      (item) => readItemText(item, 'name', APP_STRINGS.entityLabels.zoomobileStation)
    ),
    guardiansTalk: formatGuardiansTalkHoverText,
    wildEncounter: formatWildEncounterHoverText,
    drinkingFountain: (items) => formatCountedHoverText(
       items,
-      () => 'Drinking Fountain'
+      () => APP_STRINGS.map.hover.drinkingFountain
    ),
    defibrillator: (items) => formatCountedHoverText(
       items,
-      () => 'Defibrillator'
+      () => APP_STRINGS.map.hover.defibrillator
    ),
    emergencyIntercom: (items) => formatCountedHoverText(
       items,
-      () => 'Emergency Intercom'
+      () => APP_STRINGS.map.hover.emergencyIntercom
    ),
    guestService: (items) => formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'service_type', 'Guest Service')
+      (item) => readItemText(item, 'service_type', APP_STRINGS.map.hover.guestService)
    ),
    picnicSite: (items) => formatCountedHoverText(
       items,
-      () => 'Picnic Site'
+      () => APP_STRINGS.map.hover.picnicSite
    ),
    eventSite: (items) => formatCountedHoverText(
       items,
-      (item) => readItemText(item, 'name', 'Event Site')
+      (item) => readItemText(item, 'name', APP_STRINGS.map.hover.eventSite)
    ),
 });
 

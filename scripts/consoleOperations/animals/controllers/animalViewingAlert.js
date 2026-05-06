@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import { loadExhibits } from '../../options/loaders.js';
 import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { setStatus } from '../../shell/status.js';
@@ -47,15 +48,15 @@ export function createAnimalViewingAlertController({
       message,
    }) {
       if (!species) {
-         return 'Species name is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.species);
       }
 
       if (!exhibit) {
-         return 'Exhibit is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.exhibit);
       }
 
       if (!message) {
-         return 'Alert message is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.alertMessage);
       }
 
       return validateOptionalDateRange(startDate, endDate);
@@ -109,7 +110,7 @@ export function createAnimalViewingAlertController({
          resetForm,
          activatePanel,
          panelEl,
-         errorMessage: 'Failed to load exhibits.',
+         errorMessage: APP_STRINGS.loadErrors.exhibits,
       });
    }
 
@@ -132,11 +133,11 @@ export function createAnimalViewingAlertController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

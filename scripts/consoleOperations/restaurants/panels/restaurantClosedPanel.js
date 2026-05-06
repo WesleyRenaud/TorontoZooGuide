@@ -6,26 +6,27 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestaurantClosedPanel() {
    return createPanelShell({
       panelId: 'restaurantClosedPanel',
-      title: 'Set restaurant as closed',
+      title: APP_STRINGS.panelTitles.restaurantClosed,
       bodyChildren: [
          createSelectField({
-            label: 'Restaurant',
+            label: APP_STRINGS.entityLabels.restaurant,
             inputId: 'restaurantClosedRestaurant',
-            emptyOptionLabel: 'Select a restaurant',
+            emptyOptionLabel: APP_STRINGS.placeholders.restaurant,
          }),
          createDateRangeFields({
             startDateId: 'restaurantClosedStartDate',
             endDateId: 'restaurantClosedEndDate',
-            endHelpText: 'Leave blank to continue until the restaurant is reopened.',
+            endHelpText: APP_STRINGS.help.continueUntilReopened('restaurant'),
          }),
          createTextareaField({
-            label: 'Closed message',
+            label: APP_STRINGS.labels.closedMessage,
             inputId: 'restaurantClosedMessage',
-            placeholder: 'Enter the message shown when the restaurant is closed',
+            placeholder: APP_STRINGS.textareas.closedMessage('restaurant'),
          }),
          createActions({
             submitId: 'submitRestaurantClosed',
