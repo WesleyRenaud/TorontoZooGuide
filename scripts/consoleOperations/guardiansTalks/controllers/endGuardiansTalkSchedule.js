@@ -1,8 +1,8 @@
+import { endGuardiansTalkSchedule } from '../../../api/consoleOperationsApi.js';
+import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
+import { resetFormFields } from '../../helpers/controllerUtils.js';
 import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
 import { APP_STRINGS } from '../../../strings.js';
-import { endGuardiansTalkSchedule } from '../../../api/consoleOperationsApi.js';
-import { resetFormFields } from '../../helpers/controllerUtils.js';
-import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
 
 export function createEndGuardiansTalkScheduleController({
    talkNameEl,

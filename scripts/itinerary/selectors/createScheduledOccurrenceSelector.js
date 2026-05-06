@@ -1,6 +1,4 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
-import { APP_STRINGS } from '../../strings.js';
-import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 import {
    migrateStoredSelectionItems,
    normalizeStoredId,
@@ -8,6 +6,8 @@ import {
    normalizeStoredString,
 } from './base/storedSelection.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
+import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
+import { APP_STRINGS } from '../../strings.js';
 
 function getOccurrenceName(row) {
    return row?.name ?? '';

@@ -1,8 +1,8 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadRestaurants } from '../../options/loaders.js';
-import { populateRestaurantDropdown } from '../../options/dropdowns.js';
 import { setRestaurantClosed } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
+import { populateRestaurantDropdown } from '../../options/dropdowns.js';
+import { loadRestaurants } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestaurantClosedController({
    restaurantEl,

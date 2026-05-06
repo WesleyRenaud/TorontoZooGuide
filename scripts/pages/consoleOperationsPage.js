@@ -1,10 +1,10 @@
-import { mountConsoleOperationPanels } from '../consoleOperations/bootstrap/panels.js';
-import { collectConsoleOperationRefs } from '../consoleOperations/bootstrap/refs.js';
 import {
    createConsoleSpecialControllers,
    wireConsoleOperationControllers,
 } from '../consoleOperations/bootstrap/controllers.js';
 import { wireConsoleOperationDatePickers } from '../consoleOperations/bootstrap/datePickers.js';
+import { mountConsoleOperationPanels } from '../consoleOperations/bootstrap/panels.js';
+import { collectConsoleOperationRefs } from '../consoleOperations/bootstrap/refs.js';
 import { createConsolePanelNavigator } from '../consoleOperations/shell/panelNavigator.js';
 
 const CONSOLE_OPERATIONS_WORKSPACE_ID = 'consoleOperationsWorkspace';

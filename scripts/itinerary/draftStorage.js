@@ -1,16 +1,16 @@
 import {
-   DATE_KEY,
-   ANIMALS_KEY,
-   ATTRACTIONS_KEY,
-   GUARDIANS_KEY,
-   WILD_KEY,
-   SELECTED_EXHIBITS_KEY,
-   SELECTED_REGIONS_KEY,
-} from './storageKeys.js';
-import {
    createEmptyItineraryDraft,
    normalizeItineraryDraft,
 } from './itineraryShape.js';
+import {
+   ANIMALS_KEY,
+   ATTRACTIONS_KEY,
+   DATE_KEY,
+   GUARDIANS_KEY,
+   SELECTED_EXHIBITS_KEY,
+   SELECTED_REGIONS_KEY,
+   WILD_KEY,
+} from './storageKeys.js';
 
 export {
    areItineraryDraftsEqual,

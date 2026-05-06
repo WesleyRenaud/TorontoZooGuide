@@ -1,9 +1,9 @@
 import { initFlatpickr } from '../datePickers/flatpickr.js';
 import {
-   DEFAULT_DAYS_AHEAD,
-   getToday,
-   getMaxDate,
    clampToAllowedVisitDate,
+   DEFAULT_DAYS_AHEAD,
+   getMaxDate,
+   getToday,
    toISODate,
 } from './visitDateRules.js';
 

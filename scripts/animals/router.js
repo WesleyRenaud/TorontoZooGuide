@@ -1,6 +1,6 @@
+import { createAnimalDetailView } from './animalDetailView.js';
 import { createAnimalsApi } from '../api/animalsApi.js';
 import { createAnimalsListView } from './listView.js';
-import { createAnimalDetailView } from './animalDetailView.js';
 
 export function createAnimalsRouter({ listEl }) {
    const api = createAnimalsApi();

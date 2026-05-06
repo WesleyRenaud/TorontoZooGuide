@@ -1,10 +1,10 @@
+import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createPanelShell,
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
-import { APP_STRINGS } from '../../../strings.js';
 
 export function createRemoveRestroomAlertPanel() {
    return createPanelShell({

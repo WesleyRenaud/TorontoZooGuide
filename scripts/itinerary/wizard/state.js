@@ -3,15 +3,15 @@ import {
    writeStoredItineraryDraft,
 } from '../draftStorage.js';
 import {
-   areItineraryDraftsEqual,
-   normalizeItineraryDraft,
-} from '../itineraryShape.js';
-import {
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,
    isValidatedItineraryEmpty,
 } from './itineraryDiff.js';
+import {
+   areItineraryDraftsEqual,
+   normalizeItineraryDraft,
+} from '../itineraryShape.js';
 
 function createPendingValidationState() {
    return {

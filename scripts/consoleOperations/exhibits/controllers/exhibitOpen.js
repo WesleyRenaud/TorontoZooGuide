@@ -1,9 +1,8 @@
-// TO-DO: Create linter rule to order imports alphabetically
-import { APP_STRINGS } from '../../../strings.js';
-import { loadExhibits } from '../../options/loaders.js';
-import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { setExhibitOpen } from '../../../api/consoleOperationsApi.js';
 import { createEntityOpenFormController } from '../../forms/entityOpenFormController.js';
+import { populateExhibitDropdown } from '../../options/dropdowns.js';
+import { loadExhibits } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createExhibitOpenController({
    exhibitEl,

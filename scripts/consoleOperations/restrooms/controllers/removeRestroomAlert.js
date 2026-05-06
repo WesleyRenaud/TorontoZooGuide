@@ -1,13 +1,13 @@
 import { removeRestroomAlert } from '../../../api/consoleOperationsApi.js';
-import { APP_STRINGS } from '../../../strings.js';
-import { loadRestrooms } from '../../options/loaders.js';
-import { populateRestroomDropdown } from '../../options/dropdowns.js';
-import { setStatus } from '../../shell/status.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
+import { populateRestroomDropdown } from '../../options/dropdowns.js';
+import { loadRestrooms } from '../../options/loaders.js';
+import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRemoveRestroomAlertController({
    showButtonEl,

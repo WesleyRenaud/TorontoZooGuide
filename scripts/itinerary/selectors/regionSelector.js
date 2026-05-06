@@ -1,8 +1,6 @@
-import {
-   getExhibitsByRegion,
-} from '../../api/itinerarySelectorApi.js';
-import { createRegionSelectorState } from './regionSelector/state.js';
+import { getExhibitsByRegion } from '../../api/itinerarySelectorApi.js';
 import { buildRegionSelectorShell } from './regionSelector/shell.js';
+import { createRegionSelectorState } from './regionSelector/state.js';
 import {
    bindRegionSelectionEvents,
    renderRegionSelectionView,

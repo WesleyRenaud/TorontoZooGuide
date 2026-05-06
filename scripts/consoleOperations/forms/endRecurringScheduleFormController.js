@@ -1,9 +1,9 @@
-import { setStatus } from '../shell/status.js';
-import { APP_STRINGS } from '../../strings.js';
 import {
    hideConsolePanel,
    resetFormFields,
 } from '../helpers/controllerUtils.js';
+import { setStatus } from '../shell/status.js';
+import { APP_STRINGS } from '../../strings.js';
 
 export function createEndRecurringScheduleFormController({
    showButtonEl,

@@ -1,10 +1,10 @@
-import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
+import { initFocusFromQuery } from '../focus/focusFromQuery.js';
 import { initMapControls } from '../map/controls.js';
+import { buildMapDateContext } from '../map/dateContext.js';
+import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
+import { createMapRuntime } from '../map/mapRuntime.js';
 import { initExploreTypeFilter } from '../search/exploreFilter.js';
 import { initSearch } from '../search/search.js';
-import { initFocusFromQuery } from '../focus/focusFromQuery.js';
-import { buildMapDateContext } from '../map/dateContext.js';
-import { createMapRuntime } from '../map/mapRuntime.js';
 import { createExploreUpdates } from '../updates/exploreUpdates.js';
 
 function getMapPageElements() {

@@ -1,11 +1,11 @@
 import { createUpdate } from '../../../api/consoleOperationsApi.js';
-import { APP_STRINGS } from '../../../strings.js';
 import {
    hideConsolePanel,
    resetFormFields,
    validateOptionalDateRange,
 } from '../../helpers/controllerUtils.js';
 import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createCreateUpdateController({
    showButtonEl,

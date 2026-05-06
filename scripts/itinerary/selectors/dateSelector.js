@@ -5,14 +5,14 @@ import {
 import { APP_STRINGS } from '../../strings.js';
 import { initVisitDateFlatpickr } from '../../visitDates/visitDateFlatpickr.js';
 import {
-   DEFAULT_DAYS_AHEAD,
-   toISODate,
-   getToday,
-   getMaxDate,
-   normalizeDate,
-   isBeforeToday,
-   isAfterMaxDate,
    clampToAllowedVisitDate,
+   DEFAULT_DAYS_AHEAD,
+   getMaxDate,
+   getToday,
+   isAfterMaxDate,
+   isBeforeToday,
+   normalizeDate,
+   toISODate,
 } from '../../visitDates/visitDateRules.js';
 
 function formatLong(d) {

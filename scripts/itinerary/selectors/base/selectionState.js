@@ -1,4 +1,7 @@
-import { loadArray, saveArray } from '../../draftStorage.js';
+import {
+   loadArray,
+   saveArray,
+} from '../../draftStorage.js';
 
 function identity(items) {
    return items;

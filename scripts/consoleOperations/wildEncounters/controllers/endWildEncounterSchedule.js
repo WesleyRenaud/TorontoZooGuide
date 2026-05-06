@@ -1,9 +1,9 @@
+import { endWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
+import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
+import { resetFormFields } from '../../helpers/controllerUtils.js';
+import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
 import { loadWildEncounters } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
-import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
-import { endWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
-import { resetFormFields } from '../../helpers/controllerUtils.js';
-import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
 
 export function createEndWildEncounterScheduleController({
    wildEncounterEl,

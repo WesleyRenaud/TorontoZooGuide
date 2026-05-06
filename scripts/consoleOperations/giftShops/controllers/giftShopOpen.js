@@ -1,8 +1,8 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadGiftShops } from '../../options/loaders.js';
-import { populateGiftShopDropdown } from '../../options/dropdowns.js';
-import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
 import { setGiftShopOpeningSchedule } from '../../../api/consoleOperationsApi.js';
+import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
+import { populateGiftShopDropdown } from '../../options/dropdowns.js';
+import { loadGiftShops } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createGiftShopOpenController({
    giftShopEl,

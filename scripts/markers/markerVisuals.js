@@ -1,5 +1,11 @@
-import { applyCountMarker, resetMarkerVisual } from './markerVisualUtils.js';
-import { renderAnimalIcon, renderMarkerByType } from './markerTypeRenderers.js';
+import {
+   renderAnimalIcon,
+   renderMarkerByType,
+} from './markerTypeRenderers.js';
+import {
+   applyCountMarker,
+   resetMarkerVisual,
+} from './markerVisualUtils.js';
 
 export function applyMarkerVisual(markerEl, itemsAtPoint) {
    if (!markerEl) return;

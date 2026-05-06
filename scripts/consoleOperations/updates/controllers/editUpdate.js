@@ -1,11 +1,11 @@
 import { editUpdate } from '../../../api/consoleOperationsApi.js';
-import { APP_STRINGS } from '../../../strings.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
 import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
 import {
    getSelectedUpdateData,
    loadActiveUpdates,

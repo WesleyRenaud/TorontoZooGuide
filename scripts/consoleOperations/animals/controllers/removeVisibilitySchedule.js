@@ -1,7 +1,3 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadExhibits } from '../../options/loaders.js';
-import { populateExhibitDropdown } from '../../options/dropdowns.js';
-import { setStatus } from '../../shell/status.js';
 import { removeAnimalVisibilitySchedule } from '../../../api/consoleOperationsApi.js';
 import {
    bindResetValueOnChange,
@@ -9,6 +5,10 @@ import {
    loadOptionsAndShowPanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
+import { populateExhibitDropdown } from '../../options/dropdowns.js';
+import { loadExhibits } from '../../options/loaders.js';
+import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRemoveVisibilityScheduleController({
    showButtonEl,
