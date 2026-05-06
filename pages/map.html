@@ -10,6 +10,7 @@
       <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom/dist/panzoom.min.js" defer></script>
 
       <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+      <title>{{ site.titles.guide }}</title>
 
       <script type="module" src="../scripts/mainMap.js"></script>
    </head>
@@ -19,19 +20,19 @@
 
          <!-- Top bar with title + logo -->
          <div class="top-bar">
-            <span class="top-bar-title">Toronto Zoo Guide</span>
+            <span class="top-bar-title">{{ site.titles.guide }}</span>
             <img 
                src="../images/logos/toronto-zoo-logo.png"
-               alt="Toronto Zoo Logo"
+               alt="{{ site.logoAlt }}"
                class="top-bar-logo"
             >
          </div>
 
          <main class="map-layout">
             <!-- LEFT PANEL: Explore menu -->
-            <aside class="side-panel left" aria-label="Explore menu">
+            <aside class="side-panel left" aria-label="{{ site.map.exploreMenuAria }}">
                <div class="side-panel-header">
-                  <h2 class="side-panel-title">Explore</h2>
+                  <h2 class="side-panel-title">{{ site.map.exploreTitle }}</h2>
                </div>
 
                <div class="side-panel-body">
@@ -40,59 +41,59 @@
                   <div class="side-panel-toggle">
                      <label class="toggle-row">
                         <input id="showMapLabels" type="checkbox" checked>
-                        <span>Show region/pavilion text</span>
+                        <span>{{ site.map.toggleLabels.showMapLabels }}</span>
                      </label>
 
                      <label class="toggle-row">
                         <input id="includeOffDisplayAnimals" type="checkbox">
-                        <span>Include off display animals</span>
+                        <span>{{ site.map.toggleLabels.includeOffDisplayAnimals }}</span>
                      </label>
 
                      <label class="toggle-row">
                         <input id="includeClosedRestaurants" type="checkbox">
-                        <span>Include closed restaurants</span>
+                        <span>{{ site.map.toggleLabels.includeClosedRestaurants }}</span>
                      </label>
 
                      <label class="toggle-row">
                         <input id="includeClosedRestrooms" type="checkbox">
-                        <span>Include closed restrooms</span>
+                        <span>{{ site.map.toggleLabels.includeClosedRestrooms }}</span>
                      </label>
 
                      <label class="toggle-row">
                         <input id="includeClosedGiftShops" type="checkbox">
-                        <span>Include closed gift shops</span>
+                        <span>{{ site.map.toggleLabels.includeClosedGiftShops }}</span>
                      </label>
 
                      <label class="toggle-row">
                         <input id="includeClosedAttractions" type="checkbox">
-                        <span>Include closed attractions</span>
+                        <span>{{ site.map.toggleLabels.includeClosedAttractions }}</span>
                      </label>
                   </div>
 
                   <div class="zoomobile-route">
                      <div class="zoomobile-route-title">
-                        Zoomobile route
+                        {{ map.zoomobileRoute.title }}
                      </div>
 
                      <div class="zoomobile-route-options">
                         <label class="zoomobile-route-option">
                            <input type="radio" name="zoomobileRoute" value="none" checked>
-                           <span>None</span>
+                           <span>{{ map.zoomobileRoute.none }}</span>
                         </label>
 
                         <label class="zoomobile-route-option">
                            <input type="radio" name="zoomobileRoute" value="current">
-                           <span>Current Route</span>
+                           <span>{{ site.map.zoomobileRoute.current }}</span>
                         </label>
 
                         <label class="zoomobile-route-option">
                            <input type="radio" name="zoomobileRoute" value="summer">
-                           <span>Summer Route</span>
+                           <span>{{ site.map.zoomobileRoute.summer }}</span>
                         </label>
 
                         <label class="zoomobile-route-option">
                            <input type="radio" name="zoomobileRoute" value="winter">
-                           <span>Winter Route</span>
+                           <span>{{ site.map.zoomobileRoute.winter }}</span>
                         </label>
                      </div>
                   </div>
@@ -100,66 +101,66 @@
                   <div class="filter-wrapper">
                      <div class="multi-select" id="typeFilter">
                         <button class="multi-select-button" type="button">
-                           <span class="filter-label">Filter:</span>
+                           <span class="filter-label">{{ site.map.filterLabel }}</span>
                            <span class="selected-values"></span>
                         </button>
 
                         <div class="multi-select-dropdown">
                            <label>
                               <input type="checkbox" value="animal" checked>
-                              Animals
+                              {{ site.nav.animals }}
                            </label>
                            <label>
                               <input type="checkbox" value="pavilion">
-                              Pavilions
+                              {{ site.map.filterTypes.pavilion }}
                            </label>
                            <label>
                               <input type="checkbox" value="restaurant">
-                              Restaurants
+                              {{ site.map.filterTypes.restaurant }}
                            </label>
                            <label>
                               <input type="checkbox" value="restroom">
-                              Restrooms
+                              {{ site.map.filterTypes.restroom }}
                            </label>
                            <label>
                               <input type="checkbox" value="giftShop">
-                              Gift Shops
+                              {{ site.map.filterTypes.giftShop }}
                            </label>
                            <label>
                               <input type="checkbox" value="attraction">
-                              Attractions
+                              {{ map.filter.attractions }}
                            </label>
                            <label>
                               <input type="checkbox" value="guardiansTalk">
-                              Meet The Guardians Talks
+                              {{ site.map.filterTypes.guardiansTalk }}
                            </label>
                            <label>
                               <input type="checkbox" value="wildEncounter">
-                              Wild Encounters
+                              {{ site.nav.wildEncounters }}
                            </label>
                            <label>
                               <input type="checkbox" value="drinkingFountain">
-                              Drinking Fountains
+                              {{ site.map.filterTypes.drinkingFountain }}
                            </label>
                            <label>
                               <input type="checkbox" value="defibrillator">
-                              Defibrillators
+                              {{ site.map.filterTypes.defibrillator }}
                            </label>
                            <label>
                               <input type="checkbox" value="emergencyIntercom">
-                              Emergency Intercoms
+                              {{ site.map.filterTypes.emergencyIntercom }}
                            </label>
                            <label>
                               <input type="checkbox" value="guestService">
-                              Guest Services
+                              {{ site.map.filterTypes.guestService }}
                            </label>
                            <label>
                               <input type="checkbox" value="picnicSite">
-                              Picnic Sites
+                              {{ site.map.filterTypes.picnicSite }}
                            </label>
                            <label>
                               <input type="checkbox" value="eventSite">
-                              Event Sites
+                              {{ site.map.filterTypes.eventSite }}
                            </label>
                         </div>
                      </div>
@@ -167,12 +168,12 @@
 
                   <!-- Search -->
                   <div class="side-panel-search">
-                     <label for="animalSearch" class="sr-only">Search animals</label>
+                     <label for="animalSearch" class="sr-only">{{ site.map.searchAnimals }}</label>
                      <input
                         id="animalSearch"
                         class="animal-search"
                         type="text"
-                        placeholder="Search..."
+                        placeholder="{{ itinerary.searchPlaceholder }}"
                         autocomplete="off"
                      >
                   </div>
@@ -182,13 +183,13 @@
 
                   <section class="explore-updates" aria-labelledby="exploreUpdatesTitle" hidden>
                      <div class="explore-updates-header">
-                        <h3 id="exploreUpdatesTitle" class="explore-updates-title">Updates</h3>
+                        <h3 id="exploreUpdatesTitle" class="explore-updates-title">{{ site.map.updates.title }}</h3>
                         <button
                            type="button"
                            id="exploreUpdatesToggle"
                            class="explore-updates-toggle"
                            aria-controls="exploreUpdatesList"
-                           aria-label="Hide updates"
+                           aria-label="{{ map.hideUpdates }}"
                            aria-expanded="true"
                         >
                         </button>
@@ -203,18 +204,18 @@
                <!-- Dropdown container -->
                <div class="map-controls">
                   <select id="mapPreset">
-                     <option value="" disabled hidden>Select a map</option>
-                     <option value="summer">Summer Map</option>
-                     <option value="winter">Winter Map</option>
-                     <option value="specific-day" selected>Specific Map</option>
+                     <option value="" disabled hidden>{{ site.map.mapPresetPlaceholder }}</option>
+                     <option value="summer">{{ site.map.mapPresets.summer }}</option>
+                     <option value="winter">{{ site.map.mapPresets.winter }}</option>
+                     <option value="specific-day" selected>{{ site.map.mapPresets.specificDay }}</option>
                   </select>
 
                   <!-- Date picker only relevant if "Specific Map" is selected -->
-                  <input type="text" id="mapDate" placeholder="Select a date">
+                  <input type="text" id="mapDate" placeholder="{{ placeholders.date }}">
                </div>
 
                <div id="mapInner">
-                  <div id="zooMapMount" aria-label="Toronto Zoo Map"></div>
+                  <div id="zooMapMount" aria-label="{{ site.map.mapAria }}"></div>
 
                   <!-- markers injected here -->
                </div>
@@ -234,11 +235,11 @@
          <!-- Bottom navigation menu -->
          <nav>
             <ul>
-               <li><a href="map.html">Map</a></li>
-               <li><a href="animals.html">Animals</a></li>
-               <li><a href="https://www.torontozoo.com/meettheguardians">Meet The Guardians</a></li>
-               <li><a href="https://www.torontozoo.com/wildencounters">Wild Encounters</a></li>
-               <li><a href="itinerary.html">Itinerary</a></li>
+               <li><a href="map.html">{{ site.nav.map }}</a></li>
+               <li><a href="animals.html">{{ site.nav.animals }}</a></li>
+               <li><a href="https://www.torontozoo.com/meettheguardians">{{ site.nav.meetTheGuardians }}</a></li>
+               <li><a href="https://www.torontozoo.com/wildencounters">{{ site.nav.wildEncounters }}</a></li>
+               <li><a href="itinerary.html">{{ site.nav.itinerary }}</a></li>
             </ul>
          </nav>
       </div>

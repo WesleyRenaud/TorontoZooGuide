@@ -1,8 +1,66 @@
 export const site = {
+   consoleOperations: {
+      description: 'Choose an operation to manage animal visibility, exhibits, restaurants, attractions, and scheduled zoo experiences.',
+      menuAria: 'Operations menu',
+      operations: 'Operations',
+   },
+   decorations: {
+      leftAlt: 'Left decoration',
+      rightAlt: 'Right decoration',
+   },
+   logoAlt: 'Toronto Zoo Logo',
+   map: {
+      exploreMenuAria: 'Explore menu',
+      exploreTitle: 'Explore',
+      filterLabel: 'Filter:',
+      filterTypes: {
+         defibrillator: 'Defibrillators',
+         drinkingFountain: 'Drinking Fountains',
+         emergencyIntercom: 'Emergency Intercoms',
+         eventSite: 'Event Sites',
+         giftShop: 'Gift Shops',
+         guestService: 'Guest Services',
+         guardiansTalk: 'Meet The Guardians Talks',
+         pavilion: 'Pavilions',
+         picnicSite: 'Picnic Sites',
+         restaurant: 'Restaurants',
+         restroom: 'Restrooms',
+      },
+      mapAria: 'Toronto Zoo Map',
+      mapPresetPlaceholder: 'Select a map',
+      mapPresets: {
+         summer: 'Summer Map',
+         winter: 'Winter Map',
+         specificDay: 'Specific Map',
+      },
+      searchAnimals: 'Search animals',
+      toggleLabels: {
+         includeClosedAttractions: 'Include closed attractions',
+         includeClosedGiftShops: 'Include closed gift shops',
+         includeClosedRestaurants: 'Include closed restaurants',
+         includeClosedRestrooms: 'Include closed restrooms',
+         includeOffDisplayAnimals: 'Include off display animals',
+         showMapLabels: 'Show region/pavilion text',
+      },
+      updates: {
+         title: 'Updates',
+      },
+      zoomobileRoute: {
+         current: 'Current Route',
+         summer: 'Summer Route',
+         winter: 'Winter Route',
+      },
+   },
    nav: {
       animals: 'Animals',
+      itinerary: 'Itinerary',
+      map: 'Map',
       meetTheGuardians: 'Meet The Guardians',
       wildEncounters: 'Wild Encounters',
+   },
+   titles: {
+      guide: 'Toronto Zoo Guide',
+      operationsConsole: 'Toronto Zoo Operations Console',
    },
 };
 
