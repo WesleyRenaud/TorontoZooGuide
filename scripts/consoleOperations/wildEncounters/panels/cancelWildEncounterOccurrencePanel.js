@@ -4,26 +4,27 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createCancelWildEncounterOccurrencePanel() {
    return createPanelShell({
       panelId: 'cancelWildEncounterOccurrencePanel',
-      title: 'Cancel Wild Encounter occurrence',
+      title: APP_STRINGS.panelTitles.cancelWildEncounterOccurrence,
       bodyChildren: [
          createSelectField({
-            label: 'Wild Encounter',
+            label: APP_STRINGS.entityLabels.wildEncounter,
             inputId: 'cancelWildEncounterOccurrenceName',
-            emptyOptionLabel: 'Select a Wild Encounter',
+            emptyOptionLabel: APP_STRINGS.placeholders.wildEncounter,
          }),
          createSelectField({
-            label: 'Date',
+            label: APP_STRINGS.labels.date,
             inputId: 'cancelWildEncounterOccurrenceDate',
-            emptyOptionLabel: 'Select a date',
+            emptyOptionLabel: APP_STRINGS.placeholders.date,
          }),
          createSelectField({
-            label: 'Time',
+            label: APP_STRINGS.labels.time,
             inputId: 'cancelWildEncounterOccurrenceTime',
-            emptyOptionLabel: 'Select a time',
+            emptyOptionLabel: APP_STRINGS.placeholders.time,
          }),
          createActions({
             submitId: 'submitCancelWildEncounterOccurrence',

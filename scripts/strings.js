@@ -1,0 +1,51 @@
+import {
+   actions,
+   common,
+   entityLabels,
+   labels,
+   likelihood,
+   schedule,
+} from './strings/common.js';
+import {
+   animalsPage,
+   site,
+} from './strings/pages.js';
+import { itinerary } from './strings/itinerary.js';
+import {
+   map,
+   search,
+   tooltips,
+} from './strings/map.js';
+import {
+   help,
+   loadErrors,
+   panelTitles,
+   placeholders,
+   status,
+   textareas,
+   updateTypes,
+   validation,
+} from './strings/console.js';
+
+export const APP_STRINGS = {
+   actions,
+   common,
+   site,
+   animalsPage,
+   itinerary,
+   help,
+   loadErrors,
+   labels,
+   likelihood,
+   map,
+   placeholders,
+   textareas,
+   panelTitles,
+   search,
+   schedule,
+   status,
+   tooltips,
+   updateTypes,
+   entityLabels,
+   validation,
+};

@@ -1,4 +1,5 @@
 import { setStatus } from '../shell/status.js';
+import { APP_STRINGS } from '../../strings.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
@@ -19,10 +20,10 @@ export function createEntityOpenFormController({
    loadOptions,
    populateOptions,
    submitOpenStatus,
-   entityLabel = 'Item',
-   optionsLabel = 'items',
-   loadErrorMessage = `Failed to load ${optionsLabel}.`,
-   successMessage = () => `${entityLabel} was set as open.`,
+   entityLabel = APP_STRINGS.entityLabels.item,
+   optionsLabel = APP_STRINGS.entityLabels.items,
+   loadErrorMessage = APP_STRINGS.loadErrors.entityOptions(optionsLabel),
+   successMessage = () => APP_STRINGS.status.open(entityLabel),
 } = {}) {
    const formFieldEls = [entityEl, startDateEl, endDateEl];
    const hasDateRange = Boolean(startDateEl || endDateEl);
@@ -41,7 +42,7 @@ export function createEntityOpenFormController({
 
    function validateForm({ entity, startDate, endDate }) {
       if (!entity) {
-         return `${entityLabel} is required.`;
+         return APP_STRINGS.validation.entityRequired(entityLabel);
       }
 
       if (!hasDateRange) {
@@ -111,11 +112,11 @@ export function createEntityOpenFormController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

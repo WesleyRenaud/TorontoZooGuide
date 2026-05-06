@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import { loadAttractions } from '../../options/loaders.js';
 import { populateAttractionDropdown } from '../../options/dropdowns.js';
 import { setAttractionClosed } from '../../../api/consoleOperationsApi.js';
@@ -18,8 +19,8 @@ export function createAttractionClosedController({
          endDate: endDate || null,
          message,
       }),
-      entityLabel: 'Attraction',
-      optionsLabel: 'attractions',
-      successMessage: result => `${result.attraction} was set as closed.`,
+      entityLabel: APP_STRINGS.entityLabels.attraction,
+      optionsLabel: APP_STRINGS.entityLabels.attractions,
+      successMessage: result => APP_STRINGS.status.closed(result.attraction),
    });
 }

@@ -5,22 +5,25 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createDrinkingFountainsClosedPanel() {
    return createPanelShell({
       panelId: 'drinkingFountainsClosedPanel',
-      title: 'Close drinking fountains',
+      title: APP_STRINGS.panelTitles.drinkingFountainsClosed,
       bodyChildren: [
          createDateRangeFields({
             startDateId: 'drinkingFountainsClosedStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'drinkingFountainsClosedEndDate',
-            endHelpText: 'Leave blank to continue until the drinking fountains are reopened.',
+            endHelpText: APP_STRINGS.help.continueUntilReopened(
+               'drinking fountains'
+            ),
          }),
          createTextareaField({
-            label: 'Closed message',
+            label: APP_STRINGS.labels.closedMessage,
             inputId: 'drinkingFountainsClosedMessage',
-            placeholder: 'Optional message shown while drinking fountains are closed',
+            placeholder: APP_STRINGS.textareas.drinkingFountainsClosedMessage,
          }),
          createActions({
             submitId: 'submitDrinkingFountainsClosed',

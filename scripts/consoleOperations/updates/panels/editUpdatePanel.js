@@ -6,39 +6,34 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createEditUpdatePanel() {
    return createPanelShell({
       panelId: 'editUpdatePanel',
-      title: 'Edit update',
+      title: APP_STRINGS.panelTitles.editUpdate,
       bodyChildren: [
          createSelectField({
-            label: 'Update',
+            label: APP_STRINGS.labels.update,
             inputId: 'editUpdateKey',
-            emptyOptionLabel: 'Select an update',
+            emptyOptionLabel: APP_STRINGS.placeholders.update,
          }),
          createTextareaField({
-            label: 'Description',
+            label: APP_STRINGS.labels.description,
             inputId: 'editUpdateDescription',
-            placeholder: 'Leave blank to keep the current description',
+            placeholder: APP_STRINGS.textareas.currentDescription,
          }),
          createSelectField({
-            label: 'Type',
+            label: APP_STRINGS.labels.type,
             inputId: 'editUpdateType',
-            emptyOptionLabel: 'Keep current type',
-            options: [
-               { value: 'Animal Birth', label: 'Animal Birth' },
-               { value: 'Animal Passing', label: 'Animal Passing' },
-               { value: 'Closure', label: 'Closure' },
-               { value: 'New Arrival', label: 'New Arrival' },
-               { value: 'Departure', label: 'Departure' },
-            ],
+            emptyOptionLabel: APP_STRINGS.placeholders.keepCurrentType,
+            options: APP_STRINGS.updateTypes,
          }),
          createDateField({
-            label: 'End date',
+            label: APP_STRINGS.labels.endDate,
             inputId: 'editUpdateEndDate',
-            placeholder: 'Select a new end date',
-            helpText: 'Leave blank to keep the current end date.',
+            placeholder: APP_STRINGS.placeholders.newEndDate,
+            helpText: APP_STRINGS.help.keepCurrentEndDate,
          }),
          createActions({
             submitId: 'submitEditUpdate',

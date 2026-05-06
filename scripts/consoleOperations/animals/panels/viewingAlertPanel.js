@@ -7,33 +7,34 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createViewingAlertPanel() {
    return createPanelShell({
       panelId: 'viewingAlertPanel',
-      title: 'Set animal viewing alert',
+      title: APP_STRINGS.panelTitles.viewingAlert,
       bodyChildren: [
          createSelectField({
-            label: 'Exhibit',
+            label: APP_STRINGS.entityLabels.exhibit,
             inputId: 'viewingAlertExhibit',
-            emptyOptionLabel: 'Select an exhibit',
+            emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
          }),
          createAutocompleteField({
-            label: 'Species',
+            label: APP_STRINGS.labels.species,
             inputId: 'viewingAlertSpecies',
             resultsId: 'viewingAlertSpeciesResults',
-            placeholder: 'Search for a species',
+            placeholder: APP_STRINGS.placeholders.speciesSearch,
          }),
          createDateRangeFields({
             startDateId: 'viewingAlertStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'viewingAlertEndDate',
-            endHelpText: 'Leave blank to keep the viewing alert active until manually removed.',
+            endHelpText: APP_STRINGS.help.keepAlertActiveUntilRemoved,
          }),
          createTextareaField({
-            label: 'Alert message',
+            label: APP_STRINGS.labels.alertMessage,
             inputId: 'viewingAlertMessage',
-            placeholder: 'Enter the viewing alert shown to guests',
+            placeholder: APP_STRINGS.textareas.viewingAlert,
          }),
          createActions({
             submitId: 'submitViewingAlert',

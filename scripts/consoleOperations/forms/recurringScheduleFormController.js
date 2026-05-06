@@ -1,4 +1,5 @@
 import { setStatus } from '../shell/status.js';
+import { APP_STRINGS } from '../../strings.js';
 import {
    hasCheckedField,
    hideConsolePanel,
@@ -22,11 +23,11 @@ export function createRecurringScheduleFormController({
    getSelectionValues,
    validateSelection = null,
    prepareForm = null,
-   loadErrorMessage = 'Failed to load options.',
+   loadErrorMessage = APP_STRINGS.loadErrors.options,
    submitSchedule,
-   successMessage = () => 'Schedule was saved.',
-   timeRequiredMessage = 'Time is required.',
-   noDaysSelectedMessage = 'At least one day must be selected.',
+   successMessage = () => APP_STRINGS.status.scheduleWasSaved,
+   timeRequiredMessage = APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.time),
+   noDaysSelectedMessage = APP_STRINGS.validation.oneDay,
 } = {}) {
    const recurringFieldEls = [
       startDateEl,
@@ -134,11 +135,11 @@ export function createRecurringScheduleFormController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

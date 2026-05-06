@@ -1,4 +1,6 @@
 import { setRestroomAlert } from '../../../api/consoleOperationsApi.js';
+import { APP_STRINGS } from '../../../strings.js';
+// TO-DO: Enforce rule for how to write imports in terms of the number of lines the brackets spread across
 import {
    loadRestrooms,
 } from '../../options/loaders.js';
@@ -47,11 +49,11 @@ export function createRestroomAlertController({
       message,
    }) {
       if (!restroom) {
-         return 'Restroom is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.restroom);
       }
 
       if (!message) {
-         return 'Alert message is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.alertMessage);
       }
 
       return validateOptionalDateRange(startDate, endDate);
@@ -71,7 +73,7 @@ export function createRestroomAlertController({
          resetForm,
          activatePanel,
          panelEl,
-         errorMessage: 'Failed to load restrooms.',
+         errorMessage: APP_STRINGS.loadErrors.restrooms,
       });
    }
 
@@ -126,11 +128,11 @@ export function createRestroomAlertController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

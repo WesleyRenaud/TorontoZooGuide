@@ -6,27 +6,28 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestroomClosedPanel() {
    return createPanelShell({
       panelId: 'restroomClosedPanel',
-      title: 'Set restroom as closed',
+      title: APP_STRINGS.panelTitles.restroomClosed,
       bodyChildren: [
          createSelectField({
-            label: 'Restroom',
+            label: APP_STRINGS.entityLabels.restroom,
             inputId: 'restroomClosedRestroom',
-            emptyOptionLabel: 'Select a restroom',
+            emptyOptionLabel: APP_STRINGS.placeholders.restroom,
          }),
          createDateRangeFields({
             startDateId: 'restroomClosedStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'restroomClosedEndDate',
-            endHelpText: 'Leave blank to continue until the restroom is reopened.',
+            endHelpText: APP_STRINGS.help.continueUntilReopened('restroom'),
          }),
          createTextareaField({
-            label: 'Closed message',
+            label: APP_STRINGS.labels.closedMessage,
             inputId: 'restroomClosedMessage',
-            placeholder: 'Enter the message shown when the restroom is closed',
+            placeholder: APP_STRINGS.textareas.closedMessage('restroom'),
          }),
          createActions({
             submitId: 'submitRestroomClosed',

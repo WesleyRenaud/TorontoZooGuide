@@ -6,26 +6,27 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createGiftShopClosedPanel() {
    return createPanelShell({
       panelId: 'giftShopClosedPanel',
-      title: 'Set gift shop as closed',
+      title: APP_STRINGS.panelTitles.giftShopClosed,
       bodyChildren: [
          createSelectField({
-            label: 'Gift shop',
+            label: APP_STRINGS.entityLabels.giftShop,
             inputId: 'giftShopClosedGiftShop',
-            emptyOptionLabel: 'Select a gift shop',
+            emptyOptionLabel: APP_STRINGS.placeholders.giftShop,
          }),
          createDateRangeFields({
             startDateId: 'giftShopClosedStartDate',
             endDateId: 'giftShopClosedEndDate',
-            endHelpText: 'Leave blank to continue until the gift shop is reopened.',
+            endHelpText: APP_STRINGS.help.continueUntilReopened('gift shop'),
          }),
          createTextareaField({
-            label: 'Closed message',
+            label: APP_STRINGS.labels.closedMessage,
             inputId: 'giftShopClosedMessage',
-            placeholder: 'Enter the message shown when the gift shop is closed',
+            placeholder: APP_STRINGS.textareas.closedMessage('gift shop'),
          }),
          createActions({
             submitId: 'submitGiftShopClosed',

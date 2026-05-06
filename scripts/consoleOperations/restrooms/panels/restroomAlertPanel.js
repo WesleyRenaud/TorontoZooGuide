@@ -6,27 +6,28 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestroomAlertPanel() {
    return createPanelShell({
       panelId: 'restroomAlertPanel',
-      title: 'Set restroom alert',
+      title: APP_STRINGS.panelTitles.restroomAlert,
       bodyChildren: [
          createSelectField({
-            label: 'Restroom',
+            label: APP_STRINGS.entityLabels.restroom,
             inputId: 'restroomAlertRestroom',
-            emptyOptionLabel: 'Select a restroom',
+            emptyOptionLabel: APP_STRINGS.placeholders.restroom,
          }),
          createDateRangeFields({
             startDateId: 'restroomAlertStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'restroomAlertEndDate',
-            endHelpText: 'Leave blank to keep the alert active until manually removed.',
+            endHelpText: APP_STRINGS.help.keepAlertActiveUntilRemoved,
          }),
          createTextareaField({
-            label: 'Alert message',
+            label: APP_STRINGS.labels.alertMessage,
             inputId: 'restroomAlertMessage',
-            placeholder: 'Example: Women\'s restroom is temporarily unavailable',
+            placeholder: APP_STRINGS.placeholders.restroomAlertExample,
          }),
          createActions({
             submitId: 'submitRestroomAlert',

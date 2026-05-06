@@ -5,22 +5,23 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createExhibitOpenPanel() {
    return createPanelShell({
       panelId: 'exhibitOpenPanel',
-      title: 'Set exhibit as open',
+      title: APP_STRINGS.panelTitles.exhibitOpen,
       bodyChildren: [
          createSelectField({
-            label: 'Exhibit',
+            label: APP_STRINGS.entityLabels.exhibit,
             inputId: 'exhibitOpenExhibit',
-            emptyOptionLabel: 'Select an exhibit',
+            emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
          }),
          createDateRangeFields({
             startDateId: 'exhibitOpenStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'exhibitOpenEndDate',
-            endHelpText: 'Leave blank to keep the exhibit explicitly open until it is changed.',
+            endHelpText: APP_STRINGS.help.keepExplicitlyOpenUntilChanged('exhibit'),
          }),
          createActions({
             submitId: 'submitExhibitOpen',

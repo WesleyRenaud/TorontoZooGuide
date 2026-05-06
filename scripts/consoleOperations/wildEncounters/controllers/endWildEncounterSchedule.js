@@ -1,4 +1,5 @@
 import { loadWildEncounters } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
 import { endWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
 import { resetFormFields } from '../../helpers/controllerUtils.js';
@@ -15,7 +16,7 @@ export function createEndWildEncounterScheduleController({
 
    function validateSelection({ wildEncounter }) {
       if (!wildEncounter) {
-         return 'Wild Encounter is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.wildEncounter);
       }
 
       return null;
@@ -46,8 +47,8 @@ export function createEndWildEncounterScheduleController({
       }),
       validateSelection,
       prepareForm,
-      loadErrorMessage: 'Failed to load Wild Encounters.',
+      loadErrorMessage: APP_STRINGS.loadErrors.wildEncounters,
       submitEndSchedule,
-      successMessage: result => `${result.wildEncounter} schedule was ended.`,
+      successMessage: result => APP_STRINGS.status.scheduleEnded(result.wildEncounter),
    });
 }

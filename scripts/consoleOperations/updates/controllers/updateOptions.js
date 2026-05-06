@@ -1,4 +1,5 @@
 import { getActiveUpdateOptions } from '../../../api/consoleOperationsApi.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 function createPlaceholderOption(label) {
    const optionEl = document.createElement('option');
@@ -30,7 +31,7 @@ export function populateUpdateDropdown(selectEl, updates = []) {
    }
 
    const fragment = document.createDocumentFragment();
-   fragment.appendChild(createPlaceholderOption('Select an update'));
+   fragment.appendChild(createPlaceholderOption(APP_STRINGS.placeholders.update));
 
    updates.forEach((update) => {
       const optionEl = document.createElement('option');

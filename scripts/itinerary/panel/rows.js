@@ -7,14 +7,13 @@ import {
 
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { makeItemRow } from './components/itemRow.js';
+import { APP_STRINGS } from '../../strings.js';
 import {
    buildAnimalAlert,
    buildAttractionRemovalReasonLine,
    buildGuardiansRemovalReasonLine,
    buildWildRemovalReasonLine,
 } from './rowAlerts.js';
-
-const MORE_INFO_LINK_TEXT = 'More Info';
 
 function buildImageSrc(...pathParts) {
    const normalizedParts = pathParts
@@ -42,7 +41,7 @@ function buildLinkRowProps(link) {
    }
 
    return {
-      linkText: MORE_INFO_LINK_TEXT,
+      linkText: APP_STRINGS.common.moreInfo,
       onLinkClick: () => window.open(link, '_blank'),
    };
 }

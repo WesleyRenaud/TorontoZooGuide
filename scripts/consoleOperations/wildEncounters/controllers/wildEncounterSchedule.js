@@ -1,4 +1,5 @@
 import { loadWildEncounters } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
 import { setWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
 import {
@@ -39,7 +40,7 @@ export function createWildEncounterScheduleController({
       wildEncounter,
    }) {
       if (!wildEncounter) {
-         return 'Wild Encounter is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.wildEncounter);
       }
 
       return null;
@@ -90,9 +91,9 @@ export function createWildEncounterScheduleController({
       }),
       validateSelection,
       prepareForm,
-      loadErrorMessage: 'Failed to load Wild Encounters.',
+      loadErrorMessage: APP_STRINGS.loadErrors.wildEncounters,
       submitSchedule,
-      successMessage: result => `${result.wildEncounter} schedule was saved.`,
-      timeRequiredMessage: 'Encounter time is required.',
+      successMessage: result => APP_STRINGS.status.scheduleSaved(result.wildEncounter),
+      timeRequiredMessage: APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.encounterTime),
    });
 }

@@ -6,27 +6,28 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createZoomobileStationClosedPanel() {
    return createPanelShell({
       panelId: 'zoomobileStationClosedPanel',
-      title: 'Set zoomobile station as closed',
+      title: APP_STRINGS.panelTitles.zoomobileStationClosed,
       bodyChildren: [
          createSelectField({
-            label: 'Zoomobile Station',
+            label: APP_STRINGS.entityLabels.zoomobileStation,
             inputId: 'zoomobileStationClosedZoomobileStation',
-            emptyOptionLabel: 'Select a zoomobile station',
+            emptyOptionLabel: APP_STRINGS.placeholders.zoomobileStation,
          }),
          createDateRangeFields({
             startDateId: 'zoomobileStationClosedStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'zoomobileStationClosedEndDate',
-            endHelpText: 'Leave blank to keep the zoomobile station closed until it is manually reopened.',
+            endHelpText: APP_STRINGS.help.keepClosedUntilManuallyReopened('zoomobile station'),
          }),
          createTextareaField({
-            label: 'Closure message',
+            label: APP_STRINGS.labels.closureMessage,
             inputId: 'zoomobileStationClosedMessage',
-            placeholder: 'Enter the closure message shown to guests',
+            placeholder: APP_STRINGS.textareas.closureMessage,
          }),
          createActions({
             submitId: 'submitZoomobileStationClosed',

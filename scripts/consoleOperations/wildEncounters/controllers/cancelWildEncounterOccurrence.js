@@ -1,4 +1,5 @@
 import { loadWildEncounters } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
 import { setStatus } from '../../shell/status.js';
 import { cancelWildEncounterOccurrence } from '../../../api/consoleOperationsApi.js';
@@ -63,15 +64,15 @@ export function createCancelWildEncounterOccurrenceController({
 
    function validateForm({ wildEncounter, date, time }) {
       if (!wildEncounter) {
-         return 'Wild Encounter is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.wildEncounter);
       }
 
       if (!date) {
-         return 'Date is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.date);
       }
 
       if (!time) {
-         return 'Time is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.time);
       }
 
       return null;
@@ -105,7 +106,7 @@ export function createCancelWildEncounterOccurrenceController({
          resetForm,
          activatePanel,
          panelEl,
-         errorMessage: 'Failed to load Wild Encounters.',
+         errorMessage: APP_STRINGS.loadErrors.wildEncounters,
       });
    }
 
@@ -128,11 +129,11 @@ export function createCancelWildEncounterOccurrenceController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

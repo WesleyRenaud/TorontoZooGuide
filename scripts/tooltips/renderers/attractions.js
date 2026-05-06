@@ -1,11 +1,12 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { APP_STRINGS } from '../../strings.js';
 import { createTooltipCard } from './cardFactory.js';
 
 export const attractionRenderer = {
    key: 'attraction',
 
    createCard(a, index) {
-      const name = a.name || 'Attraction';
+      const name = a.name || APP_STRINGS.entityLabels.attraction;
       const normalizedName = normalizeAssetKey(name);
 
       return createTooltipCard({
@@ -17,14 +18,18 @@ export const attractionRenderer = {
          },
          title: { text: name },
          details: [
-            a.free_with_admission ? 'Free With Admission' : 'Extra Charge',
-            a.seasonal_schedule ? `Seasonal Schedule: ${a.seasonal_schedule}` : '',
-            a.description ? `Description: ${a.description}` : '',
+            a.free_with_admission
+               ? APP_STRINGS.search.freeWithAdmission
+               : APP_STRINGS.search.extraCharge,
+            a.seasonal_schedule
+               ? APP_STRINGS.tooltips.seasonalSchedule(a.seasonal_schedule)
+               : '',
+            a.description ? APP_STRINGS.tooltips.description(a.description) : '',
          ],
          links: a.info_link
             ? [{
                href: a.info_link,
-               text: a.hyperlink_text || 'More Info',
+               text: a.hyperlink_text || APP_STRINGS.common.moreInfo,
                className: 'gift-shop-link',
             }]
             : [],

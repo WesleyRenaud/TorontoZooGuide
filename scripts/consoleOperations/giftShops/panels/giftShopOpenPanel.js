@@ -8,25 +8,26 @@ import {
    createTextareaField,
    createWeeklyScheduleCheckboxes,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createGiftShopOpenPanel() {
    return createPanelShell({
       panelId: 'giftShopOpenPanel',
-      title: 'Set gift shop as open',
+      title: APP_STRINGS.panelTitles.giftShopOpen,
       bodyChildren: [
          createSelectField({
-            label: 'Gift shop',
+            label: APP_STRINGS.entityLabels.giftShop,
             inputId: 'giftShopOpenGiftShop',
-            emptyOptionLabel: 'Select a gift shop',
+            emptyOptionLabel: APP_STRINGS.placeholders.giftShop,
          }),
          createSchedulePresetField({
             inputId: 'giftShopOpenPreset',
          }),
          createDateRangeFields({
             startDateId: 'giftShopOpenStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'giftShopOpenEndDate',
-            endHelpText: 'Leave blank to keep this schedule active until it is changed.',
+            endHelpText: APP_STRINGS.help.keepScheduleUntilChanged,
          }),
          createWeeklyScheduleCheckboxes({
             dayIds: {
@@ -41,9 +42,9 @@ export function createGiftShopOpenPanel() {
             },
          }),
          createTextareaField({
-            label: 'Schedule message',
+            label: APP_STRINGS.labels.scheduleMessage,
             inputId: 'giftShopOpenMessage',
-            placeholder: 'Enter the message shown when the gift shop is closed outside this schedule',
+            placeholder: APP_STRINGS.textareas.scheduledClosedMessage('gift shop'),
          }),
          createActions({
             submitId: 'submitGiftShopOpen',

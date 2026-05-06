@@ -8,45 +8,46 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createVisibilitySchedulePanel() {
    return createPanelShell({
       panelId: 'visibilitySchedulePanel',
-      title: 'Set animal visibility schedule',
+      title: APP_STRINGS.panelTitles.visibilitySchedule,
       bodyChildren: [
          createSelectField({
-            label: 'Exhibit',
+            label: APP_STRINGS.entityLabels.exhibit,
             inputId: 'visibilityScheduleExhibit',
-            emptyOptionLabel: 'Select an exhibit',
+            emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
          }),
          createAutocompleteField({
-            label: 'Species',
+            label: APP_STRINGS.labels.species,
             inputId: 'visibilityScheduleSpecies',
             resultsId: 'visibilityScheduleSpeciesResults',
-            placeholder: 'Search for a species',
+            placeholder: APP_STRINGS.placeholders.speciesSearch,
          }),
          createDateRangeFields({
             startDateId: 'visibilityScheduleStartDate',
-            startLabel: 'Schedule start date',
-            startHelpText: 'Leave blank to start immediately.',
+            startLabel: APP_STRINGS.labels.scheduleStartDate,
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'visibilityScheduleEndDate',
-            endLabel: 'Schedule end date',
-            endHelpText: 'Leave blank to keep this visibility schedule in place until manually changed.',
+            endLabel: APP_STRINGS.labels.scheduleEndDate,
+            endHelpText: APP_STRINGS.help.keepVisibilityScheduleUntilChanged,
          }),
          createDateField({
-            label: 'Daily viewing start time',
+            label: APP_STRINGS.labels.dailyViewingStartTime,
             inputId: 'visibilityScheduleDailyStartTime',
-            placeholder: 'Select a daily start time',
+            placeholder: APP_STRINGS.placeholders.dailyStartTime,
          }),
          createDateField({
-            label: 'Daily viewing end time',
+            label: APP_STRINGS.labels.dailyViewingEndTime,
             inputId: 'visibilityScheduleDailyEndTime',
-            placeholder: 'Select a daily end time',
+            placeholder: APP_STRINGS.placeholders.dailyEndTime,
          }),
          createTextareaField({
-            label: 'Message',
+            label: APP_STRINGS.labels.message,
             inputId: 'visibilityScheduleMessage',
-            placeholder: 'Enter the viewing message shown to guests',
+            placeholder: APP_STRINGS.textareas.viewingMessage,
          }),
          createActions({
             submitId: 'submitVisibilitySchedule',

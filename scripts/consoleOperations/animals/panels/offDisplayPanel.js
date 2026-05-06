@@ -7,33 +7,34 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createOffDisplayPanel() {
    return createPanelShell({
       panelId: 'offDisplayPanel',
-      title: 'Set animal as off display',
+      title: APP_STRINGS.panelTitles.offDisplay,
       bodyChildren: [
          createSelectField({
-            label: 'Exhibit',
+            label: APP_STRINGS.entityLabels.exhibit,
             inputId: 'offDisplayExhibit',
-            emptyOptionLabel: 'Select an exhibit',
+            emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
          }),
          createAutocompleteField({
-            label: 'Species',
+            label: APP_STRINGS.labels.species,
             inputId: 'offDisplaySpecies',
             resultsId: 'offDisplaySpeciesResults',
-            placeholder: 'Search for a species',
+            placeholder: APP_STRINGS.placeholders.speciesSearch,
          }),
          createDateRangeFields({
             startDateId: 'offDisplayStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'offDisplayEndDate',
-            endHelpText: 'Leave blank to keep the animal off display until it is manually set back on display.',
+            endHelpText: APP_STRINGS.help.keepOffDisplayUntilOnDisplay,
          }),
          createTextareaField({
-            label: 'Reason',
+            label: APP_STRINGS.labels.reason,
             inputId: 'offDisplayMessage',
-            placeholder: 'Enter the reason this animal is off display',
+            placeholder: APP_STRINGS.textareas.offDisplayReason,
          }),
          createActions({
             submitId: 'submitOffDisplay',

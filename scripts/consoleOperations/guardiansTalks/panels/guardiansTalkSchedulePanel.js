@@ -8,48 +8,49 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createGuardiansTalkSchedulePanel() {
    return createPanelShell({
       panelId: 'guardiansTalkSchedulePanel',
-      title: 'Set Meet the Guardians talk schedule',
+      title: APP_STRINGS.panelTitles.guardiansTalkSchedule,
       bodyChildren: [
          createSelectField({
-            label: 'Location',
+            label: APP_STRINGS.labels.location,
             inputId: 'guardiansTalkScheduleLocation',
-            emptyOptionLabel: 'Select an exhibit',
+            emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
          }),
          createSelectField({
-            label: 'Talk name',
+            label: APP_STRINGS.labels.talkName,
             inputId: 'guardiansTalkScheduleTalkName',
-            emptyOptionLabel: 'Select a talk',
+            emptyOptionLabel: APP_STRINGS.placeholders.talk,
          }),
          createDateRangeFields({
             startDateId: 'guardiansTalkScheduleStartDate',
             endDateId: 'guardiansTalkScheduleEndDate',
-            endHelpText: 'Leave blank to continue until the schedule is ended.',
+            endHelpText: APP_STRINGS.help.continueUntilScheduleEnded,
          }),
          createCheckboxGridField({
-            label: 'Occurs on these days',
+            label: APP_STRINGS.labels.occursOnTheseDays,
             options: [
-               { id: 'guardiansTalkScheduleMonday', label: 'Monday' },
-               { id: 'guardiansTalkScheduleTuesday', label: 'Tuesday' },
-               { id: 'guardiansTalkScheduleWednesday', label: 'Wednesday' },
-               { id: 'guardiansTalkScheduleThursday', label: 'Thursday' },
-               { id: 'guardiansTalkScheduleFriday', label: 'Friday' },
-               { id: 'guardiansTalkScheduleSaturday', label: 'Saturday' },
-               { id: 'guardiansTalkScheduleSunday', label: 'Sunday' },
+               { id: 'guardiansTalkScheduleMonday', label: APP_STRINGS.schedule.dayLabels.monday },
+               { id: 'guardiansTalkScheduleTuesday', label: APP_STRINGS.schedule.dayLabels.tuesday },
+               { id: 'guardiansTalkScheduleWednesday', label: APP_STRINGS.schedule.dayLabels.wednesday },
+               { id: 'guardiansTalkScheduleThursday', label: APP_STRINGS.schedule.dayLabels.thursday },
+               { id: 'guardiansTalkScheduleFriday', label: APP_STRINGS.schedule.dayLabels.friday },
+               { id: 'guardiansTalkScheduleSaturday', label: APP_STRINGS.schedule.dayLabels.saturday },
+               { id: 'guardiansTalkScheduleSunday', label: APP_STRINGS.schedule.dayLabels.sunday },
             ],
          }),
          createDateField({
-            label: 'Talk time',
+            label: APP_STRINGS.labels.talkTime,
             inputId: 'guardiansTalkScheduleTime',
-            placeholder: 'Select a talk time',
+            placeholder: APP_STRINGS.placeholders.scheduledTime('a talk'),
          }),
          createTextareaField({
-            label: 'Schedule message',
+            label: APP_STRINGS.labels.scheduleMessage,
             inputId: 'guardiansTalkScheduleMessage',
-            placeholder: 'Enter an optional message for this talk schedule',
+            placeholder: APP_STRINGS.textareas.optionalScheduleMessage('talk'),
          }),
          createActions({
             submitId: 'submitGuardiansTalkSchedule',

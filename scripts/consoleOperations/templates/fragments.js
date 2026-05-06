@@ -1,3 +1,5 @@
+import { APP_STRINGS } from '../../strings.js';
+
 function appendChild(parentEl, child) {
    if (!child) {
       return;
@@ -45,11 +47,11 @@ function createLabel({
 
 function createOption({
    value = '',
-   label = '',
+   label,
 } = {}) {
    const optionEl = document.createElement('option');
    optionEl.value = value;
-   optionEl.textContent = label;
+   optionEl.textContent = label ?? value;
    return optionEl;
 }
 
@@ -145,7 +147,7 @@ export function createSelectField({
 
 export function createSchedulePresetField({
    inputId,
-   label = 'Schedule preset',
+   label = APP_STRINGS.labels.schedulePreset,
 } = {}) {
    const fieldEl = createFieldWrapper();
    const labelEl = createLabel({
@@ -158,10 +160,10 @@ export function createSchedulePresetField({
    selectEl.className = 'console-operations-input console-operations-select';
 
    [
-      { value: 'everyDay', label: 'Every day' },
-      { value: 'custom', label: 'Custom' },
-      { value: 'weekendsOnly', label: 'Weekends only' },
-      { value: 'weekendsAndHolidays', label: 'Weekends + holidays only' },
+      { value: 'everyDay', label: APP_STRINGS.schedule.presetLabels.everyDay },
+      { value: 'custom', label: APP_STRINGS.schedule.presetLabels.custom },
+      { value: 'weekendsOnly', label: APP_STRINGS.schedule.presetLabels.weekendsOnly },
+      { value: 'weekendsAndHolidays', label: APP_STRINGS.schedule.presetLabels.weekendsAndHolidays },
    ].forEach((option) => {
       selectEl.appendChild(createOption(option));
    });
@@ -216,12 +218,12 @@ export function createDateField({
 
 export function createDateRangeFields({
    startDateId,
-   startLabel = 'Start date',
-   startPlaceholder = 'Select a start date',
+   startLabel = APP_STRINGS.labels.startDate,
+   startPlaceholder = APP_STRINGS.placeholders.startDate,
    startHelpText = '',
    endDateId,
-   endLabel = 'End date',
-   endPlaceholder = 'Select an end date',
+   endLabel = APP_STRINGS.labels.endDate,
+   endPlaceholder = APP_STRINGS.placeholders.endDate,
    endHelpText = '',
 } = {}) {
    return createFragment([
@@ -325,22 +327,25 @@ export function createCheckboxGridField({
 }
 
 export function createWeeklyScheduleCheckboxes({
-   label = 'Open on these days',
+   label = APP_STRINGS.labels.openOnTheseDays,
    dayIds = {},
    includeHolidays = true,
 } = {}) {
    const options = [
-      { id: dayIds.monday, label: 'Monday' },
-      { id: dayIds.tuesday, label: 'Tuesday' },
-      { id: dayIds.wednesday, label: 'Wednesday' },
-      { id: dayIds.thursday, label: 'Thursday' },
-      { id: dayIds.friday, label: 'Friday' },
-      { id: dayIds.saturday, label: 'Saturday' },
-      { id: dayIds.sunday, label: 'Sunday' },
+      { id: dayIds.monday, label: APP_STRINGS.schedule.dayLabels.monday },
+      { id: dayIds.tuesday, label: APP_STRINGS.schedule.dayLabels.tuesday },
+      { id: dayIds.wednesday, label: APP_STRINGS.schedule.dayLabels.wednesday },
+      { id: dayIds.thursday, label: APP_STRINGS.schedule.dayLabels.thursday },
+      { id: dayIds.friday, label: APP_STRINGS.schedule.dayLabels.friday },
+      { id: dayIds.saturday, label: APP_STRINGS.schedule.dayLabels.saturday },
+      { id: dayIds.sunday, label: APP_STRINGS.schedule.dayLabels.sunday },
    ];
 
    if (includeHolidays && dayIds.holidays) {
-      options.push({ id: dayIds.holidays, label: 'Holidays' });
+      options.push({
+         id: dayIds.holidays,
+         label: APP_STRINGS.schedule.dayLabels.holidays,
+      });
    }
 
    return createCheckboxGridField({
@@ -388,7 +393,7 @@ export function createRadioGroupField({
 
 export function createActions({
    submitId,
-   submitLabel = 'Save',
+   submitLabel = APP_STRINGS.actions.save,
 } = {}) {
    const actionsEl = document.createElement('div');
    actionsEl.className = 'console-operations-actions';

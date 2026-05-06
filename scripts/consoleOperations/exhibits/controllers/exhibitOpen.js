@@ -1,3 +1,5 @@
+// TO-DO: Create linter rule to order imports alphabetically
+import { APP_STRINGS } from '../../../strings.js';
 import { loadExhibits } from '../../options/loaders.js';
 import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { setExhibitOpen } from '../../../api/consoleOperationsApi.js';
@@ -17,8 +19,8 @@ export function createExhibitOpenController({
          startDate: startDate || null,
          endDate: endDate || null,
       }),
-      entityLabel: 'Exhibit',
-      optionsLabel: 'exhibits',
-      successMessage: result => `${result.exhibit} was set as explicitly open.`,
+      entityLabel: APP_STRINGS.entityLabels.exhibit,
+      optionsLabel: APP_STRINGS.entityLabels.exhibits,
+      successMessage: result => APP_STRINGS.status.explicitlyOpen(result.exhibit),
    });
 }

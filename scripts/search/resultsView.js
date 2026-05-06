@@ -1,3 +1,5 @@
+import { APP_STRINGS } from '../strings.js';
+
 function buildDetailSummary(parts, fallback) {
    const details = parts.filter(Boolean);
 
@@ -10,7 +12,7 @@ function buildDetailSummary(parts, fallback) {
 
 function buildLocationSummary(row, fallback) {
    return [
-      row.location ? `Location: ${row.location}` : null,
+      row.location ? APP_STRINGS.search.location(row.location) : null,
       row.sub_location,
    ]
       .filter(Boolean)
@@ -25,42 +27,54 @@ function buildNamedResultPresentation(fallbackTitle, getSubtitle) {
 }
 
 const DEFAULT_RESULT_PRESENTATION = {
-   getTitle: (row) => row.species || 'Animal',
-   getSubtitle: (row) => row.exhibit ? `Exhibit: ${row.exhibit}` : 'Animal',
+   getTitle: (row) => row.species || APP_STRINGS.entityLabels.animal,
+   getSubtitle: (row) => row.exhibit
+      ? `${APP_STRINGS.entityLabels.exhibit}: ${row.exhibit}`
+      : APP_STRINGS.entityLabels.animal,
 };
 
 const RESULT_PRESENTATIONS = {
    wildEncounter: buildNamedResultPresentation(
-      'Wild Encounter',
-      (row) => buildDetailSummary([row.meeting_spot, row.time_of_day], 'Wild Encounter')
+      APP_STRINGS.entityLabels.wildEncounter,
+      (row) => buildDetailSummary(
+         [row.meeting_spot, row.time_of_day],
+         APP_STRINGS.entityLabels.wildEncounter
+      )
    ),
    guardiansTalk: buildNamedResultPresentation(
-      'Meet The Guardians Talk',
-      (row) => buildDetailSummary([row.location, row.time_of_day], 'Meet The Guardians Talk')
+      APP_STRINGS.entityLabels.guardiansTalk,
+      (row) => buildDetailSummary(
+         [row.location, row.time_of_day],
+         APP_STRINGS.entityLabels.guardiansTalk
+      )
    ),
    zoomobileStation: buildNamedResultPresentation(
-      'Zoomobile Station',
+      APP_STRINGS.entityLabels.zoomobileStation,
       () => null
    ),
    attraction: buildNamedResultPresentation(
-      'Attraction',
-      (row) => row.free_with_admission ? 'Free With Admission' : 'Extra Charge'
+      APP_STRINGS.entityLabels.attraction,
+      (row) => row.free_with_admission
+         ? APP_STRINGS.search.freeWithAdmission
+         : APP_STRINGS.search.extraCharge
    ),
    giftShop: buildNamedResultPresentation(
-      'Gift Shop',
-      (row) => buildLocationSummary(row, 'Gift Shop')
+      APP_STRINGS.entityLabels.giftShop,
+      (row) => buildLocationSummary(row, APP_STRINGS.entityLabels.giftShop)
    ),
    restroom: {
-      getTitle: (row) => row.title || 'Restroom',
+      getTitle: (row) => row.title || APP_STRINGS.entityLabels.restroom,
       getSubtitle: () => null,
    },
    restaurant: buildNamedResultPresentation(
-      'Restaurant',
-      (row) => buildLocationSummary(row, 'Restaurant')
+      APP_STRINGS.entityLabels.restaurant,
+      (row) => buildLocationSummary(row, APP_STRINGS.entityLabels.restaurant)
    ),
    pavilion: buildNamedResultPresentation(
-      'Pavilion',
-      (row) => row.region ? `Region: ${row.region}` : 'Pavilion'
+      APP_STRINGS.entityLabels.pavilion,
+      (row) => row.region
+         ? APP_STRINGS.search.region(row.region)
+         : APP_STRINGS.entityLabels.pavilion
    ),
 };
 
@@ -107,7 +121,7 @@ function createFocusButton(row, onFocusRow) {
    const button = document.createElement('button');
    button.type = 'button';
    button.className = 'animal-result-map-btn';
-   button.textContent = 'View on Map';
+   button.textContent = APP_STRINGS.common.viewOnMap;
 
    button.addEventListener('click', (event) => {
       event.stopPropagation();

@@ -1,18 +1,5 @@
 import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
-
-const DETAIL_SECTIONS = [
-   ['Seasonal Viewing Summary', 'seasonal_viewing_summary'],
-   ['Seasonal Viewing Information', 'seasonal_viewing_information'],
-   ['General Viewing Tips', 'general_viewing_tips'],
-   ['Seasonal Viewing Tips', 'seasonal_viewing_tips'],
-   ['Identification', 'identification'],
-   ['Habitat And Range', 'habitat_and_range'],
-   ['Diet And Feeding', 'diet_and_feeding'],
-   ['Behaviour And Life Cycle', 'behaviour_and_life_cycle'],
-   ['Adaptations', 'adaptations'],
-   ['Reproduction And Life Cycle', 'reproduction_and_life_cycle'],
-   ['Animals At The Zoo', 'animals_at_the_zoo'],
-];
+import { APP_STRINGS } from '../strings.js';
 
 function readText(value = '') {
    return typeof value === 'string'
@@ -24,7 +11,7 @@ function buildBackButton(onBack) {
    const button = document.createElement('button');
    button.className = 'animal-info-back-button';
    button.type = 'button';
-   button.textContent = '← Back';
+   button.textContent = APP_STRINGS.animalsPage.backWithArrow;
    button.addEventListener('click', () => onBack?.());
    return button;
 }
@@ -88,7 +75,7 @@ function buildViewOnMapButton(animal, exhibitName) {
    const button = document.createElement('button');
    button.className = 'view-on-map-button';
    button.type = 'button';
-   button.textContent = 'View on Map';
+   button.textContent = APP_STRINGS.common.viewOnMap;
 
    button.addEventListener('click', () => {
       const url = new URL('map.html', window.location.href);
@@ -124,7 +111,7 @@ function buildAnimalDetailContent(animal, { exhibitName } = {}) {
       fragment.appendChild(buildViewOnMapButton(animal, exhibitName));
    }
 
-   DETAIL_SECTIONS.forEach(([title, field]) => {
+   APP_STRINGS.animalsPage.detailSections.forEach(([title, field]) => {
       const section = buildDetailSection(title, animal?.[field]);
 
       if (section) {

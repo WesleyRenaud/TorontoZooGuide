@@ -1,6 +1,7 @@
 import {
    populateGuardiansTalkDropdown,
 } from '../../options/dropdowns.js';
+import { APP_STRINGS } from '../../../strings.js';
 import { setStatus } from '../../shell/status.js';
 import {
    cancelGuardiansTalkOccurrence,
@@ -82,19 +83,19 @@ export function createCancelGuardiansTalkOccurrenceController({
 
    function validateForm({ talk, location, date, time }) {
       if (!location) {
-         return 'Location is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.location);
       }
 
       if (!talk) {
-         return 'Talk name is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkName);
       }
 
       if (!date) {
-         return 'Date is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.date);
       }
 
       if (!time) {
-         return 'Time is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.time);
       }
 
       return null;
@@ -134,7 +135,7 @@ export function createCancelGuardiansTalkOccurrenceController({
          show();
       }
       catch(err) {
-         setStatus(statusEl, 'Failed to load locations.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.loadErrors.locations, 'is-error');
          show();
       }
    }
@@ -158,12 +159,12 @@ export function createCancelGuardiansTalkOccurrenceController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
 
       }
       catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

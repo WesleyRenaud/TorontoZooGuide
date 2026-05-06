@@ -1,4 +1,5 @@
 import { setStatus } from '../shell/status.js';
+import { APP_STRINGS } from '../../strings.js';
 import {
    hideConsolePanel,
    resetFormFields,
@@ -16,9 +17,9 @@ export function createEndRecurringScheduleFormController({
    getSelectionValues,
    validateSelection = null,
    prepareForm = null,
-   loadErrorMessage = 'Failed to load options.',
+   loadErrorMessage = APP_STRINGS.loadErrors.options,
    submitEndSchedule,
-   successMessage = () => 'Schedule was ended.',
+   successMessage = () => APP_STRINGS.status.scheduleWasEnded,
 } = {}) {
    const formFieldEls = [endDateEl];
 
@@ -100,11 +101,11 @@ export function createEndRecurringScheduleFormController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

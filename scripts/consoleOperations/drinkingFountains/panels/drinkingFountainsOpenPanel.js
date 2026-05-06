@@ -4,17 +4,18 @@ import {
    createPanelShell,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createDrinkingFountainsOpenPanel() {
    return createPanelShell({
       panelId: 'drinkingFountainsOpenPanel',
-      title: 'Open drinking fountains',
+      title: APP_STRINGS.panelTitles.drinkingFountainsOpen,
       bodyChildren: [
          createDateRangeFields({
             startDateId: 'drinkingFountainsOpenStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'drinkingFountainsOpenEndDate',
-            endHelpText: 'Leave blank to keep the drinking fountains explicitly open until they are changed.',
+            endHelpText: APP_STRINGS.help.keepExplicitlyOpenUntilChanged('drinking fountains', 'they are'),
          }),
          createActions({
             submitId: 'submitDrinkingFountainsOpen',

@@ -2,6 +2,7 @@ import {
    getStoredItineraryDate,
    setStoredItineraryDate,
 } from '../draftStorage.js';
+import { APP_STRINGS } from '../../strings.js';
 import { initVisitDateFlatpickr } from '../../visitDates/visitDateFlatpickr.js';
 import {
    DEFAULT_DAYS_AHEAD,
@@ -13,15 +14,6 @@ import {
    isAfterMaxDate,
    clampToAllowedVisitDate,
 } from '../../visitDates/visitDateRules.js';
-
-const DATE_SELECTOR_DIALOG_LABEL = 'Itinerary Builder';
-const DATE_SELECTOR_TOP_TITLE = 'Itinerary Builder';
-const DATE_SELECTOR_TITLE = 'Set Visit Date';
-const DATE_SELECTOR_SUBTITLE = 'Choose the date for your visit.';
-const DATE_SELECTOR_FIELD_LABEL = 'Visit Date';
-const DATE_SELECTOR_CLOSE_LABEL = 'Close itinerary builder';
-const NEXT_BUTTON_TEXT = 'Next';
-const FINISH_BUTTON_TEXT = 'Finish';
 
 function formatLong(d) {
    return d.toLocaleDateString(undefined, {
@@ -152,19 +144,19 @@ function buildDateSelectorView() {
    card.className = 'itin-card';
    card.setAttribute('role', 'dialog');
    card.setAttribute('aria-modal', 'true');
-   card.setAttribute('aria-label', DATE_SELECTOR_DIALOG_LABEL);
+   card.setAttribute('aria-label', APP_STRINGS.itinerary.selectors.builderTitle);
 
    const topbar = document.createElement('div');
    topbar.className = 'itin-card-topbar itin-card-topbar-with-close';
 
    const topTitle = document.createElement('div');
    topTitle.className = 'itin-top-title';
-   topTitle.textContent = DATE_SELECTOR_TOP_TITLE;
+   topTitle.textContent = APP_STRINGS.itinerary.selectors.builderTitle;
 
    const closeButtonEl = createButton({
       className: 'itin-close',
-      text: '×',
-      ariaLabel: DATE_SELECTOR_CLOSE_LABEL,
+      text: APP_STRINGS.common.closeSymbol,
+      ariaLabel: APP_STRINGS.itinerary.aria.closeBuilder,
    });
 
    topbar.append(topTitle, closeButtonEl);
@@ -174,15 +166,15 @@ function buildDateSelectorView() {
 
    const heading = document.createElement('h1');
    heading.className = 'itin-h1';
-   heading.textContent = DATE_SELECTOR_TITLE;
+   heading.textContent = APP_STRINGS.itinerary.selectors.titleDate;
 
    const subtitle = document.createElement('p');
    subtitle.className = 'itin-subtitle';
-   subtitle.textContent = DATE_SELECTOR_SUBTITLE;
+   subtitle.textContent = APP_STRINGS.itinerary.selectors.visitDateSubtitle;
 
    const fieldLabel = document.createElement('div');
    fieldLabel.className = 'itin-field-label';
-   fieldLabel.textContent = DATE_SELECTOR_FIELD_LABEL;
+   fieldLabel.textContent = APP_STRINGS.itinerary.selectors.visitDate;
 
    const inputEl = document.createElement('input');
    inputEl.className = 'itin-date-input';
@@ -201,12 +193,12 @@ function buildDateSelectorView() {
 
    const nextButtonEl = createButton({
       className: 'itin-next',
-      text: NEXT_BUTTON_TEXT,
+      text: APP_STRINGS.itinerary.actions.next,
    });
 
    const finishButtonEl = createButton({
       className: 'itin-next itin-finish',
-      text: FINISH_BUTTON_TEXT,
+      text: APP_STRINGS.itinerary.actions.finish,
    });
 
    actionsRight.append(nextButtonEl, finishButtonEl);

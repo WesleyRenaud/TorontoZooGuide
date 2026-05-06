@@ -1,6 +1,7 @@
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { APP_STRINGS } from '../../strings.js';
 import {
    buildAnimalImageSrc,
    buildOffDisplayWarningMessage,
@@ -17,11 +18,8 @@ import {
 } from './animalSelector/view.js';
 
 const STORAGE_KEY = 'tzg.itineraryAnimals';
-const DEFAULT_ANIMAL_TITLE = 'Animal';
-const OFF_DISPLAY_CONFIRM_TITLE = 'Animal May Be Off Display';
-
 function getAnimalTitle(row) {
-   return getAnimalSpecies(row) || DEFAULT_ANIMAL_TITLE;
+   return getAnimalSpecies(row) || APP_STRINGS.entityLabels.animal;
 }
 
 function buildAnimalSearchPayload(query, includeOffDisplayAnimals) {
@@ -50,10 +48,10 @@ function shouldConfirmOffDisplayAnimal({
 
 function promptForOffDisplayAnimalSelection(row, proceed) {
    showItineraryConfirmPopup({
-      title: OFF_DISPLAY_CONFIRM_TITLE,
+      title: APP_STRINGS.itinerary.confirmation.animalMayBeOffDisplay,
       message: buildOffDisplayWarningMessage(row),
-      confirmText: 'Add',
-      cancelText: 'Cancel',
+      confirmText: APP_STRINGS.itinerary.actions.add,
+      cancelText: APP_STRINGS.itinerary.actions.cancel,
       onConfirm: proceed,
    });
 }
@@ -92,10 +90,10 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
 
       makeSelection: makeAnimalSelection,
 
-      topTitle: 'Itinerary Builder',
-      h1: 'Add Animals',
-      subtitle: 'Search and add animals to your plan.',
-      emptyText: 'No animals found.',
+      topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
+      h1: APP_STRINGS.itinerary.selectors.titleAnimals,
+      subtitle: APP_STRINGS.itinerary.selectors.animalSubtitle,
+      emptyText: APP_STRINGS.itinerary.emptyText.animals,
 
       renderRowLeft: renderAnimalSelectorRowLeft,
 
