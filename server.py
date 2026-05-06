@@ -1,8 +1,11 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from functools import wraps
+import html
 import json
 import mimetypes
 import os
+import re
+import subprocess
 import sys
 from urllib.parse import unquote, urlparse
 
@@ -10,6 +13,53 @@ import database
 
 
 DEFAULT_PORT = 8000
+STRING_EXPORT_SCRIPT = './tools/exportStringValues.mjs'
+HTML_STRING_TOKEN_RE = re.compile( r'\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}' )
+HTML_STRING_VALUES = None
+
+
+def _flatten_string_values( values, prefix='' ):
+   flattened = {}
+
+   for key, value in values.items():
+      path = '{}.{}'.format( prefix, key ) if prefix else key
+
+      if isinstance( value, dict ):
+         flattened.update( _flatten_string_values( value, path ) )
+      else:
+         flattened[ path ] = str( value )
+
+   return flattened
+
+
+def get_html_string_values():
+   global HTML_STRING_VALUES
+
+   if HTML_STRING_VALUES is None:
+      result = subprocess.run(
+         [ 'node', STRING_EXPORT_SCRIPT ],
+         check=True,
+         capture_output=True,
+         text=True
+      )
+      HTML_STRING_VALUES = _flatten_string_values( json.loads( result.stdout ) )
+
+   return HTML_STRING_VALUES
+
+
+def render_html_strings( content ):
+   string_values = get_html_string_values()
+
+   def replace_token( match ):
+      key = match.group( 1 )
+      value = string_values.get( key )
+
+      if value is None:
+         return match.group( 0 )
+
+      return html.escape( value, quote=True )
+
+   return HTML_STRING_TOKEN_RE.sub( replace_token, content )
 
 
 def with_database( handler ):
@@ -40,6 +90,11 @@ class MyHandler( BaseHTTPRequestHandler ):
          content_type, _ = mimetypes.guess_type( filepath )
       self.send_header( "Content-type", content_type or "application/octet-stream" )
       self.end_headers()
+
+      if content_type == "text/html":
+         with open( filepath, encoding='utf-8' ) as fp:
+            self.wfile.write( render_html_strings( fp.read() ).encode( 'utf-8' ) )
+         return
 
       with open( filepath, "rb" ) as fp:
          while True:

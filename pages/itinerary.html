@@ -2,6 +2,7 @@
 <html lang="en" class="home-page">
    <head>
       <!-- Stylesheets -->
+      <title>{{ site.titles.guide }}</title>
       <link rel="stylesheet" href="../styles/styles.css">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
@@ -21,10 +22,10 @@
 
          <!-- Top bar -->
          <div class="top-bar">
-            <span class="top-bar-title">Toronto Zoo Guide</span>
+            <span class="top-bar-title">{{ site.titles.guide }}</span>
             <img
                src="../images/logos/toronto-zoo-logo.png"
-               alt="Toronto Zoo Logo"
+               alt="{{ site.logoAlt }}"
                class="top-bar-logo"
             >
          </div>
@@ -32,14 +33,14 @@
          <main class="map-layout itinerary-layout">
 
             <!-- LEFT PANEL: Itinerary -->
-            <aside class="side-panel left itinerary-panel" aria-label="Itinerary panel">
+            <aside class="side-panel left itinerary-panel" aria-label="{{ itinerary.aria.panel }}">
                <div class="side-panel-header">
-                  <h2 class="side-panel-title">Itinerary</h2>
+                  <h2 class="side-panel-title">{{ site.nav.itinerary }}</h2>
                </div>
 
                <div class="side-panel-body">
                   <div class="itinerary-empty">
-                     Build an itinerary to see it here.
+                     {{ itinerary.emptyPanel }}
                   </div>
                </div>
             </aside>
@@ -47,7 +48,7 @@
             <!-- MAP -->
             <div class="map-container">
                <div id="mapInner">
-                  <div id="zooMapMount" aria-label="Toronto Zoo Map"></div>
+                  <div id="zooMapMount" aria-label="{{ site.map.mapAria }}"></div>
                   
                   <!-- markers injected here -->
                </div>
@@ -64,11 +65,11 @@
          <!-- Bottom navigation -->
          <nav>
             <ul>
-               <li><a href="map.html">Map</a></li>
-               <li><a href="animals.html">Animals</a></li>
-               <li><a href="https://www.torontozoo.com/meettheguardians">Meet The Guardians</a></li>
-               <li><a href="https://www.torontozoo.com/wildencounters">Wild Encounters</a></li>
-               <li><a href="itinerary.html">Itinerary</a></li>
+               <li><a href="map.html">{{ site.nav.map }}</a></li>
+               <li><a href="animals.html">{{ site.nav.animals }}</a></li>
+               <li><a href="https://www.torontozoo.com/meettheguardians">{{ site.nav.meetTheGuardians }}</a></li>
+               <li><a href="https://www.torontozoo.com/wildencounters">{{ site.nav.wildEncounters }}</a></li>
+               <li><a href="itinerary.html">{{ site.nav.itinerary }}</a></li>
             </ul>
          </nav>
 
