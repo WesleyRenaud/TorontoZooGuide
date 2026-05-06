@@ -1,8 +1,8 @@
-import { createRemovedItemsPopupLayout } from './removedItemsPopupLayout.js';
 import {
    buildRemovedItemsPopupSections,
    hasRemovedItemsPopupContent,
 } from './removedItemsPopupContent.js';
+import { createRemovedItemsPopupLayout } from './removedItemsPopupLayout.js';
 
 export function showRemovedItemsPopup({
    mountEl,

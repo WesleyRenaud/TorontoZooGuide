@@ -1,5 +1,3 @@
-import { setStatus } from '../shell/status.js';
-import { APP_STRINGS } from '../../strings.js';
 import {
    hasCheckedField,
    hideConsolePanel,
@@ -7,6 +5,8 @@ import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../helpers/controllerUtils.js';
+import { setStatus } from '../shell/status.js';
+import { APP_STRINGS } from '../../strings.js';
 
 export function createWeeklyAvailabilityFormController({
    showButtonEl,

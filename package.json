@@ -8,7 +8,7 @@
       "coverage:js": "node --test --experimental-test-coverage --test-coverage-include='scripts/**/*.js' tests/frontend/frontend.test.mjs",
       "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/backend --cov=database --cov=server --cov=zoo --cov=seed --cov-report=term-missing",
       "lint": "npm run lint:js && npm run lint:py",
-      "lint:js": "node tools/lint/jsFilenameStyle.js && eslint scripts && echo 'All checks passed!'",
+      "lint:js": "node tools/lint/jsFilenameStyle.js && node tools/lint/jsImportStyle.js && eslint scripts && echo 'All checks passed!'",
       "lint:py": "python3 tools/lint/pythonHouseStyle.py && ruff check .",
       "test:js": "node --test tests/frontend/frontend.test.mjs",
       "test:py": "python3 -m pytest tests/backend",

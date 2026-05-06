@@ -1,26 +1,27 @@
-import { loadArray, saveArray } from '../../draftStorage.js';
+import { getAnimalsByExhibit } from '../../../api/itinerarySelectorApi.js';
+import {
+   loadArray,
+   saveArray,
+} from '../../draftStorage.js';
+import {
+   buildSelectedAnimalKey,
+   getRegionExhibits,
+   isRegionFullySelected,
+   makeSelectedAnimal,
+   mergeAnimals,
+   normalizeRegions,
+   normalizeSelectedAnimal,
+   syncRegionSelection,
+} from './regionSelection.js';
+import {
+   loadSelectedNames,
+   saveSelectedNames,
+} from './regionStorage.js';
 import {
    ANIMALS_KEY,
    SELECTED_EXHIBITS_KEY,
    SELECTED_REGIONS_KEY,
 } from '../../storageKeys.js';
-import { getAnimalsByExhibit } from '../../../api/itinerarySelectorApi.js';
-
-import {
-   getRegionExhibits,
-   normalizeSelectedAnimal,
-   normalizeRegions,
-   makeSelectedAnimal,
-   buildSelectedAnimalKey,
-   mergeAnimals,
-   isRegionFullySelected,
-   syncRegionSelection,
-} from './regionSelection.js';
-
-import {
-   loadSelectedNames,
-   saveSelectedNames,
-} from './regionStorage.js';
 
 export function createRegionSelectorState() {
    let regions = [];

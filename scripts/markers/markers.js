@@ -1,5 +1,8 @@
 import { enableMarkerCoordinateEditing } from './coordinateEditing.js';
-import { createMarkerElement, bindMarkerInteractions } from './markerElement.js';
+import {
+   bindMarkerInteractions,
+   createMarkerElement,
+} from './markerElement.js';
 import { groupMarkersByCoordinate } from './markerGroups.js';
 
 const MARKER_SELECTOR = '.marker';

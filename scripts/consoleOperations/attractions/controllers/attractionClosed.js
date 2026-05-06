@@ -1,8 +1,8 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadAttractions } from '../../options/loaders.js';
-import { populateAttractionDropdown } from '../../options/dropdowns.js';
 import { setAttractionClosed } from '../../../api/consoleOperationsApi.js';
 import { createEntityClosedFormController } from '../../forms/entityClosedFormController.js';
+import { populateAttractionDropdown } from '../../options/dropdowns.js';
+import { loadAttractions } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createAttractionClosedController({
    attractionEl,

@@ -1,5 +1,5 @@
-import { loadSpecies } from '../../options/loaders.js';
 import { getAnimalsInExhibit } from '../../../api/animalsApi.js';
+import { loadSpecies } from '../../options/loaders.js';
 
 function normalizeSpeciesList(species) {
    return [...new Set(

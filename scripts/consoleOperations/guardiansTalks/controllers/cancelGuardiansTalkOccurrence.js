@@ -1,15 +1,11 @@
-import {
-   populateGuardiansTalkDropdown,
-} from '../../options/dropdowns.js';
-import { APP_STRINGS } from '../../../strings.js';
-import { setStatus } from '../../shell/status.js';
-import {
-   cancelGuardiansTalkOccurrence,
-} from '../../../api/consoleOperationsApi.js';
+import { cancelGuardiansTalkOccurrence } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
+import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createCancelGuardiansTalkOccurrenceController({
    showButtonEl,

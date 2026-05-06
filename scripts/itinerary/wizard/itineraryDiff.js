@@ -1,7 +1,5 @@
 import { buildAnimalVisibilityChanges } from './diff/animalVisibility.js';
-import {
-   findRemovedItemsByField,
-} from './diff/removedItems.js';
+import { findRemovedItemsByField } from './diff/removedItems.js';
 import {
    hasImprovedVisibility,
    hasReducedVisibility,

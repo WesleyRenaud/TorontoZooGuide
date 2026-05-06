@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createDateField,
@@ -5,7 +6,6 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
-import { APP_STRINGS } from '../../../strings.js';
 
 export function createEndUpdatePanel() {
    return createPanelShell({

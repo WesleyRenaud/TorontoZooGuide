@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createDateField,
@@ -6,7 +7,6 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
-import { APP_STRINGS } from '../../../strings.js';
 
 export function createEditUpdatePanel() {
    return createPanelShell({

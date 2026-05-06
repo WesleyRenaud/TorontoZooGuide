@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createDateRangeFields,
@@ -5,7 +6,6 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
-import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestroomOpenPanel() {
    return createPanelShell({

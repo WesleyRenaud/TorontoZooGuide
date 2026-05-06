@@ -1,8 +1,8 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadRestaurants } from '../../options/loaders.js';
-import { populateRestaurantDropdown } from '../../options/dropdowns.js';
-import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
 import { setRestaurantOpeningSchedule } from '../../../api/consoleOperationsApi.js';
+import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
+import { populateRestaurantDropdown } from '../../options/dropdowns.js';
+import { loadRestaurants } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestaurantOpenController({
    restaurantEl,

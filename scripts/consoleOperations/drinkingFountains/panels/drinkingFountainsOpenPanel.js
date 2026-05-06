@@ -1,10 +1,10 @@
+import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createDateRangeFields,
    createPanelShell,
    createStatus,
 } from '../../templates/fragments.js';
-import { APP_STRINGS } from '../../../strings.js';
 
 export function createDrinkingFountainsOpenPanel() {
    return createPanelShell({

@@ -1,7 +1,3 @@
-import { createItinerarySelectorController } from './createSelectorController.js';
-import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
-import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
-import { APP_STRINGS } from '../../strings.js';
 import {
    buildAnimalImageSrc,
    buildOffDisplayWarningMessage,
@@ -16,6 +12,10 @@ import {
    renderAnimalSelectorRowLeft,
    renderIncludeOffDisplayToggle,
 } from './animalSelector/view.js';
+import { createItinerarySelectorController } from './createSelectorController.js';
+import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
+import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAnimals';
 function getAnimalTitle(row) {

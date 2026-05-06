@@ -7,16 +7,6 @@ import {
    schedule,
 } from './strings/common.js';
 import {
-   animalsPage,
-   site,
-} from './strings/pages.js';
-import { itinerary } from './strings/itinerary.js';
-import {
-   map,
-   search,
-   tooltips,
-} from './strings/map.js';
-import {
    help,
    loadErrors,
    panelTitles,
@@ -26,6 +16,16 @@ import {
    updateTypes,
    validation,
 } from './strings/console.js';
+import { itinerary } from './strings/itinerary.js';
+import {
+   map,
+   search,
+   tooltips,
+} from './strings/map.js';
+import {
+   animalsPage,
+   site,
+} from './strings/pages.js';
 
 export const APP_STRINGS = {
    actions,

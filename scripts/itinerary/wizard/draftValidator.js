@@ -1,8 +1,6 @@
 import { validateItineraryDraftRequest } from '../../api/itineraryApi.js';
 import { normalizeItineraryDraft } from '../draftStorage.js';
-import {
-   buildItineraryDiff,
-} from './itineraryDiff.js';
+import { buildItineraryDiff } from './itineraryDiff.js';
 
 function getMonthName(dateObj) {
    return dateObj.toLocaleString('en-CA', { month: 'long' });

@@ -1,5 +1,5 @@
-import { TYPE_REGISTRY } from '../tooltips/tooltipRenderers.js';
 import { coordKey } from '../map/coordKey.js';
+import { TYPE_REGISTRY } from '../tooltips/tooltipRenderers.js';
 
 function itemLikelihood(item) {
    const value = Number(item?.likelihood);

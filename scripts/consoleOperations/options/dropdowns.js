@@ -1,5 +1,8 @@
+import {
+   getOptionItemName,
+   sortNamedOptions,
+} from './namedItems.js';
 import { APP_STRINGS } from '../../strings.js';
-import { getOptionItemName, sortNamedOptions } from './namedItems.js';
 
 function createPlaceholderOption(label) {
    const placeholder = document.createElement('option');

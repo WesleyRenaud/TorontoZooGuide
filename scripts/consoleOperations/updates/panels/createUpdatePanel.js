@@ -1,13 +1,13 @@
+import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createDateRangeFields,
    createPanelShell,
    createSelectField,
    createStatus,
-   createTextInputField,
    createTextareaField,
+   createTextInputField,
 } from '../../templates/fragments.js';
-import { APP_STRINGS } from '../../../strings.js';
 
 export function createCreateUpdatePanel() {
    return createPanelShell({

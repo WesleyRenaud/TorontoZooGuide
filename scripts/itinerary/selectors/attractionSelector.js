@@ -1,10 +1,6 @@
-import { createItinerarySelectorController } from './createSelectorController.js';
-import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
-import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
-import { APP_STRINGS } from '../../strings.js';
 import {
-   buildClosedAttractionMessage,
    buildAttractionImageSrc,
+   buildClosedAttractionMessage,
    getAttractionId,
    getAttractionInfoLink,
    getAttractionSubtitle,
@@ -14,6 +10,10 @@ import {
    shouldConfirmClosedAttraction,
 } from './attractionSelector/model.js';
 import { renderIncludeClosedAttractionsToggle } from './attractionSelector/view.js';
+import { createItinerarySelectorController } from './createSelectorController.js';
+import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
+import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAttractions';
 

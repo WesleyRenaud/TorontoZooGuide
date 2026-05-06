@@ -1,6 +1,4 @@
-import {
-   normalizeStoredString,
-} from './base/storedSelection.js';
+import { normalizeStoredString } from './base/storedSelection.js';
 import { createScheduledOccurrenceSelectorController } from './createScheduledOccurrenceSelector.js';
 import { APP_STRINGS } from '../../strings.js';
 

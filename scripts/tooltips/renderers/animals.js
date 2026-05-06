@@ -1,6 +1,6 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
-import { getLikelihoodPhrase } from '../../likelihood/likelihoodPresentation.js';
 import { createTooltipCard } from './cardFactory.js';
+import { getLikelihoodPhrase } from '../../likelihood/likelihoodPresentation.js';
 
 export const animalRenderer = {
    key: 'animal',

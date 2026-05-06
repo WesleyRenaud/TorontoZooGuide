@@ -1,13 +1,13 @@
-import { loadWildEncounters } from '../../options/loaders.js';
-import { APP_STRINGS } from '../../../strings.js';
-import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
-import { setStatus } from '../../shell/status.js';
 import { cancelWildEncounterOccurrence } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
+import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
+import { loadWildEncounters } from '../../options/loaders.js';
+import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createCancelWildEncounterOccurrenceController({
    showButtonEl,

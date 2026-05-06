@@ -1,8 +1,8 @@
-import { APP_STRINGS } from '../../../strings.js';
-import { loadAttractions } from '../../options/loaders.js';
-import { populateAttractionDropdown } from '../../options/dropdowns.js';
-import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
 import { setAttractionOpeningSchedule } from '../../../api/consoleOperationsApi.js';
+import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
+import { populateAttractionDropdown } from '../../options/dropdowns.js';
+import { loadAttractions } from '../../options/loaders.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createAttractionOpenController({
    attractionEl,

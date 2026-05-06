@@ -1,19 +1,17 @@
-import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
-import { createItineraryRegionSelectorController } from '../../itinerary/selectors/regionSelector.js';
+import { validateItineraryDraft } from './draftValidator.js';
+import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
 import { createItineraryAnimalSelectorController } from '../../itinerary/selectors/animalSelector.js';
 import { createItineraryAttractionSelectorController } from '../../itinerary/selectors/attractionSelector.js';
+import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
 import { createItineraryGuardiansTalkSelectorController } from '../../itinerary/selectors/guardiansTalkSelector.js';
+import { createItineraryRegionSelectorController } from '../../itinerary/selectors/regionSelector.js';
 import { createItineraryWildEncounterSelectorController } from '../../itinerary/selectors/wildEncounterSelector.js';
-import { toISODate } from '../../visitDates/visitDateRules.js';
-
-import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
-
 import { getItinerary } from '../itineraryService.js';
-import { finalizeItineraryWizard } from './wizardFinalizer.js';
-import { validateItineraryDraft } from './draftValidator.js';
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
 import { showWizardValidationPopupIfNeeded } from './validationPopup.js';
+import { toISODate } from '../../visitDates/visitDateRules.js';
+import { finalizeItineraryWizard } from './wizardFinalizer.js';
 
 const DEFAULT_START_STEP = 'date';
 
