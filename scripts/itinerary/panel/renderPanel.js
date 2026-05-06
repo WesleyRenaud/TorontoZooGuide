@@ -2,6 +2,7 @@ import { makeActionsBar } from './components/actionsBar.js';
 import { makeSection } from './components/section.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
+import { APP_STRINGS } from '../../strings.js';
 
 import {
    buildAnimalRows,
@@ -49,25 +50,25 @@ function buildSectionConfigs({
 } = {}) {
    return [
       {
-         title: 'Animals',
+         title: APP_STRINGS.site.nav.animals,
          count: animals.length,
          children: buildAnimalRows(animals),
          stepKey: 'animals',
       },
       {
-         title: 'Attractions',
+         title: APP_STRINGS.map.filter.attractions,
          count: attractions.length,
          children: buildAttractionRows(attractions),
          stepKey: 'attractions',
       },
       {
-         title: 'Meet the Guardians',
+         title: APP_STRINGS.site.nav.meetTheGuardians,
          count: guardiansTalks.length,
          children: buildGuardiansRows(guardiansTalks),
          stepKey: 'guardiansTalks',
       },
       {
-         title: 'Wild Encounters',
+         title: APP_STRINGS.site.nav.wildEncounters,
          count: wildEncounters.length,
          children: buildWildRows(wildEncounters),
          stepKey: 'wildEncounters',

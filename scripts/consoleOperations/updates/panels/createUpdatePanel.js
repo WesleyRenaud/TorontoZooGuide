@@ -7,40 +7,34 @@ import {
    createTextInputField,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createCreateUpdatePanel() {
    return createPanelShell({
       panelId: 'createUpdatePanel',
-      title: 'Create update',
+      title: APP_STRINGS.panelTitles.createUpdate,
       bodyChildren: [
          createTextInputField({
-            label: 'Title',
+            label: APP_STRINGS.labels.title,
             inputId: 'createUpdateTitle',
-            placeholder: 'Example: New baby giraffe',
+            placeholder: APP_STRINGS.textareas.updateTitleExample,
          }),
          createTextareaField({
-            label: 'Description',
+            label: APP_STRINGS.labels.description,
             inputId: 'createUpdateDescription',
-            placeholder: 'Enter the update shown to guests',
+            placeholder: APP_STRINGS.textareas.updateDescription,
          }),
          createSelectField({
-            label: 'Type',
+            label: APP_STRINGS.labels.type,
             inputId: 'createUpdateType',
-            emptyOptionLabel: 'Select a type',
-            options: [
-               { value: 'Animal Birth', label: 'Animal Birth' },
-               { value: 'Animal Passing', label: 'Animal Passing' },
-               { value: 'Closure', label: 'Closure' },
-               { value: 'New Arrival', label: 'New Arrival' },
-               { value: 'Departure', label: 'Departure' },
-            ],
+            emptyOptionLabel: APP_STRINGS.placeholders.type,
+            options: APP_STRINGS.updateTypes,
          }),
          createDateRangeFields({
             startDateId: 'createUpdateStartDate',
-            // TO-DO: create centralized strings for things like this
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'createUpdateEndDate',
-            endHelpText: 'Leave blank to keep the update active with no end date.',
+            endHelpText: APP_STRINGS.help.keepUpdateActiveWithoutEndDate,
          }),
          createActions({
             submitId: 'submitCreateUpdate',

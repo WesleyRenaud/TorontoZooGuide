@@ -5,27 +5,28 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createEndGuardiansTalkSchedulePanel() {
    return createPanelShell({
       panelId: 'endGuardiansTalkSchedulePanel',
-      title: 'End Meet the Guardians talk schedule',
+      title: APP_STRINGS.panelTitles.endGuardiansTalkSchedule,
       bodyChildren: [
          createSelectField({
-            label: 'Location',
+            label: APP_STRINGS.labels.location,
             inputId: 'endGuardiansTalkScheduleLocation',
-            emptyOptionLabel: 'Select a location',
+            emptyOptionLabel: APP_STRINGS.placeholders.location,
          }),
          createSelectField({
-            label: 'Talk name',
+            label: APP_STRINGS.labels.talkName,
             inputId: 'endGuardiansTalkScheduleTalkName',
-            emptyOptionLabel: 'Select a talk',
+            emptyOptionLabel: APP_STRINGS.placeholders.talk,
          }),
          createDateField({
-            label: 'End date',
+            label: APP_STRINGS.labels.endDate,
             inputId: 'endGuardiansTalkScheduleEndDate',
-            placeholder: 'Select the date the schedule should end',
-            helpText: 'Leave blank to end the schedule today.',
+            placeholder: APP_STRINGS.placeholders.scheduleEndDate,
+            helpText: APP_STRINGS.help.endScheduleToday,
          }),
          createActions({
             submitId: 'submitEndGuardiansTalkSchedule',

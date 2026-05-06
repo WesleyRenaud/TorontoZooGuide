@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import { loadRestaurants } from '../../options/loaders.js';
 import { populateRestaurantDropdown } from '../../options/dropdowns.js';
 import { setRestaurantClosed } from '../../../api/consoleOperationsApi.js';
@@ -18,8 +19,8 @@ export function createRestaurantClosedController({
          endDate: endDate || null,
          message,
       }),
-      entityLabel: 'Restaurant',
-      optionsLabel: 'restaurants',
-      successMessage: result => `${result.restaurant} was set as closed.`,
+      entityLabel: APP_STRINGS.entityLabels.restaurant,
+      optionsLabel: APP_STRINGS.entityLabels.restaurants,
+      successMessage: result => APP_STRINGS.status.closed(result.restaurant),
    });
 }

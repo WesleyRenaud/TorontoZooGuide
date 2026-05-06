@@ -5,22 +5,23 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRemoveVisibilitySchedulePanel() {
    return createPanelShell({
       panelId: 'removeVisibilitySchedulePanel',
-      title: 'Remove visibility schedule',
+      title: APP_STRINGS.panelTitles.removeVisibilitySchedule,
       bodyChildren: [
          createSelectField({
-            label: 'Exhibit',
+            label: APP_STRINGS.entityLabels.exhibit,
             inputId: 'removeVisibilityScheduleExhibit',
-            emptyOptionLabel: 'Select an exhibit',
+            emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
          }),
          createAutocompleteField({
-            label: 'Species',
+            label: APP_STRINGS.labels.species,
             inputId: 'removeVisibilityScheduleSpecies',
             resultsId: 'removeVisibilityScheduleSpeciesResults',
-            placeholder: 'Search for a species',
+            placeholder: APP_STRINGS.placeholders.speciesSearch,
          }),
          createActions({
             submitId: 'submitRemoveVisibilitySchedule',

@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../strings.js';
 import { getOptionItemName, sortNamedOptions } from './namedItems.js';
 
 function createPlaceholderOption(label) {
@@ -15,7 +16,7 @@ function createNamedOption(name) {
 }
 
 export function populateDropdown(selectEl, items, {
-   emptyOptionLabel = 'Select an option',
+   emptyOptionLabel = APP_STRINGS.placeholders.option,
    getName = item => String(item ?? '').trim(),
    sortItems = null,
 } = {}) {
@@ -56,33 +57,33 @@ function populateNamedDropdown(selectEl, items, emptyOptionLabel) {
 }
 
 export function populateExhibitDropdown(selectEl, exhibits) {
-   populateNamedDropdown(selectEl, exhibits, 'Select an exhibit');
+   populateNamedDropdown(selectEl, exhibits, APP_STRINGS.placeholders.exhibit);
 }
 
 export function populateRestaurantDropdown(selectEl, restaurants) {
-   populateNamedDropdown(selectEl, restaurants, 'Select a restaurant');
+   populateNamedDropdown(selectEl, restaurants, APP_STRINGS.placeholders.restaurant);
 }
 
 export function populateRestroomDropdown(selectEl, restrooms) {
-   populateNamedDropdown(selectEl, restrooms, 'Select a restroom');
+   populateNamedDropdown(selectEl, restrooms, APP_STRINGS.placeholders.restroom);
 }
 
 export function populateGiftShopDropdown(selectEl, giftShops) {
-   populateNamedDropdown(selectEl, giftShops, 'Select a gift shop');
+   populateNamedDropdown(selectEl, giftShops, APP_STRINGS.placeholders.giftShop);
 }
 
 export function populateAttractionDropdown(selectEl, attractions) {
-   populateNamedDropdown(selectEl, attractions, 'Select an attraction');
+   populateNamedDropdown(selectEl, attractions, APP_STRINGS.placeholders.attraction);
 }
 
 export function populateZoomobileStationDropdown(selectEl, zoomobileStations) {
-   populateNamedDropdown(selectEl, zoomobileStations, 'Select a zoomobile station');
+   populateNamedDropdown(selectEl, zoomobileStations, APP_STRINGS.placeholders.zoomobileStation);
 }
 
 export function populateGuardiansTalkDropdown(selectEl, guardiansTalks) {
-   populateNamedDropdown(selectEl, guardiansTalks, 'Select a talk');
+   populateNamedDropdown(selectEl, guardiansTalks, APP_STRINGS.placeholders.talk);
 }
 
 export function populateWildEncounterDropdown(selectEl, wildEncounters) {
-   populateNamedDropdown(selectEl, wildEncounters, 'Select a Wild Encounter');
+   populateNamedDropdown(selectEl, wildEncounters, APP_STRINGS.placeholders.wildEncounter);
 }

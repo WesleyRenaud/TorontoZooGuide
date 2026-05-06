@@ -4,16 +4,17 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createZoomobileStationOpenPanel() {
    return createPanelShell({
       panelId: 'zoomobileStationOpenPanel',
-      title: 'Set zoomobile station as open',
+      title: APP_STRINGS.panelTitles.zoomobileStationOpen,
       bodyChildren: [
          createSelectField({
-            label: 'Zoomobile Station',
+            label: APP_STRINGS.entityLabels.zoomobileStation,
             inputId: 'zoomobileStationOpenZoomobileStation',
-            emptyOptionLabel: 'Select a zoomobile station',
+            emptyOptionLabel: APP_STRINGS.placeholders.zoomobileStation,
          }),
          createActions({
             submitId: 'submitZoomobileStationOpen',

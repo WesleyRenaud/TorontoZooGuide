@@ -14,3 +14,4 @@ import './layerRequest.test.mjs';
 import './mapSources.test.mjs';
 import './sourceHelpers.test.mjs';
 import './panelRows.test.mjs';
+import './strings.test.mjs';

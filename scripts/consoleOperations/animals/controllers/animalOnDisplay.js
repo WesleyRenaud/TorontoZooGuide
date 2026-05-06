@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import { loadExhibits } from '../../options/loaders.js';
 import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { setStatus } from '../../shell/status.js';
@@ -34,11 +35,11 @@ export function createAnimalOnDisplayController({
 
    function validateForm({ species, exhibit }) {
       if (!species) {
-         return 'Species name is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.species);
       }
 
       if (!exhibit) {
-         return 'Exhibit is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.exhibit);
       }
 
       return null;
@@ -66,7 +67,7 @@ export function createAnimalOnDisplayController({
    function handleSubmitSuccess(result) {
       setStatus(
          statusEl,
-         `${result.species} in ${result.exhibit} was set as on display.`,
+         APP_STRINGS.status.animalOnDisplay(result),
          'is-success'
       );
 
@@ -83,7 +84,7 @@ export function createAnimalOnDisplayController({
          resetForm,
          activatePanel,
          panelEl,
-         errorMessage: 'Failed to load exhibits.',
+         errorMessage: APP_STRINGS.loadErrors.exhibits,
       });
    }
 
@@ -108,14 +109,14 @@ export function createAnimalOnDisplayController({
          else {
             setStatus(
                statusEl,
-               result.error || 'Failed.',
+               result.error || APP_STRINGS.common.genericFailed,
                'is-error'
             );
          }
 
       }
       catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

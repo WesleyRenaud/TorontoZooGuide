@@ -1,4 +1,5 @@
 import { searchItineraryItems } from '../../api/searchApi.js';
+import { APP_STRINGS } from '../../strings.js';
 import { createSelectorSelectionState } from './base/selectionState.js';
 import {
    createDefaultSelectorRowLeftRenderer,
@@ -145,10 +146,10 @@ export function createItinerarySelectorController({
 
    makeSelection = row => ({ id: getId(row) }),
 
-   topTitle = 'Itinerary Builder',
+   topTitle = APP_STRINGS.itinerary.selectors.builderTitle,
    h1 = 'Add Items',
    subtitle = 'Search and add items to your plan.',
-   emptyText = 'No results found.',
+   emptyText = APP_STRINGS.itinerary.emptyText.results,
 
    renderRowLeft,
    renderExtraControls = null,

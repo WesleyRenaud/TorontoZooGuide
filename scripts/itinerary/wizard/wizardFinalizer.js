@@ -1,11 +1,12 @@
 import { isItineraryEmpty, saveItinerary } from '../itineraryService.js';
 import { normalizeItineraryDraft } from '../draftStorage.js';
+import { APP_STRINGS } from '../../strings.js';
 import { showItineraryWizardPopup } from './wizardPopup.js';
 
 const EMPTY_SELECTION_POPUP_CONFIG = Object.freeze({
-   title: 'No Items Selected',
-   message: 'Please add at least one Animal, Attraction, Meet the Guardians talk, or Wild Encounter before finishing.',
-   buttonText: 'OK',
+   title: APP_STRINGS.itinerary.noItemsSelected.title,
+   message: APP_STRINGS.itinerary.noItemsSelected.message,
+   buttonText: APP_STRINGS.itinerary.noItemsSelected.button,
 });
 
 function clearWizardMount(mountEl) {

@@ -1,4 +1,5 @@
 import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
+import { APP_STRINGS } from '../../../strings.js';
 import { setGuardiansTalkSchedule } from '../../../api/consoleOperationsApi.js';
 import {
    resetFormFields,
@@ -55,11 +56,11 @@ export function createGuardiansTalkScheduleController({
       location,
    }) {
       if (!location) {
-         return 'Location is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.location);
       }
 
       if (!talk) {
-         return 'Talk name is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkName);
       }
 
       return null;
@@ -113,9 +114,9 @@ export function createGuardiansTalkScheduleController({
       }),
       validateSelection,
       prepareForm,
-      loadErrorMessage: 'Failed to load locations.',
+      loadErrorMessage: APP_STRINGS.loadErrors.locations,
       submitSchedule,
-      successMessage: result => `${result.talk} in ${result.location} schedule was saved.`,
-      timeRequiredMessage: 'Talk time is required.',
+      successMessage: result => APP_STRINGS.status.guardiansTalkScheduleSaved(result),
+      timeRequiredMessage: APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkTime),
    });
 }

@@ -8,25 +8,26 @@ import {
    createTextareaField,
    createWeeklyScheduleCheckboxes,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRestaurantOpenPanel() {
    return createPanelShell({
       panelId: 'restaurantOpenPanel',
-      title: 'Set restaurant as open',
+      title: APP_STRINGS.panelTitles.restaurantOpen,
       bodyChildren: [
          createSelectField({
-            label: 'Restaurant',
+            label: APP_STRINGS.entityLabels.restaurant,
             inputId: 'restaurantOpenRestaurant',
-            emptyOptionLabel: 'Select a restaurant',
+            emptyOptionLabel: APP_STRINGS.placeholders.restaurant,
          }),
          createSchedulePresetField({
             inputId: 'restaurantOpenPreset',
          }),
          createDateRangeFields({
             startDateId: 'restaurantOpenStartDate',
-            startHelpText: 'Leave blank to start immediately.',
+            startHelpText: APP_STRINGS.help.startImmediately,
             endDateId: 'restaurantOpenEndDate',
-            endHelpText: 'Leave blank to keep this schedule active until it is changed.',
+            endHelpText: APP_STRINGS.help.keepScheduleUntilChanged,
          }),
          createWeeklyScheduleCheckboxes({
             dayIds: {
@@ -41,9 +42,9 @@ export function createRestaurantOpenPanel() {
             },
          }),
          createTextareaField({
-            label: 'Schedule message',
+            label: APP_STRINGS.labels.scheduleMessage,
             inputId: 'restaurantOpenMessage',
-            placeholder: 'Enter the message shown when the restaurant is closed outside this schedule',
+            placeholder: APP_STRINGS.textareas.scheduledClosedMessage('restaurant'),
          }),
          createActions({
             submitId: 'submitRestaurantOpen',

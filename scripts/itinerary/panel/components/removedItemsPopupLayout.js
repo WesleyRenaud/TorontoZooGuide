@@ -1,4 +1,5 @@
 import { el } from '../dom.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createRemovedItemsPopupLayout({ isEmptyItinerary = false } = {}) {
    const root = el('div', 'tzg-popup');
@@ -8,10 +9,10 @@ export function createRemovedItemsPopupLayout({ isEmptyItinerary = false } = {})
 
    const topbar = el('div', 'itin-card-topbar itin-card-topbar-with-close');
    topbar.appendChild(
-      el('div', 'itin-top-title', 'Itinerary Updated')
+      el('div', 'itin-top-title', APP_STRINGS.itinerary.removedItems.itineraryUpdated)
    );
 
-   const closeBtn = el('button', 'itin-close', '×');
+   const closeBtn = el('button', 'itin-close', APP_STRINGS.common.closeSymbol);
    closeBtn.type = 'button';
    topbar.appendChild(closeBtn);
 
@@ -27,7 +28,9 @@ export function createRemovedItemsPopupLayout({ isEmptyItinerary = false } = {})
       el(
          'div',
          'itin-h1',
-         isEmptyItinerary ? 'Your itinerary is now empty' : 'Some itinerary details changed'
+         isEmptyItinerary
+            ? APP_STRINGS.itinerary.removedItems.emptyItineraryTitle
+            : APP_STRINGS.itinerary.removedItems.someDetailsChanged
       )
    );
 
@@ -36,8 +39,8 @@ export function createRemovedItemsPopupLayout({ isEmptyItinerary = false } = {})
          'div',
          'itin-subtitle',
          isEmptyItinerary
-            ? 'None of your selected items are available on the new date. You can view alternatives below.'
-            : 'Some itinerary items changed for your new date. Review the updates below.'
+            ? APP_STRINGS.itinerary.removedItems.emptyItinerarySubtitle
+            : APP_STRINGS.itinerary.removedItems.changedSubtitle
       )
    );
 
@@ -45,7 +48,13 @@ export function createRemovedItemsPopupLayout({ isEmptyItinerary = false } = {})
 
    const actions = el('div', 'itin-card-actions');
 
-   const okBtn = el('button', 'itin-finish', isEmptyItinerary ? 'Accept' : 'Okay');
+   const okBtn = el(
+      'button',
+      'itin-finish',
+      isEmptyItinerary
+         ? APP_STRINGS.itinerary.actions.accept
+         : APP_STRINGS.itinerary.removedItems.okay
+   );
    okBtn.type = 'button';
    actions.appendChild(okBtn);
 

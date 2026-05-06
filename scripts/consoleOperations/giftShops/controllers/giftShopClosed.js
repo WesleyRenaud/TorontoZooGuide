@@ -1,3 +1,4 @@
+import { APP_STRINGS } from '../../../strings.js';
 import { loadGiftShops } from '../../options/loaders.js';
 import { populateGiftShopDropdown } from '../../options/dropdowns.js';
 import { setGiftShopClosed } from '../../../api/consoleOperationsApi.js';
@@ -18,8 +19,8 @@ export function createGiftShopClosedController({
          endDate: endDate || null,
          message,
       }),
-      entityLabel: 'Gift shop',
-      optionsLabel: 'gift shops',
-      successMessage: result => `${result.gift_shop} was set as closed.`,
+      entityLabel: APP_STRINGS.entityLabels.giftShop,
+      optionsLabel: APP_STRINGS.entityLabels.giftShops,
+      successMessage: result => APP_STRINGS.status.closed(result.gift_shop),
    });
 }

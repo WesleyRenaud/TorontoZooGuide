@@ -8,43 +8,46 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createWildEncounterSchedulePanel() {
    return createPanelShell({
       panelId: 'wildEncounterSchedulePanel',
-      title: 'Set Wild Encounter schedule',
+      title: APP_STRINGS.panelTitles.wildEncounterSchedule,
       bodyChildren: [
          createSelectField({
-            label: 'Wild Encounter',
+            label: APP_STRINGS.entityLabels.wildEncounter,
             inputId: 'wildEncounterScheduleName',
-            emptyOptionLabel: 'Select a Wild Encounter',
+            emptyOptionLabel: APP_STRINGS.placeholders.wildEncounter,
          }),
          createDateRangeFields({
             startDateId: 'wildEncounterScheduleStartDate',
             endDateId: 'wildEncounterScheduleEndDate',
-            endHelpText: 'Leave blank to continue until the schedule is ended.',
+            endHelpText: APP_STRINGS.help.continueUntilScheduleEnded,
          }),
          createCheckboxGridField({
-            label: 'Occurs on these days',
+            label: APP_STRINGS.labels.occursOnTheseDays,
             options: [
-               { id: 'wildEncounterScheduleMonday', label: 'Monday' },
-               { id: 'wildEncounterScheduleTuesday', label: 'Tuesday' },
-               { id: 'wildEncounterScheduleWednesday', label: 'Wednesday' },
-               { id: 'wildEncounterScheduleThursday', label: 'Thursday' },
-               { id: 'wildEncounterScheduleFriday', label: 'Friday' },
-               { id: 'wildEncounterScheduleSaturday', label: 'Saturday' },
-               { id: 'wildEncounterScheduleSunday', label: 'Sunday' },
+               { id: 'wildEncounterScheduleMonday', label: APP_STRINGS.schedule.dayLabels.monday },
+               { id: 'wildEncounterScheduleTuesday', label: APP_STRINGS.schedule.dayLabels.tuesday },
+               { id: 'wildEncounterScheduleWednesday', label: APP_STRINGS.schedule.dayLabels.wednesday },
+               { id: 'wildEncounterScheduleThursday', label: APP_STRINGS.schedule.dayLabels.thursday },
+               { id: 'wildEncounterScheduleFriday', label: APP_STRINGS.schedule.dayLabels.friday },
+               { id: 'wildEncounterScheduleSaturday', label: APP_STRINGS.schedule.dayLabels.saturday },
+               { id: 'wildEncounterScheduleSunday', label: APP_STRINGS.schedule.dayLabels.sunday },
             ],
          }),
          createDateField({
-            label: 'Encounter time',
+            label: APP_STRINGS.labels.encounterTime,
             inputId: 'wildEncounterScheduleTime',
-            placeholder: 'Select an encounter time',
+            placeholder: APP_STRINGS.placeholders.scheduledTime('an encounter'),
          }),
          createTextareaField({
-            label: 'Schedule message',
+            label: APP_STRINGS.labels.scheduleMessage,
             inputId: 'wildEncounterScheduleMessage',
-            placeholder: 'Enter an optional message for this Wild Encounter schedule',
+            placeholder: APP_STRINGS.textareas.optionalScheduleMessage(
+               APP_STRINGS.entityLabels.wildEncounter
+            ),
          }),
          createActions({
             submitId: 'submitWildEncounterSchedule',

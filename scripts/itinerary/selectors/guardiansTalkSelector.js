@@ -2,6 +2,7 @@ import {
    normalizeStoredString,
 } from './base/storedSelection.js';
 import { createScheduledOccurrenceSelectorController } from './createScheduledOccurrenceSelector.js';
+import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
 
@@ -31,12 +32,12 @@ export function createItineraryGuardiansTalkSelectorController({
       responseKey: 'guardians_talks',
       searchFlag: 'includeGuardiansTalks',
       imageDirectory: 'guardians-talks',
-      defaultTitle: 'Talk',
-      heading: 'Meet the Guardians',
-      subtitle: 'Search and add talks to your plan.',
-      emptyText: 'No Meet the Guardians talks found for this day',
+      defaultTitle: APP_STRINGS.itinerary.selectors.talkFallback,
+      heading: APP_STRINGS.site.nav.meetTheGuardians,
+      subtitle: APP_STRINGS.itinerary.selectors.guardiansTalkSubtitle,
+      emptyText: APP_STRINGS.itinerary.emptyText.guardiansTalks,
 
-      primaryLabel: 'Location',
+      primaryLabel: APP_STRINGS.labels.location,
       getPrimaryValue: getTalkLocation,
       getTimeOfDay: getTalkTimeOfDay,
       emptyStoredFields: {

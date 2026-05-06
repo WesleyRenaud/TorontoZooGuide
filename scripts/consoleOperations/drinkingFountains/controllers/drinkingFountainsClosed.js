@@ -1,4 +1,5 @@
 import { setDrinkingFountainsClosed } from '../../../api/consoleOperationsApi.js';
+import { APP_STRINGS } from '../../../strings.js';
 import {
    resetFormFields,
    validateOptionalDateRange,
@@ -45,15 +46,15 @@ export function createDrinkingFountainsClosedController({
          });
 
          if (result.success) {
-            setStatus(statusEl, 'Drinking fountains were set as closed.', 'is-success');
+            setStatus(statusEl, APP_STRINGS.status.drinkingFountainsClosed, 'is-success');
             resetForm();
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

@@ -1,4 +1,5 @@
 import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
+import { APP_STRINGS } from '../strings.js';
 
 export function createAnimalsListView({ listEl }) {
    function clear() {
@@ -42,7 +43,7 @@ export function createAnimalsListView({ listEl }) {
       clear();
 
       renderButton({
-         label: 'Back',
+         label: APP_STRINGS.animalsPage.back,
          isBack: true,
          onClick: onBack
       });
@@ -61,7 +62,7 @@ export function createAnimalsListView({ listEl }) {
       clear();
 
       renderButton({
-         label: 'Back',
+         label: APP_STRINGS.animalsPage.back,
          isBack: true,
          onClick: onBack
       });

@@ -1,3 +1,5 @@
+import { APP_STRINGS } from '../strings.js';
+
 export function createTooltipCarouselView({
    tooltipEl,
    getRendererForItem,
@@ -51,10 +53,10 @@ export function createTooltipCarouselView({
       const nav = document.createElement('div');
       nav.className = 'tooltip-nav';
 
-      const left = createArrow('<', () => step(-1));
+      const left = createArrow(APP_STRINGS.common.previousSymbol, () => step(-1));
       left.classList.add('tooltip-prev', 'visible');
 
-      const right = createArrow('>', () => step(+1));
+      const right = createArrow(APP_STRINGS.common.nextSymbol, () => step(+1));
       right.classList.add('tooltip-next', 'visible');
 
       nav.appendChild(left);

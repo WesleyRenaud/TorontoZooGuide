@@ -5,22 +5,23 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createOnDisplayPanel() {
    return createPanelShell({
       panelId: 'onDisplayPanel',
-      title: 'Set animal as on display',
+      title: APP_STRINGS.panelTitles.onDisplay,
       bodyChildren: [
          createSelectField({
-            label: 'Exhibit',
+            label: APP_STRINGS.entityLabels.exhibit,
             inputId: 'onDisplayExhibit',
-            emptyOptionLabel: 'Select an exhibit',
+            emptyOptionLabel: APP_STRINGS.placeholders.exhibit,
          }),
          createAutocompleteField({
-            label: 'Species',
+            label: APP_STRINGS.labels.species,
             inputId: 'onDisplaySpecies',
             resultsId: 'onDisplaySpeciesResults',
-            placeholder: 'Search for a species',
+            placeholder: APP_STRINGS.placeholders.speciesSearch,
          }),
          createActions({
             submitId: 'submitOnDisplay',

@@ -1,18 +1,5 @@
 import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
-
-const SPECIES_DETAIL_SECTIONS = Object.freeze([
-   ['Seasonal Viewing Summary', 'seasonal_viewing_summary'],
-   ['Seasonal Viewing Information', 'seasonal_viewing_information'],
-   ['General Viewing Tips', 'general_viewing_tips'],
-   ['Seasonal Viewing Tips', 'seasonal_viewing_tips'],
-   ['Identification', 'identification'],
-   ['Habitat And Range', 'habitat_and_range'],
-   ['Diet And Feeding', 'diet_and_feeding'],
-   ['Behaviour And Life Cycle', 'behaviour_and_life_cycle'],
-   ['Adaptations', 'adaptations'],
-   ['Reproduction And Life Cycle', 'reproduction_and_life_cycle'],
-   ['Animals At The Zoo', 'animals_at_the_zoo'],
-]);
+import { APP_STRINGS } from '../strings.js';
 
 function readText(value) {
    return typeof value === 'string'
@@ -77,7 +64,7 @@ export function buildSpeciesContent(animal) {
 
    fragment.appendChild(createTextElement('h4', 'animal-exhibit', exhibit));
 
-   SPECIES_DETAIL_SECTIONS.forEach(([title, key]) => {
+   APP_STRINGS.animalsPage.detailSections.forEach(([title, key]) => {
       appendIfPresent(
          fragment,
          createDetailSection(title, animal?.[key])

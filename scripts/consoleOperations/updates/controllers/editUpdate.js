@@ -1,4 +1,5 @@
 import { editUpdate } from '../../../api/consoleOperationsApi.js';
+import { APP_STRINGS } from '../../../strings.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
@@ -59,7 +60,7 @@ export function createEditUpdateController({
          resetForm,
          activatePanel,
          panelEl,
-         errorMessage: 'Failed to load updates.',
+         errorMessage: APP_STRINGS.loadErrors.updates,
       });
    }
 
@@ -74,14 +75,14 @@ export function createEditUpdateController({
       type,
       endDate,
    }) {
-      if (!title || !startDate) return 'Update is required.';
+      if (!title || !startDate) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.update);
 
       if (!description && !type && !endDate) {
-         return 'Enter at least one change.';
+         return APP_STRINGS.validation.oneChange;
       }
 
       if (endDate && new Date(endDate).getTime() < new Date(startDate).getTime()) {
-         return 'End date cannot be before the start date.';
+         return APP_STRINGS.validation.endDateBeforeStartDate;
       }
 
       return null;
@@ -109,15 +110,15 @@ export function createEditUpdateController({
          const result = await editUpdate(values);
 
          if (result.success) {
-            setStatus(statusEl, 'Update was edited.', 'is-success');
+            setStatus(statusEl, APP_STRINGS.status.updateEdited, 'is-success');
             resetForm();
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch (err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

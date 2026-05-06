@@ -1,4 +1,5 @@
 import { setStatus } from '../../shell/status.js';
+import { APP_STRINGS } from '../../../strings.js';
 import { setCurrentZoomobileRoute } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
@@ -45,7 +46,7 @@ export function createZoomobileRouteController({
 
    function validateForm({ route, startDate, endDate }) {
       if (!route) {
-         return 'Zoomobile route is required.';
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.map.zoomobileRoute.title);
       }
 
       return validateOptionalDateRange(startDate, endDate);
@@ -84,7 +85,7 @@ export function createZoomobileRouteController({
    function handleSubmitSuccess(result) {
       setStatus(
          statusEl,
-         `Zoomobile route was set to ${result.route}.`,
+         APP_STRINGS.status.zoomobileRouteSet(result),
          'is-success'
       );
 
@@ -110,11 +111,11 @@ export function createZoomobileRouteController({
             handleSubmitSuccess(result);
          }
          else {
-            setStatus(statusEl, result.error || 'Failed.', 'is-error');
+            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
       catch(err) {
-         setStatus(statusEl, 'Request failed.', 'is-error');
+         setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 

@@ -1,3 +1,5 @@
+import { APP_STRINGS } from '../strings.js';
+
 const TYPE_FILTER_ID = 'typeFilter';
 const ZOOMOBILE_ROUTE_SELECTOR = 'input[name="zoomobileRoute"]:checked';
 const DEFAULT_SELECTED_TYPES = ['animal'];
@@ -61,7 +63,7 @@ function getCheckboxLabel(checkbox) {
 function createNoSelectionChip() {
    const chip = document.createElement('span');
    chip.className = 'filter-none';
-   chip.textContent = 'None';
+   chip.textContent = APP_STRINGS.map.zoomobileRoute.none;
    return chip;
 }
 

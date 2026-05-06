@@ -1,11 +1,12 @@
 import { buildSpeciesContent } from './speciesOverlayContent.js';
+import { APP_STRINGS } from '../strings.js';
 
 function createCloseButton(onClose) {
    const button = document.createElement('button');
    button.className = 'species-close';
    button.type = 'button';
-   button.setAttribute('aria-label', 'Close');
-   button.textContent = '×';
+   button.setAttribute('aria-label', APP_STRINGS.common.close);
+   button.textContent = APP_STRINGS.common.closeSymbol;
    button.addEventListener('click', onClose);
    return button;
 }

@@ -5,22 +5,23 @@ import {
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 export function createEndWildEncounterSchedulePanel() {
    return createPanelShell({
       panelId: 'endWildEncounterSchedulePanel',
-      title: 'End Wild Encounter schedule',
+      title: APP_STRINGS.panelTitles.endWildEncounterSchedule,
       bodyChildren: [
          createSelectField({
-            label: 'Wild Encounter',
+            label: APP_STRINGS.entityLabels.wildEncounter,
             inputId: 'endWildEncounterScheduleName',
-            emptyOptionLabel: 'Select a Wild Encounter',
+            emptyOptionLabel: APP_STRINGS.placeholders.wildEncounter,
          }),
          createDateField({
-            label: 'End date',
+            label: APP_STRINGS.labels.endDate,
             inputId: 'endWildEncounterScheduleDate',
-            placeholder: 'Select the date the schedule should end',
-            helpText: 'Leave blank to end the schedule today.',
+            placeholder: APP_STRINGS.placeholders.scheduleEndDate,
+            helpText: APP_STRINGS.help.endScheduleToday,
          }),
          createActions({
             submitId: 'submitEndWildEncounterSchedule',

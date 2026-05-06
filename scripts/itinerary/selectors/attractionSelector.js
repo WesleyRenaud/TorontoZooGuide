@@ -1,6 +1,7 @@
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { APP_STRINGS } from '../../strings.js';
 import {
    buildClosedAttractionMessage,
    buildAttractionImageSrc,
@@ -18,10 +19,10 @@ const STORAGE_KEY = 'tzg.itineraryAttractions';
 
 function promptForClosedAttractionSelection(row, proceed) {
    showItineraryConfirmPopup({
-      title: 'Attraction May Be Closed',
+      title: APP_STRINGS.itinerary.confirmation.attractionMayBeClosed,
       message: buildClosedAttractionMessage(row),
-      confirmText: 'Add',
-      cancelText: 'Cancel',
+      confirmText: APP_STRINGS.itinerary.actions.add,
+      cancelText: APP_STRINGS.itinerary.actions.cancel,
       onConfirm: proceed,
    });
 }
@@ -63,10 +64,10 @@ export function createItineraryAttractionSelectorController({
 
       makeSelection: makeAttractionSelection,
 
-      topTitle: 'Itinerary Builder',
-      h1: 'Add Attractions',
-      subtitle: 'Search and add attractions to your plan.',
-      emptyText: 'No attractions found.',
+      topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
+      h1: APP_STRINGS.itinerary.selectors.titleAttractions,
+      subtitle: APP_STRINGS.itinerary.selectors.attractionSubtitle,
+      emptyText: APP_STRINGS.itinerary.emptyText.attractions,
 
       onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
          if (!shouldConfirmClosedAttraction({
