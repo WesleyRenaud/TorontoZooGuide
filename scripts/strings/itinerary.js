@@ -42,6 +42,18 @@ export const itinerary = {
       wildEncounters: 'No wild encounters found for this day',
    },
    emptyPanel: 'Build an itinerary to see it here.',
+   dayPlanner: {
+      aria: 'Itinerary day planner preview',
+      date: 'Saturday, June 20',
+      eventEnd: '10:45 AM',
+      eventLocation: 'Africa Savanna',
+      eventTitle: 'Sample Itinerary Item',
+      firstSlot: '9:30 AM',
+      openLabel: 'Zoo Opens',
+      secondSlot: '10:00 AM',
+      thirdSlot: '10:30 AM',
+      title: 'Day Plan',
+   },
    itemImage: title => `${title} image`,
    itemPhoto: title => `${title} photo`,
    noItemsSelected: {
