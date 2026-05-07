@@ -15,7 +15,6 @@ import database
 DEFAULT_PORT = 8000
 STRING_EXPORT_SCRIPT = './tools/exportStringValues.mjs'
 HTML_STRING_TOKEN_RE = re.compile( r'\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}' )
-HTML_STRING_VALUES = None
 
 
 def _flatten_string_values( values, prefix='' ):
@@ -33,18 +32,14 @@ def _flatten_string_values( values, prefix='' ):
 
 
 def get_html_string_values():
-   global HTML_STRING_VALUES
+   result = subprocess.run(
+      [ 'node', STRING_EXPORT_SCRIPT ],
+      check=True,
+      capture_output=True,
+      text=True
+   )
 
-   if HTML_STRING_VALUES is None:
-      result = subprocess.run(
-         [ 'node', STRING_EXPORT_SCRIPT ],
-         check=True,
-         capture_output=True,
-         text=True
-      )
-      HTML_STRING_VALUES = _flatten_string_values( json.loads( result.stdout ) )
-
-   return HTML_STRING_VALUES
+   return _flatten_string_values( json.loads( result.stdout ) )
 
 
 def render_html_strings( content ):
