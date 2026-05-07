@@ -57,6 +57,10 @@ function textFor(row, selector) {
    return row.querySelector(selector)?.textContent ?? '';
 }
 
+function imageSrcFor(row) {
+   return row.querySelector('.itin-panel-thumb')?.children[0]?.src ?? '';
+}
+
 beforeEach(() => {
    globalThis.document = {
       createElement: (tagName) => createNode(tagName),
@@ -110,6 +114,10 @@ test('buildAnimalRows deduplicates species and renders visibility alerts', () =>
    ]);
 
    assert.equal(rows.length, 1);
+   assert.equal(
+      imageSrcFor(rows[0]),
+      'images/details/animals/africa-savanna/african-lion.png'
+   );
    assert.equal(textFor(rows[0], '.itin-panel-name'), 'African Lion');
    assert.equal(textFor(rows[0], '.itin-panel-meta'), 'Exhibit: Africa Savanna');
    assert.equal(
@@ -130,6 +138,10 @@ test('buildAttractionRows renders seeded attraction metadata and removal reason'
    ]);
 
    assert.equal(textFor(row, '.itin-panel-name'), 'Conservation Carousel');
+   assert.equal(
+      imageSrcFor(row),
+      'images/details/attractions/conservation-carousel.png'
+   );
    assert.equal(textFor(row, '.itin-panel-meta'), 'Carousels are timeless and fun for all ages!');
    assert.equal(
       textFor(row, '.itin-panel-alert'),
@@ -154,8 +166,16 @@ test('buildGuardiansRows and buildWildRows render schedule metadata', () => {
    ]);
 
    assert.equal(textFor(talkRow, '.itin-panel-name'), 'Amur Tiger');
+   assert.equal(
+      imageSrcFor(talkRow),
+      'images/details/guardians-talks/amur-tiger.png'
+   );
    assert.equal(textFor(talkRow, '.itin-panel-meta'), 'Location: Eurasia Wilds');
    assert.equal(textFor(wildRow, '.itin-panel-name'), 'African Rainforest');
+   assert.equal(
+      imageSrcFor(wildRow),
+      'images/details/wild-encounters/african-rainforest.png'
+   );
    assert.equal(
       textFor(wildRow, '.itin-panel-meta'),
       'Meeting Spot: Wild Encounter - Africa Meeting Spot'

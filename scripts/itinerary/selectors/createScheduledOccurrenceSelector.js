@@ -20,7 +20,7 @@ function buildOccurrenceImageSrc(imageDirectory, name) {
       return null;
    }
 
-   return `../images/${imageDirectory}/${file}.png`;
+   return `../images/details/${imageDirectory}/${file}.png`;
 }
 
 function buildOccurrenceSubtitle({
