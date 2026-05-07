@@ -23,7 +23,7 @@ function buildImageSrc(...pathParts) {
       return null;
    }
 
-   return `images/${normalizedParts.join('/')}.png`;
+   return `images/details/${normalizedParts.join('/')}.png`;
 }
 
 function buildFieldLine(label, value) {
