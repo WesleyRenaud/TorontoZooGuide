@@ -62,6 +62,29 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    assert cleared.wild_encounters == []
 
 
+def test_get_zoo_hours_returns_seeded_operating_bounds( db ):
+   assert db.get_zoo_hours( '2026-06-20' ) == {
+      'date': '2026-06-20',
+      'openTime': '09:30',
+      'closeTime': '19:00',
+      'lastAdmissionTime': '18:00'
+   }
+
+   assert db.get_zoo_hours( '2026-06-22' ) == {
+      'date': '2026-06-22',
+      'openTime': '09:30',
+      'closeTime': '18:00',
+      'lastAdmissionTime': '17:00'
+   }
+
+   assert db.get_zoo_hours( '2026-12-25' ) == {
+      'date': '2026-12-25',
+      'openTime': '11:00',
+      'closeTime': '16:00',
+      'lastAdmissionTime': '15:00'
+   }
+
+
 def test_validate_animals_removes_unavailable_entries( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
    db.set_animal_as_off_display(
