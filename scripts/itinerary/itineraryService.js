@@ -2,7 +2,7 @@ import {
    clearItineraryRequest,
    getItineraryRequest,
    setItineraryRequest,
-} from '../../api/itineraryApi.js';
+} from '../api/itineraryApi.js';
 import {
    createEmptyItineraryDraft,
    isItineraryEmptyDraft,
