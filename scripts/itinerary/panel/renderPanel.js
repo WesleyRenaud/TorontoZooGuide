@@ -1,6 +1,11 @@
 import { makeActionsBar } from './components/actionsBar.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
+import {
+   ITINERARY_PANEL_VIEWS,
+   makeDayPlannerPreview,
+   makeItineraryPanelViews,
+} from './components/dayPlanner.js';
 import { makeSection } from './components/section.js';
 import { clearItineraryDraftStorage } from '../draftStorage.js';
 import {
@@ -17,6 +22,7 @@ import {
 import { APP_STRINGS } from '../../strings.js';
 
 let latestRenderToken = 0;
+let activePanelView = ITINERARY_PANEL_VIEWS.list;
 
 function destroyRenderedPanelChildren(bodyEl) {
    Array.from(bodyEl?.children ?? []).forEach((child) => {
@@ -73,10 +79,28 @@ function buildSectionConfigs({
    ];
 }
 
+function makePanelViewShell() {
+   return makeItineraryPanelViews({
+      activeView: activePanelView,
+      onViewChange: (view) => {
+         activePanelView = view;
+      },
+   });
+}
+
+function appendDayPlannerView(dayPlannerView) {
+   dayPlannerView.appendChild(makeDayPlannerPreview());
+}
+
 function buildItineraryPanelContent(itinerary) {
    const fragment = document.createDocumentFragment();
+   const {
+      root,
+      listView,
+      dayPlannerView,
+   } = makePanelViewShell();
 
-   fragment.appendChild(
+   listView.appendChild(
       makeActionsBar({
          onAfterClear: clearStoredItinerary,
       })
@@ -85,16 +109,31 @@ function buildItineraryPanelContent(itinerary) {
    const dateCard = makeDateCard(itinerary);
 
    if (dateCard) {
-      fragment.appendChild(dateCard);
+      listView.appendChild(dateCard);
    }
 
    buildSectionConfigs(itinerary).forEach((sectionConfig) => {
-      fragment.appendChild(
+      listView.appendChild(
          makeSection(sectionConfig)
       );
    });
 
+   appendDayPlannerView(dayPlannerView);
+   fragment.appendChild(root);
+
    return fragment;
+}
+
+function buildEmptyItineraryPanelContent(bodyEl) {
+   const {
+      root,
+      listView,
+      dayPlannerView,
+   } = makePanelViewShell();
+
+   renderBuildOnly(listView);
+   appendDayPlannerView(dayPlannerView);
+   bodyEl.appendChild(root);
 }
 
 export async function renderItineraryPanelInto(bodyEl) {
@@ -112,7 +151,7 @@ export async function renderItineraryPanelInto(bodyEl) {
    clearRenderedPanel(bodyEl);
 
    if (!itinerary || isItineraryEmpty(itinerary)) {
-      renderBuildOnly(bodyEl);
+      buildEmptyItineraryPanelContent(bodyEl);
       return;
    }
 

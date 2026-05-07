@@ -56,56 +56,6 @@
                   <!-- markers injected here -->
                </div>
 
-               <section
-                  class="itinerary-day-module"
-                  aria-label="{{ itinerary.dayPlanner.aria }}"
-               >
-                  <div class="itinerary-day-module-header">
-                     <div>
-                        <div class="itinerary-day-module-kicker">
-                           {{ site.nav.itinerary }}
-                        </div>
-                        <h3>{{ itinerary.dayPlanner.title }}</h3>
-                     </div>
-                     <span class="itinerary-day-module-date">
-                        {{ itinerary.dayPlanner.date }}
-                     </span>
-                  </div>
-
-                  <div class="itinerary-day-timeline" aria-hidden="true">
-                     <div class="itinerary-day-time">
-                        {{ itinerary.dayPlanner.firstSlot }}
-                     </div>
-                     <div class="itinerary-day-grid-line"></div>
-
-                     <div class="itinerary-day-time">
-                        {{ itinerary.dayPlanner.secondSlot }}
-                     </div>
-                     <div class="itinerary-day-grid-line">
-                        <article class="itinerary-day-event">
-                           <div class="itinerary-day-event-time">
-                              {{ itinerary.dayPlanner.secondSlot }} - {{ itinerary.dayPlanner.eventEnd }}
-                           </div>
-                           <div class="itinerary-day-event-title">
-                              {{ itinerary.dayPlanner.eventTitle }}
-                           </div>
-                           <div class="itinerary-day-event-location">
-                              {{ itinerary.dayPlanner.eventLocation }}
-                           </div>
-                        </article>
-                     </div>
-
-                     <div class="itinerary-day-time">
-                        {{ itinerary.dayPlanner.thirdSlot }}
-                     </div>
-                     <div class="itinerary-day-grid-line">
-                        <span class="itinerary-day-open-pill">
-                           {{ itinerary.dayPlanner.openLabel }}
-                        </span>
-                     </div>
-                  </div>
-               </section>
-
                <div id="tooltip" class="tooltip" style="display:none;"></div>
                <div id="hoverTooltip" class="hover-tooltip" style="display:none;"></div>
 
