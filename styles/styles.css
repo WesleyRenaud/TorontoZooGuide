@@ -1683,8 +1683,76 @@ nav ul li a:hover {
    overflow-y: auto;
    overflow-x: hidden;
 
-   padding: 32px 20px 32px 20px;
+   padding: 0 20px 32px 20px;
    box-sizing: border-box;
+}
+
+.itin-panel-view-shell {
+   display: flex;
+   flex-direction: column;
+   gap: 112px;
+   min-height: 0;
+   flex: 1 1 auto;
+}
+
+.itin-panel-view {
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+   min-height: 0;
+}
+
+.itin-panel-view[hidden] {
+   display: none;
+}
+
+.itin-panel-view-toggle {
+   display: grid;
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+   gap: 0;
+   margin: 0 -20px;
+   padding: 0;
+   border-radius: 0;
+   background: #5e9600;
+   box-shadow:
+      0 12px 26px rgba(20, 35, 10, 0.22),
+      0 2px 0 rgba(255, 255, 255, 0.12) inset;
+}
+
+.itin-panel-view-toggle-button {
+   min-height: 112px;
+   border: none;
+   border-radius: 0;
+   background: #5e9600;
+   color: #ffffff;
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.8rem;
+   font-weight: 900;
+   line-height: 1.1;
+   cursor: pointer;
+   box-shadow:
+      inset 0 5px 0 rgba(255, 255, 255, 0.16),
+      inset 0 -8px 0 rgba(20, 35, 10, 0.22),
+      0 10px 18px rgba(20, 35, 10, 0.18);
+   transition:
+      background-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
+}
+
+.itin-panel-view-toggle-button-active {
+   background: #5e9600;
+   color: #ffffff;
+}
+
+.itin-panel-view-toggle-button:hover,
+.itin-panel-view-toggle-button:focus-visible {
+   background: #6fac11;
+   box-shadow:
+      inset 0 5px 0 rgba(255, 255, 255, 0.22),
+      inset 0 -8px 0 rgba(20, 35, 10, 0.18),
+      0 12px 20px rgba(20, 35, 10, 0.2);
+   transform: translateY(-1px);
 }
 
 /* ============================================================
@@ -1692,45 +1760,38 @@ nav ul li a:hover {
 ============================================================ */
 
 .itinerary-day-module {
-   position: absolute;
-   top: 30px;
-   left: 30px;
-   z-index: 60;
-
-   width: min(720px, calc(100% - 60px));
+   width: 100%;
    box-sizing: border-box;
 
-   padding: 28px;
+   padding: 18px;
    border-radius: 8px;
    border: 4px solid rgba(94, 150, 0, 0.48);
    background: rgba(246, 251, 238, 0.97);
-   box-shadow: 0 24px 60px rgba(20, 35, 10, 0.32);
-   backdrop-filter: blur(10px);
+   box-shadow: 0 10px 24px rgba(20, 35, 10, 0.16);
 
    font-family: 'Poppins', sans-serif;
    color: rgba(20, 35, 10, 0.94);
-   pointer-events: auto;
 }
 
 .itinerary-day-module-header {
    display: flex;
    align-items: flex-start;
    justify-content: space-between;
-   gap: 24px;
-   padding: 2px 2px 24px 2px;
+   gap: 12px;
+   padding: 2px 2px 16px 2px;
    border-bottom: 3px solid rgba(94, 150, 0, 0.18);
 }
 
 .itinerary-day-module-kicker {
-   font-size: 1.45rem;
+   font-size: 0.9rem;
    line-height: 1;
    font-weight: 900;
    color: #5e9600;
 }
 
 .itinerary-day-module h3 {
-   margin: 8px 0 0 0;
-   font-size: 3.45rem;
+   margin: 6px 0 0 0;
+   font-size: 1.8rem;
    line-height: 1;
    font-weight: 900;
    letter-spacing: 0;
@@ -1738,12 +1799,12 @@ nav ul li a:hover {
 
 .itinerary-day-module-date {
    flex: 0 0 auto;
-   max-width: 210px;
-   padding: 12px 14px;
+   max-width: 138px;
+   padding: 9px 10px;
    border-radius: 8px;
    background: #5e9600;
    color: #ffffff;
-   font-size: 1.35rem;
+   font-size: 0.85rem;
    line-height: 1.1;
    font-weight: 900;
    text-align: center;
@@ -1752,16 +1813,16 @@ nav ul li a:hover {
 
 .itinerary-day-timeline {
    display: grid;
-   grid-template-columns: 126px minmax(0, 1fr);
-   grid-auto-rows: minmax(108px, auto);
-   padding-top: 22px;
+   grid-template-columns: 80px minmax(0, 1fr);
+   grid-auto-rows: minmax(92px, auto);
+   padding-top: 18px;
 }
 
 .itinerary-day-time {
-   padding-top: 12px;
-   padding-right: 22px;
+   padding-top: 10px;
+   padding-right: 12px;
    color: rgba(20, 35, 10, 0.64);
-   font-size: 1.28rem;
+   font-size: 0.82rem;
    font-weight: 900;
    text-align: right;
    white-space: nowrap;
@@ -1769,61 +1830,61 @@ nav ul li a:hover {
 
 .itinerary-day-grid-line {
    position: relative;
-   min-height: 108px;
-   border-top: 3px solid rgba(94, 150, 0, 0.18);
-   border-left: 4px solid rgba(94, 150, 0, 0.22);
+   min-height: 92px;
+   border-top: 2px solid rgba(94, 150, 0, 0.18);
+   border-left: 3px solid rgba(94, 150, 0, 0.22);
 }
 
 .itinerary-day-event {
    position: absolute;
-   top: 12px;
-   left: 18px;
+   top: 10px;
+   left: 10px;
    right: 0;
-   min-height: 116px;
+   min-height: 100px;
    box-sizing: border-box;
 
-   padding: 18px 22px;
+   padding: 13px 14px;
    border-radius: 8px;
-   border-left: 12px solid #7dbb2f;
+   border-left: 8px solid #7dbb2f;
    background: linear-gradient(135deg, #ffffff 0%, #e5f4d2 100%);
-   box-shadow: 0 12px 28px rgba(20, 35, 10, 0.18);
+   box-shadow: 0 8px 18px rgba(20, 35, 10, 0.16);
 }
 
 .itinerary-day-event-time {
    color: #5e9600;
-   font-size: 1.18rem;
+   font-size: 0.78rem;
    line-height: 1.2;
    font-weight: 900;
 }
 
 .itinerary-day-event-title {
-   margin-top: 6px;
-   font-size: 1.75rem;
+   margin-top: 5px;
+   font-size: 1.08rem;
    line-height: 1.15;
    font-weight: 900;
 }
 
 .itinerary-day-event-location {
-   margin-top: 7px;
+   margin-top: 6px;
    color: rgba(20, 35, 10, 0.68);
-   font-size: 1.22rem;
+   font-size: 0.82rem;
    line-height: 1.2;
    font-weight: 800;
 }
 
 .itinerary-day-open-pill {
    position: absolute;
-   top: -21px;
-   left: 18px;
-   padding: 8px 14px;
+   top: -16px;
+   left: 10px;
+   padding: 6px 10px;
    border-radius: 999px;
    background: #ffffff;
-   border: 3px solid rgba(94, 150, 0, 0.35);
+   border: 2px solid rgba(94, 150, 0, 0.35);
    color: #5e9600;
-   font-size: 1.08rem;
+   font-size: 0.75rem;
    line-height: 1;
    font-weight: 900;
-   box-shadow: 0 8px 18px rgba(20, 35, 10, 0.14);
+   box-shadow: 0 6px 14px rgba(20, 35, 10, 0.14);
 }
 
 /* ============================================================
