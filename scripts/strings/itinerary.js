@@ -44,11 +44,13 @@ export const itinerary = {
    emptyPanel: 'Build an itinerary to see it here.',
    dayPlanner: {
       aria: 'Itinerary day planner preview',
+      dayPlannerLabel: 'Day Planner View',
       date: 'Saturday, June 20',
       eventEnd: '10:45 AM',
       eventLocation: 'Africa Savanna',
       eventTitle: 'Sample Itinerary Item',
       firstSlot: '9:30 AM',
+      listViewLabel: 'List View',
       openLabel: 'Zoo Opens',
       secondSlot: '10:00 AM',
       thirdSlot: '10:30 AM',

@@ -493,15 +493,15 @@ def test_send_file_renders_shared_html_strings():
    assert '{{ site.titles.guide }}' not in content
 
 
-def test_send_file_renders_itinerary_day_planner_strings():
+def test_send_file_renders_itinerary_static_strings():
    handler = FakeHandler( path='/itinerary.html' )
 
    server.MyHandler._send_file( handler, './pages/itinerary.html', 'text/html' )
 
    content = handler.wfile.getvalue().decode( 'utf-8' )
 
-   assert 'Day Plan' in content
-   assert '{{ itinerary.dayPlanner.title }}' not in content
+   assert 'Itinerary panel' in content
+   assert '{{ itinerary.aria.panel }}' not in content
 
 
 def test_send_file_renders_console_operation_strings():
