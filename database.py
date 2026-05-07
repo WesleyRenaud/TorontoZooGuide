@@ -2110,6 +2110,34 @@ class Database():
       return itinerary
 
 
+   def get_zoo_hours( self, date_value ):
+      operating_date = self.parse_date_value( date_value ).isoformat()
+      cur = self.conn.cursor()
+
+      row = cur.execute(
+         """   SELECT
+                  OPERATING_DATE,
+                  OPEN_TIME,
+                  CLOSE_TIME,
+                  LAST_ADMISSION_TIME
+               FROM ZooHours
+               WHERE OPERATING_DATE = ?;
+         """,
+         ( operating_date, ) ).fetchone()
+
+      cur.close()
+
+      if row == None:
+         return None
+
+      return {
+         'date': row[ 'OPERATING_DATE' ],
+         'openTime': row[ 'OPEN_TIME' ],
+         'closeTime': row[ 'CLOSE_TIME' ],
+         'lastAdmissionTime': row[ 'LAST_ADMISSION_TIME' ]
+      }
+
+
    def set_itinerary(
          self,
          date,

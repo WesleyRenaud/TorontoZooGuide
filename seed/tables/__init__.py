@@ -25,6 +25,7 @@ from . import emergency_intercom
 from . import guest_service
 from . import picnic_site
 from . import event_site
+from . import zoo_hours
 
 
 static_tables = [
@@ -55,4 +56,5 @@ static_tables = [
    guest_service,
    picnic_site,
    event_site,
+   zoo_hours,
 ]

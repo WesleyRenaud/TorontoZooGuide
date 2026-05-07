@@ -27,6 +27,7 @@ from .tables.emergency_intercom import emergency_intercoms
 from .tables.guest_service import guest_services
 from .tables.picnic_site import picnic_sites
 from .tables.event_site import event_sites
+from .tables.zoo_hours import zoo_hours
 
 __all__ = [
    'regions',
@@ -56,4 +57,5 @@ __all__ = [
    'guest_services',
    'picnic_sites',
    'event_sites',
+   'zoo_hours',
 ]

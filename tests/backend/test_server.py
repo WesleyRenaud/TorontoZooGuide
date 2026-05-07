@@ -273,6 +273,16 @@ class StubDatabase:
       return zoo.Itinerary( date='2026-06-15' )
 
 
+   def get_zoo_hours( self, date_value ):
+      self.calls.append( ( 'get_zoo_hours', { 'date_value': date_value } ) )
+      return {
+         'date': date_value,
+         'openTime': '09:30',
+         'closeTime': '19:00',
+         'lastAdmissionTime': '18:00'
+      }
+
+
    def clear_itinerary( self ):
       self.calls.append( ( 'clear_itinerary', {} ) )
       return True
@@ -616,7 +626,8 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
       ( '/get-picnic-sites', {}, 'picnic_sites' ),
       ( '/get-event-sites', {}, 'event_sites' ),
       ( '/get-updates', { 'month': 'June', 'day': 15 }, 'updates' ),
-      ( '/get-closed-exhibits', { 'month': 'June', 'day': 15 }, 'closed_exhibits' )
+      ( '/get-closed-exhibits', { 'month': 'June', 'day': 15 }, 'closed_exhibits' ),
+      ( '/get-zoo-hours', { 'date': '2026-06-20' }, 'hours' )
    ]
 )
 def test_read_endpoints_return_json_keys( stub_database, path, body, response_key ):
