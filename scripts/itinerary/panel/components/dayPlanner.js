@@ -1,4 +1,13 @@
+import {
+   buildHalfHourSlotStarts,
+   formatMinutesAsClockTime,
+   parseClockTimeMinutes,
+} from '../dayPlannerSchedule.js';
 import { el } from '../dom.js';
+import {
+   formatClockTime,
+   formatISODateFull,
+} from '../format.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export const ITINERARY_PANEL_VIEWS = {
@@ -25,6 +34,23 @@ function setViewVisibility(root, selectedView) {
    root.querySelectorAll('.itin-panel-view').forEach((view) => {
       view.hidden = view.dataset.view !== selectedView;
    });
+}
+
+function makeTimelineRow(timeLabel, pillLabel) {
+   const gridLine = el('div', 'itinerary-day-grid-line');
+
+   if (pillLabel) {
+      gridLine.appendChild(el('span', 'itinerary-day-open-pill', pillLabel));
+   }
+
+   return [
+      el('div', 'itinerary-day-time', timeLabel),
+      gridLine,
+   ];
+}
+
+function makeUnavailableMessage(message) {
+   return el('div', 'itinerary-day-unavailable', message);
 }
 
 export function makeItineraryPanelViews({
@@ -73,44 +99,53 @@ export function makeItineraryPanelViews({
    };
 }
 
-export function makeDayPlannerPreview() {
+export function makeDayPlannerPreview(zooHours = null) {
    const strings = APP_STRINGS.itinerary.dayPlanner;
+   const hours = zooHours && typeof zooHours === 'object'
+      ? zooHours
+      : {};
+   const closeTime = formatClockTime(hours.closeTime, strings.thirdSlot);
    const section = el('section', 'itinerary-day-module');
    const header = el('div', 'itinerary-day-module-header');
    const titleWrap = el('div');
-   const kicker = el('div', 'itinerary-day-module-kicker', APP_STRINGS.site.nav.itinerary);
    const title = el('h3', '', strings.title);
-   const date = el('span', 'itinerary-day-module-date', strings.date);
+   const date = el('span', 'itinerary-day-module-date', formatISODateFull(hours.date, strings.date));
    const timeline = el('div', 'itinerary-day-timeline');
 
    section.setAttribute('aria-label', strings.aria);
    timeline.setAttribute('aria-hidden', 'true');
 
-   titleWrap.appendChild(kicker);
    titleWrap.appendChild(title);
    header.appendChild(titleWrap);
    header.appendChild(date);
 
-   timeline.appendChild(el('div', 'itinerary-day-time', strings.firstSlot));
-   timeline.appendChild(el('div', 'itinerary-day-grid-line'));
+   const openMinutes = parseClockTimeMinutes(hours.openTime);
+   const lastAdmissionMinutes = parseClockTimeMinutes(hours.lastAdmissionTime);
+   const closeMinutes = parseClockTimeMinutes(hours.closeTime);
+   const halfHourSlotStarts = buildHalfHourSlotStarts(openMinutes, closeMinutes);
 
-   const eventLine = el('div', 'itinerary-day-grid-line');
-   const event = el('article', 'itinerary-day-event');
-   event.appendChild(
-      el('div', 'itinerary-day-event-time', `${strings.secondSlot} - ${strings.eventEnd}`)
-   );
-   event.appendChild(el('div', 'itinerary-day-event-title', strings.eventTitle));
-   event.appendChild(el('div', 'itinerary-day-event-location', strings.eventLocation));
-   eventLine.appendChild(event);
+   if (halfHourSlotStarts.length === 0) {
+      section.appendChild(header);
+      section.appendChild(makeUnavailableMessage(strings.hoursUnavailable));
+      return section;
+   }
 
-   timeline.appendChild(el('div', 'itinerary-day-time', strings.secondSlot));
-   timeline.appendChild(eventLine);
+   halfHourSlotStarts.forEach((slotStart) => {
+      const pillLabel = slotStart === openMinutes
+         ? strings.openLabel
+         : slotStart === lastAdmissionMinutes
+            ? strings.lastAdmissionLabel
+            : null;
+      const [timeCell, gridLine] = makeTimelineRow(
+         formatMinutesAsClockTime(slotStart),
+         pillLabel
+      );
 
-   const openLine = el('div', 'itinerary-day-grid-line');
-   openLine.appendChild(el('span', 'itinerary-day-open-pill', strings.openLabel));
+      timeline.appendChild(timeCell);
+      timeline.appendChild(gridLine);
+   });
 
-   timeline.appendChild(el('div', 'itinerary-day-time', strings.thirdSlot));
-   timeline.appendChild(openLine);
+   timeline.append(...makeTimelineRow(closeTime, strings.closeLabel));
 
    section.appendChild(header);
    section.appendChild(timeline);

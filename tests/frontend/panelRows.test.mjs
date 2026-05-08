@@ -8,6 +8,13 @@ import {
    buildWildRows,
 } from '../../scripts/itinerary/panel/rows.js';
 import {
+   buildHalfHourSlotStarts,
+   formatMinutesAsClockTime,
+   parseClockTimeMinutes,
+} from '../../scripts/itinerary/panel/dayPlannerSchedule.js';
+import {
+   formatClockTime,
+   formatISODateFull,
    formatISODateLong,
    normalizeAnimal,
    normalizeAttraction,
@@ -78,6 +85,21 @@ afterEach(() => {
 test('formats and normalizes itinerary panel item data', () => {
    assert.match(formatISODateLong('2026-06-15'), /June 15, 2026/);
    assert.equal(formatISODateLong('not-a-date'), '');
+   assert.equal(formatISODateFull('2026-06-20'), 'Saturday, June 20, 2026');
+   assert.equal(formatISODateFull('not-a-date', 'Fallback Date'), 'not-a-date');
+   assert.equal(formatClockTime('09:30'), '9:30 AM');
+   assert.equal(formatClockTime('19:00'), '7:00 PM');
+   assert.equal(formatClockTime('', 'Fallback Time'), 'Fallback Time');
+   assert.equal(parseClockTimeMinutes('09:30'), 570);
+   assert.equal(parseClockTimeMinutes('bad-time'), null);
+   assert.equal(formatMinutesAsClockTime(1140), '7:00 PM');
+   assert.deepEqual(buildHalfHourSlotStarts(570, 720), [
+      570,
+      600,
+      630,
+      660,
+      690,
+   ]);
    assert.deepEqual(normalizeAnimal({
       species: '  African Lion  ',
       exhibit: '  Africa Savanna  ',

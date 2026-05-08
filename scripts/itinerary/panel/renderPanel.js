@@ -7,10 +7,14 @@ import {
    makeItineraryPanelViews,
 } from './components/dayPlanner.js';
 import { makeSection } from './components/section.js';
-import { clearItineraryDraftStorage } from '../draftStorage.js';
+import {
+   clearItineraryDraftStorage,
+   getStoredItineraryDate,
+} from '../draftStorage.js';
 import {
    clearItinerary,
    getItinerary,
+   getZooHours,
    isItineraryEmpty,
 } from '../itineraryService.js';
 import {
@@ -88,11 +92,15 @@ function makePanelViewShell() {
    });
 }
 
-function appendDayPlannerView(dayPlannerView) {
-   dayPlannerView.appendChild(makeDayPlannerPreview());
+function appendDayPlannerViewWithHours(dayPlannerView, zooHours) {
+   dayPlannerView.appendChild(makeDayPlannerPreview(zooHours));
 }
 
-function buildItineraryPanelContent(itinerary) {
+function getDayPlannerDate(itinerary) {
+   return itinerary?.date || getStoredItineraryDate();
+}
+
+function buildItineraryPanelContent(itinerary, zooHours) {
    const fragment = document.createDocumentFragment();
    const {
       root,
@@ -118,13 +126,13 @@ function buildItineraryPanelContent(itinerary) {
       );
    });
 
-   appendDayPlannerView(dayPlannerView);
+   appendDayPlannerViewWithHours(dayPlannerView, zooHours);
    fragment.appendChild(root);
 
    return fragment;
 }
 
-function buildEmptyItineraryPanelContent(bodyEl) {
+function buildEmptyItineraryPanelContent(bodyEl, zooHours) {
    const {
       root,
       listView,
@@ -132,7 +140,7 @@ function buildEmptyItineraryPanelContent(bodyEl) {
    } = makePanelViewShell();
 
    renderBuildOnly(listView);
-   appendDayPlannerView(dayPlannerView);
+   appendDayPlannerViewWithHours(dayPlannerView, zooHours);
    bodyEl.appendChild(root);
 }
 
@@ -143,6 +151,7 @@ export async function renderItineraryPanelInto(bodyEl) {
 
    const renderToken = ++latestRenderToken;
    const itinerary = await getItinerary();
+   const zooHours = await getZooHours(getDayPlannerDate(itinerary));
 
    if (renderToken !== latestRenderToken) {
       return;
@@ -151,11 +160,11 @@ export async function renderItineraryPanelInto(bodyEl) {
    clearRenderedPanel(bodyEl);
 
    if (!itinerary || isItineraryEmpty(itinerary)) {
-      buildEmptyItineraryPanelContent(bodyEl);
+      buildEmptyItineraryPanelContent(bodyEl, zooHours);
       return;
    }
 
    bodyEl.appendChild(
-      buildItineraryPanelContent(itinerary)
+      buildItineraryPanelContent(itinerary, zooHours)
    );
 }

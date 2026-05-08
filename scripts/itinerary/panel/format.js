@@ -35,6 +35,48 @@ export function formatISODateLong(iso) {
    });
 }
 
+export function formatISODateFull(iso, fallback = '') {
+   if (!iso || typeof iso !== 'string') return fallback;
+
+   const dateParts = iso.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+   if (!dateParts) {
+      return iso.trim() || fallback;
+   }
+
+   const date = new Date(
+      Number(dateParts[1]),
+      Number(dateParts[2]) - 1,
+      Number(dateParts[3])
+   );
+
+   return new Intl.DateTimeFormat('en-CA', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+   }).format(date);
+}
+
+export function formatClockTime(timeValue, fallback = '') {
+   if (typeof timeValue !== 'string' || !timeValue.trim()) {
+      return fallback;
+   }
+
+   const timeParts = timeValue.trim().match(/^(\d{1,2}):(\d{2})$/);
+
+   if (!timeParts) {
+      return timeValue.trim();
+   }
+
+   const hours = Number(timeParts[1]);
+   const minutes = Number(timeParts[2]);
+   const period = hours >= 12 ? 'PM' : 'AM';
+   const displayHours = hours % 12 || 12;
+
+   return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+}
+
 export function normalizeAnimal(value) {
    const source = asObject(value);
 

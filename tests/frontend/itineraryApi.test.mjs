@@ -3,6 +3,7 @@ import { afterEach, test } from 'node:test';
 
 import {
    getItineraryRequest,
+   getZooHoursRequest,
    setItineraryRequest,
    validateItineraryDraftRequest,
 } from '../../scripts/api/itineraryApi.js';
@@ -72,6 +73,32 @@ test('normalizes set itinerary failures without dropping returned itinerary data
          attractions: [{ name: 'Conservation Carousel' }],
          guardiansTalks: [],
          wildEncounters: [],
+      },
+   });
+});
+
+test('normalizes zoo hours response', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/get-zoo-hours');
+      assert.equal(options.method, 'POST');
+      assert.deepEqual(JSON.parse(options.body), { date: '2026-06-20' });
+
+      return mockJsonResponse({
+         hours: {
+            date: '  2026-06-20  ',
+            openTime: ' 09:30 ',
+            closeTime: '19:00 ',
+            lastAdmissionTime: ' 18:00',
+         },
+      });
+   };
+
+   assert.deepEqual(await getZooHoursRequest('2026-06-20'), {
+      hours: {
+         date: '2026-06-20',
+         openTime: '09:30',
+         closeTime: '19:00',
+         lastAdmissionTime: '18:00',
       },
    });
 });
