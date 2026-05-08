@@ -1,6 +1,7 @@
 import {
    clearItineraryRequest,
    getItineraryRequest,
+   getZooHoursRequest,
    setItineraryRequest,
 } from '../api/itineraryApi.js';
 import {
@@ -60,6 +61,15 @@ export function normalizeItinerary(itinerary) {
 export async function getItinerary() {
    const result = await getItineraryRequest();
    return normalizeItinerary(result?.itinerary);
+}
+
+export async function getZooHours(date) {
+   if (!date) {
+      return null;
+   }
+
+   const result = await getZooHoursRequest(date);
+   return result?.hours || null;
 }
 
 export async function saveItinerary(itinerary = {}) {

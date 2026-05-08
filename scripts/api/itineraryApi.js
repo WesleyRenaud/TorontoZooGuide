@@ -56,6 +56,25 @@ function normalizeItineraryResponse(response) {
    };
 }
 
+function normalizeZooHours(hours) {
+   const source = asObject(hours);
+
+   return {
+      date: asTrimmedString(source.date),
+      openTime: asTrimmedString(source.openTime),
+      closeTime: asTrimmedString(source.closeTime),
+      lastAdmissionTime: asTrimmedString(source.lastAdmissionTime),
+   };
+}
+
+function normalizeZooHoursResponse(response) {
+   const source = asObject(response);
+
+   return {
+      hours: normalizeZooHours(source.hours),
+   };
+}
+
 function normalizeValidationBucket(bucket) {
    return normalizeValidationCollections(asObject(bucket));
 }
@@ -75,6 +94,11 @@ function normalizeValidatedItineraryResponse(response) {
 export async function getItineraryRequest() {
    const response = await postJson('/get-itinerary', {});
    return normalizeItineraryResponse(response);
+}
+
+export async function getZooHoursRequest(date) {
+   const response = await postJson('/get-zoo-hours', { date });
+   return normalizeZooHoursResponse(response);
 }
 
 export async function setItineraryRequest(payload) {
