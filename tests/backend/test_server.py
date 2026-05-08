@@ -493,6 +493,26 @@ def test_send_file_renders_shared_html_strings():
    assert '{{ site.titles.guide }}' not in content
 
 
+def test_send_file_renders_animals_page_nav_in_standard_order():
+   handler = FakeHandler( path='/animals.html' )
+
+   server.MyHandler._send_file( handler, './pages/animals.html', 'text/html' )
+
+   content = handler.wfile.getvalue().decode( 'utf-8' )
+
+   nav_items = [
+      '<a href="map.html">Map</a>',
+      '<a href="animals.html">Animals</a>',
+      '<a href="https://www.torontozoo.com/meettheguardians">Meet The Guardians</a>',
+      '<a href="https://www.torontozoo.com/wildencounters">Wild Encounters</a>',
+      '<a href="itinerary.html">Itinerary</a>'
+   ]
+
+   nav_positions = [ content.index( item ) for item in nav_items ]
+
+   assert nav_positions == sorted( nav_positions )
+
+
 def test_send_file_renders_itinerary_static_strings():
    handler = FakeHandler( path='/itinerary.html' )
 
