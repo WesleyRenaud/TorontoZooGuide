@@ -63,6 +63,11 @@ function createNode(tagName, className = '', textContent = '') {
       addEventListener(eventName, handler) {
          listeners[eventName] = handler;
       },
+      getBoundingClientRect() {
+         return {
+            height: 100,
+         };
+      },
       setAttribute(name, value) {
          attributes[name] = value;
       },
@@ -124,14 +129,25 @@ function imageSrcFor(row) {
 beforeEach(() => {
    globalThis.document = {
       createElement: (tagName) => createNode(tagName),
+      createTextNode: (textContent) => createNode('#text', '', textContent),
    };
    globalThis.window = {
+      addEventListener: () => {},
+      getComputedStyle: () => ({
+         gap: '0',
+         paddingBottom: '0',
+         paddingTop: '0',
+         rowGap: '0',
+      }),
       open: () => {},
+      removeEventListener: () => {},
    };
+   globalThis.requestAnimationFrame = (callback) => callback();
 });
 
 afterEach(() => {
    delete globalThis.document;
+   delete globalThis.requestAnimationFrame;
    delete globalThis.window;
 });
 
@@ -217,6 +233,18 @@ test('day planner renders scheduled guardians talks and wild encounters', () => 
                duration: 45,
             },
          ],
+         animals: [
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+            },
+         ],
+         attractions: [
+            {
+               name: 'Conservation Carousel',
+               subtitle: 'Carousels are timeless and fun for all ages!',
+            },
+         ],
       }
    );
    const text = allTextFor(planner);
@@ -225,6 +253,41 @@ test('day planner renders scheduled guardians talks and wild encounters', () => 
    assert.match(text, /Location: Eurasia Wilds/);
    assert.match(text, /African Rainforest/);
    assert.match(text, /Meeting Spot: Wild Encounter - Africa Meeting Spot/);
+   assert.match(text, /Unscheduled Items/);
+   assert.match(text, /Animals \(1\)/);
+   assert.match(text, /African Lion/);
+   assert.match(text, /Attractions \(1\)/);
+   assert.match(text, /Conservation Carousel/);
+   assert.match(text, /Meet The Guardians \(0\)/);
+   assert.match(text, /Wild Encounters \(0\)/);
+});
+
+test('day planner renders zero-count unscheduled sections', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         guardiansTalks: [
+            {
+               name: 'Amur Tiger',
+               location: 'Eurasia Wilds',
+               time_of_day: '1:30 PM',
+               duration: 30,
+            },
+         ],
+      }
+   );
+   const text = allTextFor(planner);
+
+   assert.match(text, /Unscheduled Items/);
+   assert.match(text, /Animals \(0\)/);
+   assert.match(text, /Attractions \(0\)/);
+   assert.match(text, /Meet The Guardians \(0\)/);
+   assert.match(text, /Wild Encounters \(0\)/);
 });
 
 test('buildAnimalRows deduplicates species and renders visibility alerts', () => {
