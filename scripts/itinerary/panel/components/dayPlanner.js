@@ -12,6 +12,8 @@ import {
    buildGuardiansRows,
    buildWildRows,
 } from '../rows.js';
+import { makeSection } from './section.js';
+import { buildSectionConfigs } from '../sectionConfigs.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export const ITINERARY_PANEL_VIEWS = {
@@ -74,10 +76,11 @@ function makeScheduledItemBlock(itemRow, duration) {
 }
 
 function buildScheduledItemRows(items, buildRows) {
-   return items.map((item) => {
+   return items.map((item, index) => {
       const [row] = buildRows([item]);
       const duration = getScheduledDuration(item);
       return {
+         index,
          item,
          row,
          startMinutes: parseClockTimeMinutes(item?.time_of_day),
@@ -90,21 +93,56 @@ function buildScheduledItemRows(items, buildRows) {
    ));
 }
 
-function buildScheduledItemRowsByStart({
-   guardiansTalks = [],
-   wildEncounters = [],
-} = {}) {
+function buildScheduledItemRowsContext(
+   {
+      guardiansTalks = [],
+      wildEncounters = [],
+   } = {},
+   slotStarts = []
+) {
+   const slotStartSet = new Set(slotStarts);
+   const guardiansTalkRows = buildScheduledItemRows(guardiansTalks, buildGuardiansRows)
+      .filter((scheduledItem) => slotStartSet.has(scheduledItem.startMinutes));
+   const wildEncounterRows = buildScheduledItemRows(wildEncounters, buildWildRows)
+      .filter((scheduledItem) => slotStartSet.has(scheduledItem.startMinutes));
    const scheduledItems = [
-      ...buildScheduledItemRows(guardiansTalks, buildGuardiansRows),
-      ...buildScheduledItemRows(wildEncounters, buildWildRows),
+      ...guardiansTalkRows,
+      ...wildEncounterRows,
    ];
-
-   return scheduledItems.reduce((itemsByStart, scheduledItem) => {
-      const items = itemsByStart.get(scheduledItem.startMinutes) ?? [];
+   const itemsByStart = scheduledItems.reduce((itemsByStartMap, scheduledItem) => {
+      const items = itemsByStartMap.get(scheduledItem.startMinutes) ?? [];
       items.push(scheduledItem);
-      itemsByStart.set(scheduledItem.startMinutes, items);
-      return itemsByStart;
+      itemsByStartMap.set(scheduledItem.startMinutes, items);
+      return itemsByStartMap;
    }, new Map());
+
+   return {
+      itemsByStart,
+      scheduledGuardiansTalkIndexes: new Set(
+         guardiansTalkRows.map((scheduledItem) => scheduledItem.index)
+      ),
+      scheduledWildEncounterIndexes: new Set(
+         wildEncounterRows.map((scheduledItem) => scheduledItem.index)
+      ),
+   };
+}
+
+function buildUnscheduledItinerary(
+   itinerary = {},
+   {
+      scheduledGuardiansTalkIndexes = new Set(),
+      scheduledWildEncounterIndexes = new Set(),
+   } = {}
+) {
+   return {
+      ...itinerary,
+      guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
+         !scheduledGuardiansTalkIndexes.has(index)
+      )),
+      wildEncounters: (itinerary.wildEncounters ?? []).filter((_, index) => (
+         !scheduledWildEncounterIndexes.has(index)
+      )),
+   };
 }
 
 function appendScheduledItems(gridLine, scheduledItems = []) {
@@ -113,6 +151,28 @@ function appendScheduledItems(gridLine, scheduledItems = []) {
          makeScheduledItemBlock(scheduledItem.row, scheduledItem.duration)
       );
    });
+}
+
+function makeUnscheduledSections(itinerary = {}, scheduledRowsContext = {}) {
+   const sectionConfigs = buildSectionConfigs(
+      buildUnscheduledItinerary(itinerary, scheduledRowsContext)
+   );
+
+   if (sectionConfigs.length === 0) {
+      return null;
+   }
+
+   const wrapper = el('section', 'itinerary-day-unscheduled-sections');
+   const title = el('h4', 'itinerary-day-unscheduled-title', (
+      APP_STRINGS.itinerary.dayPlanner.unscheduledTitle
+   ));
+
+   wrapper.appendChild(title);
+   sectionConfigs.forEach((sectionConfig) => {
+      wrapper.appendChild(makeSection(sectionConfig));
+   });
+
+   return wrapper;
 }
 
 export function makeItineraryPanelViews({
@@ -170,13 +230,13 @@ export function makeDayPlannerPreview(zooHours = null, itinerary = {}) {
       ? zooHours
       : {};
    const closeTime = formatClockTime(hours.closeTime, strings.thirdSlot);
+   const root = el('div', 'itinerary-day-planner-content');
    const section = el('section', 'itinerary-day-module');
    const header = el('div', 'itinerary-day-module-header');
    const titleWrap = el('div');
    const title = el('h3', '', strings.title);
    const date = el('span', 'itinerary-day-module-date', formatISODateFull(hours.date, strings.date));
    const timeline = el('div', 'itinerary-day-timeline');
-   const scheduledItemRowsByStart = buildScheduledItemRowsByStart(itinerary);
 
    section.setAttribute('aria-label', strings.aria);
    timeline.setAttribute('aria-hidden', 'true');
@@ -193,11 +253,16 @@ export function makeDayPlannerPreview(zooHours = null, itinerary = {}) {
       ? earlyAdmissionMinutes
       : openMinutes;
    const halfHourSlotStarts = buildHalfHourSlotStarts(timelineStartMinutes, closeMinutes);
+   const scheduledRowsContext = buildScheduledItemRowsContext(
+      itinerary,
+      halfHourSlotStarts
+   );
 
    if (halfHourSlotStarts.length === 0) {
       section.appendChild(header);
       section.appendChild(makeUnavailableMessage(strings.hoursUnavailable));
-      return section;
+      root.appendChild(section);
+      return root;
    }
 
    halfHourSlotStarts.forEach((slotStart) => {
@@ -216,7 +281,7 @@ export function makeDayPlannerPreview(zooHours = null, itinerary = {}) {
          pillLabel
       );
 
-      appendScheduledItems(gridLine, scheduledItemRowsByStart.get(slotStart));
+      appendScheduledItems(gridLine, scheduledRowsContext.itemsByStart.get(slotStart));
       timeline.appendChild(timeCell);
       timeline.appendChild(gridLine);
    });
@@ -225,6 +290,13 @@ export function makeDayPlannerPreview(zooHours = null, itinerary = {}) {
 
    section.appendChild(header);
    section.appendChild(timeline);
+   root.appendChild(section);
 
-   return section;
+   const unscheduledSection = makeUnscheduledSections(itinerary, scheduledRowsContext);
+
+   if (unscheduledSection) {
+      root.appendChild(unscheduledSection);
+   }
+
+   return root;
 }

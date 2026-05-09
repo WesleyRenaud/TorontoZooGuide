@@ -1759,6 +1759,13 @@ nav ul li a:hover {
    ITINERARY DAY MODULE
 ============================================================ */
 
+.itinerary-day-planner-content {
+   display: flex;
+   flex-direction: column;
+   gap: 52px;
+   padding-bottom: 96px;
+}
+
 .itinerary-day-module {
    width: 100%;
    box-sizing: border-box;
@@ -1913,6 +1920,20 @@ nav ul li a:hover {
    line-height: 1;
    font-weight: 900;
    box-shadow: 0 6px 14px rgba(20, 35, 10, 0.14);
+}
+
+.itinerary-day-unscheduled-sections {
+   display: flex;
+   flex-direction: column;
+   gap: 22px;
+}
+
+.itinerary-day-unscheduled-title {
+   margin: 0 0 4px 0;
+   color: rgba(20, 35, 10, 0.92);
+   font-size: 3.8em;
+   line-height: 1.05;
+   font-weight: 900;
 }
 
 /* ============================================================
