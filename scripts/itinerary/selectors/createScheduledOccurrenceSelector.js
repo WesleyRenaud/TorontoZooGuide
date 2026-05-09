@@ -78,10 +78,10 @@ function createStoredOccurrenceFromObject(item, {
       storedOccurrence.link = normalizeStoredLink(item.link);
    }
 
-   const duration = Number(item.duration);
+   const maximumDuration = Number(item.maximum_duration);
 
-   if (Number.isFinite(duration) && duration > 0) {
-      storedOccurrence.duration = duration;
+   if (Number.isFinite(maximumDuration) && maximumDuration > 0) {
+      storedOccurrence.maximum_duration = maximumDuration;
    }
 
    return storedOccurrence;
@@ -127,10 +127,10 @@ function createOccurrenceSelection(row, {
       selection.link = link;
    }
 
-   const duration = Number(row?.duration);
+   const maximumDuration = Number(row?.maximum_duration);
 
-   if (Number.isFinite(duration) && duration > 0) {
-      selection.duration = duration;
+   if (Number.isFinite(maximumDuration) && maximumDuration > 0) {
+      selection.maximum_duration = maximumDuration;
    }
 
    return selection;

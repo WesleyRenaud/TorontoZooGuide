@@ -238,7 +238,7 @@ class GuardiansTalk:
          x_coord,
          y_coord,
          time_of_day=None,
-         duration=None,
+         maximum_duration=None,
          is_available=True,
          unavailable_message=None ):
       self.name = name
@@ -246,7 +246,7 @@ class GuardiansTalk:
       self.x_coord = x_coord
       self.y_coord = y_coord
       self.time_of_day = time_of_day
-      self.duration = duration
+      self.maximum_duration = maximum_duration
       self.is_available = is_available
       self.unavailable_message = unavailable_message
 
@@ -258,7 +258,7 @@ class GuardiansTalk:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'time_of_day': self.time_of_day,
-         'duration': self.duration,
+         'maximum_duration': self.maximum_duration,
          'is_available': ZooUtil.as_boolean( self.is_available ),
          'unavailable_message': self.unavailable_message
       }
@@ -271,7 +271,7 @@ class WildEncounter:
          meeting_spot,
          link,
          time_of_day=None,
-         duration=None,
+         maximum_duration=None,
          x_coord=None,
          y_coord=None,
          is_available=True,
@@ -280,7 +280,7 @@ class WildEncounter:
       self.meeting_spot = meeting_spot
       self.link = link
       self.time_of_day = time_of_day
-      self.duration = duration
+      self.maximum_duration = maximum_duration
       self.x_coord = x_coord
       self.y_coord = y_coord
       self.is_available = is_available
@@ -293,7 +293,7 @@ class WildEncounter:
          'meeting_spot': self.meeting_spot,
          'link': self.link,
          'time_of_day': self.time_of_day,
-         'duration': self.duration,
+         'maximum_duration': self.maximum_duration,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'is_available': ZooUtil.as_boolean( self.is_available ),

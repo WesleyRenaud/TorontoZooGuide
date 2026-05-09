@@ -28,7 +28,6 @@ function normalizeGuardiansTalkRow(row) {
       name: asTrimmedString(source.name),
       location: asTrimmedString(source.location),
       time_of_day: asTrimmedString(source.time_of_day),
-      duration: Number.isFinite(Number(source.duration)) ? Number(source.duration) : null,
    };
 }
 
@@ -40,7 +39,6 @@ function normalizeWildEncounterRow(row) {
       name: asTrimmedString(source.name),
       meeting_spot: asTrimmedString(source.meeting_spot),
       time_of_day: asTrimmedString(source.time_of_day),
-      duration: Number.isFinite(Number(source.duration)) ? Number(source.duration) : null,
       link: asNullableString(source.link),
    };
 }

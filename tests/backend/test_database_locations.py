@@ -580,7 +580,7 @@ def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
    assert next(
       talk for talk in talks
       if talk.name == 'African Lion' and talk.time_of_day == '10:00'
-   ).duration == 30
+   ).maximum_duration == 30
 
    assert db.cancel_guardians_talk_occurrence(
       talk='African Lion',
@@ -657,7 +657,7 @@ def test_wild_encounter_schedule_and_cancellation( db, freeze_database_today ):
    encounters = db.get_wild_encounters( month='June', day=15 )
    encounter = next( item for item in encounters if item.name == 'African Rainforest' and item.time_of_day == '14:00' )
    assert encounter.is_available is True
-   assert encounter.duration == 45
+   assert encounter.maximum_duration == 45
 
    assert db.cancel_wild_encounter_occurrence(
       wild_encounter='African Rainforest',
