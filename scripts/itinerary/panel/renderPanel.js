@@ -92,8 +92,8 @@ function makePanelViewShell() {
    });
 }
 
-function appendDayPlannerViewWithHours(dayPlannerView, zooHours) {
-   dayPlannerView.appendChild(makeDayPlannerPreview(zooHours));
+function appendDayPlannerViewWithHours(dayPlannerView, zooHours, itinerary = {}) {
+   dayPlannerView.appendChild(makeDayPlannerPreview(zooHours, itinerary));
 }
 
 function getDayPlannerDate(itinerary) {
@@ -126,7 +126,7 @@ function buildItineraryPanelContent(itinerary, zooHours) {
       );
    });
 
-   appendDayPlannerViewWithHours(dayPlannerView, zooHours);
+   appendDayPlannerViewWithHours(dayPlannerView, zooHours, itinerary);
    fragment.appendChild(root);
 
    return fragment;

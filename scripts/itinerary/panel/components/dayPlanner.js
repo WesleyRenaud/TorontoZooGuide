@@ -8,6 +8,10 @@ import {
    formatClockTime,
    formatISODateFull,
 } from '../format.js';
+import {
+   buildGuardiansRows,
+   buildWildRows,
+} from '../rows.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export const ITINERARY_PANEL_VIEWS = {
@@ -51,6 +55,64 @@ function makeTimelineRow(timeLabel, pillLabel) {
 
 function makeUnavailableMessage(message) {
    return el('div', 'itinerary-day-unavailable', message);
+}
+
+function getScheduledDuration(item) {
+   const duration = Number(item?.duration);
+   return Number.isFinite(duration) && duration > 0 ? duration : null;
+}
+
+function makeScheduledItemBlock(itemRow, duration) {
+   const block = el('div', 'itinerary-day-event');
+   const slotSpan = Math.max(duration / 30, 1);
+
+   block.style.setProperty('--itinerary-event-slot-span', slotSpan);
+   itemRow.classList.add('itinerary-day-event-card');
+   block.appendChild(itemRow);
+
+   return block;
+}
+
+function buildScheduledItemRows(items, buildRows) {
+   return items.map((item) => {
+      const [row] = buildRows([item]);
+      const duration = getScheduledDuration(item);
+      return {
+         item,
+         row,
+         startMinutes: parseClockTimeMinutes(item?.time_of_day),
+         duration,
+      };
+   }).filter((scheduledItem) => (
+      scheduledItem.row
+      && Number.isFinite(scheduledItem.startMinutes)
+      && Number.isFinite(scheduledItem.duration)
+   ));
+}
+
+function buildScheduledItemRowsByStart({
+   guardiansTalks = [],
+   wildEncounters = [],
+} = {}) {
+   const scheduledItems = [
+      ...buildScheduledItemRows(guardiansTalks, buildGuardiansRows),
+      ...buildScheduledItemRows(wildEncounters, buildWildRows),
+   ];
+
+   return scheduledItems.reduce((itemsByStart, scheduledItem) => {
+      const items = itemsByStart.get(scheduledItem.startMinutes) ?? [];
+      items.push(scheduledItem);
+      itemsByStart.set(scheduledItem.startMinutes, items);
+      return itemsByStart;
+   }, new Map());
+}
+
+function appendScheduledItems(gridLine, scheduledItems = []) {
+   scheduledItems.forEach((scheduledItem) => {
+      gridLine.appendChild(
+         makeScheduledItemBlock(scheduledItem.row, scheduledItem.duration)
+      );
+   });
 }
 
 export function makeItineraryPanelViews({
@@ -99,7 +161,7 @@ export function makeItineraryPanelViews({
    };
 }
 
-export function makeDayPlannerPreview(zooHours = null) {
+export function makeDayPlannerPreview(zooHours = null, itinerary = {}) {
    const strings = APP_STRINGS.itinerary.dayPlanner;
    const hours = zooHours && typeof zooHours === 'object'
       ? zooHours
@@ -111,6 +173,7 @@ export function makeDayPlannerPreview(zooHours = null) {
    const title = el('h3', '', strings.title);
    const date = el('span', 'itinerary-day-module-date', formatISODateFull(hours.date, strings.date));
    const timeline = el('div', 'itinerary-day-timeline');
+   const scheduledItemRowsByStart = buildScheduledItemRowsByStart(itinerary);
 
    section.setAttribute('aria-label', strings.aria);
    timeline.setAttribute('aria-hidden', 'true');
@@ -150,6 +213,7 @@ export function makeDayPlannerPreview(zooHours = null) {
          pillLabel
       );
 
+      appendScheduledItems(gridLine, scheduledItemRowsByStart.get(slotStart));
       timeline.appendChild(timeCell);
       timeline.appendChild(gridLine);
    });

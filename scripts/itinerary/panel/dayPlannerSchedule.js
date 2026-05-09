@@ -5,20 +5,42 @@ export function parseClockTimeMinutes(timeValue) {
       return null;
    }
 
-   const timeParts = timeValue.trim().match(/^(\d{1,2}):(\d{2})$/);
+   const normalizedTimeValue = timeValue.trim();
+   const timeParts = normalizedTimeValue.match(/^(\d{1,2}):(\d{2})$/);
 
-   if (!timeParts) {
+   if (timeParts) {
+      const hours = Number(timeParts[1]);
+      const minutes = Number(timeParts[2]);
+
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+         return null;
+      }
+
+      return (hours * 60) + minutes;
+   }
+
+   const displayTimeParts = normalizedTimeValue.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+   if (!displayTimeParts) {
       return null;
    }
 
-   const hours = Number(timeParts[1]);
-   const minutes = Number(timeParts[2]);
+   const displayHours = Number(displayTimeParts[1]);
+   const displayMinutes = Number(displayTimeParts[2]);
+   const period = displayTimeParts[3].toUpperCase();
 
-   if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+   if (
+      displayHours < 1
+      || displayHours > 12
+      || displayMinutes < 0
+      || displayMinutes > 59
+   ) {
       return null;
    }
 
-   return (hours * 60) + minutes;
+   const hours = (displayHours % 12) + (period === 'PM' ? 12 : 0);
+
+   return (hours * 60) + displayMinutes;
 }
 
 export function formatMinutesAsClockTime(totalMinutes) {

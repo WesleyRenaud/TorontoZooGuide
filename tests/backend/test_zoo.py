@@ -141,6 +141,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
             x_coord=1,
             y_coord=2,
             time_of_day='10:00',
+            duration=30,
             is_available=1 )
       ],
       wild_encounters=[
@@ -149,6 +150,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
             meeting_spot='Spot',
             link='link',
             time_of_day='14:00',
+            duration=30,
             is_available=0,
             unavailable_message='Unavailable.' )
       ]
@@ -200,6 +202,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
             'x_coord': 1,
             'y_coord': 2,
             'time_of_day': '10:00',
+            'duration': 30,
             'is_available': True,
             'unavailable_message': None,
             'type': 'guardiansTalk'
@@ -211,6 +214,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
             'meeting_spot': 'Spot',
             'link': 'link',
             'time_of_day': '14:00',
+            'duration': 30,
             'x_coord': None,
             'y_coord': None,
             'is_available': False,

@@ -27,6 +27,7 @@ function createNode(tagName, className = '', textContent = '') {
    const children = [];
    const listeners = {};
    const attributes = {};
+   const classes = new Set(className ? className.split(/\s+/) : []);
 
    return {
       tagName,
@@ -35,6 +36,23 @@ function createNode(tagName, className = '', textContent = '') {
       children,
       listeners,
       attributes,
+      style: {
+         setProperty(name, value) {
+            attributes[`style:${name}`] = value;
+         },
+      },
+      classList: {
+         add(value) {
+            classes.add(value);
+         },
+         toggle(value, shouldAdd) {
+            if (shouldAdd) {
+               classes.add(value);
+            } else {
+               classes.delete(value);
+            }
+         },
+      },
       appendChild(child) {
          children.push(child);
          return child;
@@ -65,6 +83,25 @@ function createNode(tagName, className = '', textContent = '') {
          }
 
          return null;
+      },
+      querySelectorAll(selector) {
+         const matches = [];
+         const classNameToFind = selector.startsWith('.')
+            ? selector.slice(1)
+            : selector;
+         const stack = [...children];
+
+         while (stack.length > 0) {
+            const child = stack.shift();
+
+            if (child.className === classNameToFind) {
+               matches.push(child);
+            }
+
+            stack.push(...(child.children ?? []));
+         }
+
+         return matches;
       },
    };
 }
@@ -107,6 +144,8 @@ test('formats and normalizes itinerary panel item data', () => {
    assert.equal(formatClockTime('19:00'), '7:00 PM');
    assert.equal(formatClockTime('', 'Fallback Time'), 'Fallback Time');
    assert.equal(parseClockTimeMinutes('09:30'), 570);
+   assert.equal(parseClockTimeMinutes('10:00 AM'), 600);
+   assert.equal(parseClockTimeMinutes('1:30 PM'), 810);
    assert.equal(parseClockTimeMinutes('bad-time'), null);
    assert.equal(formatMinutesAsClockTime(1140), '7:00 PM');
    assert.deepEqual(buildHalfHourSlotStarts(570, 720), [
@@ -151,6 +190,41 @@ test('day planner starts at early admission when available', () => {
    assert.match(text, /Early Admission/);
    assert.match(text, /9:30 AM/);
    assert.match(text, /Zoo Opens/);
+});
+
+test('day planner renders scheduled guardians talks and wild encounters', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         guardiansTalks: [
+            {
+               name: 'Amur Tiger',
+               location: 'Eurasia Wilds',
+               time_of_day: '1:30 PM',
+               duration: 30,
+            },
+         ],
+         wildEncounters: [
+            {
+               name: 'African Rainforest',
+               meeting_spot: 'Wild Encounter - Africa Meeting Spot',
+               time_of_day: '2:00 PM',
+               duration: 45,
+            },
+         ],
+      }
+   );
+   const text = allTextFor(planner);
+
+   assert.match(text, /Amur Tiger/);
+   assert.match(text, /Location: Eurasia Wilds/);
+   assert.match(text, /African Rainforest/);
+   assert.match(text, /Meeting Spot: Wild Encounter - Africa Meeting Spot/);
 });
 
 test('buildAnimalRows deduplicates species and renders visibility alerts', () => {
