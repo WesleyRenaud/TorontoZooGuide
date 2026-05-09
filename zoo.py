@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import calendar
 import math
 
@@ -239,6 +239,8 @@ class GuardiansTalk:
          y_coord,
          time_of_day=None,
          maximum_duration=None,
+         start_time=None,
+         end_time=None,
          is_available=True,
          unavailable_message=None ):
       self.name = name
@@ -247,6 +249,8 @@ class GuardiansTalk:
       self.y_coord = y_coord
       self.time_of_day = time_of_day
       self.maximum_duration = maximum_duration
+      self.start_time = start_time
+      self.end_time = end_time
       self.is_available = is_available
       self.unavailable_message = unavailable_message
 
@@ -259,6 +263,8 @@ class GuardiansTalk:
          'y_coord': self.y_coord,
          'time_of_day': self.time_of_day,
          'maximum_duration': self.maximum_duration,
+         'start_time': self.start_time,
+         'end_time': self.end_time,
          'is_available': ZooUtil.as_boolean( self.is_available ),
          'unavailable_message': self.unavailable_message
       }
@@ -272,6 +278,8 @@ class WildEncounter:
          link,
          time_of_day=None,
          maximum_duration=None,
+         start_time=None,
+         end_time=None,
          x_coord=None,
          y_coord=None,
          is_available=True,
@@ -281,6 +289,8 @@ class WildEncounter:
       self.link = link
       self.time_of_day = time_of_day
       self.maximum_duration = maximum_duration
+      self.start_time = start_time
+      self.end_time = end_time
       self.x_coord = x_coord
       self.y_coord = y_coord
       self.is_available = is_available
@@ -294,6 +304,8 @@ class WildEncounter:
          'link': self.link,
          'time_of_day': self.time_of_day,
          'maximum_duration': self.maximum_duration,
+         'start_time': self.start_time,
+         'end_time': self.end_time,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'is_available': ZooUtil.as_boolean( self.is_available ),
@@ -451,6 +463,118 @@ class Itinerary:
 
 
 class ZooUtil:
+   @staticmethod
+   def parse_datetime_value( value ):
+      if value == None:
+         return None
+
+      for fmt in (
+         '%Y-%m-%d %I:%M %p',
+         '%Y-%m-%d %H:%M:%S',
+         '%Y-%m-%d %H:%M'
+      ):
+
+         try:
+            return datetime.strptime( value, fmt )
+         except ValueError:
+            pass
+
+      raise ValueError( f'Unsupported datetime format: { value }' )
+
+
+   @staticmethod
+   def parse_time_value( value ):
+      if value == None:
+         return None
+
+      value = str( value ).strip()
+
+      if not value:
+         return None
+
+      for fmt in (
+         '%H:%M',
+         '%I:%M %p'
+      ):
+
+         try:
+            return datetime.strptime( value, fmt ).time()
+         except ValueError:
+            pass
+
+      raise ValueError( f'Unsupported time format: { value }' )
+
+
+   @staticmethod
+   def format_time_value( value ):
+      parsed_time = ZooUtil.parse_time_value( value )
+
+      if parsed_time == None:
+         return None
+
+      return parsed_time.strftime( '%H:%M' )
+
+
+   @staticmethod
+   def add_minutes_to_time( value, minutes ):
+      parsed_time = ZooUtil.parse_time_value( value )
+
+      if parsed_time == None or minutes == None:
+         return None
+
+      duration = int( minutes )
+
+      if duration <= 0:
+         return None
+
+      anchor = datetime.combine( date.today(), parsed_time )
+      return ( anchor + timedelta( minutes=duration ) ).time().strftime( '%H:%M' )
+
+
+   @staticmethod
+   def parse_date_value( value ):
+      if value == None:
+         return None
+
+      if isinstance( value, date ) and not isinstance( value, datetime ):
+         return value
+
+      if isinstance( value, datetime ):
+         return value.date()
+
+      value = str( value ).strip()
+
+      try:
+         return date.fromisoformat( value )
+      except ValueError:
+         pass
+
+      date_part = value.split( ' ' )[ 0 ]
+
+      try:
+         return date.fromisoformat( date_part )
+      except ValueError:
+         pass
+
+      raise ValueError( f'Unsupported date format: { value }' )
+
+
+   @staticmethod
+   def is_date_in_range( target_date, start_date_value, end_date_value ):
+      start_ok = True
+      end_ok = True
+
+      if start_date_value != None:
+         start_date = ZooUtil.parse_date_value( value=start_date_value )
+         start_ok = target_date >= start_date
+
+      if end_date_value != None:
+         end_date = ZooUtil.parse_date_value( value=end_date_value )
+         end_ok = target_date <= end_date
+
+      return start_ok and end_ok
+
+
    @staticmethod
    def as_boolean( value ):
       if isinstance( value, bool ):
