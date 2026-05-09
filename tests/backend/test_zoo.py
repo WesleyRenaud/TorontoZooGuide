@@ -203,6 +203,8 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
             'y_coord': 2,
             'time_of_day': '10:00',
             'maximum_duration': 30,
+            'start_time': None,
+            'end_time': None,
             'is_available': True,
             'unavailable_message': None,
             'type': 'guardiansTalk'
@@ -215,6 +217,8 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
             'link': 'link',
             'time_of_day': '14:00',
             'maximum_duration': 30,
+            'start_time': None,
+            'end_time': None,
             'x_coord': None,
             'y_coord': None,
             'is_available': False,
