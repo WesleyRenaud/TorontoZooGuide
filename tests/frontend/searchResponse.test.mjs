@@ -21,7 +21,7 @@ test('normalizes search response collections before rows are rendered', () => {
             name: '  Amur Tiger  ',
             location: '  Eurasia Wilds  ',
             time_of_day: '  13:30  ',
-            duration: '30',
+            maximum_duration: 30,
          },
       ],
       wild_encounters: [
@@ -29,7 +29,7 @@ test('normalizes search response collections before rows are rendered', () => {
             name: '  African Rainforest  ',
             meeting_spot: '  Wild Encounter - Africa Meeting Spot  ',
             time_of_day: '  14:00  ',
-            duration: 45,
+            maximum_duration: 45,
             link: '',
          },
       ],
@@ -46,13 +46,13 @@ test('normalizes search response collections before rows are rendered', () => {
       name: 'Amur Tiger',
       location: 'Eurasia Wilds',
       time_of_day: '13:30',
-      duration: 30,
+      maximum_duration: 30,
    });
    assert.deepEqual(response.wild_encounters[0], {
       name: 'African Rainforest',
       meeting_spot: 'Wild Encounter - Africa Meeting Spot',
       time_of_day: '14:00',
-      duration: 45,
+      maximum_duration: 45,
       link: null,
    });
 });
