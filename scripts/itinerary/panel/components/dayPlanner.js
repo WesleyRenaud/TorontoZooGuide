@@ -59,14 +59,14 @@ function makeUnavailableMessage(message) {
    return el('div', 'itinerary-day-unavailable', message);
 }
 
-function getScheduledDuration(item) {
-   const duration = Number(item?.duration);
-   return Number.isFinite(duration) && duration > 0 ? duration : null;
+function getScheduledMaximumDuration(item) {
+   const maximumDuration = Number(item?.maximum_duration);
+   return Number.isFinite(maximumDuration) && maximumDuration > 0 ? maximumDuration : null;
 }
 
-function makeScheduledItemBlock(itemRow, duration) {
+function makeScheduledItemBlock(itemRow, maximumDuration) {
    const block = el('div', 'itinerary-day-event');
-   const slotSpan = duration / 30;
+   const slotSpan = maximumDuration / 30;
 
    block.style.setProperty('--itinerary-event-slot-span', slotSpan);
    itemRow.classList.add('itinerary-day-event-card');
@@ -78,18 +78,18 @@ function makeScheduledItemBlock(itemRow, duration) {
 function buildScheduledItemRows(items, buildRows) {
    return items.map((item, index) => {
       const [row] = buildRows([item]);
-      const duration = getScheduledDuration(item);
+      const maximumDuration = getScheduledMaximumDuration(item);
       return {
          index,
          item,
          row,
          startMinutes: parseClockTimeMinutes(item?.time_of_day),
-         duration,
+         maximumDuration,
       };
    }).filter((scheduledItem) => (
       scheduledItem.row
       && Number.isFinite(scheduledItem.startMinutes)
-      && Number.isFinite(scheduledItem.duration)
+      && Number.isFinite(scheduledItem.maximumDuration)
    ));
 }
 
@@ -148,7 +148,7 @@ function buildUnscheduledItinerary(
 function appendScheduledItems(gridLine, scheduledItems = []) {
    scheduledItems.forEach((scheduledItem) => {
       gridLine.appendChild(
-         makeScheduledItemBlock(scheduledItem.row, scheduledItem.duration)
+         makeScheduledItemBlock(scheduledItem.row, scheduledItem.maximumDuration)
       );
    });
 }

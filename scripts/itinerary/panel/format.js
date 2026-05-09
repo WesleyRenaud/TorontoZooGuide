@@ -20,9 +20,9 @@ function normalizeNumber(value) {
    return Number.isFinite(number) ? number : null;
 }
 
-function normalizeDuration(value) {
-   const duration = normalizeNumber(value);
-   return duration && duration > 0 ? duration : null;
+function normalizeMaximumDuration(value) {
+   const maximumDuration = normalizeNumber(value);
+   return maximumDuration && maximumDuration > 0 ? maximumDuration : null;
 }
 
 export function formatISODateLong(iso) {
@@ -118,7 +118,7 @@ export function normalizeTalk(value) {
       name: normalizeText(source.name),
       location: normalizeText(source.location),
       time_of_day: normalizeText(source.time_of_day),
-      duration: normalizeDuration(source.duration),
+      maximum_duration: normalizeMaximumDuration(source.maximum_duration),
       link: normalizeOptionalText(source.link),
       removalReason: normalizeOptionalText(source.removalReason),
    };
@@ -132,7 +132,7 @@ export function normalizeWild(value) {
       name: normalizeText(source.name),
       meeting_spot: normalizeText(source.meeting_spot),
       time_of_day: normalizeText(source.time_of_day),
-      duration: normalizeDuration(source.duration),
+      maximum_duration: normalizeMaximumDuration(source.maximum_duration),
       link: normalizeOptionalText(source.link),
       removalReason: normalizeOptionalText(source.removalReason),
    };
