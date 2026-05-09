@@ -86,9 +86,10 @@ test('normalizes zoo hours response', async () => {
       return mockJsonResponse({
          hours: {
             date: '  2026-06-20  ',
+            earlyAdmissionTime: ' 09:00 ',
             openTime: ' 09:30 ',
-            closeTime: '19:00 ',
             lastAdmissionTime: ' 18:00',
+            closeTime: '19:00 ',
          },
       });
    };
@@ -96,9 +97,10 @@ test('normalizes zoo hours response', async () => {
    assert.deepEqual(await getZooHoursRequest('2026-06-20'), {
       hours: {
          date: '2026-06-20',
+         earlyAdmissionTime: '09:00',
          openTime: '09:30',
-         closeTime: '19:00',
          lastAdmissionTime: '18:00',
+         closeTime: '19:00',
       },
    });
 });
