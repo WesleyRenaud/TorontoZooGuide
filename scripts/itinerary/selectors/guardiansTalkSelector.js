@@ -40,15 +40,15 @@ export function createItineraryGuardiansTalkSelectorController({
       getTimeOfDay: getTalkTimeOfDay,
       emptyStoredFields: {
          location: '',
-         timeOfDay: '',
+         time_of_day: '',
       },
       readStoredFields: (item) => ({
          location: normalizeStoredString(item.location),
-         timeOfDay: normalizeStoredString(item.timeOfDay),
+         time_of_day: normalizeStoredString(item.time_of_day || item.timeOfDay),
       }),
       buildSelectionFields: (row) => ({
          location: getTalkLocation(row),
-         timeOfDay: getTalkTimeOfDay(row),
+         time_of_day: getTalkTimeOfDay(row),
       }),
    });
 }
