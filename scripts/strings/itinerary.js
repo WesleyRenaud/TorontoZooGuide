@@ -56,6 +56,7 @@ export const itinerary = {
       secondSlot: '10:00 AM',
       thirdSlot: '10:30 AM',
       title: 'Day Plan',
+      unscheduledTitle: 'Unscheduled Items',
    },
    itemImage: title => `${title} image`,
    itemPhoto: title => `${title} photo`,

@@ -17,13 +17,7 @@ import {
    getZooHours,
    isItineraryEmpty,
 } from '../itineraryService.js';
-import {
-   buildAnimalRows,
-   buildAttractionRows,
-   buildGuardiansRows,
-   buildWildRows,
-} from './rows.js';
-import { APP_STRINGS } from '../../strings.js';
+import { buildSectionConfigs } from './sectionConfigs.js';
 
 let latestRenderToken = 0;
 let activePanelView = ITINERARY_PANEL_VIEWS.list;
@@ -47,40 +41,6 @@ async function clearStoredItinerary() {
    catch (err) {
       console.error('Failed to clear itinerary:', err);
    }
-}
-
-function buildSectionConfigs({
-   animals = [],
-   attractions = [],
-   guardiansTalks = [],
-   wildEncounters = [],
-} = {}) {
-   return [
-      {
-         title: APP_STRINGS.site.nav.animals,
-         count: animals.length,
-         children: buildAnimalRows(animals),
-         stepKey: 'animals',
-      },
-      {
-         title: APP_STRINGS.map.filter.attractions,
-         count: attractions.length,
-         children: buildAttractionRows(attractions),
-         stepKey: 'attractions',
-      },
-      {
-         title: APP_STRINGS.site.nav.meetTheGuardians,
-         count: guardiansTalks.length,
-         children: buildGuardiansRows(guardiansTalks),
-         stepKey: 'guardiansTalks',
-      },
-      {
-         title: APP_STRINGS.site.nav.wildEncounters,
-         count: wildEncounters.length,
-         children: buildWildRows(wildEncounters),
-         stepKey: 'wildEncounters',
-      },
-   ];
 }
 
 function makePanelViewShell() {
