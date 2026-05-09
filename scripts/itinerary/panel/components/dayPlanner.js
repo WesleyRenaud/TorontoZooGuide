@@ -64,7 +64,7 @@ function getScheduledDuration(item) {
 
 function makeScheduledItemBlock(itemRow, duration) {
    const block = el('div', 'itinerary-day-event');
-   const slotSpan = Math.max(duration / 30, 1);
+   const slotSpan = duration / 30;
 
    block.style.setProperty('--itinerary-event-slot-span', slotSpan);
    itemRow.classList.add('itinerary-day-event-card');
@@ -121,6 +121,7 @@ export function makeItineraryPanelViews({
 } = {}) {
    const root = el('div', 'itin-panel-view-shell');
    const toggle = el('div', 'itin-panel-view-toggle');
+   const sharedHeader = el('div', 'itin-panel-shared-header');
    const listView = el('div', 'itin-panel-view itin-panel-list-view');
    const dayPlannerView = el('div', 'itin-panel-view itin-panel-day-planner-view');
 
@@ -149,6 +150,7 @@ export function makeItineraryPanelViews({
       })
    );
 
+   root.appendChild(sharedHeader);
    root.appendChild(toggle);
    root.appendChild(listView);
    root.appendChild(dayPlannerView);
@@ -156,6 +158,7 @@ export function makeItineraryPanelViews({
 
    return {
       root,
+      sharedHeader,
       listView,
       dayPlannerView,
    };
