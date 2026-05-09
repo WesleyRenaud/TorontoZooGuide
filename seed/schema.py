@@ -835,10 +835,42 @@ def create_schema( cursor ):
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryGuardiansTalk
                      (  TALK_NAME            VARCHAR(64) NOT NULL,
+                        START_TIME           TEXT,
+                        END_TIME             TEXT,
                         PRIMARY KEY ( TALK_NAME ),
                         FOREIGN KEY ( TALK_NAME ) REFERENCES MeetTheGuardiansTalk(NAME) ); ''' )
 
+   itinerary_guardians_talk_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( ItineraryGuardiansTalk );' ).fetchall()
+   }
+
+   if 'START_TIME' not in itinerary_guardians_talk_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryGuardiansTalk ADD COLUMN START_TIME TEXT;'
+      )
+
+   if 'END_TIME' not in itinerary_guardians_talk_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryGuardiansTalk ADD COLUMN END_TIME TEXT;'
+      )
+
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryWildEncounter
                      (  WILD_ENCOUNTER       VARCHAR(64) NOT NULL,
+                        START_TIME           TEXT,
+                        END_TIME             TEXT,
                         PRIMARY KEY ( WILD_ENCOUNTER ),
                         FOREIGN KEY ( WILD_ENCOUNTER ) REFERENCES WildEncounter(NAME) ); ''' )
+
+   itinerary_wild_encounter_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( ItineraryWildEncounter );' ).fetchall()
+   }
+
+   if 'START_TIME' not in itinerary_wild_encounter_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryWildEncounter ADD COLUMN START_TIME TEXT;'
+      )
+
+   if 'END_TIME' not in itinerary_wild_encounter_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryWildEncounter ADD COLUMN END_TIME TEXT;'
+      )

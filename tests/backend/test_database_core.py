@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 import pytest
 
+import zoo
 from conftest import make_row
 
 
@@ -26,8 +27,8 @@ def test_close_is_idempotent( db ):
       ( '2026-06-15 09:30', date( 2026, 6, 15 ) )
    ]
 )
-def test_parse_date_value( db, value, expected ):
-   assert db.parse_date_value( value ) == expected
+def test_parse_date_value( value, expected ):
+   assert zoo.ZooUtil.parse_date_value( value ) == expected
 
 
 @pytest.mark.parametrize(
@@ -39,16 +40,16 @@ def test_parse_date_value( db, value, expected ):
       ( '2026-06-15 17:45', datetime( 2026, 6, 15, 17, 45 ) )
    ]
 )
-def test_parse_datetime_value( db, value, expected ):
-   assert db.parse_datetime_value( value ) == expected
+def test_parse_datetime_value( value, expected ):
+   assert zoo.ZooUtil.parse_datetime_value( value ) == expected
 
 
-def test_parse_values_raise_for_unsupported_formats( db ):
+def test_parse_values_raise_for_unsupported_formats():
    with pytest.raises( ValueError ):
-      db.parse_date_value( 'June 15, 2026' )
+      zoo.ZooUtil.parse_date_value( 'June 15, 2026' )
 
    with pytest.raises( ValueError ):
-      db.parse_datetime_value( 'June 15, 2026 9:30' )
+      zoo.ZooUtil.parse_datetime_value( 'June 15, 2026 9:30' )
 
 
 @pytest.mark.parametrize(
@@ -60,8 +61,8 @@ def test_parse_values_raise_for_unsupported_formats( db ):
       ( date( 2026, 6, 16 ), None, '2026-06-15', False )
    ]
 )
-def test_is_date_in_range( db, target, start, end, expected ):
-   assert db.is_date_in_range( target_date=target, start_date_value=start, end_date_value=end ) is expected
+def test_is_date_in_range( target, start, end, expected ):
+   assert zoo.ZooUtil.is_date_in_range( target_date=target, start_date_value=start, end_date_value=end ) is expected
 
 
 @pytest.mark.parametrize(

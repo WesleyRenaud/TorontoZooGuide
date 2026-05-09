@@ -227,7 +227,7 @@ class Database():
       off_display_start = animal[ 'OFF_DISPLAY_START' ]
       off_display_end = animal[ 'OFF_DISPLAY_END' ]
 
-      is_off_display = self.is_date_in_range(
+      is_off_display = zoo.ZooUtil.is_date_in_range(
          target_date=target_date,
          start_date_value=off_display_start,
          end_date_value=off_display_end )
@@ -248,7 +248,7 @@ class Database():
       if daily_start_time == None or daily_end_time == None:
          return False, None
 
-      is_active = self.is_date_in_range( target_date=target_date, start_date_value=schedule_start_date, end_date_value=schedule_end_date )
+      is_active = zoo.ZooUtil.is_date_in_range( target_date=target_date, start_date_value=schedule_start_date, end_date_value=schedule_end_date )
 
       if is_active:
          return True, viewing_message
@@ -264,7 +264,7 @@ class Database():
       if alert_message == None:
          return False, None
 
-      is_active = self.is_date_in_range( target_date=target_date, start_date_value=alert_start_date, end_date_value=alert_end_date )
+      is_active = zoo.ZooUtil.is_date_in_range( target_date=target_date, start_date_value=alert_start_date, end_date_value=alert_end_date )
 
       if is_active:
          return True, alert_message
@@ -279,7 +279,7 @@ class Database():
       start_date = animal[ 'CLOSED_START' ]
       end_date = animal[ 'CLOSED_END' ]
 
-      is_active = self.is_date_in_range(
+      is_active = zoo.ZooUtil.is_date_in_range(
          target_date=target_date,
          start_date_value=start_date,
          end_date_value=end_date )
@@ -331,66 +331,6 @@ class Database():
             1.0 ) )
 
       return max( round( likelihood * 100 ), 0 )
-
-
-   def is_date_in_range( self, target_date, start_date_value, end_date_value ):
-      start_ok = True
-      end_ok = True
-
-      if start_date_value != None:
-         start_date = self.parse_date_value( value=start_date_value )
-         start_ok = target_date >= start_date
-
-      if end_date_value != None:
-         end_date = self.parse_date_value( value=end_date_value )
-         end_ok = target_date <= end_date
-
-      return start_ok and end_ok
-
-
-   def parse_datetime_value( self, value ):
-      if value == None:
-         return None
-
-      for fmt in (
-         '%Y-%m-%d %I:%M %p',
-         '%Y-%m-%d %H:%M:%S',
-         '%Y-%m-%d %H:%M'
-      ):
-
-         try:
-            return datetime.strptime( value, fmt )
-         except ValueError:
-            pass
-
-      raise ValueError( f'Unsupported datetime format: { value }' )
-
-
-   def parse_date_value( self, value ):
-      if value == None:
-         return None
-
-      if isinstance( value, date ) and not isinstance( value, datetime ):
-         return value
-
-      if isinstance( value, datetime ):
-         return value.date()
-
-      value = str( value ).strip()
-
-      try:
-         return date.fromisoformat( value )
-      except ValueError:
-         pass
-
-      date_part = value.split( ' ' )[ 0 ]
-
-      try:
-         return date.fromisoformat( date_part )
-      except ValueError:
-         pass
-
-      raise ValueError( f'Unsupported date format: { value }' )
 
 
    def get_exhibits_in_region( self, region ):
@@ -667,7 +607,7 @@ class Database():
          return 'unknown', None
 
       for schedule in schedule_rows:
-         is_active = self.is_date_in_range(
+         is_active = zoo.ZooUtil.is_date_in_range(
             target_date=target_date,
             start_date_value=schedule[ 'SCHEDULE_START_DATE' ],
             end_date_value=schedule[ 'SCHEDULE_END_DATE' ] )
@@ -757,7 +697,7 @@ class Database():
          alert_message = None
 
          if restroom[ 'IS_CLOSED' ] != None:
-            status_is_active = self.is_date_in_range(
+            status_is_active = zoo.ZooUtil.is_date_in_range(
                target_date=target_date,
                start_date_value=restroom[ 'CLOSED_START' ],
                end_date_value=restroom[ 'CLOSED_END' ] )
@@ -768,7 +708,7 @@ class Database():
                closed_message = restroom[ 'CLOSED_MESSAGE' ]
 
          if restroom[ 'ALERT_MESSAGE' ] != None:
-            alert_is_active = self.is_date_in_range(
+            alert_is_active = zoo.ZooUtil.is_date_in_range(
                target_date=target_date,
                start_date_value=restroom[ 'ALERT_START_DATE' ],
                end_date_value=restroom[ 'ALERT_END_DATE' ] )
@@ -899,7 +839,7 @@ class Database():
          return 'unknown', None
 
       for schedule in schedule_rows:
-         is_active = self.is_date_in_range(
+         is_active = zoo.ZooUtil.is_date_in_range(
             target_date=target_date,
             start_date_value=schedule[ 'SCHEDULE_START_DATE' ],
             end_date_value=schedule[ 'SCHEDULE_END_DATE' ] )
@@ -1065,7 +1005,7 @@ class Database():
          return 'unknown', None
 
       for schedule in schedule_rows:
-         is_active = self.is_date_in_range(
+         is_active = zoo.ZooUtil.is_date_in_range(
             target_date=target_date,
             start_date_value=schedule[ 'SCHEDULE_START_DATE' ],
             end_date_value=schedule[ 'SCHEDULE_END_DATE' ] )
@@ -1176,11 +1116,11 @@ class Database():
             end_ok = True
 
             if status[ 'CLOSED_START' ] != None:
-               start_date = self.parse_date_value( value=status[ 'CLOSED_START' ] )
+               start_date = zoo.ZooUtil.parse_date_value( value=status[ 'CLOSED_START' ] )
                start_ok = target_date >= start_date
 
             if status[ 'CLOSED_END' ] != None:
-               end_date = self.parse_date_value( value=status[ 'CLOSED_END' ] )
+               end_date = zoo.ZooUtil.parse_date_value( value=status[ 'CLOSED_END' ] )
                end_ok = target_date <= end_date
 
             if not ( start_ok and end_ok ):
@@ -1347,12 +1287,12 @@ class Database():
          unavailable_message = None
 
          if guardians_talk[ 'SCHEDULE_START_DATE' ] != None:
-            schedule_start_date = self.parse_date_value(
+            schedule_start_date = zoo.ZooUtil.parse_date_value(
                value=guardians_talk[ 'SCHEDULE_START_DATE' ] )
             start_ok = target_date >= schedule_start_date
 
          if guardians_talk[ 'SCHEDULE_END_DATE' ] != None:
-            schedule_end_date = self.parse_date_value(
+            schedule_end_date = zoo.ZooUtil.parse_date_value(
                value=guardians_talk[ 'SCHEDULE_END_DATE' ] )
             end_ok = target_date <= schedule_end_date
 
@@ -1465,12 +1405,12 @@ class Database():
          unavailable_message = None
 
          if wild_encounter[ 'SCHEDULE_START_DATE' ] != None:
-            schedule_start_date = self.parse_date_value(
+            schedule_start_date = zoo.ZooUtil.parse_date_value(
                value=wild_encounter[ 'SCHEDULE_START_DATE' ] )
             start_ok = target_date >= schedule_start_date
 
          if wild_encounter[ 'SCHEDULE_END_DATE' ] != None:
-            schedule_end_date = self.parse_date_value(
+            schedule_end_date = zoo.ZooUtil.parse_date_value(
                value=wild_encounter[ 'SCHEDULE_END_DATE' ] )
             end_ok = target_date <= schedule_end_date
 
@@ -1568,7 +1508,7 @@ class Database():
          return self.get_drinking_fountain_seasonal_status(
             target_date=target_date )
 
-      if not self.is_date_in_range(
+      if not zoo.ZooUtil.is_date_in_range(
             target_date=target_date,
             start_date_value=status[ 'START_DATE' ],
             end_date_value=status[ 'END_DATE' ] ):
@@ -1828,12 +1768,12 @@ class Database():
          end_ok = True
 
          if exhibit_status[ 'CLOSED_START' ] != None:
-            closed_start = self.parse_date_value(
+            closed_start = zoo.ZooUtil.parse_date_value(
                value=exhibit_status[ 'CLOSED_START' ] )
             start_ok = target_date >= closed_start
 
          if exhibit_status[ 'CLOSED_END' ] != None:
-            closed_end = self.parse_date_value(
+            closed_end = zoo.ZooUtil.parse_date_value(
                value=exhibit_status[ 'CLOSED_END' ] )
             end_ok = target_date <= closed_end
 
@@ -2020,7 +1960,7 @@ class Database():
       day = None
 
       if itinerary_row[ 'ITINERARY_DATE' ] != None:
-         itinerary_date = self.parse_date_value(
+         itinerary_date = zoo.ZooUtil.parse_date_value(
             value=itinerary_row[ 'ITINERARY_DATE' ] )
 
          date = itinerary_date.isoformat()
@@ -2051,22 +1991,30 @@ class Database():
             """ ).fetchall()
       ]
 
+      guardians_talk_rows = cur.execute(
+         """   SELECT
+                  TALK_NAME,
+                  START_TIME,
+                  END_TIME
+               FROM ItineraryGuardiansTalk;
+         """ ).fetchall()
+
       guardians_talks_to_include = [
          row[ 'TALK_NAME' ]
-         for row in cur.execute(
-            """   SELECT
-                     TALK_NAME
-                  FROM ItineraryGuardiansTalk;
-            """ ).fetchall()
+         for row in guardians_talk_rows
       ]
+
+      wild_encounter_rows = cur.execute(
+         """   SELECT
+                  WILD_ENCOUNTER,
+                  START_TIME,
+                  END_TIME
+               FROM ItineraryWildEncounter;
+         """ ).fetchall()
 
       wild_encounters_to_include = [
          row[ 'WILD_ENCOUNTER' ]
-         for row in cur.execute(
-            """   SELECT
-                     WILD_ENCOUNTER
-                  FROM ItineraryWildEncounter;
-            """ ).fetchall()
+         for row in wild_encounter_rows
       ]
 
       animals = []
@@ -2094,13 +2042,15 @@ class Database():
             guardians_talks = self.get_guardians_talks_for_itinerary(
                month=month,
                day=day,
-               guardians_talks_to_include=guardians_talks_to_include )
+               guardians_talks_to_include=guardians_talks_to_include,
+               saved_guardians_talk_rows=guardians_talk_rows )
 
          if wild_encounters_to_include:
             wild_encounters = self.get_wild_encounters_for_itinerary(
                month=month,
                day=day,
-               wild_encounters_to_include=wild_encounters_to_include )
+               wild_encounters_to_include=wild_encounters_to_include,
+               saved_wild_encounter_rows=wild_encounter_rows )
 
       itinerary = zoo.Itinerary(
          date=date,
@@ -2115,7 +2065,7 @@ class Database():
 
 
    def get_zoo_hours( self, date_value ):
-      operating_date = self.parse_date_value( date_value ).isoformat()
+      operating_date = zoo.ZooUtil.parse_date_value( date_value ).isoformat()
       cur = self.conn.cursor()
 
       row = cur.execute(
@@ -2142,6 +2092,68 @@ class Database():
          'lastAdmissionTime': row[ 'LAST_ADMISSION_TIME' ],
          'closeTime': row[ 'CLOSE_TIME' ]
       }
+
+
+   def get_guardians_talk_maximum_duration( self, cursor, talk_name ):
+      row = cursor.execute(
+         """   SELECT MAXIMUM_DURATION
+               FROM MeetTheGuardiansTalk
+               WHERE NAME = ?;
+         """,
+         ( talk_name, ) ).fetchone()
+
+      return row[ 'MAXIMUM_DURATION' ] if row != None else None
+
+
+   def get_wild_encounter_maximum_duration( self, cursor, wild_encounter_name ):
+      row = cursor.execute(
+         """   SELECT MAXIMUM_DURATION
+               FROM WildEncounter
+               WHERE NAME = ?;
+         """,
+         ( wild_encounter_name, ) ).fetchone()
+
+      return row[ 'MAXIMUM_DURATION' ] if row != None else None
+
+
+   def schedule_guardians_talk( self, cursor, talk_name, start_time=None ):
+      end_time = zoo.ZooUtil.add_minutes_to_time(
+         start_time,
+         self.get_guardians_talk_maximum_duration( cursor, talk_name ) )
+
+      cursor.execute(
+         """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
+                  TALK_NAME,
+                  START_TIME,
+                  END_TIME
+               )
+               VALUES ( ?, ?, ? );
+         """,
+         (
+            talk_name,
+            start_time,
+            end_time
+         ) )
+
+
+   def schedule_wild_encounter( self, cursor, wild_encounter_name, start_time=None ):
+      end_time = zoo.ZooUtil.add_minutes_to_time(
+         start_time,
+         self.get_wild_encounter_maximum_duration( cursor, wild_encounter_name ) )
+
+      cursor.execute(
+         """   INSERT OR IGNORE INTO ItineraryWildEncounter (
+                  WILD_ENCOUNTER,
+                  START_TIME,
+                  END_TIME
+               )
+               VALUES ( ?, ?, ? );
+         """,
+         (
+            wild_encounter_name,
+            start_time,
+            end_time
+         ) )
 
 
    def set_itinerary(
@@ -2223,33 +2235,31 @@ class Database():
 
       for guardians_talk in guardians_talks:
          talk_name = guardians_talk
+         start_time = None
 
          if isinstance( guardians_talk, dict ):
             talk_name = guardians_talk.get( 'name' )
+            start_time = guardians_talk.get( 'start_time' )
 
          if talk_name:
-            cur.execute(
-               """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
-                        TALK_NAME
-                     )
-                     VALUES ( ? );
-               """,
-               ( talk_name, ) )
+            self.schedule_guardians_talk(
+               cur,
+               talk_name,
+               start_time )
 
       for wild_encounter in wild_encounters:
          wild_encounter_name = wild_encounter
+         start_time = None
 
          if isinstance( wild_encounter, dict ):
             wild_encounter_name = wild_encounter.get( 'name' )
+            start_time = wild_encounter.get( 'start_time' )
 
          if wild_encounter_name:
-            cur.execute(
-               """   INSERT OR IGNORE INTO ItineraryWildEncounter (
-                        WILD_ENCOUNTER
-                     )
-                     VALUES ( ? );
-               """,
-               ( wild_encounter_name, ) )
+            self.schedule_wild_encounter(
+               cur,
+               wild_encounter_name,
+               start_time )
 
       self.conn.commit()
       cur.close()
@@ -2459,12 +2469,12 @@ class Database():
             end_ok = True
 
             if row[ 'CLOSED_START' ] != None:
-               closed_start = self.parse_date_value(
+               closed_start = zoo.ZooUtil.parse_date_value(
                   value=row[ 'CLOSED_START' ] )
                start_ok = target_date >= closed_start
 
             if row[ 'CLOSED_END' ] != None:
-               closed_end = self.parse_date_value(
+               closed_end = zoo.ZooUtil.parse_date_value(
                   value=row[ 'CLOSED_END' ] )
                end_ok = target_date <= closed_end
 
@@ -2661,13 +2671,13 @@ class Database():
       schedule_end_date = today + timedelta( days=days_ahead )
 
       if guardians_talk_schedule[ 'SCHEDULE_START_DATE' ] != None:
-         parsed_start_date = self.parse_date_value(
+         parsed_start_date = zoo.ZooUtil.parse_date_value(
             value=guardians_talk_schedule[ 'SCHEDULE_START_DATE' ] )
          if parsed_start_date > schedule_start_date:
             schedule_start_date = parsed_start_date
 
       if guardians_talk_schedule[ 'SCHEDULE_END_DATE' ] != None:
-         parsed_end_date = self.parse_date_value(
+         parsed_end_date = zoo.ZooUtil.parse_date_value(
             value=guardians_talk_schedule[ 'SCHEDULE_END_DATE' ] )
          if parsed_end_date < schedule_end_date:
             schedule_end_date = parsed_end_date
@@ -2788,13 +2798,13 @@ class Database():
       schedule_end_date = today + timedelta( days=days_ahead )
 
       if wild_encounter_schedule[ 'SCHEDULE_START_DATE' ] != None:
-         parsed_start_date = self.parse_date_value(
+         parsed_start_date = zoo.ZooUtil.parse_date_value(
             value=wild_encounter_schedule[ 'SCHEDULE_START_DATE' ] )
          if parsed_start_date > schedule_start_date:
             schedule_start_date = parsed_start_date
 
       if wild_encounter_schedule[ 'SCHEDULE_END_DATE' ] != None:
-         parsed_end_date = self.parse_date_value(
+         parsed_end_date = zoo.ZooUtil.parse_date_value(
             value=wild_encounter_schedule[ 'SCHEDULE_END_DATE' ] )
          if parsed_end_date < schedule_end_date:
             schedule_end_date = parsed_end_date
@@ -2976,7 +2986,8 @@ class Database():
          self,
          month,
          day,
-         guardians_talks_to_include=None ):
+         guardians_talks_to_include=None,
+         saved_guardians_talk_rows=None ):
 
       guardians_talks_to_include = guardians_talks_to_include or []
 
@@ -3004,6 +3015,11 @@ class Database():
          if ( guardians_talk.name or '' ).strip().lower() in guardians_talks_filter
       ]
 
+      if saved_guardians_talk_rows:
+         self.apply_saved_guardians_talk_times(
+            guardians_talks,
+            saved_guardians_talk_rows )
+
       guardians_talks.sort(
          key=lambda t: (
             ( t.name or '' ).lower(),
@@ -3014,11 +3030,30 @@ class Database():
       return guardians_talks
 
 
+   def apply_saved_guardians_talk_times( self, guardians_talks, saved_guardians_talk_rows ):
+      guardians_talk_times_by_name = {
+         ( row[ 'TALK_NAME' ] or '' ).strip().lower(): (
+            row[ 'START_TIME' ],
+            row[ 'END_TIME' ]
+         )
+         for row in saved_guardians_talk_rows
+      }
+
+      for guardians_talk in guardians_talks:
+         start_time, end_time = guardians_talk_times_by_name.get(
+            ( guardians_talk.name or '' ).strip().lower(),
+            ( None, None ) )
+         guardians_talk.time_of_day = start_time
+         guardians_talk.start_time = start_time
+         guardians_talk.end_time = end_time
+
+
    def get_wild_encounters_for_itinerary(
          self,
          month,
          day,
-         wild_encounters_to_include=None ):
+         wild_encounters_to_include=None,
+         saved_wild_encounter_rows=None ):
 
       wild_encounters_to_include = wild_encounters_to_include or []
 
@@ -3046,6 +3081,16 @@ class Database():
          if ( wild_encounter.name or '' ).strip().lower() in wild_encounters_filter
       ]
 
+      if saved_wild_encounter_rows:
+         self.apply_saved_wild_encounter_times(
+            wild_encounters,
+            saved_wild_encounter_rows )
+         wild_encounters = [
+            wild_encounter
+            for wild_encounter in wild_encounters
+            if getattr( wild_encounter, 'is_available', True )
+         ]
+
       wild_encounters.sort(
          key=lambda w: (
             ( w.name or '' ).lower(),
@@ -3054,6 +3099,24 @@ class Database():
       )
 
       return wild_encounters
+
+
+   def apply_saved_wild_encounter_times( self, wild_encounters, saved_wild_encounter_rows ):
+      wild_encounter_times_by_name = {
+         ( row[ 'WILD_ENCOUNTER' ] or '' ).strip().lower(): (
+            row[ 'START_TIME' ],
+            row[ 'END_TIME' ]
+         )
+         for row in saved_wild_encounter_rows
+      }
+
+      for wild_encounter in wild_encounters:
+         start_time, end_time = wild_encounter_times_by_name.get(
+            ( wild_encounter.name or '' ).strip().lower(),
+            ( None, None ) )
+         wild_encounter.time_of_day = start_time
+         wild_encounter.start_time = start_time
+         wild_encounter.end_time = end_time
 
 
    def set_animal_as_off_display( self, species, exhibit, start_date, end_date, message ):
@@ -3474,10 +3537,10 @@ class Database():
       parsed_end_date = None
 
       try:
-         parsed_start_date = self.parse_date_value( start_date )
+         parsed_start_date = zoo.ZooUtil.parse_date_value( start_date )
 
          if end_date:
-            parsed_end_date = self.parse_date_value( end_date )
+            parsed_end_date = zoo.ZooUtil.parse_date_value( end_date )
       except ValueError:
          return None
 
@@ -3519,7 +3582,7 @@ class Database():
          end_date = datetime.now().date().isoformat()
 
       try:
-         parsed_end_date = self.parse_date_value( end_date )
+         parsed_end_date = zoo.ZooUtil.parse_date_value( end_date )
       except ValueError:
          return False
 
@@ -3559,7 +3622,7 @@ class Database():
 
       if should_update_end_date and end_date:
          try:
-            parsed_end_date = self.parse_date_value( end_date )
+            parsed_end_date = zoo.ZooUtil.parse_date_value( end_date )
          except ValueError:
             return False
 
@@ -3582,7 +3645,7 @@ class Database():
          cur.close()
          return False
 
-      current_start_date = self.parse_date_value( current_update[ 'START_DATE' ] )
+      current_start_date = zoo.ZooUtil.parse_date_value( current_update[ 'START_DATE' ] )
 
       if should_update_end_date and parsed_end_date == None:
          next_end_date = None
@@ -3994,7 +4057,7 @@ class Database():
 
       try:
          normalized_start_date = (
-            self.parse_date_value( value=start_date ).isoformat()
+            zoo.ZooUtil.parse_date_value( value=start_date ).isoformat()
             if start_date
             else datetime.now().date().isoformat()
          )
@@ -4005,7 +4068,7 @@ class Database():
 
       if end_date:
          try:
-            normalized_end_date = self.parse_date_value( value=end_date ).isoformat()
+            normalized_end_date = zoo.ZooUtil.parse_date_value( value=end_date ).isoformat()
          except ValueError:
             return False
 

@@ -39,9 +39,51 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
       date='2026-06-15',
       animals=[ { 'species': 'African Lion', 'exhibit': 'Africa Savanna' } ],
       attractions=[ { 'name': 'Conservation Carousel' } ],
-      guardians_talks=[ 'African Lion' ],
-      wild_encounters=[ 'African Rainforest' ],
+      guardians_talks=[
+         {
+            'name': 'African Lion',
+            'start_time': '10:00'
+         }
+      ],
+      wild_encounters=[
+         {
+            'name': 'African Rainforest',
+            'start_time': '14:00'
+         }
+      ],
       is_active=True
+   )
+
+   talk_schedule = db.conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryGuardiansTalk
+            WHERE TALK_NAME = 'African Lion';
+      """ ).fetchone()
+   encounter_schedule = db.conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryWildEncounter
+            WHERE WILD_ENCOUNTER = 'African Rainforest';
+      """ ).fetchone()
+
+   assert dict( talk_schedule ) == {
+      'START_TIME': '10:00',
+      'END_TIME': '10:30'
+   }
+   assert dict( encounter_schedule ) == {
+      'START_TIME': '14:00',
+      'END_TIME': '14:45'
+   }
+
+   assert db.cancel_guardians_talk_occurrence(
+      talk='African Lion',
+      location='Africa Savanna',
+      date='2026-06-15',
+      time='10:00'
+   )
+   assert db.cancel_wild_encounter_occurrence(
+      wild_encounter='African Rainforest',
+      date='2026-06-15',
+      time='14:00'
    )
 
    itinerary = db.get_itinerary()
@@ -49,8 +91,8 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    assert itinerary.date == '2026-06-15'
    assert [ animal.species for animal in itinerary.animals ] == [ 'African Lion' ]
    assert [ attraction.name for attraction in itinerary.attractions ] == [ 'Conservation Carousel' ]
-   assert [ talk.name for talk in itinerary.guardians_talks ] == [ 'African Lion' ]
-   assert [ encounter.name for encounter in itinerary.wild_encounters ] == [ 'African Rainforest' ]
+   assert itinerary.guardians_talks == []
+   assert itinerary.wild_encounters == []
 
    assert db.clear_itinerary()
    cleared = db.get_itinerary()

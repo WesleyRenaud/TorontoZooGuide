@@ -73,7 +73,9 @@ def test_create_schema_migrates_partial_dynamic_tables():
       'WildEncounterSchedule': 'WILD_ENCOUNTER TEXT',
       'WildEncounterCancellation': 'WILD_ENCOUNTER TEXT',
       'Itinerary': 'ID INTEGER',
-      'ItineraryAnimal': 'SPECIES TEXT'
+      'ItineraryAnimal': 'SPECIES TEXT',
+      'ItineraryGuardiansTalk': 'TALK_NAME TEXT',
+      'ItineraryWildEncounter': 'WILD_ENCOUNTER TEXT'
    }
 
    for table, columns in partial_tables.items():
@@ -241,6 +243,16 @@ def test_create_schema_migrates_partial_dynamic_tables():
       'ItineraryAnimal': {
          'SPECIES',
          'EXHIBIT'
+      },
+      'ItineraryGuardiansTalk': {
+         'TALK_NAME',
+         'START_TIME',
+         'END_TIME'
+      },
+      'ItineraryWildEncounter': {
+         'WILD_ENCOUNTER',
+         'START_TIME',
+         'END_TIME'
       }
    }
 

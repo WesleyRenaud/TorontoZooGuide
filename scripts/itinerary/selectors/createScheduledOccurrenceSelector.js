@@ -78,6 +78,12 @@ function createStoredOccurrenceFromObject(item, {
       storedOccurrence.link = normalizeStoredLink(item.link);
    }
 
+   const startTime = normalizeStoredString(item.start_time);
+
+   if (startTime) {
+      storedOccurrence.start_time = startTime;
+   }
+
    const maximumDuration = Number(item.maximum_duration);
 
    if (Number.isFinite(maximumDuration) && maximumDuration > 0) {
@@ -112,8 +118,10 @@ function createOccurrenceSelection(row, {
    getName,
    buildImageSrc,
    buildSelectionFields,
+   getTimeOfDay,
 } = {}) {
    const name = getName(row);
+   const startTime = normalizeStoredString(getTimeOfDay(row));
    const selection = {
       id: getId(row),
       name,
@@ -131,6 +139,10 @@ function createOccurrenceSelection(row, {
 
    if (Number.isFinite(maximumDuration) && maximumDuration > 0) {
       selection.maximum_duration = maximumDuration;
+   }
+
+   if (startTime) {
+      selection.start_time = startTime;
    }
 
    return selection;
@@ -176,6 +188,7 @@ export function createScheduledOccurrenceSelectorController({
       getId,
       getLink,
       getName,
+      getTimeOfDay,
       buildImageSrc,
       buildSelectionFields,
    });
