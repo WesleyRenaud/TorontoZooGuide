@@ -2117,9 +2117,10 @@ class Database():
       row = cur.execute(
          """   SELECT
                   OPERATING_DATE,
+                  EARLY_ADMISSION_TIME,
                   OPEN_TIME,
-                  CLOSE_TIME,
-                  LAST_ADMISSION_TIME
+                  LAST_ADMISSION_TIME,
+                  CLOSE_TIME
                FROM ZooHours
                WHERE OPERATING_DATE = ?;
          """,
@@ -2132,9 +2133,10 @@ class Database():
 
       return {
          'date': row[ 'OPERATING_DATE' ],
+         'earlyAdmissionTime': row[ 'EARLY_ADMISSION_TIME' ],
          'openTime': row[ 'OPEN_TIME' ],
-         'closeTime': row[ 'CLOSE_TIME' ],
-         'lastAdmissionTime': row[ 'LAST_ADMISSION_TIME' ]
+         'lastAdmissionTime': row[ 'LAST_ADMISSION_TIME' ],
+         'closeTime': row[ 'CLOSE_TIME' ]
       }
 
 

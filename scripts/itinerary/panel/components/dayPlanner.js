@@ -119,10 +119,14 @@ export function makeDayPlannerPreview(zooHours = null) {
    header.appendChild(titleWrap);
    header.appendChild(date);
 
+   const earlyAdmissionMinutes = parseClockTimeMinutes(hours.earlyAdmissionTime);
    const openMinutes = parseClockTimeMinutes(hours.openTime);
    const lastAdmissionMinutes = parseClockTimeMinutes(hours.lastAdmissionTime);
    const closeMinutes = parseClockTimeMinutes(hours.closeTime);
-   const halfHourSlotStarts = buildHalfHourSlotStarts(openMinutes, closeMinutes);
+   const timelineStartMinutes = Number.isFinite(earlyAdmissionMinutes)
+      ? earlyAdmissionMinutes
+      : openMinutes;
+   const halfHourSlotStarts = buildHalfHourSlotStarts(timelineStartMinutes, closeMinutes);
 
    if (halfHourSlotStarts.length === 0) {
       section.appendChild(header);
@@ -131,11 +135,16 @@ export function makeDayPlannerPreview(zooHours = null) {
    }
 
    halfHourSlotStarts.forEach((slotStart) => {
-      const pillLabel = slotStart === openMinutes
-         ? strings.openLabel
-         : slotStart === lastAdmissionMinutes
-            ? strings.lastAdmissionLabel
-            : null;
+      let pillLabel = null;
+
+      if (slotStart === earlyAdmissionMinutes) {
+         pillLabel = strings.earlyAdmissionLabel;
+      } else if (slotStart === openMinutes) {
+         pillLabel = strings.openLabel;
+      } else if (slotStart === lastAdmissionMinutes) {
+         pillLabel = strings.lastAdmissionLabel;
+      }
+
       const [timeCell, gridLine] = makeTimelineRow(
          formatMinutesAsClockTime(slotStart),
          pillLabel
