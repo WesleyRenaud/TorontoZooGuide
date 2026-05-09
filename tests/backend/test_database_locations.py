@@ -38,6 +38,16 @@ def test_region_and_static_location_queries( db ):
       'Tundra Trek'
    ]
 
+   region_exhibits_without_date = db.get_regions_with_exhibits( None, None )
+   africa = next(
+      region for region in region_exhibits_without_date
+      if region[ 'name' ] == 'Africa'
+   )
+   assert africa[ 'exhibits' ] == [
+      'Africa Savanna',
+      'African Rainforest Pavilion'
+   ]
+
    pavilions = {
       pavilion.name: pavilion
       for pavilion in db.get_pavilions()

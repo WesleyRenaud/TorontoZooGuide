@@ -283,16 +283,21 @@ export async function openItineraryWizard({
 
    SELECTION_STEP_CONFIGS.forEach(createSelectionStepController);
 
-   async function handleDateSelection(date, dateObj) {
+   async function handleDateNext(date, dateObj) {
       await validateAndApplyDate(date, dateObj);
       showStep('regions');
+   }
+
+   async function handleDateFinish(date, dateObj) {
+      await validateAndApplyDate(date, dateObj);
+      await finish({ date }, { allowEmpty: true });
    }
 
    wizardSteps.date = createItineraryDateSelectorController({
       mountEl,
       onClose: handleClose,
-      onSave: handleDateSelection,
-      onFinish: handleDateSelection,
+      onSave: handleDateNext,
+      onFinish: handleDateFinish,
    });
 
    return showStep(resolveStartStep(startAt));
