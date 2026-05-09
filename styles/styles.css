@@ -1690,9 +1690,16 @@ nav ul li a:hover {
 .itin-panel-view-shell {
    display: flex;
    flex-direction: column;
-   gap: 112px;
+   gap: 36px;
    min-height: 0;
    flex: 1 1 auto;
+}
+
+.itin-panel-shared-header {
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+   padding-top: 40px;
 }
 
 .itin-panel-view {
@@ -1709,39 +1716,43 @@ nav ul li a:hover {
 .itin-panel-view-toggle {
    display: grid;
    grid-template-columns: repeat(2, minmax(0, 1fr));
-   gap: 0;
-   margin: 0 -20px;
+   gap: 24px;
+   margin: 0 0 56px 0;
    padding: 0;
-   border-radius: 0;
-   background: #5e9600;
-   box-shadow: 0 8px 18px rgba(20, 35, 10, 0.16);
+   background: transparent;
+   box-shadow: none;
 }
 
 .itin-panel-view-toggle-button {
-   min-height: 112px;
+   width: 100%;
+   min-height: 104px;
    border: none;
-   border-radius: 0;
-   background: transparent;
+   border-radius: 18px;
+   background: #77B800;
    color: #ffffff;
    font-family: 'Poppins', sans-serif;
-   font-size: 2.8rem;
+   font-size: 2.8em;
    font-weight: 900;
    line-height: 1.1;
    cursor: pointer;
-   box-shadow: none;
+   box-shadow: 0 10px 22px rgba(0,0,0,0.22);
    transition:
-      background-color 0.15s ease,
-      color 0.15s ease;
+      transform 0.15s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
 }
 
 .itin-panel-view-toggle-button-active {
-   background: transparent;
+   background: #77B800;
    color: #ffffff;
+   box-shadow: 0 10px 22px rgba(0,0,0,0.22);
 }
 
 .itin-panel-view-toggle-button:hover,
 .itin-panel-view-toggle-button:focus-visible {
-   background: rgba(255, 255, 255, 0.14);
+   background: #5e9600;
+   transform: translateY(-2px);
+   box-shadow: 0 14px 32px rgba(0,0,0,0.28);
 }
 
 /* ============================================================
@@ -1752,7 +1763,7 @@ nav ul li a:hover {
    width: 100%;
    box-sizing: border-box;
 
-   padding: 28px;
+   padding: 34px;
    border-radius: 8px;
    border: 4px solid rgba(94, 150, 0, 0.48);
    background: rgba(246, 251, 238, 0.97);
@@ -1766,14 +1777,14 @@ nav ul li a:hover {
    display: flex;
    align-items: flex-start;
    justify-content: space-between;
-   gap: 24px;
-   padding: 4px 4px 34px 4px;
+   gap: 30px;
+   padding: 4px 4px 42px 4px;
    border-bottom: 3px solid rgba(94, 150, 0, 0.18);
 }
 
 .itinerary-day-module h3 {
    margin: 0;
-   font-size: 4.4rem;
+   font-size: 5rem;
    line-height: 1;
    font-weight: 900;
    letter-spacing: 0;
@@ -1781,12 +1792,12 @@ nav ul li a:hover {
 
 .itinerary-day-module-date {
    flex: 0 0 auto;
-   max-width: 360px;
-   padding: 22px 28px;
+   max-width: 400px;
+   padding: 26px 32px;
    border-radius: 8px;
    background: #5e9600;
    color: #ffffff;
-   font-size: 2.15rem;
+   font-size: 2.35rem;
    line-height: 1.1;
    font-weight: 900;
    text-align: center;
@@ -1794,12 +1805,12 @@ nav ul li a:hover {
 }
 
 .itinerary-day-timeline {
-   --itinerary-half-hour-slot-height: 220px;
+   --itinerary-half-hour-slot-height: 330px;
 
    display: grid;
-   grid-template-columns: 168px minmax(0, 1fr);
+   grid-template-columns: 190px minmax(0, 1fr);
    grid-auto-rows: var(--itinerary-half-hour-slot-height);
-   padding-top: 38px;
+   padding-top: 46px;
 }
 
 .itinerary-day-unavailable {
@@ -1811,10 +1822,10 @@ nav ul li a:hover {
 }
 
 .itinerary-day-time {
-   padding-top: 16px;
-   padding-right: 24px;
+   padding-top: 18px;
+   padding-right: 28px;
    color: rgba(20, 35, 10, 0.64);
-   font-size: 1.65rem;
+   font-size: 1.85rem;
    font-weight: 900;
    text-align: right;
    white-space: nowrap;
@@ -1829,43 +1840,43 @@ nav ul li a:hover {
 
 .itinerary-day-event {
    position: absolute;
-   top: 14px;
-   left: 28px;
-   right: 16px;
+   top: 16px;
+   left: 34px;
+   right: 20px;
    z-index: 1;
    height: calc(
       (var(--itinerary-event-slot-span, 1) * var(--itinerary-half-hour-slot-height))
-      - 28px
+      - 32px
    );
 }
 
-.itinerary-day-event-card {
+.itin-panel-item.itinerary-day-event-card {
    height: 100%;
    min-height: 0;
    box-sizing: border-box;
-   padding: 20px;
-   align-items: stretch;
+   padding: 18px 22px;
+   align-items: flex-start;
 }
 
 .itinerary-day-event-card .itin-panel-item-left {
-   align-items: center;
+   align-items: flex-start;
    min-height: 0;
 }
 
 .itinerary-day-event-card .itin-panel-thumb {
-   width: 126px;
+   width: 150px;
    height: min(
       calc(
          (var(--itinerary-event-slot-span, 1) * var(--itinerary-half-hour-slot-height))
-         - 72px
+         - 88px
       ),
-      132px
+      156px
    );
-   border-radius: 12px;
+   border-radius: 14px;
 }
 
 .itinerary-day-event-card .itin-panel-text {
-   gap: 8px;
+   gap: 10px;
 }
 
 .itinerary-day-event-card .itin-panel-name,
@@ -1878,27 +1889,27 @@ nav ul li a:hover {
 
 .itinerary-day-event-card .itin-panel-name {
    -webkit-line-clamp: 1;
-   font-size: 2.35em;
+   font-size: 2.7em;
    line-height: 1.05;
 }
 
 .itinerary-day-event-card .itin-panel-meta,
 .itinerary-day-event-card .itin-panel-link {
    -webkit-line-clamp: 2;
-   font-size: 1.55em;
+   font-size: 1.75em;
    line-height: 1.12;
 }
 
 .itinerary-day-open-pill {
    position: absolute;
-   top: -32px;
-   left: 18px;
-   padding: 15px 26px;
+   top: -36px;
+   left: 22px;
+   padding: 17px 30px;
    border-radius: 999px;
    background: #ffffff;
    border: 2px solid rgba(94, 150, 0, 0.35);
    color: #5e9600;
-   font-size: 1.85rem;
+   font-size: 2.05rem;
    line-height: 1;
    font-weight: 900;
    box-shadow: 0 6px 14px rgba(20, 35, 10, 0.14);

@@ -104,11 +104,12 @@ function buildItineraryPanelContent(itinerary, zooHours) {
    const fragment = document.createDocumentFragment();
    const {
       root,
+      sharedHeader,
       listView,
       dayPlannerView,
    } = makePanelViewShell();
 
-   listView.appendChild(
+   sharedHeader.appendChild(
       makeActionsBar({
          onAfterClear: clearStoredItinerary,
       })
@@ -117,7 +118,7 @@ function buildItineraryPanelContent(itinerary, zooHours) {
    const dateCard = makeDateCard(itinerary);
 
    if (dateCard) {
-      listView.appendChild(dateCard);
+      sharedHeader.appendChild(dateCard);
    }
 
    buildSectionConfigs(itinerary).forEach((sectionConfig) => {
