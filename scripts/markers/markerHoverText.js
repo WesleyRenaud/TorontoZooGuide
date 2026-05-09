@@ -22,7 +22,7 @@ function formatGuardiansTalkHoverText(itemsAtPoint) {
    return formatCountedHoverText(itemsAtPoint, (item) => {
       const name = item?.name || '';
       return name
-         ? APP_STRINGS.entityLabels.guardiansTalkWithName(name)
+         ? APP_STRINGS.map.hover.guardiansTalkWithName(name)
          : APP_STRINGS.entityLabels.guardiansTalk;
    });
 }

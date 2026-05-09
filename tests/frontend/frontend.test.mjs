@@ -12,6 +12,7 @@ import './itineraryApi.test.mjs';
 import './itineraryDiff.test.mjs';
 import './layerRequest.test.mjs';
 import './mapSources.test.mjs';
+import './markerHoverText.test.mjs';
 import './sourceHelpers.test.mjs';
 import './panelRows.test.mjs';
 import './strings.test.mjs';
