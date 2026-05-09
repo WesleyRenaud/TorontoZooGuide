@@ -1316,6 +1316,7 @@ class Database():
                   t.LOCATION,
                   t.X_COORD,
                   t.Y_COORD,
+                  t.DURATION,
                   s.SCHEDULE_START_DATE,
                   s.SCHEDULE_END_DATE,
                   s.MONDAY,
@@ -1406,6 +1407,7 @@ class Database():
                   x_coord=guardians_talk[ 'X_COORD' ],
                   y_coord=guardians_talk[ 'Y_COORD' ],
                   time_of_day=talk_time,
+                  duration=guardians_talk[ 'DURATION' ],
                   is_available=is_available,
                   unavailable_message=unavailable_message ) )
 
@@ -1430,6 +1432,7 @@ class Database():
                   w.NAME,
                   w.MEETING_SPOT,
                   w.LINK,
+                  w.DURATION,
                   m.X_COORD,
                   m.Y_COORD,
                   s.SCHEDULE_START_DATE,
@@ -1518,6 +1521,7 @@ class Database():
                meeting_spot=wild_encounter[ 'MEETING_SPOT' ],
                link=wild_encounter[ 'LINK' ],
                time_of_day=encounter_time,
+               duration=wild_encounter[ 'DURATION' ],
                x_coord=wild_encounter[ 'X_COORD' ],
                y_coord=wild_encounter[ 'Y_COORD' ],
                is_available=is_available,

@@ -78,6 +78,12 @@ function createStoredOccurrenceFromObject(item, {
       storedOccurrence.link = normalizeStoredLink(item.link);
    }
 
+   const duration = Number(item.duration);
+
+   if (Number.isFinite(duration) && duration > 0) {
+      storedOccurrence.duration = duration;
+   }
+
    return storedOccurrence;
 }
 
@@ -119,6 +125,12 @@ function createOccurrenceSelection(row, {
 
    if (link) {
       selection.link = link;
+   }
+
+   const duration = Number(row?.duration);
+
+   if (Number.isFinite(duration) && duration > 0) {
+      selection.duration = duration;
    }
 
    return selection;

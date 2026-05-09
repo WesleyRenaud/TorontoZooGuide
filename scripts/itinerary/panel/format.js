@@ -20,6 +20,11 @@ function normalizeNumber(value) {
    return Number.isFinite(number) ? number : null;
 }
 
+function normalizeDuration(value) {
+   const duration = normalizeNumber(value);
+   return duration && duration > 0 ? duration : null;
+}
+
 export function formatISODateLong(iso) {
    if (!iso || typeof iso !== 'string') return '';
 
@@ -113,6 +118,7 @@ export function normalizeTalk(value) {
       name: normalizeText(source.name),
       location: normalizeText(source.location),
       time_of_day: normalizeText(source.time_of_day),
+      duration: normalizeDuration(source.duration),
       link: normalizeOptionalText(source.link),
       removalReason: normalizeOptionalText(source.removalReason),
    };
@@ -126,6 +132,7 @@ export function normalizeWild(value) {
       name: normalizeText(source.name),
       meeting_spot: normalizeText(source.meeting_spot),
       time_of_day: normalizeText(source.time_of_day),
+      duration: normalizeDuration(source.duration),
       link: normalizeOptionalText(source.link),
       removalReason: normalizeOptionalText(source.removalReason),
    };
