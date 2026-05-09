@@ -712,6 +712,29 @@ def test_get_wild_encounters_endpoint_uses_available_database_results( stub_data
    ]
 
 
+def test_get_exhibits_by_region_allows_missing_date_context( stub_database ):
+   handler = make_handler( '/get-exhibits-by-region', {} )
+
+   server.MyHandler.do_POST( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert StubDatabase.instances[ 0 ].calls == [
+      (
+         'get_regions_with_exhibits',
+         {
+            'month': None,
+            'day': None
+         }
+      )
+   ]
+   assert response_json( handler )[ 'regions' ] == [
+      {
+         'name': 'Africa',
+         'exhibits': [ ANIMAL_EXHIBIT ]
+      }
+   ]
+
+
 @pytest.mark.parametrize(
    'path, body, expected_call, response_subset',
    [

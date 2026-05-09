@@ -2405,11 +2405,13 @@ class Database():
 
    def get_regions_with_exhibits( self, month, day ):
       cur = self.conn.cursor()
+      target_date = None
 
-      target_date = date(
-         datetime.now().year,
-         zoo.ZooUtil.normalize_month( month ),
-         int( day ) )
+      if month != None and day != None:
+         target_date = date(
+            datetime.now().year,
+            zoo.ZooUtil.normalize_month( month ),
+            int( day ) )
 
       data = cur.execute(
          """   SELECT
@@ -2446,7 +2448,7 @@ class Database():
 
          is_closed = False
 
-         if row[ 'IS_CLOSED' ]:
+         if row[ 'IS_CLOSED' ] and target_date != None:
             start_ok = True
             end_ok = True
 
