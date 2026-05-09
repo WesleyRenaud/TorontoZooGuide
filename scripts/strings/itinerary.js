@@ -46,6 +46,7 @@ export const itinerary = {
       aria: 'Itinerary day planner preview',
       dayPlannerLabel: 'Day Planner View',
       date: 'Saturday, June 20',
+      earlyAdmissionLabel: 'Early Admission',
       firstSlot: '9:30 AM',
       listViewLabel: 'List View',
       closeLabel: 'Zoo Closes',

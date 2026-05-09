@@ -1,12 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
-import {
-   buildAnimalRows,
-   buildAttractionRows,
-   buildGuardiansRows,
-   buildWildRows,
-} from '../../scripts/itinerary/panel/rows.js';
+import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
 import {
    buildHalfHourSlotStarts,
    formatMinutesAsClockTime,
@@ -21,10 +16,17 @@ import {
    normalizeTalk,
    normalizeWild,
 } from '../../scripts/itinerary/panel/format.js';
+import {
+   buildAnimalRows,
+   buildAttractionRows,
+   buildGuardiansRows,
+   buildWildRows,
+} from '../../scripts/itinerary/panel/rows.js';
 
 function createNode(tagName, className = '', textContent = '') {
    const children = [];
    const listeners = {};
+   const attributes = {};
 
    return {
       tagName,
@@ -32,12 +34,19 @@ function createNode(tagName, className = '', textContent = '') {
       textContent,
       children,
       listeners,
+      attributes,
       appendChild(child) {
          children.push(child);
          return child;
       },
+      append(...items) {
+         children.push(...items);
+      },
       addEventListener(eventName, handler) {
          listeners[eventName] = handler;
+      },
+      setAttribute(name, value) {
+         attributes[name] = value;
       },
       querySelector(selector) {
          const classNameToFind = selector.startsWith('.')
@@ -58,6 +67,13 @@ function createNode(tagName, className = '', textContent = '') {
          return null;
       },
    };
+}
+
+function allTextFor(node) {
+   return [
+      node.textContent,
+      ...(node.children ?? []).map(allTextFor),
+   ].flat(Infinity).filter(Boolean).join(' ');
 }
 
 function textFor(row, selector) {
@@ -119,6 +135,22 @@ test('formats and normalizes itinerary panel item data', () => {
    }).infoLink, 'https://www.torontozoo.com/tickets/carousel');
    assert.equal(normalizeTalk({ name: '  Amur Tiger  ' }).name, 'Amur Tiger');
    assert.equal(normalizeWild({ name: '  African Rainforest  ' }).name, 'African Rainforest');
+});
+
+test('day planner starts at early admission when available', () => {
+   const planner = makeDayPlannerPreview({
+      date: '2026-06-20',
+      earlyAdmissionTime: '09:00',
+      openTime: '09:30',
+      lastAdmissionTime: '18:00',
+      closeTime: '19:00',
+   });
+   const text = allTextFor(planner);
+
+   assert.match(text, /9:00 AM/);
+   assert.match(text, /Early Admission/);
+   assert.match(text, /9:30 AM/);
+   assert.match(text, /Zoo Opens/);
 });
 
 test('buildAnimalRows deduplicates species and renders visibility alerts', () => {

@@ -61,9 +61,10 @@ function normalizeZooHours(hours) {
 
    return {
       date: asTrimmedString(source.date),
+      earlyAdmissionTime: asTrimmedString(source.earlyAdmissionTime),
       openTime: asTrimmedString(source.openTime),
-      closeTime: asTrimmedString(source.closeTime),
       lastAdmissionTime: asTrimmedString(source.lastAdmissionTime),
+      closeTime: asTrimmedString(source.closeTime),
    };
 }
 

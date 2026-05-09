@@ -277,9 +277,10 @@ class StubDatabase:
       self.calls.append( ( 'get_zoo_hours', { 'date_value': date_value } ) )
       return {
          'date': date_value,
+         'earlyAdmissionTime': '09:00',
          'openTime': '09:30',
-         'closeTime': '19:00',
-         'lastAdmissionTime': '18:00'
+         'lastAdmissionTime': '18:00',
+         'closeTime': '19:00'
       }
 
 
