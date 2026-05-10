@@ -101,6 +101,7 @@ function buildEmptyItineraryPanelContent(bodyEl, zooHours) {
    } = makePanelViewShell();
 
    renderBuildOnly(listView);
+   renderBuildOnly(dayPlannerView);
    appendDayPlannerViewWithHours(dayPlannerView, zooHours);
    bodyEl.appendChild(root);
 }
