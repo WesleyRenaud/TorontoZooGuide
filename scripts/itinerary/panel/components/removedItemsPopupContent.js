@@ -64,48 +64,52 @@ function buildSectionRows(items, rowBuilder, stepKey, onViewAlternatives, remove
 }
 
 function getSectionSpecs({
-   removed = {},
-   reducedVisibility = {},
-   improvedVisibility = {},
+   removed,
+   reducedVisibility,
+   improvedVisibility,
 } = {}) {
+   const safeRemoved = removed ?? {};
+   const safeReduced = reducedVisibility ?? {};
+   const safeImproved = improvedVisibility ?? {};
+
    return [
       {
-         items: removed.animals ?? [],
+         items: safeRemoved.animals ?? [],
          title: APP_STRINGS.itinerary.removedItems.animalsRemovedTitle,
          subtitle: APP_STRINGS.itinerary.removedItems.animalsRemovedSubtitle,
          rowBuilder: buildAnimalRows,
          stepKey: 'animals',
       },
       {
-         items: reducedVisibility.animals ?? [],
+         items: safeReduced.animals ?? [],
          title: APP_STRINGS.itinerary.removedItems.reducedAnimalVisibilityTitle,
          subtitle: APP_STRINGS.itinerary.removedItems.reducedAnimalVisibilitySubtitle,
          rowBuilder: buildAnimalRows,
          stepKey: 'animals',
       },
       {
-         items: improvedVisibility.animals ?? [],
+         items: safeImproved.animals ?? [],
          title: APP_STRINGS.itinerary.removedItems.improvedAnimalVisibilityTitle,
          subtitle: APP_STRINGS.itinerary.removedItems.improvedAnimalVisibilitySubtitle,
          rowBuilder: buildAnimalRows,
          stepKey: 'animals',
       },
       {
-         items: removed.attractions ?? [],
+         items: safeRemoved.attractions ?? [],
          title: APP_STRINGS.map.filter.attractions,
          subtitle: APP_STRINGS.itinerary.removedItems.attractionsSubtitle,
          rowBuilder: buildAttractionRows,
          stepKey: 'attractions',
       },
       {
-         items: removed.guardiansTalks ?? [],
+         items: safeRemoved.guardiansTalks ?? [],
          title: APP_STRINGS.site.nav.meetTheGuardians,
          subtitle: APP_STRINGS.itinerary.removedItems.talksSubtitle,
          rowBuilder: buildGuardiansRows,
          stepKey: 'guardiansTalks',
       },
       {
-         items: removed.wildEncounters ?? [],
+         items: safeRemoved.wildEncounters ?? [],
          title: APP_STRINGS.site.nav.wildEncounters,
          subtitle: APP_STRINGS.itinerary.removedItems.wildEncountersSubtitle,
          rowBuilder: buildWildRows,
@@ -115,18 +119,18 @@ function getSectionSpecs({
 }
 
 export function hasRemovedItemsPopupContent({
-   removed = {},
-   reducedVisibility = {},
-   improvedVisibility = {},
+   removed,
+   reducedVisibility,
+   improvedVisibility,
 } = {}) {
    return getSectionSpecs({ removed, reducedVisibility, improvedVisibility })
       .some((section) => Array.isArray(section.items) && section.items.length > 0);
 }
 
 export function buildRemovedItemsPopupSections({
-   removed = {},
-   reducedVisibility = {},
-   improvedVisibility = {},
+   removed,
+   reducedVisibility,
+   improvedVisibility,
    onViewAlternatives,
    removePopupOnly,
 } = {}) {
