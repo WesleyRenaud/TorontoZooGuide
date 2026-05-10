@@ -383,7 +383,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          month = data.get( 'month' )
          day = data.get( 'day' )
 
-         guardians_talks = self.database.get_guardians_talks( month=month, day=day )
+         guardians_talks = self.database.get_guardians_talk_schedule( month=month, day=day )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
