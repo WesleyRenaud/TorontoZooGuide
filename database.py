@@ -2069,7 +2069,8 @@ class Database():
       animal_rows = cur.execute(
          """   SELECT
                   SPECIES,
-                  EXHIBIT
+                  EXHIBIT,
+                  IS_DELETED
                FROM ItineraryAnimal;
          """ ).fetchall()
 
@@ -2081,20 +2082,24 @@ class Database():
          for row in animal_rows
       ]
 
+      attraction_rows = cur.execute(
+         """   SELECT
+                  ATTRACTION,
+                  IS_DELETED
+               FROM ItineraryAttraction;
+         """ ).fetchall()
+
       attractions_to_include = [
          row[ 'ATTRACTION' ]
-         for row in cur.execute(
-            """   SELECT
-                     ATTRACTION
-                  FROM ItineraryAttraction;
-            """ ).fetchall()
+         for row in attraction_rows
       ]
 
       guardians_talk_rows = cur.execute(
          """   SELECT
                   TALK_NAME,
                   START_TIME,
-                  END_TIME
+                  END_TIME,
+                  IS_DELETED
                FROM ItineraryGuardiansTalk;
          """ ).fetchall()
 
@@ -2107,7 +2112,8 @@ class Database():
          """   SELECT
                   WILD_ENCOUNTER,
                   START_TIME,
-                  END_TIME
+                  END_TIME,
+                  IS_DELETED
                FROM ItineraryWildEncounter;
          """ ).fetchall()
 
@@ -2128,14 +2134,16 @@ class Database():
                day=day,
                temp=None,
                species_exhibit_pairs=species_exhibit_pairs,
-               include_off_display_animals=True )
+               include_off_display_animals=True,
+               saved_animal_rows=animal_rows )
 
          if attractions_to_include:
             attractions = self.get_attractions_for_itinerary(
                month=month,
                day=day,
                attractions_to_include=attractions_to_include,
-               include_closed_attractions=True )
+               include_closed_attractions=True,
+               saved_attraction_rows=attraction_rows )
 
          if guardians_talks_to_include:
             guardians_talks = self.get_guardians_talks_for_itinerary(
@@ -2220,9 +2228,10 @@ class Database():
          """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
                   TALK_NAME,
                   START_TIME,
-                  END_TIME
+                  END_TIME,
+                  IS_DELETED
                )
-               VALUES ( ?, ?, ? );
+               VALUES ( ?, ?, ?, 0 );
          """,
          (
             talk_name,
@@ -2240,9 +2249,10 @@ class Database():
          """   INSERT OR IGNORE INTO ItineraryWildEncounter (
                   WILD_ENCOUNTER,
                   START_TIME,
-                  END_TIME
+                  END_TIME,
+                  IS_DELETED
                )
-               VALUES ( ?, ?, ? );
+               VALUES ( ?, ?, ?, 0 );
          """,
          (
             wild_encounter_name,
@@ -2304,9 +2314,10 @@ class Database():
             cur.execute(
                """   INSERT OR IGNORE INTO ItineraryAnimal (
                         SPECIES,
-                        EXHIBIT
+                        EXHIBIT,
+                        IS_DELETED
                      )
-                     VALUES ( ?, ? );
+                     VALUES ( ?, ?, 0 );
                """,
                (
                   species,
@@ -2322,9 +2333,10 @@ class Database():
          if attraction_name:
             cur.execute(
                """   INSERT OR IGNORE INTO ItineraryAttraction (
-                        ATTRACTION
+                        ATTRACTION,
+                        IS_DELETED
                      )
-                     VALUES ( ? );
+                     VALUES ( ?, 0 );
                """,
                ( attraction_name, ) )
 
@@ -2987,7 +2999,8 @@ class Database():
          temp=None,
          species_exhibit_pairs=None,
          include_off_display_animals=True,
-         exhibits_to_include=None ):
+         exhibits_to_include=None,
+         saved_animal_rows=None ):
 
       species_exhibit_pairs = species_exhibit_pairs or []
 
@@ -3057,9 +3070,16 @@ class Database():
          month,
          day,
          attractions_to_include=None,
-         include_closed_attractions=True ):
+         include_closed_attractions=True,
+         saved_attraction_rows=None ):
 
-      attractions_to_include = attractions_to_include or []
+      if saved_attraction_rows is not None:
+         attractions_to_include = [
+            row[ 'ATTRACTION' ]
+            for row in saved_attraction_rows
+         ]
+      else:
+         attractions_to_include = attractions_to_include or []
 
       attractions_filter = set()
 
@@ -3123,21 +3143,22 @@ class Database():
 
 
    def apply_saved_guardians_talk_times( self, guardians_talks, saved_guardians_talk_rows ):
-      guardians_talk_times_by_name = {
-         ( row[ 'TALK_NAME' ] or '' ).strip().lower(): (
-            row[ 'START_TIME' ],
-            row[ 'END_TIME' ]
-         )
+      guardians_talk_row_by_name = {
+         ( row[ 'TALK_NAME' ] or '' ).strip().lower(): row
          for row in saved_guardians_talk_rows
       }
 
       for guardians_talk in guardians_talks:
-         start_time, end_time = guardians_talk_times_by_name.get(
-            ( guardians_talk.name or '' ).strip().lower(),
-            ( None, None ) )
-         guardians_talk.time_of_day = start_time
-         guardians_talk.start_time = start_time
-         guardians_talk.end_time = end_time
+         row = guardians_talk_row_by_name.get(
+            ( guardians_talk.name or '' ).strip().lower() )
+
+         if row == None:
+            continue
+
+         guardians_talk.time_of_day = row[ 'START_TIME' ]
+         guardians_talk.start_time = row[ 'START_TIME' ]
+         guardians_talk.end_time = row[ 'END_TIME' ]
+         guardians_talk.is_deleted = bool( row[ 'IS_DELETED' ] )
 
 
    def get_wild_encounters_for_itinerary(
@@ -3172,21 +3193,22 @@ class Database():
 
 
    def apply_saved_wild_encounter_times( self, wild_encounters, saved_wild_encounter_rows ):
-      wild_encounter_times_by_name = {
-         ( row[ 'WILD_ENCOUNTER' ] or '' ).strip().lower(): (
-            row[ 'START_TIME' ],
-            row[ 'END_TIME' ]
-         )
+      wild_encounter_row_by_name = {
+         ( row[ 'WILD_ENCOUNTER' ] or '' ).strip().lower(): row
          for row in saved_wild_encounter_rows
       }
 
       for wild_encounter in wild_encounters:
-         start_time, end_time = wild_encounter_times_by_name.get(
-            ( wild_encounter.name or '' ).strip().lower(),
-            ( None, None ) )
-         wild_encounter.time_of_day = start_time
-         wild_encounter.start_time = start_time
-         wild_encounter.end_time = end_time
+         row = wild_encounter_row_by_name.get(
+            ( wild_encounter.name or '' ).strip().lower() )
+
+         if row == None:
+            continue
+
+         wild_encounter.time_of_day = row[ 'START_TIME' ]
+         wild_encounter.start_time = row[ 'START_TIME' ]
+         wild_encounter.end_time = row[ 'END_TIME' ]
+         wild_encounter.is_deleted = bool( row[ 'IS_DELETED' ] )
 
 
    def set_animal_as_off_display( self, species, exhibit, start_date, end_date, message ):

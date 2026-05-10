@@ -815,6 +815,7 @@ def create_schema( cursor ):
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryAnimal
                      (  SPECIES              VARCHAR(64) NOT NULL,
                         EXHIBIT              VARCHAR(64) NOT NULL,
+                        IS_DELETED           BOOL        NOT NULL DEFAULT 0,
                         PRIMARY KEY ( SPECIES, EXHIBIT ),
                         FOREIGN KEY ( SPECIES, EXHIBIT )
                            REFERENCES Enclosure( SPECIES, EXHIBIT ) ); ''' )
@@ -828,15 +829,31 @@ def create_schema( cursor ):
          'ALTER TABLE ItineraryAnimal ADD COLUMN EXHIBIT VARCHAR(64) NOT NULL DEFAULT "";'
       )
 
+   if 'IS_DELETED' not in itinerary_animal_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryAnimal ADD COLUMN IS_DELETED BOOL NOT NULL DEFAULT 0;'
+      )
+
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryAttraction
                      (  ATTRACTION           VARCHAR(64) NOT NULL,
+                        IS_DELETED           BOOL        NOT NULL DEFAULT 0,
                         PRIMARY KEY ( ATTRACTION ),
                         FOREIGN KEY ( ATTRACTION ) REFERENCES Attraction(NAME) ); ''' )
+
+   itinerary_attraction_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( ItineraryAttraction );' ).fetchall()
+   }
+
+   if 'IS_DELETED' not in itinerary_attraction_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryAttraction ADD COLUMN IS_DELETED BOOL NOT NULL DEFAULT 0;'
+      )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryGuardiansTalk
                      (  TALK_NAME            VARCHAR(64) NOT NULL,
                         START_TIME           TEXT,
                         END_TIME             TEXT,
+                        IS_DELETED           BOOL        NOT NULL DEFAULT 0,
                         PRIMARY KEY ( TALK_NAME ),
                         FOREIGN KEY ( TALK_NAME ) REFERENCES MeetTheGuardiansTalk(NAME) ); ''' )
 
@@ -854,10 +871,16 @@ def create_schema( cursor ):
          'ALTER TABLE ItineraryGuardiansTalk ADD COLUMN END_TIME TEXT;'
       )
 
+   if 'IS_DELETED' not in itinerary_guardians_talk_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryGuardiansTalk ADD COLUMN IS_DELETED BOOL NOT NULL DEFAULT 0;'
+      )
+
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryWildEncounter
                      (  WILD_ENCOUNTER       VARCHAR(64) NOT NULL,
                         START_TIME           TEXT,
                         END_TIME             TEXT,
+                        IS_DELETED           BOOL        NOT NULL DEFAULT 0,
                         PRIMARY KEY ( WILD_ENCOUNTER ),
                         FOREIGN KEY ( WILD_ENCOUNTER ) REFERENCES WildEncounter(NAME) ); ''' )
 
@@ -873,4 +896,9 @@ def create_schema( cursor ):
    if 'END_TIME' not in itinerary_wild_encounter_columns:
       cursor.execute(
          'ALTER TABLE ItineraryWildEncounter ADD COLUMN END_TIME TEXT;'
+      )
+
+   if 'IS_DELETED' not in itinerary_wild_encounter_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryWildEncounter ADD COLUMN IS_DELETED BOOL NOT NULL DEFAULT 0;'
       )

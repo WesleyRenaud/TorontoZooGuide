@@ -242,17 +242,24 @@ def test_create_schema_migrates_partial_dynamic_tables():
       },
       'ItineraryAnimal': {
          'SPECIES',
-         'EXHIBIT'
+         'EXHIBIT',
+         'IS_DELETED'
+      },
+      'ItineraryAttraction': {
+         'ATTRACTION',
+         'IS_DELETED'
       },
       'ItineraryGuardiansTalk': {
          'TALK_NAME',
          'START_TIME',
-         'END_TIME'
+         'END_TIME',
+         'IS_DELETED'
       },
       'ItineraryWildEncounter': {
          'WILD_ENCOUNTER',
          'START_TIME',
-         'END_TIME'
+         'END_TIME',
+         'IS_DELETED'
       }
    }
 
