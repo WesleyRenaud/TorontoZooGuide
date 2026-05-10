@@ -72,7 +72,6 @@ def test_create_schema_migrates_partial_dynamic_tables():
       'GuardiansTalkCancellation': 'TALK_NAME TEXT, LOCATION TEXT',
       'WildEncounterSchedule': 'WILD_ENCOUNTER TEXT',
       'WildEncounterCancellation': 'WILD_ENCOUNTER TEXT',
-      'Itinerary': 'ID INTEGER',
       'ItineraryAnimal': 'SPECIES TEXT',
       'ItineraryGuardiansTalk': 'TALK_NAME TEXT',
       'ItineraryWildEncounter': 'WILD_ENCOUNTER TEXT'
@@ -235,9 +234,7 @@ def test_create_schema_migrates_partial_dynamic_tables():
          'CANCELLATION_DATE',
          'ENCOUNTER_TIME'
       },
-      'Itinerary': {
-         'ID',
-         'IS_ACTIVE',
+      'ItineraryDate': {
          'ITINERARY_DATE'
       },
       'ItineraryAnimal': {
@@ -268,6 +265,10 @@ def test_create_schema_migrates_partial_dynamic_tables():
 
    assert column_info( cursor, 'ZooUpdate', 'END_DATE' )[ 3 ] == 0
 
-   assert cursor.execute( 'SELECT COUNT(*) FROM Itinerary WHERE ID = 1;' ).fetchone()[ 0 ] == 1
+   assert cursor.execute(
+      """   SELECT COUNT(*) FROM sqlite_master
+            WHERE type = 'table' AND name = 'ItineraryDate';
+      """
+   ).fetchone()[ 0 ] == 1
 
    conn.close()
