@@ -2170,20 +2170,23 @@ nav ul li a:hover {
 
 .itin-results::-webkit-scrollbar,
 .itinerary-panel .side-panel-body::-webkit-scrollbar,
-.itin-panel-section-body::-webkit-scrollbar {
+.itin-panel-section-body::-webkit-scrollbar,
+.itin-removed-popup-body::-webkit-scrollbar {
    width: 28px;
 }
 
 .itin-results::-webkit-scrollbar-track,
 .itinerary-panel .side-panel-body::-webkit-scrollbar-track,
-.itin-panel-section-body::-webkit-scrollbar-track {
+.itin-panel-section-body::-webkit-scrollbar-track,
+.itin-removed-popup-body::-webkit-scrollbar-track {
    background: rgba(94, 150, 0, 0.12);
    border-radius: 999px;
 }
 
 .itin-results::-webkit-scrollbar-thumb,
 .itinerary-panel .side-panel-body::-webkit-scrollbar-thumb,
-.itin-panel-section-body::-webkit-scrollbar-thumb {
+.itin-panel-section-body::-webkit-scrollbar-thumb,
+.itin-removed-popup-body::-webkit-scrollbar-thumb {
    background: rgba(94, 150, 0, 0.55);
    border-radius: 999px;
    border: 4px solid rgba(255,255,255,0.7);
@@ -2191,7 +2194,8 @@ nav ul li a:hover {
 
 .itin-results::-webkit-scrollbar-thumb:hover,
 .itinerary-panel .side-panel-body::-webkit-scrollbar-thumb:hover,
-.itin-panel-section-body::-webkit-scrollbar-thumb:hover {
+.itin-panel-section-body::-webkit-scrollbar-thumb:hover,
+.itin-removed-popup-body::-webkit-scrollbar-thumb:hover {
    background: rgba(94, 150, 0, 0.8);
 }
 
@@ -2870,9 +2874,28 @@ nav ul li a:hover {
 
 .itin-removed-popup-card {
    width: min(1600px, 96vw);
+   max-height: min(85vh, calc(100dvh - 22vh));
+   display: flex;
+   flex-direction: column;
+}
+
+.itin-removed-popup-card .itin-card-topbar {
+   flex-shrink: 0;
+}
+
+.itin-removed-popup-card .itin-card-actions {
+   flex-shrink: 0;
 }
 
 .itin-removed-popup-body {
+   flex: 1 1 auto;
+   min-height: 0;
+   overflow-y: auto;
+   -webkit-overflow-scrolling: touch;
+
+   scrollbar-width: thin;
+   scrollbar-color: rgba(94, 150, 0, 0.55) rgba(94, 150, 0, 0.12);
+
    padding-top: 40px;
    padding-bottom: 40px;
    padding-left: 40px;

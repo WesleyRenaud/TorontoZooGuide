@@ -16,7 +16,7 @@ export function createRemovedItemsPopupLayout({ isEmptyItinerary = false } = {})
    closeBtn.type = 'button';
    topbar.appendChild(closeBtn);
 
-   const body = el('div', 'itin-card-body tzg-popup-body itin-removed-popup-body');
+   const body = el('div', 'itin-card-body itin-removed-popup-body');
    const content = el(
       'div',
       isEmptyItinerary
