@@ -1,5 +1,5 @@
 import { buildAnimalVisibilityChanges } from './diff/animalVisibility.js';
-import { findRemovedItemsByField } from './diff/removedItems.js';
+import { mergeRemovedItems } from './diff/removedItems.js';
 import {
    hasImprovedVisibility,
    hasReducedVisibility,
@@ -9,14 +9,30 @@ import {
 
 function buildRemovedItems(previous, validated, backendRemoved = {}) {
    return {
-      animals: backendRemoved.animals
-         ?? findRemovedItemsByField(previous.animals, validated.animals, 'species'),
-      attractions: backendRemoved.attractions
-         ?? findRemovedItemsByField(previous.attractions, validated.attractions, 'name'),
-      guardiansTalks: backendRemoved.guardiansTalks
-         ?? findRemovedItemsByField(previous.guardiansTalks, validated.guardiansTalks, 'name'),
-      wildEncounters: backendRemoved.wildEncounters
-         ?? findRemovedItemsByField(previous.wildEncounters, validated.wildEncounters, 'name'),
+      animals: mergeRemovedItems(
+         backendRemoved.animals,
+         previous.animals,
+         validated.animals,
+         'species'
+      ),
+      attractions: mergeRemovedItems(
+         backendRemoved.attractions,
+         previous.attractions,
+         validated.attractions,
+         'name'
+      ),
+      guardiansTalks: mergeRemovedItems(
+         backendRemoved.guardiansTalks,
+         previous.guardiansTalks,
+         validated.guardiansTalks,
+         'name'
+      ),
+      wildEncounters: mergeRemovedItems(
+         backendRemoved.wildEncounters,
+         previous.wildEncounters,
+         validated.wildEncounters,
+         'name'
+      ),
    };
 }
 

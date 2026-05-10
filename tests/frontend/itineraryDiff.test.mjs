@@ -50,6 +50,70 @@ test('uses backend removed items when validation already provides them', () => {
    assert.deepEqual(diff.removed.attractions, [{ name: 'Conservation Carousel' }]);
 });
 
+test('infers guardians talks removed when backend sends empty removed but previous had them', () => {
+   const previous = {
+      animals: [],
+      attractions: [],
+      guardiansTalks: [{ name: 'Only On Mondays' }],
+      wildEncounters: [],
+   };
+   const validated = {
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   };
+
+   const diff = buildItineraryDiff(previous, validated, {
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   assert.deepEqual(diff.removed.guardiansTalks, [{ name: 'Only On Mondays' }]);
+   assert.equal(hasRemovedItems(diff.removed), true);
+});
+
+test('merges backend removed guardians talks with items missing from validated', () => {
+   const diff = buildItineraryDiff(
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [
+            { name: 'Not On New Day Schedule' },
+            { name: 'Cancelled On Schedule' },
+         ],
+         wildEncounters: [],
+      },
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+      },
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [
+            {
+               name: 'Cancelled On Schedule',
+               removalReason: 'Cancelled.',
+            },
+         ],
+         wildEncounters: [],
+      }
+   );
+
+   assert.equal(diff.removed.guardiansTalks.length, 2);
+   assert.ok(
+      diff.removed.guardiansTalks.some(
+         (t) => t.name === 'Cancelled On Schedule' && t.removalReason === 'Cancelled.'
+      )
+   );
+   assert.ok(diff.removed.guardiansTalks.some((t) => t.name === 'Not On New Day Schedule'));
+});
+
 test('reports meaningful animal visibility changes after date validation', () => {
    const previous = {
       animals: [
