@@ -8,7 +8,7 @@ class Animal:
                  reproduction_and_life_cycle=None, animals_at_the_zoo=None, exhibit=None, seasonal_viewing_summary=None,
                  seasonal_viewing_information=None, off_display_message=None, enclosure_type=None, x_coord=None,y_coord=None,
                  likelihood=None, has_limited_viewing_schedule=None, limited_viewing_message=None, has_viewing_alert=None,
-                 viewing_alert_message=None ):
+                 viewing_alert_message=None, is_deleted=False ):
       self.species = species
       self.latin_name = latin_name
       self.general_viewing_tips = general_viewing_tips
@@ -32,6 +32,7 @@ class Animal:
       self.limited_viewing_message = limited_viewing_message
       self.has_viewing_alert = has_viewing_alert
       self.viewing_alert_message = viewing_alert_message
+      self.is_deleted = is_deleted
 
 
    def to_dict( self ):
@@ -58,7 +59,8 @@ class Animal:
          'has_limited_viewing_schedule': ZooUtil.as_boolean( self.has_limited_viewing_schedule ),
          'limited_viewing_message': self.limited_viewing_message,
          'has_viewing_alert': ZooUtil.as_boolean( self.has_viewing_alert ),
-         'viewing_alert_message': self.viewing_alert_message
+         'viewing_alert_message': self.viewing_alert_message,
+         'is_deleted': ZooUtil.as_boolean( self.is_deleted )
       }
 
 
@@ -170,7 +172,7 @@ class GiftShop:
 
 class Attraction:
    def __init__( self, name, free_with_admission, description=None, info_link=None, hyperlink_text=None, x_coord=None, y_coord=None,
-                 is_closed=False, closed_message=None, likelihood=None ):
+                 is_closed=False, closed_message=None, likelihood=None, is_deleted=False ):
       self.name = name
       self.free_with_admission = free_with_admission
       self.description = description
@@ -181,6 +183,7 @@ class Attraction:
       self.is_closed = is_closed
       self.closed_message = closed_message
       self.likelihood = likelihood
+      self.is_deleted = is_deleted
 
 
    def to_dict( self ):
@@ -194,7 +197,8 @@ class Attraction:
          'y_coord': self.y_coord,
          'is_closed': ZooUtil.as_boolean( self.is_closed ),
          'closed_message': self.closed_message,
-         'likelihood': self.likelihood
+         'likelihood': self.likelihood,
+         'is_deleted': ZooUtil.as_boolean( self.is_deleted )
       }
 
 
@@ -242,7 +246,8 @@ class GuardiansTalk:
          start_time=None,
          end_time=None,
          is_available=True,
-         unavailable_message=None ):
+         unavailable_message=None,
+         is_deleted=False ):
       self.name = name
       self.location = location
       self.x_coord = x_coord
@@ -253,6 +258,7 @@ class GuardiansTalk:
       self.end_time = end_time
       self.is_available = is_available
       self.unavailable_message = unavailable_message
+      self.is_deleted = is_deleted
 
 
    def to_dict( self ):
@@ -266,7 +272,8 @@ class GuardiansTalk:
          'start_time': self.start_time,
          'end_time': self.end_time,
          'is_available': ZooUtil.as_boolean( self.is_available ),
-         'unavailable_message': self.unavailable_message
+         'unavailable_message': self.unavailable_message,
+         'is_deleted': ZooUtil.as_boolean( self.is_deleted )
       }
 
 
@@ -283,7 +290,8 @@ class WildEncounter:
          x_coord=None,
          y_coord=None,
          is_available=True,
-         unavailable_message=None ):
+         unavailable_message=None,
+         is_deleted=False ):
       self.name = name
       self.meeting_spot = meeting_spot
       self.link = link
@@ -295,6 +303,7 @@ class WildEncounter:
       self.y_coord = y_coord
       self.is_available = is_available
       self.unavailable_message = unavailable_message
+      self.is_deleted = is_deleted
 
 
    def to_dict( self ):
@@ -309,7 +318,8 @@ class WildEncounter:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'is_available': ZooUtil.as_boolean( self.is_available ),
-         'unavailable_message': self.unavailable_message
+         'unavailable_message': self.unavailable_message,
+         'is_deleted': ZooUtil.as_boolean( self.is_deleted )
       }
 
 

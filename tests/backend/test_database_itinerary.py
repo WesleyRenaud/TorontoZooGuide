@@ -55,23 +55,25 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    )
 
    talk_schedule = db.conn.execute(
-      """   SELECT START_TIME, END_TIME
+      """   SELECT START_TIME, END_TIME, IS_DELETED
             FROM ItineraryGuardiansTalk
             WHERE TALK_NAME = 'African Lion';
       """ ).fetchone()
    encounter_schedule = db.conn.execute(
-      """   SELECT START_TIME, END_TIME
+      """   SELECT START_TIME, END_TIME, IS_DELETED
             FROM ItineraryWildEncounter
             WHERE WILD_ENCOUNTER = 'African Rainforest';
       """ ).fetchone()
 
    assert dict( talk_schedule ) == {
       'START_TIME': '10:00',
-      'END_TIME': '10:30'
+      'END_TIME': '10:30',
+      'IS_DELETED': 0
    }
    assert dict( encounter_schedule ) == {
       'START_TIME': '14:00',
-      'END_TIME': '14:45'
+      'END_TIME': '14:45',
+      'IS_DELETED': 0
    }
 
    assert db.cancel_guardians_talk_occurrence(
