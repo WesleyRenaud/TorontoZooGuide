@@ -672,15 +672,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          attractions = data.get( 'attractions' )
          guardians_talks = data.get( 'guardiansTalks' )
          wild_encounters = data.get( 'wildEncounters' )
-         is_active = data.get( 'isActive' )
 
          success = self.database.set_itinerary(
             date=date,
             animals=animals,
             attractions=attractions,
             guardians_talks=guardians_talks,
-            wild_encounters=wild_encounters,
-            is_active=is_active )
+            wild_encounters=wild_encounters )
 
          itinerary = self.database.get_itinerary() if success else None
 
@@ -879,8 +877,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                animals=animals_json,
                attractions=attractions_json,
                guardians_talks=guardians_talks_json,
-               wild_encounters=wild_encounters_json,
-               is_active=True )
+               wild_encounters=wild_encounters_json )
 
          response = {
             'success': clear_success and set_success,
