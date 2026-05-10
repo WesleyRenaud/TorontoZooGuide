@@ -123,19 +123,9 @@ class StubDatabase:
       }
 
 
-   def get_guardians_talks( self, **kwargs ):
-      self.calls.append( ( 'get_guardians_talks', kwargs ) )
+   def get_guardians_talk_schedule( self, **kwargs ):
+      self.calls.append( ( 'get_guardians_talk_schedule', kwargs ) )
       return [ zoo.GuardiansTalk( name=GUARDIANS_TALK_NAME, location=GUARDIANS_TALK_LOCATION, x_coord=51.138, y_coord=41.279 ) ]
-
-
-   def get_wild_encounters( self, **kwargs ):
-      self.calls.append( ( 'get_wild_encounters', kwargs ) )
-      return [
-         zoo.WildEncounter(
-            name=WILD_ENCOUNTER_NAME,
-            meeting_spot=WILD_ENCOUNTER_MEETING_SPOT,
-            link=WILD_ENCOUNTER_LINK )
-      ]
 
 
    def get_available_wild_encounters( self, **kwargs ):

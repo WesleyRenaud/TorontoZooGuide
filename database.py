@@ -1239,7 +1239,56 @@ class Database():
       return route
 
 
-   def get_guardians_talks( self, month, day ):
+   def get_guardians_talk_details( self, guardians_talks_to_include=None ):
+      guardians_talks_filter = {
+         talk_name.strip().lower()
+         for talk_name in guardians_talks_to_include or []
+      }
+
+      if guardians_talks_to_include != None and not guardians_talks_filter:
+         return []
+
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  NAME,
+                  LOCATION,
+                  X_COORD,
+                  Y_COORD,
+                  MAXIMUM_DURATION
+               FROM MeetTheGuardiansTalk;
+         """ )
+
+      rows = data.fetchall()
+      cur.close()
+
+      guardians_talks = []
+
+      for row in rows:
+         if guardians_talks_filter and (
+               row[ 'NAME' ] or '' ).strip().lower() not in guardians_talks_filter:
+            continue
+
+         guardians_talks.append(
+            zoo.GuardiansTalk(
+               name=row[ 'NAME' ],
+               location=row[ 'LOCATION' ],
+               x_coord=row[ 'X_COORD' ],
+               y_coord=row[ 'Y_COORD' ],
+               maximum_duration=row[ 'MAXIMUM_DURATION' ] ) )
+
+      guardians_talks.sort(
+         key=lambda t: (
+            ( t.name or '' ).lower(),
+            ( t.location or '' ).lower()
+         )
+      )
+
+      return guardians_talks
+
+
+   def get_guardians_talk_schedule( self, month, day ):
       cur = self.conn.cursor()
 
       target_date = date(
@@ -1356,7 +1405,55 @@ class Database():
       return guardians_talks
 
 
-   def get_wild_encounters( self, month, day ):
+   def get_wild_encounter_details( self, wild_encounters_to_include=None ):
+      wild_encounters_filter = {
+         wild_encounter_name.strip().lower()
+         for wild_encounter_name in wild_encounters_to_include or []
+      }
+
+      if wild_encounters_to_include != None and not wild_encounters_filter:
+         return []
+
+      cur = self.conn.cursor()
+
+      data = cur.execute(
+         """   SELECT
+                  w.NAME,
+                  w.MEETING_SPOT,
+                  w.LINK,
+                  w.MAXIMUM_DURATION,
+                  m.X_COORD,
+                  m.Y_COORD
+               FROM WildEncounter w
+               JOIN WildEncounterMeetingSpot m
+                  ON w.MEETING_SPOT = m.NAME;
+         """ )
+
+      rows = data.fetchall()
+      cur.close()
+
+      wild_encounters = []
+
+      for row in rows:
+         if wild_encounters_filter and (
+               row[ 'NAME' ] or '' ).strip().lower() not in wild_encounters_filter:
+            continue
+
+         wild_encounters.append(
+            zoo.WildEncounter(
+               name=row[ 'NAME' ],
+               meeting_spot=row[ 'MEETING_SPOT' ],
+               link=row[ 'LINK' ],
+               maximum_duration=row[ 'MAXIMUM_DURATION' ],
+               x_coord=row[ 'X_COORD' ],
+               y_coord=row[ 'Y_COORD' ] ) )
+
+      wild_encounters.sort( key=lambda w: ( w.name or '' ).lower() )
+
+      return wild_encounters
+
+
+   def get_wild_encounter_schedule( self, month, day ):
       cur = self.conn.cursor()
 
       target_date = date(
@@ -1475,7 +1572,9 @@ class Database():
    def get_available_wild_encounters( self, month, day ):
       return [
          wild_encounter
-         for wild_encounter in self.get_wild_encounters( month=month, day=day )
+         for wild_encounter in self.get_wild_encounter_schedule(
+            month=month,
+            day=day )
          if getattr( wild_encounter, 'is_available', True )
       ]
 
@@ -1894,7 +1993,7 @@ class Database():
 
 
    def get_guardians_talks_matching_query( self, query, month, day ):
-      talks = self.get_guardians_talks( month=month, day=day )
+      talks = self.get_guardians_talk_schedule( month=month, day=day )
 
       if not query:
          return talks
@@ -2040,15 +2139,11 @@ class Database():
 
          if guardians_talks_to_include:
             guardians_talks = self.get_guardians_talks_for_itinerary(
-               month=month,
-               day=day,
                guardians_talks_to_include=guardians_talks_to_include,
                saved_guardians_talk_rows=guardians_talk_rows )
 
          if wild_encounters_to_include:
             wild_encounters = self.get_wild_encounters_for_itinerary(
-               month=month,
-               day=day,
                wild_encounters_to_include=wild_encounters_to_include,
                saved_wild_encounter_rows=wild_encounter_rows )
 
@@ -2358,12 +2453,19 @@ class Database():
 
 
    def validate_guardians_talks( self, month, day, guardians_talks_to_include=None ):
-      guardians_talks_to_include = guardians_talks_to_include or []
+      guardians_talks_filter = {
+         talk_name.strip().lower()
+         for talk_name in guardians_talks_to_include or []
+      }
 
-      guardians_talks = self.get_guardians_talks_for_itinerary(
+      guardians_talks = self.get_guardians_talk_schedule(
          month=month,
-         day=day,
-         guardians_talks_to_include=guardians_talks_to_include )
+         day=day )
+
+      guardians_talks = [
+         guardians_talk for guardians_talk in guardians_talks
+         if ( guardians_talk.name or '' ).strip().lower() in guardians_talks_filter
+      ]
 
       valid_guardians_talks = []
       removed_guardians_talks = []
@@ -2389,12 +2491,19 @@ class Database():
 
 
    def validate_wild_encounters( self, month, day, wild_encounters_to_include=None ):
-      wild_encounters_to_include = wild_encounters_to_include or []
+      wild_encounters_filter = {
+         wild_encounter_name.strip().lower()
+         for wild_encounter_name in wild_encounters_to_include or []
+      }
 
-      wild_encounters = self.get_wild_encounters_for_itinerary(
+      wild_encounters = self.get_wild_encounter_schedule(
          month=month,
-         day=day,
-         wild_encounters_to_include=wild_encounters_to_include )
+         day=day )
+
+      wild_encounters = [
+         wild_encounter for wild_encounter in wild_encounters
+         if ( wild_encounter.name or '' ).strip().lower() in wild_encounters_filter
+      ]
 
       valid_wild_encounters = []
       removed_wild_encounters = []
@@ -2984,36 +3093,19 @@ class Database():
 
    def get_guardians_talks_for_itinerary(
          self,
-         month,
-         day,
          guardians_talks_to_include=None,
          saved_guardians_talk_rows=None ):
 
-      guardians_talks_to_include = guardians_talks_to_include or []
+      guardians_talk_names = [
+         row[ 'TALK_NAME' ]
+         for row in saved_guardians_talk_rows or []
+      ] or guardians_talks_to_include or []
 
-      guardians_talks_filter = set()
-
-      for talk_name in guardians_talks_to_include:
-
-         if not isinstance( talk_name, str ):
-            continue
-
-         talk_name = talk_name.strip().lower()
-
-         if talk_name:
-            guardians_talks_filter.add( talk_name )
-
-      if not guardians_talks_filter:
+      if not guardians_talk_names:
          return []
 
-      guardians_talks = self.get_guardians_talks(
-         month=month,
-         day=day )
-
-      guardians_talks = [
-         guardians_talk for guardians_talk in guardians_talks
-         if ( guardians_talk.name or '' ).strip().lower() in guardians_talks_filter
-      ]
+      guardians_talks = self.get_guardians_talk_details(
+         guardians_talk_names )
 
       if saved_guardians_talk_rows:
          self.apply_saved_guardians_talk_times(
@@ -3050,46 +3142,24 @@ class Database():
 
    def get_wild_encounters_for_itinerary(
          self,
-         month,
-         day,
          wild_encounters_to_include=None,
          saved_wild_encounter_rows=None ):
 
-      wild_encounters_to_include = wild_encounters_to_include or []
+      wild_encounter_names = [
+         row[ 'WILD_ENCOUNTER' ]
+         for row in saved_wild_encounter_rows or []
+      ] or wild_encounters_to_include or []
 
-      wild_encounters_filter = set()
-
-      for wild_encounter_name in wild_encounters_to_include:
-
-         if not isinstance( wild_encounter_name, str ):
-            continue
-
-         wild_encounter_name = wild_encounter_name.strip().lower()
-
-         if wild_encounter_name:
-            wild_encounters_filter.add( wild_encounter_name )
-
-      if not wild_encounters_filter:
+      if not wild_encounter_names:
          return []
 
-      wild_encounters = self.get_wild_encounters(
-         month=month,
-         day=day )
-
-      wild_encounters = [
-         wild_encounter for wild_encounter in wild_encounters
-         if ( wild_encounter.name or '' ).strip().lower() in wild_encounters_filter
-      ]
+      wild_encounters = self.get_wild_encounter_details(
+         wild_encounter_names )
 
       if saved_wild_encounter_rows:
          self.apply_saved_wild_encounter_times(
             wild_encounters,
             saved_wild_encounter_rows )
-         wild_encounters = [
-            wild_encounter
-            for wild_encounter in wild_encounters
-            if getattr( wild_encounter, 'is_available', True )
-         ]
 
       wild_encounters.sort(
          key=lambda w: (
