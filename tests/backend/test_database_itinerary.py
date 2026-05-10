@@ -91,8 +91,18 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    assert itinerary.date == '2026-06-15'
    assert [ animal.species for animal in itinerary.animals ] == [ 'African Lion' ]
    assert [ attraction.name for attraction in itinerary.attractions ] == [ 'Conservation Carousel' ]
-   assert itinerary.guardians_talks == []
-   assert itinerary.wild_encounters == []
+   assert [
+      ( talk.name, talk.time_of_day, talk.start_time, talk.end_time )
+      for talk in itinerary.guardians_talks
+   ] == [
+      ( 'African Lion', '10:00', '10:00', '10:30' )
+   ]
+   assert [
+      ( encounter.name, encounter.time_of_day, encounter.start_time, encounter.end_time )
+      for encounter in itinerary.wild_encounters
+   ] == [
+      ( 'African Rainforest', '14:00', '14:00', '14:45' )
+   ]
 
    assert db.clear_itinerary()
    cleared = db.get_itinerary()
@@ -174,7 +184,7 @@ def test_validate_attractions_removes_closed_entries( db, freeze_database_today 
 
 
 def test_validate_guardians_talks_splits_available_and_unavailable_entries( db, monkeypatch ):
-   def get_guardians_talks_for_itinerary( **kwargs ):
+   def get_guardians_talk_schedule( **kwargs ):
       return [
          zoo.GuardiansTalk(
             name='African Lion',
@@ -200,7 +210,7 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries( db, 
             is_available=True )
       ]
 
-   monkeypatch.setattr( db, 'get_guardians_talks_for_itinerary', get_guardians_talks_for_itinerary )
+   monkeypatch.setattr( db, 'get_guardians_talk_schedule', get_guardians_talk_schedule )
 
    result = db.validate_guardians_talks(
       month='June',
@@ -224,7 +234,7 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries( db, 
 
 
 def test_validate_wild_encounters_splits_available_and_unavailable_entries( db, monkeypatch ):
-   def get_wild_encounters_for_itinerary( **kwargs ):
+   def get_wild_encounter_schedule( **kwargs ):
       return [
          zoo.WildEncounter(
             name='Kangaroo',
@@ -247,7 +257,7 @@ def test_validate_wild_encounters_splits_available_and_unavailable_entries( db, 
             is_available=True )
       ]
 
-   monkeypatch.setattr( db, 'get_wild_encounters_for_itinerary', get_wild_encounters_for_itinerary )
+   monkeypatch.setattr( db, 'get_wild_encounter_schedule', get_wild_encounter_schedule )
 
    result = db.validate_wild_encounters(
       month='June',
@@ -295,7 +305,7 @@ def test_itinerary_filter_helpers_ignore_invalid_input_and_sort( db ):
    assert [ attraction.name for attraction in attractions ] == [ 'Conservation Carousel', 'Greenhouse' ]
 
 
-def test_itinerary_filter_helpers_return_empty_without_valid_filters( db ):
+def test_itinerary_filter_helpers_return_empty_without_filters( db ):
    assert db.get_animals_for_itinerary(
       month='June',
       day=15,
@@ -313,14 +323,10 @@ def test_itinerary_filter_helpers_return_empty_without_valid_filters( db ):
       attractions_to_include=[ None, '', '   ' ]
    ) == []
    assert db.get_guardians_talks_for_itinerary(
-      month='June',
-      day=15,
-      guardians_talks_to_include=[ None, '', '   ' ]
+      guardians_talks_to_include=[]
    ) == []
    assert db.get_wild_encounters_for_itinerary(
-      month='June',
-      day=15,
-      wild_encounters_to_include=[ None, '', '   ' ]
+      wild_encounters_to_include=[]
    ) == []
 
 
@@ -385,27 +391,27 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( 
       message=None
    )
 
-   talks = db.get_guardians_talks_for_itinerary(
+   talk_result = db.validate_guardians_talks(
       month='June',
       day=15,
-      guardians_talks_to_include=[ ' african lion ', 'AMUR TIGER', None ]
+      guardians_talks_to_include=[ ' african lion ', 'AMUR TIGER' ]
    )
-   encounters = db.get_wild_encounters_for_itinerary(
+   encounter_result = db.validate_wild_encounters(
       month='June',
       day=15,
-      wild_encounters_to_include=[ ' kangaroo ', 'AFRICAN RAINFOREST', None ]
+      wild_encounters_to_include=[ ' kangaroo ', 'AFRICAN RAINFOREST' ]
    )
 
    assert [
       ( talk.name, talk.time_of_day )
-      for talk in talks
+      for talk in talk_result[ 'valid_guardians_talks' ]
    ] == [
       ( 'African Lion', '10:00' ),
       ( 'Amur Tiger', '09:00' )
    ]
    assert [
       ( encounter.name, encounter.time_of_day )
-      for encounter in encounters
+      for encounter in encounter_result[ 'valid_wild_encounters' ]
    ] == [
       ( 'African Rainforest', '14:00' ),
       ( 'Kangaroo', '09:00' )
