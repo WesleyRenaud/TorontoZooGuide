@@ -24,11 +24,14 @@ def test_domain_objects_serialize_to_frontend_shapes():
 
    assert zoo.GiftShop( name='Shop', location='Gate', is_closed=0 ).to_dict()[ 'is_closed' ] is False
    assert zoo.Attraction( name='Ride', free_with_admission=1 ).to_dict()[ 'free_with_admission' ] is True
+   assert zoo.Attraction( name='Ride', free_with_admission=1 ).to_dict()[ 'is_deleted' ] is False
    assert zoo.Restroom( title='Restroom', x_coord=3, y_coord=4 ).to_dict()[ 'title' ] == 'Restroom'
    assert zoo.ZoomobileStation( name='Station' ).to_dict()[ 'name' ] == 'Station'
    assert zoo.ZoomobileRouteMarker( route_type='summer', x_coord=1, y_coord=2 ).to_dict()[ 'route_type' ] == 'summer'
    assert zoo.GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_available' ] is True
+   assert zoo.GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_deleted' ] is False
    assert zoo.WildEncounter( name='Encounter', meeting_spot='Spot', link='https://example.test' ).to_dict()[ 'is_available' ] is True
+   assert zoo.WildEncounter( name='Encounter', meeting_spot='Spot', link='https://example.test' ).to_dict()[ 'is_deleted' ] is False
    assert zoo.DrinkingFountain( x_coord=1, y_coord=2, is_closed=1, likelihood=0.0 ).to_dict() == {
       'x_coord': 1,
       'y_coord': 2,
@@ -96,6 +99,7 @@ def test_animal_to_dict_converts_boolean_flags():
    assert result[ 'species' ] == 'Amur Tiger'
    assert result[ 'has_limited_viewing_schedule' ] is True
    assert result[ 'has_viewing_alert' ] is False
+   assert result[ 'is_deleted' ] is False
 
 
 def test_itinerary_serializes_objects_and_dicts_with_types():
@@ -131,7 +135,8 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
          {
             'name': 'Carousel',
             'type': 'customAttraction',
-            'is_closed': False
+            'is_closed': False,
+            'is_deleted': False
          }
       ],
       guardians_talks=[
@@ -185,6 +190,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
             'limited_viewing_message': 'Visible from 10:00 AM to 2:00 PM.',
             'has_viewing_alert': True,
             'viewing_alert_message': 'May be difficult to spot.',
+            'is_deleted': False,
             'type': 'animal'
          }
       ],
@@ -192,7 +198,8 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
          {
             'name': 'Carousel',
             'type': 'customAttraction',
-            'is_closed': False
+            'is_closed': False,
+            'is_deleted': False
          }
       ],
       'guardians_talks': [
@@ -207,6 +214,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
             'end_time': None,
             'is_available': True,
             'unavailable_message': None,
+            'is_deleted': False,
             'type': 'guardiansTalk'
          }
       ],
@@ -223,6 +231,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
             'y_coord': None,
             'is_available': False,
             'unavailable_message': 'Unavailable.',
+            'is_deleted': False,
             'type': 'wildEncounter'
          }
       ]
