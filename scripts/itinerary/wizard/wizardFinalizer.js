@@ -34,7 +34,6 @@ function showEmptySelectionPopup(mountEl) {
 function saveFinalItinerary(finalItinerary) {
    return saveItinerary({
       ...finalItinerary,
-      isActive: true,
    });
 }
 

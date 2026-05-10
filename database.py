@@ -2041,30 +2041,28 @@ class Database():
    def get_itinerary( self ):
       cur = self.conn.cursor()
 
-      itinerary_row = cur.execute(
-         """   SELECT
-                  ID,
-                  IS_ACTIVE,
-                  ITINERARY_DATE
-               FROM Itinerary
-               WHERE ID = 1;
-         """ ).fetchone()
+      date_row = cur.execute(
+         """   SELECT ITINERARY_DATE
+               FROM ItineraryDate
+               LIMIT 1;
+         """
+      ).fetchone()
 
-      if itinerary_row == None:
+      if date_row == None or date_row[ 'ITINERARY_DATE' ] == None:
          cur.close()
-         return None
+         return zoo.Itinerary(
+            date='',
+            animals=[],
+            attractions=[],
+            guardians_talks=[],
+            wild_encounters=[] )
 
-      date = ''
-      month = None
-      day = None
+      itinerary_date = zoo.ZooUtil.parse_date_value(
+         value=date_row[ 'ITINERARY_DATE' ] )
 
-      if itinerary_row[ 'ITINERARY_DATE' ] != None:
-         itinerary_date = zoo.ZooUtil.parse_date_value(
-            value=itinerary_row[ 'ITINERARY_DATE' ] )
-
-         date = itinerary_date.isoformat()
-         month = itinerary_date.strftime( '%B' )
-         day = itinerary_date.day
+      date = itinerary_date.isoformat()
+      month = itinerary_date.strftime( '%B' )
+      day = itinerary_date.day
 
       animal_rows = cur.execute(
          """   SELECT
@@ -2127,33 +2125,32 @@ class Database():
       guardians_talks = []
       wild_encounters = []
 
-      if bool( itinerary_row[ 'IS_ACTIVE' ] ) and month and day:
-         if species_exhibit_pairs:
-            animals = self.get_animals_for_itinerary(
-               month=month,
-               day=day,
-               temp=None,
-               species_exhibit_pairs=species_exhibit_pairs,
-               include_off_display_animals=True,
-               saved_animal_rows=animal_rows )
+      if species_exhibit_pairs:
+         animals = self.get_animals_for_itinerary(
+            month=month,
+            day=day,
+            temp=None,
+            species_exhibit_pairs=species_exhibit_pairs,
+            include_off_display_animals=True,
+            saved_animal_rows=animal_rows )
 
-         if attractions_to_include:
-            attractions = self.get_attractions_for_itinerary(
-               month=month,
-               day=day,
-               attractions_to_include=attractions_to_include,
-               include_closed_attractions=True,
-               saved_attraction_rows=attraction_rows )
+      if attractions_to_include:
+         attractions = self.get_attractions_for_itinerary(
+            month=month,
+            day=day,
+            attractions_to_include=attractions_to_include,
+            include_closed_attractions=True,
+            saved_attraction_rows=attraction_rows )
 
-         if guardians_talks_to_include:
-            guardians_talks = self.get_guardians_talks_for_itinerary(
-               guardians_talks_to_include=guardians_talks_to_include,
-               saved_guardians_talk_rows=guardians_talk_rows )
+      if guardians_talks_to_include:
+         guardians_talks = self.get_guardians_talks_for_itinerary(
+            guardians_talks_to_include=guardians_talks_to_include,
+            saved_guardians_talk_rows=guardians_talk_rows )
 
-         if wild_encounters_to_include:
-            wild_encounters = self.get_wild_encounters_for_itinerary(
-               wild_encounters_to_include=wild_encounters_to_include,
-               saved_wild_encounter_rows=wild_encounter_rows )
+      if wild_encounters_to_include:
+         wild_encounters = self.get_wild_encounters_for_itinerary(
+            wild_encounters_to_include=wild_encounters_to_include,
+            saved_wild_encounter_rows=wild_encounter_rows )
 
       itinerary = zoo.Itinerary(
          date=date,
@@ -2267,8 +2264,7 @@ class Database():
          animals,
          attractions,
          guardians_talks,
-         wild_encounters,
-         is_active ):
+         wild_encounters ):
       cur = self.conn.cursor()
 
       if not date:
@@ -2286,16 +2282,14 @@ class Database():
       if wild_encounters == None:
          wild_encounters = []
 
-      cur.execute(
-         """   UPDATE Itinerary
-               SET IS_ACTIVE = ?,
-                   ITINERARY_DATE = ?
-               WHERE ID = 1;
-         """,
-         (
-            int( bool( is_active ) ),
-            date
-         ) )
+      cur.execute( 'DELETE FROM ItineraryDate;' )
+
+      if date:
+         cur.execute(
+            """   INSERT INTO ItineraryDate ( ITINERARY_DATE )
+                  VALUES ( ? );
+            """,
+            ( date, ) )
 
       cur.execute( 'DELETE FROM ItineraryAnimal;' )
       cur.execute( 'DELETE FROM ItineraryAttraction;' )
@@ -2377,12 +2371,7 @@ class Database():
    def clear_itinerary( self ):
       cur = self.conn.cursor()
 
-      cur.execute(
-         """   UPDATE Itinerary
-               SET IS_ACTIVE = 0,
-                   ITINERARY_DATE = NULL
-               WHERE ID = 1;
-         """ )
+      cur.execute( 'DELETE FROM ItineraryDate;' )
 
       cur.execute( 'DELETE FROM ItineraryAnimal;' )
       cur.execute( 'DELETE FROM ItineraryAttraction;' )

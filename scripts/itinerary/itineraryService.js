@@ -76,7 +76,6 @@ export async function saveItinerary(itinerary = {}) {
    const normalizedDraft = normalizeItineraryDraft(itinerary);
    const result = await setItineraryRequest({
       ...normalizedDraft,
-      isActive: itinerary.isActive !== false,
    });
 
    const normalizedItinerary = normalizeItinerary(result?.itinerary);

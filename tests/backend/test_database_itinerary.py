@@ -50,8 +50,7 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
             'name': 'African Rainforest',
             'start_time': '14:00'
          }
-      ],
-      is_active=True
+      ]
    )
 
    talk_schedule = db.conn.execute(

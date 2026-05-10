@@ -980,8 +980,7 @@ def test_itinerary_endpoints_return_success_payloads( stub_database ):
          'animals': [],
          'attractions': [],
          'guardiansTalks': [],
-         'wildEncounters': [],
-         'isActive': True
+         'wildEncounters': []
       }
    )
    get_handler = make_handler( '/get-itinerary' )
@@ -1034,8 +1033,7 @@ def test_validate_itinerary_endpoint_returns_previous_validated_and_removed_payl
             'animals': result[ 'validated' ][ 'animals' ],
             'attractions': result[ 'validated' ][ 'attractions' ],
             'guardians_talks': result[ 'validated' ][ 'guardiansTalks' ],
-            'wild_encounters': result[ 'validated' ][ 'wildEncounters' ],
-            'is_active': True
+            'wild_encounters': result[ 'validated' ][ 'wildEncounters' ]
          }
       )
    ]

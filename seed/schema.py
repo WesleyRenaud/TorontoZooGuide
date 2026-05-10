@@ -12,6 +12,7 @@ def create_schema( cursor ):
    cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingTime;' )
    cursor.execute( 'DROP TABLE IF EXISTS RestaurantStatus;' )
    cursor.execute( 'DROP TABLE IF EXISTS ZoomobileRouteOverride;' )
+   cursor.execute( 'DROP TABLE IF EXISTS Itinerary;' )
 
    # Dynamic tables
 
@@ -787,30 +788,8 @@ def create_schema( cursor ):
 
    # Itinerary tables
 
-   cursor.execute( ''' CREATE TABLE IF NOT EXISTS Itinerary
-                  (  ID                 INTEGER     NOT NULL,
-                     IS_ACTIVE          BOOL        NOT NULL DEFAULT 0,
-                     ITINERARY_DATE     DATE,
-                     PRIMARY KEY ( ID ) ); ''' )
-
-   itinerary_columns = {
-      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( Itinerary );' ).fetchall()
-   }
-
-   if 'IS_ACTIVE' not in itinerary_columns:
-      cursor.execute(
-         'ALTER TABLE Itinerary ADD COLUMN IS_ACTIVE BOOL NOT NULL DEFAULT 0;'
-      )
-
-   if 'ITINERARY_DATE' not in itinerary_columns:
-      cursor.execute(
-         'ALTER TABLE Itinerary ADD COLUMN ITINERARY_DATE DATE;'
-      )
-
-   cursor.execute(
-      ''' INSERT OR IGNORE INTO Itinerary ( ID, IS_ACTIVE, ITINERARY_DATE )
-          VALUES ( 1, 0, NULL ); '''
-   )
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryDate
+                     (  ITINERARY_DATE     DATE ); ''' )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryAnimal
                      (  SPECIES              VARCHAR(64) NOT NULL,
