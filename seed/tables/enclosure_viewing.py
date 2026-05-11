@@ -1952,10 +1952,10 @@ enclosure_viewings =\
       78.68                   # Y coordinate on map
    ),
    (
-      'Domestic Goat',
+      'Cheetah',
       'Indo-Malaya Outdoor',
       'Outdoor',
-      None,                   # Seasonally off-display message
+      '''The cheetahs are most likely inside and off-display on this day due to particularly harsh conditions.''',
       49.295,                 # X coordinate on map
       71.958                  # Y coordinate on map
    ),

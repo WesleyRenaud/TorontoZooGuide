@@ -1327,7 +1327,7 @@ enclosures =\
       None                                         # Seasonal viewing information (for seasonal exhibits)
    ),
    (
-      'Domestic Goat',
+      'Cheetah',
       'Indo-Malaya Outdoor',
       'Year-round',                                # Seasonal viewing summary
       None                                         # Seasonal viewing information (for seasonal exhibits)
