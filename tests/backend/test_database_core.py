@@ -35,6 +35,25 @@ def test_parse_date_value( value, expected ):
    'value, expected',
    [
       ( None, None ),
+      ( '', None ),
+      ( '  ', None ),
+      ( '2026-06-15', '2026-06-15' ),
+      ( date( 2026, 6, 15 ), '2026-06-15' ),
+      ( datetime( 2026, 6, 15, 9, 30 ), '2026-06-15' ),
+   ]
+)
+def test_normalize_date_key( value, expected ):
+   assert zoo.ZooUtil.normalize_date_key( value ) == expected
+
+
+def test_normalize_date_key_returns_none_for_unsupported_date_strings():
+   assert zoo.ZooUtil.normalize_date_key( 'June 15, 2026' ) is None
+
+
+@pytest.mark.parametrize(
+   'value, expected',
+   [
+      ( None, None ),
       ( '2026-06-15 09:30 AM', datetime( 2026, 6, 15, 9, 30 ) ),
       ( '2026-06-15 17:45:00', datetime( 2026, 6, 15, 17, 45 ) ),
       ( '2026-06-15 17:45', datetime( 2026, 6, 15, 17, 45 ) )

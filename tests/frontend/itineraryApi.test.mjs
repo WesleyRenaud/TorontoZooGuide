@@ -5,7 +5,6 @@ import {
    getItineraryRequest,
    getZooHoursRequest,
    setItineraryRequest,
-   validateItineraryDraftRequest,
 } from '../../scripts/api/itineraryApi.js';
 
 function mockJsonResponse(payload, { ok = true, status = 200, statusText = 'OK' } = {}) {
@@ -101,62 +100,6 @@ test('normalizes zoo hours response', async () => {
          openTime: '09:30',
          lastAdmissionTime: '18:00',
          closeTime: '19:00',
-      },
-   });
-});
-
-test('normalizes validated itinerary response buckets', async () => {
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/validate-itinerary');
-      assert.deepEqual(JSON.parse(options.body), {
-         date: '2026-06-15',
-         month: 'June',
-         day: 15,
-         animals: ['African Lion'],
-      });
-
-      return mockJsonResponse({
-         previous: {
-            animals: [{ species: 'African Lion' }],
-            guardiansTalks: [{ name: 'Amur Tiger' }],
-         },
-         validated: {
-            animals: [{ species: 'African Lion' }],
-            attractions: [{ name: 'Greenhouse' }],
-            wildEncounters: [],
-         },
-         removed: {
-            attractions: [{ name: 'Conservation Carousel' }],
-            wildEncounters: [{ name: 'African Rainforest' }],
-         },
-      });
-   };
-
-   assert.deepEqual(await validateItineraryDraftRequest({
-      date: '2026-06-15',
-      month: 'June',
-      day: 15,
-      animals: ['African Lion'],
-   }), {
-      success: true,
-      error: null,
-      previous: {
-         animals: [{ species: 'African Lion' }],
-         attractions: [],
-         guardiansTalks: [{ name: 'Amur Tiger' }],
-         wildEncounters: [],
-      },
-      validated: {
-         animals: [{ species: 'African Lion' }],
-         attractions: [{ name: 'Greenhouse' }],
-         guardiansTalks: [],
-         wildEncounters: [],
-      },
-      removed: {
-         animals: [],
-         attractions: [{ name: 'Conservation Carousel' }],
-         guardiansTalks: [],
-         wildEncounters: [{ name: 'African Rainforest' }],
       },
    });
 });

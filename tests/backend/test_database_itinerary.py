@@ -38,19 +38,9 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    assert db.set_itinerary(
       date='2026-06-15',
       animals=[ { 'species': 'African Lion', 'exhibit': 'Africa Savanna' } ],
-      attractions=[ { 'name': 'Conservation Carousel' } ],
-      guardians_talks=[
-         {
-            'name': 'African Lion',
-            'start_time': '10:00'
-         }
-      ],
-      wild_encounters=[
-         {
-            'name': 'African Rainforest',
-            'start_time': '14:00'
-         }
-      ]
+      attractions=[ 'Conservation Carousel' ],
+      guardians_talks=[ 'African Lion' ],
+      wild_encounters=[ 'African Rainforest' ],
    )
 
    talk_schedule = db.conn.execute(
@@ -152,17 +142,27 @@ def test_validate_animals_removes_unavailable_entries( db, freeze_database_today
    )
 
    result = db.validate_animals(
-      month='June',
-      day=15,
-      temp=22,
-      animals_to_include=[
+      animals=[
          { 'species': 'African Lion', 'exhibit': 'Africa Savanna' },
          { 'species': 'African Penguin', 'exhibit': 'Africa Savanna' }
-      ]
-   )
+      ],
+      new_visit_date_temp=22,
+      old_visit_date='2026-06-15',
+      new_visit_date='2026-06-15' )
 
-   assert [ animal.species for animal in result[ 'valid_animals' ] ] == [ 'African Penguin' ]
-   assert [ animal.species for animal in result[ 'removed_animals' ] ] == [ 'African Lion' ]
+   assert len( result ) == 2
+
+   assert [
+      ( d.species, ( d.new_likelihood or 0 ) > 0 )
+      for d in result
+      if d.species == 'African Lion'
+   ] == [ ( 'African Lion', False ) ]
+
+   assert [
+      ( d.species, ( d.new_likelihood or 0 ) > 0 )
+      for d in result
+      if d.species == 'African Penguin'
+   ] == [ ( 'African Penguin', True ) ]
 
 
 def test_validate_attractions_removes_closed_entries( db, freeze_database_today ):
@@ -175,13 +175,21 @@ def test_validate_attractions_removes_closed_entries( db, freeze_database_today 
    )
 
    result = db.validate_attractions(
-      month='June',
-      day=15,
-      attractions_to_include=[ 'Conservation Carousel', 'Greenhouse' ]
-   )
+      attractions=[ 'Conservation Carousel', 'Greenhouse' ],
+      old_visit_date='2026-06-15',
+      new_visit_date='2026-06-15' )
 
-   assert [ attraction.name for attraction in result[ 'valid_attractions' ] ] == [ 'Greenhouse' ]
-   assert [ attraction.name for attraction in result[ 'removed_attractions' ] ] == [ 'Conservation Carousel' ]
+   assert [
+      ( d.name, d.new_likelihood )
+      for d in result
+      if d.name == 'Greenhouse'
+   ] == [ ( 'Greenhouse', 100 ) ]
+
+   assert [
+      ( d.name, d.new_likelihood )
+      for d in result
+      if d.name == 'Conservation Carousel'
+   ] == [ ( 'Conservation Carousel', 0 ) ]
 
 
 def test_validate_guardians_talks_splits_available_and_unavailable_entries( db, monkeypatch ):

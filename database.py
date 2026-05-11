@@ -898,11 +898,6 @@ class Database():
          normalized_month,
          normalized_day )
 
-      weekday = target_date.weekday()
-      is_weekend_or_holiday = (
-         weekday >= 5
-         or zoo.ZooUtil.is_holiday( d=target_date ) )
-
       data = cur.execute(
          """   SELECT
                   a.NAME,
@@ -927,28 +922,10 @@ class Database():
 
       for attraction in attraction_data:
          name = attraction[ 'NAME' ]
-         likelihood = 100
-         closed_message = None
-         attraction_day_seasonal_availability_multiplier = (
-            attraction[ 'ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ]
-            if is_weekend_or_holiday
-            else attraction[ 'ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER' ]
-         )
-
-         schedule_status, schedule_message = self.get_active_attraction_schedule_status(
-            attraction_name=name,
-            target_date=target_date,
-            weekday=weekday )
-
-         if schedule_status == 'closed':
-            likelihood = 0
-            closed_message = schedule_message
-         elif schedule_status == 'unknown':
-            likelihood = self.calculate_attraction_likelihood(
-               day_seasonal_availability_multiplier=attraction_day_seasonal_availability_multiplier )
-
-            if likelihood == 0:
-               closed_message = f'The { name } is most likely not operating on this day.'
+         likelihood, closed_message = (
+            self.get_attraction_likelihood_and_message_for_date(
+               attraction,
+               target_date ) )
 
          is_closed = likelihood <= 0
 
@@ -1059,6 +1036,71 @@ class Database():
       likelihood = max( 0.0, min( seasonal_multiplier, 1.0 ) )
 
       return max( round( likelihood * 100 ), 0 )
+
+
+   def get_attraction_likelihood_and_message_for_date(
+         self, attraction_row, target_date ):
+      name = attraction_row[ 'NAME' ]
+      weekday = target_date.weekday()
+      is_weekend_or_holiday = (
+         weekday >= 5
+         or zoo.ZooUtil.is_holiday( d=target_date ) )
+
+      attraction_day_seasonal_availability_multiplier = (
+         attraction_row[ 'ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ]
+         if is_weekend_or_holiday
+         else attraction_row[ 'ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER' ]
+      )
+
+      likelihood = 100
+      closed_message = None
+
+      schedule_status, schedule_message = self.get_active_attraction_schedule_status(
+         attraction_name=name,
+         target_date=target_date,
+         weekday=weekday )
+
+      if schedule_status == 'closed':
+         likelihood = 0
+         closed_message = schedule_message
+      elif schedule_status == 'unknown':
+         likelihood = self.calculate_attraction_likelihood(
+            day_seasonal_availability_multiplier=attraction_day_seasonal_availability_multiplier )
+
+         if likelihood == 0:
+            closed_message = f'The { name } is most likely not operating on this day.'
+
+      return likelihood, closed_message
+
+
+   def get_attraction_row_for_calendar_day(
+         self, attraction_name, month_int, day_int ):
+      cur = self.conn.cursor()
+
+      row = cur.execute(
+         """   SELECT
+                  a.NAME,
+                  a.FREE_WITH_ADMISSION,
+                  a.DESCRIPTION,
+                  a.INFO_LINK,
+                  a.HYPERLINK_TEXT,
+                  a.X_COORD,
+                  a.Y_COORD,
+                  COALESCE( adsam.WEEKDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
+                  COALESCE( adsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
+               FROM Attraction a
+               LEFT JOIN AttractionDaySeasonalAvailabilityMultiplier adsam
+                  ON a.NAME = adsam.ATTRACTION
+                  AND adsam.MONTH = ?
+                  AND adsam.DAY = ?
+               WHERE a.NAME = ?;
+         """,
+         ( month_int, day_int, attraction_name )
+      ).fetchone()
+
+      cur.close()
+
+      return row
 
 
    def get_zoomobile_stations( self, route, month, day, zoomobile_stations_to_include=None ):
@@ -2038,7 +2080,7 @@ class Database():
       return species
 
 
-   def get_itinerary( self ):
+   def get_itinerary_date( self ):
       cur = self.conn.cursor()
 
       date_row = cur.execute(
@@ -2048,8 +2090,18 @@ class Database():
          """
       ).fetchone()
 
+      cur.close()
+
       if date_row == None or date_row[ 'ITINERARY_DATE' ] == None:
-         cur.close()
+         return None
+
+      return zoo.ZooUtil.normalize_date_key( date_row[ 'ITINERARY_DATE' ] )
+
+
+   def get_itinerary( self ):
+      date_value = self.get_itinerary_date()
+
+      if date_value == None:
          return zoo.Itinerary(
             date='',
             animals=[],
@@ -2057,18 +2109,20 @@ class Database():
             guardians_talks=[],
             wild_encounters=[] )
 
-      itinerary_date = zoo.ZooUtil.parse_date_value(
-         value=date_row[ 'ITINERARY_DATE' ] )
+      itinerary_date = zoo.ZooUtil.parse_date_value( date_value )
 
       date = itinerary_date.isoformat()
       month = itinerary_date.strftime( '%B' )
       day = itinerary_date.day
 
+      cur = self.conn.cursor()
+
       animal_rows = cur.execute(
          """   SELECT
                   SPECIES,
                   EXHIBIT,
-                  IS_DELETED
+                  OLD_LIKELIHOOD,
+                  NEW_LIKELIHOOD
                FROM ItineraryAnimal;
          """ ).fetchall()
 
@@ -2083,7 +2137,8 @@ class Database():
       attraction_rows = cur.execute(
          """   SELECT
                   ATTRACTION,
-                  IS_DELETED
+                  OLD_LIKELIHOOD,
+                  NEW_LIKELIHOOD
                FROM ItineraryAttraction;
          """ ).fetchall()
 
@@ -2265,102 +2320,87 @@ class Database():
          attractions,
          guardians_talks,
          wild_encounters ):
+      animals = animals or []
+      attractions = attractions or []
+      guardians_talks = guardians_talks or []
+      wild_encounters = wild_encounters or []
+
+      itinerary_date = zoo.ZooUtil.parse_date_value( date )
+      month = itinerary_date.strftime( '%B' )
+      day = itinerary_date.day
+
+      old_visit_date = self.get_itinerary_date()
+      new_visit_date = date
+
+      validation = self.validate_itinerary(
+         month,
+         day,
+         animals,
+         attractions,
+         guardians_talks,
+         wild_encounters,
+         new_visit_date_temp=None,
+         old_visit_date=old_visit_date,
+         new_visit_date=new_visit_date )
+
+      self.clear_itinerary()
+
       cur = self.conn.cursor()
 
-      if not date:
-         date = None
+      cur.execute(
+         """   INSERT INTO ItineraryDate ( ITINERARY_DATE )
+               VALUES ( ? );
+         """,
+         ( date, )
+      )
 
-      if animals == None:
-         animals = []
-
-      if attractions == None:
-         attractions = []
-
-      if guardians_talks == None:
-         guardians_talks = []
-
-      if wild_encounters == None:
-         wild_encounters = []
-
-      cur.execute( 'DELETE FROM ItineraryDate;' )
-
-      if date:
+      for animal in validation[ 'animals' ]:
          cur.execute(
-            """   INSERT INTO ItineraryDate ( ITINERARY_DATE )
-                  VALUES ( ? );
+            """   INSERT OR IGNORE INTO ItineraryAnimal (
+                     SPECIES,
+                     EXHIBIT,
+                     OLD_LIKELIHOOD,
+                     NEW_LIKELIHOOD
+                  )
+                  VALUES ( ?, ?, ?, ? );
             """,
-            ( date, ) )
+            (
+               animal.species,
+               animal.exhibit,
+               animal.old_likelihood,
+               animal.new_likelihood,
+            ) )
 
-      cur.execute( 'DELETE FROM ItineraryAnimal;' )
-      cur.execute( 'DELETE FROM ItineraryAttraction;' )
-      cur.execute( 'DELETE FROM ItineraryGuardiansTalk;' )
-      cur.execute( 'DELETE FROM ItineraryWildEncounter;' )
+      for attraction in validation[ 'attractions' ]:
+         cur.execute(
+            """   INSERT OR IGNORE INTO ItineraryAttraction (
+                     ATTRACTION,
+                     OLD_LIKELIHOOD,
+                     NEW_LIKELIHOOD
+                  )
+                  VALUES ( ?, ?, ? );
+            """,
+            (
+               attraction.name,
+               attraction.old_likelihood,
+               attraction.new_likelihood,
+            ) )
 
-      for animal in animals:
-         species = None
-         exhibit = None
+      for talk in validation[ 'guardians_talks' ][ 'valid_guardians_talks' ]:
+         start_time = getattr( talk, 'start_time', None )
 
-         if isinstance( animal, dict ):
-            species = animal.get( 'species' )
-            exhibit = animal.get( 'exhibit' )
+         if not start_time:
+            start_time = getattr( talk, 'time_of_day', None )
 
-         if species and exhibit:
-            cur.execute(
-               """   INSERT OR IGNORE INTO ItineraryAnimal (
-                        SPECIES,
-                        EXHIBIT,
-                        IS_DELETED
-                     )
-                     VALUES ( ?, ?, 0 );
-               """,
-               (
-                  species,
-                  exhibit
-               ) )
+         self.schedule_guardians_talk( cur, talk.name, start_time )
 
-      for attraction in attractions:
-         attraction_name = attraction
+      for encounter in validation[ 'wild_encounters' ][ 'valid_wild_encounters' ]:
+         start_time = getattr( encounter, 'start_time', None )
 
-         if isinstance( attraction, dict ):
-            attraction_name = attraction.get( 'name' )
+         if not start_time:
+            start_time = getattr( encounter, 'time_of_day', None )
 
-         if attraction_name:
-            cur.execute(
-               """   INSERT OR IGNORE INTO ItineraryAttraction (
-                        ATTRACTION,
-                        IS_DELETED
-                     )
-                     VALUES ( ?, 0 );
-               """,
-               ( attraction_name, ) )
-
-      for guardians_talk in guardians_talks:
-         talk_name = guardians_talk
-         start_time = None
-
-         if isinstance( guardians_talk, dict ):
-            talk_name = guardians_talk.get( 'name' )
-            start_time = guardians_talk.get( 'start_time' )
-
-         if talk_name:
-            self.schedule_guardians_talk(
-               cur,
-               talk_name,
-               start_time )
-
-      for wild_encounter in wild_encounters:
-         wild_encounter_name = wild_encounter
-         start_time = None
-
-         if isinstance( wild_encounter, dict ):
-            wild_encounter_name = wild_encounter.get( 'name' )
-            start_time = wild_encounter.get( 'start_time' )
-
-         if wild_encounter_name:
-            self.schedule_wild_encounter(
-               cur,
-               wild_encounter_name,
-               start_time )
+         self.schedule_wild_encounter( cur, encounter.name, start_time )
 
       self.conn.commit()
       cur.close()
@@ -2384,73 +2424,203 @@ class Database():
       return True
 
 
-   def validate_animals( self, month, day, temp, animals_to_include=None ):
-      animals_to_include = animals_to_include or []
-
-      animals = self.get_animals_for_itinerary(
+   def get_animal_likelihood_for_date( self, month, day, temp, species, exhibit ):
+      rows = self.get_animals_for_itinerary(
          month=month,
          day=day,
          temp=temp,
-         species_exhibit_pairs=animals_to_include,
-         include_off_display_animals=True )
+         species_exhibit_pairs=[
+            {
+               'species': species,
+               'exhibit': exhibit,
+            }
+         ],
+         include_off_display_animals=True,
+      )
 
-      best_valid_by_species = {}
-      removed_by_species = {}
+      if not rows:
+         return None
 
-      for animal in animals:
-         species = animal.species
+      return rows[ 0 ].likelihood
 
-         if animal.likelihood <= 0:
-            removed_by_species[ species ] = animal
-            continue
 
-         current = best_valid_by_species.get( species )
+   def get_attraction_likelihood_for_visit_date(
+         self, visit_date_value, attraction_name ):
+      name = ( attraction_name or '' ).strip()
 
-         if current is None or animal.likelihood > current.likelihood:
-            best_valid_by_species[ species ] = animal
+      parsed = zoo.ZooUtil.parse_date_value( visit_date_value )
 
-      valid_animals = list( best_valid_by_species.values() )
-      valid_animals.sort( key=lambda a: a.species.lower() )
+      row = self.get_attraction_row_for_calendar_day(
+         name,
+         parsed.month,
+         parsed.day )
 
-      removed_animals = []
+      if row == None:
+         return None
 
-      for species, animal in removed_by_species.items():
-         if species not in best_valid_by_species:
-            removed_animals.append( animal )
+      likelihood, _ = self.get_attraction_likelihood_and_message_for_date(
+         row,
+         parsed )
 
-      removed_animals.sort( key=lambda a: a.species.lower() )
+      return likelihood
+
+
+   def validate_itinerary(
+         self,
+         month,
+         day,
+         animals,
+         attractions,
+         guardians_talks,
+         wild_encounters,
+         new_visit_date_temp=None,
+         old_visit_date=None,
+         new_visit_date=None ):
+      guardians_talks = guardians_talks or []
+      wild_encounters = wild_encounters or []
+
+      saved_itinerary_animal_rows = []
+      saved_itinerary_attraction_rows = []
+
+      if old_visit_date != None:
+         cur = self.conn.cursor()
+
+         saved_itinerary_animal_rows = cur.execute(
+            """   SELECT
+                     SPECIES,
+                     EXHIBIT,
+                     NEW_LIKELIHOOD
+                  FROM ItineraryAnimal;
+            """
+         ).fetchall()
+
+         saved_itinerary_attraction_rows = cur.execute(
+            """   SELECT
+                     ATTRACTION,
+                     NEW_LIKELIHOOD
+                  FROM ItineraryAttraction;
+            """
+         ).fetchall()
+
+         cur.close()
 
       return {
-         'valid_animals': valid_animals,
-         'removed_animals': removed_animals
+         'animals': (
+            self.validate_animals(
+               animals=animals,
+               new_visit_date_temp=new_visit_date_temp,
+               old_visit_date=old_visit_date,
+               new_visit_date=new_visit_date,
+               saved_itinerary_animal_rows=saved_itinerary_animal_rows )
+            if animals
+            else []
+         ),
+         'attractions': (
+            self.validate_attractions(
+               attractions=attractions,
+               old_visit_date=old_visit_date,
+               new_visit_date=new_visit_date,
+               saved_itinerary_attraction_rows=saved_itinerary_attraction_rows )
+            if attractions
+            else []
+         ),
+         'guardians_talks': self.validate_guardians_talks(
+            month=month,
+            day=day,
+            guardians_talks_to_include=guardians_talks ),
+         'wild_encounters': self.validate_wild_encounters(
+            month=month,
+            day=day,
+            wild_encounters_to_include=wild_encounters ),
       }
 
 
-   def validate_attractions( self, month, day, attractions_to_include=None ):
-      attractions_to_include = attractions_to_include or []
+   def validate_animals(
+         self,
+         animals,
+         new_visit_date_temp=None,
+         old_visit_date=None,
+         new_visit_date=None,
+         saved_itinerary_animal_rows=None ):
+      parsed_new = zoo.ZooUtil.parse_date_value( new_visit_date )
+      new_month = parsed_new.strftime( '%B' )
+      new_day = parsed_new.day
 
-      attractions = self.get_attractions_for_itinerary(
-         month=month,
-         day=day,
-         attractions_to_include=attractions_to_include,
-         include_closed_attractions=True )
+      old_likelihood_by_pair = {}
 
-      valid_attractions = []
-      removed_attractions = []
+      if old_visit_date != None and saved_itinerary_animal_rows:
+         for row in saved_itinerary_animal_rows:
+            old_likelihood_by_pair[
+               ( row[ 'SPECIES' ], row[ 'EXHIBIT' ] )
+            ] = row[ 'NEW_LIKELIHOOD' ]
+
+      diffs = []
+
+      for item in animals:
+         species = ( item.get( 'species' ) or '' ).strip()
+         exhibit = ( item.get( 'exhibit' ) or '' ).strip()
+
+         old_likelihood = (
+            None
+            if old_visit_date == None
+            else old_likelihood_by_pair.get( ( species, exhibit ) ) )
+
+         new_likelihood = self.get_animal_likelihood_for_date(
+            new_month,
+            new_day,
+            new_visit_date_temp,
+            species,
+            exhibit )
+
+         diffs.append(
+            zoo.AnimalDiff(
+               species=species,
+               exhibit=exhibit,
+               old_likelihood=old_likelihood,
+               new_likelihood=new_likelihood,
+            )
+         )
+
+      return diffs
+
+
+   def validate_attractions(
+         self,
+         attractions,
+         old_visit_date=None,
+         new_visit_date=None,
+         saved_itinerary_attraction_rows=None ):
+
+      old_likelihood_by_name = {}
+
+      if old_visit_date != None and saved_itinerary_attraction_rows:
+
+         for row in saved_itinerary_attraction_rows:
+            old_likelihood_by_name[ row[ 'ATTRACTION' ] ] = row[ 'NEW_LIKELIHOOD' ]
+
+      diffs = []
 
       for attraction in attractions:
-         if attraction.is_closed:
-            removed_attractions.append( attraction )
-         else:
-            valid_attractions.append( attraction )
+         attraction_name = str( attraction ).strip()
 
-      valid_attractions.sort( key=lambda a: a.name.lower() )
-      removed_attractions.sort( key=lambda a: a.name.lower() )
+         old_likelihood = (
+            None
+            if old_visit_date == None
+            else old_likelihood_by_name.get( attraction_name ) )
 
-      return {
-         'valid_attractions': valid_attractions,
-         'removed_attractions': removed_attractions
-      }
+         new_likelihood = self.get_attraction_likelihood_for_visit_date(
+            new_visit_date,
+            attraction_name )
+
+         diffs.append(
+            zoo.AttractionDiff(
+               name=attraction_name,
+               old_likelihood=old_likelihood,
+               new_likelihood=new_likelihood,
+            )
+         )
+
+      return diffs
 
 
    def validate_guardians_talks( self, month, day, guardians_talks_to_include=None ):

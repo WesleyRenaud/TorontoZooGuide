@@ -7,6 +7,7 @@ import {
    createEmptyItineraryDraft,
    isItineraryEmptyDraft,
    normalizeItineraryDraft,
+   toSetItineraryPayload,
 } from '../../scripts/itinerary/itineraryShape.js';
 
 test('creates and normalizes itinerary draft shape', () => {
@@ -73,4 +74,25 @@ test('treats a draft with only a date as empty', () => {
       date: '2026-06-15',
       wildEncounters: [{ name: 'African Rainforest' }],
    }), false);
+});
+
+test('toSetItineraryPayload sends canonical shapes for the save API', () => {
+   assert.deepEqual(toSetItineraryPayload({
+      date: '2026-06-15',
+      animals: [
+         { species: 'African Lion', exhibit: 'Africa Savanna', likelihood: 90 },
+         { species: '  ', exhibit: 'Africa Savanna' },
+      ],
+      attractions: [{ name: 'Conservation Carousel' }, 'Greenhouse'],
+      guardiansTalks: [{ name: 'African Lion', type: 'guardiansTalk' }],
+      wildEncounters: [{ name: 'African Rainforest' }],
+   }), {
+      date: '2026-06-15',
+      animals: [
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+      ],
+      attractions: ['Conservation Carousel', 'Greenhouse'],
+      guardiansTalks: ['African Lion'],
+      wildEncounters: ['African Rainforest'],
+   });
 });
