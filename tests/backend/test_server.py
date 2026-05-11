@@ -263,6 +263,11 @@ class StubDatabase:
       return zoo.Itinerary( date='2026-06-15' )
 
 
+   def get_itinerary_date( self ):
+      self.calls.append( ( 'get_itinerary_date', {} ) )
+      return '2026-06-15'
+
+
    def get_zoo_hours( self, date_value ):
       self.calls.append( ( 'get_zoo_hours', { 'date_value': date_value } ) )
       return {
@@ -274,27 +279,203 @@ class StubDatabase:
       }
 
 
+   def get_animals_for_itinerary( self, **kwargs ):
+      self.calls.append( ( 'get_animals_for_itinerary', kwargs ) )
+      pairs = kwargs.get( 'species_exhibit_pairs' ) or []
+
+      result = []
+
+      for pair in pairs:
+         species = pair.get( 'species', '' )
+
+         if species == ANIMAL_NAME:
+            result.append(
+               zoo.Animal(
+                  species=ANIMAL_NAME,
+                  exhibit=ANIMAL_EXHIBIT,
+                  likelihood=85 ) )
+         elif species == 'Amur Tiger':
+            result.append(
+               zoo.Animal(
+                  species='Amur Tiger',
+                  exhibit='Eurasia Wilds',
+                  off_display_message='Unavailable.',
+                  likelihood=0 ) )
+
+      return result
+
+
+   def get_attractions_for_itinerary( self, **kwargs ):
+      self.calls.append( ( 'get_attractions_for_itinerary', kwargs ) )
+      names = kwargs.get( 'attractions_to_include' ) or []
+      result = []
+
+      for name in names:
+
+         if name == ATTRACTION_NAME:
+            result.append(
+               zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) )
+
+         elif name == REMOVED_ATTRACTION_NAME:
+            result.append(
+               zoo.Attraction(
+                  name=REMOVED_ATTRACTION_NAME,
+                  free_with_admission=0,
+                  closed_message='Closed.' ) )
+
+      return result
+
+
    def clear_itinerary( self ):
       self.calls.append( ( 'clear_itinerary', {} ) )
       return True
 
 
+   def validate_itinerary(
+         self,
+         month,
+         day,
+         animals,
+         attractions,
+         guardians_talks,
+         wild_encounters,
+         new_visit_date_temp=None,
+         old_visit_date=None,
+         new_visit_date=None ):
+      self.calls.append(
+         (
+            'validate_itinerary',
+            {
+               'month': month,
+               'day': day,
+               'animals': animals,
+               'attractions': attractions,
+               'guardians_talks': guardians_talks,
+               'wild_encounters': wild_encounters,
+               'new_visit_date_temp': new_visit_date_temp,
+               'old_visit_date': old_visit_date,
+               'new_visit_date': new_visit_date,
+            }
+         )
+      )
+      return {
+         'animals': [
+            zoo.AnimalDiff(
+               species=ANIMAL_NAME,
+               exhibit=ANIMAL_EXHIBIT,
+               old_likelihood=85,
+               new_likelihood=85 ),
+            zoo.AnimalDiff(
+               species='Amur Tiger',
+               exhibit='Eurasia Wilds',
+               old_likelihood=0,
+               new_likelihood=0 ),
+         ],
+         'attractions': [
+            zoo.AttractionDiff(
+               name=ATTRACTION_NAME,
+               old_likelihood=100,
+               new_likelihood=100 ),
+            zoo.AttractionDiff(
+               name=REMOVED_ATTRACTION_NAME,
+               old_likelihood=100,
+               new_likelihood=0 ),
+         ],
+         'guardians_talks': {
+            'valid_guardians_talks': [
+               zoo.GuardiansTalk(
+                  name=GUARDIANS_TALK_NAME,
+                  location=GUARDIANS_TALK_LOCATION,
+                  x_coord=51.138,
+                  y_coord=41.279 )
+            ],
+            'removed_guardians_talks': [
+               zoo.GuardiansTalk(
+                  name='Amur Tiger',
+                  location='Eurasia Wilds',
+                  x_coord=75.979,
+                  y_coord=74.707,
+                  unavailable_message='Cancelled.' )
+            ],
+         },
+         'wild_encounters': {
+            'valid_wild_encounters': [
+               zoo.WildEncounter(
+                  name=WILD_ENCOUNTER_NAME,
+                  meeting_spot=WILD_ENCOUNTER_MEETING_SPOT,
+                  link=WILD_ENCOUNTER_LINK )
+            ],
+            'removed_wild_encounters': [
+               zoo.WildEncounter(
+                  name='Kangaroo',
+                  meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+                  link='https://www.torontozoo.com/tickets/wekangaroo',
+                  unavailable_message='Unavailable.' )
+            ],
+         },
+      }
+
+
    def validate_animals( self, **kwargs ):
       self.calls.append( ( 'validate_animals', kwargs ) )
-      return {
-         'valid_animals': [ zoo.Animal( species=ANIMAL_NAME, exhibit=ANIMAL_EXHIBIT ) ],
-         'removed_animals': [ zoo.Animal( species='Amur Tiger', off_display_message='Unavailable.' ) ]
-      }
+
+      if kwargs.get( 'animals_to_include' ) is not None:
+         return {
+            'valid_animals': [
+               zoo.Animal(
+                  species=ANIMAL_NAME,
+                  exhibit=ANIMAL_EXHIBIT,
+                  likelihood=85 ),
+            ],
+            'removed_animals': [
+               zoo.Animal(
+                  species='Amur Tiger',
+                  exhibit='Eurasia Wilds',
+                  off_display_message='Unavailable.',
+                  likelihood=0 ),
+            ],
+         }
+
+      return [
+         zoo.AnimalDiff(
+            species=ANIMAL_NAME,
+            exhibit=ANIMAL_EXHIBIT,
+            old_likelihood=85,
+            new_likelihood=85 ),
+         zoo.AnimalDiff(
+            species='Amur Tiger',
+            exhibit='Eurasia Wilds',
+            old_likelihood=0,
+            new_likelihood=0 ),
+      ]
 
 
    def validate_attractions( self, **kwargs ):
       self.calls.append( ( 'validate_attractions', kwargs ) )
-      return {
-         'valid_attractions': [ zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ],
-         'removed_attractions': [
-            zoo.Attraction( name=REMOVED_ATTRACTION_NAME, free_with_admission=0, closed_message='Closed.' )
-         ]
-      }
+
+      if kwargs.get( 'attractions_to_include' ) is not None:
+         return {
+            'valid_attractions': [
+               zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ),
+            ],
+            'removed_attractions': [
+               zoo.Attraction(
+                  name=REMOVED_ATTRACTION_NAME,
+                  free_with_admission=0,
+                  closed_message='Closed.' ),
+            ],
+         }
+
+      return [
+         zoo.AttractionDiff(
+            name=ATTRACTION_NAME,
+            old_likelihood=100,
+            new_likelihood=100 ),
+         zoo.AttractionDiff(
+            name=REMOVED_ATTRACTION_NAME,
+            old_likelihood=100,
+            new_likelihood=0 ),
+      ]
 
 
    def validate_guardians_talks( self, **kwargs ):
@@ -1024,6 +1205,7 @@ def test_validate_itinerary_endpoint_returns_previous_validated_and_removed_payl
    assert result[ 'removed' ][ 'attractions' ][ 0 ][ 'removalReason' ] == 'Closed.'
    assert result[ 'removed' ][ 'guardiansTalks' ][ 0 ][ 'removalReason' ] == 'Cancelled.'
    assert result[ 'removed' ][ 'wildEncounters' ][ 0 ][ 'removalReason' ] == 'Unavailable.'
+
    assert StubDatabase.instances[ 0 ].calls[ -2: ] == [
       ( 'clear_itinerary', {} ),
       (
@@ -1033,7 +1215,7 @@ def test_validate_itinerary_endpoint_returns_previous_validated_and_removed_payl
             'animals': result[ 'validated' ][ 'animals' ],
             'attractions': result[ 'validated' ][ 'attractions' ],
             'guardians_talks': result[ 'validated' ][ 'guardiansTalks' ],
-            'wild_encounters': result[ 'validated' ][ 'wildEncounters' ]
+            'wild_encounters': result[ 'validated' ][ 'wildEncounters' ],
          }
       )
    ]

@@ -8,6 +8,7 @@ import {
    createEmptyItineraryDraft,
    isItineraryEmptyDraft,
    normalizeItineraryDraft,
+   toSetItineraryPayload,
 } from './itineraryShape.js';
 
 function createEmptyItinerary() {
@@ -73,10 +74,8 @@ export async function getZooHours(date) {
 }
 
 export async function saveItinerary(itinerary = {}) {
-   const normalizedDraft = normalizeItineraryDraft(itinerary);
-   const result = await setItineraryRequest({
-      ...normalizedDraft,
-   });
+   const payload = toSetItineraryPayload(itinerary);
+   const result = await setItineraryRequest(payload);
 
    const normalizedItinerary = normalizeItinerary(result?.itinerary);
    dispatchItineraryUpdated(normalizedItinerary);

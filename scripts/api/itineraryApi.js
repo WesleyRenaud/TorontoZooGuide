@@ -13,13 +13,6 @@ const ITINERARY_COLLECTION_FIELDS = [
    ['wildEncounters', 'wild_encounters'],
 ];
 
-const VALIDATION_COLLECTION_FIELDS = [
-   ['animals', 'animals'],
-   ['attractions', 'attractions'],
-   ['guardiansTalks', 'guardiansTalks'],
-   ['wildEncounters', 'wildEncounters'],
-];
-
 function normalizeCollectionFields(source = {}, fields) {
    return Object.fromEntries(
       fields.map(([targetKey, responseKey]) => [
@@ -31,10 +24,6 @@ function normalizeCollectionFields(source = {}, fields) {
 
 function normalizeItineraryCollections(source = {}) {
    return normalizeCollectionFields(source, ITINERARY_COLLECTION_FIELDS);
-}
-
-function normalizeValidationCollections(source = {}) {
-   return normalizeCollectionFields(source, VALIDATION_COLLECTION_FIELDS);
 }
 
 function normalizeItineraryModel(itinerary) {
@@ -76,22 +65,6 @@ function normalizeZooHoursResponse(response) {
    };
 }
 
-function normalizeValidationBucket(bucket) {
-   return normalizeValidationCollections(asObject(bucket));
-}
-
-function normalizeValidatedItineraryResponse(response) {
-   const source = asObject(response);
-
-   return {
-      success: source.success !== false,
-      error: asNullableString(source.error),
-      previous: normalizeValidationBucket(source.previous),
-      validated: normalizeValidationBucket(source.validated),
-      removed: normalizeValidationBucket(source.removed),
-   };
-}
-
 export async function getItineraryRequest() {
    const response = await postJson('/get-itinerary', {});
    return normalizeItineraryResponse(response);
@@ -109,9 +82,4 @@ export async function setItineraryRequest(payload) {
 
 export function clearItineraryRequest() {
    return postJson('/clear-itinerary', {});
-}
-
-export async function validateItineraryDraftRequest(payload) {
-   const response = await postJson('/validate-itinerary', payload);
-   return normalizeValidatedItineraryResponse(response);
 }

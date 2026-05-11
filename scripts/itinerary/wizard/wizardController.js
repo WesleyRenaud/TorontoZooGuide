@@ -1,4 +1,3 @@
-import { validateItineraryDraft } from './draftValidator.js';
 import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
 import { createItineraryAnimalSelectorController } from '../../itinerary/selectors/animalSelector.js';
 import { createItineraryAttractionSelectorController } from '../../itinerary/selectors/attractionSelector.js';
@@ -188,17 +187,11 @@ export async function openItineraryWizard({
       closeWizard(mountEl, onDone);
    }
 
-   async function validateAndApplyDate(date, dateObj) {
-      const result = await validateItineraryDraft({
-         date,
-         dateObj,
-         draft: buildWizardDraft(wizardState, { date }),
-      });
-
-      wizard.applyValidationResult(date, result);
+   function applyWizardDate(date) {
+      wizard.applyValidationResult(date, null);
    }
 
-   async function syncDateStepDraft() {
+   function syncDateStepDraft() {
       const currentDate = wizardSteps.date?.getDate?.();
 
       if (!(currentDate instanceof Date) || !Number.isFinite(currentDate.getTime())) {
@@ -211,7 +204,7 @@ export async function openItineraryWizard({
          return;
       }
 
-      await validateAndApplyDate(date, currentDate);
+      applyWizardDate(date);
    }
 
    async function syncSelectionStepDraft(stepKey) {
@@ -234,7 +227,7 @@ export async function openItineraryWizard({
 
    async function syncActiveStepDraft() {
       if (activeStepKey === DEFAULT_START_STEP) {
-         await syncDateStepDraft();
+         syncDateStepDraft();
          return;
       }
 
@@ -283,13 +276,13 @@ export async function openItineraryWizard({
 
    SELECTION_STEP_CONFIGS.forEach(createSelectionStepController);
 
-   async function handleDateNext(date, dateObj) {
-      await validateAndApplyDate(date, dateObj);
+   function handleDateNext(date) {
+      applyWizardDate(date);
       showStep('regions');
    }
 
-   async function handleDateFinish(date, dateObj) {
-      await validateAndApplyDate(date, dateObj);
+   async function handleDateFinish(date) {
+      applyWizardDate(date);
       await finish({ date }, { allowEmpty: true });
    }
 

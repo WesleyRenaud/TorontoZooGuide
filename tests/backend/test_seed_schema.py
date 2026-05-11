@@ -240,11 +240,13 @@ def test_create_schema_migrates_partial_dynamic_tables():
       'ItineraryAnimal': {
          'SPECIES',
          'EXHIBIT',
-         'IS_DELETED'
+         'OLD_LIKELIHOOD',
+         'NEW_LIKELIHOOD'
       },
       'ItineraryAttraction': {
          'ATTRACTION',
-         'IS_DELETED'
+         'OLD_LIKELIHOOD',
+         'NEW_LIKELIHOOD'
       },
       'ItineraryGuardiansTalk': {
          'TALK_NAME',

@@ -105,6 +105,50 @@ export function cloneItineraryDraft(draft = {}) {
    };
 }
 
+function normalizeNamedStringList(items) {
+   const out = [];
+
+   for (const item of normalizeItineraryItems(items)) {
+
+      const name = typeof item === 'string'
+         ? item.trim()
+         : String(item?.name ?? '').trim();
+
+      if (name) {
+         out.push(name);
+      }
+   }
+
+   return out;
+}
+
+function normalizeAnimalForSave(item) {
+   if (!item || typeof item !== 'object') {
+      return null;
+   }
+
+   const species = String(item.species ?? '').trim();
+   const exhibit = String(item.exhibit ?? '').trim();
+
+   if (!species || !exhibit) {
+      return null;
+   }
+
+   return { species, exhibit };
+}
+
+export function toSetItineraryPayload(draft = {}) {
+   const base = normalizeItineraryDraft(draft);
+
+   return {
+      date: base.date,
+      animals: base.animals.map(normalizeAnimalForSave).filter(Boolean),
+      attractions: normalizeNamedStringList(base.attractions),
+      guardiansTalks: normalizeNamedStringList(base.guardiansTalks),
+      wildEncounters: normalizeNamedStringList(base.wildEncounters),
+   };
+}
+
 export function areItineraryDraftsEqual(left, right) {
    return areDraftValuesEqual(
       normalizeItineraryDraft(left),
