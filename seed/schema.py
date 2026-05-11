@@ -794,7 +794,8 @@ def create_schema( cursor ):
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryAnimal
                      (  SPECIES              VARCHAR(64) NOT NULL,
                         EXHIBIT              VARCHAR(64) NOT NULL,
-                        IS_DELETED           BOOL        NOT NULL DEFAULT 0,
+                        OLD_LIKELIHOOD       INTEGER,
+                        NEW_LIKELIHOOD       INTEGER,
                         PRIMARY KEY ( SPECIES, EXHIBIT ),
                         FOREIGN KEY ( SPECIES, EXHIBIT )
                            REFERENCES Enclosure( SPECIES, EXHIBIT ) ); ''' )
@@ -808,14 +809,20 @@ def create_schema( cursor ):
          'ALTER TABLE ItineraryAnimal ADD COLUMN EXHIBIT VARCHAR(64) NOT NULL DEFAULT "";'
       )
 
-   if 'IS_DELETED' not in itinerary_animal_columns:
+   if 'OLD_LIKELIHOOD' not in itinerary_animal_columns:
       cursor.execute(
-         'ALTER TABLE ItineraryAnimal ADD COLUMN IS_DELETED BOOL NOT NULL DEFAULT 0;'
+         'ALTER TABLE ItineraryAnimal ADD COLUMN OLD_LIKELIHOOD INTEGER;'
+      )
+
+   if 'NEW_LIKELIHOOD' not in itinerary_animal_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryAnimal ADD COLUMN NEW_LIKELIHOOD INTEGER;'
       )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryAttraction
                      (  ATTRACTION           VARCHAR(64) NOT NULL,
-                        IS_DELETED           BOOL        NOT NULL DEFAULT 0,
+                        OLD_LIKELIHOOD       INTEGER,
+                        NEW_LIKELIHOOD       INTEGER,
                         PRIMARY KEY ( ATTRACTION ),
                         FOREIGN KEY ( ATTRACTION ) REFERENCES Attraction(NAME) ); ''' )
 
@@ -823,9 +830,14 @@ def create_schema( cursor ):
       row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( ItineraryAttraction );' ).fetchall()
    }
 
-   if 'IS_DELETED' not in itinerary_attraction_columns:
+   if 'OLD_LIKELIHOOD' not in itinerary_attraction_columns:
       cursor.execute(
-         'ALTER TABLE ItineraryAttraction ADD COLUMN IS_DELETED BOOL NOT NULL DEFAULT 0;'
+         'ALTER TABLE ItineraryAttraction ADD COLUMN OLD_LIKELIHOOD INTEGER;'
+      )
+
+   if 'NEW_LIKELIHOOD' not in itinerary_attraction_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryAttraction ADD COLUMN NEW_LIKELIHOOD INTEGER;'
       )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryGuardiansTalk

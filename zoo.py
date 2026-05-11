@@ -323,6 +323,38 @@ class WildEncounter:
       }
 
 
+class AnimalDiff:
+   def __init__( self, species, exhibit, old_likelihood, new_likelihood ):
+      self.species = species
+      self.exhibit = exhibit
+      self.old_likelihood = old_likelihood
+      self.new_likelihood = new_likelihood
+
+
+   def to_dict( self ):
+      return {
+         'species': self.species,
+         'exhibit': self.exhibit,
+         'old_likelihood': self.old_likelihood,
+         'new_likelihood': self.new_likelihood,
+      }
+
+
+class AttractionDiff:
+   def __init__( self, name, old_likelihood, new_likelihood ):
+      self.name = name
+      self.old_likelihood = old_likelihood
+      self.new_likelihood = new_likelihood
+
+
+   def to_dict( self ):
+      return {
+         'name': self.name,
+         'old_likelihood': self.old_likelihood,
+         'new_likelihood': self.new_likelihood,
+      }
+
+
 class DrinkingFountain:
    def __init__(
          self,
@@ -567,6 +599,33 @@ class ZooUtil:
          pass
 
       raise ValueError( f'Unsupported date format: { value }' )
+
+
+   @staticmethod
+   def normalize_date_key( value ):
+      if value == None:
+         return None
+
+      if isinstance( value, str ) and value.strip() == '':
+         return None
+
+      try:
+         parsed = ZooUtil.parse_date_value( value )
+      except ValueError:
+         return None
+
+      if parsed == None:
+         return None
+
+      return parsed.isoformat()
+
+
+   @staticmethod
+   def normalize_itinerary_schedule_time( value ):
+      if value == None:
+         return ''
+
+      return str( value ).strip()
 
 
    @staticmethod
