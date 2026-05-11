@@ -3803,8 +3803,9 @@ animals = [
       'Acinonyx Jubatus',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
       '''The cheetahs can be seen on the Africa Savanna loop, between the white rhinos and baboons, and across from the zeberas.
-         Most of the time, the cheetahs can be seen in the back right part of their enclosure. Look for a head just past the trees.
-         Your best chance to see the cheetahs active is early in the day,'''.replace( '\n', ' ' ),
+         Most of the time, the cheetahs can be seen in the back right part of their enclosure. Look for a head just past the trees,
+         and in Indo-Malaya in the habitat off the boardwalk connecting Indo-Malaya to Africa. Your best chance to see the cheetahs
+         active is early in the day.'''.replace( '\n', ' ' ),
       '''The cheetahs are on exhibit year-round. In the coldest months of the year they are given access to indoor spaces, so on
          very cold and/or icy days they may decide to spend their time inside. They are most active on cooler days in the fall and
          spring.'''.replace( '\n', ' ' ),
@@ -6961,8 +6962,7 @@ animals = [
       'Domestic Goat',
       'Capra Hircus',
       -10,                                                           # Minimum temperature (only for animals with outdoor viewing)
-      '''The domestic goats can be seen across from the Discovery Zone in the Goat World habitat, and in the Indo-Malaya Outdoor
-         exhibit, at the old Sumatran tiger habitat.'''.replace( '\n', ' ' ),
+      '''The domestic goats can be seen across from the Discovery Zone in the Goat World habitat.'''.replace( '\n', ' ' ),
       '''Goats can stand very cold temperatures, and are viewable outside year-round.''',
       '''The domestic goat is a small-to-medium herbivore, typically weighing 45–90 kg, depending on breed and sex. Males (bucks)
          are generally larger than females (does). Goats have cloven hooves, a short tail, and curved horns that vary in shape and
