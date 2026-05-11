@@ -7,6 +7,7 @@ import './visitDateRules.test.mjs';
 import './assetNormalization.test.mjs';
 import './likelihood.test.mjs';
 import './itineraryShape.test.mjs';
+import './wizardState.test.mjs';
 import './draftStorage.test.mjs';
 import './itineraryApi.test.mjs';
 import './itineraryDiff.test.mjs';
