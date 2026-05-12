@@ -10,6 +10,7 @@ import {
 } from './itineraryDiff.js';
 import {
    areItineraryDraftsEqual,
+   isItineraryEmptyDraft,
    normalizeItineraryDraft,
 } from '../itineraryShape.js';
 
@@ -132,10 +133,13 @@ export function createItineraryWizardState(existing = {}) {
       },
 
       hasUnsavedChanges() {
-         return !areItineraryDraftsEqual(
-            buildWizardDraftSnapshot(state),
-            initialDraft
-         );
+         const snapshot = buildWizardDraftSnapshot(state);
+
+         if (isItineraryEmptyDraft(snapshot) && isItineraryEmptyDraft(initialDraft)) {
+            return false;
+         }
+
+         return !areItineraryDraftsEqual(snapshot, initialDraft);
       },
 
       discardChanges() {
