@@ -9,7 +9,7 @@ import {
    isValidatedItineraryEmpty,
 } from './itineraryDiff.js';
 import {
-   areItineraryDraftsEqual,
+   areItineraryDraftsSemanticallyEqual,
    isItineraryEmptyDraft,
    normalizeItineraryDraft,
 } from '../itineraryShape.js';
@@ -139,7 +139,7 @@ export function createItineraryWizardState(existing = {}) {
             return false;
          }
 
-         return !areItineraryDraftsEqual(snapshot, initialDraft);
+         return !areItineraryDraftsSemanticallyEqual(snapshot, initialDraft);
       },
 
       discardChanges() {

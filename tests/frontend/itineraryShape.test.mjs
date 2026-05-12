@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
    areItineraryDraftsEqual,
+   areItineraryDraftsSemanticallyEqual,
    cloneItineraryDraft,
    createEmptyItineraryDraft,
    isItineraryEmptyDraft,
@@ -54,17 +55,56 @@ test('compares normalized itinerary drafts deeply', () => {
    assert.equal(areItineraryDraftsEqual(
       {
          date: '2026-06-15',
-         animals: [{ species: 'African Lion', likelihood: 90 }],
+         animals: [{ species: 'African Lion', exhibit: 'Africa Savanna', likelihood: 90 }],
       },
       {
          date: '2026-06-15',
-         animals: [{ species: 'African Lion', likelihood: 90 }],
+         animals: [{ species: 'African Lion', exhibit: 'Africa Savanna', likelihood: 90 }],
       }
    ), true);
 
    assert.equal(areItineraryDraftsEqual(
-      { animals: [{ species: 'African Lion' }] },
-      { animals: [{ species: 'Amur Tiger' }] }
+      { animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }] },
+      { animals: [{ species: 'Amur Tiger', exhibit: 'Eurasia' }] }
+   ), false);
+});
+
+test('semantic draft equality ignores animal metadata and list order', () => {
+   assert.equal(areItineraryDraftsSemanticallyEqual(
+      {
+         date: '2026-06-15',
+         animals: [
+            { species: 'African Lion', exhibit: 'Africa Savanna', likelihood: 90, imageSrc: '/a.png' },
+         ],
+      },
+      {
+         date: '2026-06-15',
+         animals: [
+            { species: 'African Lion', exhibit: 'Africa Savanna', likelihood: 5 },
+         ],
+      }
+   ), true);
+
+   assert.equal(areItineraryDraftsSemanticallyEqual(
+      {
+         date: '2026-06-15',
+         animals: [
+            { species: 'Amur Tiger', exhibit: 'Eurasia' },
+            { species: 'African Lion', exhibit: 'Africa Savanna' },
+         ],
+      },
+      {
+         date: '2026-06-15',
+         animals: [
+            { species: 'African Lion', exhibit: 'Africa Savanna' },
+            { species: 'Amur Tiger', exhibit: 'Eurasia' },
+         ],
+      }
+   ), true);
+
+   assert.equal(areItineraryDraftsSemanticallyEqual(
+      { date: '2026-06-15', animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }] },
+      { date: '2026-06-16', animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }] }
    ), false);
 });
 
