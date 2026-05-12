@@ -4,18 +4,16 @@ import {
    getItinerary,
    isItineraryEmpty,
 } from '../itinerary/itineraryService.js';
+import { showWizardValidationPopupIfNeeded } from '../itinerary/wizard/validationPopup.js';
 import { blockMapWheelWhileWizardOpen } from '../itinerary/wizard/wheelBlocker.js';
 import { openItineraryWizard } from '../itinerary/wizard/wizardController.js';
 import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
 
 const DEFAULT_WIZARD_STEP = 'date';
+let lastShownValidationSignature = null;
 
 function hasEmbeddedMap() {
    return Boolean(document.getElementById('mapInner'));
-}
-
-function createPanelRefresh() {
-   return () => renderItineraryPanel();
 }
 
 function createWizardOpener(mountEl, onDone) {
@@ -26,6 +24,49 @@ function createWizardOpener(mountEl, onDone) {
          onDone,
       });
    };
+}
+
+function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
+   if (!itinerary?.validation?.hasChanges) {
+      return;
+   }
+
+   const validationSignature = JSON.stringify({
+      date: itinerary.date,
+      removed: itinerary.validation.removed,
+      reducedVisibility: itinerary.validation.reducedVisibility,
+      improvedVisibility: itinerary.validation.improvedVisibility,
+   });
+
+   if (validationSignature === lastShownValidationSignature) {
+      return;
+   }
+
+   lastShownValidationSignature = validationSignature;
+
+   showWizardValidationPopupIfNeeded({
+      mountEl,
+      pendingValidation: {
+         removed: itinerary.validation.removed,
+         reducedVisibility: itinerary.validation.reducedVisibility,
+         improvedVisibility: itinerary.validation.improvedVisibility,
+         isEmptyItinerary: isItineraryEmpty(itinerary),
+      },
+      onViewAlternatives: (step) => openWizard({ startAt: step }),
+   });
+}
+
+async function refreshItineraryPageContent(mountEl, openWizard) {
+   await renderItineraryPanel();
+
+   const itinerary = await getItinerary();
+
+   if (!itinerary || isItineraryEmpty(itinerary)) {
+      openWizard();
+      return;
+   }
+
+   showItineraryValidationDiff(mountEl, itinerary, openWizard);
 }
 
 function bindWizardEvents(openWizard) {
@@ -46,7 +87,7 @@ function bindWizardEvents(openWizard) {
 
 function bindPanelRefreshEvents(refreshPanel) {
    window.addEventListener('tzg:itineraryUpdated', () => {
-      refreshPanel();
+      void refreshPanel();
    });
 }
 
@@ -63,30 +104,21 @@ async function initEmbeddedItineraryMap() {
    }
 }
 
-async function shouldOpenWizardOnLoad() {
-   const itinerary = await getItinerary();
-   return !itinerary || isItineraryEmpty(itinerary);
-}
-
-async function initItineraryPageContent(openWizard, refreshPanel) {
+async function initItineraryPageContent(mountEl, openWizard, refreshPanel) {
    await initEmbeddedItineraryMap();
    await refreshPanel();
-
-   if (await shouldOpenWizardOnLoad()) {
-      openWizard();
-   }
 }
 
 export function initItineraryPage() {
    const mountEl = document.getElementById('itineraryFlow');
    if (!mountEl) return;
 
-   const refreshPanel = createPanelRefresh();
+   const refreshPanel = () => refreshItineraryPageContent(mountEl, openWizard);
    const openWizard = createWizardOpener(mountEl, refreshPanel);
 
    blockMapWheelWhileWizardOpen(mountEl);
    bindWizardEvents(openWizard);
    bindPanelRefreshEvents(refreshPanel);
 
-   void initItineraryPageContent(openWizard, refreshPanel);
+   void initItineraryPageContent(mountEl, openWizard, refreshPanel);
 }

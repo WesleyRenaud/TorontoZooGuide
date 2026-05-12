@@ -10,6 +10,7 @@ import {
    normalizeItineraryDraft,
    toSetItineraryPayload,
 } from './itineraryShape.js';
+import { buildItineraryValidationState } from './itineraryValidation.js';
 
 function createEmptyItinerary() {
    return {
@@ -55,6 +56,7 @@ export function normalizeItinerary(itinerary) {
 
    return {
       ...normalizedDraft,
+      validation: buildItineraryValidationState(normalizedDraft),
       isActive: !isItineraryEmptyDraft(normalizedDraft),
    };
 }

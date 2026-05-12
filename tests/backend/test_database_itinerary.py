@@ -94,6 +94,11 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    ] == [
       ( 'African Rainforest', '14:00', '14:45' )
    ]
+   itinerary_dict = itinerary.to_dict()
+   assert itinerary_dict[ 'animals' ][ 0 ][ 'old_likelihood' ] is None
+   assert itinerary_dict[ 'animals' ][ 0 ][ 'new_likelihood' ] > 0
+   assert itinerary_dict[ 'attractions' ][ 0 ][ 'old_likelihood' ] is None
+   assert itinerary_dict[ 'attractions' ][ 0 ][ 'new_likelihood' ] > 0
 
    assert db.clear_itinerary()
    cleared = db.get_itinerary()
