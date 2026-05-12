@@ -243,7 +243,6 @@ class GuardiansTalk:
          y_coord,
          time_of_day=None,
          maximum_duration=None,
-         start_time=None,
          end_time=None,
          is_available=True,
          unavailable_message=None,
@@ -254,7 +253,6 @@ class GuardiansTalk:
       self.y_coord = y_coord
       self.time_of_day = time_of_day
       self.maximum_duration = maximum_duration
-      self.start_time = start_time
       self.end_time = end_time
       self.is_available = is_available
       self.unavailable_message = unavailable_message
@@ -269,7 +267,6 @@ class GuardiansTalk:
          'y_coord': self.y_coord,
          'time_of_day': self.time_of_day,
          'maximum_duration': self.maximum_duration,
-         'start_time': self.start_time,
          'end_time': self.end_time,
          'is_available': ZooUtil.as_boolean( self.is_available ),
          'unavailable_message': self.unavailable_message,
@@ -285,7 +282,6 @@ class WildEncounter:
          link,
          time_of_day=None,
          maximum_duration=None,
-         start_time=None,
          end_time=None,
          x_coord=None,
          y_coord=None,
@@ -297,7 +293,6 @@ class WildEncounter:
       self.link = link
       self.time_of_day = time_of_day
       self.maximum_duration = maximum_duration
-      self.start_time = start_time
       self.end_time = end_time
       self.x_coord = x_coord
       self.y_coord = y_coord
@@ -313,7 +308,6 @@ class WildEncounter:
          'link': self.link,
          'time_of_day': self.time_of_day,
          'maximum_duration': self.maximum_duration,
-         'start_time': self.start_time,
          'end_time': self.end_time,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
@@ -352,6 +346,40 @@ class AttractionDiff:
          'name': self.name,
          'old_likelihood': self.old_likelihood,
          'new_likelihood': self.new_likelihood,
+      }
+
+
+class GuardiansTalkDiff:
+   def __init__( self, name, is_deleted, start_time=None, end_time=None ):
+      self.name = name
+      self.is_deleted = is_deleted
+      self.start_time = start_time
+      self.end_time = end_time
+
+
+   def to_dict( self ):
+      return {
+         'name': self.name,
+         'is_deleted': ZooUtil.as_boolean( self.is_deleted ),
+         'start_time': self.start_time,
+         'end_time': self.end_time,
+      }
+
+
+class WildEncounterDiff:
+   def __init__( self, name, is_deleted, start_time=None, end_time=None ):
+      self.name = name
+      self.is_deleted = is_deleted
+      self.start_time = start_time
+      self.end_time = end_time
+
+
+   def to_dict( self ):
+      return {
+         'name': self.name,
+         'is_deleted': ZooUtil.as_boolean( self.is_deleted ),
+         'start_time': self.start_time,
+         'end_time': self.end_time,
       }
 
 

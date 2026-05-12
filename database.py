@@ -1447,6 +1447,29 @@ class Database():
       return guardians_talks
 
 
+   def get_guardians_talk_schedule_for_talk_on_day(
+         self,
+         month,
+         day,
+         talk_name,
+         day_schedule=None ):
+      rows = (
+         day_schedule
+         if day_schedule is not None
+         else self.get_guardians_talk_schedule( month=month, day=day )
+      )
+
+      key = ( talk_name or '' ).strip().lower()
+
+      if not key:
+         return []
+
+      return [
+         row for row in rows
+         if ( row.name or '' ).strip().lower() == key
+      ]
+
+
    def get_wild_encounter_details( self, wild_encounters_to_include=None ):
       wild_encounters_filter = {
          wild_encounter_name.strip().lower()
@@ -1609,6 +1632,30 @@ class Database():
       cur.close()
 
       return wild_encounters
+
+
+   def get_wild_encounter_schedule_for_encounter_on_day(
+         self,
+         month,
+         day,
+         encounter_name,
+         day_schedule=None ):
+      """Return schedule rows for *encounter_name* on the given day (subset of *day_schedule* when passed)."""
+      rows = (
+         day_schedule
+         if day_schedule is not None
+         else self.get_wild_encounter_schedule( month=month, day=day )
+      )
+
+      key = ( encounter_name or '' ).strip().lower()
+
+      if not key:
+         return []
+
+      return [
+         row for row in rows
+         if ( row.name or '' ).strip().lower() == key
+      ]
 
 
    def get_available_wild_encounters( self, month, day ):
@@ -2271,48 +2318,6 @@ class Database():
       return row[ 'MAXIMUM_DURATION' ] if row != None else None
 
 
-   def schedule_guardians_talk( self, cursor, talk_name, start_time=None ):
-      end_time = zoo.ZooUtil.add_minutes_to_time(
-         start_time,
-         self.get_guardians_talk_maximum_duration( cursor, talk_name ) )
-
-      cursor.execute(
-         """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
-                  TALK_NAME,
-                  START_TIME,
-                  END_TIME,
-                  IS_DELETED
-               )
-               VALUES ( ?, ?, ?, 0 );
-         """,
-         (
-            talk_name,
-            start_time,
-            end_time
-         ) )
-
-
-   def schedule_wild_encounter( self, cursor, wild_encounter_name, start_time=None ):
-      end_time = zoo.ZooUtil.add_minutes_to_time(
-         start_time,
-         self.get_wild_encounter_maximum_duration( cursor, wild_encounter_name ) )
-
-      cursor.execute(
-         """   INSERT OR IGNORE INTO ItineraryWildEncounter (
-                  WILD_ENCOUNTER,
-                  START_TIME,
-                  END_TIME,
-                  IS_DELETED
-               )
-               VALUES ( ?, ?, ?, 0 );
-         """,
-         (
-            wild_encounter_name,
-            start_time,
-            end_time
-         ) )
-
-
    def set_itinerary(
          self,
          date,
@@ -2386,21 +2391,39 @@ class Database():
                attraction.new_likelihood,
             ) )
 
-      for talk in validation[ 'guardians_talks' ][ 'valid_guardians_talks' ]:
-         start_time = getattr( talk, 'start_time', None )
+      for talk in validation[ 'guardians_talks' ]:
+         cur.execute(
+            """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
+                     TALK_NAME,
+                     START_TIME,
+                     END_TIME,
+                     IS_DELETED
+                  )
+                  VALUES ( ?, ?, ?, ? );
+            """,
+            (
+               talk.name,
+               talk.start_time,
+               talk.end_time,
+               1 if talk.is_deleted else 0,
+            ) )
 
-         if not start_time:
-            start_time = getattr( talk, 'time_of_day', None )
-
-         self.schedule_guardians_talk( cur, talk.name, start_time )
-
-      for encounter in validation[ 'wild_encounters' ][ 'valid_wild_encounters' ]:
-         start_time = getattr( encounter, 'start_time', None )
-
-         if not start_time:
-            start_time = getattr( encounter, 'time_of_day', None )
-
-         self.schedule_wild_encounter( cur, encounter.name, start_time )
+      for encounter in validation[ 'wild_encounters' ]:
+         cur.execute(
+            """   INSERT OR IGNORE INTO ItineraryWildEncounter (
+                     WILD_ENCOUNTER,
+                     START_TIME,
+                     END_TIME,
+                     IS_DELETED
+                  )
+                  VALUES ( ?, ?, ?, ? );
+            """,
+            (
+               encounter.name,
+               encounter.start_time,
+               encounter.end_time,
+               1 if encounter.is_deleted else 0,
+            ) )
 
       self.conn.commit()
       cur.close()
@@ -2623,80 +2646,110 @@ class Database():
       return diffs
 
 
+   def build_guardians_talk_diff_for_visit_day( self, talk_name, talk_schedule_rows ):
+      has_available = any(
+         getattr( row, 'is_available', True )
+         for row in talk_schedule_rows
+      )
+      resolved_name = (
+         talk_schedule_rows[ 0 ].name
+         if talk_schedule_rows
+         else str( talk_name ).strip()
+      )
+
+      start_time = None
+      end_time = None
+
+      if talk_schedule_rows and talk_schedule_rows[ 0 ].time_of_day:
+         start_time = talk_schedule_rows[ 0 ].time_of_day
+         cur = self.conn.cursor()
+
+         try:
+            end_time = zoo.ZooUtil.add_minutes_to_time(
+               start_time,
+               self.get_guardians_talk_maximum_duration( cur, resolved_name ) )
+         finally:
+            cur.close()
+
+      return zoo.GuardiansTalkDiff(
+         name=resolved_name,
+         is_deleted=not has_available,
+         start_time=start_time,
+         end_time=end_time,
+      )
+
+
+   def build_wild_encounter_diff_for_visit_day( self, encounter_name, encounter_schedule_rows ):
+      has_available = any(
+         getattr( row, 'is_available', True )
+         for row in encounter_schedule_rows
+      )
+      resolved_name = (
+         encounter_schedule_rows[ 0 ].name
+         if encounter_schedule_rows
+         else str( encounter_name ).strip()
+      )
+
+      start_time = None
+      end_time = None
+
+      if encounter_schedule_rows and encounter_schedule_rows[ 0 ].time_of_day:
+         start_time = encounter_schedule_rows[ 0 ].time_of_day
+         cur = self.conn.cursor()
+
+         try:
+            end_time = zoo.ZooUtil.add_minutes_to_time(
+               start_time,
+               self.get_wild_encounter_maximum_duration( cur, resolved_name ) )
+         finally:
+            cur.close()
+
+      return zoo.WildEncounterDiff(
+         name=resolved_name,
+         is_deleted=not has_available,
+         start_time=start_time,
+         end_time=end_time,
+      )
+
+
    def validate_guardians_talks( self, month, day, guardians_talks_to_include=None ):
-      guardians_talks_filter = {
-         talk_name.strip().lower()
-         for talk_name in guardians_talks_to_include or []
-      }
+      day_schedule = self.get_guardians_talk_schedule( month=month, day=day )
 
-      guardians_talks = self.get_guardians_talk_schedule(
-         month=month,
-         day=day )
+      diffs = []
 
-      guardians_talks = [
-         guardians_talk for guardians_talk in guardians_talks
-         if ( guardians_talk.name or '' ).strip().lower() in guardians_talks_filter
-      ]
+      for talk_name in guardians_talks_to_include or []:
+         talk_schedule = self.get_guardians_talk_schedule_for_talk_on_day(
+            month,
+            day,
+            talk_name,
+            day_schedule=day_schedule )
 
-      valid_guardians_talks = []
-      removed_guardians_talks = []
+         diffs.append(
+            self.build_guardians_talk_diff_for_visit_day( talk_name, talk_schedule )
+         )
 
-      for guardians_talk in guardians_talks:
-         if getattr( guardians_talk, 'is_available', True ):
-            valid_guardians_talks.append( guardians_talk )
-         else:
-            removed_guardians_talks.append( guardians_talk )
-
-      valid_guardians_talks.sort(
-         key=lambda t: ( t.name.lower(), t.time_of_day )
-      )
-
-      removed_guardians_talks.sort(
-         key=lambda t: ( t.name.lower(), t.time_of_day )
-      )
-
-      return {
-         'valid_guardians_talks': valid_guardians_talks,
-         'removed_guardians_talks': removed_guardians_talks
-      }
+      return diffs
 
 
    def validate_wild_encounters( self, month, day, wild_encounters_to_include=None ):
-      wild_encounters_filter = {
-         wild_encounter_name.strip().lower()
-         for wild_encounter_name in wild_encounters_to_include or []
-      }
+      day_schedule = self.get_wild_encounter_schedule( month=month, day=day )
 
-      wild_encounters = self.get_wild_encounter_schedule(
-         month=month,
-         day=day )
+      diffs = []
 
-      wild_encounters = [
-         wild_encounter for wild_encounter in wild_encounters
-         if ( wild_encounter.name or '' ).strip().lower() in wild_encounters_filter
-      ]
+      for encounter_name in wild_encounters_to_include or []:
+         encounter_schedule = self.get_wild_encounter_schedule_for_encounter_on_day(
+            month,
+            day,
+            encounter_name,
+            day_schedule=day_schedule )
 
-      valid_wild_encounters = []
-      removed_wild_encounters = []
+         diffs.append(
+            self.build_wild_encounter_diff_for_visit_day(
+               encounter_name,
+               encounter_schedule )
+         )
 
-      for wild_encounter in wild_encounters:
-         if getattr( wild_encounter, 'is_available', True ):
-            valid_wild_encounters.append( wild_encounter )
-         else:
-            removed_wild_encounters.append( wild_encounter )
-
-      valid_wild_encounters.sort(
-         key=lambda w: ( w.name.lower(), w.time_of_day )
-      )
-
-      removed_wild_encounters.sort(
-         key=lambda w: ( w.name.lower(), w.time_of_day )
-      )
-
-      return {
-         'valid_wild_encounters': valid_wild_encounters,
-         'removed_wild_encounters': removed_wild_encounters
-      }
+      return diffs
 
 
    def get_regions_with_exhibits( self, month, day ):
@@ -3315,7 +3368,6 @@ class Database():
             continue
 
          guardians_talk.time_of_day = row[ 'START_TIME' ]
-         guardians_talk.start_time = row[ 'START_TIME' ]
          guardians_talk.end_time = row[ 'END_TIME' ]
          guardians_talk.is_deleted = bool( row[ 'IS_DELETED' ] )
 
@@ -3365,7 +3417,6 @@ class Database():
             continue
 
          wild_encounter.time_of_day = row[ 'START_TIME' ]
-         wild_encounter.start_time = row[ 'START_TIME' ]
          wild_encounter.end_time = row[ 'END_TIME' ]
          wild_encounter.is_deleted = bool( row[ 'IS_DELETED' ] )
 
