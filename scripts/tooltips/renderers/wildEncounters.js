@@ -19,7 +19,7 @@ export const wildEncounterRenderer = {
          title: { text: name },
          details: [
             w.meeting_spot || '',
-            w.time_of_day || '',
+            w.start_time || '',
          ],
          links: w.link
             ? [{

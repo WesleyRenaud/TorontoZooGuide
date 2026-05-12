@@ -78,9 +78,7 @@ function createStoredOccurrenceFromObject(item, {
       storedOccurrence.link = normalizeStoredLink(item.link);
    }
 
-   // TO-DO: Change backend to always return start_time and remove time_of_day fallback
-   const startTime = normalizeStoredString(
-      item.start_time != null ? item.start_time : item.time_of_day);
+   const startTime = normalizeStoredString(item.start_time);
 
    if (startTime) {
       storedOccurrence.start_time = startTime;
@@ -169,7 +167,7 @@ export function createScheduledOccurrenceSelectorController({
    getName = getOccurrenceName,
    getId = getName,
    getPrimaryValue,
-   getTimeOfDay = (row) => row.time_of_day ?? '',
+   getTimeOfDay = (row) => normalizeStoredString(row?.start_time),
    getLink = null,
    emptyStoredFields = {},
    readStoredFields,

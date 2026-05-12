@@ -83,13 +83,13 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    assert [ animal.species for animal in itinerary.animals ] == [ 'African Lion' ]
    assert [ attraction.name for attraction in itinerary.attractions ] == [ 'Conservation Carousel' ]
    assert [
-      ( talk.name, talk.time_of_day, talk.end_time )
+      ( talk.name, talk.start_time, talk.end_time )
       for talk in itinerary.guardians_talks
    ] == [
       ( 'African Lion', '10:00', '10:30' )
    ]
    assert [
-      ( encounter.name, encounter.time_of_day, encounter.end_time )
+      ( encounter.name, encounter.start_time, encounter.end_time )
       for encounter in itinerary.wild_encounters
    ] == [
       ( 'African Rainforest', '14:00', '14:45' )
@@ -200,14 +200,14 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries( db, 
             location='Africa Savanna',
             x_coord=51.138,
             y_coord=41.279,
-            time_of_day='10:00',
+            start_time='10:00',
             is_available=True ),
          zoo.GuardiansTalk(
             name='Amur Tiger',
             location='Eurasia Wilds',
             x_coord=75.979,
             y_coord=74.707,
-            time_of_day='11:00',
+            start_time='11:00',
             is_available=False,
             unavailable_message='Cancelled.' ),
          zoo.GuardiansTalk(
@@ -215,7 +215,7 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries( db, 
             location='Africa Savanna',
             x_coord=51.138,
             y_coord=41.279,
-            time_of_day='09:00',
+            start_time='09:00',
             is_available=True )
       ]
 
@@ -243,20 +243,20 @@ def test_validate_wild_encounters_splits_available_and_unavailable_entries( db, 
             name='Kangaroo',
             meeting_spot='Wild Encounter - Eurasia Meeting Spot',
             link='https://www.torontozoo.com/tickets/wekangaroo',
-            time_of_day='13:00',
+            start_time='13:00',
             is_available=True ),
          zoo.WildEncounter(
             name='African Rainforest',
             meeting_spot='Wild Encounter - Africa Meeting Spot',
             link='https://www.torontozoo.com/tickets/weafricarainforest',
-            time_of_day='14:00',
+            start_time='14:00',
             is_available=False,
             unavailable_message='Unavailable.' ),
          zoo.WildEncounter(
             name='Kangaroo',
             meeting_spot='Wild Encounter - Eurasia Meeting Spot',
             link='https://www.torontozoo.com/tickets/wekangaroo',
-            time_of_day='09:00',
+            start_time='09:00',
             is_available=True )
       ]
 

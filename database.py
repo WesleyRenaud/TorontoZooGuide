@@ -1437,7 +1437,7 @@ class Database():
                   location=location,
                   x_coord=guardians_talk[ 'X_COORD' ],
                   y_coord=guardians_talk[ 'Y_COORD' ],
-                  time_of_day=talk_time,
+                  start_time=talk_time,
                   maximum_duration=guardians_talk[ 'MAXIMUM_DURATION' ],
                   is_available=is_available,
                   unavailable_message=unavailable_message ) )
@@ -1622,7 +1622,7 @@ class Database():
                name=name,
                meeting_spot=wild_encounter[ 'MEETING_SPOT' ],
                link=wild_encounter[ 'LINK' ],
-               time_of_day=encounter_time,
+               start_time=encounter_time,
                maximum_duration=wild_encounter[ 'MAXIMUM_DURATION' ],
                x_coord=wild_encounter[ 'X_COORD' ],
                y_coord=wild_encounter[ 'Y_COORD' ],
@@ -2391,40 +2391,6 @@ class Database():
                attraction.new_likelihood,
             ) )
 
-      for talk in validation[ 'guardians_talks' ]:
-         cur.execute(
-            """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
-                     TALK_NAME,
-                     START_TIME,
-                     END_TIME,
-                     IS_DELETED
-                  )
-                  VALUES ( ?, ?, ?, ? );
-            """,
-            (
-               talk.name,
-               talk.start_time,
-               talk.end_time,
-               1 if talk.is_deleted else 0,
-            ) )
-
-      for encounter in validation[ 'wild_encounters' ]:
-         cur.execute(
-            """   INSERT OR IGNORE INTO ItineraryWildEncounter (
-                     WILD_ENCOUNTER,
-                     START_TIME,
-                     END_TIME,
-                     IS_DELETED
-                  )
-                  VALUES ( ?, ?, ?, ? );
-            """,
-            (
-               encounter.name,
-               encounter.start_time,
-               encounter.end_time,
-               1 if encounter.is_deleted else 0,
-            ) )
-
       self.conn.commit()
       cur.close()
 
@@ -2728,8 +2694,6 @@ class Database():
             self.build_guardians_talk_diff_for_visit_day( talk_name, talk_schedule )
          )
 
-      return diffs
-
 
    def validate_wild_encounters( self, month, day, wild_encounters_to_include=None ):
       day_schedule = self.get_wild_encounter_schedule( month=month, day=day )
@@ -2748,8 +2712,6 @@ class Database():
                encounter_name,
                encounter_schedule )
          )
-
-      return diffs
 
 
    def get_regions_with_exhibits( self, month, day ):
@@ -3347,7 +3309,7 @@ class Database():
       guardians_talks.sort(
          key=lambda t: (
             ( t.name or '' ).lower(),
-            t.time_of_day or ''
+            t.start_time or ''
          )
       )
 
@@ -3367,7 +3329,7 @@ class Database():
          if row == None:
             continue
 
-         guardians_talk.time_of_day = row[ 'START_TIME' ]
+         guardians_talk.start_time = row[ 'START_TIME' ]
          guardians_talk.end_time = row[ 'END_TIME' ]
          guardians_talk.is_deleted = bool( row[ 'IS_DELETED' ] )
 
@@ -3396,7 +3358,7 @@ class Database():
       wild_encounters.sort(
          key=lambda w: (
             ( w.name or '' ).lower(),
-            w.time_of_day or ''
+            w.start_time or ''
          )
       )
 
@@ -3416,7 +3378,7 @@ class Database():
          if row == None:
             continue
 
-         wild_encounter.time_of_day = row[ 'START_TIME' ]
+         wild_encounter.start_time = row[ 'START_TIME' ]
          wild_encounter.end_time = row[ 'END_TIME' ]
          wild_encounter.is_deleted = bool( row[ 'IS_DELETED' ] )
 

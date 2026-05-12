@@ -11,8 +11,8 @@ function getWildEncounterMeetingSpot(row) {
    return row.meeting_spot ?? '';
 }
 
-function getWildEncounterTimeOfDay(row) {
-   return row.time_of_day ?? '';
+function getWildEncounterScheduleStart(row) {
+   return normalizeStoredString(row?.start_time);
 }
 
 function getWildEncounterLink(row) {
@@ -43,19 +43,19 @@ export function createItineraryWildEncounterSelectorController({
 
       primaryLabel: APP_STRINGS.itinerary.selectors.meetingSpot,
       getPrimaryValue: getWildEncounterMeetingSpot,
-      getTimeOfDay: getWildEncounterTimeOfDay,
+      getTimeOfDay: getWildEncounterScheduleStart,
       getLink: getWildEncounterLink,
       emptyStoredFields: {
          meeting_spot: '',
-         time_of_day: '',
+         start_time: '',
       },
       readStoredFields: (item) => ({
-         meeting_spot: normalizeStoredString(item.meeting_spot || item.meetingSpot),
-         time_of_day: normalizeStoredString(item.time_of_day || item.timeOfDay),
+         meeting_spot: normalizeStoredString(item.meeting_spot),
+         start_time: normalizeStoredString(item.start_time),
       }),
       buildSelectionFields: (row) => ({
          meeting_spot: getWildEncounterMeetingSpot(row),
-         time_of_day: getWildEncounterTimeOfDay(row),
+         start_time: getWildEncounterScheduleStart(row),
       }),
    });
 }
