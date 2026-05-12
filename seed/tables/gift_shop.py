@@ -49,23 +49,6 @@ gift_shops = [
       41.501,  # X coordinate on map
       69.603   # Y coordinate on map
    ),
-   (
-      'Discovery Zone',
-      'Next to Splash Island',
-      '''An aquatic-themed outdoor kiosk that has you covered for summer. Towels, apparel, sunscreen, toys, and more! Located by the
-         entrance of Splash Island.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
-      67.176,  # X coordinate on map
-      77.413   # Y coordinate on map
-   ),
-   (
-      'Tundra Trading Post',
-      'Tundra Trek',
-      '''This arctic-themed outdoor kiosk has you covered for summer adventures! Find apparel, sunscreen, toys, and other essentials
-         perfect for your day at the Zoo. Conveniently located beside BeaverTails and the polar bear habitat near the Tundra Trek
-         Loop.'''.replace( '\n', ' ' ).replace( '*', '\n' ),
-      74.05,   # X coordinate on map
-      56.912   # Y coordinate on map
-   ),
 ]
 
 def insert_rows( cursor ):
