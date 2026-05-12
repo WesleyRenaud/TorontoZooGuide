@@ -3274,6 +3274,27 @@ class Database():
          )
       )
 
+      if saved_animal_rows is not None:
+         saved_row_by_pair = {
+            (
+               ( row[ 'SPECIES' ] or '' ).strip().lower(),
+               ( row[ 'EXHIBIT' ] or '' ).strip().lower()
+            ): row
+            for row in saved_animal_rows
+         }
+
+         for animal in filtered_animals:
+            saved_row = saved_row_by_pair.get( (
+               ( animal.species or '' ).strip().lower(),
+               ( animal.exhibit or '' ).strip().lower()
+            ) )
+
+            if saved_row == None:
+               continue
+
+            animal.old_likelihood = saved_row[ 'OLD_LIKELIHOOD' ]
+            animal.new_likelihood = saved_row[ 'NEW_LIKELIHOOD' ]
+
       return filtered_animals
 
 
@@ -3317,6 +3338,22 @@ class Database():
          attraction for attraction in attractions
          if ( attraction.name or '' ).strip().lower() in attractions_filter
       ]
+
+      if saved_attraction_rows is not None:
+         saved_row_by_name = {
+            ( row[ 'ATTRACTION' ] or '' ).strip().lower(): row
+            for row in saved_attraction_rows
+         }
+
+         for attraction in attractions:
+            saved_row = saved_row_by_name.get(
+               ( attraction.name or '' ).strip().lower() )
+
+            if saved_row == None:
+               continue
+
+            attraction.old_likelihood = saved_row[ 'OLD_LIKELIHOOD' ]
+            attraction.new_likelihood = saved_row[ 'NEW_LIKELIHOOD' ]
 
       attractions.sort( key=lambda a: ( a.name or '' ).lower() )
 
