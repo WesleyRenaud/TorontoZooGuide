@@ -2391,6 +2391,40 @@ class Database():
                attraction.new_likelihood,
             ) )
 
+      for talk in validation[ 'guardians_talks' ]:
+         cur.execute(
+            """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
+                     TALK_NAME,
+                     START_TIME,
+                     END_TIME,
+                     IS_DELETED
+                  )
+                  VALUES ( ?, ?, ?, ? );
+            """,
+            (
+               talk.name,
+               talk.start_time,
+               talk.end_time,
+               1 if talk.is_deleted else 0,
+            ) )
+
+      for encounter in validation[ 'wild_encounters' ]:
+         cur.execute(
+            """   INSERT OR IGNORE INTO ItineraryWildEncounter (
+                     WILD_ENCOUNTER,
+                     START_TIME,
+                     END_TIME,
+                     IS_DELETED
+                  )
+                  VALUES ( ?, ?, ?, ? );
+            """,
+            (
+               encounter.name,
+               encounter.start_time,
+               encounter.end_time,
+               1 if encounter.is_deleted else 0,
+            ) )
+
       self.conn.commit()
       cur.close()
 
@@ -2626,8 +2660,8 @@ class Database():
       start_time = None
       end_time = None
 
-      if talk_schedule_rows and talk_schedule_rows[ 0 ].time_of_day:
-         start_time = talk_schedule_rows[ 0 ].time_of_day
+      if talk_schedule_rows and talk_schedule_rows[ 0 ].start_time:
+         start_time = talk_schedule_rows[ 0 ].start_time
          cur = self.conn.cursor()
 
          try:
@@ -2659,8 +2693,8 @@ class Database():
       start_time = None
       end_time = None
 
-      if encounter_schedule_rows and encounter_schedule_rows[ 0 ].time_of_day:
-         start_time = encounter_schedule_rows[ 0 ].time_of_day
+      if encounter_schedule_rows and encounter_schedule_rows[ 0 ].start_time:
+         start_time = encounter_schedule_rows[ 0 ].start_time
          cur = self.conn.cursor()
 
          try:
@@ -2694,6 +2728,8 @@ class Database():
             self.build_guardians_talk_diff_for_visit_day( talk_name, talk_schedule )
          )
 
+      return diffs
+
 
    def validate_wild_encounters( self, month, day, wild_encounters_to_include=None ):
       day_schedule = self.get_wild_encounter_schedule( month=month, day=day )
@@ -2712,6 +2748,8 @@ class Database():
                encounter_name,
                encounter_schedule )
          )
+
+      return diffs
 
 
    def get_regions_with_exhibits( self, month, day ):
