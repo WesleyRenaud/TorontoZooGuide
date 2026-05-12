@@ -3,6 +3,7 @@ import {
    loadArray,
    saveArray,
 } from '../../draftStorage.js';
+import { getItineraryDateSearchContext } from '../../itinerarySearchContext.js';
 import {
    buildSelectedAnimalKey,
    getRegionExhibits,
@@ -17,11 +18,28 @@ import {
    loadSelectedNames,
    saveSelectedNames,
 } from './regionStorage.js';
+import { buildDateSearchContext } from '../../../search/searchContext.js';
 import {
    ANIMALS_KEY,
    SELECTED_EXHIBITS_KEY,
    SELECTED_REGIONS_KEY,
 } from '../../storageKeys.js';
+import {
+   getToday,
+   toISODate,
+} from '../../../visitDates/visitDateRules.js';
+
+async function resolveAnimalsByExhibitQueryContext() {
+   let context = await getItineraryDateSearchContext({ includeTemp: false });
+
+   if (!context.month || context.day == null) {
+      context = await buildDateSearchContext(toISODate(getToday()), {
+         includeTemp: false,
+      });
+   }
+
+   return context;
+}
 
 export function createRegionSelectorState() {
    let regions = [];
@@ -131,7 +149,12 @@ export function createRegionSelectorState() {
          .map(normalizeSelectedAnimal)
          .filter(Boolean);
 
-      const fullAnimals = await getAnimalsByExhibit(selectedExhibits);
+      const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
+      const fullAnimals = await getAnimalsByExhibit(selectedExhibits, {
+         month,
+         day,
+         temp,
+      });
       const selectedAnimals = fullAnimals
          .map(makeSelectedAnimal)
          .filter(Boolean);
