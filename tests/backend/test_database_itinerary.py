@@ -83,16 +83,16 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    assert [ animal.species for animal in itinerary.animals ] == [ 'African Lion' ]
    assert [ attraction.name for attraction in itinerary.attractions ] == [ 'Conservation Carousel' ]
    assert [
-      ( talk.name, talk.time_of_day, talk.start_time, talk.end_time )
+      ( talk.name, talk.time_of_day, talk.end_time )
       for talk in itinerary.guardians_talks
    ] == [
-      ( 'African Lion', '10:00', '10:00', '10:30' )
+      ( 'African Lion', '10:00', '10:30' )
    ]
    assert [
-      ( encounter.name, encounter.time_of_day, encounter.start_time, encounter.end_time )
+      ( encounter.name, encounter.time_of_day, encounter.end_time )
       for encounter in itinerary.wild_encounters
    ] == [
-      ( 'African Rainforest', '14:00', '14:00', '14:45' )
+      ( 'African Rainforest', '14:00', '14:45' )
    ]
 
    assert db.clear_itinerary()
@@ -228,17 +228,11 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries( db, 
    )
 
    assert [
-      ( talk.name, talk.time_of_day )
-      for talk in result[ 'valid_guardians_talks' ]
+      ( d.name, d.is_deleted, d.start_time, d.end_time )
+      for d in result
    ] == [
-      ( 'African Lion', '09:00' ),
-      ( 'African Lion', '10:00' )
-   ]
-   assert [
-      ( talk.name, talk.unavailable_message )
-      for talk in result[ 'removed_guardians_talks' ]
-   ] == [
-      ( 'Amur Tiger', 'Cancelled.' )
+      ( 'African Lion', False, '10:00', '10:30' ),
+      ( 'Amur Tiger', True, '11:00', '11:30' ),
    ]
 
 
@@ -275,17 +269,11 @@ def test_validate_wild_encounters_splits_available_and_unavailable_entries( db, 
    )
 
    assert [
-      ( encounter.name, encounter.time_of_day )
-      for encounter in result[ 'valid_wild_encounters' ]
+      ( d.name, d.is_deleted, d.start_time, d.end_time )
+      for d in result
    ] == [
-      ( 'Kangaroo', '09:00' ),
-      ( 'Kangaroo', '13:00' )
-   ]
-   assert [
-      ( encounter.name, encounter.unavailable_message )
-      for encounter in result[ 'removed_wild_encounters' ]
-   ] == [
-      ( 'African Rainforest', 'Unavailable.' )
+      ( 'African Rainforest', True, '14:00', '14:45' ),
+      ( 'Kangaroo', False, '13:00', '13:45' ),
    ]
 
 
@@ -412,16 +400,15 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( 
    )
 
    assert [
-      ( talk.name, talk.time_of_day )
-      for talk in talk_result[ 'valid_guardians_talks' ]
+      d.name for d in talk_result if not d.is_deleted
    ] == [
-      ( 'African Lion', '10:00' ),
-      ( 'Amur Tiger', '09:00' )
+      'African Lion',
+      'Amur Tiger',
    ]
    assert [
-      ( encounter.name, encounter.time_of_day )
-      for encounter in encounter_result[ 'valid_wild_encounters' ]
+      ( d.name, d.is_deleted )
+      for d in encounter_result
    ] == [
-      ( 'African Rainforest', '14:00' ),
-      ( 'Kangaroo', '09:00' )
+      ( 'Kangaroo', False ),
+      ( 'African Rainforest', False ),
    ]

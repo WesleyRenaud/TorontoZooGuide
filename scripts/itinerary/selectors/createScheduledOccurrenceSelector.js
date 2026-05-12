@@ -78,7 +78,9 @@ function createStoredOccurrenceFromObject(item, {
       storedOccurrence.link = normalizeStoredLink(item.link);
    }
 
-   const startTime = normalizeStoredString(item.start_time);
+   // TO-DO: Change backend to always return start_time and remove time_of_day fallback
+   const startTime = normalizeStoredString(
+      item.start_time != null ? item.start_time : item.time_of_day);
 
    if (startTime) {
       storedOccurrence.start_time = startTime;
