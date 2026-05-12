@@ -241,9 +241,8 @@ class GuardiansTalk:
          location,
          x_coord,
          y_coord,
-         time_of_day=None,
-         maximum_duration=None,
          start_time=None,
+         maximum_duration=None,
          end_time=None,
          is_available=True,
          unavailable_message=None,
@@ -252,9 +251,8 @@ class GuardiansTalk:
       self.location = location
       self.x_coord = x_coord
       self.y_coord = y_coord
-      self.time_of_day = time_of_day
-      self.maximum_duration = maximum_duration
       self.start_time = start_time
+      self.maximum_duration = maximum_duration
       self.end_time = end_time
       self.is_available = is_available
       self.unavailable_message = unavailable_message
@@ -267,9 +265,8 @@ class GuardiansTalk:
          'location': self.location,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'time_of_day': self.time_of_day,
-         'maximum_duration': self.maximum_duration,
          'start_time': self.start_time,
+         'maximum_duration': self.maximum_duration,
          'end_time': self.end_time,
          'is_available': ZooUtil.as_boolean( self.is_available ),
          'unavailable_message': self.unavailable_message,
@@ -283,9 +280,8 @@ class WildEncounter:
          name,
          meeting_spot,
          link,
-         time_of_day=None,
-         maximum_duration=None,
          start_time=None,
+         maximum_duration=None,
          end_time=None,
          x_coord=None,
          y_coord=None,
@@ -295,9 +291,8 @@ class WildEncounter:
       self.name = name
       self.meeting_spot = meeting_spot
       self.link = link
-      self.time_of_day = time_of_day
-      self.maximum_duration = maximum_duration
       self.start_time = start_time
+      self.maximum_duration = maximum_duration
       self.end_time = end_time
       self.x_coord = x_coord
       self.y_coord = y_coord
@@ -311,9 +306,8 @@ class WildEncounter:
          'name': self.name,
          'meeting_spot': self.meeting_spot,
          'link': self.link,
-         'time_of_day': self.time_of_day,
-         'maximum_duration': self.maximum_duration,
          'start_time': self.start_time,
+         'maximum_duration': self.maximum_duration,
          'end_time': self.end_time,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,

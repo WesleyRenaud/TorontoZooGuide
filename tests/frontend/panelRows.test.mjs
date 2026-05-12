@@ -221,7 +221,7 @@ test('day planner renders scheduled guardians talks and wild encounters', () => 
             {
                name: 'Amur Tiger',
                location: 'Eurasia Wilds',
-               time_of_day: '1:30 PM',
+               start_time: '1:30 PM',
                maximum_duration: 30,
             },
          ],
@@ -229,7 +229,7 @@ test('day planner renders scheduled guardians talks and wild encounters', () => 
             {
                name: 'African Rainforest',
                meeting_spot: 'Wild Encounter - Africa Meeting Spot',
-               time_of_day: '2:00 PM',
+               start_time: '2:00 PM',
                maximum_duration: 45,
             },
          ],
@@ -275,7 +275,7 @@ test('day planner renders zero-count unscheduled sections', () => {
             {
                name: 'Amur Tiger',
                location: 'Eurasia Wilds',
-               time_of_day: '1:30 PM',
+               start_time: '1:30 PM',
                maximum_duration: 30,
             },
          ],
@@ -345,14 +345,14 @@ test('buildGuardiansRows and buildWildRows render schedule metadata', () => {
       {
          name: 'Amur Tiger',
          location: 'Eurasia Wilds',
-         time_of_day: '13:30',
+         start_time: '13:30',
       },
    ]);
    const [wildRow] = buildWildRows([
       {
          name: 'African Rainforest',
          meeting_spot: 'Wild Encounter - Africa Meeting Spot',
-         time_of_day: '14:00',
+         start_time: '14:00',
       },
    ]);
 

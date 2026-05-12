@@ -19,7 +19,7 @@ export const guardiansTalkRenderer = {
          title: { text: name },
          details: [
             APP_STRINGS.search.location(t.location),
-            APP_STRINGS.tooltips.startTime(t.time_of_day),
+            APP_STRINGS.tooltips.startTime(t.start_time),
             APP_STRINGS.tooltips.description(APP_STRINGS.tooltips.guardiansTalkDescription),
          ],
       });

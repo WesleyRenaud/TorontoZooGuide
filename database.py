@@ -1437,7 +1437,7 @@ class Database():
                   location=location,
                   x_coord=guardians_talk[ 'X_COORD' ],
                   y_coord=guardians_talk[ 'Y_COORD' ],
-                  time_of_day=talk_time,
+                  start_time=talk_time,
                   maximum_duration=guardians_talk[ 'MAXIMUM_DURATION' ],
                   is_available=is_available,
                   unavailable_message=unavailable_message ) )
@@ -1599,7 +1599,7 @@ class Database():
                name=name,
                meeting_spot=wild_encounter[ 'MEETING_SPOT' ],
                link=wild_encounter[ 'LINK' ],
-               time_of_day=encounter_time,
+               start_time=encounter_time,
                maximum_duration=wild_encounter[ 'MAXIMUM_DURATION' ],
                x_coord=wild_encounter[ 'X_COORD' ],
                y_coord=wild_encounter[ 'Y_COORD' ],
@@ -2387,20 +2387,10 @@ class Database():
             ) )
 
       for talk in validation[ 'guardians_talks' ][ 'valid_guardians_talks' ]:
-         start_time = getattr( talk, 'start_time', None )
-
-         if not start_time:
-            start_time = getattr( talk, 'time_of_day', None )
-
-         self.schedule_guardians_talk( cur, talk.name, start_time )
+         self.schedule_guardians_talk( cur, talk.name, talk.start_time )
 
       for encounter in validation[ 'wild_encounters' ][ 'valid_wild_encounters' ]:
-         start_time = getattr( encounter, 'start_time', None )
-
-         if not start_time:
-            start_time = getattr( encounter, 'time_of_day', None )
-
-         self.schedule_wild_encounter( cur, encounter.name, start_time )
+         self.schedule_wild_encounter( cur, encounter.name, encounter.start_time )
 
       self.conn.commit()
       cur.close()
@@ -2648,11 +2638,11 @@ class Database():
             removed_guardians_talks.append( guardians_talk )
 
       valid_guardians_talks.sort(
-         key=lambda t: ( t.name.lower(), t.time_of_day )
+         key=lambda t: ( t.name.lower(), t.start_time )
       )
 
       removed_guardians_talks.sort(
-         key=lambda t: ( t.name.lower(), t.time_of_day )
+         key=lambda t: ( t.name.lower(), t.start_time )
       )
 
       return {
@@ -2686,11 +2676,11 @@ class Database():
             removed_wild_encounters.append( wild_encounter )
 
       valid_wild_encounters.sort(
-         key=lambda w: ( w.name.lower(), w.time_of_day )
+         key=lambda w: ( w.name.lower(), w.start_time )
       )
 
       removed_wild_encounters.sort(
-         key=lambda w: ( w.name.lower(), w.time_of_day )
+         key=lambda w: ( w.name.lower(), w.start_time )
       )
 
       return {
@@ -3294,7 +3284,7 @@ class Database():
       guardians_talks.sort(
          key=lambda t: (
             ( t.name or '' ).lower(),
-            t.time_of_day or ''
+            t.start_time or ''
          )
       )
 
@@ -3314,7 +3304,6 @@ class Database():
          if row == None:
             continue
 
-         guardians_talk.time_of_day = row[ 'START_TIME' ]
          guardians_talk.start_time = row[ 'START_TIME' ]
          guardians_talk.end_time = row[ 'END_TIME' ]
          guardians_talk.is_deleted = bool( row[ 'IS_DELETED' ] )
@@ -3344,7 +3333,7 @@ class Database():
       wild_encounters.sort(
          key=lambda w: (
             ( w.name or '' ).lower(),
-            w.time_of_day or ''
+            w.start_time or ''
          )
       )
 
@@ -3364,7 +3353,6 @@ class Database():
          if row == None:
             continue
 
-         wild_encounter.time_of_day = row[ 'START_TIME' ]
          wild_encounter.start_time = row[ 'START_TIME' ]
          wild_encounter.end_time = row[ 'END_TIME' ]
          wild_encounter.is_deleted = bool( row[ 'IS_DELETED' ] )

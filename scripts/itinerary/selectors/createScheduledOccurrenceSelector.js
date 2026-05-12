@@ -167,7 +167,7 @@ export function createScheduledOccurrenceSelectorController({
    getName = getOccurrenceName,
    getId = getName,
    getPrimaryValue,
-   getTimeOfDay = (row) => row.time_of_day ?? '',
+   getTimeOfDay = (row) => normalizeStoredString(row?.start_time),
    getLink = null,
    emptyStoredFields = {},
    readStoredFields,
