@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
 import {
+   acceptItineraryRequest,
    getItineraryRequest,
    getZooHoursRequest,
    setItineraryRequest,
@@ -70,6 +71,37 @@ test('normalizes set itinerary failures without dropping returned itinerary data
          date: '2026-06-15',
          animals: [],
          attractions: [{ name: 'Conservation Carousel' }],
+         guardiansTalks: [],
+         wildEncounters: [],
+      },
+   });
+});
+
+test('normalizes accept itinerary response', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/accept-itinerary');
+      assert.equal(options.method, 'POST');
+      assert.deepEqual(JSON.parse(options.body), {});
+
+      return mockJsonResponse({
+         success: true,
+         itinerary: {
+            date: '2026-06-15',
+            animals: [],
+            attractions: [],
+            guardians_talks: [],
+            wild_encounters: [],
+         },
+      });
+   };
+
+   assert.deepEqual(await acceptItineraryRequest(), {
+      success: true,
+      error: null,
+      itinerary: {
+         date: '2026-06-15',
+         animals: [],
+         attractions: [],
          guardiansTalks: [],
          wildEncounters: [],
       },

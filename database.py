@@ -2447,6 +2447,40 @@ class Database():
       return True
 
 
+   def accept_itinerary( self ):
+      cur = self.conn.cursor()
+
+      # TO-DO: Evatually we will support overriding behaviour here for animals and attractions
+      cur.execute(
+         """   DELETE FROM ItineraryAnimal
+               WHERE OLD_LIKELIHOOD IS NOT NULL
+                  AND NEW_LIKELIHOOD IS NOT NULL
+                  AND NEW_LIKELIHOOD < OLD_LIKELIHOOD;
+         """ )
+
+      cur.execute(
+         """   DELETE FROM ItineraryAttraction
+               WHERE OLD_LIKELIHOOD IS NOT NULL
+                  AND NEW_LIKELIHOOD IS NOT NULL
+                  AND NEW_LIKELIHOOD < OLD_LIKELIHOOD;
+         """ )
+
+      cur.execute(
+         """   DELETE FROM ItineraryGuardiansTalk
+               WHERE IS_DELETED = 1;
+         """ )
+
+      cur.execute(
+         """   DELETE FROM ItineraryWildEncounter
+               WHERE IS_DELETED = 1;
+         """ )
+
+      self.conn.commit()
+      cur.close()
+
+      return True
+
+
    def get_animal_likelihood_for_date( self, month, day, temp, species, exhibit ):
       rows = self.get_animals_for_itinerary(
          month=month,

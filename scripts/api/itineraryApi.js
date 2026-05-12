@@ -80,6 +80,11 @@ export async function setItineraryRequest(payload) {
    return normalizeItineraryResponse(response);
 }
 
+export async function acceptItineraryRequest() {
+   const response = await postJson('/accept-itinerary', {});
+   return normalizeItineraryResponse(response);
+}
+
 export function clearItineraryRequest() {
    return postJson('/clear-itinerary', {});
 }

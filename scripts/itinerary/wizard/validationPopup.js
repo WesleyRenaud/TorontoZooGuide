@@ -4,6 +4,7 @@ import {
    hasReducedVisibility,
    hasRemovedItems,
 } from './itineraryDiff.js';
+import { acceptItinerary } from '../itineraryService.js';
 
 export function showWizardValidationPopupIfNeeded({
    mountEl,
@@ -29,7 +30,9 @@ export function showWizardValidationPopupIfNeeded({
       reducedVisibility,
       improvedVisibility,
       isEmptyItinerary,
-      onAccept: () => {},
+      onAccept: () => {
+         void acceptItinerary();
+      },
       onDismiss: () => {},
       onViewAlternatives,
    });
