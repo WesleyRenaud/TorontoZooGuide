@@ -51,9 +51,7 @@ export function createRemovedItemsPopupLayout({ isEmptyItinerary = false } = {})
    const okBtn = el(
       'button',
       'itin-finish',
-      isEmptyItinerary
-         ? APP_STRINGS.itinerary.actions.accept
-         : APP_STRINGS.itinerary.removedItems.okay
+      APP_STRINGS.itinerary.actions.accept
    );
    okBtn.type = 'button';
    actions.appendChild(okBtn);

@@ -739,6 +739,25 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/accept-itinerary':
+         success = self.database.accept_itinerary()
+         itinerary = self.database.get_itinerary() if success else None
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'itinerary': itinerary.to_dict() if itinerary != None else None
+         }
+
+         if not success:
+            response[ 'error' ] = 'Could not accept itinerary changes.'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/get-species':
          species = self.database.get_species()
 

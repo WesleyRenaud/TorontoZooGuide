@@ -78,7 +78,6 @@ export const itinerary = {
       ),
       improvedAnimalVisibilityTitle: 'Improved Animal Visibility',
       itineraryUpdated: 'Itinerary Updated',
-      okay: 'Okay',
       emptyItinerarySubtitle: (
          'None of your selected items are available on the new date. You can view alternatives below.'
       ),
