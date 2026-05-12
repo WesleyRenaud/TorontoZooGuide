@@ -218,6 +218,13 @@ export async function openItineraryWizard({
          return;
       }
 
+      if (
+         typeof activeController.shouldSkipClosingSelectionSync === 'function'
+         && activeController.shouldSkipClosingSelectionSync()
+      ) {
+         return;
+      }
+
       const selection = await activeController.getSelectionSnapshot();
 
       updateSelection(activeConfig.selectionKey, selection, {

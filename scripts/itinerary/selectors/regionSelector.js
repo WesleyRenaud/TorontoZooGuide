@@ -29,6 +29,15 @@ export function createItineraryRegionSelectorController({
 } = {}) {
    let elements = null;
    const state = createRegionSelectorState();
+   let exhibitFingerprintAtShow = '';
+
+   function buildExhibitSelectionFingerprint() {
+      return [...state.getSelectedExhibitNamesSet()]
+         .map((name) => String(name).trim())
+         .filter(Boolean)
+         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+         .join('\0');
+   }
 
    function getSelectionSnapshot() {
       return state.buildUpdatedAnimalsFromSelection();
@@ -120,6 +129,7 @@ export function createItineraryRegionSelectorController({
 
       ensureBuilt();
       await refreshRegions();
+      exhibitFingerprintAtShow = buildExhibitSelectionFingerprint();
       mountRoot();
    }
 
@@ -131,9 +141,14 @@ export function createItineraryRegionSelectorController({
       mountEl.replaceChildren();
    }
 
+   function shouldSkipClosingSelectionSync() {
+      return buildExhibitSelectionFingerprint() === exhibitFingerprintAtShow;
+   }
+
    return {
       show,
       hide,
       getSelectionSnapshot,
+      shouldSkipClosingSelectionSync,
    };
 }
