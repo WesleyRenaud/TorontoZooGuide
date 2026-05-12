@@ -576,10 +576,10 @@ def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
    )
 
    talks = db.get_guardians_talk_schedule( month='June', day=15 )
-   assert any( talk.name == 'African Lion' and talk.time_of_day == '10:00' for talk in talks )
+   assert any( talk.name == 'African Lion' and talk.start_time == '10:00' for talk in talks )
    assert next(
       talk for talk in talks
-      if talk.name == 'African Lion' and talk.time_of_day == '10:00'
+      if talk.name == 'African Lion' and talk.start_time == '10:00'
    ).maximum_duration == 30
 
    assert db.cancel_guardians_talk_occurrence(
@@ -590,7 +590,7 @@ def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
    )
    talks_after_cancel = db.get_guardians_talk_schedule( month='June', day=15 )
 
-   assert all( not ( talk.name == 'African Lion' and talk.time_of_day == '10:00' ) for talk in talks_after_cancel )
+   assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00' ) for talk in talks_after_cancel )
 
    assert db.get_guardians_talk_schedule( month='June', day=16 ) == []
 
@@ -655,7 +655,7 @@ def test_wild_encounter_schedule_and_cancellation( db, freeze_database_today ):
    )
 
    encounters = db.get_wild_encounter_schedule( month='June', day=15 )
-   encounter = next( item for item in encounters if item.name == 'African Rainforest' and item.time_of_day == '14:00' )
+   encounter = next( item for item in encounters if item.name == 'African Rainforest' and item.start_time == '14:00' )
    assert encounter.is_available is True
    assert encounter.maximum_duration == 45
 
@@ -665,16 +665,16 @@ def test_wild_encounter_schedule_and_cancellation( db, freeze_database_today ):
       time='14:00'
    )
    encounters_after_cancel = db.get_wild_encounter_schedule( month='June', day=15 )
-   cancelled = next( item for item in encounters_after_cancel if item.name == 'African Rainforest' and item.time_of_day == '14:00' )
+   cancelled = next( item for item in encounters_after_cancel if item.name == 'African Rainforest' and item.start_time == '14:00' )
    assert cancelled.is_available is False
 
    weekday_unavailable = next(
       item for item in db.get_wild_encounter_schedule( month='June', day=16 )
-      if item.name == 'African Rainforest' and item.time_of_day == '14:00'
+      if item.name == 'African Rainforest' and item.start_time == '14:00'
    )
    out_of_range = next(
       item for item in db.get_wild_encounter_schedule( month='July', day=1 )
-      if item.name == 'African Rainforest' and item.time_of_day == '14:00'
+      if item.name == 'African Rainforest' and item.start_time == '14:00'
    )
    assert weekday_unavailable.unavailable_message == 'African Rainforest is not offered on this day of the week.'
    assert out_of_range.unavailable_message == 'African Rainforest is not scheduled on July 1.'

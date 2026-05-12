@@ -154,7 +154,7 @@ export function buildGuardiansRows(guardiansTalks = []) {
       getName: (talk) => talk.name,
       getMetaLines: (talk) => [
          buildFieldLine('Location', talk.location),
-         buildFieldLine('Time', talk.time_of_day),
+         buildFieldLine('Time', talk.start_time),
       ],
       getAlertLine: buildGuardiansRemovalReasonLine,
       getLink: (talk) => talk.link,
@@ -169,7 +169,7 @@ export function buildWildRows(wildEncounters = []) {
       getName: (wild) => wild.name,
       getMetaLines: (wild) => [
          buildFieldLine('Meeting Spot', wild.meeting_spot),
-         buildFieldLine('Time', wild.time_of_day),
+         buildFieldLine('Time', wild.start_time),
       ],
       getAlertLine: buildWildRemovalReasonLine,
       getLink: (wild) => wild.link,
