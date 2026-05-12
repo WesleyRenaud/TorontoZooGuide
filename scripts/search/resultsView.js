@@ -37,14 +37,14 @@ const RESULT_PRESENTATIONS = {
    wildEncounter: buildNamedResultPresentation(
       APP_STRINGS.entityLabels.wildEncounter,
       (row) => buildDetailSummary(
-         [row.meeting_spot, row.time_of_day],
+         [row.meeting_spot, row.start_time],
          APP_STRINGS.entityLabels.wildEncounter
       )
    ),
    guardiansTalk: buildNamedResultPresentation(
       APP_STRINGS.entityLabels.guardiansTalk,
       (row) => buildDetailSummary(
-         [row.location, row.time_of_day],
+         [row.location, row.start_time],
          APP_STRINGS.entityLabels.guardiansTalk
       )
    ),

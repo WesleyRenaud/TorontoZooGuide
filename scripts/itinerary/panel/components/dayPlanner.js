@@ -83,7 +83,7 @@ function buildScheduledItemRows(items, buildRows) {
          index,
          item,
          row,
-         startMinutes: parseClockTimeMinutes(item?.time_of_day),
+         startMinutes: parseClockTimeMinutes(item?.start_time),
          maximumDuration,
       };
    }).filter((scheduledItem) => (

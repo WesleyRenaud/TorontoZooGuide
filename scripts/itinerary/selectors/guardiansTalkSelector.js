@@ -8,8 +8,8 @@ function getTalkLocation(row) {
    return row.location ?? '';
 }
 
-function getTalkTimeOfDay(row) {
-   return row.time_of_day ?? '';
+function getTalkScheduleStart(row) {
+   return normalizeStoredString(row?.start_time);
 }
 
 export function createItineraryGuardiansTalkSelectorController({
@@ -37,18 +37,18 @@ export function createItineraryGuardiansTalkSelectorController({
 
       primaryLabel: APP_STRINGS.labels.location,
       getPrimaryValue: getTalkLocation,
-      getTimeOfDay: getTalkTimeOfDay,
+      getTimeOfDay: getTalkScheduleStart,
       emptyStoredFields: {
          location: '',
-         time_of_day: '',
+         start_time: '',
       },
       readStoredFields: (item) => ({
          location: normalizeStoredString(item.location),
-         time_of_day: normalizeStoredString(item.time_of_day || item.timeOfDay),
+         start_time: normalizeStoredString(item.start_time),
       }),
       buildSelectionFields: (row) => ({
          location: getTalkLocation(row),
-         time_of_day: getTalkTimeOfDay(row),
+         start_time: getTalkScheduleStart(row),
       }),
    });
 }

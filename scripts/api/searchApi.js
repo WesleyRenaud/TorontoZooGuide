@@ -27,7 +27,7 @@ function normalizeGuardiansTalkRow(row) {
       ...source,
       name: asTrimmedString(source.name),
       location: asTrimmedString(source.location),
-      time_of_day: asTrimmedString(source.time_of_day),
+      start_time: asTrimmedString(source.start_time),
    };
 }
 
@@ -38,7 +38,7 @@ function normalizeWildEncounterRow(row) {
       ...source,
       name: asTrimmedString(source.name),
       meeting_spot: asTrimmedString(source.meeting_spot),
-      time_of_day: asTrimmedString(source.time_of_day),
+      start_time: asTrimmedString(source.start_time),
       link: asNullableString(source.link),
    };
 }
