@@ -149,6 +149,50 @@ export function toSetItineraryPayload(draft = {}) {
    };
 }
 
+function sortStringsForComparison(values = []) {
+   return [...values].map((item) => String(item)).sort((a, b) => a.localeCompare(b));
+}
+
+function sortAnimalsForSaveComparison(animals = []) {
+   return [...animals].sort((a, b) => {
+      const keyA = `${String(a.species).toLowerCase()}||${String(a.exhibit).toLowerCase()}`;
+      const keyB = `${String(b.species).toLowerCase()}||${String(b.exhibit).toLowerCase()}`;
+
+      return keyA.localeCompare(keyB);
+   });
+}
+
+export function areItineraryDraftsSemanticallyEqual(left, right) {
+   const leftSave = toSetItineraryPayload(left);
+   const rightSave = toSetItineraryPayload(right);
+
+   if (leftSave.date !== rightSave.date) {
+      return false;
+   }
+
+   if (
+      !areDraftValuesEqual(
+         sortAnimalsForSaveComparison(leftSave.animals),
+         sortAnimalsForSaveComparison(rightSave.animals),
+      )
+   ) {
+      return false;
+   }
+
+   return areDraftValuesEqual(
+      sortStringsForComparison(leftSave.attractions),
+      sortStringsForComparison(rightSave.attractions),
+   )
+   && areDraftValuesEqual(
+      sortStringsForComparison(leftSave.guardiansTalks),
+      sortStringsForComparison(rightSave.guardiansTalks),
+   )
+   && areDraftValuesEqual(
+      sortStringsForComparison(leftSave.wildEncounters),
+      sortStringsForComparison(rightSave.wildEncounters),
+   );
+}
+
 export function areItineraryDraftsEqual(left, right) {
    return areDraftValuesEqual(
       normalizeItineraryDraft(left),
