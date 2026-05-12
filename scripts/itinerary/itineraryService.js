@@ -1,4 +1,5 @@
 import {
+   acceptItineraryRequest,
    clearItineraryRequest,
    getItineraryRequest,
    getZooHoursRequest,
@@ -93,6 +94,15 @@ export async function clearItinerary() {
    dispatchItineraryUpdated(clearedItinerary);
 
    return result;
+}
+
+export async function acceptItinerary() {
+   const result = await acceptItineraryRequest();
+   const acceptedItinerary = normalizeItinerary(result?.itinerary);
+
+   dispatchItineraryUpdated(acceptedItinerary);
+
+   return acceptedItinerary;
 }
 
 export async function hasActiveItinerary() {

@@ -1,6 +1,7 @@
 import { initItineraryMap } from '../itinerary/itineraryMapController.js';
 import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
 import {
+   acceptItinerary,
    getItinerary,
    isItineraryEmpty,
 } from '../itinerary/itineraryService.js';
@@ -51,6 +52,9 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
          reducedVisibility: itinerary.validation.reducedVisibility,
          improvedVisibility: itinerary.validation.improvedVisibility,
          isEmptyItinerary: isItineraryEmpty(itinerary),
+      },
+      onAccept: () => {
+         void acceptItinerary();
       },
       onViewAlternatives: (step) => openWizard({ startAt: step }),
    });

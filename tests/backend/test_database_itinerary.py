@@ -136,6 +136,72 @@ def test_get_zoo_hours_returns_seeded_operating_bounds( db ):
    }
 
 
+def test_accept_itinerary_removes_declined_and_deleted_items( db ):
+   db.conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD
+            )
+            VALUES
+               ( 'African Lion', 'Africa Savanna', 90, 60 ),
+               ( 'African Penguin', 'Africa Savanna', 40, 80 );
+      """ )
+   db.conn.execute(
+      """   INSERT INTO ItineraryAttraction (
+               ATTRACTION,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD
+            )
+            VALUES
+               ( 'Conservation Carousel', 100, 0 ),
+               ( 'Greenhouse', 50, 75 );
+      """ )
+   db.conn.execute(
+      """   INSERT INTO ItineraryGuardiansTalk (
+               TALK_NAME,
+               START_TIME,
+               END_TIME,
+               IS_DELETED
+            )
+            VALUES
+               ( 'African Lion', '10:00', '10:30', 1 ),
+               ( 'Amur Tiger', '11:00', '11:30', 0 );
+      """ )
+   db.conn.execute(
+      """   INSERT INTO ItineraryWildEncounter (
+               WILD_ENCOUNTER,
+               START_TIME,
+               END_TIME,
+               IS_DELETED
+            )
+            VALUES
+               ( 'African Rainforest', '14:00', '14:45', 1 ),
+               ( 'Kangaroo', '13:00', '13:45', 0 );
+      """ )
+   db.conn.commit()
+
+   assert db.accept_itinerary()
+
+   assert [
+      row[ 'SPECIES' ]
+      for row in db.conn.execute( 'SELECT SPECIES FROM ItineraryAnimal;' )
+   ] == [ 'African Penguin' ]
+   assert [
+      row[ 'ATTRACTION' ]
+      for row in db.conn.execute( 'SELECT ATTRACTION FROM ItineraryAttraction;' )
+   ] == [ 'Greenhouse' ]
+   assert [
+      row[ 'TALK_NAME' ]
+      for row in db.conn.execute( 'SELECT TALK_NAME FROM ItineraryGuardiansTalk;' )
+   ] == [ 'Amur Tiger' ]
+   assert [
+      row[ 'WILD_ENCOUNTER' ]
+      for row in db.conn.execute( 'SELECT WILD_ENCOUNTER FROM ItineraryWildEncounter;' )
+   ] == [ 'Kangaroo' ]
+
+
 def test_validate_animals_removes_unavailable_entries( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
    db.set_animal_as_off_display(

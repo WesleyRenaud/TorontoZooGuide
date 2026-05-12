@@ -263,6 +263,11 @@ class StubDatabase:
       return zoo.Itinerary( date='2026-06-15' )
 
 
+   def accept_itinerary( self ):
+      self.calls.append( ( 'accept_itinerary', {} ) )
+      return True
+
+
    def get_itinerary_date( self ):
       self.calls.append( ( 'get_itinerary_date', {} ) )
       return '2026-06-15'
@@ -979,14 +984,18 @@ def test_itinerary_endpoints_return_success_payloads( stub_database ):
    )
    get_handler = make_handler( '/get-itinerary' )
    clear_handler = make_handler( '/clear-itinerary' )
+   accept_handler = make_handler( '/accept-itinerary' )
 
    server.MyHandler.do_POST( set_handler )
    server.MyHandler.do_POST( get_handler )
    server.MyHandler.do_POST( clear_handler )
+   server.MyHandler.do_POST( accept_handler )
 
    assert response_json( set_handler )[ 'success' ] is True
    assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
    assert response_json( clear_handler )[ 'success' ] is True
+   assert response_json( accept_handler )[ 'success' ] is True
+   assert response_json( accept_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
 
 
 @pytest.mark.parametrize(
