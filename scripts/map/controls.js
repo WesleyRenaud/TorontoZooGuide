@@ -1,4 +1,5 @@
 import { initVisitDateFlatpickr } from '../visitDates/visitDateFlatpickr.js';
+import { getToday } from '../visitDates/visitDateRules.js';
 
 function blurMapDateInput(mapDateInput) {
    mapDateInput?.blur();
@@ -61,9 +62,13 @@ function bindChangeListeners(inputs, onChange) {
 function initMapDatePicker(mapDateInput, {
    mapPreset,
    onSpecificDayChange,
+   earliestSelectableNoon,
 } = {}) {
+   const floor = earliestSelectableNoon ?? getToday();
+
    return initVisitDateFlatpickr(mapDateInput, {
-      defaultDate: new Date(),
+      defaultDate: floor,
+      earliestNoon: floor,
       clickOpens: false,
       onChange: (_safeDate, isoDate, instance) => {
          instance.close();
@@ -109,6 +114,7 @@ export function initMapControls({
    includeClosedGiftShopsCheckbox,
    includeClosedAttractionsCheckbox,
    zoomobileRouteRadios,
+   earliestSelectableNoon,
    onUpdate,
 } = {}) {
    if (!mapPreset || !mapDateInput || !onUpdate) {
@@ -118,6 +124,7 @@ export function initMapControls({
 
    const fp = initMapDatePicker(mapDateInput, {
       mapPreset,
+      earliestSelectableNoon,
       onSpecificDayChange: (dateStr) => {
          onUpdate('specific-day', dateStr);
       },

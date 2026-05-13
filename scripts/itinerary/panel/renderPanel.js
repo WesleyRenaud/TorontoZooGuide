@@ -7,10 +7,7 @@ import {
    makeItineraryPanelViews,
 } from './components/dayPlanner.js';
 import { makeSection } from './components/section.js';
-import {
-   clearItineraryDraftStorage,
-   getStoredItineraryDate,
-} from '../draftStorage.js';
+import { clearItineraryDraftStorage } from '../draftStorage.js';
 import {
    clearItinerary,
    getItinerary,
@@ -18,6 +15,7 @@ import {
    isItineraryEmpty,
 } from '../itineraryService.js';
 import { buildSectionConfigs } from './sectionConfigs.js';
+import { resolveEffectiveItineraryHoursDateIso } from '../visitDateEarliest.js';
 
 let latestRenderToken = 0;
 let activePanelView = ITINERARY_PANEL_VIEWS.list;
@@ -54,10 +52,6 @@ function makePanelViewShell() {
 
 function appendDayPlannerViewWithHours(dayPlannerView, zooHours, itinerary = {}) {
    dayPlannerView.appendChild(makeDayPlannerPreview(zooHours, itinerary));
-}
-
-function getDayPlannerDate(itinerary) {
-   return itinerary?.date || getStoredItineraryDate();
 }
 
 function buildItineraryPanelContent(itinerary, zooHours) {
@@ -113,7 +107,8 @@ export async function renderItineraryPanelInto(bodyEl) {
 
    const renderToken = ++latestRenderToken;
    const itinerary = await getItinerary();
-   const zooHours = await getZooHours(getDayPlannerDate(itinerary));
+   const hoursDate = await resolveEffectiveItineraryHoursDateIso(itinerary);
+   const zooHours = await getZooHours(hoursDate);
 
    if (renderToken !== latestRenderToken) {
       return;
