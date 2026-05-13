@@ -1,7 +1,6 @@
 import { initItineraryMap } from '../itinerary/itineraryMapController.js';
 import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
 import {
-   acceptItinerary,
    getItinerary,
    isItineraryEmpty,
 } from '../itinerary/itineraryService.js';
@@ -53,20 +52,24 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
          improvedVisibility: itinerary.validation.improvedVisibility,
          isEmptyItinerary: isItineraryEmpty(itinerary),
       },
-      onAccept: () => {
-         void acceptItinerary();
-      },
       onViewAlternatives: (step) => openWizard({ startAt: step }),
    });
 }
 
-async function refreshItineraryPageContent(mountEl, openWizard) {
+async function refreshItineraryPageContent(
+   mountEl,
+   openWizard,
+   { openBuilderWhenEmpty = false } = {}
+) {
    await renderItineraryPanel();
 
    const itinerary = await getItinerary();
 
    if (!itinerary || isItineraryEmpty(itinerary)) {
-      openWizard();
+      if (openBuilderWhenEmpty) {
+         openWizard();
+      }
+
       return;
    }
 
@@ -110,14 +113,18 @@ async function initEmbeddedItineraryMap() {
 
 async function initItineraryPageContent(mountEl, openWizard, refreshPanel) {
    await initEmbeddedItineraryMap();
-   await refreshPanel();
+   await refreshPanel({ openBuilderWhenEmpty: true });
 }
 
 export function initItineraryPage() {
    const mountEl = document.getElementById('itineraryFlow');
    if (!mountEl) return;
 
-   const refreshPanel = () => refreshItineraryPageContent(mountEl, openWizard);
+   const refreshPanel = (options) => refreshItineraryPageContent(
+      mountEl,
+      openWizard,
+      options
+   );
    const openWizard = createWizardOpener(mountEl, refreshPanel);
 
    blockMapWheelWhileWizardOpen(mountEl);
