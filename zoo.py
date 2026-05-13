@@ -8,7 +8,7 @@ class Animal:
                  reproduction_and_life_cycle=None, animals_at_the_zoo=None, exhibit=None, seasonal_viewing_summary=None,
                  seasonal_viewing_information=None, off_display_message=None, enclosure_type=None, x_coord=None,y_coord=None,
                  likelihood=None, has_limited_viewing_schedule=None, limited_viewing_message=None, has_viewing_alert=None,
-                 viewing_alert_message=None, is_deleted=False, old_likelihood=None, new_likelihood=None ):
+                 viewing_alert_message=None, is_deleted=False, old_likelihood=None ):
       self.species = species
       self.latin_name = latin_name
       self.general_viewing_tips = general_viewing_tips
@@ -34,7 +34,6 @@ class Animal:
       self.viewing_alert_message = viewing_alert_message
       self.is_deleted = is_deleted
       self.old_likelihood = old_likelihood
-      self.new_likelihood = new_likelihood
 
 
    def to_dict( self ):
@@ -63,8 +62,7 @@ class Animal:
          'has_viewing_alert': ZooUtil.as_boolean( self.has_viewing_alert ),
          'viewing_alert_message': self.viewing_alert_message,
          'is_deleted': ZooUtil.as_boolean( self.is_deleted ),
-         'old_likelihood': self.old_likelihood,
-         'new_likelihood': self.new_likelihood
+         'old_likelihood': self.old_likelihood
       }
 
 
@@ -176,7 +174,7 @@ class GiftShop:
 
 class Attraction:
    def __init__( self, name, free_with_admission, description=None, info_link=None, hyperlink_text=None, x_coord=None, y_coord=None,
-                 is_closed=False, closed_message=None, likelihood=None, is_deleted=False, old_likelihood=None, new_likelihood=None ):
+                 is_closed=False, closed_message=None, likelihood=None, is_deleted=False, old_likelihood=None ):
       self.name = name
       self.free_with_admission = free_with_admission
       self.description = description
@@ -189,7 +187,6 @@ class Attraction:
       self.likelihood = likelihood
       self.is_deleted = is_deleted
       self.old_likelihood = old_likelihood
-      self.new_likelihood = new_likelihood
 
 
    def to_dict( self ):
@@ -205,8 +202,7 @@ class Attraction:
          'closed_message': self.closed_message,
          'likelihood': self.likelihood,
          'is_deleted': ZooUtil.as_boolean( self.is_deleted ),
-         'old_likelihood': self.old_likelihood,
-         'new_likelihood': self.new_likelihood
+         'old_likelihood': self.old_likelihood
       }
 
 
