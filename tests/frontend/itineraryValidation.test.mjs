@@ -10,14 +10,14 @@ test('buildItineraryValidationState reports removed saved items', () => {
             species: 'African Lion',
             exhibit: 'Africa Savanna',
             old_likelihood: 90,
-            new_likelihood: 0,
+            likelihood: 0,
          },
       ],
       attractions: [
          {
             name: 'Conservation Carousel',
             old_likelihood: 100,
-            new_likelihood: 0,
+            likelihood: 0,
          },
       ],
       guardiansTalks: [
@@ -60,19 +60,19 @@ test('buildItineraryValidationState reports animal visibility changes', () => {
             species: 'African Penguin',
             exhibit: 'Africa Savanna',
             old_likelihood: 90,
-            new_likelihood: 60,
+            likelihood: 60,
          },
          {
             species: 'Amur Tiger',
             exhibit: 'Eurasia Wilds',
             old_likelihood: 40,
-            new_likelihood: 80,
+            likelihood: 80,
          },
          {
             species: 'Snow Leopard',
             exhibit: 'Eurasia Wilds',
             old_likelihood: 80,
-            new_likelihood: 75,
+            likelihood: 75,
          },
       ],
    });
@@ -95,14 +95,14 @@ test('buildItineraryValidationState ignores active unchanged items', () => {
             species: 'African Lion',
             exhibit: 'Africa Savanna',
             old_likelihood: 90,
-            new_likelihood: 80,
+            likelihood: 80,
          },
       ],
       attractions: [
          {
             name: 'Greenhouse',
             old_likelihood: 100,
-            new_likelihood: 100,
+            likelihood: 100,
          },
       ],
       guardiansTalks: [
@@ -129,14 +129,14 @@ test('buildItineraryValidationState ignores items without old likelihood values'
             species: 'African Lion',
             exhibit: 'Africa Savanna',
             old_likelihood: null,
-            new_likelihood: 90,
+            likelihood: 90,
          },
       ],
       attractions: [
          {
             name: 'Greenhouse',
             old_likelihood: null,
-            new_likelihood: 100,
+            likelihood: 100,
          },
       ],
    });

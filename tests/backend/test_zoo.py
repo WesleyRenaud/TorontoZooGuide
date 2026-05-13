@@ -192,7 +192,6 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
             'viewing_alert_message': 'May be difficult to spot.',
             'is_deleted': False,
             'old_likelihood': None,
-            'new_likelihood': None,
             'type': 'animal'
          }
       ],
