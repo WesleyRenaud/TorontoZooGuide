@@ -6,10 +6,10 @@ import { createItineraryGuardiansTalkSelectorController } from '../../itinerary/
 import { createItineraryRegionSelectorController } from '../../itinerary/selectors/regionSelector.js';
 import { createItineraryWildEncounterSelectorController } from '../../itinerary/selectors/wildEncounterSelector.js';
 import { getItinerary } from '../itineraryService.js';
-import { resolveEarliestSelectableVisitDateNoon } from '../visitDateEarliest.js';
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
 import { showWizardValidationPopupIfNeeded } from './validationPopup.js';
+import { resolveEarliestSelectableVisitDateNoon } from '../visitDateEarliest.js';
 import { toISODate } from '../../visitDates/visitDateRules.js';
 import { finalizeItineraryWizard } from './wizardFinalizer.js';
 

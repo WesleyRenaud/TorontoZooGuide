@@ -1,9 +1,9 @@
 import { initFocusFromQuery } from '../focus/focusFromQuery.js';
+import { resolveEarliestSelectableVisitDateNoon } from '../itinerary/visitDateEarliest.js';
 import { initMapControls } from '../map/controls.js';
 import { buildMapDateContext } from '../map/dateContext.js';
 import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
-import { resolveEarliestSelectableVisitDateNoon } from '../itinerary/visitDateEarliest.js';
 import { initExploreTypeFilter } from '../search/exploreFilter.js';
 import { initSearch } from '../search/search.js';
 import { createExploreUpdates } from '../updates/exploreUpdates.js';

@@ -14,8 +14,8 @@ import {
    getZooHours,
    isItineraryEmpty,
 } from '../itineraryService.js';
-import { resolveEffectiveItineraryHoursDateIso } from '../visitDateEarliest.js';
 import { buildSectionConfigs } from './sectionConfigs.js';
+import { resolveEffectiveItineraryHoursDateIso } from '../visitDateEarliest.js';
 
 let latestRenderToken = 0;
 let activePanelView = ITINERARY_PANEL_VIEWS.list;
