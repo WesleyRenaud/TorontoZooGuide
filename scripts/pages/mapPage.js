@@ -3,6 +3,7 @@ import { initMapControls } from '../map/controls.js';
 import { buildMapDateContext } from '../map/dateContext.js';
 import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
+import { resolveEarliestSelectableVisitDateNoon } from '../itinerary/visitDateEarliest.js';
 import { initExploreTypeFilter } from '../search/exploreFilter.js';
 import { initSearch } from '../search/search.js';
 import { createExploreUpdates } from '../updates/exploreUpdates.js';
@@ -123,6 +124,7 @@ function initMapPageControls({
    elements,
    updater,
    getSearch,
+   earliestSelectableNoon,
 } = {}) {
    initMapControls({
       mapPreset: elements.mapPreset,
@@ -133,6 +135,7 @@ function initMapPageControls({
       includeClosedGiftShopsCheckbox: elements.includeClosedGiftShopsCheckbox,
       includeClosedAttractionsCheckbox: elements.includeClosedAttractionsCheckbox,
       zoomobileRouteRadios: elements.zoomobileRouteRadios,
+      earliestSelectableNoon,
       onUpdate: (preset, dateStr) => {
          updater.updateMap(preset, dateStr, null);
          getSearch()?.refresh?.();
@@ -187,10 +190,13 @@ export async function initMapPage() {
       updater,
    });
 
+   const earliestVisitNoon = await resolveEarliestSelectableVisitDateNoon();
+
    initMapPageControls({
       elements,
       updater,
       getSearch,
+      earliestSelectableNoon: earliestVisitNoon,
    });
 
    initMapDeepLinkFocus(updater);

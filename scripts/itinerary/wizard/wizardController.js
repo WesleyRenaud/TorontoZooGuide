@@ -6,6 +6,7 @@ import { createItineraryGuardiansTalkSelectorController } from '../../itinerary/
 import { createItineraryRegionSelectorController } from '../../itinerary/selectors/regionSelector.js';
 import { createItineraryWildEncounterSelectorController } from '../../itinerary/selectors/wildEncounterSelector.js';
 import { getItinerary } from '../itineraryService.js';
+import { resolveEarliestSelectableVisitDateNoon } from '../visitDateEarliest.js';
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
 import { showWizardValidationPopupIfNeeded } from './validationPopup.js';
@@ -136,6 +137,7 @@ export async function openItineraryWizard({
    }
 
    const existing = await getItinerary();
+   const earliestVisitNoon = await resolveEarliestSelectableVisitDateNoon();
    const wizard = createItineraryWizardState(existing ?? {});
    const { state: wizardState } = wizard;
 
@@ -295,6 +297,7 @@ export async function openItineraryWizard({
 
    wizardSteps.date = createItineraryDateSelectorController({
       mountEl,
+      earliestSelectableDate: earliestVisitNoon,
       onClose: handleClose,
       onSave: handleDateNext,
       onFinish: handleDateFinish,
