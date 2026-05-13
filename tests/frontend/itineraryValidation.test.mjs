@@ -121,3 +121,29 @@ test('buildItineraryValidationState ignores active unchanged items', () => {
 
    assert.equal(validation.hasChanges, false);
 });
+
+test('buildItineraryValidationState ignores items without old likelihood values', () => {
+   const validation = buildItineraryValidationState({
+      animals: [
+         {
+            species: 'African Lion',
+            exhibit: 'Africa Savanna',
+            old_likelihood: null,
+            new_likelihood: 90,
+         },
+      ],
+      attractions: [
+         {
+            name: 'Greenhouse',
+            old_likelihood: null,
+            new_likelihood: 100,
+         },
+      ],
+   });
+
+   assert.equal(validation.hasChanges, false);
+   assert.deepEqual(validation.removed.animals, []);
+   assert.deepEqual(validation.reducedVisibility.animals, []);
+   assert.deepEqual(validation.improvedVisibility.animals, []);
+   assert.deepEqual(validation.removed.attractions, []);
+});
