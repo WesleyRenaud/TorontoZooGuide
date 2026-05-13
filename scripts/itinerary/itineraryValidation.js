@@ -5,6 +5,10 @@ import {
 } from './wizard/itineraryDiff.js';
 
 function normalizeLikelihood(value) {
+   if (value == null || value === '') {
+      return null;
+   }
+
    const likelihood = Number(value);
 
    if (!Number.isFinite(likelihood)) {
