@@ -386,6 +386,22 @@ enclosures =\
          the season sometime in late March or April, and closes sometime in November. For confirmation on whether the exhibit is open,
          consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
    ),
+   (
+      'Red-Legged Seriema',
+      'Americas Outdoor Mayan Temple Ruins',
+      'May-Oct',                                   # Seasonal viewing summary
+      '''The red-legged seriemas are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit
+         typically opens for the season sometime in late March or April, and closes sometime in November. For confirmation on whether
+         the exhibit is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
+   ),
+   (
+      'Turkey Vulture',
+      'Americas Outdoor Mayan Temple Ruins',
+      'May-Oct',                                   # Seasonal viewing summary
+      '''The turkey vultures are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit
+         typically opens for the season sometime in late March or April, and closes sometime in November. For confirmation on whether
+         the exhibit is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
+   ),
 
    # Americas Pavilion
    (
