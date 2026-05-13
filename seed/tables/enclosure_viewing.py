@@ -525,24 +525,40 @@ enclosure_viewings =\
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
       '''The American flamingos are likely to be inside and off display on this day due to cold weather.''',
-      77.944,                 # X coordinate on map
-      36.736                  # Y coordinate on map
+      77.471,                 # X coordinate on map
+      38.008                  # Y coordinate on map
    ),
    (
       'Black-Handed Spider Monkey',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
       '''The black-handed spider monkeys are likely to be inside and off display on this day due to colder weather.''',
-      77.218,                 # X coordinate on map
-      35.005                  # Y coordinate on map
+      77.016,                 # X coordinate on map
+      35.154                  # Y coordinate on map
    ),
    (
       'Capybara',
       'Americas Outdoor Mayan Temple Ruins',
       'Outdoor',
       '''The capybaras are likely to be inside and off display on this day due to cold weather.''',
-      76.359,                 # X coordinate on map
-      37.719                  # Y coordinate on map
+      76.108,                 # X coordinate on map
+      37.753                  # Y coordinate on map
+   ),
+   (
+      'Red-Legged Seriema',
+      'Americas Outdoor Mayan Temple Ruins',
+      'Outdoor',
+      '''The red-legged seriemas are likely to be inside and off display on this day due to cold weather.''',
+      78.017,                 # X coordinate on map
+      36.228                  # Y coordinate on map
+   ),
+   (
+      'Turkey Vulture',
+      'Americas Outdoor Mayan Temple Ruins',
+      'Outdoor',
+      '''The turkey vultures are likely to be inside and off display on this day due to cold weather.''',
+      78.017,                 # X coordinate on map
+      36.228                  # Y coordinate on map
    ),
 
    # Americas Pavilion
