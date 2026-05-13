@@ -10,7 +10,6 @@ import {
    getMaxDate,
    getToday,
    isAfterMaxDate,
-   isBeforeToday,
    normalizeDate,
    toISODate,
 } from '../../visitDates/visitDateRules.js';
@@ -35,30 +34,38 @@ function readSavedDateFromStorage() {
    return Number.isFinite(savedDate.getTime()) ? savedDate : null;
 }
 
-function isSelectableVisitDate(date) {
-   if (!date) {
-      return false;
-   }
-
-   if (isBeforeToday(date)) {
-      return false;
-   }
-
-   if (isAfterMaxDate(date, DEFAULT_DAYS_AHEAD)) {
-      return false;
-   }
-
-   return true;
-}
-
 function createDateSelectionModel({
    initialDate = null,
    syncInputValue = () => {},
+   earliestDateFloor = null,
 } = {}) {
+   const floor = earliestDateFloor ?? getToday();
    let currentDate = null;
 
    function persistDate(date) {
       setStoredItineraryDate(toISODate(date));
+   }
+
+   function isSelectableVisitDate(date) {
+      if (!date) {
+         return false;
+      }
+
+      const candidate = normalizeDate(date);
+
+      if (!candidate) {
+         return false;
+      }
+
+      if (candidate < floor) {
+         return false;
+      }
+
+      if (isAfterMaxDate(candidate, DEFAULT_DAYS_AHEAD)) {
+         return false;
+      }
+
+      return true;
    }
 
    function setDate(date, { updateInput = true, persist = false } = {}) {
@@ -102,9 +109,9 @@ function createDateSelectionModel({
 
    function getDisplayDate() {
       const savedDate = readSavedDateFromStorage();
-      const selectedDate = initialDate || savedDate || getToday();
+      const selectedDate = initialDate || savedDate || floor;
 
-      return clampToAllowedVisitDate(selectedDate, DEFAULT_DAYS_AHEAD);
+      return clampToAllowedVisitDate(selectedDate, DEFAULT_DAYS_AHEAD, floor);
    }
 
    function getDate() {
@@ -220,7 +227,9 @@ function createDatePickerBinding({
    getDate,
    setDate,
    syncInputValue,
+   earliestDateFloor = null,
 } = {}) {
+   const floor = earliestDateFloor ?? getToday();
    let flatpickrInstance = null;
 
    function applyPickerDate(date, instance) {
@@ -240,7 +249,7 @@ function createDatePickerBinding({
          return;
       }
 
-      flatpickrInstance.set('minDate', getToday());
+      flatpickrInstance.set('minDate', floor);
       flatpickrInstance.set('maxDate', getMaxDate(DEFAULT_DAYS_AHEAD));
       flatpickrInstance.setDate(currentDate, false);
       syncInputValue(currentDate);
@@ -249,7 +258,8 @@ function createDatePickerBinding({
 
    function init() {
       flatpickrInstance = initVisitDateFlatpickr(inputEl, {
-         defaultDate: getDate() || getToday(),
+         defaultDate: getDate() || floor,
+         earliestNoon: floor,
          clickOpens: true,
          onReady: (safeDate, _isoDate, instance) => {
             applyPickerDate(safeDate, instance);
@@ -275,12 +285,15 @@ function createDatePickerBinding({
 export function createItineraryDateSelectorController({
    mountEl,
    initialDate = null,
+   earliestSelectableDate = null,
    onSave,
    onFinish,
    onClose,
 } = {}) {
    let elements = null;
    let picker = null;
+
+   const earliestFloor = earliestSelectableDate ?? getToday();
 
    function syncInputValue(date = model.getDate()) {
       if (!elements?.inputEl) {
@@ -293,6 +306,7 @@ export function createItineraryDateSelectorController({
    const model = createDateSelectionModel({
       initialDate,
       syncInputValue,
+      earliestDateFloor: earliestFloor,
    });
 
    function commitDateSelection(callback) {
@@ -333,6 +347,7 @@ export function createItineraryDateSelectorController({
          getDate: model.getDate,
          setDate: model.setDate,
          syncInputValue,
+         earliestDateFloor: earliestFloor,
       });
       picker.init();
    }

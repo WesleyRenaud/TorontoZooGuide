@@ -158,16 +158,96 @@ export function isAfterMaxDate(d, daysAhead = DEFAULT_DAYS_AHEAD) {
    return candidate > getMaxDate(daysAhead);
 }
 
-export function clampToAllowedVisitDate(d, daysAhead = DEFAULT_DAYS_AHEAD) {
-   const { today, maxDate } = createAllowedVisitDateRange(daysAhead);
+/**
+ * Parses "HH:MM" (24h) or "H:MM AM/PM" zoo-style clock strings to minutes from midnight.
+ */
+export function parseZooClockTimeMinutes(timeValue) {
+   if (typeof timeValue !== 'string') {
+      return null;
+   }
+
+   const normalizedTimeValue = timeValue.trim();
+   const timeParts = normalizedTimeValue.match(/^(\d{1,2}):(\d{2})$/);
+
+   if (timeParts) {
+      const hours = Number(timeParts[1]);
+      const minutes = Number(timeParts[2]);
+
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+         return null;
+      }
+
+      return (hours * 60) + minutes;
+   }
+
+   const displayTimeParts = normalizedTimeValue.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+   if (!displayTimeParts) {
+      return null;
+   }
+
+   const displayHours = Number(displayTimeParts[1]);
+   const displayMinutes = Number(displayTimeParts[2]);
+   const period = displayTimeParts[3].toUpperCase();
+
+   if (
+      displayHours < 1
+      || displayHours > 12
+      || displayMinutes < 0
+      || displayMinutes > 59
+   ) {
+      return null;
+   }
+
+   const hours = (displayHours % 12) + (period === 'PM' ? 12 : 0);
+
+   return (hours * 60) + displayMinutes;
+}
+
+/**
+ * True when local wall-clock time is at or after the zoo's close time for the current calendar day.
+ */
+export function isLocalTimeAtOrPastZooClose(closeTimeStr, now = new Date()) {
+   const closeMinutes = parseZooClockTimeMinutes(closeTimeStr);
+
+   if (closeMinutes == null) {
+      return false;
+   }
+
+   const nowMinutes = (now.getHours() * 60) + now.getMinutes();
+
+   return nowMinutes >= closeMinutes;
+}
+
+export function addLocalCalendarDays(localNoonDate, deltaDays) {
+   const base = normalizeDate(localNoonDate);
+
+   if (!base) {
+      return getToday();
+   }
+
+   const d = new Date(base);
+
+   d.setDate(d.getDate() + deltaDays);
+
+   return normalizeDate(d);
+}
+
+export function clampToAllowedVisitDate(
+   d,
+   daysAhead = DEFAULT_DAYS_AHEAD,
+   earliestNoon = null
+) {
+   const { today: calendarToday, maxDate } = createAllowedVisitDateRange(daysAhead);
+   const floor = normalizeDate(earliestNoon) ?? calendarToday;
    const normalized = normalizeDate(d);
 
    if (!normalized) {
-      return today;
+      return floor;
    }
 
-   if (normalized < today) {
-      return today;
+   if (normalized < floor) {
+      return floor;
    }
 
    if (normalized > maxDate) {
