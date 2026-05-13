@@ -1776,6 +1776,63 @@ animals = [
          .replace( '\n', ' ' )
    ),
    (
+      'Red-Legged Seriema',
+      'Cariama Cristata',
+      5,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      '''The red-legged seriemas are part of the Mayan Temple Ruins exhibit, which is accessed by walking through the Tundra Trek.
+         The seriema can be found in a habitat in between the flamingos and spider monkeys.'''.replace( '\n', ' ' ),
+      '''Red-legged seriemas are outdoor birds that are most reliably visible from May through October. They may also be visible on
+         warmer days in March, April, and November, depending on conditions in the outdoor habitat.'''.replace( '\n', ' ' ),
+      '''The Red-legged Seriema is a tall, long-legged bird with greyish-brown plumage, a pale belly, red legs, and a red bill. It
+         has a distinctive fan-shaped crest of feathers at the base of the bill and long eyelashes around the eyes. The species has
+         a ground-dwelling build, with strong legs used for walking, running, and striking at prey.'''.replace( '\n', ' ' ),
+      '''Red-legged Seriemas are native to South America, especially open grasslands, savannas, scrublands, and lightly wooded
+         habitats in Brazil, Bolivia, Paraguay, Uruguay, and Argentina. They are usually found in dry, open areas where they can
+         walk and run while foraging on the ground.'''.replace( '\n', ' ' ),
+      '''Red-legged Seriemas are omnivorous, feeding on insects, small reptiles, rodents, birds, eggs, seeds, fruits, and other
+         plant material. They are known for subduing larger prey by striking it against the ground. At the zoo, their diet includes
+         a balanced mix of appropriate animal protein, produce, and formulated foods.'''.replace( '\n', ' ' ),
+      '''These birds are usually seen alone, in pairs, or in small family groups. They spend much of their time walking through open
+         habitat in search of food and are strong runners. Red-legged Seriemas are also known for loud, carrying calls that pairs may
+         use to communicate and maintain territory.'''.replace( '\n', ' ' ),
+      '''Red-legged Seriemas are adapted for life on the ground. Their long legs allow them to run quickly through open habitat, and
+         their strong feet help them capture and handle prey. Their crest, alert posture, and cryptic plumage help with communication
+         and camouflage in dry grassland environments.'''.replace( '\n', ' ' ),
+      '''Breeding pairs build nests in shrubs or low trees. Females usually lay two eggs, and both parents may help care for the
+         chicks. Young seriemas leave the nest before they can fly well and follow their parents while learning to forage. The
+         species can live for many years under human care.'''.replace( '\n', ' ' ),
+      None                                                           # Animals at the zoo
+   ),
+   (
+      'Turkey Vulture',
+      'Cathartes Aura',
+      0,                                                             # Minimum temperature (only for animals with outdoor viewing)
+      '''The turkey vultures are part of the Mayan Temple Ruins exhibit, which is accessed by walking through the Tundra Trek. The
+         turkey vulture can be found in a habitat in between the flamingos and spider monkeys.'''.replace( '\n', ' ' ),
+      '''Turkey vultures are outdoor birds that are most reliably visible from May through October. They may also be visible on
+         temperate days in March, April, and November, depending on conditions in the outdoor habitat.'''.replace( '\n', ' ' ),
+      '''The Turkey Vulture is a large, dark soaring bird with long wings, a small bare red head, and a pale bill. In flight, it
+         holds its wings in a shallow V and often rocks from side to side. From below, the flight feathers appear silvery compared
+         with the darker body and wing linings.'''.replace( '\n', ' ' ),
+      '''Turkey Vultures are widespread across the Americas, from southern Canada through the United States, Central America, and
+         much of South America. They use many habitats, including forests, grasslands, wetlands, deserts, agricultural areas, and
+         open landscapes where carrion can be located from the air.'''.replace( '\n', ' ' ),
+      '''Turkey Vultures are scavengers that feed primarily on carrion. They use an excellent sense of smell to locate food, a rare
+         ability among birds. At the zoo, they receive a carefully managed carnivore diet that supports their nutritional needs while
+         reflecting their natural scavenging biology.'''.replace( '\n', ' ' ),
+      '''Turkey Vultures are often seen soaring for long periods while searching for food. They conserve energy by riding thermals
+         and rarely need to flap while gliding. They may roost in groups and rely on body posture, hissing, and other behaviours for
+         communication.'''.replace( '\n', ' ' ),
+      '''Turkey Vultures are highly adapted for scavenging. Their bare head helps keep feathers clean while feeding, their keen
+         sense of smell helps them find carrion hidden under vegetation, and their broad wings make them efficient soaring birds.
+         Their strong digestive system allows them to safely consume food that would be unsafe for many other animals.'''
+         .replace( '\n', ' ' ),
+      '''Turkey Vultures usually nest in sheltered places such as hollow logs, caves, dense vegetation, or abandoned structures
+         rather than building a typical nest. Females usually lay one to three eggs, and both parents help incubate and feed the
+         young. Young vultures remain dependent on their parents for several weeks after hatching.'''.replace( '\n', ' ' ),
+      None                                                           # Animals at the zoo
+   ),
+   (
       'Black-Handed Spider Monkey',
       'Ateles Geoffroyi',
       14,                                                            # Minimum temperature (only for animals with outdoor viewing)
