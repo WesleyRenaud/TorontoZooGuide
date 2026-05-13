@@ -20,7 +20,7 @@ function normalizeLikelihood(value) {
 
 function hasMeaningfulVisibilityChange(item) {
    const before = normalizeLikelihood(item.old_likelihood);
-   const after = normalizeLikelihood(item.new_likelihood);
+   const after = normalizeLikelihood(item.likelihood);
 
    if (before == null || after == null) {
       return false;
@@ -33,13 +33,13 @@ function withVisibilityFields(item) {
    return {
       ...item,
       likelihoodBefore: item.old_likelihood,
-      likelihoodAfter: item.new_likelihood,
+      likelihoodAfter: item.likelihood,
    };
 }
 
 function buildRemovedAnimals(animals = []) {
    return animals
-      .filter((animal) => normalizeLikelihood(animal.new_likelihood) === 0)
+      .filter((animal) => normalizeLikelihood(animal.likelihood) === 0)
       .map(withVisibilityFields);
 }
 
@@ -47,7 +47,7 @@ function buildReducedVisibilityAnimals(animals = []) {
    return animals
       .filter((animal) => {
          const before = normalizeLikelihood(animal.old_likelihood);
-         const after = normalizeLikelihood(animal.new_likelihood);
+         const after = normalizeLikelihood(animal.likelihood);
 
          return hasMeaningfulVisibilityChange(animal) && after < before;
       })
@@ -58,7 +58,7 @@ function buildImprovedVisibilityAnimals(animals = []) {
    return animals
       .filter((animal) => {
          const before = normalizeLikelihood(animal.old_likelihood);
-         const after = normalizeLikelihood(animal.new_likelihood);
+         const after = normalizeLikelihood(animal.likelihood);
 
          return hasMeaningfulVisibilityChange(animal) && after > before;
       })
@@ -67,7 +67,7 @@ function buildImprovedVisibilityAnimals(animals = []) {
 
 function buildRemovedAttractions(attractions = []) {
    return attractions
-      .filter((attraction) => normalizeLikelihood(attraction.new_likelihood) === 0)
+      .filter((attraction) => normalizeLikelihood(attraction.likelihood) === 0)
       .map(withVisibilityFields);
 }
 

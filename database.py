@@ -3327,7 +3327,6 @@ class Database():
                continue
 
             animal.old_likelihood = saved_row[ 'OLD_LIKELIHOOD' ]
-            animal.new_likelihood = saved_row[ 'NEW_LIKELIHOOD' ]
 
       return filtered_animals
 
@@ -3387,7 +3386,6 @@ class Database():
                continue
 
             attraction.old_likelihood = saved_row[ 'OLD_LIKELIHOOD' ]
-            attraction.new_likelihood = saved_row[ 'NEW_LIKELIHOOD' ]
 
       attractions.sort( key=lambda a: ( a.name or '' ).lower() )
 
