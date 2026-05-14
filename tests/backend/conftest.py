@@ -5,8 +5,8 @@ import sqlite3
 
 import pytest
 
-import database
-from seed.runner import main as seed_database
+import api.database as database
+from api.seed.runner import main as seed_database
 
 
 @pytest.fixture

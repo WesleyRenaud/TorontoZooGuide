@@ -1,4 +1,4 @@
-from seed.runner import main
+from api.seed.runner import main
 
 
 if __name__ == '__main__':

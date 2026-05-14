@@ -9,7 +9,7 @@ import subprocess
 import sys
 from urllib.parse import unquote, urlparse
 
-import database
+from . import database
 
 
 DEFAULT_PORT = 8000
