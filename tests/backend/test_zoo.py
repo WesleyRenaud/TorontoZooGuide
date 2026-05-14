@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-import zoo
+from api import zoo
 
 
 def test_domain_objects_serialize_to_frontend_shapes():
@@ -287,6 +287,55 @@ def test_get_month_abbreviation( value, expected ):
 def test_get_month_abbreviation_rejects_invalid_values():
    with pytest.raises( ValueError ):
       zoo.ZooUtil.get_month_abbreviation( 13 )
+
+
+@pytest.mark.parametrize(
+   'value, expected',
+   [
+      ( 1, 1 ),
+      ( 6, 6 ),
+      ( '06', 6 ),
+      ( 'June', 6 ),
+      ( 'JUN', 6 ),
+      ( 'January', 1 ),
+      ( 'december', 12 ),
+   ]
+)
+def test_resolve_visit_calendar_month_returns_int_one_through_twelve( value, expected ):
+   got = zoo.ZooUtil.resolve_visit_calendar_month( value )
+   assert got == expected
+   assert isinstance( got, int )
+
+
+def test_resolve_visit_calendar_month_rejects_invalid_values():
+   with pytest.raises( ValueError ):
+      zoo.ZooUtil.resolve_visit_calendar_month( 13 )
+
+
+def test_resolve_visit_day_of_month():
+   assert zoo.ZooUtil.resolve_visit_day_of_month( '15' ) == 15
+   assert zoo.ZooUtil.resolve_visit_day_of_month( 7 ) == 7
+
+
+def test_resolve_visit_calendar_year_explicit():
+   assert zoo.ZooUtil.resolve_visit_calendar_year( 2029 ) == 2029
+
+
+def test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch ):
+   from datetime import datetime as std_datetime
+
+   class Fixed( std_datetime ):
+      @classmethod
+      def now( cls ):
+         return std_datetime( 2032, 3, 1, 0, 0, 0 )
+
+   monkeypatch.setattr( zoo, 'datetime', Fixed )
+   assert zoo.ZooUtil.resolve_visit_calendar_year( None ) == 2032
+
+
+def test_visit_target_date():
+   from datetime import date as date_cls
+   assert zoo.ZooUtil.visit_target_date( 2026, 6, 15 ) == date_cls( 2026, 6, 15 )
 
 
 def test_temperature_helpers_are_stable():

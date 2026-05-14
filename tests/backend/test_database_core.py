@@ -2,7 +2,13 @@ from datetime import date, datetime
 
 import pytest
 
-import zoo
+from api import zoo
+from api.data_access.animal_viewability_mapper import map_animal_viewability_row
+from api.logic.animal_viewability import calculate_animal_likelihood
+from api.logic.animal_viewability import get_active_exhibit_status
+from api.logic.animal_viewability import get_active_limited_viewing_status
+from api.logic.animal_viewability import get_active_off_display_status
+from api.logic.animal_viewability import get_active_viewing_alert_status
 from conftest import make_row
 
 
@@ -101,8 +107,8 @@ def test_simple_likelihood_calculators_clamp_and_round( db, method_name ):
    assert method( 1.5 ) == 100
 
 
-def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs( db ):
-   assert db.calculate_animal_likelihood(
+def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs():
+   assert calculate_animal_likelihood(
       temp=-20,
       sigma=2,
       enclosure_type='indoor',
@@ -111,7 +117,7 @@ def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs( db ):
       exhibit_day_seasonal_availability_multiplier=1
    ) == 100
 
-   assert db.calculate_animal_likelihood(
+   assert calculate_animal_likelihood(
       temp=-20,
       sigma=2,
       enclosure_type='indoor',
@@ -120,7 +126,7 @@ def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs( db ):
       exhibit_day_seasonal_availability_multiplier=0
    ) == 0
 
-   assert db.calculate_animal_likelihood(
+   assert calculate_animal_likelihood(
       temp=20,
       sigma=2,
       enclosure_type='Outdoor',
@@ -129,7 +135,7 @@ def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs( db ):
       exhibit_day_seasonal_availability_multiplier=0.5
    ) == 12
 
-   assert db.calculate_animal_likelihood(
+   assert calculate_animal_likelihood(
       temp=None,
       sigma=2,
       enclosure_type='Outdoor',
@@ -139,8 +145,8 @@ def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs( db ):
    ) == 100
 
 
-def test_active_status_helpers( db ):
-   active_row = make_row(
+def test_active_status_helpers():
+   active_record = map_animal_viewability_row( make_row(
       {
          'IS_OFF_DISPLAY': 1,
          'OFF_DISPLAY_MESSAGE': 'Temporarily hidden.',
@@ -159,17 +165,17 @@ def test_active_status_helpers( db ):
          'CLOSED_START': '2026-06-01',
          'CLOSED_END': '2026-06-30'
       }
-   )
+   ) )
    target_date = date( 2026, 6, 15 )
 
-   assert db.get_active_off_display_status( active_row, target_date ) == ( True, 'Temporarily hidden.' )
-   assert db.get_active_limited_viewing_status( active_row, target_date ) == ( True, 'Morning only.' )
-   assert db.get_active_viewing_alert_status( active_row, target_date ) == ( True, 'Low visibility.' )
-   assert db.get_active_exhibit_status( active_row, target_date ) == ( 'closed', 'Closed.' )
+   assert get_active_off_display_status( active_record, target_date ) == ( True, 'Temporarily hidden.' )
+   assert get_active_limited_viewing_status( active_record, target_date ) == ( True, 'Morning only.' )
+   assert get_active_viewing_alert_status( active_record, target_date ) == ( True, 'Low visibility.' )
+   assert get_active_exhibit_status( active_record, target_date ) == ( 'closed', 'Closed.' )
 
 
-def test_active_status_helpers_return_inactive_defaults( db ):
-   inactive_row = make_row(
+def test_active_status_helpers_return_inactive_defaults():
+   inactive_record = map_animal_viewability_row( make_row(
       {
          'IS_OFF_DISPLAY': 0,
          'OFF_DISPLAY_MESSAGE': 'Temporarily hidden.',
@@ -188,8 +194,8 @@ def test_active_status_helpers_return_inactive_defaults( db ):
          'CLOSED_START': '2026-06-01',
          'CLOSED_END': '2026-06-30'
       }
-   )
-   expired_row = make_row(
+   ) )
+   expired_record = map_animal_viewability_row( make_row(
       {
          'IS_OFF_DISPLAY': 1,
          'OFF_DISPLAY_MESSAGE': 'Temporarily hidden.',
@@ -208,16 +214,16 @@ def test_active_status_helpers_return_inactive_defaults( db ):
          'CLOSED_START': '2026-06-01',
          'CLOSED_END': '2026-06-30'
       }
-   )
+   ) )
    target_date = date( 2026, 7, 15 )
 
-   assert db.get_active_off_display_status( inactive_row, target_date ) == ( False, None )
-   assert db.get_active_limited_viewing_status( inactive_row, target_date ) == ( False, None )
-   assert db.get_active_viewing_alert_status( inactive_row, target_date ) == ( False, None )
-   assert db.get_active_exhibit_status( inactive_row, target_date ) == ( 'unknown', None )
+   assert get_active_off_display_status( inactive_record, target_date ) == ( False, None )
+   assert get_active_limited_viewing_status( inactive_record, target_date ) == ( False, None )
+   assert get_active_viewing_alert_status( inactive_record, target_date ) == ( False, None )
+   assert get_active_exhibit_status( inactive_record, target_date ) == ( 'unknown', None )
 
-   assert db.get_active_off_display_status( expired_row, target_date ) == ( False, None )
-   assert db.get_active_limited_viewing_status( expired_row, target_date ) == ( False, None )
-   assert db.get_active_viewing_alert_status( expired_row, target_date ) == ( False, None )
-   assert db.get_active_exhibit_status( expired_row, target_date ) == ( 'unknown', None )
-   assert db.get_active_exhibit_status( expired_row, date( 2026, 6, 15 ) ) == ( 'open', None )
+   assert get_active_off_display_status( expired_record, target_date ) == ( False, None )
+   assert get_active_limited_viewing_status( expired_record, target_date ) == ( False, None )
+   assert get_active_viewing_alert_status( expired_record, target_date ) == ( False, None )
+   assert get_active_exhibit_status( expired_record, target_date ) == ( 'unknown', None )
+   assert get_active_exhibit_status( expired_record, date( 2026, 6, 15 ) ) == ( 'open', None )
