@@ -15,6 +15,7 @@ from .models import GuestService
 from .models import Itinerary
 from .models import Pavilion
 from .models import PicnicSite
+from .models import Region
 from .models import Restaurant
 from .models import Restroom
 from .models import Update
@@ -41,6 +42,7 @@ __all__ = [
    'Itinerary',
    'Pavilion',
    'PicnicSite',
+   'Region',
    'Restaurant',
    'Restroom',
    'Update',
