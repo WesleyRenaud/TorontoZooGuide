@@ -1498,12 +1498,11 @@ animals = [
          protection from predators and harsh weather. Cubs are dependent on the mother for 18–22 months, learning to hunt and
          navigate mountainous terrain. Snow Leopards can live 10–12 years in the wild, with captive individuals sometimes exceeding
          20 years under optimal care.'''.replace( '\n', ' ' ),
-      '''The zoo is home to four snow leopards: an adult male, Pemba who goes in exhibit by himself on Mondays, Wednesdays, and
-         Fridays, and a mother, Jita, and her two female cubs, Minu and Zoya, who are all on exhibit together on Tuesdays,
-         Thursdays, Saturdays,and Sundays. The mother and cubs are nearing the end of their time together on exhibit. Once the cubs
-         become too old for their mother, they will be moved to other zoos. Snow leopards are solitary animals, except for during
-         breeding season, and a mother and her cubs, hence why Pemba goes on exhibit by himself. The snow leopard cubs are quite
-         active, and can often be seen chasing each other, or their mother, around the habitat.'''.replace( '\n', ' ' )
+      '''The zoo is home to a mother, Jita, and her two female cubs, Minu and Zoya. The mother and cubs are nearing the end of
+         their time together on exhibit. Once the cubs become too old for their mother, they will be moved to other zoos. Snow
+         leopards are solitary animals, except during breeding season and when a mother is raising her cubs. The snow leopard cubs
+         are quite active, and can often be seen chasing each other, or their mother, around the habitat.'''
+         .replace( '\n', ' ' )
    ),
    (
       'Steller\'s Sea Eagle',

@@ -1628,9 +1628,37 @@ class Database():
 
 
    def get_active_update_options( self ):
+      target_date = datetime.now().date()
+      cur = self.conn.cursor()
+      data = cur.execute(
+         """   SELECT
+                  TITLE,
+                  DESCRIPTION,
+                  UPDATE_TYPE,
+                  START_DATE,
+                  END_DATE
+               FROM ZooUpdate
+               WHERE END_DATE IS NULL
+                  OR END_DATE >= ?
+               ORDER BY START_DATE DESC, TITLE ASC;
+         """,
+         ( target_date.isoformat(), ) )
+
+      updates = [
+         zoo.Update(
+            title=row[ 'TITLE' ],
+            description=row[ 'DESCRIPTION' ],
+            update_type=row[ 'UPDATE_TYPE' ],
+            start_date=row[ 'START_DATE' ],
+            end_date=row[ 'END_DATE' ] )
+         for row in data.fetchall()
+      ]
+
+      cur.close()
+
       return [
          update.to_dict()
-         for update in self.get_updates()
+         for update in updates
       ]
 
 

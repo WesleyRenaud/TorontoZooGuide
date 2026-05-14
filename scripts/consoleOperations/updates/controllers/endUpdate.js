@@ -1,3 +1,4 @@
+import { endUpdate } from '../../../api/consoleOperationsApi.js';
 import {
    hideConsolePanel,
    loadOptionsAndShowPanel,
