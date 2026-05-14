@@ -318,6 +318,33 @@ def test_create_end_and_edit_updates_change_active_update_results( db, freeze_da
    assert db.get_updates( month='June', day=15 ) == []
 
 
+def test_active_update_options_include_future_updates_but_not_expired_updates( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert db.create_update(
+      title='Future update',
+      description='This starts later.',
+      update_type='Closure',
+      start_date='2026-07-01',
+      end_date='2026-07-31' )
+
+   assert db.create_update(
+      title='Expired update',
+      description='This already ended.',
+      update_type='Closure',
+      start_date='2026-05-01',
+      end_date='2026-05-31' )
+
+   assert db.get_updates( month='June', day=15 ) == []
+
+   update_options = db.get_active_update_options()
+
+   assert [
+      update[ 'title' ]
+      for update in update_options
+   ] == [ 'Future update' ]
+
+
 def test_set_current_zoomobile_route_changes_current_route_result( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
 
