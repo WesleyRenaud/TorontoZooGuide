@@ -1,6 +1,6 @@
 from datetime import date
 
-import zoo
+from api import zoo
 
 
 def test_set_get_and_clear_itinerary( db, freeze_database_today ):

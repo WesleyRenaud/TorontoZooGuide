@@ -3,8 +3,8 @@ import json
 
 import pytest
 
-import server
-import zoo
+import api.server as server
+from api import zoo
 from conftest import FakeHandler
 
 

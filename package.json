@@ -6,13 +6,13 @@
       "build": "python3 setup.py && npm run coverage && npm run lint && echo 'Build complete!' && node tools/coverageSummary.js --print-last-summary",
       "coverage": "node tools/coverageSummary.js",
       "coverage:js": "node --test --experimental-test-coverage --test-coverage-include='scripts/**/*.js' tests/frontend/frontend.test.mjs",
-      "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/backend --cov=database --cov=server --cov=zoo --cov=seed --cov-report=term-missing",
+      "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/backend --cov=api.database --cov=api.server --cov=api.zoo --cov=api.seed --cov-report=term-missing",
       "lint": "npm run lint:js && npm run lint:py",
       "lint:js": "node tools/lint/jsFilenameStyle.js && node tools/lint/jsImportStyle.js && eslint scripts && echo 'All checks passed!'",
       "lint:py": "python3 tools/lint/pythonHouseStyle.py && ruff check .",
       "test:js": "node --test tests/frontend/frontend.test.mjs",
       "test:py": "python3 -m pytest tests/backend",
-      "start": "python3 server.py"
+      "start": "python3 -m api.server"
    },
    "devDependencies": {
       "eslint": "^10.2.0"

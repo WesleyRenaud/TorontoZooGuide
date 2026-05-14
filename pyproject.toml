@@ -17,6 +17,6 @@ select = [
 blank_lines_between_methods = 2
 exclude = [
    "scripts/capture_readme_screenshots.py",
-   "seed/tables/animal.py",
-   "zoo.py"
+   "api/seed/tables/animal.py",
+   "api/zoo.py"
 ]

@@ -1,7 +1,7 @@
 import sqlite3
 
-from seed import data
-from seed.schema import create_schema
+from api.seed import data
+from api.seed.schema import create_schema
 
 
 def column_names( cursor, table ):
