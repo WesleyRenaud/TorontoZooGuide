@@ -1,7 +1,5 @@
 from .. import zoo
-from ..strings import EXHIBIT_STATUS_CLOSED
-from ..strings import EXHIBIT_STATUS_OPEN
-from ..strings import EXHIBIT_STATUS_UNKNOWN
+from ..enums import ExhibitStatus
 from .animal_viewability_context import AnimalViewabilityContext
 
 
@@ -94,7 +92,7 @@ def get_active_viewing_alert_status( animal, target_date ):
 
 def get_active_exhibit_status( animal, target_date ):
    if animal.is_closed == None:
-      return EXHIBIT_STATUS_UNKNOWN, None
+      return ExhibitStatus.UNKNOWN, None
 
    start_date = animal.closed_start
    end_date = animal.closed_end
@@ -105,12 +103,12 @@ def get_active_exhibit_status( animal, target_date ):
       end_date_value=end_date )
 
    if not is_active:
-      return EXHIBIT_STATUS_UNKNOWN, None
+      return ExhibitStatus.UNKNOWN, None
 
    if bool( animal.is_closed ):
-      return EXHIBIT_STATUS_CLOSED, animal.closed_message
+      return ExhibitStatus.CLOSED, animal.closed_message
 
-   return EXHIBIT_STATUS_OPEN, None
+   return ExhibitStatus.OPEN, None
 
 
 def calculate_animal_likelihood(
@@ -246,12 +244,12 @@ def calculate_viewable_animal_likelihood(
       sigma,
       is_off_display,
       exhibit_status ):
-   if is_off_display or exhibit_status == EXHIBIT_STATUS_CLOSED:
+   if is_off_display or exhibit_status == ExhibitStatus.CLOSED:
       return 0
 
    applied_exhibit_day_availability_multiplier = 1.0
 
-   if exhibit_status == EXHIBIT_STATUS_UNKNOWN:
+   if exhibit_status == ExhibitStatus.UNKNOWN:
       applied_exhibit_day_availability_multiplier = animal.exhibit_day_seasonal_availability_multiplier
 
    return calculate_animal_likelihood(
@@ -274,14 +272,14 @@ def get_viewable_animal_display_message(
    if is_off_display:
       return off_display_message
 
-   if exhibit_status == EXHIBIT_STATUS_CLOSED:
+   if exhibit_status == ExhibitStatus.CLOSED:
       return exhibit_closed_message
 
    if likelihood != 0:
       return None
 
    if (
-         exhibit_status == EXHIBIT_STATUS_UNKNOWN
+         exhibit_status == ExhibitStatus.UNKNOWN
          and exhibit_day_seasonal_availability_multiplier == 0 ):
       return f'The { animal.exhibit } is most likely closed on this day.'
 
