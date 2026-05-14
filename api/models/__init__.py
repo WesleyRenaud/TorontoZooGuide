@@ -13,6 +13,7 @@ from .guest_service import GuestService
 from .itinerary import Itinerary
 from .pavilion import Pavilion
 from .picnic_site import PicnicSite
+from .region import Region
 from .restaurant import Restaurant
 from .restroom import Restroom
 from .update import Update
@@ -37,6 +38,7 @@ __all__ = [
    'Itinerary',
    'Pavilion',
    'PicnicSite',
+   'Region',
    'Restaurant',
    'Restroom',
    'Update',

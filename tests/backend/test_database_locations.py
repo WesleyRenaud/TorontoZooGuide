@@ -6,7 +6,10 @@ import pytest
 def test_region_and_static_location_queries( db ):
    regions = db.get_regions()
 
-   assert regions == [
+   assert [
+      region.to_dict()
+      for region in regions
+   ] == [
       { 'name': 'Africa', 'hasExhibits': True },
       { 'name': 'Americas', 'hasExhibits': True },
       { 'name': 'Australasia', 'hasExhibits': True },

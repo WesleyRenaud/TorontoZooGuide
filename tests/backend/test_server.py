@@ -76,7 +76,7 @@ class StubDatabase:
 
    def get_regions( self ):
       self.calls.append( ( 'get_regions', {} ) )
-      return [ { 'name': 'Africa', 'hasExhibits': True } ]
+      return [ zoo.Region( name='Africa', has_exhibits=True ) ]
 
 
    def get_animals_in_exhibit( self, exhibit ):

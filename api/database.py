@@ -41,69 +41,16 @@ class Database():
 
 
    def get_exhibits_in_region( self, region ):
-      cur = self.conn.cursor()
+      from .controllers.exhibit_controller import ExhibitController
 
-      data = cur.execute(
-         f"""  SELECT
-                  e.NAME
-               FROM Exhibit e
-               WHERE e.REGION = ?;
-         """, ( region, ) )
-
-      exhibits = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return exhibits
+      return ExhibitController( self.conn ).get_exhibits_in_region(
+         region=region )
 
 
    def get_regions( self ):
-      cur = self.conn.cursor()
+      from .controllers.exhibit_controller import ExhibitController
 
-      data = cur.execute(
-         """   SELECT
-                  r.NAME AS REGION_NAME,
-                  e.NAME AS EXHIBIT_NAME
-               FROM Region r
-               LEFT JOIN Exhibit e
-                  ON e.REGION = r.NAME
-               ORDER BY r.NAME, e.NAME;
-         """ )
-
-      rows = data.fetchall()
-      regions = []
-      current_region = None
-
-      for row in rows:
-         region_name = row[ 'REGION_NAME' ]
-         exhibit_name = row[ 'EXHIBIT_NAME' ]
-
-         if current_region == None or current_region[ 'name' ] != region_name:
-            current_region = {
-               'name': region_name,
-               'exhibits': [],
-            }
-            regions.append( current_region )
-
-         if exhibit_name != None:
-            current_region[ 'exhibits' ].append( exhibit_name )
-
-      cur.close()
-
-      regions = [
-         region for region in regions
-         if len( region[ 'exhibits' ] ) > 0
-      ]
-
-      return [
-         {
-            'name': region[ 'name' ],
-            'hasExhibits': not (
-               len( region[ 'exhibits' ] ) == 1
-               and region[ 'exhibits' ][ 0 ] == region[ 'name' ]
-            ),
-         }
-         for region in regions
-      ]
+      return ExhibitController( self.conn ).get_regions()
 
 
    def get_animals_in_exhibit( self, exhibit ):
