@@ -3,14 +3,58 @@ from datetime import date, datetime
 import pytest
 
 from api import zoo
-from api.data_access.animal_viewability_mapper import map_animal_viewability_row
-from api.enums import ExhibitStatus
-from api.logic.animal_viewability import calculate_animal_likelihood
-from api.logic.animal_viewability import get_active_exhibit_status
-from api.logic.animal_viewability import get_active_limited_viewing_status
-from api.logic.animal_viewability import get_active_off_display_status
-from api.logic.animal_viewability import get_active_viewing_alert_status
-from conftest import make_row
+from api.animals.data_access.animal_viewability_record import AnimalViewabilityRecord
+from api.exhibits.enums import ExhibitStatus
+from api.animals.logic.animal_viewability import calculate_animal_likelihood
+from api.animals.logic.animal_viewability import get_active_exhibit_status
+from api.animals.logic.animal_viewability import get_active_limited_viewing_status
+from api.animals.logic.animal_viewability import get_active_off_display_status
+from api.animals.logic.animal_viewability import get_active_viewing_alert_status
+
+
+def make_animal_viewability_record( **overrides ):
+   values = {
+      'species': None,
+      'latin_name': None,
+      'min_temperature': None,
+      'general_viewing_tips': None,
+      'seasonal_viewing_tips': None,
+      'identification': None,
+      'habitat_and_range': None,
+      'diet_and_feeding': None,
+      'behaviour_and_social_life': None,
+      'adaptations': None,
+      'reproduction_and_life_cycle': None,
+      'animals_at_the_zoo': None,
+      'exhibit': None,
+      'seasonal_viewing_summary': None,
+      'seasonal_viewing_information': None,
+      'enclosure_type': None,
+      'seasonally_off_display_message': None,
+      'x_coord': None,
+      'y_coord': None,
+      'is_off_display': None,
+      'off_display_message': None,
+      'off_display_start': None,
+      'off_display_end': None,
+      'schedule_start_date': None,
+      'schedule_end_date': None,
+      'daily_start_time': None,
+      'daily_end_time': None,
+      'viewing_message': None,
+      'alert_message': None,
+      'alert_start_date': None,
+      'alert_end_date': None,
+      'is_closed': None,
+      'closed_message': None,
+      'closed_start': None,
+      'closed_end': None,
+      'animal_day_seasonal_multiplier': None,
+      'exhibit_day_seasonal_availability_multiplier': None,
+   }
+   values.update( overrides )
+
+   return AnimalViewabilityRecord( **values )
 
 
 def test_database_uses_injected_path( db ):
@@ -147,26 +191,23 @@ def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs():
 
 
 def test_active_status_helpers():
-   active_record = map_animal_viewability_row( make_row(
-      {
-         'IS_OFF_DISPLAY': 1,
-         'OFF_DISPLAY_MESSAGE': 'Temporarily hidden.',
-         'OFF_DISPLAY_START': '2026-06-01',
-         'OFF_DISPLAY_END': '2026-06-30',
-         'SCHEDULE_START_DATE': '2026-06-01',
-         'SCHEDULE_END_DATE': '2026-06-30',
-         'DAILY_START_TIME': '09:00',
-         'DAILY_END_TIME': '11:00',
-         'VIEWING_MESSAGE': 'Morning only.',
-         'ALERT_MESSAGE': 'Low visibility.',
-         'ALERT_START_DATE': '2026-06-01',
-         'ALERT_END_DATE': '2026-06-30',
-         'IS_CLOSED': 1,
-         'CLOSED_MESSAGE': 'Closed.',
-         'CLOSED_START': '2026-06-01',
-         'CLOSED_END': '2026-06-30'
-      }
-   ) )
+   active_record = make_animal_viewability_record(
+      is_off_display=1,
+      off_display_message='Temporarily hidden.',
+      off_display_start='2026-06-01',
+      off_display_end='2026-06-30',
+      schedule_start_date='2026-06-01',
+      schedule_end_date='2026-06-30',
+      daily_start_time='09:00',
+      daily_end_time='11:00',
+      viewing_message='Morning only.',
+      alert_message='Low visibility.',
+      alert_start_date='2026-06-01',
+      alert_end_date='2026-06-30',
+      is_closed=1,
+      closed_message='Closed.',
+      closed_start='2026-06-01',
+      closed_end='2026-06-30' )
    target_date = date( 2026, 6, 15 )
 
    assert get_active_off_display_status( active_record, target_date ) == ( True, 'Temporarily hidden.' )
@@ -176,46 +217,40 @@ def test_active_status_helpers():
 
 
 def test_active_status_helpers_return_inactive_defaults():
-   inactive_record = map_animal_viewability_row( make_row(
-      {
-         'IS_OFF_DISPLAY': 0,
-         'OFF_DISPLAY_MESSAGE': 'Temporarily hidden.',
-         'OFF_DISPLAY_START': '2026-06-01',
-         'OFF_DISPLAY_END': '2026-06-30',
-         'SCHEDULE_START_DATE': '2026-06-01',
-         'SCHEDULE_END_DATE': '2026-06-30',
-         'DAILY_START_TIME': None,
-         'DAILY_END_TIME': '11:00',
-         'VIEWING_MESSAGE': 'Morning only.',
-         'ALERT_MESSAGE': None,
-         'ALERT_START_DATE': '2026-06-01',
-         'ALERT_END_DATE': '2026-06-30',
-         'IS_CLOSED': None,
-         'CLOSED_MESSAGE': 'Closed.',
-         'CLOSED_START': '2026-06-01',
-         'CLOSED_END': '2026-06-30'
-      }
-   ) )
-   expired_record = map_animal_viewability_row( make_row(
-      {
-         'IS_OFF_DISPLAY': 1,
-         'OFF_DISPLAY_MESSAGE': 'Temporarily hidden.',
-         'OFF_DISPLAY_START': '2026-06-01',
-         'OFF_DISPLAY_END': '2026-06-30',
-         'SCHEDULE_START_DATE': '2026-06-01',
-         'SCHEDULE_END_DATE': '2026-06-30',
-         'DAILY_START_TIME': '09:00',
-         'DAILY_END_TIME': '11:00',
-         'VIEWING_MESSAGE': 'Morning only.',
-         'ALERT_MESSAGE': 'Low visibility.',
-         'ALERT_START_DATE': '2026-06-01',
-         'ALERT_END_DATE': '2026-06-30',
-         'IS_CLOSED': 0,
-         'CLOSED_MESSAGE': 'Closed.',
-         'CLOSED_START': '2026-06-01',
-         'CLOSED_END': '2026-06-30'
-      }
-   ) )
+   inactive_record = make_animal_viewability_record(
+      is_off_display=0,
+      off_display_message='Temporarily hidden.',
+      off_display_start='2026-06-01',
+      off_display_end='2026-06-30',
+      schedule_start_date='2026-06-01',
+      schedule_end_date='2026-06-30',
+      daily_start_time=None,
+      daily_end_time='11:00',
+      viewing_message='Morning only.',
+      alert_message=None,
+      alert_start_date='2026-06-01',
+      alert_end_date='2026-06-30',
+      is_closed=None,
+      closed_message='Closed.',
+      closed_start='2026-06-01',
+      closed_end='2026-06-30' )
+   expired_record = make_animal_viewability_record(
+      is_off_display=1,
+      off_display_message='Temporarily hidden.',
+      off_display_start='2026-06-01',
+      off_display_end='2026-06-30',
+      schedule_start_date='2026-06-01',
+      schedule_end_date='2026-06-30',
+      daily_start_time='09:00',
+      daily_end_time='11:00',
+      viewing_message='Morning only.',
+      alert_message='Low visibility.',
+      alert_start_date='2026-06-01',
+      alert_end_date='2026-06-30',
+      is_closed=0,
+      closed_message='Closed.',
+      closed_start='2026-06-01',
+      closed_end='2026-06-30' )
    target_date = date( 2026, 7, 15 )
 
    assert get_active_off_display_status( inactive_record, target_date ) == ( False, None )

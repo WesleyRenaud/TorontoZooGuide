@@ -28,7 +28,7 @@ class Database():
          include_off_display_animals=False,
          threshold=0,
          exhibits_to_include=None ):
-      from .controllers.animal_controller import AnimalController
+      from .animals.controllers.animal_controller import AnimalController
 
       return AnimalController( self.conn ).get_animals_viewable_on_day(
          month=month,
@@ -41,86 +41,30 @@ class Database():
 
 
    def get_exhibits_in_region( self, region ):
-      from .controllers.exhibit_controller import ExhibitController
+      from .exhibits.controllers.exhibit_controller import ExhibitController
 
       return ExhibitController( self.conn ).get_exhibits_in_region(
          region=region )
 
 
    def get_regions( self ):
-      from .controllers.exhibit_controller import ExhibitController
+      from .exhibits.controllers.exhibit_controller import ExhibitController
 
       return ExhibitController( self.conn ).get_regions()
 
 
-   def get_animals_in_exhibit( self, exhibit ):
-      cur = self.conn.cursor()
+   def get_names_of_animals_in_exhibit( self, exhibit ):
+      from .exhibits.controllers.exhibit_controller import ExhibitController
 
-      data = cur.execute(
-         """   SELECT
-                  a.SPECIES
-               FROM Animal a
-               JOIN Enclosure e
-                  ON a.SPECIES = e.SPECIES
-               WHERE e.EXHIBIT = ?
-         """, ( exhibit, ) )
-
-      animals = [ row[ 0 ] for row in data.fetchall() ]
-
-      cur.close()
-
-      return animals
+      return ExhibitController( self.conn ).get_names_of_animals_in_exhibit(
+         exhibit=exhibit )
 
 
    def get_animal_information( self, species ):
-      cur = self.conn.cursor()
+      from .animals.controllers.animal_controller import AnimalController
 
-      data = cur.execute(
-         """   SELECT
-                  a.LATIN_NAME,
-                  a.GENERAL_VIEWING_TIPS,
-                  a.SEASONAL_VIEWING_TIPS,
-                  a.IDENTIFICATION,
-                  a.HABITAT_AND_RANGE,
-                  a.DIET_AND_FEEDING,
-                  a.BEHAVIOUR_AND_SOCIAL_LIFE,
-                  a.ADAPTATIONS,
-                  a.REPRODUCTION_AND_LIFE_CYCLE,
-                  a.ANIMALS_AT_THE_ZOO,
-                  e.EXHIBIT,
-                  e.SEASONAL_VIEWING_SUMMARY,
-                  e.SEASONAL_VIEWING_INFORMATION
-               FROM Animal a
-               JOIN Enclosure e
-                  ON a.SPECIES = e.SPECIES
-               WHERE a.SPECIES = ?;
-         """,
-         ( species, ) )
-
-      animal = data.fetchone()
-
-      if animal is None:
-         return None
-
-      animal_info = zoo.Animal(
-         species = species,
-         latin_name = animal[ 'LATIN_NAME' ],
-         general_viewing_tips = animal[ 'GENERAL_VIEWING_TIPS' ],
-         seasonal_viewing_tips = animal[ 'SEASONAL_VIEWING_TIPS' ],
-         identification = animal[ 'IDENTIFICATION' ],
-         habitat_and_range = animal[ 'HABITAT_AND_RANGE' ],
-         diet_and_feeding = animal[ 'DIET_AND_FEEDING' ],
-         behaviour_and_life_cycle = animal[ 'BEHAVIOUR_AND_SOCIAL_LIFE' ],
-         adaptations = animal[ 'ADAPTATIONS' ],
-         reproduction_and_life_cycle = animal[ 'REPRODUCTION_AND_LIFE_CYCLE' ],
-         animals_at_the_zoo = animal[ 'ANIMALS_AT_THE_ZOO' ],
-         exhibit = animal[ 'EXHIBIT' ],
-         seasonal_viewing_summary = animal[ 'SEASONAL_VIEWING_SUMMARY' ],
-         seasonal_viewing_information = animal[ 'SEASONAL_VIEWING_INFORMATION' ] )
-
-      cur.close()
-
-      return animal_info
+      return AnimalController( self.conn ).get_animal_information(
+         species=species )
 
 
    def get_pavilions( self ):

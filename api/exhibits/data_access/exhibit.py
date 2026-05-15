@@ -36,3 +36,22 @@ def fetch_region_exhibit_rows( conn ):
 
    finally:
       cur.close()
+
+
+def fetch_animal_names_in_exhibit( conn, exhibit ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  a.SPECIES
+               FROM Animal a
+               JOIN Enclosure e
+                  ON a.SPECIES = e.SPECIES
+               WHERE e.EXHIBIT = ?;
+         """, ( exhibit, ) )
+
+      return [ row[ 0 ] for row in data.fetchall() ]
+
+   finally:
+      cur.close()
