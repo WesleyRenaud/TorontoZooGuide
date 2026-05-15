@@ -94,6 +94,11 @@ export function getDay(dateStr) {
    return isValidDate(date) ? date.getDate() : null;
 }
 
+export function getYear(dateStr) {
+   const date = parseLocalDate(dateStr);
+   return isValidDate(date) ? date.getFullYear() : null;
+}
+
 export function isoDateToMonFirstDow(iso) {
    const date = iso ? parseLocalDate(iso) : getToday();
 

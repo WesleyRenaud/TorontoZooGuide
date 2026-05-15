@@ -2,6 +2,51 @@ from datetime import date
 
 import pytest
 
+from api.attractions.data_access.attraction import fetch_attraction_schedule_records
+from api.attractions.logic.attraction import get_active_attraction_schedule_status
+from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_records
+from api.giftshops.logic.gift_shop import get_active_gift_shop_schedule_status
+from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_records
+from api.restaurants.logic.restaurant import get_active_restaurant_schedule_status
+
+
+def get_amenity_schedule_status(
+      db,
+      method_name,
+      item_name,
+      target_date,
+      weekday ):
+
+   if method_name == 'get_active_restaurant_schedule_status':
+      return get_active_restaurant_schedule_status(
+         schedule_records=[
+            schedule_record
+            for schedule_record in fetch_restaurant_schedule_records( db.conn )
+            if schedule_record.restaurant == item_name
+         ],
+         target_date=target_date,
+         weekday=weekday )
+
+   if method_name == 'get_active_gift_shop_schedule_status':
+      return get_active_gift_shop_schedule_status(
+         schedule_records=[
+            schedule_record
+            for schedule_record in fetch_gift_shop_schedule_records( db.conn )
+            if schedule_record.gift_shop == item_name
+         ],
+         target_date=target_date,
+         weekday=weekday )
+
+   return get_active_attraction_schedule_status(
+      schedule_records=[
+         schedule_record
+         for schedule_record in fetch_attraction_schedule_records( db.conn )
+         if schedule_record.attraction == item_name
+      ],
+      attraction_name=item_name,
+      target_date=target_date,
+      weekday=weekday )
+
 
 def test_region_and_static_location_queries( db ):
    regions = db.get_regions()
@@ -479,7 +524,12 @@ def test_amenity_schedule_status_opens_on_each_weekday(
 
    assert getattr( db, setter_name )( **schedule )
 
-   assert getattr( db, method_name )( item_name, target_date, target_date.weekday() ) == ( 'open', None )
+   assert get_amenity_schedule_status(
+      db,
+      method_name,
+      item_name,
+      target_date,
+      target_date.weekday() ) == ( 'open', None )
 
 
 @pytest.mark.parametrize(
@@ -511,9 +561,12 @@ def test_amenity_schedule_status_handles_unknown_inactive_closed_and_holiday(
       setter_name,
       item_kw,
       item_name ):
-   method = getattr( db, method_name )
-
-   assert method( item_name, date( 2026, 5, 15 ), 4 ) == ( 'unknown', None )
+   assert get_amenity_schedule_status(
+      db,
+      method_name,
+      item_name,
+      date( 2026, 5, 15 ),
+      4 ) == ( 'unknown', None )
 
    schedule = {
       item_kw: item_name,
@@ -532,15 +585,30 @@ def test_amenity_schedule_status_handles_unknown_inactive_closed_and_holiday(
 
    assert getattr( db, setter_name )( **schedule )
 
-   assert method( item_name, date( 2026, 5, 15 ), 4 ) == ( 'unknown', None )
-   assert method( item_name, date( 2026, 6, 15 ), 0 ) == ( 'closed', 'Closed for testing.' )
+   assert get_amenity_schedule_status(
+      db,
+      method_name,
+      item_name,
+      date( 2026, 5, 15 ),
+      4 ) == ( 'unknown', None )
+   assert get_amenity_schedule_status(
+      db,
+      method_name,
+      item_name,
+      date( 2026, 6, 15 ),
+      0 ) == ( 'closed', 'Closed for testing.' )
 
    schedule[ 'start_date' ] = '2026-01-01'
    schedule[ 'end_date' ] = '2026-12-31'
    schedule[ 'holidays_only' ] = True
    assert getattr( db, setter_name )( **schedule )
 
-   assert method( item_name, date( 2026, 12, 25 ), 4 ) == ( 'open', None )
+   assert get_amenity_schedule_status(
+      db,
+      method_name,
+      item_name,
+      date( 2026, 12, 25 ),
+      4 ) == ( 'open', None )
 
 
 def test_zoomobile_route_selection_and_station_filtering( db, freeze_database_today ):
@@ -549,15 +617,15 @@ def test_zoomobile_route_selection_and_station_filtering( db, freeze_database_to
    manual = db.get_zoomobile_route( route='winter', month='January', day=15 )
    invalid = db.get_zoomobile_route( route='bad-route', month='January', day=15 )
 
-   assert manual[ 'route' ] == 'winter'
-   assert invalid[ 'route' ] == 'summer'
+   assert manual.route == 'winter'
+   assert invalid.route == 'summer'
 
    assert db.set_current_zoomobile_route( route='winter', start_date='2026-01-01', end_date='2026-01-31' )
    current = db.get_zoomobile_route( route='current', month='January', day=15 )
 
-   assert current[ 'route' ] == 'winter'
-   assert current[ 'route_source' ] == 'override'
-   assert all( station.name != 'Africa Zoomobile Station' for station in current[ 'zoomobile_stations' ] )
+   assert current.route == 'winter'
+   assert current.route_source == 'override'
+   assert all( station.name != 'Africa Zoomobile Station' for station in current.zoomobile_stations )
 
 
 def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
@@ -578,7 +646,7 @@ def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
       message=None
    )
 
-   talks = db.get_guardians_talk_schedule( month='June', day=15 )
+   talks = db.get_guardians_talk_schedule( month='June', day=15, year=2026 )
    assert any( talk.name == 'African Lion' and talk.start_time == '10:00' for talk in talks )
    assert next(
       talk for talk in talks
@@ -591,11 +659,11 @@ def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
       date='2026-06-15',
       time='10:00'
    )
-   talks_after_cancel = db.get_guardians_talk_schedule( month='June', day=15 )
+   talks_after_cancel = db.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
    assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00' ) for talk in talks_after_cancel )
 
-   assert db.get_guardians_talk_schedule( month='June', day=16 ) == []
+   assert db.get_guardians_talk_schedule( month='June', day=16, year=2026 ) == []
 
 
 def test_guardians_talk_occurrences_cover_all_weekdays_and_cancellations( db, freeze_database_today ):

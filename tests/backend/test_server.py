@@ -5,6 +5,7 @@ import pytest
 
 import api.server as server
 from api import zoo
+from api.models.zoomobile_route import ZoomobileRoute
 from conftest import FakeHandler
 
 
@@ -116,11 +117,11 @@ class StubDatabase:
 
    def get_zoomobile_route( self, **kwargs ):
       self.calls.append( ( 'get_zoomobile_route', kwargs ) )
-      return {
-         'route': 'summer',
-         'route_source': 'manual',
-         'zoomobile_stations': [ zoo.ZoomobileStation( name=ZOOMOBILE_STATION_NAME ) ]
-      }
+      return ZoomobileRoute(
+         route='summer',
+         route_source='manual',
+         zoomobile_stations=( zoo.ZoomobileStation( name=ZOOMOBILE_STATION_NAME ), ),
+      )
 
 
    def get_guardians_talk_schedule( self, **kwargs ):
@@ -638,7 +639,7 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
       ( '/get-gift-shops', { 'month': 'June', 'day': 15 }, 'gift_shops' ),
       ( '/get-attractions', { 'month': 'June', 'day': 15 }, 'attractions' ),
       ( '/get-zoomobile-route', { 'zoomobileRoute': 'summer', 'month': 'June', 'day': 15 }, 'route' ),
-      ( '/get-guardians-talks', { 'month': 'June', 'day': 15 }, 'guardians_talks' ),
+      ( '/get-guardians-talks', { 'month': 'June', 'day': 15, 'year': 2026 }, 'guardians_talks' ),
       ( '/get-wild-encounters', { 'month': 'June', 'day': 15 }, 'wild_encounters' ),
       ( '/get-drinking-fountains', { 'month': 'June', 'day': 15 }, 'drinking_fountains' ),
       ( '/get-defibrillators', {}, 'defibrillators' ),
@@ -910,7 +911,8 @@ def test_search_endpoint_adds_type_fields( stub_database ):
          'includeWildEncounters': True,
          'zoomobileRoute': 'summer',
          'month': 'June',
-         'day': 15
+         'day': 15,
+         'year': 2026,
       }
    )
 
@@ -934,6 +936,56 @@ def test_search_endpoint_adds_type_fields( stub_database ):
          'day': 15,
          'include_closed_restrooms': False
       }
+   ) in StubDatabase.instances[ 0 ].calls
+
+   assert (
+      'get_guardians_talks_matching_query',
+      {
+         'query': 'a',
+         'month': 'June',
+         'day': 15,
+         'year': 2026,
+      }
+   ) in StubDatabase.instances[ 0 ].calls
+
+
+def test_get_guardians_talks_omitted_year_passes_through( stub_database ):
+   handler = make_handler(
+      '/get-guardians-talks',
+      { 'month': 'June', 'day': 15 },
+   )
+
+   server.MyHandler.do_POST( handler )
+
+   assert handler.errors == []
+   assert (
+      'get_guardians_talk_schedule',
+      { 'month': 'June', 'day': 15, 'year': None },
+   ) in StubDatabase.instances[ 0 ].calls
+
+
+def test_search_omitted_year_passes_through_when_guardians_included( stub_database ):
+   handler = make_handler(
+      '/search',
+      {
+         'query': 'a',
+         'includeGuardiansTalks': True,
+         'month': 'June',
+         'day': 15,
+      },
+   )
+
+   server.MyHandler.do_POST( handler )
+
+   assert handler.errors == []
+   assert (
+      'get_guardians_talks_matching_query',
+      {
+         'query': 'a',
+         'month': 'June',
+         'day': 15,
+         'year': None,
+      },
    ) in StubDatabase.instances[ 0 ].calls
 
 

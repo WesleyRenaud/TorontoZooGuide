@@ -2,6 +2,7 @@ import sqlite3
 from datetime import date, datetime, timedelta
 
 from . import zoo
+from .shared.strings import SharedStrings
 
 
 ################################################################################
@@ -68,981 +69,98 @@ class Database():
 
 
    def get_pavilions( self ):
-      cur = self.conn.cursor()
+      from .pavilions.controllers.pavilion_controller import PavilionController
 
-      data = cur.execute(
-         """   SELECT
-                  p.NAME,
-                  p.REGION,
-                  p.DESCRIPTION,
-                  p.X_COORD,
-                  p.Y_COORD
-               FROM Pavilion p;
-         """ )
-
-      pavilion_data = data.fetchall()
-
-      pavilions = []
-
-      for pavilion in pavilion_data:
-         pavilions.append(
-            zoo.Pavilion(
-               name=pavilion[ 'NAME' ],
-               region=pavilion[ 'REGION' ],
-               description=pavilion[ 'DESCRIPTION' ],
-               x_coord=pavilion[ 'X_COORD' ],
-               y_coord=pavilion[ 'Y_COORD' ] ) )
-
-      cur.close()
-
-      return pavilions
+      return PavilionController( self.conn ).get_pavilions()
 
 
    def get_restaurants( self, month, day, include_closed_restaurants, restaurants_to_include=[] ):
-      cur = self.conn.cursor()
+      from .restaurants.controllers.restaurant_controller import RestaurantController
 
-      normalized_month = zoo.ZooUtil.normalize_month( month=month )
-      normalized_day = int( day )
-
-      target_date = date( datetime.now().year, normalized_month, normalized_day )
-      weekday = target_date.weekday()
-      is_weekend_or_holiday = (
-         weekday >= 5
-         or zoo.ZooUtil.is_holiday( d=target_date ) )
-
-      data = cur.execute(
-         """   SELECT
-                  r.NAME,
-                  r.LOCATION,
-                  r.SUB_LOCATION,
-                  r.DESCRIPTION,
-                  r.MENU_LINK,
-                  r.X_COORD,
-                  r.Y_COORD,
-                  COALESCE( rdsam.WEEKDAY_VALUE, 1.0 ) AS RESTAURANT_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
-                  COALESCE( rdsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS RESTAURANT_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
-               FROM Restaurant r
-               LEFT JOIN RestaurantDaySeasonalAvailabilityMultiplier rdsam
-                  ON r.NAME = rdsam.RESTAURANT
-                  AND rdsam.MONTH = ?
-                  AND rdsam.DAY = ?;
-         """, ( normalized_month, normalized_day ) )
-
-      restaurant_data = data.fetchall()
-
-      restaurants = []
-
-      for restaurant in restaurant_data:
-         name = restaurant[ 'NAME' ]
-         likelihood = 100
-         closed_message = None
-         restaurant_day_seasonal_availability_multiplier = (
-            restaurant[ 'RESTAURANT_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ]
-            if is_weekend_or_holiday
-            else restaurant[ 'RESTAURANT_DAY_SEASONAL_WEEKDAY_MULTIPLIER' ]
-         )
-
-         schedule_status, schedule_message = self.get_active_restaurant_schedule_status(
-            restaurant_name=name,
-            target_date=target_date,
-            weekday=weekday )
-
-         if schedule_status == 'closed':
-            likelihood = 0
-            closed_message = schedule_message
-         elif schedule_status == 'unknown':
-            likelihood = self.calculate_restaurant_likelihood(
-               day_seasonal_availability_multiplier=restaurant_day_seasonal_availability_multiplier )
-
-            if likelihood == 0:
-               closed_message = f'The { name } is most likely not open on this day.'
-
-         is_closed = likelihood <= 0
-
-         if include_closed_restaurants or not is_closed or name in restaurants_to_include:
-            restaurants.append(
-               zoo.Restaurant(
-                  name=name,
-                  location=restaurant[ 'LOCATION' ],
-                  sub_location=restaurant[ 'SUB_LOCATION' ],
-                  description=restaurant[ 'DESCRIPTION' ],
-                  menu_link=restaurant[ 'MENU_LINK' ],
-                  x_coord=restaurant[ 'X_COORD' ],
-                  y_coord=restaurant[ 'Y_COORD' ],
-                  is_closed=is_closed,
-                  closed_message=closed_message,
-                  likelihood=likelihood ) )
-
-      cur.close()
-
-      return restaurants
-
-
-   def get_active_restaurant_schedule_status( self, restaurant_name, target_date, weekday ):
-      cur = self.conn.cursor()
-
-      data = cur.execute(
-         """   SELECT
-                  s.SCHEDULE_START_DATE,
-                  s.SCHEDULE_END_DATE,
-                  s.MONDAY,
-                  s.TUESDAY,
-                  s.WEDNESDAY,
-                  s.THURSDAY,
-                  s.FRIDAY,
-                  s.SATURDAY,
-                  s.SUNDAY,
-                  s.HOLIDAYS_ONLY,
-                  s.SCHEDULE_MESSAGE
-               FROM RestaurantOpeningSchedule s
-               WHERE s.RESTAURANT = ?;
-         """, ( restaurant_name, ) )
-
-      schedule_rows = data.fetchall()
-      cur.close()
-
-      if len( schedule_rows ) == 0:
-         return 'unknown', None
-
-      for schedule in schedule_rows:
-         is_active = zoo.ZooUtil.is_date_in_range(
-            target_date=target_date,
-            start_date_value=schedule[ 'SCHEDULE_START_DATE' ],
-            end_date_value=schedule[ 'SCHEDULE_END_DATE' ] )
-
-         if not is_active:
-            continue
-
-         is_holiday = zoo.ZooUtil.is_holiday( d=target_date )
-
-         open_on_day = False
-
-         if weekday == 0 and schedule[ 'MONDAY' ]:
-            open_on_day = True
-         elif weekday == 1 and schedule[ 'TUESDAY' ]:
-            open_on_day = True
-         elif weekday == 2 and schedule[ 'WEDNESDAY' ]:
-            open_on_day = True
-         elif weekday == 3 and schedule[ 'THURSDAY' ]:
-            open_on_day = True
-         elif weekday == 4 and schedule[ 'FRIDAY' ]:
-            open_on_day = True
-         elif weekday == 5 and schedule[ 'SATURDAY' ]:
-            open_on_day = True
-         elif weekday == 6 and schedule[ 'SUNDAY' ]:
-            open_on_day = True
-
-         if is_holiday and schedule[ 'HOLIDAYS_ONLY' ]:
-            open_on_day = True
-
-         if open_on_day:
-            return 'open', None
-
-         return 'closed', schedule[ 'SCHEDULE_MESSAGE' ]
-
-      return 'unknown', None
-
-
-   def calculate_restaurant_likelihood( self, day_seasonal_availability_multiplier ):
-      seasonal_multiplier = (
-         day_seasonal_availability_multiplier
-         if day_seasonal_availability_multiplier is not None
-         else 1.0
-      )
-      likelihood = max( 0.0, min( seasonal_multiplier, 1.0 ) )
-
-      return max( round( likelihood * 100 ), 0 )
+      return RestaurantController( self.conn ).get_restaurants(
+         month=month,
+         day=day,
+         include_closed_restaurants=include_closed_restaurants,
+         restaurants_to_include=restaurants_to_include )
 
 
    def get_restrooms( self, month=None, day=None, include_closed_restrooms=False ):
-      cur = self.conn.cursor()
+      from .restrooms.controllers.restroom_controller import RestroomController
 
-      if month is not None and day is not None:
-         target_date = date(
-            datetime.now().year,
-            zoo.ZooUtil.normalize_month( month=month ),
-            int( day ) )
-      else:
-         target_date = datetime.now().date()
-
-      data = cur.execute(
-         """   SELECT
-                  r.TITLE,
-                  r.X_COORD,
-                  r.Y_COORD,
-                  s.IS_CLOSED,
-                  s.CLOSED_MESSAGE,
-                  s.CLOSED_START,
-                  s.CLOSED_END,
-                  a.ALERT_MESSAGE,
-                  a.ALERT_START_DATE,
-                  a.ALERT_END_DATE
-               FROM Restroom r
-               LEFT JOIN RestroomStatus s
-                  ON s.RESTROOM = r.TITLE
-               LEFT JOIN RestroomAlert a
-                  ON a.RESTROOM = r.TITLE;
-         """ )
-
-      restroom_data = data.fetchall()
-
-      restrooms = []
-
-      for restroom in restroom_data:
-         is_closed = False
-         closed_message = None
-         has_alert = False
-         alert_message = None
-
-         if restroom[ 'IS_CLOSED' ] != None:
-            status_is_active = zoo.ZooUtil.is_date_in_range(
-               target_date=target_date,
-               start_date_value=restroom[ 'CLOSED_START' ],
-               end_date_value=restroom[ 'CLOSED_END' ] )
-
-            is_closed = bool( restroom[ 'IS_CLOSED' ] ) and status_is_active
-
-            if is_closed:
-               closed_message = restroom[ 'CLOSED_MESSAGE' ]
-
-         if restroom[ 'ALERT_MESSAGE' ] != None:
-            alert_is_active = zoo.ZooUtil.is_date_in_range(
-               target_date=target_date,
-               start_date_value=restroom[ 'ALERT_START_DATE' ],
-               end_date_value=restroom[ 'ALERT_END_DATE' ] )
-
-            has_alert = alert_is_active
-
-            if has_alert:
-               alert_message = restroom[ 'ALERT_MESSAGE' ]
-
-         if is_closed and not include_closed_restrooms:
-            continue
-
-         restrooms.append(
-            zoo.Restroom(
-               title=restroom[ 'TITLE' ],
-               x_coord=restroom[ 'X_COORD' ],
-               y_coord=restroom[ 'Y_COORD' ],
-               is_closed=is_closed,
-               closed_message=closed_message,
-               has_alert=has_alert,
-               alert_message=alert_message ) )
-
-      cur.close()
-
-      return restrooms
+      return RestroomController( self.conn ).get_restrooms(
+         month=month,
+         day=day,
+         include_closed_restrooms=include_closed_restrooms )
 
 
    def get_gift_shops( self, month, day, include_closed_gift_shops, gift_shops_to_include=[] ):
-      cur = self.conn.cursor()
+      from .giftshops.controllers.gift_shop_controller import GiftShopController
 
-      normalized_month = zoo.ZooUtil.normalize_month( month )
-      normalized_day = int( day )
-
-      target_date = date( datetime.now().year, normalized_month, normalized_day )
-      weekday = target_date.weekday()
-      is_weekend_or_holiday = (
-         weekday >= 5
-         or zoo.ZooUtil.is_holiday( d=target_date ) )
-
-      data = cur.execute(
-         """   SELECT
-                  g.NAME,
-                  g.LOCATION,
-                  g.DESCRIPTION,
-                  g.X_COORD,
-                  g.Y_COORD,
-                  COALESCE( gdsam.WEEKDAY_VALUE, 1.0 ) AS GIFT_SHOP_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
-                  COALESCE( gdsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS GIFT_SHOP_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
-               FROM GiftShop g
-               LEFT JOIN GiftShopDaySeasonalAvailabilityMultiplier gdsam
-                  ON g.NAME = gdsam.GIFT_SHOP
-                  AND gdsam.MONTH = ?
-                  AND gdsam.DAY = ?;
-         """, ( normalized_month, normalized_day ) )
-
-      gift_shop_data = data.fetchall()
-
-      gift_shops = []
-
-      for gift_shop in gift_shop_data:
-         name = gift_shop[ 'NAME' ]
-         likelihood = 100
-         closed_message = None
-         gift_shop_day_seasonal_availability_multiplier = (
-            gift_shop[ 'GIFT_SHOP_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ]
-            if is_weekend_or_holiday
-            else gift_shop[ 'GIFT_SHOP_DAY_SEASONAL_WEEKDAY_MULTIPLIER' ]
-         )
-
-         schedule_status, schedule_message = self.get_active_gift_shop_schedule_status(
-            gift_shop_name=name,
-            target_date=target_date,
-            weekday=weekday )
-
-         if schedule_status == 'closed':
-            likelihood = 0
-            closed_message = schedule_message
-         elif schedule_status == 'unknown':
-            likelihood = self.calculate_gift_shop_likelihood(
-               day_seasonal_availability_multiplier=gift_shop_day_seasonal_availability_multiplier )
-
-            if likelihood == 0:
-               closed_message = f'The { name } is most likely not open on this day.'
-
-         is_closed = likelihood <= 0
-
-         if include_closed_gift_shops or not is_closed or name in gift_shops_to_include:
-            gift_shops.append(
-               zoo.GiftShop(
-                  name=name,
-                  location=gift_shop[ 'LOCATION' ],
-                  description=gift_shop[ 'DESCRIPTION' ],
-                  x_coord=gift_shop[ 'X_COORD' ],
-                  y_coord=gift_shop[ 'Y_COORD' ],
-                  is_closed=is_closed,
-                  closed_message=closed_message,
-                  likelihood=likelihood ) )
-
-      cur.close()
-
-      return gift_shops
-
-
-   def get_active_gift_shop_schedule_status( self, gift_shop_name, target_date, weekday ):
-      cur = self.conn.cursor()
-
-      data = cur.execute(
-         """   SELECT
-                  s.SCHEDULE_START_DATE,
-                  s.SCHEDULE_END_DATE,
-                  s.MONDAY,
-                  s.TUESDAY,
-                  s.WEDNESDAY,
-                  s.THURSDAY,
-                  s.FRIDAY,
-                  s.SATURDAY,
-                  s.SUNDAY,
-                  s.HOLIDAYS_ONLY,
-                  s.SCHEDULE_MESSAGE
-               FROM GiftShopOpeningSchedule s
-               WHERE s.GIFT_SHOP = ?;
-         """, ( gift_shop_name, ) )
-
-      schedule_rows = data.fetchall()
-      cur.close()
-
-      if len( schedule_rows ) == 0:
-         return 'unknown', None
-
-      for schedule in schedule_rows:
-         is_active = zoo.ZooUtil.is_date_in_range(
-            target_date=target_date,
-            start_date_value=schedule[ 'SCHEDULE_START_DATE' ],
-            end_date_value=schedule[ 'SCHEDULE_END_DATE' ] )
-
-         if not is_active:
-            continue
-
-         is_holiday = zoo.ZooUtil.is_holiday( d=target_date )
-
-         open_on_day = False
-
-         if weekday == 0 and schedule[ 'MONDAY' ]:
-            open_on_day = True
-         elif weekday == 1 and schedule[ 'TUESDAY' ]:
-            open_on_day = True
-         elif weekday == 2 and schedule[ 'WEDNESDAY' ]:
-            open_on_day = True
-         elif weekday == 3 and schedule[ 'THURSDAY' ]:
-            open_on_day = True
-         elif weekday == 4 and schedule[ 'FRIDAY' ]:
-            open_on_day = True
-         elif weekday == 5 and schedule[ 'SATURDAY' ]:
-            open_on_day = True
-         elif weekday == 6 and schedule[ 'SUNDAY' ]:
-            open_on_day = True
-
-         if is_holiday and schedule[ 'HOLIDAYS_ONLY' ]:
-            open_on_day = True
-
-         if open_on_day:
-            return 'open', None
-
-         return 'closed', schedule[ 'SCHEDULE_MESSAGE' ]
-
-      return 'unknown', None
-
-
-   def calculate_gift_shop_likelihood( self, day_seasonal_availability_multiplier ):
-      seasonal_multiplier = (
-         day_seasonal_availability_multiplier
-         if day_seasonal_availability_multiplier is not None
-         else 1.0
-      )
-      likelihood = max( 0.0, min( seasonal_multiplier, 1.0 ) )
-
-      return max( round( likelihood * 100 ), 0 )
+      return GiftShopController( self.conn ).get_gift_shops(
+         month=month,
+         day=day,
+         include_closed_gift_shops=include_closed_gift_shops,
+         gift_shops_to_include=gift_shops_to_include )
 
 
    def get_attractions( self, month, day, include_closed_attractions=False ):
-      cur = self.conn.cursor()
-      normalized_month = zoo.ZooUtil.normalize_month( month )
-      normalized_day = int( day )
+      from .attractions.controllers.attraction_controller import AttractionController
 
-      target_date = date(
-         datetime.now().year,
-         normalized_month,
-         normalized_day )
-
-      data = cur.execute(
-         """   SELECT
-                  a.NAME,
-                  a.FREE_WITH_ADMISSION,
-                  a.DESCRIPTION,
-                  a.INFO_LINK,
-                  a.HYPERLINK_TEXT,
-                  a.X_COORD,
-                  a.Y_COORD,
-                  COALESCE( adsam.WEEKDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
-                  COALESCE( adsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
-               FROM Attraction a
-               LEFT JOIN AttractionDaySeasonalAvailabilityMultiplier adsam
-                  ON a.NAME = adsam.ATTRACTION
-                  AND adsam.MONTH = ?
-                  AND adsam.DAY = ?;
-         """, ( normalized_month, normalized_day ) )
-
-      attraction_data = data.fetchall()
-
-      attractions = []
-
-      for attraction in attraction_data:
-         name = attraction[ 'NAME' ]
-         likelihood, closed_message = (
-            self.get_attraction_likelihood_and_message_for_date(
-               attraction,
-               target_date ) )
-
-         is_closed = likelihood <= 0
-
-         should_include = (
-            ( not is_closed )
-            or include_closed_attractions
-         )
-
-         if not should_include:
-            continue
-
-         attractions.append(
-            zoo.Attraction(
-               name=name,
-               free_with_admission=attraction[ 'FREE_WITH_ADMISSION' ],
-               description=attraction[ 'DESCRIPTION' ],
-               info_link=attraction[ 'INFO_LINK' ],
-               hyperlink_text=attraction[ 'HYPERLINK_TEXT' ],
-               x_coord=attraction[ 'X_COORD' ],
-               y_coord=attraction[ 'Y_COORD' ],
-               is_closed=is_closed,
-               closed_message=closed_message,
-               likelihood=likelihood ) )
-
-      cur.close()
-
-      return attractions
-
-
-   def get_active_attraction_schedule_status( self, attraction_name, target_date, weekday ):
-      cur = self.conn.cursor()
-
-      data = cur.execute(
-         """   SELECT
-                  s.SCHEDULE_START_DATE,
-                  s.SCHEDULE_END_DATE,
-                  s.MONDAY,
-                  s.TUESDAY,
-                  s.WEDNESDAY,
-                  s.THURSDAY,
-                  s.FRIDAY,
-                  s.SATURDAY,
-                  s.SUNDAY,
-                  s.HOLIDAYS_ONLY,
-                  s.SCHEDULE_MESSAGE
-               FROM AttractionOpeningSchedule s
-               WHERE s.ATTRACTION = ?;
-         """, ( attraction_name, ) )
-
-      schedule_rows = data.fetchall()
-      cur.close()
-
-      if len( schedule_rows ) == 0:
-         return 'unknown', None
-
-      for schedule in schedule_rows:
-         is_active = zoo.ZooUtil.is_date_in_range(
-            target_date=target_date,
-            start_date_value=schedule[ 'SCHEDULE_START_DATE' ],
-            end_date_value=schedule[ 'SCHEDULE_END_DATE' ] )
-
-         if not is_active:
-            continue
-
-         is_holiday = zoo.ZooUtil.is_holiday( d=target_date )
-
-         open_on_day = False
-
-         if weekday == 0 and schedule[ 'MONDAY' ]:
-            open_on_day = True
-         elif weekday == 1 and schedule[ 'TUESDAY' ]:
-            open_on_day = True
-         elif weekday == 2 and schedule[ 'WEDNESDAY' ]:
-            open_on_day = True
-         elif weekday == 3 and schedule[ 'THURSDAY' ]:
-            open_on_day = True
-         elif weekday == 4 and schedule[ 'FRIDAY' ]:
-            open_on_day = True
-         elif weekday == 5 and schedule[ 'SATURDAY' ]:
-            open_on_day = True
-         elif weekday == 6 and schedule[ 'SUNDAY' ]:
-            open_on_day = True
-         elif schedule[ 'HOLIDAYS_ONLY' ] and is_holiday:
-            open_on_day = True
-
-         if open_on_day:
-            return 'open', None
-
-         message = schedule[ 'SCHEDULE_MESSAGE' ]
-
-         if not message:
-            if schedule[ 'SATURDAY' ] and schedule[ 'SUNDAY' ] and schedule[ 'HOLIDAYS_ONLY' ]:
-               message = f'The { attraction_name } is open on weekends and holidays only.'
-            else:
-               message = f'The { attraction_name } is not scheduled to be open today.'
-
-         return 'closed', message
-
-      return 'unknown', None
-
-
-   def calculate_attraction_likelihood( self, day_seasonal_availability_multiplier ):
-      seasonal_multiplier = (
-         day_seasonal_availability_multiplier
-         if day_seasonal_availability_multiplier is not None
-         else 1.0
-      )
-      likelihood = max( 0.0, min( seasonal_multiplier, 1.0 ) )
-
-      return max( round( likelihood * 100 ), 0 )
-
-
-   def get_attraction_likelihood_and_message_for_date(
-         self, attraction_row, target_date ):
-      name = attraction_row[ 'NAME' ]
-      weekday = target_date.weekday()
-      is_weekend_or_holiday = (
-         weekday >= 5
-         or zoo.ZooUtil.is_holiday( d=target_date ) )
-
-      attraction_day_seasonal_availability_multiplier = (
-         attraction_row[ 'ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ]
-         if is_weekend_or_holiday
-         else attraction_row[ 'ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER' ]
-      )
-
-      likelihood = 100
-      closed_message = None
-
-      schedule_status, schedule_message = self.get_active_attraction_schedule_status(
-         attraction_name=name,
-         target_date=target_date,
-         weekday=weekday )
-
-      if schedule_status == 'closed':
-         likelihood = 0
-         closed_message = schedule_message
-      elif schedule_status == 'unknown':
-         likelihood = self.calculate_attraction_likelihood(
-            day_seasonal_availability_multiplier=attraction_day_seasonal_availability_multiplier )
-
-         if likelihood == 0:
-            closed_message = f'The { name } is most likely not operating on this day.'
-
-      return likelihood, closed_message
-
-
-   def get_attraction_row_for_calendar_day(
-         self, attraction_name, month_int, day_int ):
-      cur = self.conn.cursor()
-
-      row = cur.execute(
-         """   SELECT
-                  a.NAME,
-                  a.FREE_WITH_ADMISSION,
-                  a.DESCRIPTION,
-                  a.INFO_LINK,
-                  a.HYPERLINK_TEXT,
-                  a.X_COORD,
-                  a.Y_COORD,
-                  COALESCE( adsam.WEEKDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKDAY_MULTIPLIER,
-                  COALESCE( adsam.WEEKEND_HOLIDAY_VALUE, 1.0 ) AS ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER
-               FROM Attraction a
-               LEFT JOIN AttractionDaySeasonalAvailabilityMultiplier adsam
-                  ON a.NAME = adsam.ATTRACTION
-                  AND adsam.MONTH = ?
-                  AND adsam.DAY = ?
-               WHERE a.NAME = ?;
-         """,
-         ( month_int, day_int, attraction_name )
-      ).fetchone()
-
-      cur.close()
-
-      return row
+      return AttractionController( self.conn ).get_attractions(
+         month=month,
+         day=day,
+         include_closed_attractions=include_closed_attractions )
 
 
    def get_zoomobile_stations( self, route, month, day, zoomobile_stations_to_include=None ):
-      if zoomobile_stations_to_include is None:
-         zoomobile_stations_to_include = []
+      from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
-      target_date = date(
-         datetime.now().year,
-         zoo.ZooUtil.normalize_month( month ),
-         int( day ) )
-
-      cur = self.conn.cursor()
-
-      data = cur.execute(
-         """   SELECT
-                  s.NAME,
-                  s.ON_WINTER_ROUTE,
-                  s.DESCRIPTION,
-                  s.X_COORD,
-                  s.Y_COORD
-               FROM ZoomobileStation s;
-         """ )
-
-      zoomobile_station_data = data.fetchall()
-
-      zoomobile_stations = []
-
-      for zoomobile_station in zoomobile_station_data:
-         name = zoomobile_station[ 'NAME' ]
-         on_winter_route = zoomobile_station[ 'ON_WINTER_ROUTE' ]
-
-         if not (
-            route == 'summer'
-            or on_winter_route
-            or name in zoomobile_stations_to_include
-         ):
-            continue
-
-         status_data = cur.execute(
-            """   SELECT
-                     s.CLOSED_START,
-                     s.CLOSED_END,
-                     s.IS_CLOSED,
-                     s.CLOSED_MESSAGE
-                  FROM ZoomobileStationStatus s
-                  WHERE s.ZOOMOBILE_STATION = ?;
-            """, ( name, ) )
-
-         status_rows = status_data.fetchall()
-
-         is_closed = False
-
-         for status in status_rows:
-            start_ok = True
-            end_ok = True
-
-            if status[ 'CLOSED_START' ] != None:
-               start_date = zoo.ZooUtil.parse_date_value( value=status[ 'CLOSED_START' ] )
-               start_ok = target_date >= start_date
-
-            if status[ 'CLOSED_END' ] != None:
-               end_date = zoo.ZooUtil.parse_date_value( value=status[ 'CLOSED_END' ] )
-               end_ok = target_date <= end_date
-
-            if not ( start_ok and end_ok ):
-               continue
-
-            if status[ 'IS_CLOSED' ]:
-               is_closed = True
-               break
-
-         if is_closed:
-            continue
-
-         zoomobile_stations.append(
-            zoo.ZoomobileStation(
-               name=name,
-               description=zoomobile_station[ 'DESCRIPTION' ],
-               x_coord=zoomobile_station[ 'X_COORD' ],
-               y_coord=zoomobile_station[ 'Y_COORD' ] ) )
-
-      cur.close()
-
-      return zoomobile_stations
+      return ZoomobileController( self.conn ).get_zoomobile_stations(
+         route=route,
+         month=month,
+         day=day,
+         zoomobile_stations_to_include=zoomobile_stations_to_include )
 
 
    def get_zoomobile_route( self, route, month, day, zoomobile_stations_to_include=None ):
-      if zoomobile_stations_to_include is None:
-         zoomobile_stations_to_include = []
+      from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
-      normalized_month = zoo.ZooUtil.normalize_month( month )
-      normalized_day = int( day )
-      target_date = date(
-         datetime.now().year,
-         normalized_month,
-         normalized_day )
-      route_source = 'manual'
-
-      if route == 'current':
-         route = self.get_active_zoomobile_route( target_date=target_date )
-
-         if route in [ 'summer', 'winter' ]:
-            route_source = 'override'
-         else:
-            route = self.get_zoomobile_day_route(
-               month=normalized_month,
-               day=normalized_day )
-            route_source = 'fallback'
-
-      if route not in [ 'summer', 'winter' ]:
-         route = 'summer'
-
-      zoomobile_stations = self.get_zoomobile_stations(
+      return ZoomobileController( self.conn ).get_zoomobile_route(
          route=route,
-         month=normalized_month,
-         day=normalized_day,
+         month=month,
+         day=day,
          zoomobile_stations_to_include=zoomobile_stations_to_include )
-
-      return {
-         'route': route,
-         'route_source': route_source,
-         'zoomobile_stations': zoomobile_stations
-      }
 
 
    def get_active_zoomobile_route( self, target_date ):
-      cur = self.conn.cursor()
+      from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
-      data = cur.execute(
-         """   SELECT
-                  z.ROUTE
-               FROM ZoomobileRouteSchedule z
-               WHERE z.SCHEDULE_START_DATE <= ?
-               AND (
-                  z.SCHEDULE_END_DATE IS NULL
-                  OR z.SCHEDULE_END_DATE >= ?
-               )
-               ORDER BY z.SCHEDULE_START_DATE DESC
-               LIMIT 1;
-         """, ( target_date.isoformat(), target_date.isoformat() ) )
-
-      route_data = data.fetchone()
-      cur.close()
-
-      if route_data is None:
-         return None
-
-      route = route_data[ 'ROUTE' ]
-
-      if route not in [ 'summer', 'winter' ]:
-         return None
-
-      return route
+      return ZoomobileController( self.conn ).get_active_zoomobile_route(
+         target_date=target_date )
 
 
    def get_zoomobile_day_route( self, month, day ):
-      cur = self.conn.cursor()
+      from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
-      data = cur.execute(
-         """   SELECT
-                  z.ROUTE
-               FROM ZoomobileDayRoute z
-               WHERE z.MONTH = ?
-               AND z.DAY = ?;
-         """, ( month, day ) )
-
-      route_data = data.fetchone()
-      cur.close()
-
-      if route_data is None:
-         return None
-
-      route = route_data[ 'ROUTE' ]
-
-      if route not in [ 'summer', 'winter' ]:
-         return None
-
-      return route
+      return ZoomobileController( self.conn ).get_zoomobile_day_route(
+         month=month,
+         day=day )
 
 
    def get_guardians_talk_details( self, guardians_talks_to_include=None ):
-      guardians_talks_filter = {
-         talk_name.strip().lower()
-         for talk_name in guardians_talks_to_include or []
-      }
+      from .guardians.controllers.guardians_controller import GuardiansController
 
-      if guardians_talks_to_include != None and not guardians_talks_filter:
-         return []
-
-      cur = self.conn.cursor()
-
-      data = cur.execute(
-         """   SELECT
-                  NAME,
-                  LOCATION,
-                  X_COORD,
-                  Y_COORD,
-                  MAXIMUM_DURATION
-               FROM MeetTheGuardiansTalk;
-         """ )
-
-      rows = data.fetchall()
-      cur.close()
-
-      guardians_talks = []
-
-      for row in rows:
-         if guardians_talks_filter and (
-               row[ 'NAME' ] or '' ).strip().lower() not in guardians_talks_filter:
-            continue
-
-         guardians_talks.append(
-            zoo.GuardiansTalk(
-               name=row[ 'NAME' ],
-               location=row[ 'LOCATION' ],
-               x_coord=row[ 'X_COORD' ],
-               y_coord=row[ 'Y_COORD' ],
-               maximum_duration=row[ 'MAXIMUM_DURATION' ] ) )
-
-      guardians_talks.sort(
-         key=lambda t: (
-            ( t.name or '' ).lower(),
-            ( t.location or '' ).lower()
-         )
-      )
-
-      return guardians_talks
+      return GuardiansController( self.conn ).get_guardians_talk_details(
+         guardians_talks_to_include=guardians_talks_to_include )
 
 
-   def get_guardians_talk_schedule( self, month, day ):
-      cur = self.conn.cursor()
+   def get_guardians_talk_schedule( self, month, day, year ):
+      from .guardians.controllers.guardians_controller import GuardiansController
 
-      target_date = date(
-         datetime.now().year,
-         zoo.ZooUtil.normalize_month( month ),
-         int( day ) )
-
-      target_weekday = target_date.weekday()
-      target_date_str = target_date.isoformat()
-
-      data = cur.execute(
-         """   SELECT
-                  t.NAME,
-                  t.LOCATION,
-                  t.X_COORD,
-                  t.Y_COORD,
-                  t.MAXIMUM_DURATION,
-                  s.SCHEDULE_START_DATE,
-                  s.SCHEDULE_END_DATE,
-                  s.MONDAY,
-                  s.TUESDAY,
-                  s.WEDNESDAY,
-                  s.THURSDAY,
-                  s.FRIDAY,
-                  s.SATURDAY,
-                  s.SUNDAY,
-                  s.TALK_TIME
-               FROM MeetTheGuardiansTalk t
-               JOIN GuardiansTalkSchedule s
-                  ON t.NAME = s.TALK_NAME
-                  AND t.LOCATION = s.LOCATION;
-         """ )
-
-      guardians_talk_data = data.fetchall()
-
-      guardians_talks = []
-
-      for guardians_talk in guardians_talk_data:
-         name = guardians_talk[ 'NAME' ]
-         location = guardians_talk[ 'LOCATION' ]
-         talk_time = guardians_talk[ 'TALK_TIME' ]
-
-         start_ok = True
-         end_ok = True
-         unavailable_message = None
-
-         if guardians_talk[ 'SCHEDULE_START_DATE' ] != None:
-            schedule_start_date = zoo.ZooUtil.parse_date_value(
-               value=guardians_talk[ 'SCHEDULE_START_DATE' ] )
-            start_ok = target_date >= schedule_start_date
-
-         if guardians_talk[ 'SCHEDULE_END_DATE' ] != None:
-            schedule_end_date = zoo.ZooUtil.parse_date_value(
-               value=guardians_talk[ 'SCHEDULE_END_DATE' ] )
-            end_ok = target_date <= schedule_end_date
-
-         weekday_ok = False
-
-         if target_weekday == 0:
-            weekday_ok = bool( guardians_talk[ 'MONDAY' ] )
-         elif target_weekday == 1:
-            weekday_ok = bool( guardians_talk[ 'TUESDAY' ] )
-         elif target_weekday == 2:
-            weekday_ok = bool( guardians_talk[ 'WEDNESDAY' ] )
-         elif target_weekday == 3:
-            weekday_ok = bool( guardians_talk[ 'THURSDAY' ] )
-         elif target_weekday == 4:
-            weekday_ok = bool( guardians_talk[ 'FRIDAY' ] )
-         elif target_weekday == 5:
-            weekday_ok = bool( guardians_talk[ 'SATURDAY' ] )
-         elif target_weekday == 6:
-            weekday_ok = bool( guardians_talk[ 'SUNDAY' ] )
-
-         cancellation_data = cur.execute(
-            """   SELECT 1
-                  FROM GuardiansTalkCancellation
-                  WHERE TALK_NAME = ?
-                  AND LOCATION = ?
-                  AND CANCELLATION_DATE = ?
-                  AND TALK_TIME = ?;
-            """,
-            (
-               name,
-               location,
-               target_date_str,
-               talk_time
-            ) )
-
-         is_cancelled = cancellation_data.fetchone() != None
-         is_available = start_ok and end_ok and weekday_ok and not is_cancelled
-
-         if not is_available:
-            if not start_ok or not end_ok:
-               unavailable_message = f'{ name } is not scheduled on { target_date.strftime( "%B" ) } { target_date.day }.'
-            elif not weekday_ok:
-               unavailable_message = f'{ name } is not offered on this day of the week.'
-            elif is_cancelled:
-               unavailable_message = f'{ name } has been cancelled for this date.'
-
-         if is_available:
-            guardians_talks.append(
-               zoo.GuardiansTalk(
-                  name=name,
-                  location=location,
-                  x_coord=guardians_talk[ 'X_COORD' ],
-                  y_coord=guardians_talk[ 'Y_COORD' ],
-                  start_time=talk_time,
-                  maximum_duration=guardians_talk[ 'MAXIMUM_DURATION' ],
-                  is_available=is_available,
-                  unavailable_message=unavailable_message ) )
-
-      cur.close()
-
-      return guardians_talks
+      return GuardiansController( self.conn ).get_guardians_talk_schedule(
+         month,
+         day,
+         year )
 
 
    def get_guardians_talk_schedule_for_talk_on_day(
@@ -1050,11 +168,15 @@ class Database():
          month,
          day,
          talk_name,
+         year,
          day_schedule=None ):
       rows = (
          day_schedule
          if day_schedule is not None
-         else self.get_guardians_talk_schedule( month=month, day=day )
+         else self.get_guardians_talk_schedule(
+            month=month,
+            day=day,
+            year=year )
       )
 
       key = ( talk_name or '' ).strip().lower()
@@ -1174,22 +296,17 @@ class Database():
                value=wild_encounter[ 'SCHEDULE_END_DATE' ] )
             end_ok = target_date <= schedule_end_date
 
-         weekday_ok = False
-
-         if target_weekday == 0:
-            weekday_ok = bool( wild_encounter[ 'MONDAY' ] )
-         elif target_weekday == 1:
-            weekday_ok = bool( wild_encounter[ 'TUESDAY' ] )
-         elif target_weekday == 2:
-            weekday_ok = bool( wild_encounter[ 'WEDNESDAY' ] )
-         elif target_weekday == 3:
-            weekday_ok = bool( wild_encounter[ 'THURSDAY' ] )
-         elif target_weekday == 4:
-            weekday_ok = bool( wild_encounter[ 'FRIDAY' ] )
-         elif target_weekday == 5:
-            weekday_ok = bool( wild_encounter[ 'SATURDAY' ] )
-         elif target_weekday == 6:
-            weekday_ok = bool( wild_encounter[ 'SUNDAY' ] )
+         weekday_ok = zoo.ZooUtil.schedule_includes_weekday(
+            target_weekday,
+            (
+               wild_encounter[ 'MONDAY' ],
+               wild_encounter[ 'TUESDAY' ],
+               wild_encounter[ 'WEDNESDAY' ],
+               wild_encounter[ 'THURSDAY' ],
+               wild_encounter[ 'FRIDAY' ],
+               wild_encounter[ 'SATURDAY' ],
+               wild_encounter[ 'SUNDAY' ],
+            ) )
 
          cancellation_data = cur.execute(
             """   SELECT 1
@@ -1209,11 +326,13 @@ class Database():
 
          if not is_available:
             if not start_ok or not end_ok:
-               unavailable_message = f'{ name } is not scheduled on { target_date.strftime( "%B" ) } { target_date.day }.'
+               unavailable_message = SharedStrings.VisitDaySchedule.not_scheduled_on_visit_day(
+                  name,
+                  target_date )
             elif not weekday_ok:
-               unavailable_message = f'{ name } is not offered on this day of the week.'
+               unavailable_message = SharedStrings.VisitDaySchedule.not_offered_this_weekday( name )
             elif is_cancelled:
-               unavailable_message = f'{ name } has been cancelled for this date.'
+               unavailable_message = SharedStrings.VisitDaySchedule.cancelled_for_this_date( name )
 
          wild_encounters.append(
             zoo.WildEncounter(
@@ -1707,8 +826,11 @@ class Database():
       ]
 
 
-   def get_guardians_talks_matching_query( self, query, month, day ):
-      talks = self.get_guardians_talk_schedule( month=month, day=day )
+   def get_guardians_talks_matching_query( self, query, month, day, year ):
+      talks = self.get_guardians_talk_schedule(
+         month=month,
+         day=day,
+         year=year )
 
       if not query:
          return talks
@@ -1972,7 +1094,8 @@ class Database():
          wild_encounters,
          new_visit_date_temp=None,
          old_visit_date=old_visit_date,
-         new_visit_date=new_visit_date )
+         new_visit_date=new_visit_date,
+         year=itinerary_date.year )
 
       self.clear_itinerary()
 
@@ -2129,23 +1252,15 @@ class Database():
 
    def get_attraction_likelihood_for_visit_date(
          self, visit_date_value, attraction_name ):
+      from .attractions.controllers.attraction_controller import AttractionController
+
       name = ( attraction_name or '' ).strip()
 
       parsed = zoo.ZooUtil.parse_date_value( visit_date_value )
 
-      row = self.get_attraction_row_for_calendar_day(
-         name,
-         parsed.month,
-         parsed.day )
-
-      if row == None:
-         return None
-
-      likelihood, _ = self.get_attraction_likelihood_and_message_for_date(
-         row,
-         parsed )
-
-      return likelihood
+      return AttractionController( self.conn ).get_attraction_likelihood_for_visit_date(
+         visit_date=parsed,
+         attraction_name=name )
 
 
    def validate_itinerary(
@@ -2156,9 +1271,11 @@ class Database():
          attractions,
          guardians_talks,
          wild_encounters,
+         *,
          new_visit_date_temp=None,
          old_visit_date=None,
-         new_visit_date=None ):
+         new_visit_date=None,
+         year ):
       guardians_talks = guardians_talks or []
       wild_encounters = wild_encounters or []
 
@@ -2210,6 +1327,7 @@ class Database():
          'guardians_talks': self.validate_guardians_talks(
             month=month,
             day=day,
+            year=year,
             guardians_talks_to_include=guardians_talks ),
          'wild_encounters': self.validate_wild_encounters(
             month=month,
@@ -2372,8 +1490,11 @@ class Database():
       )
 
 
-   def validate_guardians_talks( self, month, day, guardians_talks_to_include=None ):
-      day_schedule = self.get_guardians_talk_schedule( month=month, day=day )
+   def validate_guardians_talks( self, month, day, year, guardians_talks_to_include=None ):
+      day_schedule = self.get_guardians_talk_schedule(
+         month=month,
+         day=day,
+         year=year )
 
       diffs = []
 
@@ -2382,6 +1503,7 @@ class Database():
             month,
             day,
             talk_name,
+            year,
             day_schedule=day_schedule )
 
          diffs.append(
@@ -2702,28 +1824,26 @@ class Database():
          for row in cancellation_data.fetchall()
       }
 
+      guardians_weekday_flags = (
+         guardians_talk_schedule[ 'MONDAY' ],
+         guardians_talk_schedule[ 'TUESDAY' ],
+         guardians_talk_schedule[ 'WEDNESDAY' ],
+         guardians_talk_schedule[ 'THURSDAY' ],
+         guardians_talk_schedule[ 'FRIDAY' ],
+         guardians_talk_schedule[ 'SATURDAY' ],
+         guardians_talk_schedule[ 'SUNDAY' ],
+      )
+
       guardians_talk_occurrences = []
 
       current_date = schedule_start_date
 
       while current_date <= schedule_end_date:
-         weekday_ok = False
          target_weekday = current_date.weekday()
 
-         if target_weekday == 0:
-            weekday_ok = bool( guardians_talk_schedule[ 'MONDAY' ] )
-         elif target_weekday == 1:
-            weekday_ok = bool( guardians_talk_schedule[ 'TUESDAY' ] )
-         elif target_weekday == 2:
-            weekday_ok = bool( guardians_talk_schedule[ 'WEDNESDAY' ] )
-         elif target_weekday == 3:
-            weekday_ok = bool( guardians_talk_schedule[ 'THURSDAY' ] )
-         elif target_weekday == 4:
-            weekday_ok = bool( guardians_talk_schedule[ 'FRIDAY' ] )
-         elif target_weekday == 5:
-            weekday_ok = bool( guardians_talk_schedule[ 'SATURDAY' ] )
-         elif target_weekday == 6:
-            weekday_ok = bool( guardians_talk_schedule[ 'SUNDAY' ] )
+         weekday_ok = zoo.ZooUtil.schedule_includes_weekday(
+            target_weekday,
+            guardians_weekday_flags )
 
          current_date_str = current_date.isoformat()
 
@@ -2825,28 +1945,26 @@ class Database():
          for row in cancellation_data.fetchall()
       }
 
+      wild_weekday_flags = (
+         wild_encounter_schedule[ 'MONDAY' ],
+         wild_encounter_schedule[ 'TUESDAY' ],
+         wild_encounter_schedule[ 'WEDNESDAY' ],
+         wild_encounter_schedule[ 'THURSDAY' ],
+         wild_encounter_schedule[ 'FRIDAY' ],
+         wild_encounter_schedule[ 'SATURDAY' ],
+         wild_encounter_schedule[ 'SUNDAY' ],
+      )
+
       wild_encounter_occurrences = []
 
       current_date = schedule_start_date
 
       while current_date <= schedule_end_date:
-         weekday_ok = False
          target_weekday = current_date.weekday()
 
-         if target_weekday == 0:
-            weekday_ok = bool( wild_encounter_schedule[ 'MONDAY' ] )
-         elif target_weekday == 1:
-            weekday_ok = bool( wild_encounter_schedule[ 'TUESDAY' ] )
-         elif target_weekday == 2:
-            weekday_ok = bool( wild_encounter_schedule[ 'WEDNESDAY' ] )
-         elif target_weekday == 3:
-            weekday_ok = bool( wild_encounter_schedule[ 'THURSDAY' ] )
-         elif target_weekday == 4:
-            weekday_ok = bool( wild_encounter_schedule[ 'FRIDAY' ] )
-         elif target_weekday == 5:
-            weekday_ok = bool( wild_encounter_schedule[ 'SATURDAY' ] )
-         elif target_weekday == 6:
-            weekday_ok = bool( wild_encounter_schedule[ 'SUNDAY' ] )
+         weekday_ok = zoo.ZooUtil.schedule_includes_weekday(
+            target_weekday,
+            wild_weekday_flags )
 
          current_date_str = current_date.isoformat()
 

@@ -48,7 +48,8 @@ function updateMapForCurrentControls({
       return;
    }
 
-   onUpdate(preset, null);
+   const anchorIso = getCurrentDateStr(mapDateInput, fp) || null;
+   onUpdate(preset, anchorIso);
 }
 
 function bindChangeListeners(inputs, onChange) {

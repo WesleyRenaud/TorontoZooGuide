@@ -329,9 +329,26 @@ class ZooUtil:
 
 
    @staticmethod
-   def visit_target_date( calendar_year, calendar_month, day_of_month ):
-      """``datetime.date`` for a visit from calendar year and 1-based month / day-of-month."""
-      return date( int( calendar_year ), int( calendar_month ), int( day_of_month ) )
+   def visit_target_date( month, day, year ):
+      """Build a visit :class:`~datetime.date` from API ``month`` / ``day`` / ``year``."""
+      return date(
+         int( ZooUtil.resolve_visit_calendar_year( year ) ),
+         int( ZooUtil.resolve_visit_calendar_month( month ) ),
+         int( ZooUtil.resolve_visit_day_of_month( day ) ),
+      )
+
+
+   @staticmethod
+   def schedule_includes_weekday( weekday_index, monday_through_sunday ):
+      """Whether ``monday_through_sunday`` marks ``weekday_index`` as active.
+
+      ``weekday_index`` follows :meth:`datetime.date.weekday` (Monday ``0`` through Sunday ``6``).
+      ``monday_through_sunday`` is seven values in Monday-first order (truthy means scheduled).
+      """
+      if weekday_index < 0 or weekday_index > 6:
+         return False
+
+      return bool( monday_through_sunday[ weekday_index ] )
 
 
    @staticmethod

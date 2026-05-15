@@ -1,5 +1,5 @@
 from ... import zoo
-from ...exhibits.enums import ExhibitStatus
+from ...shared.enums import ScheduleStatus
 from .animal_viewability_context import AnimalViewabilityContext
 
 
@@ -15,17 +15,13 @@ def resolve_temperature_likelihood_context( month, day, temp=None ):
 
 
 def resolve_animal_viewability_context( month, day, calendar_year=None, temp=None ):
-   calendar_month = zoo.ZooUtil.resolve_visit_calendar_month( month )
-   day_of_month = zoo.ZooUtil.resolve_visit_day_of_month( day )
-   calendar_year = zoo.ZooUtil.resolve_visit_calendar_year( calendar_year )
+   target_date = zoo.ZooUtil.visit_target_date( month, day, calendar_year )
+   calendar_month = target_date.month
+   day_of_month = target_date.day
    temp, sigma = resolve_temperature_likelihood_context(
-      month=calendar_month,
+      month=target_date.month,
       day=day_of_month,
       temp=temp )
-   target_date = zoo.ZooUtil.visit_target_date(
-      calendar_year,
-      calendar_month,
-      day_of_month )
 
    return AnimalViewabilityContext(
       calendar_month=calendar_month,
@@ -92,7 +88,7 @@ def get_active_viewing_alert_status( animal, target_date ):
 
 def get_active_exhibit_status( animal, target_date ):
    if animal.is_closed == None:
-      return ExhibitStatus.UNKNOWN, None
+      return ScheduleStatus.UNKNOWN, None
 
    start_date = animal.closed_start
    end_date = animal.closed_end
@@ -103,12 +99,12 @@ def get_active_exhibit_status( animal, target_date ):
       end_date_value=end_date )
 
    if not is_active:
-      return ExhibitStatus.UNKNOWN, None
+      return ScheduleStatus.UNKNOWN, None
 
    if bool( animal.is_closed ):
-      return ExhibitStatus.CLOSED, animal.closed_message
+      return ScheduleStatus.CLOSED, animal.closed_message
 
-   return ExhibitStatus.OPEN, None
+   return ScheduleStatus.OPEN, None
 
 
 def calculate_animal_likelihood(
@@ -244,12 +240,12 @@ def calculate_viewable_animal_likelihood(
       sigma,
       is_off_display,
       exhibit_status ):
-   if is_off_display or exhibit_status == ExhibitStatus.CLOSED:
+   if is_off_display or exhibit_status == ScheduleStatus.CLOSED:
       return 0
 
    applied_exhibit_day_availability_multiplier = 1.0
 
-   if exhibit_status == ExhibitStatus.UNKNOWN:
+   if exhibit_status == ScheduleStatus.UNKNOWN:
       applied_exhibit_day_availability_multiplier = animal.exhibit_day_seasonal_availability_multiplier
 
    return calculate_animal_likelihood(
@@ -272,14 +268,14 @@ def get_viewable_animal_display_message(
    if is_off_display:
       return off_display_message
 
-   if exhibit_status == ExhibitStatus.CLOSED:
+   if exhibit_status == ScheduleStatus.CLOSED:
       return exhibit_closed_message
 
    if likelihood != 0:
       return None
 
    if (
-         exhibit_status == ExhibitStatus.UNKNOWN
+         exhibit_status == ScheduleStatus.UNKNOWN
          and exhibit_day_seasonal_availability_multiplier == 0 ):
       return f'The { animal.exhibit } is most likely closed on this day.'
 
