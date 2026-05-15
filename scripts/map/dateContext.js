@@ -1,4 +1,5 @@
 import { buildDateSearchContext } from '../search/searchContext.js';
+import { getToday, getYear, toISODate } from '../visitDates/visitDateRules.js';
 
 const PRESET_DATE_CONTEXTS = {
    summer: {
@@ -22,9 +23,15 @@ export async function buildMapDateContext(preset, dateStr) {
    const presetDateCtx = PRESET_DATE_CONTEXTS[presetKey];
 
    if (presetDateCtx) {
+      const trimmed = typeof dateStr === 'string' ? dateStr.trim() : '';
+      const anchorIso = getYear(trimmed) != null ? trimmed : toISODate(getToday());
+
+      const anchorCtx = await buildDateSearchContext(anchorIso, { includeTemp: false });
+
       return {
          preset: presetKey,
          ...presetDateCtx,
+         year: anchorCtx.year,
       };
    }
 

@@ -64,7 +64,7 @@ export async function getZoomobileRoute(payload = EMPTY_PAYLOAD) {
    return normalizeRouteResponse(response);
 }
 
-export async function getGuardiansTalks(payload = EMPTY_PAYLOAD) {
+export async function getGuardiansTalks(payload) {
    return await fetchCollection('/get-guardians-talks', 'guardians_talks', payload);
 }
 

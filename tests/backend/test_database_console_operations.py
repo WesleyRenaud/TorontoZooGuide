@@ -250,13 +250,13 @@ def test_set_zoomobile_station_closed_and_open_changes_route_results( db, freeze
 
    route = db.get_zoomobile_route( route='summer', month='June', day=15 )
 
-   assert all( station.name != 'Africa Zoomobile Station' for station in route[ 'zoomobile_stations' ] )
+   assert all( station.name != 'Africa Zoomobile Station' for station in route.zoomobile_stations )
 
    assert db.set_zoomobile_station_as_open( 'Africa Zoomobile Station' )
 
    route = db.get_zoomobile_route( route='summer', month='June', day=15 )
 
-   assert any( station.name == 'Africa Zoomobile Station' for station in route[ 'zoomobile_stations' ] )
+   assert any( station.name == 'Africa Zoomobile Station' for station in route.zoomobile_stations )
 
 
 def test_create_end_and_edit_updates_change_active_update_results( db, freeze_database_today ):
@@ -352,8 +352,8 @@ def test_set_current_zoomobile_route_changes_current_route_result( db, freeze_da
 
    route = db.get_zoomobile_route( route='current', month='June', day=15 )
 
-   assert route[ 'route' ] == 'winter'
-   assert route[ 'route_source' ] == 'override'
+   assert route.route == 'winter'
+   assert route.route_source == 'override'
    assert db.set_current_zoomobile_route( 'summer', '2026-07-01', '2026-06-30' ) is False
 
 
@@ -376,13 +376,13 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results( db, fr
       ''
    )
 
-   talks = db.get_guardians_talk_schedule( month='June', day=15 )
+   talks = db.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
    assert any( talk.name == 'African Lion' and talk.start_time == '10:00' for talk in talks )
 
    assert db.end_guardians_talk_schedule( 'African Lion', 'Africa Savanna', '2026-06-14' )
 
-   talks = db.get_guardians_talk_schedule( month='June', day=15 )
+   talks = db.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
    assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00' ) for talk in talks )
 
@@ -403,7 +403,7 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results( db, fr
    )
    assert db.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', '10:00' )
 
-   talks = db.get_guardians_talk_schedule( month='June', day=15 )
+   talks = db.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
    assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00' ) for talk in talks )
    assert db.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', '10:00' ) is False

@@ -14,6 +14,7 @@ import './itineraryApi.test.mjs';
 import './itineraryDiff.test.mjs';
 import './itineraryValidation.test.mjs';
 import './layerRequest.test.mjs';
+import './mapDateContext.test.mjs';
 import './mapSources.test.mjs';
 import './markerHoverText.test.mjs';
 import './sourceHelpers.test.mjs';

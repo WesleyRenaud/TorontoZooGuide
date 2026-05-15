@@ -1,0 +1,78 @@
+from datetime import date
+from datetime import datetime
+
+from ... import zoo
+from .restroom_context import RestroomContext
+
+
+def resolve_restroom_context( month=None, day=None ):
+   if month is not None and day is not None:
+      target_date = date(
+         datetime.now().year,
+         zoo.ZooUtil.normalize_month( month=month ),
+         int( day ) )
+   else:
+      target_date = datetime.now().date()
+
+   return RestroomContext(
+      target_date=target_date )
+
+
+def is_restroom_status_active( restroom_record, target_date ):
+   if restroom_record.is_closed == None:
+      return False
+
+   return zoo.ZooUtil.is_date_in_range(
+      target_date=target_date,
+      start_date_value=restroom_record.closed_start,
+      end_date_value=restroom_record.closed_end )
+
+
+def is_restroom_alert_active( restroom_record, target_date ):
+   if restroom_record.alert_message == None:
+      return False
+
+   return zoo.ZooUtil.is_date_in_range(
+      target_date=target_date,
+      start_date_value=restroom_record.alert_start_date,
+      end_date_value=restroom_record.alert_end_date )
+
+
+def build_restroom( restroom_record, context ):
+   is_closed = (
+      bool( restroom_record.is_closed )
+      and is_restroom_status_active(
+         restroom_record=restroom_record,
+         target_date=context.target_date ) )
+   has_alert = is_restroom_alert_active(
+      restroom_record=restroom_record,
+      target_date=context.target_date )
+
+   return zoo.Restroom(
+      title=restroom_record.title,
+      x_coord=restroom_record.x_coord,
+      y_coord=restroom_record.y_coord,
+      is_closed=is_closed,
+      closed_message=restroom_record.closed_message if is_closed else None,
+      has_alert=has_alert,
+      alert_message=restroom_record.alert_message if has_alert else None )
+
+
+def build_restrooms(
+      restroom_records,
+      context,
+      include_closed_restrooms ):
+
+   restrooms = []
+
+   for restroom_record in restroom_records:
+      restroom = build_restroom(
+         restroom_record=restroom_record,
+         context=context )
+
+      if restroom.is_closed and not include_closed_restrooms:
+         continue
+
+      restrooms.append( restroom )
+
+   return restrooms

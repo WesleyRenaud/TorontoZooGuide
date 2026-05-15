@@ -4,12 +4,15 @@ import pytest
 
 from api import zoo
 from api.animals.data_access.animal_viewability_record import AnimalViewabilityRecord
-from api.exhibits.enums import ExhibitStatus
+from api.shared.enums import ScheduleStatus
 from api.animals.logic.animal_viewability import calculate_animal_likelihood
 from api.animals.logic.animal_viewability import get_active_exhibit_status
 from api.animals.logic.animal_viewability import get_active_limited_viewing_status
 from api.animals.logic.animal_viewability import get_active_off_display_status
 from api.animals.logic.animal_viewability import get_active_viewing_alert_status
+from api.attractions.logic.attraction import calculate_attraction_likelihood
+from api.giftshops.logic.gift_shop import calculate_gift_shop_likelihood
+from api.restaurants.logic.restaurant import calculate_restaurant_likelihood
 
 
 def make_animal_viewability_record( **overrides ):
@@ -136,20 +139,18 @@ def test_is_date_in_range( target, start, end, expected ):
 
 
 @pytest.mark.parametrize(
-   'method_name',
+   'calculate_likelihood',
    [
-      'calculate_restaurant_likelihood',
-      'calculate_gift_shop_likelihood',
-      'calculate_attraction_likelihood'
+      calculate_restaurant_likelihood,
+      calculate_gift_shop_likelihood,
+      calculate_attraction_likelihood
    ]
 )
-def test_simple_likelihood_calculators_clamp_and_round( db, method_name ):
-   method = getattr( db, method_name )
-
-   assert method( None ) == 100
-   assert method( -0.5 ) == 0
-   assert method( 0.444 ) == 44
-   assert method( 1.5 ) == 100
+def test_simple_likelihood_calculators_clamp_and_round( calculate_likelihood ):
+   assert calculate_likelihood( None ) == 100
+   assert calculate_likelihood( -0.5 ) == 0
+   assert calculate_likelihood( 0.444 ) == 44
+   assert calculate_likelihood( 1.5 ) == 100
 
 
 def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs():
@@ -213,7 +214,7 @@ def test_active_status_helpers():
    assert get_active_off_display_status( active_record, target_date ) == ( True, 'Temporarily hidden.' )
    assert get_active_limited_viewing_status( active_record, target_date ) == ( True, 'Morning only.' )
    assert get_active_viewing_alert_status( active_record, target_date ) == ( True, 'Low visibility.' )
-   assert get_active_exhibit_status( active_record, target_date ) == ( ExhibitStatus.CLOSED, 'Closed.' )
+   assert get_active_exhibit_status( active_record, target_date ) == ( ScheduleStatus.CLOSED, 'Closed.' )
 
 
 def test_active_status_helpers_return_inactive_defaults():
@@ -256,10 +257,10 @@ def test_active_status_helpers_return_inactive_defaults():
    assert get_active_off_display_status( inactive_record, target_date ) == ( False, None )
    assert get_active_limited_viewing_status( inactive_record, target_date ) == ( False, None )
    assert get_active_viewing_alert_status( inactive_record, target_date ) == ( False, None )
-   assert get_active_exhibit_status( inactive_record, target_date ) == ( ExhibitStatus.UNKNOWN, None )
+   assert get_active_exhibit_status( inactive_record, target_date ) == ( ScheduleStatus.UNKNOWN, None )
 
    assert get_active_off_display_status( expired_record, target_date ) == ( False, None )
    assert get_active_limited_viewing_status( expired_record, target_date ) == ( False, None )
    assert get_active_viewing_alert_status( expired_record, target_date ) == ( False, None )
-   assert get_active_exhibit_status( expired_record, target_date ) == ( ExhibitStatus.UNKNOWN, None )
-   assert get_active_exhibit_status( expired_record, date( 2026, 6, 15 ) ) == ( ExhibitStatus.OPEN, None )
+   assert get_active_exhibit_status( expired_record, target_date ) == ( ScheduleStatus.UNKNOWN, None )
+   assert get_active_exhibit_status( expired_record, date( 2026, 6, 15 ) ) == ( ScheduleStatus.OPEN, None )

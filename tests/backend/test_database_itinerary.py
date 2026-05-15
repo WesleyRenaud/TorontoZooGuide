@@ -295,6 +295,7 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries( db, 
    result = db.validate_guardians_talks(
       month='June',
       day=15,
+      year=2026,
       guardians_talks_to_include=[ 'African Lion', 'Amur Tiger' ]
    )
 
@@ -462,6 +463,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( 
    talk_result = db.validate_guardians_talks(
       month='June',
       day=15,
+      year=2026,
       guardians_talks_to_include=[ ' african lion ', 'AMUR TIGER' ]
    )
    encounter_result = db.validate_wild_encounters(

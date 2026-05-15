@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ExhibitStatus( str, Enum ):
+class ScheduleStatus( str, Enum ):
    CLOSED = 'closed'
    OPEN = 'open'
    UNKNOWN = 'unknown'
