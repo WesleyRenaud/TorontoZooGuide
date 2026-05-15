@@ -1,5 +1,5 @@
-from .. import zoo
-from ..enums import ExhibitStatus
+from ... import zoo
+from ...exhibits.enums import ExhibitStatus
 from .animal_viewability_context import AnimalViewabilityContext
 
 
