@@ -4,6 +4,7 @@
    "type": "module",
    "scripts": {
       "build": "python3 setup.py && npm run coverage && npm run lint && echo 'Build complete!' && node tools/coverageSummary.js --print-last-summary",
+      "clean": "node tools/cleanBuildArtifacts.js",
       "coverage": "node tools/coverageSummary.js",
       "coverage:js": "node --test --experimental-test-coverage --test-coverage-include='scripts/**/*.js' tests/frontend/frontend.test.mjs",
       "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/backend --cov=api.database --cov=api.server --cov=api.zoo --cov=api.seed --cov-report=term-missing",
