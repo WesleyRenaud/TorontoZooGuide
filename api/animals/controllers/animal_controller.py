@@ -1,3 +1,4 @@
+from ..data_access.animal_information import fetch_animal_information
 from ..data_access.animal_viewable_on_day import fetch_animals_viewable_on_day_records
 from ..logic.animal_viewability import build_viewable_animals_on_day
 from ..logic.animal_viewability import resolve_animal_viewability_context
@@ -38,3 +39,9 @@ class AnimalController():
          sigma=context.sigma,
          include_off_display_animals=include_off_display_animals,
          threshold=threshold )
+
+
+   def get_animal_information( self, species ):
+      return fetch_animal_information(
+         self._conn,
+         species=species )

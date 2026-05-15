@@ -1,4 +1,4 @@
-from ..models import Region
+from ...models import Region
 
 
 def build_region_options( region_exhibit_rows ):

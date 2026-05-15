@@ -158,7 +158,7 @@ def test_animal_query_helpers_dedupe_and_sort( db ):
 
 
 def test_basic_animal_lookup_methods( db ):
-   assert 'African Lion' in db.get_animals_in_exhibit( 'Africa Savanna' )
+   assert 'African Lion' in db.get_names_of_animals_in_exhibit( 'Africa Savanna' )
 
    information = db.get_animal_information( 'African Lion' )
 

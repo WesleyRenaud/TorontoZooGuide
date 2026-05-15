@@ -186,7 +186,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          exhibit = data.get( 'exhibit' )
 
-         animals = self.database.get_animals_in_exhibit( exhibit=exhibit )
+         animals = self.database.get_names_of_animals_in_exhibit( exhibit=exhibit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
