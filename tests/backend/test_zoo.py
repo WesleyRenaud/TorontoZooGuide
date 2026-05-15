@@ -335,7 +335,24 @@ def test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch ):
 
 def test_visit_target_date():
    from datetime import date as date_cls
-   assert zoo.ZooUtil.visit_target_date( 2026, 6, 15 ) == date_cls( 2026, 6, 15 )
+
+   assert zoo.ZooUtil.visit_target_date( 'June', 15, 2026 ) == date_cls( 2026, 6, 15 )
+   assert zoo.ZooUtil.visit_target_date( 6, 15, 2026 ) == date_cls( 2026, 6, 15 )
+   assert zoo.ZooUtil.visit_target_date( 'January', 10, '2028' ) == date_cls( 2028, 1, 10 )
+
+
+def test_schedule_includes_weekday_monday_first():
+   flags = ( True, False, False, False, False, False, False )
+
+   assert zoo.ZooUtil.schedule_includes_weekday( 0, flags ) is True
+   assert zoo.ZooUtil.schedule_includes_weekday( 1, flags ) is False
+
+
+def test_schedule_includes_weekday_rejects_bad_index():
+   flags = ( True, ) * 7
+
+   assert zoo.ZooUtil.schedule_includes_weekday( -1, flags ) is False
+   assert zoo.ZooUtil.schedule_includes_weekday( 7, flags ) is False
 
 
 def test_temperature_helpers_are_stable():

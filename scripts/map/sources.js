@@ -39,6 +39,7 @@ function buildDatePayload(ctx, extra = {}) {
    return {
       month: ctx.month,
       day: ctx.day,
+      year: ctx.year,
       ...extra,
    };
 }

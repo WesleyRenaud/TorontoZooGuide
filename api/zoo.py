@@ -21,6 +21,7 @@ from .models import Restroom
 from .models import Update
 from .models import WildEncounter
 from .models import WildEncounterDiff
+from .models import ZoomobileRoute
 from .models import ZoomobileRouteMarker
 from .models import ZoomobileStation
 from .zoo_util import ZooUtil
@@ -48,6 +49,7 @@ __all__ = [
    'Update',
    'WildEncounter',
    'WildEncounterDiff',
+   'ZoomobileRoute',
    'ZoomobileRouteMarker',
    'ZoomobileStation',
    'ZooUtil',

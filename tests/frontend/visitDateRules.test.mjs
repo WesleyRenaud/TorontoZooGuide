@@ -8,6 +8,7 @@ import {
    getMaxDate,
    getMonth,
    getToday,
+   getYear,
    isoDateToMonFirstDow,
    isAfterMaxDate,
    isBeforeToday,
@@ -39,8 +40,10 @@ test('formats visit dates for API and calendar display', () => {
    assert.equal(toISODate(new Date(2026, 5, 15, 23, 59)), '2026-06-15');
    assert.equal(getMonth('2026-06-15'), 'JUN');
    assert.equal(getDay('2026-06-15'), 15);
+   assert.equal(getYear('2026-06-15'), 2026);
    assert.equal(getMonth('bad-date'), null);
    assert.equal(getDay('bad-date'), null);
+   assert.equal(getYear('bad-date'), null);
    assert.equal(isoDateToMonFirstDow('2026-06-15'), 1);
    assert.equal(isoDateToMonFirstDow('2026-06-21'), 7);
    assert.equal(isoDateToMonFirstDow('bad-date'), 1);

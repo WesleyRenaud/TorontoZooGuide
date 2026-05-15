@@ -366,11 +366,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {
-            'route': zoomobile_route[ 'route' ],
-            'route_source': zoomobile_route[ 'route_source' ],
-            'zoomobile_stations': [ station.to_dict() for station in zoomobile_route[ 'zoomobile_stations' ] ]
-         }
+         response = zoomobile_route.to_dict()
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -382,8 +378,12 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          month = data.get( 'month' )
          day = data.get( 'day' )
+         year = data.get( 'year' )
 
-         guardians_talks = self.database.get_guardians_talk_schedule( month=month, day=day )
+         guardians_talks = self.database.get_guardians_talk_schedule(
+            month=month,
+            day=day,
+            year=year )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -542,6 +542,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          month = data.get( 'month' )
          day = data.get( 'day' )
+         year = data.get( 'year' )
          temp = data.get( 'temp' )
 
          include_off_display_animals = bool( data.get( 'includeOffDisplayAnimals' ) )
@@ -631,7 +632,11 @@ class MyHandler( BaseHTTPRequestHandler ):
                   zoomobile_stations_json.append( d )
 
          if include_guardians_talks:
-            guardians_talks = self.database.get_guardians_talks_matching_query( query=query, month=month, day=day ) or []
+            guardians_talks = self.database.get_guardians_talks_matching_query(
+               query=query,
+               month=month,
+               day=day,
+               year=year ) or []
             for guardians_talk in guardians_talks:
                   d = guardians_talk.to_dict()
                   d[ 'type' ] = d.get( 'type', 'guardiansTalk' )

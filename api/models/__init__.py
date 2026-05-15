@@ -19,6 +19,7 @@ from .restroom import Restroom
 from .update import Update
 from .wild_encounter import WildEncounter
 from .wild_encounter_diff import WildEncounterDiff
+from .zoomobile_route import ZoomobileRoute
 from .zoomobile_route_marker import ZoomobileRouteMarker
 from .zoomobile_station import ZoomobileStation
 
@@ -44,6 +45,7 @@ __all__ = [
    'Update',
    'WildEncounter',
    'WildEncounterDiff',
+   'ZoomobileRoute',
    'ZoomobileRouteMarker',
    'ZoomobileStation',
 ]
