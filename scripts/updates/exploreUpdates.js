@@ -107,6 +107,7 @@ function buildUpdatesPayload(dateCtx) {
    return {
       month: dateCtx.month,
       day: dateCtx.day,
+      year: dateCtx.year,
    };
 }
 

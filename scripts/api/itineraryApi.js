@@ -70,8 +70,8 @@ export async function getItineraryRequest() {
    return normalizeItineraryResponse(response);
 }
 
-export async function getZooHoursRequest(date) {
-   const response = await postJson('/get-zoo-hours', { date });
+export async function getZooHoursRequest({ day, month, year }) {
+   const response = await postJson('/get-zoo-hours', { day, month, year });
    return normalizeZooHoursResponse(response);
 }
 

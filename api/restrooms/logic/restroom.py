@@ -1,21 +1,13 @@
-from datetime import date
-from datetime import datetime
-
 from ... import zoo
 from .restroom_context import RestroomContext
 
 
-def resolve_restroom_context( month=None, day=None ):
-   if month is not None and day is not None:
-      target_date = date(
-         datetime.now().year,
-         zoo.ZooUtil.normalize_month( month=month ),
-         int( day ) )
-   else:
-      target_date = datetime.now().date()
-
+def resolve_restroom_context( day, month, year ):
    return RestroomContext(
-      target_date=target_date )
+      target_date=zoo.ZooUtil.visit_target_date(
+         month=month,
+         day=day,
+         year=year ) )
 
 
 def is_restroom_status_active( restroom_record, target_date ):

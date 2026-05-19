@@ -2,7 +2,6 @@ import sqlite3
 from datetime import date, datetime, timedelta
 
 from . import zoo
-from .shared.strings import SharedStrings
 
 
 ################################################################################
@@ -23,8 +22,9 @@ class Database():
 
    def get_animals_viewable_on_day(
          self,
-         month,
          day,
+         month,
+         year,
          temp=None,
          include_off_display_animals=False,
          threshold=0,
@@ -32,13 +32,13 @@ class Database():
       from .animals.controllers.animal_controller import AnimalController
 
       return AnimalController( self.conn ).get_animals_viewable_on_day(
-         month=month,
          day=day,
+         month=month,
+         year=year,
          temp=temp,
          include_off_display_animals=include_off_display_animals,
          threshold=threshold,
-         exhibits_to_include=exhibits_to_include,
-         calendar_year=datetime.now().year )
+         exhibits_to_include=exhibits_to_include )
 
 
    def get_exhibits_in_region( self, region ):
@@ -74,61 +74,67 @@ class Database():
       return PavilionController( self.conn ).get_pavilions()
 
 
-   def get_restaurants( self, month, day, include_closed_restaurants, restaurants_to_include=[] ):
+   def get_restaurants( self, day, month, year, include_closed_restaurants, restaurants_to_include=[] ):
       from .restaurants.controllers.restaurant_controller import RestaurantController
 
       return RestaurantController( self.conn ).get_restaurants(
-         month=month,
          day=day,
+         month=month,
+         year=year,
          include_closed_restaurants=include_closed_restaurants,
          restaurants_to_include=restaurants_to_include )
 
 
-   def get_restrooms( self, month=None, day=None, include_closed_restrooms=False ):
+   def get_restrooms( self, day, month, year, include_closed_restrooms=False ):
       from .restrooms.controllers.restroom_controller import RestroomController
 
       return RestroomController( self.conn ).get_restrooms(
-         month=month,
          day=day,
+         month=month,
+         year=year,
          include_closed_restrooms=include_closed_restrooms )
 
 
-   def get_gift_shops( self, month, day, include_closed_gift_shops, gift_shops_to_include=[] ):
+   def get_gift_shops( self, day, month, year, include_closed_gift_shops, gift_shops_to_include=[] ):
       from .giftshops.controllers.gift_shop_controller import GiftShopController
 
       return GiftShopController( self.conn ).get_gift_shops(
-         month=month,
          day=day,
+         month=month,
+         year=year,
          include_closed_gift_shops=include_closed_gift_shops,
          gift_shops_to_include=gift_shops_to_include )
 
 
-   def get_attractions( self, month, day, include_closed_attractions=False ):
+   def get_attractions( self, day, month, year, include_closed_attractions=False ):
       from .attractions.controllers.attraction_controller import AttractionController
 
       return AttractionController( self.conn ).get_attractions(
-         month=month,
          day=day,
+         month=month,
+         year=year,
          include_closed_attractions=include_closed_attractions )
 
 
-   def get_zoomobile_stations( self, route, month, day, zoomobile_stations_to_include=None ):
+   def get_zoomobile_stations( self, route, day, month, year, zoomobile_stations_to_include=None ):
       from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
       return ZoomobileController( self.conn ).get_zoomobile_stations(
          route=route,
-         month=month,
          day=day,
+         month=month,
+         year=year,
          zoomobile_stations_to_include=zoomobile_stations_to_include )
 
 
-   def get_zoomobile_route( self, route, month, day, zoomobile_stations_to_include=None ):
+   def get_zoomobile_route( self, route, day, month, year, zoomobile_stations_to_include=None ):
       from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
       return ZoomobileController( self.conn ).get_zoomobile_route(
          route=route,
-         month=month,
          day=day,
+         month=month,
+         year=year,
          zoomobile_stations_to_include=zoomobile_stations_to_include )
 
 
@@ -163,907 +169,247 @@ class Database():
          year )
 
 
-   def get_guardians_talk_schedule_for_talk_on_day(
+   def get_guardians_talk_on_day_schedule(
          self,
          month,
          day,
          talk_name,
          year,
          day_schedule=None ):
-      rows = (
-         day_schedule
-         if day_schedule is not None
-         else self.get_guardians_talk_schedule(
-            month=month,
-            day=day,
-            year=year )
-      )
+      from .guardians.controllers.guardians_controller import GuardiansController
 
-      key = ( talk_name or '' ).strip().lower()
-
-      if not key:
-         return []
-
-      return [
-         row for row in rows
-         if ( row.name or '' ).strip().lower() == key
-      ]
+      return GuardiansController( self.conn ).get_guardians_talk_on_day_schedule(
+         month=month,
+         day=day,
+         talk_name=talk_name,
+         year=year,
+         day_schedule=day_schedule )
 
 
    def get_wild_encounter_details( self, wild_encounters_to_include=None ):
-      wild_encounters_filter = {
-         wild_encounter_name.strip().lower()
-         for wild_encounter_name in wild_encounters_to_include or []
-      }
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
-      if wild_encounters_to_include != None and not wild_encounters_filter:
-         return []
+      return WildEncounterController( self.conn ).get_wild_encounter_details(
+         wild_encounters_to_include=wild_encounters_to_include )
 
-      cur = self.conn.cursor()
 
-      data = cur.execute(
-         """   SELECT
-                  w.NAME,
-                  w.MEETING_SPOT,
-                  w.LINK,
-                  w.MAXIMUM_DURATION,
-                  m.X_COORD,
-                  m.Y_COORD
-               FROM WildEncounter w
-               JOIN WildEncounterMeetingSpot m
-                  ON w.MEETING_SPOT = m.NAME;
-         """ )
+   def get_wild_encounter_schedule( self, month, day, year ):
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
-      rows = data.fetchall()
-      cur.close()
-
-      wild_encounters = []
-
-      for row in rows:
-         if wild_encounters_filter and (
-               row[ 'NAME' ] or '' ).strip().lower() not in wild_encounters_filter:
-            continue
-
-         wild_encounters.append(
-            zoo.WildEncounter(
-               name=row[ 'NAME' ],
-               meeting_spot=row[ 'MEETING_SPOT' ],
-               link=row[ 'LINK' ],
-               maximum_duration=row[ 'MAXIMUM_DURATION' ],
-               x_coord=row[ 'X_COORD' ],
-               y_coord=row[ 'Y_COORD' ] ) )
-
-      wild_encounters.sort( key=lambda w: ( w.name or '' ).lower() )
-
-      return wild_encounters
-
-
-   def get_wild_encounter_schedule( self, month, day ):
-      cur = self.conn.cursor()
-
-      target_date = date(
-         datetime.now().year,
-         zoo.ZooUtil.normalize_month( month=month ),
-         int( day ) )
-
-      target_weekday = target_date.weekday()
-      target_date_str = target_date.isoformat()
-
-      data = cur.execute(
-         """   SELECT
-                  w.NAME,
-                  w.MEETING_SPOT,
-                  w.LINK,
-                  w.MAXIMUM_DURATION,
-                  m.X_COORD,
-                  m.Y_COORD,
-                  s.SCHEDULE_START_DATE,
-                  s.SCHEDULE_END_DATE,
-                  s.MONDAY,
-                  s.TUESDAY,
-                  s.WEDNESDAY,
-                  s.THURSDAY,
-                  s.FRIDAY,
-                  s.SATURDAY,
-                  s.SUNDAY,
-                  s.ENCOUNTER_TIME
-               FROM WildEncounter w
-               JOIN WildEncounterMeetingSpot m
-                  ON w.MEETING_SPOT = m.NAME
-               JOIN WildEncounterSchedule s
-                  ON w.NAME = s.WILD_ENCOUNTER;
-         """ )
-
-      wild_encounter_data = data.fetchall()
-
-      wild_encounters = []
-
-      for wild_encounter in wild_encounter_data:
-         name = wild_encounter[ 'NAME' ]
-         encounter_time = wild_encounter[ 'ENCOUNTER_TIME' ]
-
-         start_ok = True
-         end_ok = True
-         unavailable_message = None
-
-         if wild_encounter[ 'SCHEDULE_START_DATE' ] != None:
-            schedule_start_date = zoo.ZooUtil.parse_date_value(
-               value=wild_encounter[ 'SCHEDULE_START_DATE' ] )
-            start_ok = target_date >= schedule_start_date
-
-         if wild_encounter[ 'SCHEDULE_END_DATE' ] != None:
-            schedule_end_date = zoo.ZooUtil.parse_date_value(
-               value=wild_encounter[ 'SCHEDULE_END_DATE' ] )
-            end_ok = target_date <= schedule_end_date
-
-         weekday_ok = zoo.ZooUtil.schedule_includes_weekday(
-            target_weekday,
-            (
-               wild_encounter[ 'MONDAY' ],
-               wild_encounter[ 'TUESDAY' ],
-               wild_encounter[ 'WEDNESDAY' ],
-               wild_encounter[ 'THURSDAY' ],
-               wild_encounter[ 'FRIDAY' ],
-               wild_encounter[ 'SATURDAY' ],
-               wild_encounter[ 'SUNDAY' ],
-            ) )
-
-         cancellation_data = cur.execute(
-            """   SELECT 1
-                  FROM WildEncounterCancellation
-                  WHERE WILD_ENCOUNTER = ?
-                  AND CANCELLATION_DATE = ?
-                  AND ENCOUNTER_TIME = ?;
-            """,
-            (
-               name,
-               target_date_str,
-               encounter_time
-            ) )
-
-         is_cancelled = cancellation_data.fetchone() != None
-         is_available = start_ok and end_ok and weekday_ok and not is_cancelled
-
-         if not is_available:
-            if not start_ok or not end_ok:
-               unavailable_message = SharedStrings.VisitDaySchedule.not_scheduled_on_visit_day(
-                  name,
-                  target_date )
-            elif not weekday_ok:
-               unavailable_message = SharedStrings.VisitDaySchedule.not_offered_this_weekday( name )
-            elif is_cancelled:
-               unavailable_message = SharedStrings.VisitDaySchedule.cancelled_for_this_date( name )
-
-         wild_encounters.append(
-            zoo.WildEncounter(
-               name=name,
-               meeting_spot=wild_encounter[ 'MEETING_SPOT' ],
-               link=wild_encounter[ 'LINK' ],
-               start_time=encounter_time,
-               maximum_duration=wild_encounter[ 'MAXIMUM_DURATION' ],
-               x_coord=wild_encounter[ 'X_COORD' ],
-               y_coord=wild_encounter[ 'Y_COORD' ],
-               is_available=is_available,
-               unavailable_message=unavailable_message ) )
-
-      cur.close()
-
-      return wild_encounters
-
-
-   def get_wild_encounter_schedule_for_encounter_on_day(
-         self,
-         month,
-         day,
-         encounter_name,
-         day_schedule=None ):
-      """Return schedule rows for *encounter_name* on the given day (subset of *day_schedule* when passed)."""
-      rows = (
-         day_schedule
-         if day_schedule is not None
-         else self.get_wild_encounter_schedule( month=month, day=day )
-      )
-
-      key = ( encounter_name or '' ).strip().lower()
-
-      if not key:
-         return []
-
-      return [
-         row for row in rows
-         if ( row.name or '' ).strip().lower() == key
-      ]
-
-
-   def get_available_wild_encounters( self, month, day ):
-      return [
-         wild_encounter
-         for wild_encounter in self.get_wild_encounter_schedule(
-            month=month,
-            day=day )
-         if getattr( wild_encounter, 'is_available', True )
-      ]
-
-
-   def get_drinking_fountain_status( self, month=None, day=None ):
-      if month is not None and day is not None:
-         target_date = date(
-            datetime.now().year,
-            zoo.ZooUtil.normalize_month( month=month ),
-            int( day ) )
-      else:
-         target_date = datetime.now().date()
-
-      cur = self.conn.cursor()
-
-      data = cur.execute(
-         """   SELECT
-                  IS_CLOSED,
-                  START_DATE,
-                  END_DATE,
-                  CLOSED_MESSAGE
-               FROM DrinkingFountainStatus
-               LIMIT 1;
-         """ )
-
-      status = data.fetchone()
-      cur.close()
-
-      if status is None:
-         return self.get_drinking_fountain_seasonal_status(
-            target_date=target_date )
-
-      if not zoo.ZooUtil.is_date_in_range(
-            target_date=target_date,
-            start_date_value=status[ 'START_DATE' ],
-            end_date_value=status[ 'END_DATE' ] ):
-         return self.get_drinking_fountain_seasonal_status(
-            target_date=target_date )
-
-      is_closed = bool( status[ 'IS_CLOSED' ] )
-      closed_message = status[ 'CLOSED_MESSAGE' ]
-      likelihood = 0.0 if is_closed else 1.0
-
-      return is_closed, closed_message, likelihood
-
-
-   def get_drinking_fountain_seasonal_status( self, target_date ):
-      likelihood = self.get_drinking_fountain_seasonal_likelihood(
-         target_date=target_date )
-      is_closed = likelihood <= 0
-
-      return is_closed, None, likelihood
-
-
-   def get_drinking_fountain_seasonal_likelihood( self, target_date ):
-      cur = self.conn.cursor()
-      data = cur.execute(
-         """   SELECT
-                  LIKELIHOOD
-               FROM DrinkingFountainDaySeasonalAvailabilityMultiplier
-               WHERE MONTH = ?
-                  AND DAY = ?;
-         """,
-         (
-            target_date.month,
-            target_date.day
-         ) )
-
-      row = data.fetchone()
-      cur.close()
-
-      return row[ 'LIKELIHOOD' ] if row else 1.0
-
-
-   def get_drinking_fountains( self, month=None, day=None ):
-      is_closed, closed_message, likelihood = self.get_drinking_fountain_status(
-         month=month,
-         day=day )
-
-      cur = self.conn.cursor()
-      data = cur.execute(
-         """   SELECT
-                  X_COORD,
-                  Y_COORD
-               FROM DrinkingFountain;
-         """ )
-
-      drinking_fountains = [
-         zoo.DrinkingFountain(
-            x_coord=row[ 'X_COORD' ],
-            y_coord=row[ 'Y_COORD' ],
-            is_closed=is_closed,
-            closed_message=closed_message if is_closed else None,
-            likelihood=likelihood )
-         for row in data.fetchall()
-      ]
-
-      cur.close()
-
-      return drinking_fountains
-
-
-   def get_defibrillators( self ):
-      cur = self.conn.cursor()
-      data = cur.execute(
-         """   SELECT
-                  X_COORD,
-                  Y_COORD
-               FROM Defibrillator;
-         """ )
-
-      defibrillators = [
-         zoo.Defibrillator(
-            x_coord=row[ 'X_COORD' ],
-            y_coord=row[ 'Y_COORD' ] )
-         for row in data.fetchall()
-      ]
-
-      cur.close()
-
-      return defibrillators
-
-
-   def get_emergency_intercoms( self ):
-      cur = self.conn.cursor()
-      data = cur.execute(
-         """   SELECT
-                  X_COORD,
-                  Y_COORD
-               FROM EmergencyIntercom;
-         """ )
-
-      emergency_intercoms = [
-         zoo.EmergencyIntercom(
-            x_coord=row[ 'X_COORD' ],
-            y_coord=row[ 'Y_COORD' ] )
-         for row in data.fetchall()
-      ]
-
-      cur.close()
-
-      return emergency_intercoms
-
-
-   def get_guest_services( self ):
-      cur = self.conn.cursor()
-      data = cur.execute(
-         """   SELECT
-                  SERVICE_TYPE,
-                  X_COORD,
-                  Y_COORD
-               FROM GuestService;
-         """ )
-
-      guest_services = [
-         zoo.GuestService(
-            service_type=row[ 'SERVICE_TYPE' ],
-            x_coord=row[ 'X_COORD' ],
-            y_coord=row[ 'Y_COORD' ] )
-         for row in data.fetchall()
-      ]
-
-      cur.close()
-
-      return guest_services
-
-
-   def get_picnic_sites( self ):
-      cur = self.conn.cursor()
-      data = cur.execute(
-         """   SELECT
-                  X_COORD,
-                  Y_COORD
-               FROM PicnicSite;
-         """ )
-
-      picnic_sites = [
-         zoo.PicnicSite(
-            x_coord=row[ 'X_COORD' ],
-            y_coord=row[ 'Y_COORD' ] )
-         for row in data.fetchall()
-      ]
-
-      cur.close()
-
-      return picnic_sites
-
-
-   def get_event_sites( self ):
-      cur = self.conn.cursor()
-      data = cur.execute(
-         """   SELECT
-                  NAME,
-                  X_COORD,
-                  Y_COORD
-               FROM EventSite;
-         """ )
-
-      event_sites = [
-         zoo.EventSite(
-            name=row[ 'NAME' ],
-            x_coord=row[ 'X_COORD' ],
-            y_coord=row[ 'Y_COORD' ] )
-         for row in data.fetchall()
-      ]
-
-      cur.close()
-
-      return event_sites
-
-
-   def get_updates( self, month=None, day=None ):
-      if month != None and day != None:
-         target_date = date(
-            datetime.now().year,
-            zoo.ZooUtil.normalize_month( month=month ),
-            int( day ) )
-      else:
-         target_date = datetime.now().date()
-
-      cur = self.conn.cursor()
-      data = cur.execute(
-         """   SELECT
-                  TITLE,
-                  DESCRIPTION,
-                  UPDATE_TYPE,
-                  START_DATE,
-                  END_DATE
-               FROM ZooUpdate
-               WHERE START_DATE <= ?
-                  AND (
-                     END_DATE IS NULL
-                     OR END_DATE >= ?
-                  )
-               ORDER BY START_DATE DESC, TITLE ASC;
-         """,
-         (
-            target_date.isoformat(),
-            target_date.isoformat()
-         ) )
-
-      updates = [
-         zoo.Update(
-            title=row[ 'TITLE' ],
-            description=row[ 'DESCRIPTION' ],
-            update_type=row[ 'UPDATE_TYPE' ],
-            start_date=row[ 'START_DATE' ],
-            end_date=row[ 'END_DATE' ] )
-         for row in data.fetchall()
-      ]
-
-      cur.close()
-
-      return updates
-
-
-   def get_active_update_options( self ):
-      target_date = datetime.now().date()
-      cur = self.conn.cursor()
-      data = cur.execute(
-         """   SELECT
-                  TITLE,
-                  DESCRIPTION,
-                  UPDATE_TYPE,
-                  START_DATE,
-                  END_DATE
-               FROM ZooUpdate
-               WHERE END_DATE IS NULL
-                  OR END_DATE >= ?
-               ORDER BY START_DATE DESC, TITLE ASC;
-         """,
-         ( target_date.isoformat(), ) )
-
-      updates = [
-         zoo.Update(
-            title=row[ 'TITLE' ],
-            description=row[ 'DESCRIPTION' ],
-            update_type=row[ 'UPDATE_TYPE' ],
-            start_date=row[ 'START_DATE' ],
-            end_date=row[ 'END_DATE' ] )
-         for row in data.fetchall()
-      ]
-
-      cur.close()
-
-      return [
-         update.to_dict()
-         for update in updates
-      ]
-
-
-   def get_closed_exhibits( self, month, day ):
-      cur = self.conn.cursor()
-
-      target_date = date(
-         datetime.now().year,
-         zoo.ZooUtil.normalize_month( month=month ),
-         int( day ) )
-
-      data = cur.execute(
-         """   SELECT
-                  e.EXHIBIT,
-                  e.IS_CLOSED,
-                  e.CLOSED_START,
-                  e.CLOSED_END
-               FROM ExhibitStatus e
-               WHERE e.IS_CLOSED = 1;
-         """ )
-
-      exhibit_status_data = data.fetchall()
-
-      closed_exhibits = []
-
-      for exhibit_status in exhibit_status_data:
-         exhibit = exhibit_status[ 'EXHIBIT' ]
-
-         start_ok = True
-         end_ok = True
-
-         if exhibit_status[ 'CLOSED_START' ] != None:
-            closed_start = zoo.ZooUtil.parse_date_value(
-               value=exhibit_status[ 'CLOSED_START' ] )
-            start_ok = target_date >= closed_start
-
-         if exhibit_status[ 'CLOSED_END' ] != None:
-            closed_end = zoo.ZooUtil.parse_date_value(
-               value=exhibit_status[ 'CLOSED_END' ] )
-            end_ok = target_date <= closed_end
-
-         if start_ok and end_ok:
-            closed_exhibits.append( exhibit )
-
-      cur.close()
-
-      return closed_exhibits
-
-
-   def get_animals_matching_query( self, query, month, day, temp, include_off_display_animals ):
-      animals = self.get_animals_viewable_on_day( month=month, day=day, temp=temp, include_off_display_animals=include_off_display_animals )
-
-      if query:
-         query_lower = query.lower()
-         animals = [
-            a for a in animals
-            if a.species and query_lower in a.species.lower()
-         ]
-
-      best_by_species = {}
-
-      for a in animals:
-
-         species = a.species
-         if not species:
-            continue
-
-         current = best_by_species.get( species )
-
-         if current is None or ( a.likelihood or 0 ) > ( current.likelihood or 0 ):
-            best_by_species[ species ] = a
-
-      unique_animals = list( best_by_species.values() )
-
-      unique_animals.sort( key=lambda a: a.species.lower() )
-
-      return unique_animals
-
-
-   def get_pavilions_matching_query( self, query ):
-      if not query:
-         return self.get_pavilions()
-
-      query_lower = query.lower()
-
-      return [
-         p for p in self.get_pavilions()
-         if p.name and query_lower in p.name.lower()
-      ]
-
-
-   def get_restaurants_matching_query( self, query, month, day, include_closed_restaurants ):
-      if not query:
-         return self.get_restaurants( month=month, day=day, include_closed_restaurants=include_closed_restaurants )
-
-      query_lower = query.lower()
-
-      return [
-         r for r in self.get_restaurants( month=month, day=day, include_closed_restaurants=include_closed_restaurants )
-         if r.name and query_lower in r.name.lower()
-      ]
-
-
-   def get_restrooms_matching_query( self, query, month=None, day=None, include_closed_restrooms=True ):
-      if not query:
-         return self.get_restrooms(
-            month=month,
-            day=day,
-            include_closed_restrooms=include_closed_restrooms )
-
-      query_lower = query.lower()
-
-      return [
-         r for r in self.get_restrooms(
-            month=month,
-            day=day,
-            include_closed_restrooms=include_closed_restrooms )
-         if r.title and query_lower in r.title.lower()
-      ]
-
-
-   def get_gift_shops_matching_query( self, query, month, day ):
-      if not query:
-         return self.get_gift_shops( month=month, day=day, include_closed_gift_shops=True )
-
-      query_lower = query.lower()
-
-      return [
-         g for g in self.get_gift_shops( month=month, day=day, include_closed_gift_shops=True )
-         if g.name and query_lower in g.name.lower()
-      ]
-
-
-   def get_attractions_matching_query( self, query, month, day, include_closed_attractions ):
-      if not query:
-         return self.get_attractions( month=month, day=day, include_closed_attractions=include_closed_attractions )
-
-      query_lower = query.lower()
-
-      return [
-         a for a in self.get_attractions( month=month, day=day, include_closed_attractions=include_closed_attractions )
-         if a.name and query_lower in a.name.lower()
-      ]
-
-
-   def get_zoomobile_stations_matching_query( self, query, route, month, day ):
-      if not query:
-         return self.get_zoomobile_stations( route=route, month=month, day=day )
-
-      query_lower = query.lower()
-
-      return [
-         s for s in self.get_zoomobile_stations( route=route, month=month, day=day )
-         if s.name and query_lower in s.name.lower()
-      ]
-
-
-   def get_guardians_talks_matching_query( self, query, month, day, year ):
-      talks = self.get_guardians_talk_schedule(
+      return WildEncounterController( self.conn ).get_wild_encounter_schedule(
          month=month,
          day=day,
          year=year )
 
-      if not query:
-         return talks
 
-      query_lower = query.lower()
+   def get_wild_encounter_on_day_schedule(
+         self,
+         month,
+         day,
+         encounter_name,
+         year,
+         day_schedule=None ):
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
-      return [
-         t for t in talks
-         if (
-            t.name
-            and query_lower in t.name.lower()
-         )
-      ]
-
-
-   def get_wild_encounters_matching_query( self, query, month, day ):
-      wild_encounters = self.get_available_wild_encounters( month=month, day=day )
-
-      if not query:
-         return wild_encounters
-
-      query_lower = query.lower()
-
-      return [
-         w for w in wild_encounters
-         if w.name and query_lower in w.name.lower()
-      ]
+      return WildEncounterController( self.conn ).get_wild_encounter_on_day_schedule(
+         month=month,
+         day=day,
+         encounter_name=encounter_name,
+         year=year,
+         day_schedule=day_schedule )
 
 
-   def get_species( self ):
-      cur = self.conn.cursor()
+   def get_available_wild_encounters( self, month, day, year ):
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
-      data = cur.execute(
-         f"""  SELECT
-                  a.SPECIES
-               FROM Animal a;
-         """ )
-
-      species = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return species
+      return WildEncounterController( self.conn ).get_available_wild_encounters(
+         month=month,
+         day=day,
+         year=year )
 
 
-   def get_itinerary_date( self ):
-      cur = self.conn.cursor()
+   def get_drinking_fountains( self, day, month, year ):
+      from .drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
 
-      date_row = cur.execute(
-         """   SELECT ITINERARY_DATE
-               FROM ItineraryDate
-               LIMIT 1;
-         """
-      ).fetchone()
+      return DrinkingFountainController( self.conn ).get_drinking_fountains(
+         month=month,
+         day=day,
+         year=year )
 
-      cur.close()
 
-      if date_row == None or date_row[ 'ITINERARY_DATE' ] == None:
-         return None
+   def get_defibrillators( self ):
+      from .defibrillators.controllers.defibrillator_controller import DefibrillatorController
 
-      return zoo.ZooUtil.normalize_date_key( date_row[ 'ITINERARY_DATE' ] )
+      return DefibrillatorController( self.conn ).get_defibrillators()
+
+
+   def get_emergency_intercoms( self ):
+      from .emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
+
+      return EmergencyIntercomController( self.conn ).get_emergency_intercoms()
+
+
+   def get_guest_services( self ):
+      from .guest_services.controllers.guest_service_controller import GuestServiceController
+
+      return GuestServiceController( self.conn ).get_guest_services()
+
+
+   def get_picnic_sites( self ):
+      from .picnic_sites.controllers.picnic_site_controller import PicnicSiteController
+
+      return PicnicSiteController( self.conn ).get_picnic_sites()
+
+
+   def get_event_sites( self ):
+      from .event_sites.controllers.event_site_controller import EventSiteController
+
+      return EventSiteController( self.conn ).get_event_sites()
+
+
+   def get_updates_for_visit_date( self, month=None, day=None, year=None ):
+      from .updates.controllers.update_controller import UpdateController
+
+      return UpdateController( self.conn ).get_updates_for_visit_date(
+         month=month,
+         day=day,
+         year=year )
+
+
+   def get_unexpired_updates( self ):
+      from .updates.controllers.update_controller import UpdateController
+
+      return UpdateController( self.conn ).get_unexpired_updates()
+
+
+   def get_closed_exhibits( self, month, day, year=None ):
+      from .exhibits.controllers.exhibit_controller import ExhibitController
+
+      return ExhibitController( self.conn ).get_closed_exhibits_for_visit_date(
+         month=month,
+         day=day,
+         year=year )
+
+
+   def get_animals_matching_query(
+         self,
+         query,
+         day,
+         month,
+         year,
+         temp=None,
+         include_off_display_animals=False ):
+      from .animals.controllers.animal_controller import AnimalController
+
+      return AnimalController( self.conn ).get_animals_matching_query(
+         query=query,
+         day=day,
+         month=month,
+         year=year,
+         temp=temp,
+         include_off_display_animals=include_off_display_animals )
+
+
+   def get_pavilions_matching_query( self, query ):
+      from .pavilions.controllers.pavilion_controller import PavilionController
+
+      return PavilionController( self.conn ).get_pavilions_matching_query(
+         query=query )
+
+
+   def get_restaurants_matching_query( self, query, day, month, year, include_closed_restaurants ):
+      from .restaurants.controllers.restaurant_controller import RestaurantController
+
+      return RestaurantController( self.conn ).get_restaurants_matching_query(
+         query=query,
+         day=day,
+         month=month,
+         year=year,
+         include_closed_restaurants=include_closed_restaurants )
+
+
+   def get_restrooms_matching_query( self, query, day, month, year, include_closed_restrooms ):
+      from .restrooms.controllers.restroom_controller import RestroomController
+
+      return RestroomController( self.conn ).get_restrooms_matching_query(
+         query=query,
+         day=day,
+         month=month,
+         year=year,
+         include_closed_restrooms=include_closed_restrooms )
+
+
+   def get_gift_shops_matching_query( self, query, day, month, year ):
+      from .giftshops.controllers.gift_shop_controller import GiftShopController
+
+      return GiftShopController( self.conn ).get_gift_shops_matching_query(
+         query=query,
+         day=day,
+         month=month,
+         year=year )
+
+
+   def get_attractions_matching_query( self, query, day, month, year, include_closed_attractions ):
+      from .attractions.controllers.attraction_controller import AttractionController
+
+      return AttractionController( self.conn ).get_attractions_matching_query(
+         query=query,
+         day=day,
+         month=month,
+         year=year,
+         include_closed_attractions=include_closed_attractions )
+
+
+   def get_zoomobile_stations_matching_query( self, query, route, day, month, year ):
+      from .zoomobile.controllers.zoomobile_controller import ZoomobileController
+
+      return ZoomobileController( self.conn ).get_zoomobile_stations_matching_query(
+         query=query,
+         route=route,
+         day=day,
+         month=month,
+         year=year )
+
+
+   def get_guardians_talks_matching_query( self, query, month, day, year ):
+      from .guardians.controllers.guardians_controller import GuardiansController
+
+      return GuardiansController( self.conn ).get_guardians_talks_matching_query(
+         query=query,
+         month=month,
+         day=day,
+         year=year )
+
+
+   def get_wild_encounters_matching_query( self, query, month, day, year ):
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+
+      return WildEncounterController( self.conn ).get_wild_encounters_matching_query(
+         query=query,
+         month=month,
+         day=day,
+         year=year )
+
+
+   def get_animal_species_names( self ):
+      from .animals.controllers.animal_controller import AnimalController
+
+      return AnimalController( self.conn ).get_animal_species_names()
 
 
    def get_itinerary( self ):
-      date_value = self.get_itinerary_date()
+      from .itinerary.controllers.itinerary_controller import ItineraryController
 
-      if date_value == None:
-         return zoo.Itinerary(
-            date='',
-            animals=[],
-            attractions=[],
-            guardians_talks=[],
-            wild_encounters=[] )
-
-      itinerary_date = zoo.ZooUtil.parse_date_value( date_value )
-
-      date = itinerary_date.isoformat()
-      month = itinerary_date.strftime( '%B' )
-      day = itinerary_date.day
-
-      cur = self.conn.cursor()
-
-      animal_rows = cur.execute(
-         """   SELECT
-                  SPECIES,
-                  EXHIBIT,
-                  OLD_LIKELIHOOD,
-                  NEW_LIKELIHOOD
-               FROM ItineraryAnimal;
-         """ ).fetchall()
-
-      species_exhibit_pairs = [
-         {
-            'species': row[ 'SPECIES' ],
-            'exhibit': row[ 'EXHIBIT' ]
-         }
-         for row in animal_rows
-      ]
-
-      attraction_rows = cur.execute(
-         """   SELECT
-                  ATTRACTION,
-                  OLD_LIKELIHOOD,
-                  NEW_LIKELIHOOD
-               FROM ItineraryAttraction;
-         """ ).fetchall()
-
-      attractions_to_include = [
-         row[ 'ATTRACTION' ]
-         for row in attraction_rows
-      ]
-
-      guardians_talk_rows = cur.execute(
-         """   SELECT
-                  TALK_NAME,
-                  START_TIME,
-                  END_TIME,
-                  IS_DELETED
-               FROM ItineraryGuardiansTalk;
-         """ ).fetchall()
-
-      guardians_talks_to_include = [
-         row[ 'TALK_NAME' ]
-         for row in guardians_talk_rows
-      ]
-
-      wild_encounter_rows = cur.execute(
-         """   SELECT
-                  WILD_ENCOUNTER,
-                  START_TIME,
-                  END_TIME,
-                  IS_DELETED
-               FROM ItineraryWildEncounter;
-         """ ).fetchall()
-
-      wild_encounters_to_include = [
-         row[ 'WILD_ENCOUNTER' ]
-         for row in wild_encounter_rows
-      ]
-
-      animals = []
-      attractions = []
-      guardians_talks = []
-      wild_encounters = []
-
-      if species_exhibit_pairs:
-         animals = self.get_animals_for_itinerary(
-            month=month,
-            day=day,
-            temp=None,
-            species_exhibit_pairs=species_exhibit_pairs,
-            include_off_display_animals=True,
-            saved_animal_rows=animal_rows )
-
-      if attractions_to_include:
-         attractions = self.get_attractions_for_itinerary(
-            month=month,
-            day=day,
-            attractions_to_include=attractions_to_include,
-            include_closed_attractions=True,
-            saved_attraction_rows=attraction_rows )
-
-      if guardians_talks_to_include:
-         guardians_talks = self.get_guardians_talks_for_itinerary(
-            guardians_talks_to_include=guardians_talks_to_include,
-            saved_guardians_talk_rows=guardians_talk_rows )
-
-      if wild_encounters_to_include:
-         wild_encounters = self.get_wild_encounters_for_itinerary(
-            wild_encounters_to_include=wild_encounters_to_include,
-            saved_wild_encounter_rows=wild_encounter_rows )
-
-      itinerary = zoo.Itinerary(
-         date=date,
-         animals=animals,
-         attractions=attractions,
-         guardians_talks=guardians_talks,
-         wild_encounters=wild_encounters )
-
-      cur.close()
-
-      return itinerary
+      return ItineraryController( self.conn ).get_itinerary()
 
 
-   def get_zoo_hours( self, date_value ):
-      operating_date = zoo.ZooUtil.parse_date_value( date_value ).isoformat()
-      cur = self.conn.cursor()
+   def get_zoo_hours( self, day, month, year ):
+      from .zoo_hours.controllers.zoo_hours_controller import ZooHoursController
 
-      row = cur.execute(
-         """   SELECT
-                  OPERATING_DATE,
-                  EARLY_ADMISSION_TIME,
-                  OPEN_TIME,
-                  LAST_ADMISSION_TIME,
-                  CLOSE_TIME
-               FROM ZooHours
-               WHERE OPERATING_DATE = ?;
-         """,
-         ( operating_date, ) ).fetchone()
-
-      cur.close()
-
-      if row == None:
-         return None
-
-      return {
-         'date': row[ 'OPERATING_DATE' ],
-         'earlyAdmissionTime': row[ 'EARLY_ADMISSION_TIME' ],
-         'openTime': row[ 'OPEN_TIME' ],
-         'lastAdmissionTime': row[ 'LAST_ADMISSION_TIME' ],
-         'closeTime': row[ 'CLOSE_TIME' ]
-      }
-
-
-   def get_guardians_talk_maximum_duration( self, cursor, talk_name ):
-      row = cursor.execute(
-         """   SELECT MAXIMUM_DURATION
-               FROM MeetTheGuardiansTalk
-               WHERE NAME = ?;
-         """,
-         ( talk_name, ) ).fetchone()
-
-      return row[ 'MAXIMUM_DURATION' ] if row != None else None
-
-
-   def get_wild_encounter_maximum_duration( self, cursor, wild_encounter_name ):
-      row = cursor.execute(
-         """   SELECT MAXIMUM_DURATION
-               FROM WildEncounter
-               WHERE NAME = ?;
-         """,
-         ( wild_encounter_name, ) ).fetchone()
-
-      return row[ 'MAXIMUM_DURATION' ] if row != None else None
+      return ZooHoursController( self.conn ).get_zoo_hours(
+         day=day,
+         month=month,
+         year=year )
 
 
    def set_itinerary(
@@ -1073,127 +419,20 @@ class Database():
          attractions,
          guardians_talks,
          wild_encounters ):
-      animals = animals or []
-      attractions = attractions or []
-      guardians_talks = guardians_talks or []
-      wild_encounters = wild_encounters or []
+      from .itinerary.controllers.itinerary_controller import ItineraryController
 
-      itinerary_date = zoo.ZooUtil.parse_date_value( date )
-      month = itinerary_date.strftime( '%B' )
-      day = itinerary_date.day
-
-      old_visit_date = self.get_itinerary_date()
-      new_visit_date = date
-
-      validation = self.validate_itinerary(
-         month,
-         day,
-         animals,
-         attractions,
-         guardians_talks,
-         wild_encounters,
-         new_visit_date_temp=None,
-         old_visit_date=old_visit_date,
-         new_visit_date=new_visit_date,
-         year=itinerary_date.year )
-
-      self.clear_itinerary()
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO ItineraryDate ( ITINERARY_DATE )
-               VALUES ( ? );
-         """,
-         ( date, )
-      )
-
-      for animal in validation[ 'animals' ]:
-         cur.execute(
-            """   INSERT OR IGNORE INTO ItineraryAnimal (
-                     SPECIES,
-                     EXHIBIT,
-                     OLD_LIKELIHOOD,
-                     NEW_LIKELIHOOD
-                  )
-                  VALUES ( ?, ?, ?, ? );
-            """,
-            (
-               animal.species,
-               animal.exhibit,
-               animal.old_likelihood,
-               animal.new_likelihood,
-            ) )
-
-      for attraction in validation[ 'attractions' ]:
-         cur.execute(
-            """   INSERT OR IGNORE INTO ItineraryAttraction (
-                     ATTRACTION,
-                     OLD_LIKELIHOOD,
-                     NEW_LIKELIHOOD
-                  )
-                  VALUES ( ?, ?, ? );
-            """,
-            (
-               attraction.name,
-               attraction.old_likelihood,
-               attraction.new_likelihood,
-            ) )
-
-      for talk in validation[ 'guardians_talks' ]:
-         cur.execute(
-            """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
-                     TALK_NAME,
-                     START_TIME,
-                     END_TIME,
-                     IS_DELETED
-                  )
-                  VALUES ( ?, ?, ?, ? );
-            """,
-            (
-               talk.name,
-               talk.start_time,
-               talk.end_time,
-               1 if talk.is_deleted else 0,
-            ) )
-
-      for encounter in validation[ 'wild_encounters' ]:
-         cur.execute(
-            """   INSERT OR IGNORE INTO ItineraryWildEncounter (
-                     WILD_ENCOUNTER,
-                     START_TIME,
-                     END_TIME,
-                     IS_DELETED
-                  )
-                  VALUES ( ?, ?, ?, ? );
-            """,
-            (
-               encounter.name,
-               encounter.start_time,
-               encounter.end_time,
-               1 if encounter.is_deleted else 0,
-            ) )
-
-      self.conn.commit()
-      cur.close()
-
-      return True
+      return ItineraryController( self.conn ).set_itinerary(
+         date=date,
+         animals=animals,
+         attractions=attractions,
+         guardians_talks=guardians_talks,
+         wild_encounters=wild_encounters )
 
 
    def clear_itinerary( self ):
-      cur = self.conn.cursor()
+      from .itinerary.controllers.itinerary_controller import ItineraryController
 
-      cur.execute( 'DELETE FROM ItineraryDate;' )
-
-      cur.execute( 'DELETE FROM ItineraryAnimal;' )
-      cur.execute( 'DELETE FROM ItineraryAttraction;' )
-      cur.execute( 'DELETE FROM ItineraryGuardiansTalk;' )
-      cur.execute( 'DELETE FROM ItineraryWildEncounter;' )
-
-      self.conn.commit()
-      cur.close()
-
-      return True
+      return ItineraryController( self.conn ).clear_itinerary()
 
 
    def accept_itinerary( self ):
@@ -1230,311 +469,29 @@ class Database():
       return True
 
 
-   def get_animal_likelihood_for_date( self, month, day, temp, species, exhibit ):
-      rows = self.get_animals_for_itinerary(
-         month=month,
-         day=day,
-         temp=temp,
-         species_exhibit_pairs=[
-            {
-               'species': species,
-               'exhibit': exhibit,
-            }
-         ],
-         include_off_display_animals=True,
-      )
-
-      if not rows:
-         return None
-
-      return rows[ 0 ].likelihood
-
-
-   def get_attraction_likelihood_for_visit_date(
-         self, visit_date_value, attraction_name ):
-      from .attractions.controllers.attraction_controller import AttractionController
-
-      name = ( attraction_name or '' ).strip()
-
-      parsed = zoo.ZooUtil.parse_date_value( visit_date_value )
-
-      return AttractionController( self.conn ).get_attraction_likelihood_for_visit_date(
-         visit_date=parsed,
-         attraction_name=name )
-
-
-   def validate_itinerary(
-         self,
-         month,
-         day,
-         animals,
-         attractions,
-         guardians_talks,
-         wild_encounters,
-         *,
-         new_visit_date_temp=None,
-         old_visit_date=None,
-         new_visit_date=None,
-         year ):
-      guardians_talks = guardians_talks or []
-      wild_encounters = wild_encounters or []
-
-      saved_itinerary_animal_rows = []
-      saved_itinerary_attraction_rows = []
-
-      if old_visit_date != None:
-         cur = self.conn.cursor()
-
-         saved_itinerary_animal_rows = cur.execute(
-            """   SELECT
-                     SPECIES,
-                     EXHIBIT,
-                     NEW_LIKELIHOOD
-                  FROM ItineraryAnimal;
-            """
-         ).fetchall()
-
-         saved_itinerary_attraction_rows = cur.execute(
-            """   SELECT
-                     ATTRACTION,
-                     NEW_LIKELIHOOD
-                  FROM ItineraryAttraction;
-            """
-         ).fetchall()
-
-         cur.close()
-
-      return {
-         'animals': (
-            self.validate_animals(
-               animals=animals,
-               new_visit_date_temp=new_visit_date_temp,
-               old_visit_date=old_visit_date,
-               new_visit_date=new_visit_date,
-               saved_itinerary_animal_rows=saved_itinerary_animal_rows )
-            if animals
-            else []
-         ),
-         'attractions': (
-            self.validate_attractions(
-               attractions=attractions,
-               old_visit_date=old_visit_date,
-               new_visit_date=new_visit_date,
-               saved_itinerary_attraction_rows=saved_itinerary_attraction_rows )
-            if attractions
-            else []
-         ),
-         'guardians_talks': self.validate_guardians_talks(
-            month=month,
-            day=day,
-            year=year,
-            guardians_talks_to_include=guardians_talks ),
-         'wild_encounters': self.validate_wild_encounters(
-            month=month,
-            day=day,
-            wild_encounters_to_include=wild_encounters ),
-      }
-
-
-   def validate_animals(
-         self,
-         animals,
-         new_visit_date_temp=None,
-         old_visit_date=None,
-         new_visit_date=None,
-         saved_itinerary_animal_rows=None ):
-      parsed_new = zoo.ZooUtil.parse_date_value( new_visit_date )
-      new_month = parsed_new.strftime( '%B' )
-      new_day = parsed_new.day
-
-      old_likelihood_by_pair = {}
-
-      if old_visit_date != None and saved_itinerary_animal_rows:
-         for row in saved_itinerary_animal_rows:
-            old_likelihood_by_pair[
-               ( row[ 'SPECIES' ], row[ 'EXHIBIT' ] )
-            ] = row[ 'NEW_LIKELIHOOD' ]
-
-      diffs = []
-
-      for item in animals:
-         species = ( item.get( 'species' ) or '' ).strip()
-         exhibit = ( item.get( 'exhibit' ) or '' ).strip()
-
-         old_likelihood = (
-            None
-            if old_visit_date == None
-            else old_likelihood_by_pair.get( ( species, exhibit ) ) )
-
-         new_likelihood = self.get_animal_likelihood_for_date(
-            new_month,
-            new_day,
-            new_visit_date_temp,
-            species,
-            exhibit )
-
-         diffs.append(
-            zoo.AnimalDiff(
-               species=species,
-               exhibit=exhibit,
-               old_likelihood=old_likelihood,
-               new_likelihood=new_likelihood,
-            )
-         )
-
-      return diffs
-
-
-   def validate_attractions(
-         self,
-         attractions,
-         old_visit_date=None,
-         new_visit_date=None,
-         saved_itinerary_attraction_rows=None ):
-
-      old_likelihood_by_name = {}
-
-      if old_visit_date != None and saved_itinerary_attraction_rows:
-
-         for row in saved_itinerary_attraction_rows:
-            old_likelihood_by_name[ row[ 'ATTRACTION' ] ] = row[ 'NEW_LIKELIHOOD' ]
-
-      diffs = []
-
-      for attraction in attractions:
-         attraction_name = str( attraction ).strip()
-
-         old_likelihood = (
-            None
-            if old_visit_date == None
-            else old_likelihood_by_name.get( attraction_name ) )
-
-         new_likelihood = self.get_attraction_likelihood_for_visit_date(
-            new_visit_date,
-            attraction_name )
-
-         diffs.append(
-            zoo.AttractionDiff(
-               name=attraction_name,
-               old_likelihood=old_likelihood,
-               new_likelihood=new_likelihood,
-            )
-         )
-
-      return diffs
-
-
-   def build_guardians_talk_diff_for_visit_day( self, talk_name, talk_schedule_rows ):
-      has_available = any(
-         getattr( row, 'is_available', True )
-         for row in talk_schedule_rows
-      )
-      resolved_name = (
-         talk_schedule_rows[ 0 ].name
-         if talk_schedule_rows
-         else str( talk_name ).strip()
-      )
-
-      start_time = None
-      end_time = None
-
-      if talk_schedule_rows and talk_schedule_rows[ 0 ].start_time:
-         start_time = talk_schedule_rows[ 0 ].start_time
-         cur = self.conn.cursor()
-
-         try:
-            end_time = zoo.ZooUtil.add_minutes_to_time(
-               start_time,
-               self.get_guardians_talk_maximum_duration( cur, resolved_name ) )
-         finally:
-            cur.close()
-
-      return zoo.GuardiansTalkDiff(
-         name=resolved_name,
-         is_deleted=not has_available,
-         start_time=start_time,
-         end_time=end_time,
-      )
-
-
-   def build_wild_encounter_diff_for_visit_day( self, encounter_name, encounter_schedule_rows ):
-      has_available = any(
-         getattr( row, 'is_available', True )
-         for row in encounter_schedule_rows
-      )
-      resolved_name = (
-         encounter_schedule_rows[ 0 ].name
-         if encounter_schedule_rows
-         else str( encounter_name ).strip()
-      )
-
-      start_time = None
-      end_time = None
-
-      if encounter_schedule_rows and encounter_schedule_rows[ 0 ].start_time:
-         start_time = encounter_schedule_rows[ 0 ].start_time
-         cur = self.conn.cursor()
-
-         try:
-            end_time = zoo.ZooUtil.add_minutes_to_time(
-               start_time,
-               self.get_wild_encounter_maximum_duration( cur, resolved_name ) )
-         finally:
-            cur.close()
-
-      return zoo.WildEncounterDiff(
-         name=resolved_name,
-         is_deleted=not has_available,
-         start_time=start_time,
-         end_time=end_time,
-      )
-
-
    def validate_guardians_talks( self, month, day, year, guardians_talks_to_include=None ):
-      day_schedule = self.get_guardians_talk_schedule(
+      from .guardians.controllers.guardians_controller import GuardiansController
+
+      return GuardiansController( self.conn ).validate_guardians_talks(
          month=month,
          day=day,
-         year=year )
-
-      diffs = []
-
-      for talk_name in guardians_talks_to_include or []:
-         talk_schedule = self.get_guardians_talk_schedule_for_talk_on_day(
-            month,
-            day,
-            talk_name,
-            year,
-            day_schedule=day_schedule )
-
-         diffs.append(
-            self.build_guardians_talk_diff_for_visit_day( talk_name, talk_schedule )
-         )
-
-      return diffs
+         year=year,
+         guardians_talks_to_include=guardians_talks_to_include )
 
 
-   def validate_wild_encounters( self, month, day, wild_encounters_to_include=None ):
-      day_schedule = self.get_wild_encounter_schedule( month=month, day=day )
+   def validate_wild_encounters( self, month, day, year, wild_encounters_to_include=None ):
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
-      diffs = []
-
-      for encounter_name in wild_encounters_to_include or []:
-         encounter_schedule = self.get_wild_encounter_schedule_for_encounter_on_day(
-            month,
-            day,
-            encounter_name,
-            day_schedule=day_schedule )
-
-         diffs.append(
-            self.build_wild_encounter_diff_for_visit_day(
-               encounter_name,
-               encounter_schedule )
-         )
-
-      return diffs
+      return WildEncounterController( self.conn ).validate_wild_encounters(
+         month=month,
+         day=day,
+         year=year,
+         wild_encounters_to_include=wild_encounters_to_include )
 
 
    def get_regions_with_exhibits( self, month, day ):
+      from .exhibits.logic.exhibit_closure import is_exhibit_closure_active_on_visit_date
+
       cur = self.conn.cursor()
       target_date = None
 
@@ -1577,25 +534,11 @@ class Database():
          if exhibit_name == None:
             continue
 
-         is_closed = False
-
-         if row[ 'IS_CLOSED' ] and target_date != None:
-            start_ok = True
-            end_ok = True
-
-            if row[ 'CLOSED_START' ] != None:
-               closed_start = zoo.ZooUtil.parse_date_value(
-                  value=row[ 'CLOSED_START' ] )
-               start_ok = target_date >= closed_start
-
-            if row[ 'CLOSED_END' ] != None:
-               closed_end = zoo.ZooUtil.parse_date_value(
-                  value=row[ 'CLOSED_END' ] )
-               end_ok = target_date <= closed_end
-
-            is_closed = start_ok and end_ok
-
-         if not is_closed:
+         if not is_exhibit_closure_active_on_visit_date(
+               row[ 'IS_CLOSED' ],
+               row[ 'CLOSED_START' ],
+               row[ 'CLOSED_END' ],
+               target_date ):
             current_region[ 'exhibits' ].append( exhibit_name )
 
       cur.close()
@@ -1980,258 +923,6 @@ class Database():
       cur.close()
 
       return wild_encounter_occurrences
-
-
-   def get_animals_for_itinerary(
-         self,
-         month,
-         day,
-         temp=None,
-         species_exhibit_pairs=None,
-         include_off_display_animals=True,
-         exhibits_to_include=None,
-         saved_animal_rows=None ):
-
-      species_exhibit_pairs = species_exhibit_pairs or []
-
-      pairs_filter = set()
-
-      for pair in species_exhibit_pairs:
-
-         if not isinstance( pair, dict ):
-            continue
-
-         species = ( pair.get( 'species' ) or '' ).strip().lower()
-         exhibit = ( pair.get( 'exhibit' ) or '' ).strip().lower()
-
-         if species and exhibit:
-            pairs_filter.add( ( species, exhibit ) )
-
-      if not pairs_filter:
-         return []
-
-      animals = self.get_animals_viewable_on_day(
-         month=month,
-         day=day,
-         temp=temp,
-         include_off_display_animals=include_off_display_animals,
-         threshold=0,
-         exhibits_to_include=exhibits_to_include )
-
-      animals = [
-         a for a in animals
-         if (
-            ( a.species or '' ).strip().lower(),
-            ( a.exhibit or '' ).strip().lower()
-         ) in pairs_filter
-      ]
-
-      has_positive_by_species = set()
-
-      for animal in animals:
-         if ( animal.likelihood or 0 ) > 0:
-            has_positive_by_species.add(
-               ( animal.species or '' ).strip().lower()
-            )
-
-      filtered_animals = []
-
-      for animal in animals:
-         species = ( animal.species or '' ).strip().lower()
-         likelihood = animal.likelihood or 0
-
-         if likelihood <= 0 and species in has_positive_by_species:
-            continue
-
-         filtered_animals.append( animal )
-
-      filtered_animals.sort(
-         key=lambda a: (
-            ( a.species or '' ).lower(),
-            ( a.exhibit or '' ).lower()
-         )
-      )
-
-      if saved_animal_rows is not None:
-         saved_row_by_pair = {
-            (
-               ( row[ 'SPECIES' ] or '' ).strip().lower(),
-               ( row[ 'EXHIBIT' ] or '' ).strip().lower()
-            ): row
-            for row in saved_animal_rows
-         }
-
-         for animal in filtered_animals:
-            saved_row = saved_row_by_pair.get( (
-               ( animal.species or '' ).strip().lower(),
-               ( animal.exhibit or '' ).strip().lower()
-            ) )
-
-            if saved_row == None:
-               continue
-
-            animal.old_likelihood = saved_row[ 'OLD_LIKELIHOOD' ]
-
-      return filtered_animals
-
-
-   def get_attractions_for_itinerary(
-         self,
-         month,
-         day,
-         attractions_to_include=None,
-         include_closed_attractions=True,
-         saved_attraction_rows=None ):
-
-      if saved_attraction_rows is not None:
-         attractions_to_include = [
-            row[ 'ATTRACTION' ]
-            for row in saved_attraction_rows
-         ]
-      else:
-         attractions_to_include = attractions_to_include or []
-
-      attractions_filter = set()
-
-      for attraction_name in attractions_to_include:
-
-         if not isinstance( attraction_name, str ):
-            continue
-
-         attraction_name = attraction_name.strip().lower()
-
-         if attraction_name:
-            attractions_filter.add( attraction_name )
-
-      if not attractions_filter:
-         return []
-
-      attractions = self.get_attractions(
-         month=month,
-         day=day,
-         include_closed_attractions=include_closed_attractions )
-
-      attractions = [
-         attraction for attraction in attractions
-         if ( attraction.name or '' ).strip().lower() in attractions_filter
-      ]
-
-      if saved_attraction_rows is not None:
-         saved_row_by_name = {
-            ( row[ 'ATTRACTION' ] or '' ).strip().lower(): row
-            for row in saved_attraction_rows
-         }
-
-         for attraction in attractions:
-            saved_row = saved_row_by_name.get(
-               ( attraction.name or '' ).strip().lower() )
-
-            if saved_row == None:
-               continue
-
-            attraction.old_likelihood = saved_row[ 'OLD_LIKELIHOOD' ]
-
-      attractions.sort( key=lambda a: ( a.name or '' ).lower() )
-
-      return attractions
-
-
-   def get_guardians_talks_for_itinerary(
-         self,
-         guardians_talks_to_include=None,
-         saved_guardians_talk_rows=None ):
-
-      guardians_talk_names = [
-         row[ 'TALK_NAME' ]
-         for row in saved_guardians_talk_rows or []
-      ] or guardians_talks_to_include or []
-
-      if not guardians_talk_names:
-         return []
-
-      guardians_talks = self.get_guardians_talk_details(
-         guardians_talk_names )
-
-      if saved_guardians_talk_rows:
-         self.apply_saved_guardians_talk_times(
-            guardians_talks,
-            saved_guardians_talk_rows )
-
-      guardians_talks.sort(
-         key=lambda t: (
-            ( t.name or '' ).lower(),
-            t.start_time or ''
-         )
-      )
-
-      return guardians_talks
-
-
-   def apply_saved_guardians_talk_times( self, guardians_talks, saved_guardians_talk_rows ):
-      guardians_talk_row_by_name = {
-         ( row[ 'TALK_NAME' ] or '' ).strip().lower(): row
-         for row in saved_guardians_talk_rows
-      }
-
-      for guardians_talk in guardians_talks:
-         row = guardians_talk_row_by_name.get(
-            ( guardians_talk.name or '' ).strip().lower() )
-
-         if row == None:
-            continue
-
-         guardians_talk.start_time = row[ 'START_TIME' ]
-         guardians_talk.end_time = row[ 'END_TIME' ]
-         guardians_talk.is_deleted = bool( row[ 'IS_DELETED' ] )
-
-
-   def get_wild_encounters_for_itinerary(
-         self,
-         wild_encounters_to_include=None,
-         saved_wild_encounter_rows=None ):
-
-      wild_encounter_names = [
-         row[ 'WILD_ENCOUNTER' ]
-         for row in saved_wild_encounter_rows or []
-      ] or wild_encounters_to_include or []
-
-      if not wild_encounter_names:
-         return []
-
-      wild_encounters = self.get_wild_encounter_details(
-         wild_encounter_names )
-
-      if saved_wild_encounter_rows:
-         self.apply_saved_wild_encounter_times(
-            wild_encounters,
-            saved_wild_encounter_rows )
-
-      wild_encounters.sort(
-         key=lambda w: (
-            ( w.name or '' ).lower(),
-            w.start_time or ''
-         )
-      )
-
-      return wild_encounters
-
-
-   def apply_saved_wild_encounter_times( self, wild_encounters, saved_wild_encounter_rows ):
-      wild_encounter_row_by_name = {
-         ( row[ 'WILD_ENCOUNTER' ] or '' ).strip().lower(): row
-         for row in saved_wild_encounter_rows
-      }
-
-      for wild_encounter in wild_encounters:
-         row = wild_encounter_row_by_name.get(
-            ( wild_encounter.name or '' ).strip().lower() )
-
-         if row == None:
-            continue
-
-         wild_encounter.start_time = row[ 'START_TIME' ]
-         wild_encounter.end_time = row[ 'END_TIME' ]
-         wild_encounter.is_deleted = bool( row[ 'IS_DELETED' ] )
 
 
    def set_animal_as_off_display( self, species, exhibit, start_date, end_date, message ):

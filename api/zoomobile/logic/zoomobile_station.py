@@ -1,6 +1,3 @@
-from datetime import date
-from datetime import datetime
-
 from ... import zoo
 from ...shared.enums.zoomobile_route import ZoomobileRouteId
 from .zoomobile_station_context import ZoomobileStationContext
@@ -8,16 +5,19 @@ from .zoomobile_station_context import ZoomobileStationContext
 
 def resolve_zoomobile_station_context(
       route,
+      year,
       month,
       day,
       zoomobile_stations_to_include=None ):
 
+   target_date = zoo.ZooUtil.visit_target_date(
+      month=month,
+      day=day,
+      year=year )
+
    return ZoomobileStationContext(
       route=route,
-      target_date=date(
-         datetime.now().year,
-         zoo.ZooUtil.normalize_month( month ),
-         int( day ) ),
+      target_date=target_date,
       zoomobile_stations_to_include=zoomobile_stations_to_include or [] )
 
 

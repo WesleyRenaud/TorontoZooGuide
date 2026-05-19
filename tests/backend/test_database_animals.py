@@ -2,7 +2,7 @@ from datetime import date
 
 
 def test_get_animals_viewable_on_day_returns_animals_from_seeded_database( db ):
-   animals = db.get_animals_viewable_on_day( month='June', day=15, temp=22 )
+   animals = db.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
 
    assert animals
    assert all( animal.species for animal in animals )
@@ -11,8 +11,9 @@ def test_get_animals_viewable_on_day_returns_animals_from_seeded_database( db ):
 
 def test_get_animals_viewable_on_day_filters_by_exhibit( db ):
    animals = db.get_animals_viewable_on_day(
-      month='June',
       day=15,
+      month='June',
+      year=2026,
       temp=22,
       exhibits_to_include=[ 'Africa Savanna' ]
    )
@@ -32,14 +33,16 @@ def test_off_display_animals_are_excluded_or_included_by_flag( db, freeze_databa
    )
 
    without_closed = db.get_animals_viewable_on_day(
-      month='June',
       day=15,
+      month='June',
+      year=2026,
       temp=22,
       include_off_display_animals=False
    )
    with_closed = db.get_animals_viewable_on_day(
-      month='June',
       day=15,
+      month='June',
+      year=2026,
       temp=22,
       include_off_display_animals=True
    )
@@ -69,7 +72,7 @@ def test_limited_viewing_and_alert_messages_are_returned( db, freeze_database_to
       message='Penguins may be harder to spot.'
    )
 
-   animals = db.get_animals_viewable_on_day( month='June', day=15, temp=22 )
+   animals = db.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
    penguin = next( animal for animal in animals if animal.species == 'African Penguin' )
 
    assert penguin.has_limited_viewing_schedule is True
@@ -106,7 +109,7 @@ def test_setting_animal_viewing_alert_twice_updates_existing_alert( db, cursor, 
       """,
       ( 'African Penguin', 'Africa Savanna' )
    ).fetchall()
-   animals = db.get_animals_viewable_on_day( month='June', day=15, temp=22 )
+   animals = db.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
    penguin = next( animal for animal in animals if animal.species == 'African Penguin' )
 
    assert len( alert_rows ) == 1
@@ -129,8 +132,9 @@ def test_exhibit_closure_sets_animal_likelihood_to_zero( db, freeze_database_tod
    )
 
    animals = db.get_animals_viewable_on_day(
-      month='June',
       day=15,
+      month='June',
+      year=2026,
       temp=22,
       include_off_display_animals=True,
       exhibits_to_include=[ 'Africa Savanna' ]
@@ -144,17 +148,39 @@ def test_exhibit_closure_sets_animal_likelihood_to_zero( db, freeze_database_tod
 def test_animal_query_helpers_dedupe_and_sort( db ):
    animals = db.get_animals_matching_query(
       query='african',
-      month='June',
       day=15,
+      month='June',
+      year=2026,
       temp=22,
       include_off_display_animals=True
    )
 
-   species = [ animal.species for animal in animals ]
+   species_exhibits = [ ( animal.species, animal.exhibit ) for animal in animals ]
 
-   assert species == sorted( species, key=str.lower )
-   assert len( species ) == len( set( species ) )
-   assert all( 'african' in name.lower() for name in species )
+   assert species_exhibits == sorted(
+      species_exhibits,
+      key=lambda pair: ( pair[ 0 ].lower(), ( pair[ 1 ] or '' ).lower() ) )
+   assert len( species_exhibits ) == len( set( species_exhibits ) )
+   assert all(
+      'african' in ( animal.species or '' ).lower()
+      or 'african' in ( animal.exhibit or '' ).lower()
+      for animal in animals
+   )
+
+
+def test_animal_query_returns_same_species_in_multiple_exhibits( db ):
+   animals = db.get_animals_matching_query(
+      query='cheetah',
+      day=15,
+      month='June',
+      year=2026,
+      temp=22,
+      include_off_display_animals=True
+   )
+
+   exhibits = { animal.exhibit for animal in animals if animal.species == 'Cheetah' }
+
+   assert exhibits == { 'Africa Savanna', 'Indo-Malaya Outdoor' }
 
 
 def test_basic_animal_lookup_methods( db ):

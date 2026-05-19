@@ -3,8 +3,9 @@ from datetime import date
 
 def get_animal( db, species, exhibit ):
    animals = db.get_animals_viewable_on_day(
-      month='June',
       day=15,
+      month='June',
+      year=2026,
       temp=22,
       include_off_display_animals=True,
       exhibits_to_include=[ exhibit ] )
@@ -17,8 +18,9 @@ def get_animal( db, species, exhibit ):
 
 def get_restaurant( db, name ):
    restaurants = db.get_restaurants(
-      month='June',
       day=15,
+      month='June',
+      year=2026,
       include_closed_restaurants=True )
 
    return next( restaurant for restaurant in restaurants if restaurant.name == name )
@@ -26,8 +28,9 @@ def get_restaurant( db, name ):
 
 def get_gift_shop( db, name ):
    gift_shops = db.get_gift_shops(
-      month='June',
       day=15,
+      month='June',
+      year=2026,
       include_closed_gift_shops=True )
 
    return next( gift_shop for gift_shop in gift_shops if gift_shop.name == name )
@@ -35,8 +38,9 @@ def get_gift_shop( db, name ):
 
 def get_attraction( db, name ):
    attractions = db.get_attractions(
-      month='June',
       day=15,
+      month='June',
+      year=2026,
       include_closed_attractions=True )
 
    return next( attraction for attraction in attractions if attraction.name == name )
@@ -124,7 +128,7 @@ def test_set_exhibit_closed_and_open_changes_animal_and_closed_exhibit_results( 
 
    assert lion.likelihood == 0
    assert lion.off_display_message == 'The Africa Savanna is temporarily closed.'
-   assert 'Africa Savanna' in db.get_closed_exhibits( month='June', day=15 )
+   assert 'Africa Savanna' in db.get_closed_exhibits( month='June', day=15, year=2026 )
 
    assert db.set_exhibit_as_open( 'Africa Savanna', '2026-06-01', '' )
 
@@ -132,7 +136,7 @@ def test_set_exhibit_closed_and_open_changes_animal_and_closed_exhibit_results( 
 
    assert lion.likelihood > 0
    assert lion.off_display_message is None
-   assert 'Africa Savanna' not in db.get_closed_exhibits( month='June', day=15 )
+   assert 'Africa Savanna' not in db.get_closed_exhibits( month='June', day=15, year=2026 )
 
 
 def test_set_restaurant_closed_and_opening_schedule_changes_restaurant_results( db, freeze_database_today ):
@@ -147,7 +151,7 @@ def test_set_restaurant_closed_and_opening_schedule_changes_restaurant_results( 
    assert restaurant.closed_message == 'The Africa Restaurant is temporarily closed.'
    assert all(
       item.name != 'Africa Restaurant'
-      for item in db.get_restaurants( month='June', day=15, include_closed_restaurants=False )
+      for item in db.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=False )
    )
 
    assert db.set_restaurant_opening_schedule(
@@ -183,7 +187,7 @@ def test_set_gift_shop_closed_and_opening_schedule_changes_gift_shop_results( db
    assert gift_shop.closed_message == 'The Zootique is temporarily closed.'
    assert all(
       item.name != 'Zootique'
-      for item in db.get_gift_shops( month='June', day=15, include_closed_gift_shops=False )
+      for item in db.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=False )
    )
 
    assert db.set_gift_shop_opening_schedule(
@@ -219,7 +223,7 @@ def test_set_attraction_closed_and_opening_schedule_changes_attraction_results( 
    assert attraction.closed_message == 'The Conservation Carousel is temporarily closed.'
    assert all(
       item.name != 'Conservation Carousel'
-      for item in db.get_attractions( month='June', day=15, include_closed_attractions=False )
+      for item in db.get_attractions( day=15, month='June', year=2026, include_closed_attractions=False )
    )
 
    assert db.set_attraction_opening_schedule(
@@ -248,13 +252,13 @@ def test_set_zoomobile_station_closed_and_open_changes_route_results( db, freeze
 
    assert db.set_zoomobile_station_as_closed( 'Africa Zoomobile Station', '2026-06-01', '2026-06-30', '' )
 
-   route = db.get_zoomobile_route( route='summer', month='June', day=15 )
+   route = db.get_zoomobile_route( route='summer', day=15, month='June', year=2026 )
 
    assert all( station.name != 'Africa Zoomobile Station' for station in route.zoomobile_stations )
 
    assert db.set_zoomobile_station_as_open( 'Africa Zoomobile Station' )
 
-   route = db.get_zoomobile_route( route='summer', month='June', day=15 )
+   route = db.get_zoomobile_route( route='summer', day=15, month='June', year=2026 )
 
    assert any( station.name == 'Africa Zoomobile Station' for station in route.zoomobile_stations )
 
@@ -271,7 +275,7 @@ def test_create_end_and_edit_updates_change_active_update_results( db, freeze_da
 
    assert created is True
 
-   updates = db.get_updates( month='June', day=15 )
+   updates = db.get_updates_for_visit_date( month='June', day=15, year=2026 )
 
    assert len( updates ) == 1
    assert updates[ 0 ].to_dict() == {
@@ -289,7 +293,7 @@ def test_create_end_and_edit_updates_change_active_update_results( db, freeze_da
       update_type='Closure',
       end_date='2026-07-15' ) is True
 
-   updates = db.get_updates( month='July', day=1 )
+   updates = db.get_updates_for_visit_date( month='July', day=1, year=2026 )
 
    assert len( updates ) == 1
    assert updates[ 0 ].to_dict() == {
@@ -305,7 +309,7 @@ def test_create_end_and_edit_updates_change_active_update_results( db, freeze_da
       start_date='2026-06-15',
       end_date='' ) is True
 
-   updates = db.get_updates( month='August', day=1 )
+   updates = db.get_updates_for_visit_date( month='August', day=1, year=2026 )
 
    assert updates[ 0 ].end_date is None
 
@@ -315,7 +319,7 @@ def test_create_end_and_edit_updates_change_active_update_results( db, freeze_da
       update_type='invalid' ) is False
 
    assert db.end_update( 'New baby giraffe', '2026-06-15', '2026-06-14' ) is True
-   assert db.get_updates( month='June', day=15 ) == []
+   assert db.get_updates_for_visit_date( month='June', day=15, year=2026 ) == []
 
 
 def test_active_update_options_include_future_updates_but_not_expired_updates( db, freeze_database_today ):
@@ -335,14 +339,11 @@ def test_active_update_options_include_future_updates_but_not_expired_updates( d
       start_date='2026-05-01',
       end_date='2026-05-31' )
 
-   assert db.get_updates( month='June', day=15 ) == []
+   assert db.get_updates_for_visit_date( month='June', day=15, year=2026 ) == []
 
-   update_options = db.get_active_update_options()
+   update_options = db.get_unexpired_updates()
 
-   assert [
-      update[ 'title' ]
-      for update in update_options
-   ] == [ 'Future update' ]
+   assert [ update.title for update in update_options ] == [ 'Future update' ]
 
 
 def test_set_current_zoomobile_route_changes_current_route_result( db, freeze_database_today ):
@@ -350,7 +351,7 @@ def test_set_current_zoomobile_route_changes_current_route_result( db, freeze_da
 
    assert db.set_current_zoomobile_route( 'winter', '2026-06-01', '2026-06-30' )
 
-   route = db.get_zoomobile_route( route='current', month='June', day=15 )
+   route = db.get_zoomobile_route( route='current', day=15, month='June', year=2026 )
 
    assert route.route == 'winter'
    assert route.route_source == 'override'
@@ -427,7 +428,7 @@ def test_set_end_and_cancel_wild_encounter_schedule_changes_wild_encounter_resul
       ''
    )
 
-   encounters = db.get_wild_encounter_schedule( month='June', day=15 )
+   encounters = db.get_wild_encounter_schedule( month='June', day=15, year=2026 )
    encounter = next( item for item in encounters if item.name == 'African Rainforest' and item.start_time == '14:00' )
 
    assert encounter.is_available is True
@@ -435,7 +436,7 @@ def test_set_end_and_cancel_wild_encounter_schedule_changes_wild_encounter_resul
 
    assert db.end_wild_encounter_schedule( 'African Rainforest', '2026-06-14' )
 
-   encounters = db.get_wild_encounter_schedule( month='June', day=15 )
+   encounters = db.get_wild_encounter_schedule( month='June', day=15, year=2026 )
    encounter = next( item for item in encounters if item.name == 'African Rainforest' and item.start_time == '14:00' )
 
    assert encounter.is_available is False
@@ -457,7 +458,7 @@ def test_set_end_and_cancel_wild_encounter_schedule_changes_wild_encounter_resul
    )
    assert db.cancel_wild_encounter_occurrence( 'African Rainforest', '2026-06-15', '14:00' )
 
-   encounters = db.get_wild_encounter_schedule( month='June', day=15 )
+   encounters = db.get_wild_encounter_schedule( month='June', day=15, year=2026 )
    encounter = next( item for item in encounters if item.name == 'African Rainforest' and item.start_time == '14:00' )
 
    assert encounter.is_available is False

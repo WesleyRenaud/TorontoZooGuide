@@ -61,7 +61,7 @@ def make_animal_viewability_record( **overrides ):
 
 
 def test_database_uses_injected_path( db ):
-   assert db.get_species()
+   assert db.get_animal_species_names()
 
 
 def test_close_is_idempotent( db ):
@@ -123,6 +123,32 @@ def test_parse_values_raise_for_unsupported_formats():
 
    with pytest.raises( ValueError ):
       zoo.ZooUtil.parse_datetime_value( 'June 15, 2026 9:30' )
+
+
+@pytest.mark.parametrize(
+   'left, right, expected',
+   [
+      ( date( 2026, 6, 15 ), None, True ),
+      ( date( 2026, 6, 15 ), '2026-06-15', True ),
+      ( date( 2026, 6, 14 ), '2026-06-15', False ),
+      ( date( 2026, 6, 16 ), '2026-06-14', True ),
+   ]
+)
+def test_is_date_on_or_after( left, right, expected ):
+   assert zoo.ZooUtil.is_date_on_or_after( left, right ) is expected
+
+
+@pytest.mark.parametrize(
+   'left, right, expected',
+   [
+      ( date( 2026, 6, 15 ), None, True ),
+      ( date( 2026, 6, 15 ), '2026-06-15', True ),
+      ( date( 2026, 6, 16 ), '2026-06-15', False ),
+      ( date( 2026, 6, 14 ), '2026-06-14', True ),
+   ]
+)
+def test_is_date_on_or_before( left, right, expected ):
+   assert zoo.ZooUtil.is_date_on_or_before( left, right ) is expected
 
 
 @pytest.mark.parametrize(

@@ -8,6 +8,7 @@ from ..logic.zoomobile_route import resolve_zoomobile_route
 from ..logic.zoomobile_route import resolve_zoomobile_route_context
 from ..logic.zoomobile_station import build_zoomobile_stations
 from ..logic.zoomobile_station import resolve_zoomobile_station_context
+from ..logic.zoomobile_stations_matching_query import build_zoomobile_stations_matching_query
 
 
 class ZoomobileController():
@@ -18,8 +19,9 @@ class ZoomobileController():
    def get_zoomobile_stations(
          self,
          route,
-         month,
          day,
+         month,
+         year,
          zoomobile_stations_to_include=None ):
 
       return build_zoomobile_stations(
@@ -27,21 +29,43 @@ class ZoomobileController():
          status_records=fetch_zoomobile_station_status_records( self._conn ),
          context=resolve_zoomobile_station_context(
             route=route,
-            month=month,
             day=day,
+            month=month,
+            year=year,
             zoomobile_stations_to_include=zoomobile_stations_to_include ) )
+
+
+   def get_zoomobile_stations_matching_query(
+         self,
+         query,
+         route,
+         day,
+         month,
+         year ):
+
+      zoomobile_stations = self.get_zoomobile_stations(
+         route=route,
+         day=day,
+         month=month,
+         year=year )
+
+      return build_zoomobile_stations_matching_query(
+         zoomobile_stations,
+         query )
 
 
    def get_zoomobile_route(
          self,
          route,
-         month,
          day,
+         month,
+         year,
          zoomobile_stations_to_include=None ):
 
       route_context = resolve_zoomobile_route_context(
+         day=day,
          month=month,
-         day=day )
+         year=year )
       resolved_route, route_source = resolve_zoomobile_route(
          requested_route=route,
          active_route=fetch_active_zoomobile_route(
@@ -57,8 +81,9 @@ class ZoomobileController():
          route_source=route_source,
          zoomobile_stations=self.get_zoomobile_stations(
             route=resolved_route,
-            month=route_context.normalized_month,
             day=route_context.normalized_day,
+            month=route_context.normalized_month,
+            year=route_context.target_date.year,
             zoomobile_stations_to_include=zoomobile_stations_to_include ) )
 
 

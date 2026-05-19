@@ -1,26 +1,21 @@
-from datetime import date
-from datetime import datetime
-
 from ... import zoo
 from ...shared.enums import ScheduleStatus
 from .gift_shop_context import GiftShopContext
 
 
-def resolve_gift_shop_context( month, day ):
-   normalized_month = zoo.ZooUtil.normalize_month( month=month )
-   normalized_day = int( day )
-   target_date = date(
-      datetime.now().year,
-      normalized_month,
-      normalized_day )
+def resolve_gift_shop_context( day, month, year ):
+   target_date = zoo.ZooUtil.visit_target_date(
+      month=month,
+      day=day,
+      year=year )
    weekday = target_date.weekday()
    is_weekend_or_holiday = (
       weekday >= 5
       or zoo.ZooUtil.is_holiday( d=target_date ) )
 
    return GiftShopContext(
-      normalized_month=normalized_month,
-      normalized_day=normalized_day,
+      normalized_month=target_date.month,
+      normalized_day=target_date.day,
       target_date=target_date,
       weekday=weekday,
       is_weekend_or_holiday=is_weekend_or_holiday )

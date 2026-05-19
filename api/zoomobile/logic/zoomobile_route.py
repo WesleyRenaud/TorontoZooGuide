@@ -1,6 +1,3 @@
-from datetime import date
-from datetime import datetime
-
 from ... import zoo
 from ...models.zoomobile_route import ZoomobileRoute
 from ...shared.enums.zoomobile_route import ZoomobileRouteId
@@ -19,17 +16,16 @@ def is_valid_zoomobile_route( route ):
       return False
 
 
-def resolve_zoomobile_route_context( month, day ):
-   normalized_month = zoo.ZooUtil.normalize_month( month )
-   normalized_day = int( day )
+def resolve_zoomobile_route_context( day, month, year ):
+   target_date = zoo.ZooUtil.visit_target_date(
+      month=month,
+      day=day,
+      year=year )
 
    return ZoomobileRouteContext(
-      normalized_month=normalized_month,
-      normalized_day=normalized_day,
-      target_date=date(
-         datetime.now().year,
-         normalized_month,
-         normalized_day ),
+      normalized_month=target_date.month,
+      normalized_day=target_date.day,
+      target_date=target_date,
    )
 
 

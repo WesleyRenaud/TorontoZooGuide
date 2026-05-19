@@ -1,0 +1,150 @@
+from ... import zoo
+from ..data_access.itinerary import fetch_itinerary_animal_rows
+from ..data_access.itinerary import fetch_itinerary_attraction_rows
+from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ..data_access.validated_itinerary import ValidatedItinerary
+
+
+def validate_itinerary_animals(
+      animal_controller,
+      animals,
+      new_visit_date,
+      new_visit_date_temp=None,
+      old_visit_date=None,
+      saved_itinerary_animal_rows=None ):
+   old_likelihood_by_pair = {}
+
+   if old_visit_date != None and saved_itinerary_animal_rows:
+      for row in saved_itinerary_animal_rows:
+         old_likelihood_by_pair[
+            ( row.species, row.exhibit )
+         ] = row.new_likelihood
+
+   diffs = []
+
+   for animal in animals:
+      species = animal.species
+      exhibit = animal.exhibit
+
+      old_likelihood = (
+         None
+         if old_visit_date == None
+         else old_likelihood_by_pair.get( ( species, exhibit ) ) )
+
+      saved_animals = animal_controller.get_animals_for_saved_itinerary(
+         day=new_visit_date.day,
+         month=new_visit_date.month,
+         year=new_visit_date.year,
+         temp=new_visit_date_temp,
+         saved_animals=[
+            ItineraryAnimalRecord(
+               species=species,
+               exhibit=exhibit,
+               old_likelihood=None,
+               new_likelihood=None ) ],
+      )
+
+      new_likelihood = (
+         None
+         if not saved_animals
+         else saved_animals[ 0 ].likelihood )
+
+      diffs.append(
+         zoo.AnimalDiff(
+            species=species,
+            exhibit=exhibit,
+            old_likelihood=old_likelihood,
+            new_likelihood=new_likelihood,
+         )
+      )
+
+   return diffs
+
+
+
+def validate_itinerary_attractions(
+      attraction_controller,
+      attractions,
+      new_visit_date,
+      old_visit_date=None,
+      saved_itinerary_attraction_rows=None ):
+
+   old_likelihood_by_name = {}
+
+   if old_visit_date != None and saved_itinerary_attraction_rows:
+      for row in saved_itinerary_attraction_rows:
+         old_likelihood_by_name[ row.attraction ] = row.new_likelihood
+
+   diffs = []
+
+   for attraction_name in attractions:
+
+      old_likelihood = (
+         None
+         if old_visit_date == None
+         else old_likelihood_by_name.get( attraction_name ) )
+
+      new_likelihood = attraction_controller.get_attraction_likelihood_for_visit_date(
+         visit_date=new_visit_date,
+         attraction_name=attraction_name )
+
+      diffs.append(
+         zoo.AttractionDiff(
+            name=attraction_name,
+            old_likelihood=old_likelihood,
+            new_likelihood=new_likelihood,
+         )
+      )
+
+   return diffs
+
+
+
+def validate_itinerary_for_save(
+      conn,
+      save_input,
+      animal_controller,
+      attraction_controller,
+      guardians_controller,
+      wild_encounter_controller,
+      *,
+      new_visit_date_temp=None,
+      old_visit_date=None ):
+   saved_itinerary_animal_rows = []
+   saved_itinerary_attraction_rows = []
+
+   if old_visit_date != None:
+      saved_itinerary_animal_rows = fetch_itinerary_animal_rows( conn )
+      saved_itinerary_attraction_rows = fetch_itinerary_attraction_rows( conn )
+
+   return ValidatedItinerary(
+      animals=(
+         validate_itinerary_animals(
+            animal_controller,
+            animals=save_input.animals,
+            new_visit_date=save_input.date,
+            new_visit_date_temp=new_visit_date_temp,
+            old_visit_date=old_visit_date,
+            saved_itinerary_animal_rows=saved_itinerary_animal_rows )
+         if save_input.animals
+         else [] ),
+      attractions=(
+         validate_itinerary_attractions(
+            attraction_controller,
+            attractions=save_input.attractions,
+            new_visit_date=save_input.date,
+            old_visit_date=old_visit_date,
+            saved_itinerary_attraction_rows=saved_itinerary_attraction_rows )
+         if save_input.attractions
+         else [] ),
+      guardians_talks=guardians_controller.validate_guardians_talks(
+         month=save_input.month(),
+         day=save_input.day(),
+         year=save_input.year(),
+         guardians_talks_to_include=save_input.guardians_talks ),
+      wild_encounters=wild_encounter_controller.validate_wild_encounters(
+         month=save_input.month(),
+         day=save_input.day(),
+         year=save_input.year(),
+         wild_encounters_to_include=save_input.wild_encounters ),
+   )
