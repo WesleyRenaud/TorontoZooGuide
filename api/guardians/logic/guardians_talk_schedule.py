@@ -1,5 +1,19 @@
 from ... import zoo
 from ...shared.strings import SharedStrings
+from .guardians_talk_name_filter import GuardiansTalkNameFilter
+
+
+def find_guardians_talk_on_day_schedule( day_schedule, talk_name ):
+   talk_filter = GuardiansTalkNameFilter( name=talk_name )
+
+   if talk_filter.should_return_empty():
+      return None
+
+   for row in day_schedule:
+      if talk_filter.allows_talk_name( row.name ):
+         return row
+
+   return None
 
 
 def build_guardians_talk_schedule_for_target_date(
@@ -17,19 +31,11 @@ def build_guardians_talk_schedule_for_target_date(
       location = record.location
       talk_time = record.talk_time
 
-      start_ok = True
-      end_ok = True
+      date_range_ok = zoo.ZooUtil.is_date_in_range(
+         target_date=target_date,
+         start_date_value=record.schedule_start_date,
+         end_date_value=record.schedule_end_date )
       unavailable_message = None
-
-      if record.schedule_start_date != None:
-         schedule_start_date = zoo.ZooUtil.parse_date_value(
-            value=record.schedule_start_date )
-         start_ok = target_date >= schedule_start_date
-
-      if record.schedule_end_date != None:
-         schedule_end_date = zoo.ZooUtil.parse_date_value(
-            value=record.schedule_end_date )
-         end_ok = target_date <= schedule_end_date
 
       weekday_ok = zoo.ZooUtil.schedule_includes_weekday(
          target_weekday,
@@ -46,13 +52,13 @@ def build_guardians_talk_schedule_for_target_date(
       is_cancelled = occurrence_is_cancelled(
          name,
          location,
-         target_date_str,
-         talk_time )
+            target_date_str,
+            talk_time )
 
-      is_available = start_ok and end_ok and weekday_ok and not is_cancelled
+      is_available = date_range_ok and weekday_ok and not is_cancelled
 
       if not is_available:
-         if not start_ok or not end_ok:
+         if not date_range_ok:
             unavailable_message = SharedStrings.VisitDaySchedule.not_scheduled_on_visit_day(
                name,
                target_date )

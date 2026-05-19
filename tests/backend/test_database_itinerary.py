@@ -1,6 +1,22 @@
 from datetime import date
 
 from api import zoo
+from api.animals.controllers.animal_controller import AnimalController
+from api.animals.logic.itinerary_animals import build_itinerary_animals
+from api.attractions.controllers.attraction_controller import AttractionController
+from api.guardians.controllers.guardians_controller import GuardiansController
+from api.guardians.logic.guardians_talk_itinerary_validation import (
+   validate_guardians_talks_for_itinerary,
+)
+from api.wild_encounters.logic.wild_encounter_itinerary_validation import (
+   validate_wild_encounters_for_itinerary,
+)
+from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInput
+from api.itinerary.logic.itinerary_validation import validate_itinerary_animals
+from api.itinerary.logic.itinerary_validation import validate_itinerary_attractions
+from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
 
 def test_set_get_and_clear_itinerary( db, freeze_database_today ):
@@ -111,7 +127,7 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
 
 
 def test_get_zoo_hours_returns_seeded_operating_bounds( db ):
-   assert db.get_zoo_hours( '2026-06-20' ) == {
+   assert db.get_zoo_hours( day=20, month='June', year=2026 ).to_dict() == {
       'date': '2026-06-20',
       'earlyAdmissionTime': '09:00',
       'openTime': '09:30',
@@ -119,7 +135,7 @@ def test_get_zoo_hours_returns_seeded_operating_bounds( db ):
       'closeTime': '19:00'
    }
 
-   assert db.get_zoo_hours( '2026-06-22' ) == {
+   assert db.get_zoo_hours( day=22, month='June', year=2026 ).to_dict() == {
       'date': '2026-06-22',
       'earlyAdmissionTime': None,
       'openTime': '09:30',
@@ -127,7 +143,7 @@ def test_get_zoo_hours_returns_seeded_operating_bounds( db ):
       'closeTime': '18:00'
    }
 
-   assert db.get_zoo_hours( '2026-12-25' ) == {
+   assert db.get_zoo_hours( day=25, month='December', year=2026 ).to_dict() == {
       'date': '2026-12-25',
       'earlyAdmissionTime': None,
       'openTime': '11:00',
@@ -212,14 +228,19 @@ def test_validate_animals_removes_unavailable_entries( db, freeze_database_today
       message='Unavailable.'
    )
 
-   result = db.validate_animals(
+   result = validate_itinerary_animals(
+      AnimalController( db.conn ),
       animals=[
-         { 'species': 'African Lion', 'exhibit': 'Africa Savanna' },
-         { 'species': 'African Penguin', 'exhibit': 'Africa Savanna' }
+         ItineraryAnimalInput(
+            species='African Lion',
+            exhibit='Africa Savanna' ),
+         ItineraryAnimalInput(
+            species='African Penguin',
+            exhibit='Africa Savanna' ),
       ],
+      new_visit_date=date( 2026, 6, 15 ),
       new_visit_date_temp=22,
-      old_visit_date='2026-06-15',
-      new_visit_date='2026-06-15' )
+      old_visit_date='2026-06-15' )
 
    assert len( result ) == 2
 
@@ -245,10 +266,11 @@ def test_validate_attractions_removes_closed_entries( db, freeze_database_today 
       message='Unavailable.'
    )
 
-   result = db.validate_attractions(
+   result = validate_itinerary_attractions(
+      AttractionController( db.conn ),
       attractions=[ 'Conservation Carousel', 'Greenhouse' ],
-      old_visit_date='2026-06-15',
-      new_visit_date='2026-06-15' )
+      new_visit_date=date( 2026, 6, 15 ),
+      old_visit_date='2026-06-15' )
 
    assert [
       ( d.name, d.new_likelihood )
@@ -263,82 +285,53 @@ def test_validate_attractions_removes_closed_entries( db, freeze_database_today 
    ] == [ ( 'Conservation Carousel', 0 ) ]
 
 
-def test_validate_guardians_talks_splits_available_and_unavailable_entries( db, monkeypatch ):
-   def get_guardians_talk_schedule( **kwargs ):
-      return [
-         zoo.GuardiansTalk(
-            name='African Lion',
-            location='Africa Savanna',
-            x_coord=51.138,
-            y_coord=41.279,
-            start_time='10:00',
-            is_available=True ),
-         zoo.GuardiansTalk(
-            name='Amur Tiger',
-            location='Eurasia Wilds',
-            x_coord=75.979,
-            y_coord=74.707,
-            start_time='11:00',
-            is_available=False,
-            unavailable_message='Cancelled.' ),
-         zoo.GuardiansTalk(
-            name='African Lion',
-            location='Africa Savanna',
-            x_coord=51.138,
-            y_coord=41.279,
-            start_time='09:00',
-            is_available=True )
-      ]
+def test_validate_guardians_talks_splits_available_and_unavailable_entries():
+   day_schedule = [
+      zoo.GuardiansTalk(
+         name='African Lion',
+         location='Africa Savanna',
+         x_coord=51.138,
+         y_coord=41.279,
+         start_time='10:00',
+         maximum_duration=30,
+         is_available=True ),
+   ]
 
-   monkeypatch.setattr( db, 'get_guardians_talk_schedule', get_guardians_talk_schedule )
-
-   result = db.validate_guardians_talks(
-      month='June',
-      day=15,
-      year=2026,
-      guardians_talks_to_include=[ 'African Lion', 'Amur Tiger' ]
-   )
+   result = validate_guardians_talks_for_itinerary(
+      guardians_talks_to_include=[ 'African Lion', 'Amur Tiger' ],
+      day_schedule=day_schedule )
 
    assert [
       ( d.name, d.is_deleted, d.start_time, d.end_time )
       for d in result
    ] == [
       ( 'African Lion', False, '10:00', '10:30' ),
-      ( 'Amur Tiger', True, '11:00', '11:30' ),
+      ( 'Amur Tiger', True, None, None ),
    ]
 
 
-def test_validate_wild_encounters_splits_available_and_unavailable_entries( db, monkeypatch ):
-   def get_wild_encounter_schedule( **kwargs ):
-      return [
-         zoo.WildEncounter(
-            name='Kangaroo',
-            meeting_spot='Wild Encounter - Eurasia Meeting Spot',
-            link='https://www.torontozoo.com/tickets/wekangaroo',
-            start_time='13:00',
-            is_available=True ),
-         zoo.WildEncounter(
-            name='African Rainforest',
-            meeting_spot='Wild Encounter - Africa Meeting Spot',
-            link='https://www.torontozoo.com/tickets/weafricarainforest',
-            start_time='14:00',
-            is_available=False,
-            unavailable_message='Unavailable.' ),
-         zoo.WildEncounter(
-            name='Kangaroo',
-            meeting_spot='Wild Encounter - Eurasia Meeting Spot',
-            link='https://www.torontozoo.com/tickets/wekangaroo',
-            start_time='09:00',
-            is_available=True )
-      ]
+def test_validate_wild_encounters_splits_available_and_unavailable_entries():
+   day_schedule = [
+      zoo.WildEncounter(
+         name='Kangaroo',
+         meeting_spot='Wild Encounter - Eurasia Meeting Spot',
+         link='https://www.torontozoo.com/tickets/wekangaroo',
+         start_time='13:00',
+         maximum_duration=45,
+         is_available=True ),
+      zoo.WildEncounter(
+         name='African Rainforest',
+         meeting_spot='Wild Encounter - Africa Meeting Spot',
+         link='https://www.torontozoo.com/tickets/weafricarainforest',
+         start_time='14:00',
+         maximum_duration=45,
+         is_available=False,
+         unavailable_message='Unavailable.' ),
+   ]
 
-   monkeypatch.setattr( db, 'get_wild_encounter_schedule', get_wild_encounter_schedule )
-
-   result = db.validate_wild_encounters(
-      month='June',
-      day=15,
-      wild_encounters_to_include=[ 'African Rainforest', 'Kangaroo' ]
-   )
+   result = validate_wild_encounters_for_itinerary(
+      wild_encounters_to_include=[ 'African Rainforest', 'Kangaroo' ],
+      day_schedule=day_schedule )
 
    assert [
       ( d.name, d.is_deleted, d.start_time, d.end_time )
@@ -349,22 +342,40 @@ def test_validate_wild_encounters_splits_available_and_unavailable_entries( db, 
    ]
 
 
-def test_itinerary_filter_helpers_ignore_invalid_input_and_sort( db ):
-   animals = db.get_animals_for_itinerary(
-      month='June',
+def test_itinerary_filter_helpers_sort_matching_animals( db ):
+   animal_controller = AnimalController( db.conn )
+   attraction_controller = AttractionController( db.conn )
+
+   animals = animal_controller.get_animals_for_saved_itinerary(
       day=15,
-      temp=22,
-      species_exhibit_pairs=[
-         'bad',
-         { 'species': 'African Penguin', 'exhibit': 'Africa Savanna' },
-         { 'species': 'African Lion', 'exhibit': 'Africa Savanna' }
-      ]
-   )
-   attractions = db.get_attractions_for_itinerary(
       month='June',
+      year=2026,
+      saved_animals=[
+         ItineraryAnimalRecord(
+            species='African Penguin',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=None ),
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=None ),
+      ] )
+   attractions = attraction_controller.get_attractions_for_saved_itinerary(
       day=15,
-      attractions_to_include=[ None, 'Greenhouse', 'Conservation Carousel' ]
-   )
+      month='June',
+      year=2026,
+      saved_attractions=[
+         ItineraryAttractionRecord(
+            attraction='Greenhouse',
+            old_likelihood=None,
+            new_likelihood=None ),
+         ItineraryAttractionRecord(
+            attraction='Conservation Carousel',
+            old_likelihood=None,
+            new_likelihood=None ),
+      ] )
 
    assert [ animal.species for animal in animals ] == sorted(
       [ animal.species for animal in animals ],
@@ -375,26 +386,23 @@ def test_itinerary_filter_helpers_ignore_invalid_input_and_sort( db ):
 
 
 def test_itinerary_filter_helpers_return_empty_without_filters( db ):
-   assert db.get_animals_for_itinerary(
-      month='June',
+   assert build_itinerary_animals( [], [] ) == []
+   assert AnimalController( db.conn ).get_animals_for_saved_itinerary(
       day=15,
-      temp=22,
-      species_exhibit_pairs=[
-         None,
-         {},
-         { 'species': 'African Lion' },
-         { 'exhibit': 'Africa Savanna' }
-      ]
-   ) == []
-   assert db.get_attractions_for_itinerary(
       month='June',
-      day=15,
-      attractions_to_include=[ None, '', '   ' ]
+      year=2026,
+      saved_animals=[],
    ) == []
-   assert db.get_guardians_talks_for_itinerary(
+   assert AttractionController( db.conn ).get_attractions_for_saved_itinerary(
+      day=15,
+      month='June',
+      year=2026,
+      saved_attractions=[],
+   ) == []
+   assert GuardiansController( db.conn ).get_guardians_talk_details(
       guardians_talks_to_include=[]
    ) == []
-   assert db.get_wild_encounters_for_itinerary(
+   assert WildEncounterController( db.conn ).get_wild_encounter_details(
       wild_encounters_to_include=[]
    ) == []
 
@@ -469,6 +477,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( 
    encounter_result = db.validate_wild_encounters(
       month='June',
       day=15,
+      year=2026,
       wild_encounters_to_include=[ ' kangaroo ', 'AFRICAN RAINFOREST' ]
    )
 

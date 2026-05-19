@@ -129,19 +129,35 @@ class ZooUtil:
 
 
    @staticmethod
+   def is_date_on_or_after( date_value, boundary_value ):
+      """True when ``date_value`` is on or after ``boundary_value``.
+
+      A ``None`` ``boundary_value`` is treated as unbounded (always true).
+      """
+      if boundary_value is None:
+         return True
+
+      return ZooUtil.parse_date_value( date_value ) >= ZooUtil.parse_date_value( boundary_value )
+
+
+   @staticmethod
+   def is_date_on_or_before( date_value, boundary_value ):
+      """True when ``date_value`` is on or before ``boundary_value``.
+
+      A ``None`` ``boundary_value`` is treated as unbounded (always true).
+      """
+      if boundary_value is None:
+         return True
+
+      return ZooUtil.parse_date_value( date_value ) <= ZooUtil.parse_date_value( boundary_value )
+
+
+   @staticmethod
    def is_date_in_range( target_date, start_date_value, end_date_value ):
-      start_ok = True
-      end_ok = True
-
-      if start_date_value != None:
-         start_date = ZooUtil.parse_date_value( value=start_date_value )
-         start_ok = target_date >= start_date
-
-      if end_date_value != None:
-         end_date = ZooUtil.parse_date_value( value=end_date_value )
-         end_ok = target_date <= end_date
-
-      return start_ok and end_ok
+      return (
+         ZooUtil.is_date_on_or_after( target_date, start_date_value )
+         and ZooUtil.is_date_on_or_before( target_date, end_date_value )
+      )
 
 
    @staticmethod

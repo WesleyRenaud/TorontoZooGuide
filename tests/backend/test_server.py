@@ -187,8 +187,8 @@ class StubDatabase:
       ]
 
 
-   def get_updates( self, **kwargs ):
-      self.calls.append( ( 'get_updates', kwargs ) )
+   def get_updates_for_visit_date( self, **kwargs ):
+      self.calls.append( ( 'get_updates_for_visit_date', kwargs ) )
       return [
          zoo.Update(
             title=UPDATE_TITLE,
@@ -269,67 +269,16 @@ class StubDatabase:
       return True
 
 
-   def get_itinerary_date( self ):
-      self.calls.append( ( 'get_itinerary_date', {} ) )
-      return '2026-06-15'
+   def get_zoo_hours( self, day, month, year ):
+      self.calls.append(
+         ( 'get_zoo_hours', { 'day': day, 'month': month, 'year': year } ) )
 
-
-   def get_zoo_hours( self, date_value ):
-      self.calls.append( ( 'get_zoo_hours', { 'date_value': date_value } ) )
-      return {
-         'date': date_value,
-         'earlyAdmissionTime': '09:00',
-         'openTime': '09:30',
-         'lastAdmissionTime': '18:00',
-         'closeTime': '19:00'
-      }
-
-
-   def get_animals_for_itinerary( self, **kwargs ):
-      self.calls.append( ( 'get_animals_for_itinerary', kwargs ) )
-      pairs = kwargs.get( 'species_exhibit_pairs' ) or []
-
-      result = []
-
-      for pair in pairs:
-         species = pair.get( 'species', '' )
-
-         if species == ANIMAL_NAME:
-            result.append(
-               zoo.Animal(
-                  species=ANIMAL_NAME,
-                  exhibit=ANIMAL_EXHIBIT,
-                  likelihood=85 ) )
-         elif species == 'Amur Tiger':
-            result.append(
-               zoo.Animal(
-                  species='Amur Tiger',
-                  exhibit='Eurasia Wilds',
-                  off_display_message='Unavailable.',
-                  likelihood=0 ) )
-
-      return result
-
-
-   def get_attractions_for_itinerary( self, **kwargs ):
-      self.calls.append( ( 'get_attractions_for_itinerary', kwargs ) )
-      names = kwargs.get( 'attractions_to_include' ) or []
-      result = []
-
-      for name in names:
-
-         if name == ATTRACTION_NAME:
-            result.append(
-               zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) )
-
-         elif name == REMOVED_ATTRACTION_NAME:
-            result.append(
-               zoo.Attraction(
-                  name=REMOVED_ATTRACTION_NAME,
-                  free_with_admission=0,
-                  closed_message='Closed.' ) )
-
-      return result
+      return zoo.ZooHours(
+         date='2026-06-20',
+         early_admission_time='09:00',
+         open_time='09:30',
+         last_admission_time='18:00',
+         close_time='19:00' )
 
 
    def clear_itinerary( self ):
@@ -337,8 +286,8 @@ class StubDatabase:
       return True
 
 
-   def get_species( self ):
-      self.calls.append( ( 'get_species', {} ) )
+   def get_animal_species_names( self ):
+      self.calls.append( ( 'get_animal_species_names', {} ) )
       return [ ANIMAL_NAME, 'Amur Tiger' ]
 
 
@@ -422,16 +371,15 @@ class StubDatabase:
       ]
 
 
-   def get_active_update_options( self ):
-      self.calls.append( ( 'get_active_update_options', {} ) )
+   def get_unexpired_updates( self ):
+      self.calls.append( ( 'get_unexpired_updates', {} ) )
       return [
-         {
-            'title': UPDATE_TITLE,
-            'description': 'Come meet the new calf.',
-            'type': 'New Arrival',
-            'start_date': '2026-06-01',
-            'end_date': '2026-06-30'
-         }
+         zoo.Update(
+            title=UPDATE_TITLE,
+            description='Come meet the new calf.',
+            update_type='New Arrival',
+            start_date='2026-06-01',
+            end_date='2026-06-30' )
       ]
 
 
@@ -573,6 +521,7 @@ def test_get_animals_by_exhibit_endpoint_adds_type_and_maps_payload( stub_databa
       '/get-animals-by-exhibit',
       {
          'month': 'June',
+         'year': 2026,
          'day': 15,
          'temp': 22,
          'exhibitsToInclude': [ 'Africa Savanna' ]
@@ -588,8 +537,9 @@ def test_get_animals_by_exhibit_endpoint_adds_type_and_maps_payload( stub_databa
    assert StubDatabase.instances[ 0 ].calls[ 0 ] == (
       'get_animals_viewable_on_day',
       {
-         'month': 'June',
          'day': 15,
+         'month': 'June',
+         'year': 2026,
          'temp': 22,
          'include_off_display_animals': False,
          'threshold': 0,
@@ -603,6 +553,7 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
       '/get-visible-animals',
       {
          'month': 'June',
+         'year': 2026,
          'day': 15,
          'temp': 22,
          'includeOffDisplayAnimals': True
@@ -616,8 +567,9 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
    assert StubDatabase.instances[ 0 ].calls[ 0 ] == (
       'get_animals_viewable_on_day',
       {
-         'month': 'June',
          'day': 15,
+         'month': 'June',
+         'year': 2026,
          'temp': 22,
          'include_off_display_animals': True,
          'threshold': 0
@@ -634,22 +586,22 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
       ( '/get-animal-names-by-exhibit', { 'exhibit': 'Africa Savanna' }, 'animals' ),
       ( '/get-animal-information', { 'species': 'African Lion' }, 'information' ),
       ( '/get-pavilions', {}, 'pavilions' ),
-      ( '/get-restaurants', { 'month': 'June', 'day': 15 }, 'restaurants' ),
-      ( '/get-restrooms', {}, 'restrooms' ),
-      ( '/get-gift-shops', { 'month': 'June', 'day': 15 }, 'gift_shops' ),
-      ( '/get-attractions', { 'month': 'June', 'day': 15 }, 'attractions' ),
-      ( '/get-zoomobile-route', { 'zoomobileRoute': 'summer', 'month': 'June', 'day': 15 }, 'route' ),
+      ( '/get-restaurants', { 'month': 'June', 'day': 15, 'year': 2026 }, 'restaurants' ),
+      ( '/get-restrooms', { 'month': 'June', 'day': 15, 'year': 2026 }, 'restrooms' ),
+      ( '/get-gift-shops', { 'month': 'June', 'day': 15, 'year': 2026 }, 'gift_shops' ),
+      ( '/get-attractions', { 'month': 'June', 'day': 15, 'year': 2026 }, 'attractions' ),
+      ( '/get-zoomobile-route', { 'zoomobileRoute': 'summer', 'month': 'June', 'day': 15, 'year': 2026 }, 'route' ),
       ( '/get-guardians-talks', { 'month': 'June', 'day': 15, 'year': 2026 }, 'guardians_talks' ),
-      ( '/get-wild-encounters', { 'month': 'June', 'day': 15 }, 'wild_encounters' ),
-      ( '/get-drinking-fountains', { 'month': 'June', 'day': 15 }, 'drinking_fountains' ),
+      ( '/get-wild-encounters', { 'month': 'June', 'day': 15, 'year': 2026 }, 'wild_encounters' ),
+      ( '/get-drinking-fountains', { 'month': 'June', 'day': 15, 'year': 2026 }, 'drinking_fountains' ),
       ( '/get-defibrillators', {}, 'defibrillators' ),
       ( '/get-emergency-intercoms', {}, 'emergency_intercoms' ),
       ( '/get-guest-services', {}, 'guest_services' ),
       ( '/get-picnic-sites', {}, 'picnic_sites' ),
       ( '/get-event-sites', {}, 'event_sites' ),
-      ( '/get-updates', { 'month': 'June', 'day': 15 }, 'updates' ),
-      ( '/get-closed-exhibits', { 'month': 'June', 'day': 15 }, 'closed_exhibits' ),
-      ( '/get-zoo-hours', { 'date': '2026-06-20' }, 'hours' )
+      ( '/get-updates', { 'month': 'June', 'day': 15, 'year': 2026 }, 'updates' ),
+      ( '/get-closed-exhibits', { 'month': 'June', 'day': 15, 'year': 2026 }, 'closed_exhibits' ),
+      ( '/get-zoo-hours', { 'day': 20, 'month': 'June', 'year': 2026 }, 'hours' )
    ]
 )
 def test_read_endpoints_return_json_keys( stub_database, path, body, response_key ):
@@ -664,11 +616,12 @@ def test_read_endpoints_return_json_keys( stub_database, path, body, response_ke
 def test_get_restrooms_endpoint_maps_closed_toggle( stub_database ):
    handler = make_handler(
       '/get-restrooms',
-      {
-         'month': 'June',
-         'day': 15,
-         'includeClosedRestrooms': True
-      }
+         {
+            'month': 'June',
+            'day': 15,
+            'year': 2026,
+            'includeClosedRestrooms': True
+         }
    )
 
    server.MyHandler.do_POST( handler )
@@ -677,8 +630,9 @@ def test_get_restrooms_endpoint_maps_closed_toggle( stub_database ):
       (
          'get_restrooms',
          {
-            'month': 'June',
             'day': 15,
+            'month': 'June',
+            'year': 2026,
             'include_closed_restrooms': True
          }
       )
@@ -688,7 +642,7 @@ def test_get_restrooms_endpoint_maps_closed_toggle( stub_database ):
 def test_get_wild_encounters_endpoint_uses_available_database_results( stub_database ):
    handler = make_handler(
       '/get-wild-encounters',
-      { 'month': 'June', 'day': 21 } )
+      { 'month': 'June', 'day': 21, 'year': 2026 } )
 
    server.MyHandler.do_POST( handler )
 
@@ -696,7 +650,7 @@ def test_get_wild_encounters_endpoint_uses_available_database_results( stub_data
 
    assert handler.statuses == [ 200 ]
    assert StubDatabase.instances[ 0 ].calls == [
-      ( 'get_available_wild_encounters', { 'month': 'June', 'day': 21 } )
+      ( 'get_available_wild_encounters', { 'month': 'June', 'day': 21, 'year': 2026 } )
    ]
    assert [ item[ 'name' ] for item in result[ 'wild_encounters' ] ] == [
       WILD_ENCOUNTER_NAME
@@ -730,9 +684,9 @@ def test_get_exhibits_by_region_allows_missing_date_context( stub_database ):
    'path, body, expected_call, response_subset',
    [
       (
-         '/get-species',
+         '/get-animal-species-names',
          {},
-         ( 'get_species', {} ),
+         ( 'get_animal_species_names', {} ),
          { 'species': [ 'African Lion', 'Amur Tiger' ] }
       ),
       (
@@ -861,7 +815,7 @@ def test_get_exhibits_by_region_allows_missing_date_context( stub_database ):
       (
          '/get-active-update-options',
          {},
-         ( 'get_active_update_options', {} ),
+         ( 'get_unexpired_updates', {} ),
          {
             'updates': [
                {
@@ -932,14 +886,36 @@ def test_search_endpoint_adds_type_fields( stub_database ):
       'get_restrooms_matching_query',
       {
          'query': 'a',
-         'month': 'June',
          'day': 15,
+         'month': 'June',
+         'year': 2026,
          'include_closed_restrooms': False
       }
    ) in StubDatabase.instances[ 0 ].calls
 
    assert (
+      'get_zoomobile_stations_matching_query',
+      {
+         'query': 'a',
+         'route': 'summer',
+         'day': 15,
+         'month': 'June',
+         'year': 2026,
+      }
+   ) in StubDatabase.instances[ 0 ].calls
+
+   assert (
       'get_guardians_talks_matching_query',
+      {
+         'query': 'a',
+         'month': 'June',
+         'day': 15,
+         'year': 2026,
+      }
+   ) in StubDatabase.instances[ 0 ].calls
+
+   assert (
+      'get_wild_encounters_matching_query',
       {
          'query': 'a',
          'month': 'June',
@@ -980,6 +956,31 @@ def test_search_omitted_year_passes_through_when_guardians_included( stub_databa
    assert handler.errors == []
    assert (
       'get_guardians_talks_matching_query',
+      {
+         'query': 'a',
+         'month': 'June',
+         'day': 15,
+         'year': None,
+      },
+   ) in StubDatabase.instances[ 0 ].calls
+
+
+def test_search_omitted_year_passes_through_when_wild_encounters_included( stub_database ):
+   handler = make_handler(
+      '/search',
+      {
+         'query': 'a',
+         'includeWildEncounters': True,
+         'month': 'June',
+         'day': 15,
+      },
+   )
+
+   server.MyHandler.do_POST( handler )
+
+   assert handler.errors == []
+   assert (
+      'get_wild_encounters_matching_query',
       {
          'query': 'a',
          'month': 'June',

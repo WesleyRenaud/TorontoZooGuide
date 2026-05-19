@@ -4,6 +4,8 @@ from ..data_access.attraction import fetch_attraction_schedule_records
 from ..logic.attraction import build_attractions
 from ..logic.attraction import get_attraction_likelihood_and_message_for_date
 from ..logic.attraction import resolve_attraction_context
+from ..logic.attractions_matching_query import build_attractions_matching_query
+from ..logic.itinerary_attractions import build_itinerary_attractions
 
 
 class AttractionController():
@@ -13,13 +15,15 @@ class AttractionController():
 
    def get_attractions(
          self,
-         month,
          day,
+         month,
+         year,
          include_closed_attractions=False ):
 
       context = resolve_attraction_context(
+         day=day,
          month=month,
-         day=day )
+         year=year )
 
       return build_attractions(
          attraction_records=fetch_attraction_records(
@@ -29,6 +33,46 @@ class AttractionController():
          schedule_records=fetch_attraction_schedule_records( self._conn ),
          context=context,
          include_closed_attractions=include_closed_attractions )
+
+
+   def get_attractions_for_saved_itinerary(
+         self,
+         day,
+         month,
+         year,
+         saved_attractions ):
+
+      if not saved_attractions:
+         return []
+
+      attractions = self.get_attractions(
+         day=day,
+         month=month,
+         year=year,
+         include_closed_attractions=True )
+
+      return build_itinerary_attractions(
+         attractions,
+         saved_attractions )
+
+
+   def get_attractions_matching_query(
+         self,
+         query,
+         day,
+         month,
+         year,
+         include_closed_attractions ):
+
+      attractions = self.get_attractions(
+         day=day,
+         month=month,
+         year=year,
+         include_closed_attractions=include_closed_attractions )
+
+      return build_attractions_matching_query(
+         attractions,
+         query )
 
 
    def get_attraction_likelihood_for_visit_date(

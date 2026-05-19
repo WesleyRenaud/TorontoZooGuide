@@ -12,6 +12,11 @@ import {
    toSetItineraryPayload,
 } from './itineraryShape.js';
 import { buildItineraryValidationState } from './itineraryValidation.js';
+import {
+   getDay,
+   getMonth,
+   getYear,
+} from '../visitDates/visitDateRules.js';
 
 function createEmptyItinerary() {
    return {
@@ -72,7 +77,15 @@ export async function getZooHours(date) {
       return null;
    }
 
-   const result = await getZooHoursRequest(date);
+   const month = getMonth(date);
+   const day = getDay(date);
+   const year = getYear(date);
+
+   if (month == null || day == null || year == null) {
+      return null;
+   }
+
+   const result = await getZooHoursRequest({ day, month, year });
    return result?.hours || null;
 }
 

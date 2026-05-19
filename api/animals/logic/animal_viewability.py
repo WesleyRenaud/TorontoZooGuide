@@ -14,8 +14,8 @@ def resolve_temperature_likelihood_context( month, day, temp=None ):
    return ( temp, 2 )
 
 
-def resolve_animal_viewability_context( month, day, calendar_year=None, temp=None ):
-   target_date = zoo.ZooUtil.visit_target_date( month, day, calendar_year )
+def resolve_animal_viewability_context( day, month, year, temp=None ):
+   target_date = zoo.ZooUtil.visit_target_date( month, day, year )
    calendar_month = target_date.month
    day_of_month = target_date.day
    temp, sigma = resolve_temperature_likelihood_context(
