@@ -62,6 +62,7 @@ function createClosedExhibitSource() {
       return await getClosedExhibits({
          month: ctx.month,
          day: ctx.day,
+         year: ctx.year,
          dayOfWeek: ctx.dayOfWeek,
       });
    });

@@ -112,7 +112,11 @@ test('normalizes zoo hours response', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/get-zoo-hours');
       assert.equal(options.method, 'POST');
-      assert.deepEqual(JSON.parse(options.body), { date: '2026-06-20' });
+      assert.deepEqual(JSON.parse(options.body), {
+         day: 20,
+         month: 'JUN',
+         year: 2026,
+      });
 
       return mockJsonResponse({
          hours: {
@@ -125,7 +129,9 @@ test('normalizes zoo hours response', async () => {
       });
    };
 
-   assert.deepEqual(await getZooHoursRequest('2026-06-20'), {
+   assert.deepEqual(
+      await getZooHoursRequest({ day: 20, month: 'JUN', year: 2026 }),
+      {
       hours: {
          date: '2026-06-20',
          earlyAdmissionTime: '09:00',

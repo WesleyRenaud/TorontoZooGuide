@@ -1,5 +1,5 @@
 from ... import zoo
-from .guardians_talk_filter import GuardiansTalkIncludeFilter
+from .guardians_talk_include_filter import GuardiansTalkIncludeFilter
 
 
 def meet_the_guardians_talk_record_to_model( record ):

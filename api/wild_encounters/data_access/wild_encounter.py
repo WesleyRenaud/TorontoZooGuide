@@ -1,0 +1,24 @@
+from .wild_encounter_mapper import map_wild_encounter_records
+
+
+def fetch_wild_encounter_records( conn ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  w.NAME,
+                  w.MEETING_SPOT,
+                  w.LINK,
+                  w.MAXIMUM_DURATION,
+                  m.X_COORD,
+                  m.Y_COORD
+               FROM WildEncounter w
+               JOIN WildEncounterMeetingSpot m
+                  ON w.MEETING_SPOT = m.NAME;
+         """ )
+
+      return map_wild_encounter_records( data.fetchall() )
+
+   finally:
+      cur.close()
