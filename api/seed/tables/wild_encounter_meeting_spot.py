@@ -46,6 +46,11 @@ wild_encounter_meeting_spots = [
       '''Wild Encounter - First Nations Art Garden Meeting Spot''',
       70.329,  # X coordinate on map
       53.162   # Y coordinate on map
+   ),
+   (
+      '''Wild Encounter - Canadian Domain Meeting Spot''',
+      35.584,  # X coordinate on map
+      20.070   # Y coordinate on map
    )
 ]
 
