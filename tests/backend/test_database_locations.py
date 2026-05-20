@@ -86,12 +86,12 @@ def test_region_and_static_location_queries( db ):
       'Tundra Trek'
    ]
 
-   region_exhibits_without_date = db.get_regions_with_exhibits( None, None )
+   region_exhibits = db.get_regions_with_exhibits()
    africa = next(
-      region for region in region_exhibits_without_date
-      if region[ 'name' ] == 'Africa'
+      region for region in region_exhibits
+      if region.name == 'Africa'
    )
-   assert africa[ 'exhibits' ] == [
+   assert africa.exhibits == [
       'Africa Savanna',
       'African Rainforest Pavilion'
    ]
@@ -696,7 +696,7 @@ def test_guardians_talk_occurrences_cover_all_weekdays_and_cancellations( db, fr
       days_ahead=6
    )
 
-   assert { occurrence[ 'date' ] for occurrence in occurrences } == {
+   assert { occurrence.date for occurrence in occurrences } == {
       '2026-06-15',
       '2026-06-16',
       '2026-06-17',
@@ -815,7 +815,7 @@ def test_wild_encounter_occurrences_cover_all_weekdays_and_cancellations( db, fr
       days_ahead=6
    )
 
-   assert { occurrence[ 'date' ] for occurrence in occurrences } == {
+   assert { occurrence.date for occurrence in occurrences } == {
       '2026-06-15',
       '2026-06-16',
       '2026-06-17',

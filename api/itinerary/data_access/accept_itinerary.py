@@ -1,0 +1,48 @@
+def remove_declined_itinerary_animals( cur ):
+   cur.execute(
+      """   DELETE FROM ItineraryAnimal
+            WHERE OLD_LIKELIHOOD IS NOT NULL
+               AND NEW_LIKELIHOOD IS NOT NULL
+               AND NEW_LIKELIHOOD < OLD_LIKELIHOOD;
+      """ )
+
+
+def remove_declined_itinerary_attractions( cur ):
+   cur.execute(
+      """   DELETE FROM ItineraryAttraction
+            WHERE OLD_LIKELIHOOD IS NOT NULL
+               AND NEW_LIKELIHOOD IS NOT NULL
+               AND NEW_LIKELIHOOD < OLD_LIKELIHOOD;
+      """ )
+
+
+def remove_deleted_itinerary_guardians_talks( cur ):
+   cur.execute(
+      """   DELETE FROM ItineraryGuardiansTalk
+            WHERE IS_DELETED = 1;
+      """ )
+
+
+def remove_deleted_itinerary_wild_encounters( cur ):
+   cur.execute(
+      """   DELETE FROM ItineraryWildEncounter
+            WHERE IS_DELETED = 1;
+      """ )
+
+
+def accept_itinerary( conn ):
+   cur = conn.cursor()
+
+   try:
+      # TO-DO: Evatually we will support overriding behaviour here for animals and attractions
+      remove_declined_itinerary_animals( cur )
+      remove_declined_itinerary_attractions( cur )
+      remove_deleted_itinerary_guardians_talks( cur )
+      remove_deleted_itinerary_wild_encounters( cur )
+
+      conn.commit()
+
+   finally:
+      cur.close()
+
+   return True

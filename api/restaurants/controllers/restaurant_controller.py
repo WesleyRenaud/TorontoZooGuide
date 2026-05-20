@@ -1,3 +1,4 @@
+from ..data_access.restaurant import fetch_restaurant_names
 from ..data_access.restaurant import fetch_restaurant_records
 from ..data_access.restaurant import fetch_restaurant_schedule_records
 from ..logic.restaurant import build_restaurants
@@ -8,6 +9,10 @@ from ..logic.restaurants_matching_query import build_restaurants_matching_query
 class RestaurantController():
    def __init__( self, conn ):
       self._conn = conn
+
+
+   def get_restaurant_names( self ):
+      return fetch_restaurant_names( self._conn )
 
 
    def get_restaurants(

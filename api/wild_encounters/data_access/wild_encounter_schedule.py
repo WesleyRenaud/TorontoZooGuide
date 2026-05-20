@@ -1,3 +1,5 @@
+from .wild_encounter_cancellation_mapper import map_wild_encounter_cancellation_records
+from .wild_encounter_schedule_mapper import map_wild_encounter_schedule_record
 from .wild_encounter_schedule_mapper import map_wild_encounter_schedule_records
 
 
@@ -37,6 +39,68 @@ def fetch_wild_encounter_schedule_records( conn, target_date ):
          ( target_date, ) )
 
       return map_wild_encounter_schedule_records( data.fetchall() )
+
+   finally:
+      cur.close()
+
+
+def fetch_wild_encounter_schedule_record_for_occurrences( conn, wild_encounter ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  w.NAME,
+                  w.MEETING_SPOT,
+                  w.LINK,
+                  w.MAXIMUM_DURATION,
+                  m.X_COORD,
+                  m.Y_COORD,
+                  s.SCHEDULE_START_DATE,
+                  s.SCHEDULE_END_DATE,
+                  s.MONDAY,
+                  s.TUESDAY,
+                  s.WEDNESDAY,
+                  s.THURSDAY,
+                  s.FRIDAY,
+                  s.SATURDAY,
+                  s.SUNDAY,
+                  s.ENCOUNTER_TIME,
+                  0 AS IS_CANCELLED
+               FROM WildEncounter w
+               JOIN WildEncounterMeetingSpot m
+                  ON w.MEETING_SPOT = m.NAME
+               JOIN WildEncounterSchedule s
+                  ON w.NAME = s.WILD_ENCOUNTER
+               WHERE s.WILD_ENCOUNTER = ?;
+         """,
+         ( wild_encounter, ) )
+
+      row = data.fetchone()
+
+      if row == None:
+         return None
+
+      return map_wild_encounter_schedule_record( row )
+
+   finally:
+      cur.close()
+
+
+def fetch_wild_encounter_cancellation_records( conn, wild_encounter ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  CANCELLATION_DATE,
+                  ENCOUNTER_TIME
+               FROM WildEncounterCancellation
+               WHERE WILD_ENCOUNTER = ?;
+         """,
+         ( wild_encounter, ) )
+
+      return map_wild_encounter_cancellation_records( data.fetchall() )
 
    finally:
       cur.close()

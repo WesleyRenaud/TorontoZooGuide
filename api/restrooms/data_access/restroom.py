@@ -1,6 +1,22 @@
 from .restroom_mapper import map_restroom_records
 
 
+def fetch_restroom_names( conn ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  r.TITLE
+               FROM Restroom r;
+         """ )
+
+      return [ row[ 0 ] for row in data.fetchall() ]
+
+   finally:
+      cur.close()
+
+
 def fetch_restroom_records( conn ):
    cur = conn.cursor()
 

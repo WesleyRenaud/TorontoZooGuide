@@ -1,10 +1,13 @@
 from ... import zoo
+from ..data_access.wild_encounter import fetch_wild_encounter_names
 from ..data_access.wild_encounter import fetch_wild_encounter_records
+from ..data_access.wild_encounter_schedule import fetch_wild_encounter_cancellation_records
+from ..data_access.wild_encounter_schedule import fetch_wild_encounter_schedule_record_for_occurrences
 from ..data_access.wild_encounter_schedule import fetch_wild_encounter_schedule_records
 from ..logic.wild_encounter import build_wild_encounter_details
+from ..logic.wild_encounter_occurrences import build_wild_encounter_occurrences
 from ..logic.wild_encounter_schedule import build_wild_encounter_schedule_for_target_date
 from ..logic.wild_encounter_schedule import filter_available_wild_encounters
-from ..logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
 from ..logic.wild_encounter_schedule import find_wild_encounter_on_day_schedule
 from ..logic.wild_encounters_matching_query import build_wild_encounters_matching_query
 from ..logic.itinerary_wild_encounters import build_itinerary_wild_encounters
@@ -13,6 +16,24 @@ from ..logic.itinerary_wild_encounters import build_itinerary_wild_encounters
 class WildEncounterController():
    def __init__( self, conn ):
       self._conn = conn
+
+
+   def get_wild_encounter_names( self ):
+      return fetch_wild_encounter_names( self._conn )
+
+
+   def get_wild_encounter_occurrences( self, wild_encounter, days_ahead=60 ):
+      schedule_record = fetch_wild_encounter_schedule_record_for_occurrences(
+         self._conn,
+         wild_encounter=wild_encounter )
+      cancellation_records = fetch_wild_encounter_cancellation_records(
+         self._conn,
+         wild_encounter=wild_encounter )
+
+      return build_wild_encounter_occurrences(
+         schedule_record=schedule_record,
+         cancellation_records=cancellation_records,
+         days_ahead=days_ahead )
 
 
    def get_wild_encounter_details( self, wild_encounters_to_include=None ):
@@ -74,22 +95,6 @@ class WildEncounterController():
       return find_wild_encounter_on_day_schedule(
          rows,
          encounter_name )
-
-
-   def validate_wild_encounters(
-         self,
-         month,
-         day,
-         year,
-         wild_encounters_to_include=None ):
-      day_schedule = self.get_wild_encounter_schedule(
-         month=month,
-         day=day,
-         year=year )
-
-      return validate_wild_encounters_for_itinerary(
-         wild_encounters_to_include,
-         day_schedule )
 
 
    def get_available_wild_encounters( self, month, day, year ):

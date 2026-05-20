@@ -299,10 +299,9 @@ class StubDatabase:
    def get_regions_with_exhibits( self, **kwargs ):
       self.calls.append( ( 'get_regions_with_exhibits', kwargs ) )
       return [
-         {
-            'name': 'Africa',
-            'exhibits': [ ANIMAL_EXHIBIT ]
-         }
+         zoo.RegionWithExhibits(
+            name='Africa',
+            exhibits=[ ANIMAL_EXHIBIT ] )
       ]
 
 
@@ -349,10 +348,9 @@ class StubDatabase:
    def get_guardians_talk_occurrences( self, **kwargs ):
       self.calls.append( ( 'get_guardians_talk_occurrences', kwargs ) )
       return [
-         {
-            'date': '2026-06-15',
-            'time': '10:00'
-         }
+         zoo.ScheduledOccurrence(
+            date='2026-06-15',
+            time='10:00' )
       ]
 
 
@@ -364,10 +362,9 @@ class StubDatabase:
    def get_wild_encounter_occurrences( self, **kwargs ):
       self.calls.append( ( 'get_wild_encounter_occurrences', kwargs ) )
       return [
-         {
-            'date': '2026-06-15',
-            'time': '14:00'
-         }
+         zoo.ScheduledOccurrence(
+            date='2026-06-15',
+            time='14:00' )
       ]
 
 
@@ -657,29 +654,6 @@ def test_get_wild_encounters_endpoint_uses_available_database_results( stub_data
    ]
 
 
-def test_get_exhibits_by_region_allows_missing_date_context( stub_database ):
-   handler = make_handler( '/get-exhibits-by-region', {} )
-
-   server.MyHandler.do_POST( handler )
-
-   assert handler.statuses == [ 200 ]
-   assert StubDatabase.instances[ 0 ].calls == [
-      (
-         'get_regions_with_exhibits',
-         {
-            'month': None,
-            'day': None
-         }
-      )
-   ]
-   assert response_json( handler )[ 'regions' ] == [
-      {
-         'name': 'Africa',
-         'exhibits': [ ANIMAL_EXHIBIT ]
-      }
-   ]
-
-
 @pytest.mark.parametrize(
    'path, body, expected_call, response_subset',
    [
@@ -697,13 +671,10 @@ def test_get_exhibits_by_region_allows_missing_date_context( stub_database ):
       ),
       (
          '/get-exhibits-by-region',
-         { 'month': 'June', 'day': 15 },
+         {},
          (
             'get_regions_with_exhibits',
-            {
-               'month': 'June',
-               'day': 15
-            }
+            {}
          ),
          {
             'regions': [
@@ -1387,6 +1358,34 @@ def test_itinerary_endpoints_return_success_payloads( stub_database ):
             'type': 'New Arrival',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30'
+         }
+      ),
+      (
+         '/create-update',
+         {
+            'title': 'Open-ended update',
+            'description': 'This has no end date.',
+            'type': 'Closure',
+            'startDate': '2026-06-01',
+            'endDate': None
+         },
+         (
+            'create_update',
+            {
+               'title': 'Open-ended update',
+               'description': 'This has no end date.',
+               'update_type': 'Closure',
+               'start_date': '2026-06-01',
+               'end_date': None
+            }
+         ),
+         {
+            'success': True,
+            'title': 'Open-ended update',
+            'description': 'This has no end date.',
+            'type': 'Closure',
+            'startDate': '2026-06-01',
+            'endDate': None
          }
       ),
       (

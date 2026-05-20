@@ -918,7 +918,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.end_headers()
 
          response = {
-            'occurrences': occurrences,
+            'occurrences': [ occurrence.to_dict() for occurrence in occurrences ],
             'talk': talk,
             'location': location
          }
@@ -950,7 +950,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.end_headers()
 
          response = {
-            'occurrences': occurrences,
+            'occurrences': [ occurrence.to_dict() for occurrence in occurrences ],
             'wildEncounter': wild_encounter
          }
 
@@ -968,21 +968,12 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-exhibits-by-region':
-         content_length = int( self.headers[ 'Content-Length' ] )
-         post_data = self.rfile.read( content_length )
-         data = json.loads( post_data.decode( 'utf-8' ) )
-
-         month = data.get( 'month' )
-         day = data.get( 'day' )
-
-         regions = self.database.get_regions_with_exhibits(
-            month=month,
-            day=day )
+         regions = self.database.get_regions_with_exhibits()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
-         response = { "regions": regions }
+         response = { "regions": [ region.to_dict() for region in regions ] }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 

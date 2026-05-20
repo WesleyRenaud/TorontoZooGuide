@@ -1,6 +1,6 @@
 from ..data_access.itinerary import fetch_itinerary_date
-from ..data_access.itinerary_persistence import clear_itinerary
-from ..data_access.itinerary_persistence import save_validated_itinerary
+from ..data_access.clear_itinerary import clear_itinerary
+from ..data_access.save_itinerary import save_validated_itinerary
 from ..data_access.itinerary_save_input_mapper import map_itinerary_save_input
 from .itinerary_validation import validate_itinerary_for_save
 

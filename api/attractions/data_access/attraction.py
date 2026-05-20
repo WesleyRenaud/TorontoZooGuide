@@ -3,6 +3,22 @@ from .attraction_mapper import map_attraction_records
 from .attraction_mapper import map_attraction_schedule_records
 
 
+def fetch_attraction_names( conn ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  a.NAME
+               FROM Attraction a;
+         """ )
+
+      return [ row[ 0 ] for row in data.fetchall() ]
+
+   finally:
+      cur.close()
+
+
 def fetch_attraction_records( conn, month, day ):
    cur = conn.cursor()
 

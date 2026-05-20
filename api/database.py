@@ -436,948 +436,225 @@ class Database():
 
 
    def accept_itinerary( self ):
-      cur = self.conn.cursor()
+      from .itinerary.controllers.itinerary_controller import ItineraryController
 
-      # TO-DO: Evatually we will support overriding behaviour here for animals and attractions
-      cur.execute(
-         """   DELETE FROM ItineraryAnimal
-               WHERE OLD_LIKELIHOOD IS NOT NULL
-                  AND NEW_LIKELIHOOD IS NOT NULL
-                  AND NEW_LIKELIHOOD < OLD_LIKELIHOOD;
-         """ )
-
-      cur.execute(
-         """   DELETE FROM ItineraryAttraction
-               WHERE OLD_LIKELIHOOD IS NOT NULL
-                  AND NEW_LIKELIHOOD IS NOT NULL
-                  AND NEW_LIKELIHOOD < OLD_LIKELIHOOD;
-         """ )
-
-      cur.execute(
-         """   DELETE FROM ItineraryGuardiansTalk
-               WHERE IS_DELETED = 1;
-         """ )
-
-      cur.execute(
-         """   DELETE FROM ItineraryWildEncounter
-               WHERE IS_DELETED = 1;
-         """ )
-
-      self.conn.commit()
-      cur.close()
-
-      return True
+      return ItineraryController( self.conn ).accept_itinerary()
 
 
-   def validate_guardians_talks( self, month, day, year, guardians_talks_to_include=None ):
-      from .guardians.controllers.guardians_controller import GuardiansController
+   def get_regions_with_exhibits( self ):
+      from .exhibits.controllers.exhibit_controller import ExhibitController
 
-      return GuardiansController( self.conn ).validate_guardians_talks(
-         month=month,
-         day=day,
-         year=year,
-         guardians_talks_to_include=guardians_talks_to_include )
-
-
-   def validate_wild_encounters( self, month, day, year, wild_encounters_to_include=None ):
-      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
-
-      return WildEncounterController( self.conn ).validate_wild_encounters(
-         month=month,
-         day=day,
-         year=year,
-         wild_encounters_to_include=wild_encounters_to_include )
-
-
-   def get_regions_with_exhibits( self, month, day ):
-      from .exhibits.logic.exhibit_closure import is_exhibit_closure_active_on_visit_date
-
-      cur = self.conn.cursor()
-      target_date = None
-
-      if month != None and day != None:
-         target_date = date(
-            datetime.now().year,
-            zoo.ZooUtil.normalize_month( month ),
-            int( day ) )
-
-      data = cur.execute(
-         """   SELECT
-                  r.NAME AS REGION_NAME,
-                  e.NAME AS EXHIBIT_NAME,
-                  s.IS_CLOSED,
-                  s.CLOSED_START,
-                  s.CLOSED_END
-               FROM Region r
-               LEFT JOIN Exhibit e
-                  ON e.REGION = r.NAME
-               LEFT JOIN ExhibitStatus s
-                  ON e.NAME = s.EXHIBIT
-               ORDER BY r.NAME, e.NAME;
-         """ )
-
-      rows = data.fetchall()
-      regions = []
-      current_region = None
-
-      for row in rows:
-         region_name = row[ 'REGION_NAME' ]
-         exhibit_name = row[ 'EXHIBIT_NAME' ]
-
-         if current_region == None or current_region[ 'name' ] != region_name:
-            current_region = {
-               'name': region_name,
-               'exhibits': []
-            }
-            regions.append( current_region )
-
-         if exhibit_name == None:
-            continue
-
-         if not is_exhibit_closure_active_on_visit_date(
-               row[ 'IS_CLOSED' ],
-               row[ 'CLOSED_START' ],
-               row[ 'CLOSED_END' ],
-               target_date ):
-            current_region[ 'exhibits' ].append( exhibit_name )
-
-      cur.close()
-
-      regions = [
-         region for region in regions
-         if len( region[ 'exhibits' ] ) > 0
-      ]
-
-      return regions
+      return ExhibitController( self.conn ).get_regions_with_exhibits()
 
 
    def get_exhibits( self ):
-      cur = self.conn.cursor()
+      from .exhibits.controllers.exhibit_controller import ExhibitController
 
-      data = cur.execute(
-         f"""  SELECT
-                  e.NAME
-               FROM Exhibit e;
-         """ )
-
-      exhibits = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return exhibits
+      return ExhibitController( self.conn ).get_exhibits()
 
 
    def get_restaurant_names( self ):
-      cur = self.conn.cursor()
+      from .restaurants.controllers.restaurant_controller import RestaurantController
 
-      data = cur.execute(
-         f"""  SELECT
-                  r.NAME
-               FROM Restaurant r;
-         """ )
-
-      restaurants = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return restaurants
+      return RestaurantController( self.conn ).get_restaurant_names()
 
 
    def get_restroom_names( self ):
-      cur = self.conn.cursor()
+      from .restrooms.controllers.restroom_controller import RestroomController
 
-      data = cur.execute(
-         f"""  SELECT
-                  r.TITLE
-               FROM Restroom r;
-         """ )
-
-      restrooms = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return restrooms
+      return RestroomController( self.conn ).get_restroom_names()
 
 
    def get_gift_shop_names( self ):
-      cur = self.conn.cursor()
+      from .giftshops.controllers.gift_shop_controller import GiftShopController
 
-      data = cur.execute(
-         f"""  SELECT
-                  g.NAME
-               FROM GiftShop g;
-         """ )
-
-      gift_shops = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return gift_shops
+      return GiftShopController( self.conn ).get_gift_shop_names()
 
 
    def get_attraction_names( self ):
-      cur = self.conn.cursor()
+      from .attractions.controllers.attraction_controller import AttractionController
 
-      data = cur.execute(
-         f"""  SELECT
-                  a.NAME
-               FROM Attraction a;
-         """ )
-
-      attractions = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return attractions
+      return AttractionController( self.conn ).get_attraction_names()
 
 
    def get_zoomobile_station_names( self ):
-      cur = self.conn.cursor()
+      from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
-      data = cur.execute(
-         f"""  SELECT
-                  s.NAME
-               FROM ZoomobileStation s;
-         """ )
-
-      zoomobile_stations = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return zoomobile_stations
+      return ZoomobileController( self.conn ).get_zoomobile_station_names()
 
 
    def get_guardians_talk_locations( self ):
-      cur = self.conn.cursor()
+      from .guardians.controllers.guardians_controller import GuardiansController
 
-      data = cur.execute(
-         """   SELECT DISTINCT
-                  t.LOCATION
-               FROM MeetTheGuardiansTalk t
-               WHERE t.LOCATION IS NOT NULL
-               ORDER BY t.LOCATION;
-         """ )
-
-      guardians_talk_locations = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return guardians_talk_locations
+      return GuardiansController( self.conn ).get_guardians_talk_locations()
 
 
    def get_guardians_talk_names( self ):
-      cur = self.conn.cursor()
+      from .guardians.controllers.guardians_controller import GuardiansController
 
-      data = cur.execute(
-         f"""  SELECT
-                  t.NAME
-               FROM MeetTheGuardiansTalk t;
-         """ )
-
-      guardians_talks = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return guardians_talks
+      return GuardiansController( self.conn ).get_guardians_talk_names()
 
 
    def get_guardians_talk_names_at_location( self, location ):
-      cur = self.conn.cursor()
+      from .guardians.controllers.guardians_controller import GuardiansController
 
-      data = cur.execute(
-         """  SELECT
-                  t.NAME
-              FROM MeetTheGuardiansTalk t
-              WHERE t.LOCATION = ?;
-         """,
-         ( location, ) )
-
-      guardians_talks = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return guardians_talks
+      return GuardiansController( self.conn ).get_guardians_talk_names_at_location(
+         location=location )
 
 
    def get_guardians_talk_occurrences( self, talk, location, days_ahead=60 ):
-      if not talk or not location:
-         return []
+      from .guardians.controllers.guardians_controller import GuardiansController
 
-      cur = self.conn.cursor()
-
-      data = cur.execute(
-         """   SELECT
-                  SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE,
-                  MONDAY,
-                  TUESDAY,
-                  WEDNESDAY,
-                  THURSDAY,
-                  FRIDAY,
-                  SATURDAY,
-                  SUNDAY,
-                  TALK_TIME
-               FROM GuardiansTalkSchedule
-               WHERE TALK_NAME = ?
-               AND LOCATION = ?;
-         """,
-         (
-            talk,
-            location
-         ) )
-
-      guardians_talk_schedule = data.fetchone()
-
-      if guardians_talk_schedule == None:
-         cur.close()
-         return []
-
-      today = datetime.now().date()
-
-      schedule_start_date = today
-      schedule_end_date = today + timedelta( days=days_ahead )
-
-      if guardians_talk_schedule[ 'SCHEDULE_START_DATE' ] != None:
-         parsed_start_date = zoo.ZooUtil.parse_date_value(
-            value=guardians_talk_schedule[ 'SCHEDULE_START_DATE' ] )
-         if parsed_start_date > schedule_start_date:
-            schedule_start_date = parsed_start_date
-
-      if guardians_talk_schedule[ 'SCHEDULE_END_DATE' ] != None:
-         parsed_end_date = zoo.ZooUtil.parse_date_value(
-            value=guardians_talk_schedule[ 'SCHEDULE_END_DATE' ] )
-         if parsed_end_date < schedule_end_date:
-            schedule_end_date = parsed_end_date
-
-      if schedule_end_date < schedule_start_date:
-         cur.close()
-         return []
-
-      talk_time = guardians_talk_schedule[ 'TALK_TIME' ]
-
-      cancellation_data = cur.execute(
-         """   SELECT
-                  CANCELLATION_DATE,
-                  TALK_TIME
-               FROM GuardiansTalkCancellation
-               WHERE TALK_NAME = ?
-               AND LOCATION = ?;
-         """,
-         (
-            talk,
-            location
-         ) )
-
-      cancelled_occurrence_keys = {
-         (
-            row[ 'CANCELLATION_DATE' ],
-            row[ 'TALK_TIME' ]
-         )
-         for row in cancellation_data.fetchall()
-      }
-
-      guardians_weekday_flags = (
-         guardians_talk_schedule[ 'MONDAY' ],
-         guardians_talk_schedule[ 'TUESDAY' ],
-         guardians_talk_schedule[ 'WEDNESDAY' ],
-         guardians_talk_schedule[ 'THURSDAY' ],
-         guardians_talk_schedule[ 'FRIDAY' ],
-         guardians_talk_schedule[ 'SATURDAY' ],
-         guardians_talk_schedule[ 'SUNDAY' ],
-      )
-
-      guardians_talk_occurrences = []
-
-      current_date = schedule_start_date
-
-      while current_date <= schedule_end_date:
-         target_weekday = current_date.weekday()
-
-         weekday_ok = zoo.ZooUtil.schedule_includes_weekday(
-            target_weekday,
-            guardians_weekday_flags )
-
-         current_date_str = current_date.isoformat()
-
-         if weekday_ok and ( current_date_str, talk_time ) not in cancelled_occurrence_keys:
-            guardians_talk_occurrences.append(
-               {
-                  'date': current_date_str,
-                  'time': talk_time
-               } )
-
-         current_date += timedelta( days=1 )
-
-      cur.close()
-
-      return guardians_talk_occurrences
+      return GuardiansController( self.conn ).get_guardians_talk_occurrences(
+         talk=talk,
+         location=location,
+         days_ahead=days_ahead )
 
 
    def get_wild_encounter_names( self ):
-      cur = self.conn.cursor()
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
-      data = cur.execute(
-         f"""  SELECT
-                  w.NAME
-               FROM WildEncounter w;
-         """ )
-
-      wild_encounters = [ row[ 0 ] for row in data.fetchall() ]
-      cur.close()
-
-      return wild_encounters
+      return WildEncounterController( self.conn ).get_wild_encounter_names()
 
 
    def get_wild_encounter_occurrences( self, wild_encounter, days_ahead=60 ):
-      if not wild_encounter:
-         return []
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
-      cur = self.conn.cursor()
-
-      data = cur.execute(
-         """   SELECT
-                  SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE,
-                  MONDAY,
-                  TUESDAY,
-                  WEDNESDAY,
-                  THURSDAY,
-                  FRIDAY,
-                  SATURDAY,
-                  SUNDAY,
-                  ENCOUNTER_TIME
-               FROM WildEncounterSchedule
-               WHERE WILD_ENCOUNTER = ?;
-         """,
-         ( wild_encounter, ) )
-
-      wild_encounter_schedule = data.fetchone()
-
-      if wild_encounter_schedule == None:
-         cur.close()
-         return []
-
-      today = datetime.now().date()
-
-      schedule_start_date = today
-      schedule_end_date = today + timedelta( days=days_ahead )
-
-      if wild_encounter_schedule[ 'SCHEDULE_START_DATE' ] != None:
-         parsed_start_date = zoo.ZooUtil.parse_date_value(
-            value=wild_encounter_schedule[ 'SCHEDULE_START_DATE' ] )
-         if parsed_start_date > schedule_start_date:
-            schedule_start_date = parsed_start_date
-
-      if wild_encounter_schedule[ 'SCHEDULE_END_DATE' ] != None:
-         parsed_end_date = zoo.ZooUtil.parse_date_value(
-            value=wild_encounter_schedule[ 'SCHEDULE_END_DATE' ] )
-         if parsed_end_date < schedule_end_date:
-            schedule_end_date = parsed_end_date
-
-      if schedule_end_date < schedule_start_date:
-         cur.close()
-         return []
-
-      encounter_time = wild_encounter_schedule[ 'ENCOUNTER_TIME' ]
-
-      cancellation_data = cur.execute(
-         """   SELECT
-                  CANCELLATION_DATE,
-                  ENCOUNTER_TIME
-               FROM WildEncounterCancellation
-               WHERE WILD_ENCOUNTER = ?;
-         """,
-         ( wild_encounter, ) )
-
-      cancelled_occurrence_keys = {
-         (
-            row[ 'CANCELLATION_DATE' ],
-            row[ 'ENCOUNTER_TIME' ]
-         )
-         for row in cancellation_data.fetchall()
-      }
-
-      wild_weekday_flags = (
-         wild_encounter_schedule[ 'MONDAY' ],
-         wild_encounter_schedule[ 'TUESDAY' ],
-         wild_encounter_schedule[ 'WEDNESDAY' ],
-         wild_encounter_schedule[ 'THURSDAY' ],
-         wild_encounter_schedule[ 'FRIDAY' ],
-         wild_encounter_schedule[ 'SATURDAY' ],
-         wild_encounter_schedule[ 'SUNDAY' ],
-      )
-
-      wild_encounter_occurrences = []
-
-      current_date = schedule_start_date
-
-      while current_date <= schedule_end_date:
-         target_weekday = current_date.weekday()
-
-         weekday_ok = zoo.ZooUtil.schedule_includes_weekday(
-            target_weekday,
-            wild_weekday_flags )
-
-         current_date_str = current_date.isoformat()
-
-         if weekday_ok and ( current_date_str, encounter_time ) not in cancelled_occurrence_keys:
-            wild_encounter_occurrences.append(
-               {
-                  'date': current_date_str,
-                  'time': encounter_time
-               } )
-
-         current_date += timedelta( days=1 )
-
-      cur.close()
-
-      return wild_encounter_occurrences
+      return WildEncounterController( self.conn ).get_wild_encounter_occurrences(
+         wild_encounter=wild_encounter,
+         days_ahead=days_ahead )
 
 
    def set_animal_as_off_display( self, species, exhibit, start_date, end_date, message ):
-      if not message:
-         message = f'The { species } is temporarily off-display.'
+      from .animals.controllers.animal_controller import AnimalController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if end_date == '':
-         end_date = None
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO AnimalStatus (
-                  SPECIES,
-                  EXHIBIT,
-                  IS_OFF_DISPLAY,
-                  OFF_DISPLAY_START,
-                  OFF_DISPLAY_END,
-                  OFF_DISPLAY_MESSAGE
-               )
-               VALUES (?, ?, 1, ?, ?, ?)
-               ON CONFLICT(SPECIES, EXHIBIT) DO UPDATE SET
-                  IS_OFF_DISPLAY = 1,
-                  OFF_DISPLAY_START = excluded.OFF_DISPLAY_START,
-                  OFF_DISPLAY_END = excluded.OFF_DISPLAY_END,
-                  OFF_DISPLAY_MESSAGE = excluded.OFF_DISPLAY_MESSAGE;
-         """,
-         ( species, exhibit, start_date, end_date, message ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return AnimalController( self.conn ).set_animal_as_off_display(
+         species=species,
+         exhibit=exhibit,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
 
 
    def set_animal_as_on_display( self, species, exhibit ):
-      cur = self.conn.cursor()
+      from .animals.controllers.animal_controller import AnimalController
 
-      cur.execute(
-         """   INSERT INTO AnimalStatus (
-                  SPECIES,
-                  EXHIBIT,
-                  IS_OFF_DISPLAY,
-                  OFF_DISPLAY_MESSAGE
-               )
-               VALUES (?, ?, 0, NULL)
-               ON CONFLICT(SPECIES, EXHIBIT) DO UPDATE SET
-                  IS_OFF_DISPLAY = 0,
-                  OFF_DISPLAY_MESSAGE = NULL;
-         """, ( species, exhibit, ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return AnimalController( self.conn ).set_animal_as_on_display(
+         species=species,
+         exhibit=exhibit )
 
 
    def set_animal_limited_viewing_schedule( self, species, exhibit, start_date, end_date, daily_start_time,
                                             daily_end_time, message ):
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
+      from .animals.controllers.animal_controller import AnimalController
 
-      if not end_date:
-         end_date = None
-
-      if not daily_start_time or not daily_end_time:
-         return False
-
-      if not message:
-
-         formatted_daily_start_time = datetime.strptime( daily_start_time, '%H:%M' ).strftime( '%I:%M %p' ).lstrip( '0' )
-         formatted_daily_end_time = datetime.strptime( daily_end_time, '%H:%M' ).strftime( '%I:%M %p' ).lstrip( '0' )
-
-         if end_date != None:
-
-            formatted_end_date = datetime.strptime( end_date, '%Y-%m-%d' ).strftime( '%A, %B %d, %Y' )
-
-            message = (
-               f'The { species } is viewable daily only from { formatted_daily_start_time } to { formatted_daily_end_time }'
-               f'until { formatted_end_date }.'
-            )
-
-         else:
-            message = (
-               f'The { species } is viewable daily only from { formatted_daily_start_time } to { formatted_daily_end_time }.'
-            )
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO AnimalVisibilitySchedule (
-                  SPECIES,
-                  EXHIBIT,
-                  SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE,
-                  DAILY_START_TIME,
-                  DAILY_END_TIME,
-                  VIEWING_MESSAGE
-               )
-               VALUES (?, ?, ?, ?, ?, ?, ?)
-               ON CONFLICT(SPECIES, EXHIBIT) DO UPDATE SET
-                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
-                  DAILY_START_TIME = excluded.DAILY_START_TIME,
-                  DAILY_END_TIME = excluded.DAILY_END_TIME,
-                  VIEWING_MESSAGE = excluded.VIEWING_MESSAGE;
-         """, ( species, exhibit, start_date, end_date, daily_start_time, daily_end_time, message ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return AnimalController( self.conn ).set_animal_limited_viewing_schedule(
+         species=species,
+         exhibit=exhibit,
+         start_date=start_date,
+         end_date=end_date,
+         daily_start_time=daily_start_time,
+         daily_end_time=daily_end_time,
+         message=message )
 
 
    def remove_animal_visibility_schedule( self, species, exhibit ):
-      cur = self.conn.cursor()
+      from .animals.controllers.animal_controller import AnimalController
 
-      cur.execute(
-         """ DELETE FROM AnimalVisibilitySchedule
-            WHERE SPECIES = ?
-               AND EXHIBIT = ?;
-         """,
-         ( species, exhibit ) )
-
-      self.conn.commit()
-      deleted = cur.rowcount
-      cur.close()
-
-      return deleted > 0
+      return AnimalController( self.conn ).remove_animal_visibility_schedule(
+         species=species,
+         exhibit=exhibit )
 
 
    def set_animal_viewing_alert( self, species, exhibit, alert_start_date, alert_end_date, message ):
-      if not alert_start_date:
-         alert_start_date = datetime.now().date().isoformat()
+      from .animals.controllers.animal_controller import AnimalController
 
-      if not alert_end_date:
-         alert_end_date = None
-
-      if not message:
-         message = f'The { species } may be less visible than usual at this time.'
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """ DELETE FROM AnimalViewingAlert
-             WHERE SPECIES = ?
-             AND EXHIBIT = ?;
-         """,
-         ( species, exhibit ) )
-
-      cur.execute(
-         """   INSERT INTO AnimalViewingAlert (
-                  SPECIES,
-                  EXHIBIT,
-                  ALERT_MESSAGE,
-                  ALERT_START_DATE,
-                  ALERT_END_DATE
-               )
-               VALUES (?, ?, ?, ?, ?)
-         """, ( species, exhibit, message, alert_start_date, alert_end_date ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return AnimalController( self.conn ).set_animal_viewing_alert(
+         species=species,
+         exhibit=exhibit,
+         alert_start_date=alert_start_date,
+         alert_end_date=alert_end_date,
+         message=message )
 
 
    def remove_animal_viewing_alert( self, species, exhibit ):
-      cur = self.conn.cursor()
+      from .animals.controllers.animal_controller import AnimalController
 
-      cur.execute(
-         """ DELETE FROM AnimalViewingAlert
-            WHERE SPECIES = ?
-            AND EXHIBIT = ?;
-         """,
-         ( species, exhibit ) )
-
-      self.conn.commit()
-      removed = cur.rowcount
-      cur.close()
-
-      return removed > 0
+      return AnimalController( self.conn ).remove_animal_viewing_alert(
+         species=species,
+         exhibit=exhibit )
 
 
    def set_exhibit_as_closed( self, exhibit, start_date, end_date, message ):
-      if not exhibit:
-         return False
+      from .exhibits.controllers.exhibit_controller import ExhibitController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
-      if not message:
-         message = f'The { exhibit } is temporarily closed.'
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO ExhibitStatus (
-                  EXHIBIT,
-                  IS_CLOSED,
-                  CLOSED_MESSAGE,
-                  CLOSED_START,
-                  CLOSED_END
-               )
-               VALUES (?, 1, ?, ?, ?)
-               ON CONFLICT(EXHIBIT) DO UPDATE SET
-                  IS_CLOSED = 1,
-                  CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
-                  CLOSED_START = excluded.CLOSED_START,
-                  CLOSED_END = excluded.CLOSED_END;
-         """, ( exhibit, message, start_date, end_date ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return ExhibitController( self.conn ).set_exhibit_as_closed(
+         exhibit=exhibit,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
 
 
    def set_exhibit_as_open( self, exhibit, start_date, end_date ):
-      if not exhibit:
-         return False
+      from .exhibits.controllers.exhibit_controller import ExhibitController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO ExhibitStatus (
-                  EXHIBIT,
-                  IS_CLOSED,
-                  CLOSED_MESSAGE,
-                  CLOSED_START,
-                  CLOSED_END
-               )
-               VALUES (?, 0, NULL, ?, ?)
-               ON CONFLICT(EXHIBIT) DO UPDATE SET
-                  IS_CLOSED = 0,
-                  CLOSED_MESSAGE = NULL,
-                  CLOSED_START = excluded.CLOSED_START,
-                  CLOSED_END = excluded.CLOSED_END;
-         """, ( exhibit, start_date, end_date ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return ExhibitController( self.conn ).set_exhibit_as_open(
+         exhibit=exhibit,
+         start_date=start_date,
+         end_date=end_date )
 
 
    def set_restroom_as_closed( self, restroom, start_date, end_date, message ):
-      if not restroom:
-         return False
+      from .restrooms.controllers.restroom_controller import RestroomController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
-      if not message:
-         message = f'The { restroom } is temporarily closed.'
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO RestroomStatus (
-                  RESTROOM,
-                  IS_CLOSED,
-                  CLOSED_MESSAGE,
-                  CLOSED_START,
-                  CLOSED_END
-               )
-               VALUES (?, 1, ?, ?, ?)
-               ON CONFLICT(RESTROOM) DO UPDATE SET
-                  IS_CLOSED = 1,
-                  CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
-                  CLOSED_START = excluded.CLOSED_START,
-                  CLOSED_END = excluded.CLOSED_END;
-         """, ( restroom, message, start_date, end_date ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return RestroomController( self.conn ).set_restroom_as_closed(
+         restroom=restroom,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
 
 
    def set_restroom_as_open( self, restroom, start_date, end_date ):
-      if not restroom:
-         return False
+      from .restrooms.controllers.restroom_controller import RestroomController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO RestroomStatus (
-                  RESTROOM,
-                  IS_CLOSED,
-                  CLOSED_MESSAGE,
-                  CLOSED_START,
-                  CLOSED_END
-               )
-               VALUES (?, 0, NULL, ?, ?)
-               ON CONFLICT(RESTROOM) DO UPDATE SET
-                  IS_CLOSED = 0,
-                  CLOSED_MESSAGE = NULL,
-                  CLOSED_START = excluded.CLOSED_START,
-                  CLOSED_END = excluded.CLOSED_END;
-         """, ( restroom, start_date, end_date ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return RestroomController( self.conn ).set_restroom_as_open(
+         restroom=restroom,
+         start_date=start_date,
+         end_date=end_date )
 
 
    def set_restroom_alert( self, restroom, alert_start_date, alert_end_date, message ):
-      if not restroom or not message:
-         return False
+      from .restrooms.controllers.restroom_controller import RestroomController
 
-      if not alert_start_date:
-         alert_start_date = datetime.now().date().isoformat()
-
-      if not alert_end_date:
-         alert_end_date = None
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """ DELETE FROM RestroomAlert
-             WHERE RESTROOM = ?;
-         """, ( restroom, ) )
-
-      cur.execute(
-         """   INSERT INTO RestroomAlert (
-                  RESTROOM,
-                  ALERT_MESSAGE,
-                  ALERT_START_DATE,
-                  ALERT_END_DATE
-               )
-               VALUES (?, ?, ?, ?)
-         """, ( restroom, message, alert_start_date, alert_end_date ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return RestroomController( self.conn ).set_restroom_alert(
+         restroom=restroom,
+         alert_start_date=alert_start_date,
+         alert_end_date=alert_end_date,
+         message=message )
 
 
    def remove_restroom_alert( self, restroom ):
-      if not restroom:
-         return False
+      from .restrooms.controllers.restroom_controller import RestroomController
 
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """ DELETE FROM RestroomAlert
-             WHERE RESTROOM = ?;
-         """, ( restroom, ) )
-
-      self.conn.commit()
-      removed = cur.rowcount
-      cur.close()
-
-      return removed > 0
+      return RestroomController( self.conn ).remove_restroom_alert(
+         restroom=restroom )
 
 
    def normalize_update_type( self, update_type ):
-      update_type_labels = {
-         'animal birth': 'Animal Birth',
-         'animal_birth': 'Animal Birth',
-         'animal passing': 'Animal Passing',
-         'animal_passing': 'Animal Passing',
-         'closure': 'Closure',
-         'new arrival': 'New Arrival',
-         'new_arrival': 'New Arrival',
-         'departure': 'Departure'
-      }
+      from .updates.logic.update_type import normalize_update_type
 
-      normalized_key = str( update_type or '' ).strip().lower()
-
-      return update_type_labels.get( normalized_key )
+      return normalize_update_type( update_type )
 
 
    def create_update( self, title, description, update_type, start_date, end_date ):
-      title = str( title or '' ).strip()
-      description = str( description or '' ).strip()
-      normalized_update_type = self.normalize_update_type( update_type )
+      from .updates.controllers.update_controller import UpdateController
 
-      if not title or not description or normalized_update_type == None:
-         return None
-
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      parsed_end_date = None
-
-      try:
-         parsed_start_date = zoo.ZooUtil.parse_date_value( start_date )
-
-         if end_date:
-            parsed_end_date = zoo.ZooUtil.parse_date_value( end_date )
-      except ValueError:
-         return None
-
-      if parsed_end_date != None and parsed_end_date < parsed_start_date:
-         return None
-
-      cur = self.conn.cursor()
-      cur.execute(
-         """   INSERT INTO ZooUpdate (
-                  TITLE,
-                  DESCRIPTION,
-                  UPDATE_TYPE,
-                  START_DATE,
-                  END_DATE
-               )
-               VALUES (?, ?, ?, ?, ?)
-               ON CONFLICT(TITLE, START_DATE) DO NOTHING;
-         """,
-         (
-            title,
-            description,
-            normalized_update_type,
-            parsed_start_date.isoformat(),
-            parsed_end_date.isoformat() if parsed_end_date != None else None
-         ) )
-
-      self.conn.commit()
-      created = cur.rowcount
-      cur.close()
-
-      return created > 0
+      return UpdateController( self.conn ).create_update(
+         title=title,
+         description=description,
+         update_type=update_type,
+         start_date=start_date,
+         end_date=end_date )
 
 
    def end_update( self, title, start_date, end_date ):
