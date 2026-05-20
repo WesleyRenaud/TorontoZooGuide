@@ -58,6 +58,16 @@ class ZooUtil:
 
 
    @staticmethod
+   def format_display_time_value( value ):
+      parsed_time = ZooUtil.parse_time_value( value )
+
+      if parsed_time == None:
+         return None
+
+      return parsed_time.strftime( '%I:%M %p' ).lstrip( '0' )
+
+
+   @staticmethod
    def add_minutes_to_time( value, minutes ):
       parsed_time = ZooUtil.parse_time_value( value )
 
@@ -121,6 +131,16 @@ class ZooUtil:
 
 
    @staticmethod
+   def format_display_date_value( value ):
+      parsed_date = ZooUtil.parse_date_value( value )
+
+      if parsed_date == None:
+         return None
+
+      return f'{ parsed_date.strftime( "%B" ) } { parsed_date.day }, { parsed_date.year }'
+
+
+   @staticmethod
    def normalize_itinerary_schedule_time( value ):
       if value == None:
          return ''
@@ -158,6 +178,14 @@ class ZooUtil:
          ZooUtil.is_date_on_or_after( target_date, start_date_value )
          and ZooUtil.is_date_on_or_before( target_date, end_date_value )
       )
+
+
+   @staticmethod
+   def is_date_range_ordered( start_date_value, end_date_value ):
+      if end_date_value is None:
+         return True
+
+      return ZooUtil.parse_date_value( end_date_value ) >= ZooUtil.parse_date_value( start_date_value )
 
 
    @staticmethod

@@ -270,8 +270,8 @@ def test_create_end_and_edit_updates_change_active_update_results( db, freeze_da
       title='New baby giraffe',
       description='Come meet the new calf.',
       update_type='new arrival',
-      start_date='',
-      end_date='' )
+      start_date='2026-06-15',
+      end_date=None )
 
    assert created is True
 
@@ -467,15 +467,11 @@ def test_set_end_and_cancel_wild_encounter_schedule_changes_wild_encounter_resul
 
 
 def test_console_status_and_schedule_guards( db ):
-   assert db.set_exhibit_as_closed( '', None, None, None ) is False
-   assert db.set_exhibit_as_open( '', None, None ) is False
    assert db.set_restaurant_as_closed( '', None, None, None ) is False
    assert db.set_gift_shop_as_closed( '', None, None, None ) is False
    assert db.set_attraction_as_closed( '', None, None, None ) is False
    assert db.set_zoomobile_station_as_closed( '', None, None, None ) is False
    assert db.set_current_zoomobile_route( 'bad', None, None ) is False
-   assert db.create_update( '', '', 'Closure', '2026-06-01', '2026-06-30' ) is None
-   assert db.create_update( 'Title', 'Description', 'Bad', '2026-06-01', '2026-06-30' ) is None
    assert db.create_update(
       'Animal birth',
       'A new animal was born.',

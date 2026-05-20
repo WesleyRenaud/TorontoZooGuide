@@ -1,30 +1,9 @@
-def clear_itinerary( conn ):
-   cur = conn.cursor()
-
-   try:
-      cur.execute( 'DELETE FROM ItineraryDate;' )
-
-      cur.execute( 'DELETE FROM ItineraryAnimal;' )
-      cur.execute( 'DELETE FROM ItineraryAttraction;' )
-      cur.execute( 'DELETE FROM ItineraryGuardiansTalk;' )
-      cur.execute( 'DELETE FROM ItineraryWildEncounter;' )
-
-      conn.commit()
-
-   finally:
-      cur.close()
-
-   return True
-
-
-
 def save_itinerary_date( cur, visit_date ):
    cur.execute(
       """   INSERT INTO ItineraryDate ( ITINERARY_DATE )
             VALUES ( ? );
       """,
       ( visit_date, ) )
-
 
 
 def save_itinerary_animals( cur, animals ):
@@ -49,7 +28,6 @@ def save_itinerary_animals( cur, animals ):
          ) )
 
 
-
 def save_itinerary_attractions( cur, attractions ):
    if not attractions:
       return
@@ -68,7 +46,6 @@ def save_itinerary_attractions( cur, attractions ):
             attraction.old_likelihood,
             attraction.new_likelihood,
          ) )
-
 
 
 def save_itinerary_guardians_talks( cur, guardians_talks ):
@@ -93,7 +70,6 @@ def save_itinerary_guardians_talks( cur, guardians_talks ):
          ) )
 
 
-
 def save_itinerary_wild_encounters( cur, wild_encounters ):
    if not wild_encounters:
       return
@@ -114,7 +90,6 @@ def save_itinerary_wild_encounters( cur, wild_encounters ):
             encounter.end_time,
             1 if encounter.is_deleted else 0,
          ) )
-
 
 
 def save_validated_itinerary( conn, visit_date, validated_itinerary ):

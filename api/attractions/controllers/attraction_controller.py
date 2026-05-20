@@ -1,4 +1,5 @@
 from ..data_access.attraction import fetch_attraction_record_for_calendar_day
+from ..data_access.attraction import fetch_attraction_names
 from ..data_access.attraction import fetch_attraction_records
 from ..data_access.attraction import fetch_attraction_schedule_records
 from ..logic.attraction import build_attractions
@@ -11,6 +12,10 @@ from ..logic.itinerary_attractions import build_itinerary_attractions
 class AttractionController():
    def __init__( self, conn ):
       self._conn = conn
+
+
+   def get_attraction_names( self ):
+      return fetch_attraction_names( self._conn )
 
 
    def get_attractions(

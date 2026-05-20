@@ -2,6 +2,22 @@ from .zoomobile_station_mapper import map_zoomobile_station_records
 from .zoomobile_station_mapper import map_zoomobile_station_status_records
 
 
+def fetch_zoomobile_station_names( conn ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  s.NAME
+               FROM ZoomobileStation s;
+         """ )
+
+      return [ row[ 0 ] for row in data.fetchall() ]
+
+   finally:
+      cur.close()
+
+
 def fetch_zoomobile_station_records( conn ):
    cur = conn.cursor()
 

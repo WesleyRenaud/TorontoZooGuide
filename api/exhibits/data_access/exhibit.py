@@ -1,6 +1,22 @@
 from .exhibit_mapper import map_region_exhibit_rows
 
 
+def fetch_exhibit_names( conn ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  e.NAME
+               FROM Exhibit e;
+         """ )
+
+      return [ row[ 0 ] for row in data.fetchall() ]
+
+   finally:
+      cur.close()
+
+
 def fetch_exhibit_names_in_region( conn, region ):
    cur = conn.cursor()
 

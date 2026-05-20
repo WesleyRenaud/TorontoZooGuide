@@ -3,7 +3,8 @@ from ...attractions.controllers.attraction_controller import AttractionControlle
 from ...guardians.controllers.guardians_controller import GuardiansController
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from ..data_access.itinerary import fetch_saved_itinerary
-from ..data_access import itinerary_persistence
+from ..data_access.accept_itinerary import accept_itinerary
+from ..data_access.clear_itinerary import clear_itinerary
 from ..logic import set_itinerary as set_itinerary_logic
 from ..logic.itinerary import build_current_itinerary
 
@@ -43,4 +44,8 @@ class ItineraryController():
 
 
    def clear_itinerary( self ):
-      return itinerary_persistence.clear_itinerary( self._conn )
+      return clear_itinerary( self._conn )
+
+
+   def accept_itinerary( self ):
+      return accept_itinerary( self._conn )
