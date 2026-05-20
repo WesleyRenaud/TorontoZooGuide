@@ -468,17 +468,19 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( 
       message=None
    )
 
-   talk_result = db.validate_guardians_talks(
-      month='June',
-      day=15,
-      year=2026,
-      guardians_talks_to_include=[ ' african lion ', 'AMUR TIGER' ]
+   talk_result = validate_guardians_talks_for_itinerary(
+      [ ' african lion ', 'AMUR TIGER' ],
+      db.get_guardians_talk_schedule(
+         month='June',
+         day=15,
+         year=2026 )
    )
-   encounter_result = db.validate_wild_encounters(
-      month='June',
-      day=15,
-      year=2026,
-      wild_encounters_to_include=[ ' kangaroo ', 'AFRICAN RAINFOREST' ]
+   encounter_result = validate_wild_encounters_for_itinerary(
+      [ ' kangaroo ', 'AFRICAN RAINFOREST' ],
+      db.get_wild_encounter_schedule(
+         month='June',
+         day=15,
+         year=2026 )
    )
 
    assert [

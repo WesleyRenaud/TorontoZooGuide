@@ -3,6 +3,8 @@ from ..data_access.itinerary import fetch_itinerary_animal_rows
 from ..data_access.itinerary import fetch_itinerary_attraction_rows
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..data_access.validated_itinerary import ValidatedItinerary
+from ...guardians.logic.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
+from ...wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
 
 
 def validate_itinerary_animals(
@@ -137,14 +139,16 @@ def validate_itinerary_for_save(
             saved_itinerary_attraction_rows=saved_itinerary_attraction_rows )
          if save_input.attractions
          else [] ),
-      guardians_talks=guardians_controller.validate_guardians_talks(
-         month=save_input.month(),
-         day=save_input.day(),
-         year=save_input.year(),
-         guardians_talks_to_include=save_input.guardians_talks ),
-      wild_encounters=wild_encounter_controller.validate_wild_encounters(
-         month=save_input.month(),
-         day=save_input.day(),
-         year=save_input.year(),
-         wild_encounters_to_include=save_input.wild_encounters ),
+      guardians_talks=validate_guardians_talks_for_itinerary(
+         save_input.guardians_talks,
+         guardians_controller.get_guardians_talk_schedule(
+            month=save_input.month(),
+            day=save_input.day(),
+            year=save_input.year() ) ),
+      wild_encounters=validate_wild_encounters_for_itinerary(
+         save_input.wild_encounters,
+         wild_encounter_controller.get_wild_encounter_schedule(
+            month=save_input.month(),
+            day=save_input.day(),
+            year=save_input.year() ) ),
    )

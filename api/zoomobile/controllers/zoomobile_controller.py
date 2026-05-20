@@ -1,5 +1,6 @@
 from ..data_access.zoomobile_station import fetch_active_zoomobile_route
 from ..data_access.zoomobile_station import fetch_zoomobile_day_route
+from ..data_access.zoomobile_station import fetch_zoomobile_station_names
 from ..data_access.zoomobile_station import fetch_zoomobile_station_records
 from ..data_access.zoomobile_station import fetch_zoomobile_station_status_records
 from ..logic.zoomobile_route import build_zoomobile_route_response
@@ -14,6 +15,10 @@ from ..logic.zoomobile_stations_matching_query import build_zoomobile_stations_m
 class ZoomobileController():
    def __init__( self, conn ):
       self._conn = conn
+
+
+   def get_zoomobile_station_names( self ):
+      return fetch_zoomobile_station_names( self._conn )
 
 
    def get_zoomobile_stations(

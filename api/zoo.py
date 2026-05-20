@@ -16,8 +16,10 @@ from .models import Itinerary
 from .models import Pavilion
 from .models import PicnicSite
 from .models import Region
+from .models import RegionWithExhibits
 from .models import Restaurant
 from .models import Restroom
+from .models import ScheduledOccurrence
 from .models import Update
 from .models import WildEncounter
 from .models import WildEncounterDiff
@@ -45,8 +47,10 @@ __all__ = [
    'Pavilion',
    'PicnicSite',
    'Region',
+   'RegionWithExhibits',
    'Restaurant',
    'Restroom',
+   'ScheduledOccurrence',
    'Update',
    'WildEncounter',
    'WildEncounterDiff',

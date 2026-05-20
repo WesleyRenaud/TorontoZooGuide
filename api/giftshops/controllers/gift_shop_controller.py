@@ -1,3 +1,4 @@
+from ..data_access.gift_shop import fetch_gift_shop_names
 from ..data_access.gift_shop import fetch_gift_shop_records
 from ..data_access.gift_shop import fetch_gift_shop_schedule_records
 from ..logic.gift_shop import build_gift_shops
@@ -8,6 +9,10 @@ from ..logic.gift_shops_matching_query import build_gift_shops_matching_query
 class GiftShopController():
    def __init__( self, conn ):
       self._conn = conn
+
+
+   def get_gift_shop_names( self ):
+      return fetch_gift_shop_names( self._conn )
 
 
    def get_gift_shops(

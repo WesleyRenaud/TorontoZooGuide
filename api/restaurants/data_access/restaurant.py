@@ -2,6 +2,22 @@ from .restaurant_mapper import map_restaurant_records
 from .restaurant_mapper import map_restaurant_schedule_records
 
 
+def fetch_restaurant_names( conn ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  r.NAME
+               FROM Restaurant r;
+         """ )
+
+      return [ row[ 0 ] for row in data.fetchall() ]
+
+   finally:
+      cur.close()
+
+
 def fetch_restaurant_records( conn, month, day ):
    cur = conn.cursor()
 

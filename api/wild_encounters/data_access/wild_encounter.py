@@ -1,6 +1,25 @@
 from .wild_encounter_mapper import map_wild_encounter_records
 
 
+def fetch_wild_encounter_names( conn ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  w.NAME
+               FROM WildEncounter w;
+         """ )
+
+      return [
+         row[ 'NAME' ]
+         for row in data.fetchall()
+      ]
+
+   finally:
+      cur.close()
+
+
 def fetch_wild_encounter_records( conn ):
    cur = conn.cursor()
 

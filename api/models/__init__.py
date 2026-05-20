@@ -14,8 +14,10 @@ from .itinerary import Itinerary
 from .pavilion import Pavilion
 from .picnic_site import PicnicSite
 from .region import Region
+from .region_with_exhibits import RegionWithExhibits
 from .restaurant import Restaurant
 from .restroom import Restroom
+from .scheduled_occurrence import ScheduledOccurrence
 from .update import Update
 from .wild_encounter import WildEncounter
 from .wild_encounter_diff import WildEncounterDiff
@@ -41,8 +43,10 @@ __all__ = [
    'Pavilion',
    'PicnicSite',
    'Region',
+   'RegionWithExhibits',
    'Restaurant',
    'Restroom',
+   'ScheduledOccurrence',
    'Update',
    'WildEncounter',
    'WildEncounterDiff',
