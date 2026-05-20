@@ -111,6 +111,12 @@ wild_encounters = [
       '''Wild Encounter - Penguin Meeting Spot''',                     # Meeting spot
       '''https://www.torontozoo.com/tickets/wesavannasafarI''',        # Link
       60                                                               # Maximum duration in minutes
+   ),
+   (
+      '''Grizzly Bear''',                                              # Name
+      '''Wild Encounter - Canadian Domain Meeting Spot''',             # Meeting spot
+      '''https://www.torontozoo.com/tickets/wegrizzly''',              # Link
+      45                                                               # Maximum duration in minutes
    )
 ]
 
