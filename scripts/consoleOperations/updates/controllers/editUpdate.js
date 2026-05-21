@@ -76,10 +76,8 @@ export function createEditUpdateController({
       endDate,
    }) {
       if (!title || !startDate) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.update);
-
-      if (!description && !type && !endDate) {
-         return APP_STRINGS.validation.oneChange;
-      }
+      if (!description) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.description);
+      if (!type) return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.type);
 
       if (endDate && new Date(endDate).getTime() < new Date(startDate).getTime()) {
          return APP_STRINGS.validation.endDateBeforeStartDate;
@@ -93,8 +91,8 @@ export function createEditUpdateController({
       const values = {
          title: selectedUpdate.title,
          startDate: selectedUpdate.startDate,
-         description: getFieldValue(descriptionEl) || null,
-         type: getFieldValue(typeEl) || null,
+         description: getFieldValue(descriptionEl),
+         type: getFieldValue(typeEl),
          endDate: getFieldValue(endDateEl) || null,
       };
       const validationError = validateForm(values);

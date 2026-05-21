@@ -51,16 +51,33 @@ class SharedStrings:
          return f'The { attraction_name } is most likely not operating on this day.'
 
 
-   class Exhibits:
+   class Locations:
       @staticmethod
-      def temporarily_closed( exhibit ):
-         return f'The { exhibit } is temporarily closed.'
+      def temporarily_closed( name ):
+         return f'The { name } is temporarily closed.'
 
 
-   class Restrooms:
       @staticmethod
-      def temporarily_closed( restroom ):
-         return f'The { restroom } is temporarily closed.'
+      def not_scheduled_to_be_open_today( name ):
+         return f'The { name } is not scheduled to be open today.'
+
+
+   class DrinkingFountains:
+      @staticmethod
+      def closed_for_season():
+         return 'The drinking fountains are closed for the season.'
+
+
+   class WildEncounters:
+      @staticmethod
+      def not_scheduled_today( wild_encounter ):
+         return f'The { wild_encounter } is not scheduled today.'
+
+
+   class GuardiansTalks:
+      @staticmethod
+      def not_scheduled_today( talk_name, location ):
+         return f'The { talk_name } at { location } is not scheduled today.'
 
 
    class VisitDaySchedule:

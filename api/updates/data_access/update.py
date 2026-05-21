@@ -31,6 +31,56 @@ def insert_update( conn, update ):
       cur.close()
 
 
+def update_end_date( conn, update ):
+   cur = conn.cursor()
+
+   try:
+      cur.execute(
+         """   UPDATE ZooUpdate
+               SET END_DATE = ?
+               WHERE TITLE = ?
+                  AND START_DATE = ?;
+         """,
+         (
+            update.end_date,
+            update.title,
+            update.start_date,
+         ) )
+
+      conn.commit()
+      return cur.rowcount > 0
+
+   finally:
+      cur.close()
+
+
+def edit_update_record( conn, update ):
+   cur = conn.cursor()
+
+   try:
+      cur.execute(
+         """  UPDATE ZooUpdate
+               SET DESCRIPTION = ?,
+                   UPDATE_TYPE = ?,
+                   END_DATE = ?
+               WHERE TITLE = ?
+                  AND START_DATE = ?;
+         """,
+         (
+            update.description,
+            update.update_type,
+            update.end_date,
+            update.title,
+            update.start_date,
+         ) )
+
+      conn.commit()
+      return cur.rowcount > 0
+
+   finally:
+      cur.close()
+
+
 def fetch_updates( conn, as_of_date ):
    cur = conn.cursor()
 

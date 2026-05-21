@@ -104,6 +104,27 @@ def test_normalize_date_key_returns_none_for_unsupported_date_strings():
    assert zoo.ZooUtil.normalize_date_key( 'June 15, 2026' ) is None
 
 
+def test_resolve_open_ended_date_range_keeps_open_end_date():
+   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+      start_date='2026-06-01',
+      end_date=None )
+
+   assert date_range.start_date == '2026-06-01'
+   assert date_range.end_date is None
+
+
+def test_resolve_open_ended_date_range_uses_today_for_missing_start(
+      freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+      start_date=None,
+      end_date=None )
+
+   assert date_range.start_date == '2026-06-15'
+   assert date_range.end_date is None
+
+
 @pytest.mark.parametrize(
    'value, expected',
    [

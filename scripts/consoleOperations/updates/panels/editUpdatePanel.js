@@ -26,14 +26,14 @@ export function createEditUpdatePanel() {
          createSelectField({
             label: APP_STRINGS.labels.type,
             inputId: 'editUpdateType',
-            emptyOptionLabel: APP_STRINGS.placeholders.keepCurrentType,
+            emptyOptionLabel: APP_STRINGS.placeholders.option,
             options: APP_STRINGS.updateTypes,
          }),
          createDateField({
             label: APP_STRINGS.labels.endDate,
             inputId: 'editUpdateEndDate',
             placeholder: APP_STRINGS.placeholders.newEndDate,
-            helpText: APP_STRINGS.help.keepCurrentEndDate,
+            helpText: APP_STRINGS.help.keepUpdateActiveWithoutEndDate,
          }),
          createActions({
             submitId: 'submitEditUpdate',

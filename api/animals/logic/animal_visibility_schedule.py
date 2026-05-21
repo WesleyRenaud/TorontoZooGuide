@@ -1,5 +1,4 @@
 from ... import zoo
-from ...shared.console_date_range import resolve_open_ended_console_date_range
 from ...shared.strings import SharedStrings
 from .animal_limited_viewing_schedule import AnimalLimitedViewingSchedule
 
@@ -12,7 +11,7 @@ def build_animal_limited_viewing_schedule(
       daily_start_time,
       daily_end_time,
       message ):
-   date_range = resolve_open_ended_console_date_range(
+   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
 

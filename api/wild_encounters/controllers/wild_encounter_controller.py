@@ -1,11 +1,17 @@
 from ... import zoo
 from ..data_access.wild_encounter import fetch_wild_encounter_names
 from ..data_access.wild_encounter import fetch_wild_encounter_records
+from ..data_access.wild_encounter_cancellation import save_wild_encounter_cancellation
+from ..data_access.wild_encounter_schedule import save_wild_encounter_schedule
+from ..data_access.wild_encounter_schedule import save_wild_encounter_schedule_end
 from ..data_access.wild_encounter_schedule import fetch_wild_encounter_cancellation_records
 from ..data_access.wild_encounter_schedule import fetch_wild_encounter_schedule_record_for_occurrences
 from ..data_access.wild_encounter_schedule import fetch_wild_encounter_schedule_records
 from ..logic.wild_encounter import build_wild_encounter_details
 from ..logic.wild_encounter_occurrences import build_wild_encounter_occurrences
+from ..logic.wild_encounter_schedule_status import build_wild_encounter_schedule
+from ..logic.wild_encounter_cancellation_status import build_wild_encounter_cancellation
+from ..logic.wild_encounter_schedule_status import build_wild_encounter_schedule_end
 from ..logic.wild_encounter_schedule import build_wild_encounter_schedule_for_target_date
 from ..logic.wild_encounter_schedule import filter_available_wild_encounters
 from ..logic.wild_encounter_schedule import find_wild_encounter_on_day_schedule
@@ -42,6 +48,60 @@ class WildEncounterController():
       return build_wild_encounter_details(
          wild_encounter_records,
          wild_encounters_to_include=wild_encounters_to_include )
+
+
+   def set_wild_encounter_schedule(
+         self,
+         wild_encounter,
+         start_date,
+         end_date,
+         encounter_time,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         message ):
+      schedule = build_wild_encounter_schedule(
+         wild_encounter=wild_encounter,
+         start_date=start_date,
+         end_date=end_date,
+         encounter_time=encounter_time,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         message=message )
+
+      return save_wild_encounter_schedule(
+         self._conn,
+         schedule=schedule )
+
+
+   def end_wild_encounter_schedule( self, wild_encounter, schedule_end_date ):
+      schedule_end = build_wild_encounter_schedule_end(
+         wild_encounter=wild_encounter,
+         schedule_end_date=schedule_end_date )
+
+      return save_wild_encounter_schedule_end(
+         self._conn,
+         schedule_end=schedule_end )
+
+
+   def cancel_wild_encounter_occurrence( self, wild_encounter, date, time ):
+      cancellation = build_wild_encounter_cancellation(
+         wild_encounter=wild_encounter,
+         date=date,
+         time=time )
+
+      return save_wild_encounter_cancellation(
+         self._conn,
+         cancellation=cancellation )
 
 
    def get_wild_encounters_for_saved_itinerary( self, saved_wild_encounters ):

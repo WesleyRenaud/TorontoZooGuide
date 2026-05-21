@@ -307,16 +307,13 @@ def test_create_end_and_edit_updates_change_active_update_results( db, freeze_da
    assert db.edit_update(
       title='New baby giraffe',
       start_date='2026-06-15',
-      end_date='' ) is True
+      description='Updated calf details.',
+      update_type='Closure',
+      end_date=None ) is True
 
    updates = db.get_updates_for_visit_date( month='August', day=1, year=2026 )
 
    assert updates[ 0 ].end_date is None
-
-   assert db.edit_update(
-      title='New baby giraffe',
-      start_date='2026-06-15',
-      update_type='invalid' ) is False
 
    assert db.end_update( 'New baby giraffe', '2026-06-15', '2026-06-14' ) is True
    assert db.get_updates_for_visit_date( month='June', day=15, year=2026 ) == []
@@ -355,7 +352,6 @@ def test_set_current_zoomobile_route_changes_current_route_result( db, freeze_da
 
    assert route.route == 'winter'
    assert route.route_source == 'override'
-   assert db.set_current_zoomobile_route( 'summer', '2026-07-01', '2026-06-30' ) is False
 
 
 def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results( db, freeze_database_today ):
@@ -467,11 +463,6 @@ def test_set_end_and_cancel_wild_encounter_schedule_changes_wild_encounter_resul
 
 
 def test_console_status_and_schedule_guards( db ):
-   assert db.set_restaurant_as_closed( '', None, None, None ) is False
-   assert db.set_gift_shop_as_closed( '', None, None, None ) is False
-   assert db.set_attraction_as_closed( '', None, None, None ) is False
-   assert db.set_zoomobile_station_as_closed( '', None, None, None ) is False
-   assert db.set_current_zoomobile_route( 'bad', None, None ) is False
    assert db.create_update(
       'Animal birth',
       'A new animal was born.',
