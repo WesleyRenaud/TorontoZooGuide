@@ -2,6 +2,7 @@ from .animal import Animal
 from .animal_diff import AnimalDiff
 from .attraction import Attraction
 from .attraction_diff import AttractionDiff
+from .date_range import DateRange
 from .defibrillator import Defibrillator
 from .drinking_fountain import DrinkingFountain
 from .emergency_intercom import EmergencyIntercom
@@ -31,6 +32,7 @@ __all__ = [
    'AnimalDiff',
    'Attraction',
    'AttractionDiff',
+   'DateRange',
    'Defibrillator',
    'DrinkingFountain',
    'EmergencyIntercom',

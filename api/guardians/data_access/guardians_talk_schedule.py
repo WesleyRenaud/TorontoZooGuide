@@ -133,3 +133,85 @@ def fetch_guardians_talk_occurrence_is_cancelled(
 
    finally:
       cur.close()
+
+
+
+def save_guardians_talk_schedule( conn, schedule ):
+   cur = conn.cursor()
+
+   try:
+      cur.execute(
+         """   INSERT INTO GuardiansTalkSchedule (
+                  TALK_NAME,
+                  LOCATION,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  TALK_TIME,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  SCHEDULE_MESSAGE
+               )
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(TALK_NAME, LOCATION) DO UPDATE SET
+                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
+                  TALK_TIME = excluded.TALK_TIME,
+                  MONDAY = excluded.MONDAY,
+                  TUESDAY = excluded.TUESDAY,
+                  WEDNESDAY = excluded.WEDNESDAY,
+                  THURSDAY = excluded.THURSDAY,
+                  FRIDAY = excluded.FRIDAY,
+                  SATURDAY = excluded.SATURDAY,
+                  SUNDAY = excluded.SUNDAY,
+                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
+         """,
+         (
+            schedule.talk_name,
+            schedule.location,
+            schedule.start_date,
+            schedule.end_date,
+            schedule.talk_time,
+            schedule.monday,
+            schedule.tuesday,
+            schedule.wednesday,
+            schedule.thursday,
+            schedule.friday,
+            schedule.saturday,
+            schedule.sunday,
+            schedule.message,
+         ) )
+
+      conn.commit()
+      return cur.rowcount > 0
+
+   finally:
+      cur.close()
+
+
+
+def save_guardians_talk_schedule_end( conn, schedule_end ):
+   cur = conn.cursor()
+
+   try:
+      cur.execute(
+         """   UPDATE GuardiansTalkSchedule
+               SET SCHEDULE_END_DATE = ?
+               WHERE TALK_NAME = ?
+               AND LOCATION = ?;
+         """,
+         (
+            schedule_end.schedule_end_date,
+            schedule_end.talk_name,
+            schedule_end.location,
+         ) )
+
+      conn.commit()
+      return cur.rowcount > 0
+
+   finally:
+      cur.close()

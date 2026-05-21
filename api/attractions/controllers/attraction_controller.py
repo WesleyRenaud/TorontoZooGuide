@@ -2,9 +2,12 @@ from ..data_access.attraction import fetch_attraction_record_for_calendar_day
 from ..data_access.attraction import fetch_attraction_names
 from ..data_access.attraction import fetch_attraction_records
 from ..data_access.attraction import fetch_attraction_schedule_records
+from ..data_access.attraction_schedule import save_attraction_opening_schedule
 from ..logic.attraction import build_attractions
 from ..logic.attraction import get_attraction_likelihood_and_message_for_date
 from ..logic.attraction import resolve_attraction_context
+from ..logic.attraction_status import build_attraction_closed_schedule
+from ..logic.attraction_status import build_attraction_opening_schedule
 from ..logic.attractions_matching_query import build_attractions_matching_query
 from ..logic.itinerary_attractions import build_itinerary_attractions
 
@@ -100,3 +103,53 @@ class AttractionController():
          target_date=visit_date )
 
       return likelihood
+
+
+   def set_attraction_as_closed(
+         self,
+         attraction,
+         start_date,
+         end_date,
+         message ):
+      schedule = build_attraction_closed_schedule(
+         attraction=attraction,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      return save_attraction_opening_schedule(
+         self._conn,
+         schedule=schedule )
+
+
+   def set_attraction_opening_schedule(
+         self,
+         attraction,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message ):
+      schedule = build_attraction_opening_schedule(
+         attraction=attraction,
+         start_date=start_date,
+         end_date=end_date,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         holidays_only=holidays_only,
+         message=message )
+
+      return save_attraction_opening_schedule(
+         self._conn,
+         schedule=schedule )

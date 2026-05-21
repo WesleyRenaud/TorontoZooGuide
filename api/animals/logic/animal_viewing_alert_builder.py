@@ -1,4 +1,4 @@
-from ...shared.console_date_range import resolve_open_ended_console_date_range
+from ... import zoo
 from ...shared.strings import SharedStrings
 from .animal_viewing_alert import AnimalViewingAlert
 
@@ -9,7 +9,7 @@ def build_animal_viewing_alert(
       alert_start_date,
       alert_end_date,
       message ):
-   date_range = resolve_open_ended_console_date_range(
+   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
       start_date=alert_start_date,
       end_date=alert_end_date )
 

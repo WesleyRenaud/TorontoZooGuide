@@ -658,142 +658,38 @@ class Database():
 
 
    def end_update( self, title, start_date, end_date ):
-      if not title or not start_date:
-         return False
+      from .updates.controllers.update_controller import UpdateController
 
-      if not end_date:
-         end_date = datetime.now().date().isoformat()
-
-      try:
-         parsed_end_date = zoo.ZooUtil.parse_date_value( end_date )
-      except ValueError:
-         return False
-
-      cur = self.conn.cursor()
-      cur.execute(
-         """   UPDATE ZooUpdate
-               SET END_DATE = ?
-               WHERE TITLE = ?
-                  AND START_DATE = ?;
-         """,
-         (
-            parsed_end_date.isoformat(),
-            title,
-            start_date
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return UpdateController( self.conn ).end_update(
+         title=title,
+         start_date=start_date,
+         end_date=end_date )
 
 
-   def edit_update( self, title, start_date, description=None, update_type=None, end_date=None ):
-      if not title or not start_date:
-         return False
+   def edit_update(
+         self,
+         title,
+         start_date,
+         description,
+         update_type,
+         end_date ):
+      from .updates.controllers.update_controller import UpdateController
 
-      parsed_end_date = None
-      should_update_end_date = end_date is not None
-      normalized_update_type = None
-
-      if update_type:
-         normalized_update_type = self.normalize_update_type( update_type )
-
-         if normalized_update_type == None:
-            return False
-
-      if should_update_end_date and end_date:
-         try:
-            parsed_end_date = zoo.ZooUtil.parse_date_value( end_date )
-         except ValueError:
-            return False
-
-      cur = self.conn.cursor()
-      data = cur.execute(
-         """   SELECT
-                  START_DATE,
-                  END_DATE
-               FROM ZooUpdate
-               WHERE TITLE = ?
-                  AND START_DATE = ?;
-         """,
-         (
-            title,
-            start_date
-         ) )
-      current_update = data.fetchone()
-
-      if current_update == None:
-         cur.close()
-         return False
-
-      current_start_date = zoo.ZooUtil.parse_date_value( current_update[ 'START_DATE' ] )
-
-      if should_update_end_date and parsed_end_date == None:
-         next_end_date = None
-      else:
-         next_end_date = parsed_end_date.isoformat() if parsed_end_date != None else current_update[ 'END_DATE' ]
-
-      if parsed_end_date != None and parsed_end_date < current_start_date:
-         cur.close()
-         return False
-
-      update_fields = []
-      update_values = []
-
-      if description != None and str( description ).strip():
-         update_fields.append( 'DESCRIPTION = ?' )
-         update_values.append( str( description ).strip() )
-
-      if normalized_update_type != None:
-         update_fields.append( 'UPDATE_TYPE = ?' )
-         update_values.append( normalized_update_type )
-
-      if should_update_end_date:
-         update_fields.append( 'END_DATE = ?' )
-         update_values.append( next_end_date )
-
-      if not update_fields:
-         cur.close()
-         return False
-
-      update_values.extend( [ title, start_date ] )
-
-      cur.execute(
-         f"""  UPDATE ZooUpdate
-               SET { ', '.join( update_fields ) }
-               WHERE TITLE = ?
-                  AND START_DATE = ?;
-         """,
-         tuple( update_values ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return UpdateController( self.conn ).edit_update(
+         title=title,
+         start_date=start_date,
+         description=description,
+         update_type=update_type,
+         end_date=end_date )
 
 
    def set_restaurant_as_closed( self, restaurant, start_date, end_date, message ):
-      if not restaurant:
-         return False
+      from .restaurants.controllers.restaurant_controller import RestaurantController
 
-      if not message:
-         message = f'The { restaurant } is temporarily closed.'
-
-      return self.set_restaurant_opening_schedule(
+      return RestaurantController( self.conn ).set_restaurant_as_closed(
          restaurant=restaurant,
          start_date=start_date,
          end_date=end_date,
-         monday=False,
-         tuesday=False,
-         wednesday=False,
-         thursday=False,
-         friday=False,
-         saturday=False,
-         sunday=False,
-         holidays_only=False,
          message=message )
 
 
@@ -811,90 +707,30 @@ class Database():
          sunday,
          holidays_only,
          message ):
-      if not restaurant:
-         return False
+      from .restaurants.controllers.restaurant_controller import RestaurantController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
-      if not message:
-         message = f'The { restaurant } is not scheduled to be open today.'
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO RestaurantOpeningSchedule (
-                  RESTAURANT,
-                  SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE,
-                  MONDAY,
-                  TUESDAY,
-                  WEDNESDAY,
-                  THURSDAY,
-                  FRIDAY,
-                  SATURDAY,
-                  SUNDAY,
-                  HOLIDAYS_ONLY,
-                  SCHEDULE_MESSAGE
-               )
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-               ON CONFLICT(RESTAURANT) DO UPDATE SET
-                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
-                  MONDAY = excluded.MONDAY,
-                  TUESDAY = excluded.TUESDAY,
-                  WEDNESDAY = excluded.WEDNESDAY,
-                  THURSDAY = excluded.THURSDAY,
-                  FRIDAY = excluded.FRIDAY,
-                  SATURDAY = excluded.SATURDAY,
-                  SUNDAY = excluded.SUNDAY,
-                  HOLIDAYS_ONLY = excluded.HOLIDAYS_ONLY,
-                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
-         """,
-         (
-            restaurant,
-            start_date,
-            end_date,
-            int( bool( monday ) ),
-            int( bool( tuesday ) ),
-            int( bool( wednesday ) ),
-            int( bool( thursday ) ),
-            int( bool( friday ) ),
-            int( bool( saturday ) ),
-            int( bool( sunday ) ),
-            int( bool( holidays_only ) ),
-            message
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return RestaurantController( self.conn ).set_restaurant_opening_schedule(
+         restaurant=restaurant,
+         start_date=start_date,
+         end_date=end_date,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         holidays_only=holidays_only,
+         message=message )
 
 
    def set_gift_shop_as_closed( self, gift_shop, start_date, end_date, message ):
-      if not gift_shop:
-         return False
+      from .giftshops.controllers.gift_shop_controller import GiftShopController
 
-      if not message:
-         message = f'The { gift_shop } is temporarily closed.'
-
-      return self.set_gift_shop_opening_schedule(
+      return GiftShopController( self.conn ).set_gift_shop_as_closed(
          gift_shop=gift_shop,
          start_date=start_date,
          end_date=end_date,
-         monday=False,
-         tuesday=False,
-         wednesday=False,
-         thursday=False,
-         friday=False,
-         saturday=False,
-         sunday=False,
-         holidays_only=False,
          message=message )
 
 
@@ -912,90 +748,30 @@ class Database():
          sunday,
          holidays_only,
          message ):
-      if not gift_shop:
-         return False
+      from .giftshops.controllers.gift_shop_controller import GiftShopController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
-      if not message:
-         message = f'The { gift_shop } is not scheduled to be open today.'
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO GiftShopOpeningSchedule (
-                  GIFT_SHOP,
-                  SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE,
-                  MONDAY,
-                  TUESDAY,
-                  WEDNESDAY,
-                  THURSDAY,
-                  FRIDAY,
-                  SATURDAY,
-                  SUNDAY,
-                  HOLIDAYS_ONLY,
-                  SCHEDULE_MESSAGE
-               )
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-               ON CONFLICT(GIFT_SHOP) DO UPDATE SET
-                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
-                  MONDAY = excluded.MONDAY,
-                  TUESDAY = excluded.TUESDAY,
-                  WEDNESDAY = excluded.WEDNESDAY,
-                  THURSDAY = excluded.THURSDAY,
-                  FRIDAY = excluded.FRIDAY,
-                  SATURDAY = excluded.SATURDAY,
-                  SUNDAY = excluded.SUNDAY,
-                  HOLIDAYS_ONLY = excluded.HOLIDAYS_ONLY,
-                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
-         """,
-         (
-            gift_shop,
-            start_date,
-            end_date,
-            int( bool( monday ) ),
-            int( bool( tuesday ) ),
-            int( bool( wednesday ) ),
-            int( bool( thursday ) ),
-            int( bool( friday ) ),
-            int( bool( saturday ) ),
-            int( bool( sunday ) ),
-            int( bool( holidays_only ) ),
-            message
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return GiftShopController( self.conn ).set_gift_shop_opening_schedule(
+         gift_shop=gift_shop,
+         start_date=start_date,
+         end_date=end_date,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         holidays_only=holidays_only,
+         message=message )
 
 
    def set_attraction_as_closed( self, attraction, start_date, end_date, message ):
-      if not attraction:
-         return False
+      from .attractions.controllers.attraction_controller import AttractionController
 
-      if not message:
-         message = f'The { attraction } is temporarily closed.'
-
-      return self.set_attraction_opening_schedule(
+      return AttractionController( self.conn ).set_attraction_as_closed(
          attraction=attraction,
          start_date=start_date,
          end_date=end_date,
-         monday=False,
-         tuesday=False,
-         wednesday=False,
-         thursday=False,
-         friday=False,
-         saturday=False,
-         sunday=False,
-         holidays_only=False,
          message=message )
 
 
@@ -1013,171 +789,47 @@ class Database():
          sunday,
          holidays_only,
          message ):
-      if not attraction:
-         return False
+      from .attractions.controllers.attraction_controller import AttractionController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
-      if not message:
-         message = f'The { attraction } is not scheduled to be open today.'
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO AttractionOpeningSchedule (
-                  ATTRACTION,
-                  SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE,
-                  MONDAY,
-                  TUESDAY,
-                  WEDNESDAY,
-                  THURSDAY,
-                  FRIDAY,
-                  SATURDAY,
-                  SUNDAY,
-                  HOLIDAYS_ONLY,
-                  SCHEDULE_MESSAGE
-               )
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-               ON CONFLICT(ATTRACTION) DO UPDATE SET
-                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
-                  MONDAY = excluded.MONDAY,
-                  TUESDAY = excluded.TUESDAY,
-                  WEDNESDAY = excluded.WEDNESDAY,
-                  THURSDAY = excluded.THURSDAY,
-                  FRIDAY = excluded.FRIDAY,
-                  SATURDAY = excluded.SATURDAY,
-                  SUNDAY = excluded.SUNDAY,
-                  HOLIDAYS_ONLY = excluded.HOLIDAYS_ONLY,
-                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
-         """,
-         (
-            attraction,
-            start_date,
-            end_date,
-            int( bool( monday ) ),
-            int( bool( tuesday ) ),
-            int( bool( wednesday ) ),
-            int( bool( thursday ) ),
-            int( bool( friday ) ),
-            int( bool( saturday ) ),
-            int( bool( sunday ) ),
-            int( bool( holidays_only ) ),
-            message
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return AttractionController( self.conn ).set_attraction_opening_schedule(
+         attraction=attraction,
+         start_date=start_date,
+         end_date=end_date,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         holidays_only=holidays_only,
+         message=message )
 
 
    def set_zoomobile_station_as_closed( self, zoomobile_station, start_date, end_date, message ):
-      if not zoomobile_station:
-         return False
+      from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
-      if not message:
-         message = f'The { zoomobile_station } is temporarily closed.'
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO ZoomobileStationStatus (
-                  ZOOMOBILE_STATION,
-                  IS_CLOSED,
-                  CLOSED_MESSAGE,
-                  CLOSED_START,
-                  CLOSED_END
-               )
-               VALUES (?, 1, ?, ?, ?)
-               ON CONFLICT(ZOOMOBILE_STATION) DO UPDATE SET
-                  IS_CLOSED = 1,
-                  CLOSED_MESSAGE = excluded.CLOSED_MESSAGE,
-                  CLOSED_START = excluded.CLOSED_START,
-                  CLOSED_END = excluded.CLOSED_END;
-         """, ( zoomobile_station, message, start_date, end_date ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return ZoomobileController( self.conn ).set_zoomobile_station_as_closed(
+         zoomobile_station=zoomobile_station,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
 
 
    def set_zoomobile_station_as_open( self, zoomobile_station ):
-      if not zoomobile_station:
-         return False
+      from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   DELETE FROM ZoomobileStationStatus
-               WHERE ZOOMOBILE_STATION = ?;
-         """, ( zoomobile_station, ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return ZoomobileController( self.conn ).set_zoomobile_station_as_open(
+         zoomobile_station=zoomobile_station )
 
 
    def set_current_zoomobile_route( self, route, start_date, end_date ):
-      if route not in ( 'summer', 'winter' ):
-         return False
+      from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
-      try:
-         normalized_start_date = (
-            zoo.ZooUtil.parse_date_value( value=start_date ).isoformat()
-            if start_date
-            else datetime.now().date().isoformat()
-         )
-      except ValueError:
-         return False
-
-      normalized_end_date = None
-
-      if end_date:
-         try:
-            normalized_end_date = zoo.ZooUtil.parse_date_value( value=end_date ).isoformat()
-         except ValueError:
-            return False
-
-         if normalized_end_date < normalized_start_date:
-            return False
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   DELETE FROM ZoomobileRouteSchedule;
-         """ )
-
-      cur.execute(
-         """   INSERT INTO ZoomobileRouteSchedule (
-                  SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE,
-                  ROUTE
-               )
-               VALUES ( ?, ?, ? )
-         """, ( normalized_start_date, normalized_end_date, route ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return ZoomobileController( self.conn ).set_current_zoomobile_route(
+         route=route,
+         start_date=start_date,
+         end_date=end_date )
 
 
    def set_guardians_talk_schedule(
@@ -1195,130 +847,41 @@ class Database():
          saturday,
          sunday,
          message ):
-      if not talk or not location:
-         return False
+      from .guardians.controllers.guardians_controller import GuardiansController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
-      if not message:
-         message = f'The { talk } at { location } is not scheduled today.'
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO GuardiansTalkSchedule (
-                  TALK_NAME,
-                  LOCATION,
-                  SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE,
-                  TALK_TIME,
-                  MONDAY,
-                  TUESDAY,
-                  WEDNESDAY,
-                  THURSDAY,
-                  FRIDAY,
-                  SATURDAY,
-                  SUNDAY,
-                  SCHEDULE_MESSAGE
-               )
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-               ON CONFLICT(TALK_NAME, LOCATION) DO UPDATE SET
-                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
-                  TALK_TIME = excluded.TALK_TIME,
-                  MONDAY = excluded.MONDAY,
-                  TUESDAY = excluded.TUESDAY,
-                  WEDNESDAY = excluded.WEDNESDAY,
-                  THURSDAY = excluded.THURSDAY,
-                  FRIDAY = excluded.FRIDAY,
-                  SATURDAY = excluded.SATURDAY,
-                  SUNDAY = excluded.SUNDAY,
-                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
-         """,
-         (
-            talk,
-            location,
-            start_date,
-            end_date,
-            talk_time,
-            int( bool( monday ) ),
-            int( bool( tuesday ) ),
-            int( bool( wednesday ) ),
-            int( bool( thursday ) ),
-            int( bool( friday ) ),
-            int( bool( saturday ) ),
-            int( bool( sunday ) ),
-            message
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return GuardiansController( self.conn ).set_guardians_talk_schedule(
+         talk=talk,
+         location=location,
+         start_date=start_date,
+         end_date=end_date,
+         talk_time=talk_time,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         message=message )
 
 
    def end_guardians_talk_schedule( self, talk, location, schedule_end_date ):
-      if not talk or not location:
-         return False
+      from .guardians.controllers.guardians_controller import GuardiansController
 
-      if not schedule_end_date:
-         schedule_end_date = datetime.now().date().isoformat()
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   UPDATE GuardiansTalkSchedule
-               SET SCHEDULE_END_DATE = ?
-               WHERE TALK_NAME = ?
-               AND LOCATION = ?;
-         """,
-         (
-            schedule_end_date,
-            talk,
-            location
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return GuardiansController( self.conn ).end_guardians_talk_schedule(
+         talk=talk,
+         location=location,
+         schedule_end_date=schedule_end_date )
 
 
    def cancel_guardians_talk_occurrence( self, talk, location, date, time ):
-      if not talk or not location or not date or not time:
-         return False
+      from .guardians.controllers.guardians_controller import GuardiansController
 
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO GuardiansTalkCancellation (
-                  TALK_NAME,
-                  LOCATION,
-                  CANCELLATION_DATE,
-                  TALK_TIME
-               )
-               VALUES (?, ?, ?, ?)
-               ON CONFLICT(TALK_NAME, LOCATION, CANCELLATION_DATE, TALK_TIME)
-               DO NOTHING;
-         """,
-         (
-            talk,
-            location,
-            date,
-            time
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return GuardiansController( self.conn ).cancel_guardians_talk_occurrence(
+         talk=talk,
+         location=location,
+         date=date,
+         time=time )
 
 
    def set_wild_encounter_schedule(
@@ -1335,179 +898,52 @@ class Database():
          saturday,
          sunday,
          message ):
-      if not wild_encounter:
-         return False
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
-      if not start_date:
-         start_date = datetime.now().date().isoformat()
-
-      if not end_date:
-         end_date = None
-
-      if not message:
-         message = f'The { wild_encounter } is not scheduled today.'
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO WildEncounterSchedule (
-                  WILD_ENCOUNTER,
-                  SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE,
-                  ENCOUNTER_TIME,
-                  MONDAY,
-                  TUESDAY,
-                  WEDNESDAY,
-                  THURSDAY,
-                  FRIDAY,
-                  SATURDAY,
-                  SUNDAY,
-                  SCHEDULE_MESSAGE
-               )
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-               ON CONFLICT(WILD_ENCOUNTER) DO UPDATE SET
-                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
-                  SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
-                  ENCOUNTER_TIME = excluded.ENCOUNTER_TIME,
-                  MONDAY = excluded.MONDAY,
-                  TUESDAY = excluded.TUESDAY,
-                  WEDNESDAY = excluded.WEDNESDAY,
-                  THURSDAY = excluded.THURSDAY,
-                  FRIDAY = excluded.FRIDAY,
-                  SATURDAY = excluded.SATURDAY,
-                  SUNDAY = excluded.SUNDAY,
-                  SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
-         """,
-         (
-            wild_encounter,
-            start_date,
-            end_date,
-            encounter_time,
-            int( bool( monday ) ),
-            int( bool( tuesday ) ),
-            int( bool( wednesday ) ),
-            int( bool( thursday ) ),
-            int( bool( friday ) ),
-            int( bool( saturday ) ),
-            int( bool( sunday ) ),
-            message
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return WildEncounterController( self.conn ).set_wild_encounter_schedule(
+         wild_encounter=wild_encounter,
+         start_date=start_date,
+         end_date=end_date,
+         encounter_time=encounter_time,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         message=message )
 
 
    def end_wild_encounter_schedule( self, wild_encounter, schedule_end_date ):
-      if not wild_encounter:
-         return False
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
-      if not schedule_end_date:
-         schedule_end_date = datetime.now().date().isoformat()
-
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   UPDATE WildEncounterSchedule
-               SET SCHEDULE_END_DATE = ?
-               WHERE WILD_ENCOUNTER = ?;
-         """,
-         (
-            schedule_end_date,
-            wild_encounter
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return WildEncounterController( self.conn ).end_wild_encounter_schedule(
+         wild_encounter=wild_encounter,
+         schedule_end_date=schedule_end_date )
 
 
    def cancel_wild_encounter_occurrence( self, wild_encounter, date, time ):
-      if not wild_encounter or not date or not time:
-         return False
+      from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """   INSERT INTO WildEncounterCancellation (
-                  WILD_ENCOUNTER,
-                  CANCELLATION_DATE,
-                  ENCOUNTER_TIME
-               )
-               VALUES (?, ?, ?)
-               ON CONFLICT(WILD_ENCOUNTER, CANCELLATION_DATE, ENCOUNTER_TIME)
-               DO NOTHING;
-         """,
-         (
-            wild_encounter,
-            date,
-            time
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return WildEncounterController( self.conn ).cancel_wild_encounter_occurrence(
+         wild_encounter=wild_encounter,
+         date=date,
+         time=time )
 
 
    def set_drinking_fountains_as_closed( self, start_date=None, end_date=None, message=None ):
-      if not message:
-         message = 'The drinking fountains are closed for the season.'
+      from .drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
 
-      cur = self.conn.cursor()
-
-      cur.execute(
-         """ DELETE FROM DrinkingFountainStatus;
-         """ )
-
-      cur.execute(
-         """   INSERT INTO DrinkingFountainStatus (
-                  IS_CLOSED,
-                  START_DATE,
-                  END_DATE,
-                  CLOSED_MESSAGE
-               )
-               VALUES (1, ?, ?, ?);
-         """, (
-            start_date,
-            end_date,
-            message
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return DrinkingFountainController( self.conn ).set_drinking_fountains_as_closed(
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
 
 
    def set_drinking_fountains_as_open( self, start_date=None, end_date=None ):
-      cur = self.conn.cursor()
+      from .drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
 
-      cur.execute(
-         """ DELETE FROM DrinkingFountainStatus;
-         """ )
-
-      cur.execute(
-         """   INSERT INTO DrinkingFountainStatus (
-                  IS_CLOSED,
-                  START_DATE,
-                  END_DATE,
-                  CLOSED_MESSAGE
-               )
-               VALUES (0, ?, ?, NULL);
-         """, (
-            start_date,
-            end_date
-         ) )
-
-      self.conn.commit()
-      updated = cur.rowcount
-      cur.close()
-
-      return updated > 0
+      return DrinkingFountainController( self.conn ).set_drinking_fountains_as_open(
+         start_date=start_date,
+         end_date=end_date )

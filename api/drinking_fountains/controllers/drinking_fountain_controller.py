@@ -1,8 +1,12 @@
 from ... import zoo
 from ..data_access.drinking_fountain import fetch_drinking_fountain_records
+from ..data_access.drinking_fountain_status import save_drinking_fountain_closed_status
+from ..data_access.drinking_fountain_status import save_drinking_fountain_open_status
 from ..data_access.drinking_fountain_status import fetch_drinking_fountain_seasonal_likelihood
 from ..data_access.drinking_fountain_status import fetch_drinking_fountain_status_record
 from ..logic.drinking_fountain import build_drinking_fountains
+from ..logic.drinking_fountain_status import build_drinking_fountain_closed_status
+from ..logic.drinking_fountain_status import build_drinking_fountain_open_status
 from ..logic.drinking_fountain_status import build_drinking_fountain_seasonal_status
 from ..logic.drinking_fountain_status import build_drinking_fountain_status
 from ..logic.drinking_fountain_status import drinking_fountain_status_applies_to_date
@@ -21,7 +25,7 @@ class DrinkingFountainController():
 
       status_record = fetch_drinking_fountain_status_record( self._conn )
 
-      if drinking_fountain_status_applies_to_date( status_record, target_date ):
+      if status_record and drinking_fountain_status_applies_to_date( status_record, target_date ):
          is_closed, closed_message, likelihood = build_drinking_fountain_status(
             status_record )
       else:
@@ -38,3 +42,24 @@ class DrinkingFountainController():
          is_closed,
          closed_message,
          likelihood )
+
+
+   def set_drinking_fountains_as_closed( self, start_date=None, end_date=None, message=None ):
+      status = build_drinking_fountain_closed_status(
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      return save_drinking_fountain_closed_status(
+         self._conn,
+         status=status )
+
+
+   def set_drinking_fountains_as_open( self, start_date=None, end_date=None ):
+      status = build_drinking_fountain_open_status(
+         start_date=start_date,
+         end_date=end_date )
+
+      return save_drinking_fountain_open_status(
+         self._conn,
+         status=status )

@@ -3,6 +3,8 @@ import calendar
 import math
 import sys
 
+from .models.date_range import DateRange
+
 
 class ZooUtil:
    @staticmethod
@@ -128,6 +130,23 @@ class ZooUtil:
          return None
 
       return parsed.isoformat()
+
+
+   @staticmethod
+   def today_date_key():
+      zoo_module = sys.modules.get( 'api.database' )
+      datetime_class = getattr( zoo_module, 'datetime', datetime )
+      return datetime_class.now().date().isoformat()
+
+
+   @staticmethod
+   def resolve_open_ended_date_range( start_date, end_date ):
+      if not start_date:
+         start_date = ZooUtil.today_date_key()
+
+      return DateRange(
+         start_date=ZooUtil.normalize_date_key( start_date ),
+         end_date=ZooUtil.normalize_date_key( end_date ) )
 
 
    @staticmethod
