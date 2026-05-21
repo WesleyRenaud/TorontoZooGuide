@@ -4,6 +4,7 @@ from .models import Animal
 from .models import AnimalDiff
 from .models import Attraction
 from .models import AttractionDiff
+from .models import DateRange
 from .models import Defibrillator
 from .models import DrinkingFountain
 from .models import EmergencyIntercom
@@ -35,6 +36,7 @@ __all__ = [
    'AnimalDiff',
    'Attraction',
    'AttractionDiff',
+   'DateRange',
    'Defibrillator',
    'DrinkingFountain',
    'EmergencyIntercom',

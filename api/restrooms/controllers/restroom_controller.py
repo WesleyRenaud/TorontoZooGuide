@@ -1,3 +1,4 @@
+from ... import zoo
 from ..data_access.restroom import fetch_restroom_names
 from ..data_access.restroom import fetch_restroom_records
 from ..data_access.restroom_alert import delete_restroom_alert
@@ -9,7 +10,6 @@ from ..logic.restroom_alert_builder import build_restroom_alert
 from ..logic.restroom import resolve_restroom_context
 from ..logic.restroom_status import build_restroom_closed_status
 from ..logic.restrooms_matching_query import build_restrooms_matching_query
-from ...shared.console_date_range import resolve_open_ended_console_date_range
 
 
 class RestroomController():
@@ -72,7 +72,7 @@ class RestroomController():
 
 
    def set_restroom_as_open( self, restroom, start_date, end_date ):
-      date_range = resolve_open_ended_console_date_range(
+      date_range = zoo.ZooUtil.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
 

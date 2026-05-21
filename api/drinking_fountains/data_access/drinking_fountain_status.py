@@ -49,3 +49,60 @@ def fetch_drinking_fountain_seasonal_likelihood( conn, target_date ):
 
    finally:
       cur.close()
+
+
+
+def save_drinking_fountain_closed_status( conn, status ):
+   cur = conn.cursor()
+
+   try:
+      cur.execute( 'DELETE FROM DrinkingFountainStatus;' )
+
+      cur.execute(
+         """   INSERT INTO DrinkingFountainStatus (
+                  IS_CLOSED,
+                  START_DATE,
+                  END_DATE,
+                  CLOSED_MESSAGE
+               )
+               VALUES (1, ?, ?, ?);
+         """,
+         (
+            status.start_date,
+            status.end_date,
+            status.message,
+         ) )
+
+      conn.commit()
+      return cur.rowcount > 0
+
+   finally:
+      cur.close()
+
+
+
+def save_drinking_fountain_open_status( conn, status ):
+   cur = conn.cursor()
+
+   try:
+      cur.execute( 'DELETE FROM DrinkingFountainStatus;' )
+
+      cur.execute(
+         """   INSERT INTO DrinkingFountainStatus (
+                  IS_CLOSED,
+                  START_DATE,
+                  END_DATE,
+                  CLOSED_MESSAGE
+               )
+               VALUES (0, ?, ?, NULL);
+         """,
+         (
+            status.start_date,
+            status.end_date,
+         ) )
+
+      conn.commit()
+      return cur.rowcount > 0
+
+   finally:
+      cur.close()

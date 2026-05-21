@@ -1,8 +1,12 @@
 from ... import database as database_module
 from ... import zoo
+from ..data_access.update import edit_update_record
 from ..data_access.update import fetch_updates
 from ..data_access.update import insert_update
+from ..data_access.update import update_end_date
 from ..logic.update_creation import build_update_create_input
+from ..logic.update_editing import build_update_edit_input
+from ..logic.update_ending import build_update_end_input
 from ..logic.update import filter_updates_started_on_or_before
 
 
@@ -45,5 +49,35 @@ class UpdateController():
          end_date=end_date )
 
       return insert_update(
+         self._conn,
+         update=update )
+
+
+   def end_update( self, title, start_date, end_date ):
+      update = build_update_end_input(
+         title=title,
+         start_date=start_date,
+         end_date=end_date )
+
+      return update_end_date(
+         self._conn,
+         update=update )
+
+
+   def edit_update(
+         self,
+         title,
+         start_date,
+         description,
+         update_type,
+         end_date ):
+      update = build_update_edit_input(
+         title=title,
+         start_date=start_date,
+         description=description,
+         update_type=update_type,
+         end_date=end_date )
+
+      return edit_update_record(
          self._conn,
          update=update )

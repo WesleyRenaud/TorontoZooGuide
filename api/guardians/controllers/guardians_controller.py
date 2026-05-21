@@ -3,6 +3,9 @@ from ..data_access.guardians_talk import fetch_guardians_talk_locations
 from ..data_access.guardians_talk import fetch_guardians_talk_names
 from ..data_access.guardians_talk import fetch_guardians_talk_names_at_location
 from ..data_access.guardians_talk import fetch_meet_the_guardians_talk_records
+from ..data_access.guardians_talk_cancellation import save_guardians_talk_cancellation
+from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule
+from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule_end
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_cancellation_records
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_occurrence_is_cancelled
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_record_for_occurrences
@@ -10,6 +13,9 @@ from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_
 from ..logic.guardians_talk import build_guardians_talk_details
 from ..logic.guardians_talk_occurrences import build_guardians_talk_occurrences
 from ..logic.guardians_talk_schedule import build_guardians_talk_schedule_for_target_date
+from ..logic.guardians_talk_schedule_status import build_guardians_talk_schedule
+from ..logic.guardians_talk_cancellation_status import build_guardians_talk_cancellation
+from ..logic.guardians_talk_schedule_status import build_guardians_talk_schedule_end
 from ..logic.guardians_talk_schedule import find_guardians_talk_on_day_schedule
 from ..logic.guardians_talks_matching_query import build_guardians_talks_matching_query
 from ..logic.itinerary_guardians_talks import build_itinerary_guardians_talks
@@ -56,6 +62,64 @@ class GuardiansController():
       return build_guardians_talk_details(
          talk_records,
          guardians_talks_to_include=guardians_talks_to_include )
+
+
+   def set_guardians_talk_schedule(
+         self,
+         talk,
+         location,
+         start_date,
+         end_date,
+         talk_time,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         message ):
+      schedule = build_guardians_talk_schedule(
+         talk=talk,
+         location=location,
+         start_date=start_date,
+         end_date=end_date,
+         talk_time=talk_time,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         message=message )
+
+      return save_guardians_talk_schedule(
+         self._conn,
+         schedule=schedule )
+
+
+   def end_guardians_talk_schedule( self, talk, location, schedule_end_date ):
+      schedule_end = build_guardians_talk_schedule_end(
+         talk=talk,
+         location=location,
+         schedule_end_date=schedule_end_date )
+
+      return save_guardians_talk_schedule_end(
+         self._conn,
+         schedule_end=schedule_end )
+
+
+   def cancel_guardians_talk_occurrence( self, talk, location, date, time ):
+      cancellation = build_guardians_talk_cancellation(
+         talk=talk,
+         location=location,
+         date=date,
+         time=time )
+
+      return save_guardians_talk_cancellation(
+         self._conn,
+         cancellation=cancellation )
 
 
    def get_guardians_talks_for_saved_itinerary( self, saved_guardians_talks ):

@@ -10,7 +10,6 @@ from ..logic.exhibit import build_region_options
 from ..logic.exhibit_closure import exhibit_names_closed_on_visit_date
 from ..logic.exhibit_status import build_exhibit_closed_status
 from ..logic.regions_with_exhibits import build_regions_with_exhibits
-from ...shared.console_date_range import resolve_open_ended_console_date_range
 
 
 class ExhibitController():
@@ -71,7 +70,7 @@ class ExhibitController():
 
 
    def set_exhibit_as_open( self, exhibit, start_date, end_date ):
-      date_range = resolve_open_ended_console_date_range(
+      date_range = zoo.ZooUtil.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
 

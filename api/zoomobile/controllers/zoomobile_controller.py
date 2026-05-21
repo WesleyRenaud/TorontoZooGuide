@@ -9,6 +9,11 @@ from ..logic.zoomobile_route import resolve_zoomobile_route
 from ..logic.zoomobile_route import resolve_zoomobile_route_context
 from ..logic.zoomobile_station import build_zoomobile_stations
 from ..logic.zoomobile_station import resolve_zoomobile_station_context
+from ..data_access.zoomobile_route_schedule import save_current_zoomobile_route_schedule
+from ..data_access.zoomobile_station_status import save_zoomobile_station_closed_status
+from ..data_access.zoomobile_station_status import save_zoomobile_station_open_status
+from ..logic.zoomobile_route_schedule import build_current_zoomobile_route_schedule
+from ..logic.zoomobile_station_status import build_zoomobile_station_closed_status
 from ..logic.zoomobile_stations_matching_query import build_zoomobile_stations_matching_query
 
 
@@ -113,3 +118,37 @@ class ZoomobileController():
          return None
 
       return route
+
+
+   def set_zoomobile_station_as_closed(
+         self,
+         zoomobile_station,
+         start_date,
+         end_date,
+         message ):
+      status = build_zoomobile_station_closed_status(
+         zoomobile_station=zoomobile_station,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      return save_zoomobile_station_closed_status(
+         self._conn,
+         status=status )
+
+
+   def set_zoomobile_station_as_open( self, zoomobile_station ):
+      return save_zoomobile_station_open_status(
+         self._conn,
+         zoomobile_station=zoomobile_station )
+
+
+   def set_current_zoomobile_route( self, route, start_date, end_date ):
+      schedule = build_current_zoomobile_route_schedule(
+         route=route,
+         start_date=start_date,
+         end_date=end_date )
+
+      return save_current_zoomobile_route_schedule(
+         self._conn,
+         schedule=schedule )
