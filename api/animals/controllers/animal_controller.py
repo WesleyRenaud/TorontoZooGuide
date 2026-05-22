@@ -14,15 +14,15 @@ from ..logic.animal_viewability import build_viewable_animals_on_day
 from ..logic.animal_viewability import resolve_animal_viewability_context
 from ..logic.animals_matching_query import build_animals_matching_query
 from ..logic.itinerary_animals import build_itinerary_animals
+from ...request_connection import get_connection
 
 
 class AnimalController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
+   @classmethod
    def get_animals_viewable_on_day(
-         self,
+         cls,
          day,
          month,
          year,
@@ -39,7 +39,7 @@ class AnimalController():
          temp=temp )
 
       animal_records = fetch_animals_viewable_on_day_records(
-         self._conn,
+         get_connection(),
          context.calendar_month,
          context.day_of_month,
          exhibits_to_include=exhibits_to_include )
@@ -53,18 +53,21 @@ class AnimalController():
          threshold=threshold )
 
 
-   def get_animal_information( self, species ):
+   @classmethod
+   def get_animal_information( cls, species ):
       return fetch_animal_information(
-         self._conn,
+         get_connection(),
          species=species )
 
 
-   def get_animal_species_names( self ):
-      return fetch_animal_species_names( self._conn )
+   @classmethod
+   def get_animal_species_names( cls ):
+      return fetch_animal_species_names( get_connection() )
 
 
+   @classmethod
    def set_animal_as_off_display(
-         self,
+         cls,
          species,
          exhibit,
          start_date,
@@ -79,7 +82,7 @@ class AnimalController():
          message=message )
 
       return save_animal_off_display_status(
-         self._conn,
+         get_connection(),
          species=status.species,
          exhibit=status.exhibit,
          start_date=status.start_date,
@@ -87,15 +90,17 @@ class AnimalController():
          message=status.message )
 
 
-   def set_animal_as_on_display( self, species, exhibit ):
+   @classmethod
+   def set_animal_as_on_display( cls, species, exhibit ):
       return save_animal_on_display_status(
-         self._conn,
+         get_connection(),
          species=species,
          exhibit=exhibit )
 
 
+   @classmethod
    def set_animal_limited_viewing_schedule(
-         self,
+         cls,
          species,
          exhibit,
          start_date,
@@ -113,7 +118,7 @@ class AnimalController():
          message=message )
 
       return save_animal_limited_viewing_schedule(
-         self._conn,
+         get_connection(),
          species=schedule.species,
          exhibit=schedule.exhibit,
          start_date=schedule.start_date,
@@ -123,15 +128,17 @@ class AnimalController():
          message=schedule.message )
 
 
-   def remove_animal_visibility_schedule( self, species, exhibit ):
+   @classmethod
+   def remove_animal_visibility_schedule( cls, species, exhibit ):
       return delete_animal_visibility_schedule(
-         self._conn,
+         get_connection(),
          species=species,
          exhibit=exhibit )
 
 
+   @classmethod
    def set_animal_viewing_alert(
-         self,
+         cls,
          species,
          exhibit,
          alert_start_date,
@@ -145,7 +152,7 @@ class AnimalController():
          message=message )
 
       return save_animal_viewing_alert(
-         self._conn,
+         get_connection(),
          species=alert.species,
          exhibit=alert.exhibit,
          alert_start_date=alert.start_date,
@@ -153,15 +160,17 @@ class AnimalController():
          message=alert.message )
 
 
-   def remove_animal_viewing_alert( self, species, exhibit ):
+   @classmethod
+   def remove_animal_viewing_alert( cls, species, exhibit ):
       return delete_animal_viewing_alert(
-         self._conn,
+         get_connection(),
          species=species,
          exhibit=exhibit )
 
 
+   @classmethod
    def get_animals_for_saved_itinerary(
-         self,
+         cls,
          day,
          month,
          year,
@@ -176,7 +185,7 @@ class AnimalController():
          for saved_animal in saved_animals
       } )
 
-      viewable_animals = self.get_animals_viewable_on_day(
+      viewable_animals = cls.get_animals_viewable_on_day(
          day=day,
          month=month,
          year=year,
@@ -190,8 +199,9 @@ class AnimalController():
          saved_animals )
 
 
+   @classmethod
    def get_animals_matching_query(
-         self,
+         cls,
          query,
          day,
          month,
@@ -199,7 +209,7 @@ class AnimalController():
          temp=None,
          include_off_display_animals=False ):
 
-      animals = self.get_animals_viewable_on_day(
+      animals = cls.get_animals_viewable_on_day(
          day=day,
          month=month,
          year=year,

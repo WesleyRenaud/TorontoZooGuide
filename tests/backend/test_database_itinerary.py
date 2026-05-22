@@ -8,6 +8,8 @@ from api.guardians.controllers.guardians_controller import GuardiansController
 from api.guardians.logic.guardians_talk_itinerary_validation import (
    validate_guardians_talks_for_itinerary,
 )
+from api.itinerary.controllers.itinerary_controller import ItineraryController
+from api.zoo_hours.controllers.zoo_hours_controller import ZooHoursController
 from api.wild_encounters.logic.wild_encounter_itinerary_validation import (
    validate_wild_encounters_for_itinerary,
 )
@@ -21,7 +23,7 @@ from api.wild_encounters.controllers.wild_encounter_controller import WildEncoun
 
 def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   db.set_guardians_talk_schedule(
+   GuardiansController.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -36,7 +38,7 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
       sunday=False,
       message=None
    )
-   db.set_wild_encounter_schedule(
+   WildEncounterController.set_wild_encounter_schedule(
       wild_encounter='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -51,7 +53,7 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
       message=None
    )
 
-   assert db.set_itinerary(
+   assert ItineraryController.set_itinerary(
       date='2026-06-15',
       animals=[ { 'species': 'African Lion', 'exhibit': 'Africa Savanna' } ],
       attractions=[ 'Conservation Carousel' ],
@@ -81,19 +83,19 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
       'IS_DELETED': 0
    }
 
-   assert db.cancel_guardians_talk_occurrence(
+   assert GuardiansController.cancel_guardians_talk_occurrence(
       talk='African Lion',
       location='Africa Savanna',
       date='2026-06-15',
       time='10:00'
    )
-   assert db.cancel_wild_encounter_occurrence(
+   assert WildEncounterController.cancel_wild_encounter_occurrence(
       wild_encounter='African Rainforest',
       date='2026-06-15',
       time='14:00'
    )
 
-   itinerary = db.get_itinerary()
+   itinerary = ItineraryController.get_itinerary()
 
    assert itinerary.date == '2026-06-15'
    assert [ animal.species for animal in itinerary.animals ] == [ 'African Lion' ]
@@ -116,8 +118,8 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
    assert itinerary_dict[ 'attractions' ][ 0 ][ 'old_likelihood' ] is None
    assert itinerary_dict[ 'attractions' ][ 0 ][ 'likelihood' ] > 0
 
-   assert db.clear_itinerary()
-   cleared = db.get_itinerary()
+   assert ItineraryController.clear_itinerary()
+   cleared = ItineraryController.get_itinerary()
 
    assert cleared.date == ''
    assert cleared.animals == []
@@ -127,7 +129,7 @@ def test_set_get_and_clear_itinerary( db, freeze_database_today ):
 
 
 def test_get_zoo_hours_returns_seeded_operating_bounds( db ):
-   assert db.get_zoo_hours( day=20, month='June', year=2026 ).to_dict() == {
+   assert ZooHoursController.get_zoo_hours( day=20, month='June', year=2026 ).to_dict() == {
       'date': '2026-06-20',
       'earlyAdmissionTime': '09:00',
       'openTime': '09:30',
@@ -135,7 +137,7 @@ def test_get_zoo_hours_returns_seeded_operating_bounds( db ):
       'closeTime': '19:00'
    }
 
-   assert db.get_zoo_hours( day=22, month='June', year=2026 ).to_dict() == {
+   assert ZooHoursController.get_zoo_hours( day=22, month='June', year=2026 ).to_dict() == {
       'date': '2026-06-22',
       'earlyAdmissionTime': None,
       'openTime': '09:30',
@@ -143,7 +145,7 @@ def test_get_zoo_hours_returns_seeded_operating_bounds( db ):
       'closeTime': '18:00'
    }
 
-   assert db.get_zoo_hours( day=25, month='December', year=2026 ).to_dict() == {
+   assert ZooHoursController.get_zoo_hours( day=25, month='December', year=2026 ).to_dict() == {
       'date': '2026-12-25',
       'earlyAdmissionTime': None,
       'openTime': '11:00',
@@ -198,7 +200,7 @@ def test_accept_itinerary_removes_declined_and_deleted_items( db ):
       """ )
    db.conn.commit()
 
-   assert db.accept_itinerary()
+   assert ItineraryController.accept_itinerary()
 
    assert [
       row[ 'SPECIES' ]
@@ -220,7 +222,7 @@ def test_accept_itinerary_removes_declined_and_deleted_items( db ):
 
 def test_validate_animals_removes_unavailable_entries( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   db.set_animal_as_off_display(
+   AnimalController.set_animal_as_off_display(
       species='African Lion',
       exhibit='Africa Savanna',
       start_date='2026-06-01',
@@ -229,7 +231,7 @@ def test_validate_animals_removes_unavailable_entries( db, freeze_database_today
    )
 
    result = validate_itinerary_animals(
-      AnimalController( db.conn ),
+      AnimalController,
       animals=[
          ItineraryAnimalInput(
             species='African Lion',
@@ -259,7 +261,7 @@ def test_validate_animals_removes_unavailable_entries( db, freeze_database_today
 
 def test_validate_attractions_removes_closed_entries( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   db.set_attraction_as_closed(
+   AttractionController.set_attraction_as_closed(
       attraction='Conservation Carousel',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -267,7 +269,7 @@ def test_validate_attractions_removes_closed_entries( db, freeze_database_today 
    )
 
    result = validate_itinerary_attractions(
-      AttractionController( db.conn ),
+      AttractionController,
       attractions=[ 'Conservation Carousel', 'Greenhouse' ],
       new_visit_date=date( 2026, 6, 15 ),
       old_visit_date='2026-06-15' )
@@ -343,8 +345,8 @@ def test_validate_wild_encounters_splits_available_and_unavailable_entries():
 
 
 def test_itinerary_filter_helpers_sort_matching_animals( db ):
-   animal_controller = AnimalController( db.conn )
-   attraction_controller = AttractionController( db.conn )
+   animal_controller = AnimalController
+   attraction_controller = AttractionController
 
    animals = animal_controller.get_animals_for_saved_itinerary(
       day=15,
@@ -387,29 +389,29 @@ def test_itinerary_filter_helpers_sort_matching_animals( db ):
 
 def test_itinerary_filter_helpers_return_empty_without_filters( db ):
    assert build_itinerary_animals( [], [] ) == []
-   assert AnimalController( db.conn ).get_animals_for_saved_itinerary(
+   assert AnimalController.get_animals_for_saved_itinerary(
       day=15,
       month='June',
       year=2026,
       saved_animals=[],
    ) == []
-   assert AttractionController( db.conn ).get_attractions_for_saved_itinerary(
+   assert AttractionController.get_attractions_for_saved_itinerary(
       day=15,
       month='June',
       year=2026,
       saved_attractions=[],
    ) == []
-   assert GuardiansController( db.conn ).get_guardians_talk_details(
+   assert GuardiansController.get_guardians_talk_details(
       guardians_talks_to_include=[]
    ) == []
-   assert WildEncounterController( db.conn ).get_wild_encounter_details(
+   assert WildEncounterController.get_wild_encounter_details(
       wild_encounters_to_include=[]
    ) == []
 
 
 def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_guardians_talk_schedule(
+   assert GuardiansController.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -424,7 +426,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( 
       sunday=False,
       message=None
    )
-   assert db.set_guardians_talk_schedule(
+   assert GuardiansController.set_guardians_talk_schedule(
       talk='Amur Tiger',
       location='Eurasia Wilds',
       start_date='2026-06-01',
@@ -439,7 +441,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( 
       sunday=False,
       message=None
    )
-   assert db.set_wild_encounter_schedule(
+   assert WildEncounterController.set_wild_encounter_schedule(
       wild_encounter='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -453,7 +455,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( 
       sunday=False,
       message=None
    )
-   assert db.set_wild_encounter_schedule(
+   assert WildEncounterController.set_wild_encounter_schedule(
       wild_encounter='Kangaroo',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -470,14 +472,14 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort( 
 
    talk_result = validate_guardians_talks_for_itinerary(
       [ ' african lion ', 'AMUR TIGER' ],
-      db.get_guardians_talk_schedule(
+      GuardiansController.get_guardians_talk_schedule(
          month='June',
          day=15,
          year=2026 )
    )
    encounter_result = validate_wild_encounters_for_itinerary(
       [ ' kangaroo ', 'AFRICAN RAINFOREST' ],
-      db.get_wild_encounter_schedule(
+      WildEncounterController.get_wild_encounter_schedule(
          month='June',
          day=15,
          year=2026 )

@@ -5,7 +5,10 @@ import sqlite3
 
 import pytest
 
-import api.database as database
+from api.connection import close_connection
+from api.connection import open_connection
+from api.request_connection import clear_connection
+from api.request_connection import set_connection
 from api.seed.runner import main as seed_database
 
 
@@ -17,18 +20,41 @@ def db_path( tmp_path ):
 
 
 @pytest.fixture
-def db( db_path ):
-   test_database = database.Database( db_path=str( db_path ) )
+def controllers( db_path ):
+   conn = open_connection( db_path=str( db_path ) )
+   set_connection( conn )
+
+   class DbControllers:
+      def __init__( self, connection ):
+         self.conn = connection
+         self._closed = False
+
+
+      def close( self ):
+         if self._closed:
+            return
+
+         close_connection( self.conn )
+         clear_connection()
+         self.conn = None
+         self._closed = True
+
+   fixture = DbControllers( conn )
 
    try:
-      yield test_database
+      yield fixture
    finally:
-      test_database.close()
+      fixture.close()
 
 
 @pytest.fixture
-def cursor( db ):
-   cur = db.conn.cursor()
+def db( controllers ):
+   return controllers
+
+
+@pytest.fixture
+def cursor( controllers ):
+   cur = controllers.conn.cursor()
 
    try:
       yield cur
@@ -55,9 +81,13 @@ class FrozenDateTime( datetime ):
 
 @pytest.fixture
 def freeze_database_today( monkeypatch ):
+   frozen_datetime_targets = ( 'api.zoo_util.datetime', )
+
    def freeze( value ):
       FrozenDateTime.frozen_now = datetime.combine( value, datetime.min.time() )
-      monkeypatch.setattr( database, 'datetime', FrozenDateTime )
+
+      for target in frozen_datetime_targets:
+         monkeypatch.setattr( target, FrozenDateTime )
 
    return freeze
 
