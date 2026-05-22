@@ -287,6 +287,41 @@ def test_validate_attractions_removes_closed_entries( db, freeze_database_today 
    ] == [ ( 'Conservation Carousel', 0 ) ]
 
 
+def test_validate_attractions_removes_closure_override_entries( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   AttractionController.set_attraction_opening_schedule(
+      attraction='Conservation Carousel',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      holidays_only=False,
+      message='Open for June.'
+   )
+   AttractionController.set_attraction_closure_override(
+      attraction='Conservation Carousel',
+      start_date='2026-06-15',
+      end_date='2026-06-15',
+      message='Unavailable.'
+   )
+
+   result = validate_itinerary_attractions(
+      AttractionController,
+      attractions=[ 'Conservation Carousel' ],
+      new_visit_date=date( 2026, 6, 15 ),
+      old_visit_date='2026-06-15' )
+
+   assert [
+      ( d.name, d.new_likelihood )
+      for d in result
+   ] == [ ( 'Conservation Carousel', 0 ) ]
+
+
 def test_validate_guardians_talks_splits_available_and_unavailable_entries():
    day_schedule = [
       zoo.GuardiansTalk(

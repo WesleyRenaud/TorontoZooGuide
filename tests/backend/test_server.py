@@ -1588,6 +1588,31 @@ def test_itinerary_endpoints_return_success_payloads( stub_database ):
          }
       ),
       (
+         '/set-attraction-closure-override',
+         {
+            'attraction': 'Conservation Carousel',
+            'startDate': '2026-06-20',
+            'endDate': '2026-06-21',
+            'message': 'Closed this weekend.'
+         },
+         (
+            'set_attraction_closure_override',
+            {
+               'attraction': 'Conservation Carousel',
+               'start_date': '2026-06-20',
+               'end_date': '2026-06-21',
+               'message': 'Closed this weekend.'
+            }
+         ),
+         {
+            'success': True,
+            'attraction': 'Conservation Carousel',
+            'startDate': '2026-06-20',
+            'endDate': '2026-06-21',
+            'message': 'Closed this weekend.'
+         }
+      ),
+      (
          '/set-zoomobile-station-closed',
          {
             'zoomobileStation': 'Africa Zoomobile Station',

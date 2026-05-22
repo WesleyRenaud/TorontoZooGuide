@@ -124,6 +124,10 @@ export function setAttractionClosed(payload) {
    return postJson('/set-attraction-closed', payload);
 }
 
+export function setAttractionClosureOverride(payload) {
+   return postJson('/set-attraction-closure-override', payload);
+}
+
 export function setZoomobileStationOpen(payload) {
    return postJson('/set-zoomobile-station-open', payload);
 }

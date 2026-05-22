@@ -1,0 +1,50 @@
+DROP TABLE IF EXISTS AttractionOpeningScheduleMigration;
+
+CREATE TABLE AttractionOpeningScheduleMigration
+(  ATTRACTION            VARCHAR(64) NOT NULL,
+   SCHEDULE_START_DATE   DATE        NOT NULL,
+   SCHEDULE_END_DATE     DATE,
+   MONDAY                BOOL        NOT NULL DEFAULT 0,
+   TUESDAY               BOOL        NOT NULL DEFAULT 0,
+   WEDNESDAY             BOOL        NOT NULL DEFAULT 0,
+   THURSDAY              BOOL        NOT NULL DEFAULT 0,
+   FRIDAY                BOOL        NOT NULL DEFAULT 0,
+   SATURDAY              BOOL        NOT NULL DEFAULT 0,
+   SUNDAY                BOOL        NOT NULL DEFAULT 0,
+   HOLIDAYS_ONLY         BOOL        NOT NULL DEFAULT 0,
+   SCHEDULE_MESSAGE      TEXT,
+   PRIMARY KEY (ATTRACTION, SCHEDULE_START_DATE),
+   FOREIGN KEY (ATTRACTION) REFERENCES Attraction(NAME) );
+
+INSERT OR IGNORE INTO AttractionOpeningScheduleMigration (
+   ATTRACTION,
+   SCHEDULE_START_DATE,
+   SCHEDULE_END_DATE,
+   MONDAY,
+   TUESDAY,
+   WEDNESDAY,
+   THURSDAY,
+   FRIDAY,
+   SATURDAY,
+   SUNDAY,
+   HOLIDAYS_ONLY,
+   SCHEDULE_MESSAGE
+)
+SELECT
+   ATTRACTION,
+   SCHEDULE_START_DATE,
+   SCHEDULE_END_DATE,
+   MONDAY,
+   TUESDAY,
+   WEDNESDAY,
+   THURSDAY,
+   FRIDAY,
+   SATURDAY,
+   SUNDAY,
+   HOLIDAYS_ONLY,
+   SCHEDULE_MESSAGE
+FROM AttractionOpeningSchedule;
+
+DROP TABLE AttractionOpeningSchedule;
+
+ALTER TABLE AttractionOpeningScheduleMigration RENAME TO AttractionOpeningSchedule;
