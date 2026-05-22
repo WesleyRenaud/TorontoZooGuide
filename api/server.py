@@ -1529,6 +1529,40 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/set-restaurant-closure-override':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restaurant = data.get( 'restaurant' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+         message = data.get( 'message' )
+
+         success = RestaurantController.set_restaurant_closure_override(
+            restaurant=restaurant,
+            start_date=start_date,
+            end_date=end_date,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restaurant': restaurant,
+            'startDate': start_date,
+            'endDate': end_date,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not create closure override for "{ restaurant }".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/set-restaurant-opening-schedule':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -1679,6 +1713,40 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not set opening schedule for "{ gift_shop }".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-gift-shop-closure-override':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         gift_shop = data.get( 'giftShop' )
+         start_date = data.get( 'startDate' )
+         end_date = data.get( 'endDate' )
+         message = data.get( 'message' )
+
+         success = GiftShopController.set_gift_shop_closure_override(
+            gift_shop=gift_shop,
+            start_date=start_date,
+            end_date=end_date,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'gift_shop': gift_shop,
+            'startDate': start_date,
+            'endDate': end_date,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not create closure override for "{ gift_shop }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

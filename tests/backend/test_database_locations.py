@@ -5,8 +5,10 @@ import pytest
 from api.attractions.data_access.attraction import fetch_attraction_schedule_records
 from api.attractions.data_access.attraction import fetch_attraction_schedule_override_records
 from api.attractions.logic.attraction import get_active_attraction_schedule_status
+from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_override_records
 from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_records
 from api.giftshops.logic.gift_shop import get_active_gift_shop_schedule_status
+from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_override_records
 from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_records
 from api.restaurants.logic.restaurant import get_active_restaurant_schedule_status
 from api.attractions.controllers.attraction_controller import AttractionController
@@ -539,6 +541,58 @@ def test_attraction_opening_schedule_rejects_overlapping_date_ranges( db ):
    )
 
 
+@pytest.mark.parametrize(
+   'setter, item_kw, item_name',
+   [
+      (
+         RestaurantController.set_restaurant_opening_schedule,
+         'restaurant',
+         'Africa Restaurant'
+      ),
+      (
+         GiftShopController.set_gift_shop_opening_schedule,
+         'gift_shop',
+         'Zootique'
+      )
+   ]
+)
+def test_restaurant_and_gift_shop_opening_schedules_reject_overlapping_date_ranges(
+      db,
+      setter,
+      item_kw,
+      item_name ):
+   june_schedule = {
+      item_kw: item_name,
+      'start_date': '2026-06-01',
+      'end_date': '2026-06-30',
+      'monday': True,
+      'tuesday': True,
+      'wednesday': True,
+      'thursday': True,
+      'friday': True,
+      'saturday': True,
+      'sunday': True,
+      'holidays_only': False,
+      'message': 'June schedule.'
+   }
+   overlapping_schedule = {
+      **june_schedule,
+      'start_date': '2026-06-15',
+      'end_date': '2026-07-15',
+      'message': 'Overlapping schedule.'
+   }
+   july_schedule = {
+      **june_schedule,
+      'start_date': '2026-07-01',
+      'end_date': '2026-07-31',
+      'message': 'July schedule.'
+   }
+
+   assert setter( **june_schedule )
+   assert setter( **overlapping_schedule ) is False
+   assert setter( **july_schedule )
+
+
 def test_attraction_closure_override_takes_precedence_over_opening_schedule( db ):
    assert AttractionController.set_attraction_opening_schedule(
       attraction='Conservation Carousel',
@@ -603,6 +657,138 @@ def test_attraction_closure_override_takes_precedence_over_opening_schedule( db 
    assert closed_attraction.is_closed is True
    assert closed_attraction.closed_message == 'Closed this weekend.'
    assert open_attraction.is_closed is False
+
+
+def test_restaurant_closure_override_takes_precedence_over_opening_schedule( db ):
+   assert RestaurantController.set_restaurant_opening_schedule(
+      restaurant='Africa Restaurant',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      holidays_only=False,
+      message='Open for June.'
+   )
+
+   assert RestaurantController.set_restaurant_closure_override(
+      restaurant='Africa Restaurant',
+      start_date='2026-06-20',
+      end_date='2026-06-21',
+      message='Closed this weekend.'
+   )
+
+   override_records = fetch_restaurant_schedule_override_records( db.conn )
+   assert [
+      (
+         record.restaurant,
+         record.override_start_date,
+         record.override_end_date,
+         record.is_closed,
+         record.override_message
+      )
+      for record in override_records
+      if record.restaurant == 'Africa Restaurant'
+   ] == [
+      (
+         'Africa Restaurant',
+         '2026-06-20',
+         '2026-06-21',
+         1,
+         'Closed this weekend.'
+      )
+   ]
+
+   closed_restaurant = next(
+      restaurant for restaurant in RestaurantController.get_restaurants(
+         day=20,
+         month='June',
+         year=2026,
+         include_closed_restaurants=True )
+      if restaurant.name == 'Africa Restaurant'
+   )
+   open_restaurant = next(
+      restaurant for restaurant in RestaurantController.get_restaurants(
+         day=22,
+         month='June',
+         year=2026,
+         include_closed_restaurants=True )
+      if restaurant.name == 'Africa Restaurant'
+   )
+
+   assert closed_restaurant.is_closed is True
+   assert closed_restaurant.closed_message == 'Closed this weekend.'
+   assert open_restaurant.is_closed is False
+
+
+def test_gift_shop_closure_override_takes_precedence_over_opening_schedule( db ):
+   assert GiftShopController.set_gift_shop_opening_schedule(
+      gift_shop='Zootique',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      holidays_only=False,
+      message='Open for June.'
+   )
+
+   assert GiftShopController.set_gift_shop_closure_override(
+      gift_shop='Zootique',
+      start_date='2026-06-20',
+      end_date='2026-06-21',
+      message='Closed this weekend.'
+   )
+
+   override_records = fetch_gift_shop_schedule_override_records( db.conn )
+   assert [
+      (
+         record.gift_shop,
+         record.override_start_date,
+         record.override_end_date,
+         record.is_closed,
+         record.override_message
+      )
+      for record in override_records
+      if record.gift_shop == 'Zootique'
+   ] == [
+      (
+         'Zootique',
+         '2026-06-20',
+         '2026-06-21',
+         1,
+         'Closed this weekend.'
+      )
+   ]
+
+   closed_gift_shop = next(
+      gift_shop for gift_shop in GiftShopController.get_gift_shops(
+         day=20,
+         month='June',
+         year=2026,
+         include_closed_gift_shops=True )
+      if gift_shop.name == 'Zootique'
+   )
+   open_gift_shop = next(
+      gift_shop for gift_shop in GiftShopController.get_gift_shops(
+         day=22,
+         month='June',
+         year=2026,
+         include_closed_gift_shops=True )
+      if gift_shop.name == 'Zootique'
+   )
+
+   assert closed_gift_shop.is_closed is True
+   assert closed_gift_shop.closed_message == 'Closed this weekend.'
+   assert open_gift_shop.is_closed is False
 
 
 @pytest.mark.parametrize(

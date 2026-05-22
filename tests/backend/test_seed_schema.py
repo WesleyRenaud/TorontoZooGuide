@@ -63,7 +63,9 @@ def test_create_schema_migrates_partial_dynamic_tables():
       'RestroomAlert': 'RESTROOM TEXT',
       'ZooUpdate': 'TITLE TEXT, START_DATE DATE',
       'RestaurantOpeningSchedule': 'RESTAURANT TEXT',
+      'RestaurantScheduleOverride': 'RESTAURANT TEXT',
       'GiftShopOpeningSchedule': 'GIFT_SHOP TEXT',
+      'GiftShopScheduleOverride': 'GIFT_SHOP TEXT',
       'AppSetting': 'ID INTEGER',
       'AttractionOpeningSchedule': 'ATTRACTION TEXT',
       'AttractionScheduleOverride': 'ATTRACTION TEXT',
@@ -149,6 +151,13 @@ def test_create_schema_migrates_partial_dynamic_tables():
          'HOLIDAYS_ONLY',
          'SCHEDULE_MESSAGE'
       },
+      'RestaurantScheduleOverride': {
+         'RESTAURANT',
+         'OVERRIDE_START_DATE',
+         'OVERRIDE_END_DATE',
+         'IS_CLOSED',
+         'OVERRIDE_MESSAGE'
+      },
       'GiftShopOpeningSchedule': {
          'GIFT_SHOP',
          'SCHEDULE_START_DATE',
@@ -162,6 +171,13 @@ def test_create_schema_migrates_partial_dynamic_tables():
          'SUNDAY',
          'HOLIDAYS_ONLY',
          'SCHEDULE_MESSAGE'
+      },
+      'GiftShopScheduleOverride': {
+         'GIFT_SHOP',
+         'OVERRIDE_START_DATE',
+         'OVERRIDE_END_DATE',
+         'IS_CLOSED',
+         'OVERRIDE_MESSAGE'
       },
       'AppSetting': {
          'ID',

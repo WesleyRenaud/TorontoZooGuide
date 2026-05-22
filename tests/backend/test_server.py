@@ -1563,6 +1563,56 @@ def test_itinerary_endpoints_return_success_payloads( stub_database ):
          }
       ),
       (
+         '/set-restaurant-closure-override',
+         {
+            'restaurant': 'Africa Restaurant',
+            'startDate': '2026-06-20',
+            'endDate': '2026-06-21',
+            'message': 'Closed this weekend.'
+         },
+         (
+            'set_restaurant_closure_override',
+            {
+               'restaurant': 'Africa Restaurant',
+               'start_date': '2026-06-20',
+               'end_date': '2026-06-21',
+               'message': 'Closed this weekend.'
+            }
+         ),
+         {
+            'success': True,
+            'restaurant': 'Africa Restaurant',
+            'startDate': '2026-06-20',
+            'endDate': '2026-06-21',
+            'message': 'Closed this weekend.'
+         }
+      ),
+      (
+         '/set-gift-shop-closure-override',
+         {
+            'giftShop': 'Zootique',
+            'startDate': '2026-06-20',
+            'endDate': '2026-06-21',
+            'message': 'Closed this weekend.'
+         },
+         (
+            'set_gift_shop_closure_override',
+            {
+               'gift_shop': 'Zootique',
+               'start_date': '2026-06-20',
+               'end_date': '2026-06-21',
+               'message': 'Closed this weekend.'
+            }
+         ),
+         {
+            'success': True,
+            'gift_shop': 'Zootique',
+            'startDate': '2026-06-20',
+            'endDate': '2026-06-21',
+            'message': 'Closed this weekend.'
+         }
+      ),
+      (
          '/set-attraction-closed',
          {
             'attraction': 'Conservation Carousel',

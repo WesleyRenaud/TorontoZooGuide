@@ -12,11 +12,13 @@ import { createDrinkingFountainsOpenPanel } from '../drinkingFountains/panels/dr
 import { createExhibitClosedPanel } from '../exhibits/panels/exhibitClosedPanel.js';
 import { createExhibitOpenPanel } from '../exhibits/panels/exhibitOpenPanel.js';
 import { createGiftShopClosedPanel } from '../giftShops/panels/giftShopClosedPanel.js';
+import { createGiftShopClosureOverridePanel } from '../giftShops/panels/giftShopClosureOverridePanel.js';
 import { createGiftShopOpenPanel } from '../giftShops/panels/giftShopOpenPanel.js';
 import { createCancelGuardiansTalkOccurrencePanel } from '../guardiansTalks/panels/cancelGuardiansTalkOccurrencePanel.js';
 import { createEndGuardiansTalkSchedulePanel } from '../guardiansTalks/panels/endGuardiansTalkSchedulePanel.js';
 import { createGuardiansTalkSchedulePanel } from '../guardiansTalks/panels/guardiansTalkSchedulePanel.js';
 import { createRestaurantClosedPanel } from '../restaurants/panels/restaurantClosedPanel.js';
+import { createRestaurantClosureOverridePanel } from '../restaurants/panels/restaurantClosureOverridePanel.js';
 import { createRestaurantOpenPanel } from '../restaurants/panels/restaurantOpenPanel.js';
 import { createRemoveRestroomAlertPanel } from '../restrooms/panels/removeRestroomAlertPanel.js';
 import { createRestroomAlertPanel } from '../restrooms/panels/restroomAlertPanel.js';
@@ -47,6 +49,7 @@ const PANEL_CREATORS = {
    ],
    restaurants: [
       createRestaurantClosedPanel,
+      createRestaurantClosureOverridePanel,
       createRestaurantOpenPanel,
    ],
    restrooms: [
@@ -57,6 +60,7 @@ const PANEL_CREATORS = {
    ],
    giftShops: [
       createGiftShopClosedPanel,
+      createGiftShopClosureOverridePanel,
       createGiftShopOpenPanel,
    ],
    attractions: [
