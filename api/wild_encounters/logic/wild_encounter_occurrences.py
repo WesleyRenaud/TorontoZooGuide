@@ -1,6 +1,5 @@
 from datetime import timedelta
 
-from ... import database as database_module
 from ... import zoo
 
 
@@ -11,7 +10,7 @@ def build_wild_encounter_occurrences(
    if schedule_record == None:
       return []
 
-   today = database_module.datetime.now().date()
+   today = zoo.ZooUtil.parse_date_value( zoo.ZooUtil.today_date_key() )
    schedule_start_date = today
    schedule_end_date = today + timedelta( days=days_ahead )
 

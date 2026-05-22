@@ -19,34 +19,37 @@ from ..logic.guardians_talk_schedule_status import build_guardians_talk_schedule
 from ..logic.guardians_talk_schedule import find_guardians_talk_on_day_schedule
 from ..logic.guardians_talks_matching_query import build_guardians_talks_matching_query
 from ..logic.itinerary_guardians_talks import build_itinerary_guardians_talks
+from ...request_connection import get_connection
 
 
 class GuardiansController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_guardians_talk_locations( self ):
-      return fetch_guardians_talk_locations( self._conn )
+   @classmethod
+   def get_guardians_talk_locations( cls ):
+      return fetch_guardians_talk_locations( get_connection() )
 
 
-   def get_guardians_talk_names( self ):
-      return fetch_guardians_talk_names( self._conn )
+   @classmethod
+   def get_guardians_talk_names( cls ):
+      return fetch_guardians_talk_names( get_connection() )
 
 
-   def get_guardians_talk_names_at_location( self, location ):
+   @classmethod
+   def get_guardians_talk_names_at_location( cls, location ):
       return fetch_guardians_talk_names_at_location(
-         self._conn,
+         get_connection(),
          location=location )
 
 
-   def get_guardians_talk_occurrences( self, talk, location, days_ahead=60 ):
+   @classmethod
+   def get_guardians_talk_occurrences( cls, talk, location, days_ahead=60 ):
       schedule_record = fetch_guardians_talk_schedule_record_for_occurrences(
-         self._conn,
+         get_connection(),
          talk_name=talk,
          location=location )
       cancellation_records = fetch_guardians_talk_cancellation_records(
-         self._conn,
+         get_connection(),
          talk_name=talk,
          location=location )
 
@@ -56,16 +59,18 @@ class GuardiansController():
          days_ahead=days_ahead )
 
 
-   def get_guardians_talk_details( self, guardians_talks_to_include=None ):
-      talk_records = fetch_meet_the_guardians_talk_records( self._conn )
+   @classmethod
+   def get_guardians_talk_details( cls, guardians_talks_to_include=None ):
+      talk_records = fetch_meet_the_guardians_talk_records( get_connection() )
 
       return build_guardians_talk_details(
          talk_records,
          guardians_talks_to_include=guardians_talks_to_include )
 
 
+   @classmethod
    def set_guardians_talk_schedule(
-         self,
+         cls,
          talk,
          location,
          start_date,
@@ -95,22 +100,24 @@ class GuardiansController():
          message=message )
 
       return save_guardians_talk_schedule(
-         self._conn,
+         get_connection(),
          schedule=schedule )
 
 
-   def end_guardians_talk_schedule( self, talk, location, schedule_end_date ):
+   @classmethod
+   def end_guardians_talk_schedule( cls, talk, location, schedule_end_date ):
       schedule_end = build_guardians_talk_schedule_end(
          talk=talk,
          location=location,
          schedule_end_date=schedule_end_date )
 
       return save_guardians_talk_schedule_end(
-         self._conn,
+         get_connection(),
          schedule_end=schedule_end )
 
 
-   def cancel_guardians_talk_occurrence( self, talk, location, date, time ):
+   @classmethod
+   def cancel_guardians_talk_occurrence( cls, talk, location, date, time ):
       cancellation = build_guardians_talk_cancellation(
          talk=talk,
          location=location,
@@ -118,11 +125,12 @@ class GuardiansController():
          time=time )
 
       return save_guardians_talk_cancellation(
-         self._conn,
+         get_connection(),
          cancellation=cancellation )
 
 
-   def get_guardians_talks_for_saved_itinerary( self, saved_guardians_talks ):
+   @classmethod
+   def get_guardians_talks_for_saved_itinerary( cls, saved_guardians_talks ):
       if not saved_guardians_talks:
          return []
 
@@ -131,7 +139,7 @@ class GuardiansController():
          for saved_talk in saved_guardians_talks
       ]
 
-      guardians_talks = self.get_guardians_talk_details(
+      guardians_talks = cls.get_guardians_talk_details(
          guardians_talk_names )
 
       return build_itinerary_guardians_talks(
@@ -139,17 +147,19 @@ class GuardiansController():
          saved_guardians_talks )
 
 
-   def get_guardians_talk_schedule( self, month, day, year ):
+   @classmethod
+   def get_guardians_talk_schedule( cls, month, day, year ):
       target_date = zoo.ZooUtil.visit_target_date(
          month=month,
          day=day,
          year=year )
 
-      return self.get_guardians_talk_schedule_for_target_date( target_date )
+      return cls.get_guardians_talk_schedule_for_target_date( target_date )
 
 
-   def get_guardians_talks_matching_query( self, query, month, day, year ):
-      guardians_talks = self.get_guardians_talk_schedule(
+   @classmethod
+   def get_guardians_talks_matching_query( cls, query, month, day, year ):
+      guardians_talks = cls.get_guardians_talk_schedule(
          month=month,
          day=day,
          year=year )
@@ -159,8 +169,9 @@ class GuardiansController():
          query )
 
 
+   @classmethod
    def get_guardians_talk_on_day_schedule(
-         self,
+         cls,
          month,
          day,
          talk_name,
@@ -169,7 +180,7 @@ class GuardiansController():
       rows = (
          day_schedule
          if day_schedule is not None
-         else self.get_guardians_talk_schedule(
+         else cls.get_guardians_talk_schedule(
             month=month,
             day=day,
             year=year )
@@ -180,19 +191,21 @@ class GuardiansController():
          talk_name )
 
 
-   def _guardians_talk_occurrence_is_cancelled( self, talk_name, location, cancellation_date, talk_time ):
+   @classmethod
+   def _guardians_talk_occurrence_is_cancelled( cls, talk_name, location, cancellation_date, talk_time ):
       return fetch_guardians_talk_occurrence_is_cancelled(
-         self._conn,
+         get_connection(),
          talk_name,
          location,
          cancellation_date,
          talk_time )
 
 
-   def get_guardians_talk_schedule_for_target_date( self, target_date ):
-      records = fetch_guardians_talk_schedule_records( self._conn )
+   @classmethod
+   def get_guardians_talk_schedule_for_target_date( cls, target_date ):
+      records = fetch_guardians_talk_schedule_records( get_connection() )
 
       return build_guardians_talk_schedule_for_target_date(
          records,
          target_date,
-         self._guardians_talk_occurrence_is_cancelled )
+         cls._guardians_talk_occurrence_is_cancelled )

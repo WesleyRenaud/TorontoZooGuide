@@ -13,6 +13,7 @@ from api.animals.logic.animal_viewability import get_active_viewing_alert_status
 from api.attractions.logic.attraction import calculate_attraction_likelihood
 from api.giftshops.logic.gift_shop import calculate_gift_shop_likelihood
 from api.restaurants.logic.restaurant import calculate_restaurant_likelihood
+from api.animals.controllers.animal_controller import AnimalController
 
 
 def make_animal_viewability_record( **overrides ):
@@ -61,7 +62,7 @@ def make_animal_viewability_record( **overrides ):
 
 
 def test_database_uses_injected_path( db ):
-   assert db.get_animal_species_names()
+   assert AnimalController.get_animal_species_names()
 
 
 def test_close_is_idempotent( db ):

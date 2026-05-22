@@ -9,7 +9,28 @@ import subprocess
 import sys
 from urllib.parse import unquote, urlparse
 
-from . import database
+from . import connection
+from .request_connection import clear_connection
+from .request_connection import set_connection
+from .animals.controllers.animal_controller import AnimalController
+from .attractions.controllers.attraction_controller import AttractionController
+from .defibrillators.controllers.defibrillator_controller import DefibrillatorController
+from .drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
+from .emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
+from .event_sites.controllers.event_site_controller import EventSiteController
+from .exhibits.controllers.exhibit_controller import ExhibitController
+from .giftshops.controllers.gift_shop_controller import GiftShopController
+from .guardians.controllers.guardians_controller import GuardiansController
+from .guest_services.controllers.guest_service_controller import GuestServiceController
+from .itinerary.controllers.itinerary_controller import ItineraryController
+from .pavilions.controllers.pavilion_controller import PavilionController
+from .picnic_sites.controllers.picnic_site_controller import PicnicSiteController
+from .restaurants.controllers.restaurant_controller import RestaurantController
+from .restrooms.controllers.restroom_controller import RestroomController
+from .updates.controllers.update_controller import UpdateController
+from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from .zoo_hours.controllers.zoo_hours_controller import ZooHoursController
+from .zoomobile.controllers.zoomobile_controller import ZoomobileController
 
 
 DEFAULT_PORT = 8000
@@ -57,23 +78,23 @@ def render_html_strings( content ):
    return HTML_STRING_TOKEN_RE.sub( replace_token, content )
 
 
-def with_database( handler ):
+def with_controllers( handler ):
    @wraps( handler )
    def wrapped( self, *args, **kwargs ):
-      db = database.Database()
+      conn = connection.open_connection()
 
       try:
-         self.database = db
+         set_connection( conn )
          return handler( self, *args, **kwargs )
       finally:
-         self.database = None
-         db.close()
+         connection.close_connection( conn )
+         clear_connection()
 
    return wrapped
 
 
 class MyHandler( BaseHTTPRequestHandler ):
-   database = None
+   pass
 
    def _send_file( self, filepath, content_type=None ):
       if not os.path.isfile( filepath ):
@@ -125,7 +146,7 @@ class MyHandler( BaseHTTPRequestHandler ):
       self.send_error( 404, "Not Found" )
 
 
-   @with_database
+   @with_controllers
    def do_POST( self ):
       if self.path == '/get-visible-animals':
          content_length = int( self.headers[ 'Content-Length' ] )
@@ -138,7 +159,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          temp = data.get( 'temp' )
          include_off_display_animals = data.get( 'includeOffDisplayAnimals' ) or False
 
-         animals = self.database.get_animals_viewable_on_day(
+         animals = AnimalController.get_animals_viewable_on_day(
             day=day,
             month=month,
             year=year,
@@ -162,7 +183,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          region = data.get( 'region' )
 
-         exhibits = self.database.get_exhibits_in_region( region=region )
+         exhibits = ExhibitController.get_exhibits_in_region( region=region )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -172,7 +193,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-regions':
-         regions = self.database.get_regions()
+         regions = ExhibitController.get_regions()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -188,7 +209,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          exhibit = data.get( 'exhibit' )
 
-         animals = self.database.get_names_of_animals_in_exhibit( exhibit=exhibit )
+         animals = ExhibitController.get_names_of_animals_in_exhibit( exhibit=exhibit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -204,7 +225,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          species = data.get( 'species' )
 
-         animal_info = self.database.get_animal_information( species=species )
+         animal_info = AnimalController.get_animal_information( species=species )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -224,7 +245,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          temp = data.get( 'temp' )
          exhibits_to_include = data.get( 'exhibitsToInclude' ) or []
 
-         animals = self.database.get_animals_viewable_on_day(
+         animals = AnimalController.get_animals_viewable_on_day(
             day=day,
             month=month,
             year=year,
@@ -252,7 +273,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-pavilions':
-         pavilions = self.database.get_pavilions()
+         pavilions = PavilionController.get_pavilions()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -272,7 +293,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_closed_restaurants = data.get( 'includeClosedRestaurants' )
          restaurants_to_include = data.get( 'restaurantsToInclude' )
 
-         restaurants = self.database.get_restaurants(
+         restaurants = RestaurantController.get_restaurants(
             day=day,
             month=month,
             year=year,
@@ -296,7 +317,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          year = data.get( 'year' )
          include_closed_restrooms = data.get( 'includeClosedRestrooms' ) or False
 
-         restrooms = self.database.get_restrooms(
+         restrooms = RestroomController.get_restrooms(
             day=day,
             month=month,
             year=year,
@@ -320,7 +341,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          include_closed_gift_shops = data.get( 'includeClosedGiftShops' )
          gift_shops_to_include = data.get( 'giftShopsToInclude' )
 
-         gift_shops = self.database.get_gift_shops(
+         gift_shops = GiftShopController.get_gift_shops(
             day=day,
             month=month,
             year=year,
@@ -344,7 +365,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          year = data.get( 'year' )
          include_closed_attractions = data.get( 'includeClosedAttractions' ) or False
 
-         attractions = self.database.get_attractions(
+         attractions = AttractionController.get_attractions(
             day=day,
             month=month,
             year=year,
@@ -369,7 +390,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          year = data.get( 'year' )
          zoomobile_stations_to_include = data.get( 'zoomobileStationsToInclude' ) or []
 
-         zoomobile_route = self.database.get_zoomobile_route(
+         zoomobile_route = ZoomobileController.get_zoomobile_route(
             route=route,
             day=day,
             month=month,
@@ -394,7 +415,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day = data.get( 'day' )
          year = data.get( 'year' )
 
-         guardians_talks = self.database.get_guardians_talk_schedule(
+         guardians_talks = GuardiansController.get_guardians_talk_schedule(
             month=month,
             day=day,
             year=year )
@@ -417,7 +438,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day = data.get( 'day' )
          year = data.get( 'year' )
 
-         wild_encounters = self.database.get_available_wild_encounters(
+         wild_encounters = WildEncounterController.get_available_wild_encounters(
             month=month,
             day=day,
             year=year )
@@ -438,7 +459,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day = data.get( 'day' )
          year = data.get( 'year' )
 
-         drinking_fountains = self.database.get_drinking_fountains(
+         drinking_fountains = DrinkingFountainController.get_drinking_fountains(
             day=day,
             month=month,
             year=year )
@@ -451,7 +472,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-defibrillators':
-         defibrillators = self.database.get_defibrillators()
+         defibrillators = DefibrillatorController.get_defibrillators()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -461,7 +482,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-emergency-intercoms':
-         emergency_intercoms = self.database.get_emergency_intercoms()
+         emergency_intercoms = EmergencyIntercomController.get_emergency_intercoms()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -471,7 +492,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-guest-services':
-         guest_services = self.database.get_guest_services()
+         guest_services = GuestServiceController.get_guest_services()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -481,7 +502,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-picnic-sites':
-         picnic_sites = self.database.get_picnic_sites()
+         picnic_sites = PicnicSiteController.get_picnic_sites()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -491,7 +512,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-event-sites':
-         event_sites = self.database.get_event_sites()
+         event_sites = EventSiteController.get_event_sites()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -509,7 +530,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day = data.get( 'day' )
          year = data.get( 'year' )
 
-         updates = self.database.get_updates_for_visit_date(
+         updates = UpdateController.get_updates_for_visit_date(
             month=month,
             day=day,
             year=year )
@@ -530,7 +551,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day = data.get( 'day' )
          year = data.get( 'year' )
 
-         closed_exhibits = self.database.get_closed_exhibits(
+         closed_exhibits = ExhibitController.get_closed_exhibits_for_visit_date(
             month=month,
             day=day,
             year=year )
@@ -584,7 +605,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          guardians_talks_json = []
 
          if include_animals:
-            animals = self.database.get_animals_matching_query(
+            animals = AnimalController.get_animals_matching_query(
                query=query,
                day=day,
                month=month,
@@ -597,14 +618,14 @@ class MyHandler( BaseHTTPRequestHandler ):
                   animals_json.append( d )
 
          if include_pavilions:
-            pavilions = self.database.get_pavilions_matching_query( query=query ) or []
+            pavilions = PavilionController.get_pavilions_matching_query( query=query ) or []
             for pavilion in pavilions:
                   d = pavilion.to_dict()
                   d[ 'type' ] = d.get( 'type', 'pavilion' )
                   pavilions_json.append( d )
 
          if include_restaurants:
-            restaurants = self.database.get_restaurants_matching_query(
+            restaurants = RestaurantController.get_restaurants_matching_query(
                query=query,
                day=day,
                month=month,
@@ -616,7 +637,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   restaurants_json.append( d )
 
          if include_restrooms:
-            restrooms = self.database.get_restrooms_matching_query(
+            restrooms = RestroomController.get_restrooms_matching_query(
                query=query,
                day=day,
                month=month,
@@ -628,7 +649,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   restrooms_json.append( d )
 
          if include_gift_shops:
-            gift_shops = self.database.get_gift_shops_matching_query(
+            gift_shops = GiftShopController.get_gift_shops_matching_query(
                query=query,
                day=day,
                month=month,
@@ -639,7 +660,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   gift_shops_json.append( d )
 
          if include_attractions:
-            attractions = self.database.get_attractions_matching_query(
+            attractions = AttractionController.get_attractions_matching_query(
                query=query,
                day=day,
                month=month,
@@ -651,7 +672,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   attractions_json.append( d )
 
          if include_zoomobile_stations:
-            zoomobile_stations = self.database.get_zoomobile_stations_matching_query(
+            zoomobile_stations = ZoomobileController.get_zoomobile_stations_matching_query(
                query=query,
                route=zoomobile_route,
                day=day,
@@ -663,7 +684,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   zoomobile_stations_json.append( d )
 
          if include_guardians_talks:
-            guardians_talks = self.database.get_guardians_talks_matching_query(
+            guardians_talks = GuardiansController.get_guardians_talks_matching_query(
                query=query,
                month=month,
                day=day,
@@ -674,7 +695,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                   guardians_talks_json.append( d )
 
          if include_wild_encounters:
-            wild_encounters = self.database.get_wild_encounters_matching_query(
+            wild_encounters = WildEncounterController.get_wild_encounters_matching_query(
                query=query,
                month=month,
                day=day,
@@ -713,14 +734,14 @@ class MyHandler( BaseHTTPRequestHandler ):
          guardians_talks = data.get( 'guardiansTalks' )
          wild_encounters = data.get( 'wildEncounters' )
 
-         success = self.database.set_itinerary(
+         success = ItineraryController.set_itinerary(
             date=date,
             animals=animals,
             attractions=attractions,
             guardians_talks=guardians_talks,
             wild_encounters=wild_encounters )
 
-         itinerary = self.database.get_itinerary() if success else None
+         itinerary = ItineraryController.get_itinerary() if success else None
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -738,7 +759,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-itinerary':
-         itinerary = self.database.get_itinerary()
+         itinerary = ItineraryController.get_itinerary()
 
          response = { 'itinerary': itinerary.to_dict() }
 
@@ -756,7 +777,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          day = data.get( 'day' )
          month = data.get( 'month' )
          year = data.get( 'year' )
-         hours = self.database.get_zoo_hours(
+         hours = ZooHoursController.get_zoo_hours(
             day=day,
             month=month,
             year=year )
@@ -772,7 +793,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/clear-itinerary':
-         success = self.database.clear_itinerary()
+         success = ItineraryController.clear_itinerary()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -789,8 +810,8 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/accept-itinerary':
-         success = self.database.accept_itinerary()
-         itinerary = self.database.get_itinerary() if success else None
+         success = ItineraryController.accept_itinerary()
+         itinerary = ItineraryController.get_itinerary() if success else None
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -808,7 +829,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-animal-species-names':
-         species = self.database.get_animal_species_names()
+         species = AnimalController.get_animal_species_names()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -818,7 +839,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-restaurant-names':
-         restaurants = self.database.get_restaurant_names()
+         restaurants = RestaurantController.get_restaurant_names()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -828,7 +849,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-restroom-names':
-         restrooms = self.database.get_restroom_names()
+         restrooms = RestroomController.get_restroom_names()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -838,7 +859,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-gift-shop-names':
-         gift_shops = self.database.get_gift_shop_names()
+         gift_shops = GiftShopController.get_gift_shop_names()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -848,7 +869,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-attraction-names':
-         attractions = self.database.get_attraction_names()
+         attractions = AttractionController.get_attraction_names()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -858,7 +879,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-zoomobile-station-names':
-         zoomobile_stations = self.database.get_zoomobile_station_names()
+         zoomobile_stations = ZoomobileController.get_zoomobile_station_names()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -868,7 +889,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-guardians-talk-locations':
-         guardians_talk_locations = self.database.get_guardians_talk_locations()
+         guardians_talk_locations = GuardiansController.get_guardians_talk_locations()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -878,7 +899,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-guardians-talk-names':
-         guardians_talks = self.database.get_guardians_talk_names()
+         guardians_talks = GuardiansController.get_guardians_talk_names()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -894,7 +915,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          location = data.get( 'location' )
 
-         guardians_talks = self.database.get_guardians_talk_names_at_location( location=location )
+         guardians_talks = GuardiansController.get_guardians_talk_names_at_location( location=location )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -911,7 +932,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          talk = data.get( 'talk' )
          location = data.get( 'location' )
 
-         occurrences = self.database.get_guardians_talk_occurrences( talk=talk, location=location )
+         occurrences = GuardiansController.get_guardians_talk_occurrences( talk=talk, location=location )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -927,7 +948,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-wild-encounter-names':
-         wild_encounters = self.database.get_wild_encounter_names()
+         wild_encounters = WildEncounterController.get_wild_encounter_names()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -943,7 +964,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          wild_encounter = data.get( 'wildEncounter' )
 
-         occurrences = self.database.get_wild_encounter_occurrences( wild_encounter=wild_encounter )
+         occurrences = WildEncounterController.get_wild_encounter_occurrences( wild_encounter=wild_encounter )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -958,7 +979,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-active-update-options':
-         updates = self.database.get_unexpired_updates()
+         updates = UpdateController.get_unexpired_updates()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -968,7 +989,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-exhibits-by-region':
-         regions = self.database.get_regions_with_exhibits()
+         regions = ExhibitController.get_regions_with_exhibits()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -978,7 +999,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/get-exhibits':
-         exhibits = self.database.get_exhibits()
+         exhibits = ExhibitController.get_exhibits()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -998,7 +1019,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_animal_as_off_display(
+         success = AnimalController.set_animal_as_off_display(
             species=species,
             exhibit=exhibit,
             start_date=start_date,
@@ -1032,7 +1053,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          species = data.get( 'species' )
          exhibit = data.get( 'exhibit' )
 
-         success = self.database.set_animal_as_on_display(
+         success = AnimalController.set_animal_as_on_display(
             species=species,
             exhibit=exhibit )
 
@@ -1065,7 +1086,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          daily_end_time = data.get( 'dailyEndTime' )
          message = data.get( 'message' )
 
-         success = self.database.set_animal_limited_viewing_schedule(
+         success = AnimalController.set_animal_limited_viewing_schedule(
             species=species,
             exhibit=exhibit,
             start_date=schedule_start_date,
@@ -1103,7 +1124,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          species = data.get( 'species' )
          exhibit = data.get( 'exhibit' )
 
-         success = self.database.remove_animal_visibility_schedule( species=species, exhibit=exhibit )
+         success = AnimalController.remove_animal_visibility_schedule( species=species, exhibit=exhibit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -1132,7 +1153,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          alert_end_date = data.get( 'alertEndDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_animal_viewing_alert(
+         success = AnimalController.set_animal_viewing_alert(
             species=species,
             exhibit=exhibit,
             alert_start_date=alert_start_date,
@@ -1166,7 +1187,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          species = data.get( 'species' )
          exhibit = data.get( 'exhibit' )
 
-         success = self.database.remove_animal_viewing_alert( species=species, exhibit=exhibit )
+         success = AnimalController.remove_animal_viewing_alert( species=species, exhibit=exhibit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -1194,7 +1215,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_exhibit_as_closed( exhibit=exhibit, start_date=start_date, end_date=end_date, message=message )
+         success = ExhibitController.set_exhibit_as_closed( exhibit=exhibit, start_date=start_date, end_date=end_date, message=message )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -1223,7 +1244,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          start_date = data.get( 'startDate' )
          end_date = data.get( 'endDate' )
 
-         success = self.database.set_exhibit_as_open(
+         success = ExhibitController.set_exhibit_as_open(
             exhibit=exhibit,
             start_date=start_date,
             end_date=end_date )
@@ -1255,7 +1276,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_restroom_as_closed(
+         success = RestroomController.set_restroom_as_closed(
             restroom=restroom,
             start_date=start_date,
             end_date=end_date,
@@ -1288,7 +1309,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          start_date = data.get( 'startDate' )
          end_date = data.get( 'endDate' )
 
-         success = self.database.set_restroom_as_open(
+         success = RestroomController.set_restroom_as_open(
             restroom=restroom,
             start_date=start_date,
             end_date=end_date )
@@ -1320,7 +1341,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          alert_end_date = data.get( 'alertEndDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_restroom_alert(
+         success = RestroomController.set_restroom_alert(
             restroom=restroom,
             alert_start_date=alert_start_date,
             alert_end_date=alert_end_date,
@@ -1351,7 +1372,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          restroom = data.get( 'restroom' )
 
-         success = self.database.remove_restroom_alert(
+         success = RestroomController.remove_restroom_alert(
             restroom=restroom )
 
          self.send_response( 200 )
@@ -1380,7 +1401,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          start_date = data.get( 'startDate' )
          end_date = data.get( 'endDate' )
 
-         success = self.database.create_update(
+         success = UpdateController.create_update(
             title=title,
             description=description,
             update_type=update_type,
@@ -1415,7 +1436,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          start_date = data.get( 'startDate' )
          end_date = data.get( 'endDate' )
 
-         success = self.database.end_update(
+         success = UpdateController.end_update(
             title=title,
             start_date=start_date,
             end_date=end_date )
@@ -1448,7 +1469,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          update_type = data.get( 'type' )
          end_date = data.get( 'endDate' )
 
-         success = self.database.edit_update(
+         success = UpdateController.edit_update(
             title=title,
             start_date=start_date,
             description=description,
@@ -1484,7 +1505,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_restaurant_as_closed(
+         success = RestaurantController.set_restaurant_as_closed(
             restaurant=restaurant,
             start_date=start_date,
             end_date=end_date,
@@ -1528,7 +1549,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          message = data.get( 'message' )
 
-         success = self.database.set_restaurant_opening_schedule(
+         success = RestaurantController.set_restaurant_opening_schedule(
             restaurant=restaurant,
             start_date=schedule_start_date,
             end_date=schedule_end_date,
@@ -1578,7 +1599,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_gift_shop_as_closed(
+         success = GiftShopController.set_gift_shop_as_closed(
             gift_shop=gift_shop,
             start_date=start_date,
             end_date=end_date,
@@ -1622,7 +1643,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          message = data.get( 'message' )
 
-         success = self.database.set_gift_shop_opening_schedule(
+         success = GiftShopController.set_gift_shop_opening_schedule(
             gift_shop=gift_shop,
             start_date=schedule_start_date,
             end_date=schedule_end_date,
@@ -1672,7 +1693,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_attraction_as_closed(
+         success = AttractionController.set_attraction_as_closed(
             attraction=attraction,
             start_date=start_date,
             end_date=end_date,
@@ -1716,7 +1737,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          message = data.get( 'message' )
 
-         success = self.database.set_attraction_opening_schedule(
+         success = AttractionController.set_attraction_opening_schedule(
             attraction=attraction,
             start_date=schedule_start_date,
             end_date=schedule_end_date,
@@ -1766,7 +1787,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_zoomobile_station_as_closed(
+         success = ZoomobileController.set_zoomobile_station_as_closed(
             zoomobile_station=zoomobile_station,
             start_date=start_date,
             end_date=end_date,
@@ -1797,7 +1818,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          zoomobile_station = data.get( 'zoomobileStation' )
 
-         success = self.database.set_zoomobile_station_as_open( zoomobile_station=zoomobile_station )
+         success = ZoomobileController.set_zoomobile_station_as_open( zoomobile_station=zoomobile_station )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -1826,7 +1847,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          success = False
 
          if route in ( 'summer', 'winter' ):
-            success = self.database.set_current_zoomobile_route(
+            success = ZoomobileController.set_current_zoomobile_route(
                route=route,
                start_date=start_date,
                end_date=end_date )
@@ -1869,7 +1890,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          message = data.get( 'message' )
 
-         success = self.database.set_guardians_talk_schedule(
+         success = GuardiansController.set_guardians_talk_schedule(
             talk=talk,
             location=location,
             start_date=schedule_start_date,
@@ -1920,7 +1941,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          location = data.get( 'location' )
          schedule_end_date = data.get( 'endDate' )
 
-         success = self.database.end_guardians_talk_schedule(
+         success = GuardiansController.end_guardians_talk_schedule(
             talk=talk,
             location=location,
             schedule_end_date=schedule_end_date )
@@ -1952,7 +1973,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          date = data.get( 'date' )
          time = data.get( 'time' )
 
-         success = self.database.cancel_guardians_talk_occurrence(
+         success = GuardiansController.cancel_guardians_talk_occurrence(
             talk=talk,
             location=location,
             date=date,
@@ -1996,7 +2017,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          message = data.get( 'message' )
 
-         success = self.database.set_wild_encounter_schedule(
+         success = WildEncounterController.set_wild_encounter_schedule(
             wild_encounter=wild_encounter,
             start_date=schedule_start_date,
             end_date=schedule_end_date,
@@ -2044,7 +2065,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          wild_encounter = data.get( 'wildEncounter' )
          schedule_end_date = data.get( 'endDate' )
 
-         success = self.database.end_wild_encounter_schedule(
+         success = WildEncounterController.end_wild_encounter_schedule(
             wild_encounter=wild_encounter,
             schedule_end_date=schedule_end_date )
 
@@ -2073,7 +2094,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          date = data.get( 'date' )
          time = data.get( 'time' )
 
-         success = self.database.cancel_wild_encounter_occurrence(
+         success = WildEncounterController.cancel_wild_encounter_occurrence(
             wild_encounter=wild_encounter,
             date=date,
             time=time )
@@ -2104,7 +2125,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
 
-         success = self.database.set_drinking_fountains_as_closed(
+         success = DrinkingFountainController.set_drinking_fountains_as_closed(
             start_date=start_date,
             end_date=end_date,
             message=message )
@@ -2134,7 +2155,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          start_date = data.get( 'startDate' )
          end_date = data.get( 'endDate' )
 
-         success = self.database.set_drinking_fountains_as_open(
+         success = DrinkingFountainController.set_drinking_fountains_as_open(
             start_date=start_date,
             end_date=end_date )
 

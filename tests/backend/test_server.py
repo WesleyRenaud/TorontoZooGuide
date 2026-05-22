@@ -38,7 +38,7 @@ def make_handler( path='/', body=None ):
    handler.statuses = []
    handler.sent_headers = []
    handler.errors = []
-   handler.database = None
+   handler.conn = None
    handler.send_response = lambda code: handler.statuses.append( code )
    handler.send_header = lambda name, value: handler.sent_headers.append( ( name, value ) )
    handler.end_headers = lambda: None
@@ -51,18 +51,53 @@ def response_json( handler ):
    return json.loads( handler.wfile.read().decode( 'utf-8' ) )
 
 
-class StubDatabase:
+class StubControllerNamespace:
+   def __init__( self, root ):
+      self._root = root
+
+
+   def __getattr__( self, name ):
+      return getattr( self._root, name )
+
+
+class StubZooControllers:
    instances = []
    default_success = True
+   controller_attributes = (
+      'animals',
+      'exhibits',
+      'pavilions',
+      'restaurants',
+      'restrooms',
+      'giftshops',
+      'attractions',
+      'zoomobile',
+      'guardians',
+      'wild_encounters',
+      'drinking_fountains',
+      'defibrillators',
+      'emergency_intercoms',
+      'guest_services',
+      'picnic_sites',
+      'event_sites',
+      'updates',
+      'itinerary',
+      'zoo_hours',
+   )
 
-   def __init__( self ):
+   def __init__( self, conn=None ):
+      self.conn = conn
       self.calls = []
       self.closed = False
-      StubDatabase.instances.append( self )
+      StubZooControllers.instances.append( self )
+
+      for attribute in self.controller_attributes:
+         setattr( self, attribute, StubControllerNamespace( self ) )
 
 
    def close( self ):
       self.closed = True
+      self.conn = None
 
 
    def get_animals_viewable_on_day( self, **kwargs ):
@@ -202,6 +237,10 @@ class StubDatabase:
    def get_closed_exhibits( self, **kwargs ):
       self.calls.append( ( 'get_closed_exhibits', kwargs ) )
       return [ ANIMAL_EXHIBIT ]
+
+
+   def get_closed_exhibits_for_visit_date( self, **kwargs ):
+      return self.get_closed_exhibits( **kwargs )
 
 
    def get_animals_matching_query( self, **kwargs ):
@@ -395,17 +434,77 @@ class StubDatabase:
 
       def mutation_stub( **kwargs ):
          self.calls.append( ( name, kwargs ) )
-         return StubDatabase.default_success
+         return StubZooControllers.default_success
 
       return mutation_stub
 
 
+def _patch_controller_with_stub( monkeypatch, controller_class, stub ):
+   for method_name in dir( controller_class ):
+      if method_name.startswith( '_' ) or not hasattr( stub, method_name ):
+         continue
+
+      stub_method = getattr( stub, method_name )
+
+      if not callable( stub_method ):
+         continue
+
+      @classmethod
+      def patched( cls, *args, _stub_method=stub_method, **kwargs ):
+         return _stub_method( *args, **kwargs )
+
+      monkeypatch.setattr( controller_class, method_name, patched )
+
+
 @pytest.fixture
-def stub_database( monkeypatch ):
-   StubDatabase.instances = []
-   StubDatabase.default_success = True
-   monkeypatch.setattr( server.database, 'Database', StubDatabase )
-   return StubDatabase
+def stub_controllers( monkeypatch ):
+   StubZooControllers.instances = []
+   StubZooControllers.default_success = True
+   stub = StubZooControllers( None )
+
+   monkeypatch.setattr( server.connection, 'open_connection', lambda db_path='animals.db': None )
+
+   def stub_set_connection( conn ):
+      StubZooControllers._active = stub
+
+   def stub_clear_connection():
+      if StubZooControllers.instances:
+         StubZooControllers.instances[ -1 ].closed = True
+
+   monkeypatch.setattr( server, 'set_connection', stub_set_connection )
+   monkeypatch.setattr( server, 'clear_connection', stub_clear_connection )
+
+   controller_classes = [
+      server.AnimalController,
+      server.ExhibitController,
+      server.PavilionController,
+      server.RestaurantController,
+      server.RestroomController,
+      server.GiftShopController,
+      server.AttractionController,
+      server.ZoomobileController,
+      server.GuardiansController,
+      server.WildEncounterController,
+      server.DrinkingFountainController,
+      server.DefibrillatorController,
+      server.EmergencyIntercomController,
+      server.GuestServiceController,
+      server.PicnicSiteController,
+      server.EventSiteController,
+      server.UpdateController,
+      server.ItineraryController,
+      server.ZooHoursController,
+   ]
+
+   for controller_class in controller_classes:
+      _patch_controller_with_stub( monkeypatch, controller_class, stub )
+
+   return StubZooControllers
+
+
+@pytest.fixture
+def stub_database( stub_controllers ):
+   return stub_controllers
 
 
 def test_send_file_serves_existing_static_page():
@@ -531,7 +630,7 @@ def test_get_animals_by_exhibit_endpoint_adds_type_and_maps_payload( stub_databa
 
    assert handler.statuses == [ 200 ]
    assert result[ 'animals' ][ 0 ][ 'type' ] == 'animal'
-   assert StubDatabase.instances[ 0 ].calls[ 0 ] == (
+   assert StubZooControllers.instances[ 0 ].calls[ 0 ] == (
       'get_animals_viewable_on_day',
       {
          'day': 15,
@@ -561,7 +660,7 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
 
    assert handler.statuses == [ 200 ]
    assert response_json( handler )[ 'animals' ][ 0 ][ 'species' ] == 'African Lion'
-   assert StubDatabase.instances[ 0 ].calls[ 0 ] == (
+   assert StubZooControllers.instances[ 0 ].calls[ 0 ] == (
       'get_animals_viewable_on_day',
       {
          'day': 15,
@@ -572,7 +671,7 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
          'threshold': 0
       }
    )
-   assert StubDatabase.instances[ 0 ].closed is True
+   assert StubZooControllers.instances[ 0 ].closed is True
 
 
 @pytest.mark.parametrize(
@@ -623,7 +722,7 @@ def test_get_restrooms_endpoint_maps_closed_toggle( stub_database ):
 
    server.MyHandler.do_POST( handler )
 
-   assert StubDatabase.instances[ 0 ].calls == [
+   assert StubZooControllers.instances[ 0 ].calls == [
       (
          'get_restrooms',
          {
@@ -646,7 +745,7 @@ def test_get_wild_encounters_endpoint_uses_available_database_results( stub_data
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert StubDatabase.instances[ 0 ].calls == [
+   assert StubZooControllers.instances[ 0 ].calls == [
       ( 'get_available_wild_encounters', { 'month': 'June', 'day': 21, 'year': 2026 } )
    ]
    assert [ item[ 'name' ] for item in result[ 'wild_encounters' ] ] == [
@@ -814,7 +913,7 @@ def test_console_options_endpoints_map_payloads_and_return_expected_keys(
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert StubDatabase.instances[ 0 ].calls == [ expected_call ]
+   assert StubZooControllers.instances[ 0 ].calls == [ expected_call ]
 
    for key, value in response_subset.items():
       assert result[ key ] == value
@@ -862,7 +961,7 @@ def test_search_endpoint_adds_type_fields( stub_database ):
          'year': 2026,
          'include_closed_restrooms': False
       }
-   ) in StubDatabase.instances[ 0 ].calls
+   ) in StubZooControllers.instances[ 0 ].calls
 
    assert (
       'get_zoomobile_stations_matching_query',
@@ -873,7 +972,7 @@ def test_search_endpoint_adds_type_fields( stub_database ):
          'month': 'June',
          'year': 2026,
       }
-   ) in StubDatabase.instances[ 0 ].calls
+   ) in StubZooControllers.instances[ 0 ].calls
 
    assert (
       'get_guardians_talks_matching_query',
@@ -883,7 +982,7 @@ def test_search_endpoint_adds_type_fields( stub_database ):
          'day': 15,
          'year': 2026,
       }
-   ) in StubDatabase.instances[ 0 ].calls
+   ) in StubZooControllers.instances[ 0 ].calls
 
    assert (
       'get_wild_encounters_matching_query',
@@ -893,7 +992,7 @@ def test_search_endpoint_adds_type_fields( stub_database ):
          'day': 15,
          'year': 2026,
       }
-   ) in StubDatabase.instances[ 0 ].calls
+   ) in StubZooControllers.instances[ 0 ].calls
 
 
 def test_get_guardians_talks_omitted_year_passes_through( stub_database ):
@@ -908,7 +1007,7 @@ def test_get_guardians_talks_omitted_year_passes_through( stub_database ):
    assert (
       'get_guardians_talk_schedule',
       { 'month': 'June', 'day': 15, 'year': None },
-   ) in StubDatabase.instances[ 0 ].calls
+   ) in StubZooControllers.instances[ 0 ].calls
 
 
 def test_search_omitted_year_passes_through_when_guardians_included( stub_database ):
@@ -933,7 +1032,7 @@ def test_search_omitted_year_passes_through_when_guardians_included( stub_databa
          'day': 15,
          'year': None,
       },
-   ) in StubDatabase.instances[ 0 ].calls
+   ) in StubZooControllers.instances[ 0 ].calls
 
 
 def test_search_omitted_year_passes_through_when_wild_encounters_included( stub_database ):
@@ -958,7 +1057,7 @@ def test_search_omitted_year_passes_through_when_wild_encounters_included( stub_
          'day': 15,
          'year': None,
       },
-   ) in StubDatabase.instances[ 0 ].calls
+   ) in StubZooControllers.instances[ 0 ].calls
 
 
 def test_search_endpoint_skips_unselected_types( stub_database ):
@@ -992,7 +1091,7 @@ def test_search_endpoint_skips_unselected_types( stub_database ):
       'wild_encounters': [],
       'guardians_talks': []
    }
-   assert StubDatabase.instances[ 0 ].calls == []
+   assert StubZooControllers.instances[ 0 ].calls == []
 
 
 def test_itinerary_endpoints_return_success_payloads( stub_database ):
@@ -1585,7 +1684,7 @@ def test_console_mutation_endpoints_map_payloads_and_success_responses(
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert StubDatabase.instances[ 0 ].calls == [ expected_call ]
+   assert StubZooControllers.instances[ 0 ].calls == [ expected_call ]
 
    for key, value in response_subset.items():
       assert result[ key ] == value
@@ -1728,7 +1827,7 @@ def test_weekly_schedule_endpoints_map_payloads_and_success_responses(
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert StubDatabase.instances[ 0 ].calls == [ expected_call ]
+   assert StubZooControllers.instances[ 0 ].calls == [ expected_call ]
    assert result[ 'success' ] is True
 
    for key, value in response_subset.items():
@@ -1951,7 +2050,7 @@ def test_schedule_and_occurrence_endpoints_map_payloads_and_success_responses(
    result = response_json( handler )
 
    assert handler.statuses == [ 200 ]
-   assert StubDatabase.instances[ 0 ].calls == [ expected_call ]
+   assert StubZooControllers.instances[ 0 ].calls == [ expected_call ]
    assert result[ 'success' ] is True
 
    for key, value in response_subset.items():
@@ -2008,7 +2107,7 @@ def test_console_mutation_endpoints_return_error_when_database_returns_false(
       path,
       body,
       expected_error ):
-   StubDatabase.default_success = False
+   StubZooControllers.default_success = False
    handler = make_handler( path, body )
 
    server.MyHandler.do_POST( handler )

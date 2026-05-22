@@ -1,10 +1,10 @@
 from ..data_access.event_site import fetch_event_sites
+from ...request_connection import get_connection
 
 
 class EventSiteController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_event_sites( self ):
-      return fetch_event_sites( self._conn )
+   @classmethod
+   def get_event_sites( cls ):
+      return fetch_event_sites( get_connection() )

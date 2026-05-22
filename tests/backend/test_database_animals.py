@@ -1,8 +1,10 @@
 from datetime import date
+from api.animals.controllers.animal_controller import AnimalController
+from api.exhibits.controllers.exhibit_controller import ExhibitController
 
 
 def test_get_animals_viewable_on_day_returns_animals_from_seeded_database( db ):
-   animals = db.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
+   animals = AnimalController.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
 
    assert animals
    assert all( animal.species for animal in animals )
@@ -10,7 +12,7 @@ def test_get_animals_viewable_on_day_returns_animals_from_seeded_database( db ):
 
 
 def test_get_animals_viewable_on_day_filters_by_exhibit( db ):
-   animals = db.get_animals_viewable_on_day(
+   animals = AnimalController.get_animals_viewable_on_day(
       day=15,
       month='June',
       year=2026,
@@ -24,7 +26,7 @@ def test_get_animals_viewable_on_day_filters_by_exhibit( db ):
 
 def test_off_display_animals_are_excluded_or_included_by_flag( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   db.set_animal_as_off_display(
+   AnimalController.set_animal_as_off_display(
       species='African Lion',
       exhibit='Africa Savanna',
       start_date='2026-06-01',
@@ -32,14 +34,14 @@ def test_off_display_animals_are_excluded_or_included_by_flag( db, freeze_databa
       message='Lions are resting.'
    )
 
-   without_closed = db.get_animals_viewable_on_day(
+   without_closed = AnimalController.get_animals_viewable_on_day(
       day=15,
       month='June',
       year=2026,
       temp=22,
       include_off_display_animals=False
    )
-   with_closed = db.get_animals_viewable_on_day(
+   with_closed = AnimalController.get_animals_viewable_on_day(
       day=15,
       month='June',
       year=2026,
@@ -55,7 +57,7 @@ def test_off_display_animals_are_excluded_or_included_by_flag( db, freeze_databa
 
 def test_limited_viewing_and_alert_messages_are_returned( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_animal_limited_viewing_schedule(
+   assert AnimalController.set_animal_limited_viewing_schedule(
       species='African Penguin',
       exhibit='Africa Savanna',
       start_date='2026-06-01',
@@ -64,7 +66,7 @@ def test_limited_viewing_and_alert_messages_are_returned( db, freeze_database_to
       daily_end_time='11:00',
       message='Morning viewing only.'
    )
-   assert db.set_animal_viewing_alert(
+   assert AnimalController.set_animal_viewing_alert(
       species='African Penguin',
       exhibit='Africa Savanna',
       alert_start_date='2026-06-01',
@@ -72,7 +74,7 @@ def test_limited_viewing_and_alert_messages_are_returned( db, freeze_database_to
       message='Penguins may be harder to spot.'
    )
 
-   animals = db.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
+   animals = AnimalController.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
    penguin = next( animal for animal in animals if animal.species == 'African Penguin' )
 
    assert penguin.has_limited_viewing_schedule is True
@@ -83,14 +85,14 @@ def test_limited_viewing_and_alert_messages_are_returned( db, freeze_database_to
 
 def test_setting_animal_viewing_alert_twice_updates_existing_alert( db, cursor, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_animal_viewing_alert(
+   assert AnimalController.set_animal_viewing_alert(
       species='African Penguin',
       exhibit='Africa Savanna',
       alert_start_date='2026-06-01',
       alert_end_date='2026-06-30',
       message='Penguins may be harder to spot.'
    )
-   assert db.set_animal_viewing_alert(
+   assert AnimalController.set_animal_viewing_alert(
       species='African Penguin',
       exhibit='Africa Savanna',
       alert_start_date='2026-06-15',
@@ -109,7 +111,7 @@ def test_setting_animal_viewing_alert_twice_updates_existing_alert( db, cursor, 
       """,
       ( 'African Penguin', 'Africa Savanna' )
    ).fetchall()
-   animals = db.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
+   animals = AnimalController.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
    penguin = next( animal for animal in animals if animal.species == 'African Penguin' )
 
    assert len( alert_rows ) == 1
@@ -124,14 +126,14 @@ def test_setting_animal_viewing_alert_twice_updates_existing_alert( db, cursor, 
 
 def test_exhibit_closure_sets_animal_likelihood_to_zero( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   db.set_exhibit_as_closed(
+   ExhibitController.set_exhibit_as_closed(
       exhibit='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
       message='Savanna is closed.'
    )
 
-   animals = db.get_animals_viewable_on_day(
+   animals = AnimalController.get_animals_viewable_on_day(
       day=15,
       month='June',
       year=2026,
@@ -146,7 +148,7 @@ def test_exhibit_closure_sets_animal_likelihood_to_zero( db, freeze_database_tod
 
 
 def test_animal_query_helpers_dedupe_and_sort( db ):
-   animals = db.get_animals_matching_query(
+   animals = AnimalController.get_animals_matching_query(
       query='african',
       day=15,
       month='June',
@@ -169,7 +171,7 @@ def test_animal_query_helpers_dedupe_and_sort( db ):
 
 
 def test_animal_query_returns_same_species_in_multiple_exhibits( db ):
-   animals = db.get_animals_matching_query(
+   animals = AnimalController.get_animals_matching_query(
       query='cheetah',
       day=15,
       month='June',
@@ -184,9 +186,9 @@ def test_animal_query_returns_same_species_in_multiple_exhibits( db ):
 
 
 def test_basic_animal_lookup_methods( db ):
-   assert 'African Lion' in db.get_names_of_animals_in_exhibit( 'Africa Savanna' )
+   assert 'African Lion' in ExhibitController.get_names_of_animals_in_exhibit( 'Africa Savanna' )
 
-   information = db.get_animal_information( 'African Lion' )
+   information = AnimalController.get_animal_information( 'African Lion' )
 
    assert information.species == 'African Lion'
    assert information.exhibit == 'Africa Savanna'

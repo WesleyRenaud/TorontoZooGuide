@@ -1,10 +1,10 @@
 from ..data_access.emergency_intercom import fetch_emergency_intercoms
+from ...request_connection import get_connection
 
 
 class EmergencyIntercomController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_emergency_intercoms( self ):
-      return fetch_emergency_intercoms( self._conn )
+   @classmethod
+   def get_emergency_intercoms( cls ):
+      return fetch_emergency_intercoms( get_connection() )

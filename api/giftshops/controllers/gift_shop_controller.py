@@ -7,19 +7,20 @@ from ..logic.gift_shop import resolve_gift_shop_context
 from ..logic.gift_shop_status import build_gift_shop_closed_schedule
 from ..logic.gift_shop_status import build_gift_shop_opening_schedule
 from ..logic.gift_shops_matching_query import build_gift_shops_matching_query
+from ...request_connection import get_connection
 
 
 class GiftShopController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_gift_shop_names( self ):
-      return fetch_gift_shop_names( self._conn )
+   @classmethod
+   def get_gift_shop_names( cls ):
+      return fetch_gift_shop_names( get_connection() )
 
 
+   @classmethod
    def get_gift_shops(
-         self,
+         cls,
          day,
          month,
          year,
@@ -33,23 +34,24 @@ class GiftShopController():
 
       return build_gift_shops(
          gift_shop_records=fetch_gift_shop_records(
-            self._conn,
+            get_connection(),
             month=context.normalized_month,
             day=context.normalized_day ),
-         schedule_records=fetch_gift_shop_schedule_records( self._conn ),
+         schedule_records=fetch_gift_shop_schedule_records( get_connection() ),
          context=context,
          include_closed_gift_shops=include_closed_gift_shops,
          gift_shops_to_include=gift_shops_to_include )
 
 
+   @classmethod
    def get_gift_shops_matching_query(
-         self,
+         cls,
          query,
          day,
          month,
          year ):
 
-      gift_shops = self.get_gift_shops(
+      gift_shops = cls.get_gift_shops(
          day=day,
          month=month,
          year=year,
@@ -60,8 +62,9 @@ class GiftShopController():
          query )
 
 
+   @classmethod
    def set_gift_shop_as_closed(
-         self,
+         cls,
          gift_shop,
          start_date,
          end_date,
@@ -73,12 +76,13 @@ class GiftShopController():
          message=message )
 
       return save_gift_shop_opening_schedule(
-         self._conn,
+         get_connection(),
          schedule=schedule )
 
 
+   @classmethod
    def set_gift_shop_opening_schedule(
-         self,
+         cls,
          gift_shop,
          start_date,
          end_date,
@@ -106,5 +110,5 @@ class GiftShopController():
          message=message )
 
       return save_gift_shop_opening_schedule(
-         self._conn,
+         get_connection(),
          schedule=schedule )
