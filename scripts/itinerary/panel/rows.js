@@ -12,6 +12,7 @@ import {
    buildGuardiansRemovalReasonLine,
    buildWildRemovalReasonLine,
 } from './rowAlerts.js';
+import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
 import { APP_STRINGS } from '../../strings.js';
 
 function buildImageSrc(...pathParts) {
@@ -84,6 +85,7 @@ function buildNamedRows(
    items = [],
    {
       normalizeItem,
+      prepareItems = (normalizedItems) => normalizedItems,
       defaultName,
       imageDirectory,
       getName,
@@ -94,6 +96,7 @@ function buildNamedRows(
 ) {
    return buildRows(items, {
       normalizeItem,
+      prepareItems,
       buildRowProps: (item) => {
          const name = getName(item) || defaultName;
 
@@ -149,6 +152,7 @@ export function buildAttractionRows(attractions = []) {
 export function buildGuardiansRows(guardiansTalks = []) {
    return buildNamedRows(guardiansTalks, {
       normalizeItem: normalizeTalk,
+      prepareItems: sortScheduledOccurrencesByStartTime,
       defaultName: 'Talk',
       imageDirectory: 'guardians-talks',
       getName: (talk) => talk.name,
@@ -164,6 +168,7 @@ export function buildGuardiansRows(guardiansTalks = []) {
 export function buildWildRows(wildEncounters = []) {
    return buildNamedRows(wildEncounters, {
       normalizeItem: normalizeWild,
+      prepareItems: sortScheduledOccurrencesByStartTime,
       defaultName: 'Wild Encounter',
       imageDirectory: 'wild-encounters',
       getName: (wild) => wild.name,
