@@ -83,8 +83,8 @@ const CONSOLE_OPERATION_REF_CONFIG = {
             messageEl: 'Message',
          },
       },
-      open: {
-         operationName: 'restaurantOpen',
+      openingSchedule: {
+         operationName: 'restaurantOpeningSchedule',
          includeWeeklyAvailability: true,
          fieldSuffixes: {
             restaurantEl: 'Restaurant',
@@ -140,8 +140,8 @@ const CONSOLE_OPERATION_REF_CONFIG = {
             messageEl: 'Message',
          },
       },
-      open: {
-         operationName: 'giftShopOpen',
+      openingSchedule: {
+         operationName: 'giftShopOpeningSchedule',
          includeWeeklyAvailability: true,
          fieldSuffixes: {
             giftShopEl: 'GiftShop',
@@ -166,8 +166,8 @@ const CONSOLE_OPERATION_REF_CONFIG = {
             messageEl: 'Message',
          },
       },
-      open: {
-         operationName: 'attractionOpen',
+      openingSchedule: {
+         operationName: 'attractionOpeningSchedule',
          includeWeeklyAvailability: true,
          fieldSuffixes: {
             attractionEl: 'Attraction',

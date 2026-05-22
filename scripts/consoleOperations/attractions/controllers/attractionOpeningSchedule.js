@@ -4,7 +4,7 @@ import { populateAttractionDropdown } from '../../options/dropdowns.js';
 import { loadAttractions } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
 
-export function createAttractionOpenController({
+export function createAttractionOpeningScheduleController({
    attractionEl,
    ...controllerOptions
 } = {}) {

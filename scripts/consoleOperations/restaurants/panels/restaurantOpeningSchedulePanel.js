@@ -10,47 +10,47 @@ import {
    createWeeklyScheduleCheckboxes,
 } from '../../templates/fragments.js';
 
-export function createRestaurantOpenPanel() {
+export function createRestaurantOpeningSchedulePanel() {
    return createPanelShell({
-      panelId: 'restaurantOpenPanel',
-      title: APP_STRINGS.panelTitles.restaurantOpen,
+      panelId: 'restaurantOpeningSchedulePanel',
+      title: APP_STRINGS.panelTitles.restaurantOpeningSchedule,
       bodyChildren: [
          createSelectField({
             label: APP_STRINGS.entityLabels.restaurant,
-            inputId: 'restaurantOpenRestaurant',
+            inputId: 'restaurantOpeningScheduleRestaurant',
             emptyOptionLabel: APP_STRINGS.placeholders.restaurant,
          }),
          createSchedulePresetField({
-            inputId: 'restaurantOpenPreset',
+            inputId: 'restaurantOpeningSchedulePreset',
          }),
          createDateRangeFields({
-            startDateId: 'restaurantOpenStartDate',
+            startDateId: 'restaurantOpeningScheduleStartDate',
             startHelpText: APP_STRINGS.help.startImmediately,
-            endDateId: 'restaurantOpenEndDate',
+            endDateId: 'restaurantOpeningScheduleEndDate',
             endHelpText: APP_STRINGS.help.keepScheduleUntilChanged,
          }),
          createWeeklyScheduleCheckboxes({
             dayIds: {
-               monday: 'restaurantOpenMonday',
-               tuesday: 'restaurantOpenTuesday',
-               wednesday: 'restaurantOpenWednesday',
-               thursday: 'restaurantOpenThursday',
-               friday: 'restaurantOpenFriday',
-               saturday: 'restaurantOpenSaturday',
-               sunday: 'restaurantOpenSunday',
-               holidays: 'restaurantOpenHolidaysOnly',
+               monday: 'restaurantOpeningScheduleMonday',
+               tuesday: 'restaurantOpeningScheduleTuesday',
+               wednesday: 'restaurantOpeningScheduleWednesday',
+               thursday: 'restaurantOpeningScheduleThursday',
+               friday: 'restaurantOpeningScheduleFriday',
+               saturday: 'restaurantOpeningScheduleSaturday',
+               sunday: 'restaurantOpeningScheduleSunday',
+               holidays: 'restaurantOpeningScheduleHolidaysOnly',
             },
          }),
          createTextareaField({
             label: APP_STRINGS.labels.scheduleMessage,
-            inputId: 'restaurantOpenMessage',
+            inputId: 'restaurantOpeningScheduleMessage',
             placeholder: APP_STRINGS.textareas.scheduledClosedMessage('restaurant'),
          }),
          createActions({
-            submitId: 'submitRestaurantOpen',
+            submitId: 'submitRestaurantOpeningSchedule',
          }),
          createStatus({
-            statusId: 'restaurantOpenStatus',
+            statusId: 'restaurantOpeningScheduleStatus',
          }),
       ],
    });

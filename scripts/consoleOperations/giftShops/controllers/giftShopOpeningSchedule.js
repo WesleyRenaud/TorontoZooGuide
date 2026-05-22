@@ -4,7 +4,7 @@ import { populateGiftShopDropdown } from '../../options/dropdowns.js';
 import { loadGiftShops } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
 
-export function createGiftShopOpenController({
+export function createGiftShopOpeningScheduleController({
    giftShopEl,
    ...controllerOptions
 } = {}) {

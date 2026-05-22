@@ -10,47 +10,47 @@ import {
    createWeeklyScheduleCheckboxes,
 } from '../../templates/fragments.js';
 
-export function createGiftShopOpenPanel() {
+export function createGiftShopOpeningSchedulePanel() {
    return createPanelShell({
-      panelId: 'giftShopOpenPanel',
-      title: APP_STRINGS.panelTitles.giftShopOpen,
+      panelId: 'giftShopOpeningSchedulePanel',
+      title: APP_STRINGS.panelTitles.giftShopOpeningSchedule,
       bodyChildren: [
          createSelectField({
             label: APP_STRINGS.entityLabels.giftShop,
-            inputId: 'giftShopOpenGiftShop',
+            inputId: 'giftShopOpeningScheduleGiftShop',
             emptyOptionLabel: APP_STRINGS.placeholders.giftShop,
          }),
          createSchedulePresetField({
-            inputId: 'giftShopOpenPreset',
+            inputId: 'giftShopOpeningSchedulePreset',
          }),
          createDateRangeFields({
-            startDateId: 'giftShopOpenStartDate',
+            startDateId: 'giftShopOpeningScheduleStartDate',
             startHelpText: APP_STRINGS.help.startImmediately,
-            endDateId: 'giftShopOpenEndDate',
+            endDateId: 'giftShopOpeningScheduleEndDate',
             endHelpText: APP_STRINGS.help.keepScheduleUntilChanged,
          }),
          createWeeklyScheduleCheckboxes({
             dayIds: {
-               monday: 'giftShopOpenMonday',
-               tuesday: 'giftShopOpenTuesday',
-               wednesday: 'giftShopOpenWednesday',
-               thursday: 'giftShopOpenThursday',
-               friday: 'giftShopOpenFriday',
-               saturday: 'giftShopOpenSaturday',
-               sunday: 'giftShopOpenSunday',
-               holidays: 'giftShopOpenHolidaysOnly',
+               monday: 'giftShopOpeningScheduleMonday',
+               tuesday: 'giftShopOpeningScheduleTuesday',
+               wednesday: 'giftShopOpeningScheduleWednesday',
+               thursday: 'giftShopOpeningScheduleThursday',
+               friday: 'giftShopOpeningScheduleFriday',
+               saturday: 'giftShopOpeningScheduleSaturday',
+               sunday: 'giftShopOpeningScheduleSunday',
+               holidays: 'giftShopOpeningScheduleHolidaysOnly',
             },
          }),
          createTextareaField({
             label: APP_STRINGS.labels.scheduleMessage,
-            inputId: 'giftShopOpenMessage',
+            inputId: 'giftShopOpeningScheduleMessage',
             placeholder: APP_STRINGS.textareas.scheduledClosedMessage('gift shop'),
          }),
          createActions({
-            submitId: 'submitGiftShopOpen',
+            submitId: 'submitGiftShopOpeningSchedule',
          }),
          createStatus({
-            statusId: 'giftShopOpenStatus',
+            statusId: 'giftShopOpeningScheduleStatus',
          }),
       ],
    });

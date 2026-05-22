@@ -4,7 +4,7 @@ import { populateRestaurantDropdown } from '../../options/dropdowns.js';
 import { loadRestaurants } from '../../options/loaders.js';
 import { APP_STRINGS } from '../../../strings.js';
 
-export function createRestaurantOpenController({
+export function createRestaurantOpeningScheduleController({
    restaurantEl,
    ...controllerOptions
 } = {}) {
