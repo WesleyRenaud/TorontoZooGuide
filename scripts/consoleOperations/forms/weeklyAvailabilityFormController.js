@@ -160,18 +160,6 @@ export function createWeeklyAvailabilityFormController({
       ]);
    }
 
-   function isEveryDaySchedule() {
-      return Boolean(
-         mondayEl?.checked
-         && tuesdayEl?.checked
-         && wednesdayEl?.checked
-         && thursdayEl?.checked
-         && fridayEl?.checked
-         && saturdayEl?.checked
-         && sundayEl?.checked
-      );
-   }
-
    async function onShowClick() {
       await loadOptionsAndShowPanel({
          statusEl,
@@ -232,9 +220,7 @@ export function createWeeklyAvailabilityFormController({
 
             setStatus(
                statusEl,
-               isEveryDaySchedule()
-                  ? APP_STRINGS.status.open(name)
-                  : APP_STRINGS.status.openingScheduleSaved(name),
+               APP_STRINGS.status.openingScheduleSaved(name),
                'is-success'
             );
 
