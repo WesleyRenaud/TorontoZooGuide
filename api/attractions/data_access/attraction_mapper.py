@@ -1,5 +1,6 @@
 from .attraction_record import AttractionRecord
 from .attraction_schedule_record import AttractionScheduleRecord
+from .attraction_schedule_override_record import AttractionScheduleOverrideRecord
 
 
 def map_attraction_record( row ):
@@ -41,5 +42,21 @@ def map_attraction_schedule_record( row ):
 def map_attraction_schedule_records( rows ):
    return [
       map_attraction_schedule_record( row )
+      for row in rows
+   ]
+
+
+def map_attraction_schedule_override_record( row ):
+   return AttractionScheduleOverrideRecord(
+      attraction=row[ 'ATTRACTION' ],
+      override_start_date=row[ 'OVERRIDE_START_DATE' ],
+      override_end_date=row[ 'OVERRIDE_END_DATE' ],
+      is_closed=row[ 'IS_CLOSED' ],
+      override_message=row[ 'OVERRIDE_MESSAGE' ] )
+
+
+def map_attraction_schedule_override_records( rows ):
+   return [
+      map_attraction_schedule_override_record( row )
       for row in rows
    ]

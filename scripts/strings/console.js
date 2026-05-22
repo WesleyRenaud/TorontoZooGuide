@@ -82,6 +82,7 @@ export const textareas = {
 
 export const panelTitles = {
    attractionClosed: 'Set attraction as closed',
+   attractionClosureOverride: 'Create attraction closure override',
    attractionOpen: 'Set attraction as open',
    cancelGuardiansTalkOccurrence: 'Cancel Meet the Guardians talk occurrence',
    cancelWildEncounterOccurrence: 'Cancel Wild Encounter occurrence',
@@ -119,6 +120,7 @@ export const status = {
    animalOffDisplay: result => `${result.species} in ${result.exhibit} was set as off display.`,
    animalOnDisplay: result => `${result.species} in ${result.exhibit} was set as on display.`,
    closed: name => `${name} was set as closed.`,
+   closureOverrideSaved: name => `${name} closure override was saved.`,
    drinkingFountainsClosed: 'Drinking fountains were set as closed.',
    drinkingFountainsOpen: 'Drinking fountains were set as open.',
    guardiansTalkScheduleEnded: result => `${result.talk} in ${result.location} schedule was ended.`,

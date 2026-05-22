@@ -66,6 +66,7 @@ def test_create_schema_migrates_partial_dynamic_tables():
       'GiftShopOpeningSchedule': 'GIFT_SHOP TEXT',
       'AppSetting': 'ID INTEGER',
       'AttractionOpeningSchedule': 'ATTRACTION TEXT',
+      'AttractionScheduleOverride': 'ATTRACTION TEXT',
       'ZoomobileRouteSchedule': 'ID INTEGER',
       'ZoomobileStationStatus': 'ZOOMOBILE_STATION TEXT',
       'GuardiansTalkSchedule': 'TALK_NAME TEXT, LOCATION TEXT',
@@ -180,6 +181,13 @@ def test_create_schema_migrates_partial_dynamic_tables():
          'SUNDAY',
          'HOLIDAYS_ONLY',
          'SCHEDULE_MESSAGE'
+      },
+      'AttractionScheduleOverride': {
+         'ATTRACTION',
+         'OVERRIDE_START_DATE',
+         'OVERRIDE_END_DATE',
+         'IS_CLOSED',
+         'OVERRIDE_MESSAGE'
       },
       'ZoomobileRouteSchedule': {
          'ID',

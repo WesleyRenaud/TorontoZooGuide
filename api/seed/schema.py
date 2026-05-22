@@ -441,7 +441,7 @@ def create_schema( cursor ):
                         SUNDAY                BOOL        NOT NULL DEFAULT 0,
                         HOLIDAYS_ONLY         BOOL        NOT NULL DEFAULT 0,
                         SCHEDULE_MESSAGE      TEXT,
-                        PRIMARY KEY (ATTRACTION),
+                        PRIMARY KEY (ATTRACTION, SCHEDULE_START_DATE),
                         FOREIGN KEY (ATTRACTION) REFERENCES Attraction(NAME) ); ''' )
 
    attraction_schedule_columns = {
@@ -501,6 +501,39 @@ def create_schema( cursor ):
    if 'SCHEDULE_MESSAGE' not in attraction_schedule_columns:
       cursor.execute(
          'ALTER TABLE AttractionOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
+      )
+
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS AttractionScheduleOverride
+                     (  ATTRACTION            VARCHAR(64) NOT NULL,
+                        OVERRIDE_START_DATE   DATE        NOT NULL,
+                        OVERRIDE_END_DATE     DATE,
+                        IS_CLOSED             BOOL        NOT NULL DEFAULT 1,
+                        OVERRIDE_MESSAGE      TEXT,
+                        PRIMARY KEY (ATTRACTION, OVERRIDE_START_DATE),
+                        FOREIGN KEY (ATTRACTION) REFERENCES Attraction(NAME) ); ''' )
+
+   attraction_schedule_override_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( AttractionScheduleOverride );' ).fetchall()
+   }
+
+   if 'OVERRIDE_START_DATE' not in attraction_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE AttractionScheduleOverride ADD COLUMN OVERRIDE_START_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+      )
+
+   if 'OVERRIDE_END_DATE' not in attraction_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE AttractionScheduleOverride ADD COLUMN OVERRIDE_END_DATE DATE;'
+      )
+
+   if 'IS_CLOSED' not in attraction_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE AttractionScheduleOverride ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 1;'
+      )
+
+   if 'OVERRIDE_MESSAGE' not in attraction_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE AttractionScheduleOverride ADD COLUMN OVERRIDE_MESSAGE TEXT;'
       )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ZoomobileRouteSchedule

@@ -17,6 +17,7 @@ const DATE_PICKER_BINDINGS = {
       ['giftShops', 'closed'],
       ['giftShops', 'open'],
       ['attractions', 'closed'],
+      ['attractions', 'closureOverride'],
       ['attractions', 'open'],
       ['zoomobile', 'stationClosed'],
       ['zoomobile', 'route'],
