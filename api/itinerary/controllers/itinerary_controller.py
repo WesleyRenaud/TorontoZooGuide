@@ -7,45 +7,48 @@ from ..data_access.accept_itinerary import accept_itinerary
 from ..data_access.clear_itinerary import clear_itinerary
 from ..logic import set_itinerary as set_itinerary_logic
 from ..logic.itinerary import build_current_itinerary
+from ...request_connection import get_connection
 
 
 class ItineraryController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_itinerary( self ):
+   @classmethod
+   def get_itinerary( cls ):
       return build_current_itinerary(
-         saved_itinerary=fetch_saved_itinerary( self._conn ),
-         animal_controller=AnimalController( self._conn ),
-         attraction_controller=AttractionController( self._conn ),
-         guardians_controller=GuardiansController( self._conn ),
-         wild_encounter_controller=WildEncounterController( self._conn ) )
+         saved_itinerary=fetch_saved_itinerary( get_connection() ),
+         animal_controller=AnimalController,
+         attraction_controller=AttractionController,
+         guardians_controller=GuardiansController,
+         wild_encounter_controller=WildEncounterController )
 
 
+   @classmethod
    def set_itinerary(
-         self,
+         cls,
          date,
          animals,
          attractions,
          guardians_talks,
          wild_encounters ):
       return set_itinerary_logic.set_itinerary(
-         self._conn,
+         get_connection(),
          date=date,
          animals=animals,
          attractions=attractions,
          guardians_talks=guardians_talks,
          wild_encounters=wild_encounters,
-         animal_controller=AnimalController( self._conn ),
-         attraction_controller=AttractionController( self._conn ),
-         guardians_controller=GuardiansController( self._conn ),
-         wild_encounter_controller=WildEncounterController( self._conn ) )
+         animal_controller=AnimalController,
+         attraction_controller=AttractionController,
+         guardians_controller=GuardiansController,
+         wild_encounter_controller=WildEncounterController )
 
 
-   def clear_itinerary( self ):
-      return clear_itinerary( self._conn )
+   @classmethod
+   def clear_itinerary( cls ):
+      return clear_itinerary( get_connection() )
 
 
-   def accept_itinerary( self ):
-      return accept_itinerary( self._conn )
+   @classmethod
+   def accept_itinerary( cls ):
+      return accept_itinerary( get_connection() )

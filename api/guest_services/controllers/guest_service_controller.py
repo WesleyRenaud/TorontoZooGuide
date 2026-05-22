@@ -1,10 +1,10 @@
 from ..data_access.guest_service import fetch_guest_services
+from ...request_connection import get_connection
 
 
 class GuestServiceController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_guest_services( self ):
-      return fetch_guest_services( self._conn )
+   @classmethod
+   def get_guest_services( cls ):
+      return fetch_guest_services( get_connection() )

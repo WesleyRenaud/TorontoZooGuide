@@ -8,6 +8,34 @@ from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_records
 from api.giftshops.logic.gift_shop import get_active_gift_shop_schedule_status
 from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_records
 from api.restaurants.logic.restaurant import get_active_restaurant_schedule_status
+from api.attractions.controllers.attraction_controller import AttractionController
+from api.defibrillators.controllers.defibrillator_controller import DefibrillatorController
+from api.drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
+from api.emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
+from api.event_sites.controllers.event_site_controller import EventSiteController
+from api.exhibits.controllers.exhibit_controller import ExhibitController
+from api.giftshops.controllers.gift_shop_controller import GiftShopController
+from api.guardians.controllers.guardians_controller import GuardiansController
+from api.guest_services.controllers.guest_service_controller import GuestServiceController
+from api.pavilions.controllers.pavilion_controller import PavilionController
+from api.picnic_sites.controllers.picnic_site_controller import PicnicSiteController
+from api.restaurants.controllers.restaurant_controller import RestaurantController
+from api.restrooms.controllers.restroom_controller import RestroomController
+from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from api.zoomobile.controllers.zoomobile_controller import ZoomobileController
+
+
+def apply_amenity_opening_schedule( db, setter_name, schedule ):
+   if setter_name == 'set_restaurant_opening_schedule':
+      return RestaurantController.set_restaurant_opening_schedule( **schedule )
+
+   if setter_name == 'set_gift_shop_opening_schedule':
+      return GiftShopController.set_gift_shop_opening_schedule( **schedule )
+
+   if setter_name == 'set_attraction_opening_schedule':
+      return AttractionController.set_attraction_opening_schedule( **schedule )
+
+   raise AssertionError( setter_name )
 
 
 def get_amenity_schedule_status(
@@ -49,7 +77,7 @@ def get_amenity_schedule_status(
 
 
 def test_region_and_static_location_queries( db ):
-   regions = db.get_regions()
+   regions = ExhibitController.get_regions()
 
    assert [
       region.to_dict()
@@ -65,11 +93,11 @@ def test_region_and_static_location_queries( db ):
       { 'name': 'Tundra Trek', 'hasExhibits': False }
    ]
 
-   assert db.get_exhibits_in_region( 'Africa' ) == [
+   assert ExhibitController.get_exhibits_in_region( 'Africa' ) == [
       'Africa Savanna',
       'African Rainforest Pavilion'
    ]
-   assert db.get_exhibits() == [
+   assert ExhibitController.get_exhibits() == [
       'Africa Savanna',
       'African Rainforest Pavilion',
       'Americas Outdoor Mayan Temple Ruins',
@@ -86,7 +114,7 @@ def test_region_and_static_location_queries( db ):
       'Tundra Trek'
    ]
 
-   region_exhibits = db.get_regions_with_exhibits()
+   region_exhibits = ExhibitController.get_regions_with_exhibits()
    africa = next(
       region for region in region_exhibits
       if region.name == 'Africa'
@@ -98,13 +126,13 @@ def test_region_and_static_location_queries( db ):
 
    pavilions = {
       pavilion.name: pavilion
-      for pavilion in db.get_pavilions()
+      for pavilion in PavilionController.get_pavilions()
    }
    restrooms = {
       restroom.title: restroom
-      for restroom in db.get_restrooms( day=15, month='June', year=2026 )
+      for restroom in RestroomController.get_restrooms( day=15, month='June', year=2026 )
    }
-   drinking_fountains = db.get_drinking_fountains( day=15, month='June', year=2026 )
+   drinking_fountains = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
 
    assert pavilions[ 'African Rainforest Pavilion' ].region == 'Africa'
    assert 'Entrance Restroom' in restrooms
@@ -116,7 +144,7 @@ def test_region_and_static_location_queries( db ):
 
 
 def test_defibrillators_have_coordinates( db ):
-   defibrillators = db.get_defibrillators()
+   defibrillators = DefibrillatorController.get_defibrillators()
 
    assert len( defibrillators ) > 0
    assert all( 0 <= defibrillator.x_coord <= 100 for defibrillator in defibrillators )
@@ -124,7 +152,7 @@ def test_defibrillators_have_coordinates( db ):
 
 
 def test_emergency_intercoms_have_coordinates( db ):
-   emergency_intercoms = db.get_emergency_intercoms()
+   emergency_intercoms = EmergencyIntercomController.get_emergency_intercoms()
 
    assert len( emergency_intercoms ) > 0
    assert all( 0 <= emergency_intercom.x_coord <= 100 for emergency_intercom in emergency_intercoms )
@@ -132,7 +160,7 @@ def test_emergency_intercoms_have_coordinates( db ):
 
 
 def test_guest_services_have_types_and_coordinates( db, cursor ):
-   guest_services = db.get_guest_services()
+   guest_services = GuestServiceController.get_guest_services()
    service_types = { service.service_type for service in guest_services }
    primary_key_columns = cursor.execute(
       """ SELECT
@@ -158,7 +186,7 @@ def test_guest_services_have_types_and_coordinates( db, cursor ):
 
 
 def test_picnic_sites_have_coordinates( db ):
-   picnic_sites = db.get_picnic_sites()
+   picnic_sites = PicnicSiteController.get_picnic_sites()
 
    assert len( picnic_sites ) > 0
    assert all( 0 <= picnic_site.x_coord <= 100 for picnic_site in picnic_sites )
@@ -166,7 +194,7 @@ def test_picnic_sites_have_coordinates( db ):
 
 
 def test_event_sites_have_names_and_coordinates( db ):
-   event_sites = db.get_event_sites()
+   event_sites = EventSiteController.get_event_sites()
    event_site_names = { event_site.name for event_site in event_sites }
 
    assert event_site_names == {
@@ -182,9 +210,9 @@ def test_event_sites_have_names_and_coordinates( db ):
 
 
 def test_drinking_fountain_seasonal_fallback_controls_open_and_closed_results( db, cursor ):
-   summer_fountains = db.get_drinking_fountains( day=15, month='June', year=2026 )
-   winter_fountains = db.get_drinking_fountains( day=15, month='January', year=2026 )
-   transition_fountains = db.get_drinking_fountains( day=30, month='April', year=2026 )
+   summer_fountains = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
+   winter_fountains = DrinkingFountainController.get_drinking_fountains( day=15, month='January', year=2026 )
+   transition_fountains = DrinkingFountainController.get_drinking_fountains( day=30, month='April', year=2026 )
    seasonal_rows = cursor.execute(
       """ SELECT
              MONTH,
@@ -235,19 +263,19 @@ def test_drinking_fountain_seasonal_fallback_controls_open_and_closed_results( d
 def test_drinking_fountain_status_controls_global_open_and_closed_results( db, cursor ):
    default_message = 'The drinking fountains are closed for the season.'
 
-   fountains = db.get_drinking_fountains( day=15, month='June', year=2026 )
+   fountains = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
 
    assert len( fountains ) > 0
    assert all( fountain.is_closed is False for fountain in fountains )
    assert all( fountain.closed_message is None for fountain in fountains )
 
-   assert db.set_drinking_fountains_as_closed(
+   assert DrinkingFountainController.set_drinking_fountains_as_closed(
       start_date='2026-06-01',
       end_date='2026-06-30',
       message='Closed for testing.' )
 
-   closed = db.get_drinking_fountains( day=15, month='June', year=2026 )
-   outside_schedule = db.get_drinking_fountains( day=1, month='July', year=2026 )
+   closed = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
+   outside_schedule = DrinkingFountainController.get_drinking_fountains( day=1, month='July', year=2026 )
    status_rows = cursor.execute(
       """ SELECT
              IS_CLOSED,
@@ -270,19 +298,19 @@ def test_drinking_fountain_status_controls_global_open_and_closed_results( db, c
    assert all( fountain.likelihood == 0.0 for fountain in closed )
    assert all( fountain.is_closed is False for fountain in outside_schedule )
 
-   assert db.set_drinking_fountains_as_open(
+   assert DrinkingFountainController.set_drinking_fountains_as_open(
       start_date='2026-06-15',
       end_date=None )
 
-   reopened = db.get_drinking_fountains( day=15, month='June', year=2026 )
+   reopened = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
 
    assert all( fountain.is_closed is False for fountain in reopened )
    assert all( fountain.closed_message is None for fountain in reopened )
    assert all( fountain.likelihood == 1.0 for fountain in reopened )
 
-   assert db.set_drinking_fountains_as_closed( message='' )
+   assert DrinkingFountainController.set_drinking_fountains_as_closed( message='' )
 
-   default_closed = db.get_drinking_fountains( day=15, month='June', year=2026 )
+   default_closed = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
 
    assert all( fountain.is_closed is True for fountain in default_closed )
    assert all( fountain.closed_message == default_message for fountain in default_closed )
@@ -291,7 +319,7 @@ def test_drinking_fountain_status_controls_global_open_and_closed_results( db, c
 
 def test_restaurant_schedule_controls_open_and_closed_results( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_restaurant_opening_schedule(
+   assert RestaurantController.set_restaurant_opening_schedule(
       restaurant='Africa Restaurant',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -306,8 +334,8 @@ def test_restaurant_schedule_controls_open_and_closed_results( db, freeze_databa
       message='Closed for testing.'
    )
 
-   open_only = db.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=False )
-   with_closed = db.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=True )
+   open_only = RestaurantController.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=False )
+   with_closed = RestaurantController.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=True )
 
    assert all( restaurant.name != 'Africa Restaurant' for restaurant in open_only )
    restaurant = next( item for item in with_closed if item.name == 'Africa Restaurant' )
@@ -317,7 +345,7 @@ def test_restaurant_schedule_controls_open_and_closed_results( db, freeze_databa
 
 def test_gift_shop_schedule_controls_open_and_closed_results( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_gift_shop_opening_schedule(
+   assert GiftShopController.set_gift_shop_opening_schedule(
       gift_shop='Zootique',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -332,8 +360,8 @@ def test_gift_shop_schedule_controls_open_and_closed_results( db, freeze_databas
       message='Closed for testing.'
    )
 
-   open_only = db.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=False )
-   with_closed = db.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=True )
+   open_only = GiftShopController.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=False )
+   with_closed = GiftShopController.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=True )
 
    assert all( shop.name != 'Zootique' for shop in open_only )
    shop = next( item for item in with_closed if item.name == 'Zootique' )
@@ -343,35 +371,35 @@ def test_gift_shop_schedule_controls_open_and_closed_results( db, freeze_databas
 
 def test_restroom_status_controls_open_and_closed_results( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_restroom_as_closed(
+   assert RestroomController.set_restroom_as_closed(
       restroom='Entrance Restroom',
       start_date='2026-06-01',
       end_date='2026-06-30',
       message='Closed for testing.'
    )
 
-   open_only = db.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=False )
-   with_closed = db.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=True )
+   open_only = RestroomController.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=False )
+   with_closed = RestroomController.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=True )
 
    assert all( restroom.title != 'Entrance Restroom' for restroom in open_only )
    restroom = next( item for item in with_closed if item.title == 'Entrance Restroom' )
    assert restroom.is_closed is True
    assert restroom.closed_message == 'Closed for testing.'
 
-   assert db.set_restroom_as_open(
+   assert RestroomController.set_restroom_as_open(
       restroom='Entrance Restroom',
       start_date='2026-06-15',
       end_date=None
    )
 
-   reopened = db.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=False )
+   reopened = RestroomController.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=False )
 
    assert any( restroom.title == 'Entrance Restroom' for restroom in reopened )
 
 
 def test_restroom_alert_controls_guest_message( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_restroom_alert(
+   assert RestroomController.set_restroom_alert(
       restroom='Entrance Restroom',
       alert_start_date='2026-06-01',
       alert_end_date='2026-06-30',
@@ -379,17 +407,17 @@ def test_restroom_alert_controls_guest_message( db, freeze_database_today ):
    )
 
    restroom = next(
-      item for item in db.get_restrooms( day=15, month='June', year=2026 )
+      item for item in RestroomController.get_restrooms( day=15, month='June', year=2026 )
       if item.title == 'Entrance Restroom'
    )
 
    assert restroom.has_alert is True
    assert restroom.alert_message == 'Women\'s restroom is temporarily unavailable.'
 
-   assert db.remove_restroom_alert( restroom='Entrance Restroom' )
+   assert RestroomController.remove_restroom_alert( restroom='Entrance Restroom' )
 
    restroom = next(
-      item for item in db.get_restrooms( day=15, month='June', year=2026 )
+      item for item in RestroomController.get_restrooms( day=15, month='June', year=2026 )
       if item.title == 'Entrance Restroom'
    )
 
@@ -399,13 +427,13 @@ def test_restroom_alert_controls_guest_message( db, freeze_database_today ):
 
 def test_setting_restroom_alert_twice_updates_existing_alert( db, cursor, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_restroom_alert(
+   assert RestroomController.set_restroom_alert(
       restroom='Entrance Restroom',
       alert_start_date='2026-06-01',
       alert_end_date='2026-06-30',
       message='Women\'s restroom is temporarily unavailable.'
    )
-   assert db.set_restroom_alert(
+   assert RestroomController.set_restroom_alert(
       restroom='Entrance Restroom',
       alert_start_date='2026-06-15',
       alert_end_date='2026-07-15',
@@ -423,7 +451,7 @@ def test_setting_restroom_alert_twice_updates_existing_alert( db, cursor, freeze
       ( 'Entrance Restroom', )
    ).fetchall()
    restroom = next(
-      item for item in db.get_restrooms( day=15, month='June', year=2026 )
+      item for item in RestroomController.get_restrooms( day=15, month='June', year=2026 )
       if item.title == 'Entrance Restroom'
    )
 
@@ -439,7 +467,7 @@ def test_setting_restroom_alert_twice_updates_existing_alert( db, cursor, freeze
 
 def test_attraction_schedule_controls_open_and_closed_results( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_attraction_opening_schedule(
+   assert AttractionController.set_attraction_opening_schedule(
       attraction='Conservation Carousel',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -454,8 +482,8 @@ def test_attraction_schedule_controls_open_and_closed_results( db, freeze_databa
       message='Closed for testing.'
    )
 
-   open_only = db.get_attractions( day=15, month='June', year=2026, include_closed_attractions=False )
-   with_closed = db.get_attractions( day=15, month='June', year=2026, include_closed_attractions=True )
+   open_only = AttractionController.get_attractions( day=15, month='June', year=2026, include_closed_attractions=False )
+   with_closed = AttractionController.get_attractions( day=15, month='June', year=2026, include_closed_attractions=True )
 
    assert all( attraction.name != 'Conservation Carousel' for attraction in open_only )
    attraction = next( item for item in with_closed if item.name == 'Conservation Carousel' )
@@ -522,7 +550,7 @@ def test_amenity_schedule_status_opens_on_each_weekday(
    }
    schedule[ weekday_flag ] = True
 
-   assert getattr( db, setter_name )( **schedule )
+   assert apply_amenity_opening_schedule( db, setter_name, schedule )
 
    assert get_amenity_schedule_status(
       db,
@@ -583,7 +611,7 @@ def test_amenity_schedule_status_handles_unknown_inactive_closed_and_holiday(
       'message': 'Closed for testing.'
    }
 
-   assert getattr( db, setter_name )( **schedule )
+   assert apply_amenity_opening_schedule( db, setter_name, schedule )
 
    assert get_amenity_schedule_status(
       db,
@@ -601,7 +629,7 @@ def test_amenity_schedule_status_handles_unknown_inactive_closed_and_holiday(
    schedule[ 'start_date' ] = '2026-01-01'
    schedule[ 'end_date' ] = '2026-12-31'
    schedule[ 'holidays_only' ] = True
-   assert getattr( db, setter_name )( **schedule )
+   assert apply_amenity_opening_schedule( db, setter_name, schedule )
 
    assert get_amenity_schedule_status(
       db,
@@ -614,14 +642,14 @@ def test_amenity_schedule_status_handles_unknown_inactive_closed_and_holiday(
 def test_zoomobile_route_selection_and_station_filtering( db, freeze_database_today ):
    freeze_database_today( date( 2026, 1, 15 ) )
 
-   manual = db.get_zoomobile_route( route='winter', day=15, month='January', year=2026 )
-   invalid = db.get_zoomobile_route( route='bad-route', day=15, month='January', year=2026 )
+   manual = ZoomobileController.get_zoomobile_route( route='winter', day=15, month='January', year=2026 )
+   invalid = ZoomobileController.get_zoomobile_route( route='bad-route', day=15, month='January', year=2026 )
 
    assert manual.route == 'winter'
    assert invalid.route == 'summer'
 
-   assert db.set_current_zoomobile_route( route='winter', start_date='2026-01-01', end_date='2026-01-31' )
-   current = db.get_zoomobile_route( route='current', day=15, month='January', year=2026 )
+   assert ZoomobileController.set_current_zoomobile_route( route='winter', start_date='2026-01-01', end_date='2026-01-31' )
+   current = ZoomobileController.get_zoomobile_route( route='current', day=15, month='January', year=2026 )
 
    assert current.route == 'winter'
    assert current.route_source == 'override'
@@ -630,7 +658,7 @@ def test_zoomobile_route_selection_and_station_filtering( db, freeze_database_to
 
 def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_guardians_talk_schedule(
+   assert GuardiansController.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -646,29 +674,29 @@ def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
       message=None
    )
 
-   talks = db.get_guardians_talk_schedule( month='June', day=15, year=2026 )
+   talks = GuardiansController.get_guardians_talk_schedule( month='June', day=15, year=2026 )
    assert any( talk.name == 'African Lion' and talk.start_time == '10:00' for talk in talks )
    assert next(
       talk for talk in talks
       if talk.name == 'African Lion' and talk.start_time == '10:00'
    ).maximum_duration == 30
 
-   assert db.cancel_guardians_talk_occurrence(
+   assert GuardiansController.cancel_guardians_talk_occurrence(
       talk='African Lion',
       location='Africa Savanna',
       date='2026-06-15',
       time='10:00'
    )
-   talks_after_cancel = db.get_guardians_talk_schedule( month='June', day=15, year=2026 )
+   talks_after_cancel = GuardiansController.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
    assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00' ) for talk in talks_after_cancel )
 
-   assert db.get_guardians_talk_schedule( month='June', day=16, year=2026 ) == []
+   assert GuardiansController.get_guardians_talk_schedule( month='June', day=16, year=2026 ) == []
 
 
 def test_guardians_talk_occurrences_cover_all_weekdays_and_cancellations( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_guardians_talk_schedule(
+   assert GuardiansController.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-15',
@@ -683,14 +711,14 @@ def test_guardians_talk_occurrences_cover_all_weekdays_and_cancellations( db, fr
       sunday=True,
       message=None
    )
-   assert db.cancel_guardians_talk_occurrence(
+   assert GuardiansController.cancel_guardians_talk_occurrence(
       talk='African Lion',
       location='Africa Savanna',
       date='2026-06-18',
       time='10:00'
    )
 
-   occurrences = db.get_guardians_talk_occurrences(
+   occurrences = GuardiansController.get_guardians_talk_occurrences(
       talk='African Lion',
       location='Africa Savanna',
       days_ahead=6
@@ -704,13 +732,13 @@ def test_guardians_talk_occurrences_cover_all_weekdays_and_cancellations( db, fr
       '2026-06-20',
       '2026-06-21'
    }
-   assert db.get_guardians_talk_occurrences( talk='', location='Africa Savanna' ) == []
-   assert db.get_guardians_talk_occurrences( talk='Bad Talk', location='Bad Location' ) == []
+   assert GuardiansController.get_guardians_talk_occurrences( talk='', location='Africa Savanna' ) == []
+   assert GuardiansController.get_guardians_talk_occurrences( talk='Bad Talk', location='Bad Location' ) == []
 
 
 def test_wild_encounter_schedule_and_cancellation( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_wild_encounter_schedule(
+   assert WildEncounterController.set_wild_encounter_schedule(
       wild_encounter='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -725,26 +753,26 @@ def test_wild_encounter_schedule_and_cancellation( db, freeze_database_today ):
       message=None
    )
 
-   encounters = db.get_wild_encounter_schedule( month='June', day=15, year=2026 )
+   encounters = WildEncounterController.get_wild_encounter_schedule( month='June', day=15, year=2026 )
    encounter = next( item for item in encounters if item.name == 'African Rainforest' and item.start_time == '14:00' )
    assert encounter.is_available is True
    assert encounter.maximum_duration == 45
 
-   assert db.cancel_wild_encounter_occurrence(
+   assert WildEncounterController.cancel_wild_encounter_occurrence(
       wild_encounter='African Rainforest',
       date='2026-06-15',
       time='14:00'
    )
-   encounters_after_cancel = db.get_wild_encounter_schedule( month='June', day=15, year=2026 )
+   encounters_after_cancel = WildEncounterController.get_wild_encounter_schedule( month='June', day=15, year=2026 )
    cancelled = next( item for item in encounters_after_cancel if item.name == 'African Rainforest' and item.start_time == '14:00' )
    assert cancelled.is_available is False
 
    weekday_unavailable = next(
-      item for item in db.get_wild_encounter_schedule( month='June', day=16, year=2026 )
+      item for item in WildEncounterController.get_wild_encounter_schedule( month='June', day=16, year=2026 )
       if item.name == 'African Rainforest' and item.start_time == '14:00'
    )
    out_of_range = next(
-      item for item in db.get_wild_encounter_schedule( month='July', day=1, year=2026 )
+      item for item in WildEncounterController.get_wild_encounter_schedule( month='July', day=1, year=2026 )
       if item.name == 'African Rainforest' and item.start_time == '14:00'
    )
    assert weekday_unavailable.unavailable_message == 'African Rainforest is not offered on this day of the week.'
@@ -753,7 +781,7 @@ def test_wild_encounter_schedule_and_cancellation( db, freeze_database_today ):
 
 def test_wild_encounter_search_only_returns_available_schedule_days( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_wild_encounter_schedule(
+   assert WildEncounterController.set_wild_encounter_schedule(
       wild_encounter='Mischevious Meerkats',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -768,17 +796,17 @@ def test_wild_encounter_search_only_returns_available_schedule_days( db, freeze_
       message=None
    )
 
-   monday_results = db.get_wild_encounters_matching_query(
+   monday_results = WildEncounterController.get_wild_encounters_matching_query(
       query='Mischevious Meerkats',
       month='June',
       day=15,
       year=2026 )
-   sunday_results = db.get_wild_encounters_matching_query(
+   sunday_results = WildEncounterController.get_wild_encounters_matching_query(
       query='Mischevious Meerkats',
       month='June',
       day=21,
       year=2026 )
-   sunday_available = db.get_available_wild_encounters(
+   sunday_available = WildEncounterController.get_available_wild_encounters(
       month='June',
       day=21,
       year=2026 )
@@ -790,7 +818,7 @@ def test_wild_encounter_search_only_returns_available_schedule_days( db, freeze_
 
 def test_wild_encounter_occurrences_cover_all_weekdays_and_cancellations( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert db.set_wild_encounter_schedule(
+   assert WildEncounterController.set_wild_encounter_schedule(
       wild_encounter='African Rainforest',
       start_date='2026-06-15',
       end_date='2026-06-21',
@@ -804,13 +832,13 @@ def test_wild_encounter_occurrences_cover_all_weekdays_and_cancellations( db, fr
       sunday=True,
       message=None
    )
-   assert db.cancel_wild_encounter_occurrence(
+   assert WildEncounterController.cancel_wild_encounter_occurrence(
       wild_encounter='African Rainforest',
       date='2026-06-18',
       time='14:00'
    )
 
-   occurrences = db.get_wild_encounter_occurrences(
+   occurrences = WildEncounterController.get_wild_encounter_occurrences(
       wild_encounter='African Rainforest',
       days_ahead=6
    )
@@ -823,29 +851,29 @@ def test_wild_encounter_occurrences_cover_all_weekdays_and_cancellations( db, fr
       '2026-06-20',
       '2026-06-21'
    }
-   assert db.get_wild_encounter_occurrences( wild_encounter='' ) == []
-   assert db.get_wild_encounter_occurrences( wild_encounter='Bad Encounter' ) == []
+   assert WildEncounterController.get_wild_encounter_occurrences( wild_encounter='' ) == []
+   assert WildEncounterController.get_wild_encounter_occurrences( wild_encounter='Bad Encounter' ) == []
 
 
 def test_search_helpers_filter_case_insensitively( db ):
    assert [
       restaurant.name
-      for restaurant in db.get_restaurants_matching_query( 'AFRICA', 15, 'June', 2026, True )
+      for restaurant in RestaurantController.get_restaurants_matching_query( 'AFRICA', 15, 'June', 2026, True )
    ] == [ 'Africa Restaurant' ]
 
    assert [
       shop.name
-      for shop in db.get_gift_shops_matching_query( 'ZOOTIQUE', 15, 'June', 2026 )
+      for shop in GiftShopController.get_gift_shops_matching_query( 'ZOOTIQUE', 15, 'June', 2026 )
    ] == [ 'Zootique' ]
 
    assert [
       attraction.name
-      for attraction in db.get_attractions_matching_query( 'CAROUSEL', 15, 'June', 2026, True )
+      for attraction in AttractionController.get_attractions_matching_query( 'CAROUSEL', 15, 'June', 2026, True )
    ] == [ 'Conservation Carousel' ]
 
    assert [
       station.name
-      for station in db.get_zoomobile_stations_matching_query(
+      for station in ZoomobileController.get_zoomobile_stations_matching_query(
          query='MAIN',
          route='summer',
          day=15,

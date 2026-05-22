@@ -10,26 +10,27 @@ from ..logic.restroom_alert_builder import build_restroom_alert
 from ..logic.restroom import resolve_restroom_context
 from ..logic.restroom_status import build_restroom_closed_status
 from ..logic.restrooms_matching_query import build_restrooms_matching_query
+from ...request_connection import get_connection
 
 
 class RestroomController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_restroom_names( self ):
-      return fetch_restroom_names( self._conn )
+   @classmethod
+   def get_restroom_names( cls ):
+      return fetch_restroom_names( get_connection() )
 
 
+   @classmethod
    def get_restrooms(
-         self,
+         cls,
          day,
          month,
          year,
          include_closed_restrooms=False ):
 
       return build_restrooms(
-         restroom_records=fetch_restroom_records( self._conn ),
+         restroom_records=fetch_restroom_records( get_connection() ),
          context=resolve_restroom_context(
             day=day,
             month=month,
@@ -37,15 +38,16 @@ class RestroomController():
          include_closed_restrooms=include_closed_restrooms )
 
 
+   @classmethod
    def get_restrooms_matching_query(
-         self,
+         cls,
          query,
          day,
          month,
          year,
          include_closed_restrooms ):
 
-      restrooms = self.get_restrooms(
+      restrooms = cls.get_restrooms(
          day=day,
          month=month,
          year=year,
@@ -56,7 +58,8 @@ class RestroomController():
          query )
 
 
-   def set_restroom_as_closed( self, restroom, start_date, end_date, message ):
+   @classmethod
+   def set_restroom_as_closed( cls, restroom, start_date, end_date, message ):
       status = build_restroom_closed_status(
          restroom=restroom,
          start_date=start_date,
@@ -64,27 +67,29 @@ class RestroomController():
          message=message )
 
       return save_restroom_closed_status(
-         self._conn,
+         get_connection(),
          restroom=status.restroom,
          start_date=status.start_date,
          end_date=status.end_date,
          message=status.message )
 
 
-   def set_restroom_as_open( self, restroom, start_date, end_date ):
+   @classmethod
+   def set_restroom_as_open( cls, restroom, start_date, end_date ):
       date_range = zoo.ZooUtil.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
 
       return save_restroom_open_status(
-         self._conn,
+         get_connection(),
          restroom=restroom,
          start_date=date_range.start_date,
          end_date=date_range.end_date )
 
 
+   @classmethod
    def set_restroom_alert(
-         self,
+         cls,
          restroom,
          alert_start_date,
          alert_end_date,
@@ -96,14 +101,15 @@ class RestroomController():
          message=message )
 
       return save_restroom_alert(
-         self._conn,
+         get_connection(),
          restroom=alert.restroom,
          alert_start_date=alert.start_date,
          alert_end_date=alert.end_date,
          message=alert.message )
 
 
-   def remove_restroom_alert( self, restroom ):
+   @classmethod
+   def remove_restroom_alert( cls, restroom ):
       return delete_restroom_alert(
-         self._conn,
+         get_connection(),
          restroom=restroom )

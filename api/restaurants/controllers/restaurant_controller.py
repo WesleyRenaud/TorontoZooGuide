@@ -7,19 +7,20 @@ from ..logic.restaurant import resolve_restaurant_context
 from ..logic.restaurant_status import build_restaurant_closed_schedule
 from ..logic.restaurant_status import build_restaurant_opening_schedule
 from ..logic.restaurants_matching_query import build_restaurants_matching_query
+from ...request_connection import get_connection
 
 
 class RestaurantController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_restaurant_names( self ):
-      return fetch_restaurant_names( self._conn )
+   @classmethod
+   def get_restaurant_names( cls ):
+      return fetch_restaurant_names( get_connection() )
 
 
+   @classmethod
    def get_restaurants(
-         self,
+         cls,
          day,
          month,
          year,
@@ -33,24 +34,25 @@ class RestaurantController():
 
       return build_restaurants(
          restaurant_records=fetch_restaurant_records(
-            self._conn,
+            get_connection(),
             month=context.normalized_month,
             day=context.normalized_day ),
-         schedule_records=fetch_restaurant_schedule_records( self._conn ),
+         schedule_records=fetch_restaurant_schedule_records( get_connection() ),
          context=context,
          include_closed_restaurants=include_closed_restaurants,
          restaurants_to_include=restaurants_to_include )
 
 
+   @classmethod
    def get_restaurants_matching_query(
-         self,
+         cls,
          query,
          day,
          month,
          year,
          include_closed_restaurants ):
 
-      restaurants = self.get_restaurants(
+      restaurants = cls.get_restaurants(
          day=day,
          month=month,
          include_closed_restaurants=include_closed_restaurants,
@@ -61,8 +63,9 @@ class RestaurantController():
          query )
 
 
+   @classmethod
    def set_restaurant_as_closed(
-         self,
+         cls,
          restaurant,
          start_date,
          end_date,
@@ -74,12 +77,13 @@ class RestaurantController():
          message=message )
 
       return save_restaurant_opening_schedule(
-         self._conn,
+         get_connection(),
          schedule=schedule )
 
 
+   @classmethod
    def set_restaurant_opening_schedule(
-         self,
+         cls,
          restaurant,
          start_date,
          end_date,
@@ -107,5 +111,5 @@ class RestaurantController():
          message=message )
 
       return save_restaurant_opening_schedule(
-         self._conn,
+         get_connection(),
          schedule=schedule )

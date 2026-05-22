@@ -1,17 +1,18 @@
 from ..data_access.pavilion import fetch_pavilions
 from ..logic.pavilions_matching_query import build_pavilions_matching_query
+from ...request_connection import get_connection
 
 
 class PavilionController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_pavilions( self ):
-      return fetch_pavilions( self._conn )
+   @classmethod
+   def get_pavilions( cls ):
+      return fetch_pavilions( get_connection() )
 
 
-   def get_pavilions_matching_query( self, query ):
+   @classmethod
+   def get_pavilions_matching_query( cls, query ):
       return build_pavilions_matching_query(
-         self.get_pavilions(),
+         cls.get_pavilions(),
          query )

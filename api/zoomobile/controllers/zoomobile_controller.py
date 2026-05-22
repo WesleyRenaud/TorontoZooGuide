@@ -15,19 +15,20 @@ from ..data_access.zoomobile_station_status import save_zoomobile_station_open_s
 from ..logic.zoomobile_route_schedule import build_current_zoomobile_route_schedule
 from ..logic.zoomobile_station_status import build_zoomobile_station_closed_status
 from ..logic.zoomobile_stations_matching_query import build_zoomobile_stations_matching_query
+from ...request_connection import get_connection
 
 
 class ZoomobileController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_zoomobile_station_names( self ):
-      return fetch_zoomobile_station_names( self._conn )
+   @classmethod
+   def get_zoomobile_station_names( cls ):
+      return fetch_zoomobile_station_names( get_connection() )
 
 
+   @classmethod
    def get_zoomobile_stations(
-         self,
+         cls,
          route,
          day,
          month,
@@ -35,8 +36,8 @@ class ZoomobileController():
          zoomobile_stations_to_include=None ):
 
       return build_zoomobile_stations(
-         station_records=fetch_zoomobile_station_records( self._conn ),
-         status_records=fetch_zoomobile_station_status_records( self._conn ),
+         station_records=fetch_zoomobile_station_records( get_connection() ),
+         status_records=fetch_zoomobile_station_status_records( get_connection() ),
          context=resolve_zoomobile_station_context(
             route=route,
             day=day,
@@ -45,15 +46,16 @@ class ZoomobileController():
             zoomobile_stations_to_include=zoomobile_stations_to_include ) )
 
 
+   @classmethod
    def get_zoomobile_stations_matching_query(
-         self,
+         cls,
          query,
          route,
          day,
          month,
          year ):
 
-      zoomobile_stations = self.get_zoomobile_stations(
+      zoomobile_stations = cls.get_zoomobile_stations(
          route=route,
          day=day,
          month=month,
@@ -64,8 +66,9 @@ class ZoomobileController():
          query )
 
 
+   @classmethod
    def get_zoomobile_route(
-         self,
+         cls,
          route,
          day,
          month,
@@ -79,17 +82,17 @@ class ZoomobileController():
       resolved_route, route_source = resolve_zoomobile_route(
          requested_route=route,
          active_route=fetch_active_zoomobile_route(
-            self._conn,
+            get_connection(),
             target_date=route_context.target_date ),
          day_route=fetch_zoomobile_day_route(
-            self._conn,
+            get_connection(),
             month=route_context.normalized_month,
             day=route_context.normalized_day ) )
 
       return build_zoomobile_route_response(
          route=resolved_route,
          route_source=route_source,
-         zoomobile_stations=self.get_zoomobile_stations(
+         zoomobile_stations=cls.get_zoomobile_stations(
             route=resolved_route,
             day=route_context.normalized_day,
             month=route_context.normalized_month,
@@ -97,9 +100,10 @@ class ZoomobileController():
             zoomobile_stations_to_include=zoomobile_stations_to_include ) )
 
 
-   def get_active_zoomobile_route( self, target_date ):
+   @classmethod
+   def get_active_zoomobile_route( cls, target_date ):
       route = fetch_active_zoomobile_route(
-         self._conn,
+         get_connection(),
          target_date=target_date )
 
       if not is_valid_zoomobile_route( route ):
@@ -108,9 +112,10 @@ class ZoomobileController():
       return route
 
 
-   def get_zoomobile_day_route( self, month, day ):
+   @classmethod
+   def get_zoomobile_day_route( cls, month, day ):
       route = fetch_zoomobile_day_route(
-         self._conn,
+         get_connection(),
          month=month,
          day=day )
 
@@ -120,8 +125,9 @@ class ZoomobileController():
       return route
 
 
+   @classmethod
    def set_zoomobile_station_as_closed(
-         self,
+         cls,
          zoomobile_station,
          start_date,
          end_date,
@@ -133,22 +139,24 @@ class ZoomobileController():
          message=message )
 
       return save_zoomobile_station_closed_status(
-         self._conn,
+         get_connection(),
          status=status )
 
 
-   def set_zoomobile_station_as_open( self, zoomobile_station ):
+   @classmethod
+   def set_zoomobile_station_as_open( cls, zoomobile_station ):
       return save_zoomobile_station_open_status(
-         self._conn,
+         get_connection(),
          zoomobile_station=zoomobile_station )
 
 
-   def set_current_zoomobile_route( self, route, start_date, end_date ):
+   @classmethod
+   def set_current_zoomobile_route( cls, route, start_date, end_date ):
       schedule = build_current_zoomobile_route_schedule(
          route=route,
          start_date=start_date,
          end_date=end_date )
 
       return save_current_zoomobile_route_schedule(
-         self._conn,
+         get_connection(),
          schedule=schedule )

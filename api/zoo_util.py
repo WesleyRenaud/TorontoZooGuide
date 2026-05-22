@@ -134,9 +134,7 @@ class ZooUtil:
 
    @staticmethod
    def today_date_key():
-      zoo_module = sys.modules.get( 'api.database' )
-      datetime_class = getattr( zoo_module, 'datetime', datetime )
-      return datetime_class.now().date().isoformat()
+      return datetime.now().date().isoformat()
 
 
    @staticmethod

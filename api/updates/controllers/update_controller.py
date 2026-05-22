@@ -1,4 +1,3 @@
-from ... import database as database_module
 from ... import zoo
 from ..data_access.update import edit_update_record
 from ..data_access.update import fetch_updates
@@ -8,34 +7,36 @@ from ..logic.update_creation import build_update_create_input
 from ..logic.update_editing import build_update_edit_input
 from ..logic.update_ending import build_update_end_input
 from ..logic.update import filter_updates_started_on_or_before
+from ...request_connection import get_connection
 
 
 class UpdateController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_updates_for_visit_date( self, month, day, year ):
+   @classmethod
+   def get_updates_for_visit_date( cls, month, day, year ):
       target_date = zoo.ZooUtil.visit_target_date(
          month=month,
          day=day,
          year=year )
 
-      updates = fetch_updates( self._conn, target_date )
+      updates = fetch_updates( get_connection(), target_date )
 
       return filter_updates_started_on_or_before(
          updates,
          target_date )
 
 
-   def get_unexpired_updates( self ):
-      as_of_date = database_module.datetime.now().date()
+   @classmethod
+   def get_unexpired_updates( cls ):
+      as_of_date = zoo.ZooUtil.today_date_key()
 
-      return fetch_updates( self._conn, as_of_date )
+      return fetch_updates( get_connection(), as_of_date )
 
 
+   @classmethod
    def create_update(
-         self,
+         cls,
          title,
          description,
          update_type,
@@ -49,23 +50,25 @@ class UpdateController():
          end_date=end_date )
 
       return insert_update(
-         self._conn,
+         get_connection(),
          update=update )
 
 
-   def end_update( self, title, start_date, end_date ):
+   @classmethod
+   def end_update( cls, title, start_date, end_date ):
       update = build_update_end_input(
          title=title,
          start_date=start_date,
          end_date=end_date )
 
       return update_end_date(
-         self._conn,
+         get_connection(),
          update=update )
 
 
+   @classmethod
    def edit_update(
-         self,
+         cls,
          title,
          start_date,
          description,
@@ -79,5 +82,5 @@ class UpdateController():
          end_date=end_date )
 
       return edit_update_record(
-         self._conn,
+         get_connection(),
          update=update )

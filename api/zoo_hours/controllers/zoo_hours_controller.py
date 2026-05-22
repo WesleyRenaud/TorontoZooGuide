@@ -1,21 +1,21 @@
 from ... import zoo
 from ..data_access.zoo_hours import fetch_zoo_hours_record
 from ..logic.zoo_hours import build_zoo_hours
+from ...request_connection import get_connection
 
 
 class ZooHoursController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_zoo_hours( self, day, month, year ):
+   @classmethod
+   def get_zoo_hours( cls, day, month, year ):
       operating_date = zoo.ZooUtil.visit_target_date(
          month,
          day,
          year )
 
       zoo_hours_record = fetch_zoo_hours_record(
-         self._conn,
+         get_connection(),
          operating_date )
 
       if zoo_hours_record == None:

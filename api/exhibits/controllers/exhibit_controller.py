@@ -10,51 +10,57 @@ from ..logic.exhibit import build_region_options
 from ..logic.exhibit_closure import exhibit_names_closed_on_visit_date
 from ..logic.exhibit_status import build_exhibit_closed_status
 from ..logic.regions_with_exhibits import build_regions_with_exhibits
+from ...request_connection import get_connection
 
 
 class ExhibitController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_exhibits_in_region( self, region ):
+   @classmethod
+   def get_exhibits_in_region( cls, region ):
       return fetch_exhibit_names_in_region(
-         self._conn,
+         get_connection(),
          region=region )
 
 
-   def get_exhibits( self ):
-      return fetch_exhibit_names( self._conn )
+   @classmethod
+   def get_exhibits( cls ):
+      return fetch_exhibit_names( get_connection() )
 
 
-   def get_regions( self ):
+   @classmethod
+   def get_regions( cls ):
       return build_region_options(
-         fetch_region_exhibit_rows( self._conn ) )
+         fetch_region_exhibit_rows( get_connection() ) )
 
 
-   def get_regions_with_exhibits( self ):
+   @classmethod
+   def get_regions_with_exhibits( cls ):
       return build_regions_with_exhibits(
-         fetch_region_exhibit_rows( self._conn ) )
+         fetch_region_exhibit_rows( get_connection() ) )
 
 
-   def get_names_of_animals_in_exhibit( self, exhibit ):
+   @classmethod
+   def get_names_of_animals_in_exhibit( cls, exhibit ):
       return fetch_animal_names_in_exhibit(
-         self._conn,
+         get_connection(),
          exhibit=exhibit )
 
 
-   def get_closed_exhibits_for_visit_date( self, month, day, year ):
+   @classmethod
+   def get_closed_exhibits_for_visit_date( cls, month, day, year ):
       target_date = zoo.ZooUtil.visit_target_date(
          month=month,
          day=day,
          year=year )
 
       return exhibit_names_closed_on_visit_date(
-         fetch_exhibit_closure_records( self._conn ),
+         fetch_exhibit_closure_records( get_connection() ),
          target_date )
 
 
-   def set_exhibit_as_closed( self, exhibit, start_date, end_date, message ):
+   @classmethod
+   def set_exhibit_as_closed( cls, exhibit, start_date, end_date, message ):
       status = build_exhibit_closed_status(
          exhibit=exhibit,
          start_date=start_date,
@@ -62,20 +68,21 @@ class ExhibitController():
          message=message )
 
       return save_exhibit_closed_status(
-         self._conn,
+         get_connection(),
          exhibit=status.exhibit,
          start_date=status.start_date,
          end_date=status.end_date,
          message=status.message )
 
 
-   def set_exhibit_as_open( self, exhibit, start_date, end_date ):
+   @classmethod
+   def set_exhibit_as_open( cls, exhibit, start_date, end_date ):
       date_range = zoo.ZooUtil.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
 
       return save_exhibit_open_status(
-         self._conn,
+         get_connection(),
          exhibit=exhibit,
          start_date=date_range.start_date,
          end_date=date_range.end_date )

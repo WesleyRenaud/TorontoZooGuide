@@ -10,19 +10,20 @@ from ..logic.attraction_status import build_attraction_closed_schedule
 from ..logic.attraction_status import build_attraction_opening_schedule
 from ..logic.attractions_matching_query import build_attractions_matching_query
 from ..logic.itinerary_attractions import build_itinerary_attractions
+from ...request_connection import get_connection
 
 
 class AttractionController():
-   def __init__( self, conn ):
-      self._conn = conn
 
 
-   def get_attraction_names( self ):
-      return fetch_attraction_names( self._conn )
+   @classmethod
+   def get_attraction_names( cls ):
+      return fetch_attraction_names( get_connection() )
 
 
+   @classmethod
    def get_attractions(
-         self,
+         cls,
          day,
          month,
          year,
@@ -35,16 +36,17 @@ class AttractionController():
 
       return build_attractions(
          attraction_records=fetch_attraction_records(
-            self._conn,
+            get_connection(),
             month=context.normalized_month,
             day=context.normalized_day ),
-         schedule_records=fetch_attraction_schedule_records( self._conn ),
+         schedule_records=fetch_attraction_schedule_records( get_connection() ),
          context=context,
          include_closed_attractions=include_closed_attractions )
 
 
+   @classmethod
    def get_attractions_for_saved_itinerary(
-         self,
+         cls,
          day,
          month,
          year,
@@ -53,7 +55,7 @@ class AttractionController():
       if not saved_attractions:
          return []
 
-      attractions = self.get_attractions(
+      attractions = cls.get_attractions(
          day=day,
          month=month,
          year=year,
@@ -64,15 +66,16 @@ class AttractionController():
          saved_attractions )
 
 
+   @classmethod
    def get_attractions_matching_query(
-         self,
+         cls,
          query,
          day,
          month,
          year,
          include_closed_attractions ):
 
-      attractions = self.get_attractions(
+      attractions = cls.get_attractions(
          day=day,
          month=month,
          year=year,
@@ -83,13 +86,14 @@ class AttractionController():
          query )
 
 
+   @classmethod
    def get_attraction_likelihood_for_visit_date(
-         self,
+         cls,
          visit_date,
          attraction_name ):
 
       attraction_record = fetch_attraction_record_for_calendar_day(
-         self._conn,
+         get_connection(),
          attraction_name=attraction_name,
          month=visit_date.month,
          day=visit_date.day )
@@ -99,14 +103,15 @@ class AttractionController():
 
       likelihood, _ = get_attraction_likelihood_and_message_for_date(
          attraction_record=attraction_record,
-         schedule_records=fetch_attraction_schedule_records( self._conn ),
+         schedule_records=fetch_attraction_schedule_records( get_connection() ),
          target_date=visit_date )
 
       return likelihood
 
 
+   @classmethod
    def set_attraction_as_closed(
-         self,
+         cls,
          attraction,
          start_date,
          end_date,
@@ -118,12 +123,13 @@ class AttractionController():
          message=message )
 
       return save_attraction_opening_schedule(
-         self._conn,
+         get_connection(),
          schedule=schedule )
 
 
+   @classmethod
    def set_attraction_opening_schedule(
-         self,
+         cls,
          attraction,
          start_date,
          end_date,
@@ -151,5 +157,5 @@ class AttractionController():
          message=message )
 
       return save_attraction_opening_schedule(
-         self._conn,
+         get_connection(),
          schedule=schedule )
