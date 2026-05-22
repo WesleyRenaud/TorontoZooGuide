@@ -6,20 +6,20 @@ import { createViewingAlertPanel } from '../animals/panels/viewingAlertPanel.js'
 import { createVisibilitySchedulePanel } from '../animals/panels/visibilitySchedulePanel.js';
 import { createAttractionClosedPanel } from '../attractions/panels/attractionClosedPanel.js';
 import { createAttractionClosureOverridePanel } from '../attractions/panels/attractionClosureOverridePanel.js';
-import { createAttractionOpenPanel } from '../attractions/panels/attractionOpenPanel.js';
+import { createAttractionOpeningSchedulePanel } from '../attractions/panels/attractionOpeningSchedulePanel.js';
 import { createDrinkingFountainsClosedPanel } from '../drinkingFountains/panels/drinkingFountainsClosedPanel.js';
 import { createDrinkingFountainsOpenPanel } from '../drinkingFountains/panels/drinkingFountainsOpenPanel.js';
 import { createExhibitClosedPanel } from '../exhibits/panels/exhibitClosedPanel.js';
 import { createExhibitOpenPanel } from '../exhibits/panels/exhibitOpenPanel.js';
 import { createGiftShopClosedPanel } from '../giftShops/panels/giftShopClosedPanel.js';
 import { createGiftShopClosureOverridePanel } from '../giftShops/panels/giftShopClosureOverridePanel.js';
-import { createGiftShopOpenPanel } from '../giftShops/panels/giftShopOpenPanel.js';
+import { createGiftShopOpeningSchedulePanel } from '../giftShops/panels/giftShopOpeningSchedulePanel.js';
 import { createCancelGuardiansTalkOccurrencePanel } from '../guardiansTalks/panels/cancelGuardiansTalkOccurrencePanel.js';
 import { createEndGuardiansTalkSchedulePanel } from '../guardiansTalks/panels/endGuardiansTalkSchedulePanel.js';
 import { createGuardiansTalkSchedulePanel } from '../guardiansTalks/panels/guardiansTalkSchedulePanel.js';
 import { createRestaurantClosedPanel } from '../restaurants/panels/restaurantClosedPanel.js';
 import { createRestaurantClosureOverridePanel } from '../restaurants/panels/restaurantClosureOverridePanel.js';
-import { createRestaurantOpenPanel } from '../restaurants/panels/restaurantOpenPanel.js';
+import { createRestaurantOpeningSchedulePanel } from '../restaurants/panels/restaurantOpeningSchedulePanel.js';
 import { createRemoveRestroomAlertPanel } from '../restrooms/panels/removeRestroomAlertPanel.js';
 import { createRestroomAlertPanel } from '../restrooms/panels/restroomAlertPanel.js';
 import { createRestroomClosedPanel } from '../restrooms/panels/restroomClosedPanel.js';
@@ -50,7 +50,7 @@ const PANEL_CREATORS = {
    restaurants: [
       createRestaurantClosedPanel,
       createRestaurantClosureOverridePanel,
-      createRestaurantOpenPanel,
+      createRestaurantOpeningSchedulePanel,
    ],
    restrooms: [
       createRestroomClosedPanel,
@@ -61,12 +61,12 @@ const PANEL_CREATORS = {
    giftShops: [
       createGiftShopClosedPanel,
       createGiftShopClosureOverridePanel,
-      createGiftShopOpenPanel,
+      createGiftShopOpeningSchedulePanel,
    ],
    attractions: [
       createAttractionClosedPanel,
       createAttractionClosureOverridePanel,
-      createAttractionOpenPanel,
+      createAttractionOpeningSchedulePanel,
    ],
    zoomobile: [
       createZoomobileStationClosedPanel,

@@ -10,47 +10,47 @@ import {
    createWeeklyScheduleCheckboxes,
 } from '../../templates/fragments.js';
 
-export function createAttractionOpenPanel() {
+export function createAttractionOpeningSchedulePanel() {
    return createPanelShell({
-      panelId: 'attractionOpenPanel',
-      title: APP_STRINGS.panelTitles.attractionOpen,
+      panelId: 'attractionOpeningSchedulePanel',
+      title: APP_STRINGS.panelTitles.attractionOpeningSchedule,
       bodyChildren: [
          createSelectField({
             label: APP_STRINGS.entityLabels.attraction,
-            inputId: 'attractionOpenAttraction',
+            inputId: 'attractionOpeningScheduleAttraction',
             emptyOptionLabel: APP_STRINGS.placeholders.attraction,
          }),
          createSchedulePresetField({
-            inputId: 'attractionOpenPreset',
+            inputId: 'attractionOpeningSchedulePreset',
          }),
          createDateRangeFields({
-            startDateId: 'attractionOpenStartDate',
+            startDateId: 'attractionOpeningScheduleStartDate',
             startHelpText: APP_STRINGS.help.startImmediately,
-            endDateId: 'attractionOpenEndDate',
+            endDateId: 'attractionOpeningScheduleEndDate',
             endHelpText: APP_STRINGS.help.keepScheduleUntilChanged,
          }),
          createWeeklyScheduleCheckboxes({
             dayIds: {
-               monday: 'attractionOpenMonday',
-               tuesday: 'attractionOpenTuesday',
-               wednesday: 'attractionOpenWednesday',
-               thursday: 'attractionOpenThursday',
-               friday: 'attractionOpenFriday',
-               saturday: 'attractionOpenSaturday',
-               sunday: 'attractionOpenSunday',
-               holidays: 'attractionOpenHolidaysOnly',
+               monday: 'attractionOpeningScheduleMonday',
+               tuesday: 'attractionOpeningScheduleTuesday',
+               wednesday: 'attractionOpeningScheduleWednesday',
+               thursday: 'attractionOpeningScheduleThursday',
+               friday: 'attractionOpeningScheduleFriday',
+               saturday: 'attractionOpeningScheduleSaturday',
+               sunday: 'attractionOpeningScheduleSunday',
+               holidays: 'attractionOpeningScheduleHolidaysOnly',
             },
          }),
          createTextareaField({
             label: APP_STRINGS.labels.scheduleMessage,
-            inputId: 'attractionOpenMessage',
+            inputId: 'attractionOpeningScheduleMessage',
             placeholder: APP_STRINGS.textareas.scheduledClosedMessage('attraction'),
          }),
          createActions({
-            submitId: 'submitAttractionOpen',
+            submitId: 'submitAttractionOpeningSchedule',
          }),
          createStatus({
-            statusId: 'attractionOpenStatus',
+            statusId: 'attractionOpeningScheduleStatus',
          }),
       ],
    });

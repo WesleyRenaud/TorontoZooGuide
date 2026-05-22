@@ -7,14 +7,14 @@ import { createRemoveViewingAlertController } from '../animals/controllers/remov
 import { createRemoveVisibilityScheduleController } from '../animals/controllers/removeVisibilitySchedule.js';
 import { createAttractionClosedController } from '../attractions/controllers/attractionClosed.js';
 import { createAttractionClosureOverrideController } from '../attractions/controllers/attractionClosureOverride.js';
-import { createAttractionOpenController } from '../attractions/controllers/attractionOpen.js';
+import { createAttractionOpeningScheduleController } from '../attractions/controllers/attractionOpeningSchedule.js';
 import { createDrinkingFountainsClosedController } from '../drinkingFountains/controllers/drinkingFountainsClosed.js';
 import { createDrinkingFountainsOpenController } from '../drinkingFountains/controllers/drinkingFountainsOpen.js';
 import { createExhibitClosedController } from '../exhibits/controllers/exhibitClosed.js';
 import { createExhibitOpenController } from '../exhibits/controllers/exhibitOpen.js';
 import { createGiftShopClosedController } from '../giftShops/controllers/giftShopClosed.js';
 import { createGiftShopClosureOverrideController } from '../giftShops/controllers/giftShopClosureOverride.js';
-import { createGiftShopOpenController } from '../giftShops/controllers/giftShopOpen.js';
+import { createGiftShopOpeningScheduleController } from '../giftShops/controllers/giftShopOpeningSchedule.js';
 import { createCancelGuardiansTalkOccurrenceController } from '../guardiansTalks/controllers/cancelGuardiansTalkOccurrence.js';
 import { createEndGuardiansTalkScheduleController } from '../guardiansTalks/controllers/endGuardiansTalkSchedule.js';
 import { createGuardiansTalkLocationFilterController } from '../guardiansTalks/controllers/guardiansTalkLocationFilter.js';
@@ -22,7 +22,7 @@ import { createGuardiansTalkOccurrenceFilterController } from '../guardiansTalks
 import { createGuardiansTalkScheduleController } from '../guardiansTalks/controllers/guardiansTalkSchedule.js';
 import { createRestaurantClosedController } from '../restaurants/controllers/restaurantClosed.js';
 import { createRestaurantClosureOverrideController } from '../restaurants/controllers/restaurantClosureOverride.js';
-import { createRestaurantOpenController } from '../restaurants/controllers/restaurantOpen.js';
+import { createRestaurantOpeningScheduleController } from '../restaurants/controllers/restaurantOpeningSchedule.js';
 import { createRemoveRestroomAlertController } from '../restrooms/controllers/removeRestroomAlert.js';
 import { createRestroomAlertController } from '../restrooms/controllers/restroomAlert.js';
 import { createRestroomClosedController } from '../restrooms/controllers/restroomClosed.js';
@@ -89,8 +89,8 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.restaurants.closureOverride,
    },
    {
-      createController: createRestaurantOpenController,
-      getRefs: refs => refs.restaurants.open,
+      createController: createRestaurantOpeningScheduleController,
+      getRefs: refs => refs.restaurants.openingSchedule,
    },
    {
       createController: createRestroomClosedController,
@@ -117,8 +117,8 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.giftShops.closureOverride,
    },
    {
-      createController: createGiftShopOpenController,
-      getRefs: refs => refs.giftShops.open,
+      createController: createGiftShopOpeningScheduleController,
+      getRefs: refs => refs.giftShops.openingSchedule,
    },
    {
       createController: createAttractionClosedController,
@@ -129,8 +129,8 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.attractions.closureOverride,
    },
    {
-      createController: createAttractionOpenController,
-      getRefs: refs => refs.attractions.open,
+      createController: createAttractionOpeningScheduleController,
+      getRefs: refs => refs.attractions.openingSchedule,
    },
    {
       createController: createZoomobileStationClosedController,
