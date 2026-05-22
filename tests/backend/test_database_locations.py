@@ -3,6 +3,7 @@ from datetime import date
 import pytest
 
 from api.attractions.data_access.attraction import fetch_attraction_schedule_records
+from api.attractions.data_access.attraction import fetch_attraction_schedule_override_records
 from api.attractions.logic.attraction import get_active_attraction_schedule_status
 from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_records
 from api.giftshops.logic.gift_shop import get_active_gift_shop_schedule_status
@@ -491,6 +492,119 @@ def test_attraction_schedule_controls_open_and_closed_results( db, freeze_databa
    assert attraction.closed_message == 'Closed for testing.'
 
 
+def test_attraction_opening_schedule_rejects_overlapping_date_ranges( db ):
+   assert AttractionController.set_attraction_opening_schedule(
+      attraction='Conservation Carousel',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      holidays_only=False,
+      message='June schedule.'
+   )
+
+   assert AttractionController.set_attraction_opening_schedule(
+      attraction='Conservation Carousel',
+      start_date='2026-06-15',
+      end_date='2026-07-15',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      holidays_only=False,
+      message='Overlapping schedule.'
+   ) is False
+
+   assert AttractionController.set_attraction_opening_schedule(
+      attraction='Conservation Carousel',
+      start_date='2026-07-01',
+      end_date='2026-07-31',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      holidays_only=False,
+      message='July schedule.'
+   )
+
+
+def test_attraction_closure_override_takes_precedence_over_opening_schedule( db ):
+   assert AttractionController.set_attraction_opening_schedule(
+      attraction='Conservation Carousel',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday=True,
+      tuesday=True,
+      wednesday=True,
+      thursday=True,
+      friday=True,
+      saturday=True,
+      sunday=True,
+      holidays_only=False,
+      message='Open for June.'
+   )
+
+   assert AttractionController.set_attraction_closure_override(
+      attraction='Conservation Carousel',
+      start_date='2026-06-20',
+      end_date='2026-06-21',
+      message='Closed this weekend.'
+   )
+
+   override_records = fetch_attraction_schedule_override_records( db.conn )
+   assert [
+      (
+         record.attraction,
+         record.override_start_date,
+         record.override_end_date,
+         record.is_closed,
+         record.override_message
+      )
+      for record in override_records
+      if record.attraction == 'Conservation Carousel'
+   ] == [
+      (
+         'Conservation Carousel',
+         '2026-06-20',
+         '2026-06-21',
+         1,
+         'Closed this weekend.'
+      )
+   ]
+
+   closed_attraction = next(
+      attraction for attraction in AttractionController.get_attractions(
+         day=20,
+         month='June',
+         year=2026,
+         include_closed_attractions=True )
+      if attraction.name == 'Conservation Carousel'
+   )
+   open_attraction = next(
+      attraction for attraction in AttractionController.get_attractions(
+         day=22,
+         month='June',
+         year=2026,
+         include_closed_attractions=True )
+      if attraction.name == 'Conservation Carousel'
+   )
+
+   assert closed_attraction.is_closed is True
+   assert closed_attraction.closed_message == 'Closed this weekend.'
+   assert open_attraction.is_closed is False
+
+
 @pytest.mark.parametrize(
    'method_name, setter_name, item_kw, item_name',
    [
@@ -626,7 +740,6 @@ def test_amenity_schedule_status_handles_unknown_inactive_closed_and_holiday(
       date( 2026, 6, 15 ),
       0 ) == ( 'closed', 'Closed for testing.' )
 
-   schedule[ 'start_date' ] = '2026-01-01'
    schedule[ 'end_date' ] = '2026-12-31'
    schedule[ 'holidays_only' ] = True
    assert apply_amenity_opening_schedule( db, setter_name, schedule )

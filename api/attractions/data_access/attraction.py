@@ -1,5 +1,6 @@
 from .attraction_mapper import map_attraction_record
 from .attraction_mapper import map_attraction_records
+from .attraction_mapper import map_attraction_schedule_override_records
 from .attraction_mapper import map_attraction_schedule_records
 
 
@@ -105,6 +106,26 @@ def fetch_attraction_schedule_records( conn ):
          """ )
 
       return map_attraction_schedule_records( data.fetchall() )
+
+   finally:
+      cur.close()
+
+
+def fetch_attraction_schedule_override_records( conn ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  o.ATTRACTION,
+                  o.OVERRIDE_START_DATE,
+                  o.OVERRIDE_END_DATE,
+                  o.IS_CLOSED,
+                  o.OVERRIDE_MESSAGE
+               FROM AttractionScheduleOverride o;
+         """ )
+
+      return map_attraction_schedule_override_records( data.fetchall() )
 
    finally:
       cur.close()

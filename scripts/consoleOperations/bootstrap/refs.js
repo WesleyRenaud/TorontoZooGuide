@@ -142,6 +142,14 @@ const CONSOLE_OPERATION_REF_CONFIG = {
             messageEl: 'Message',
          },
       },
+      closureOverride: {
+         operationName: 'attractionClosureOverride',
+         includeDateRange: true,
+         fieldSuffixes: {
+            attractionEl: 'Attraction',
+            messageEl: 'Message',
+         },
+      },
       open: {
          operationName: 'attractionOpen',
          includeWeeklyAvailability: true,
