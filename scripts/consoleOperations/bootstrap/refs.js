@@ -75,6 +75,14 @@ const CONSOLE_OPERATION_REF_CONFIG = {
             messageEl: 'Message',
          },
       },
+      closureOverride: {
+         operationName: 'restaurantClosureOverride',
+         includeDateRange: true,
+         fieldSuffixes: {
+            restaurantEl: 'Restaurant',
+            messageEl: 'Message',
+         },
+      },
       open: {
          operationName: 'restaurantOpen',
          includeWeeklyAvailability: true,
@@ -118,6 +126,14 @@ const CONSOLE_OPERATION_REF_CONFIG = {
    giftShops: {
       closed: {
          operationName: 'giftShopClosed',
+         includeDateRange: true,
+         fieldSuffixes: {
+            giftShopEl: 'GiftShop',
+            messageEl: 'Message',
+         },
+      },
+      closureOverride: {
+         operationName: 'giftShopClosureOverride',
          includeDateRange: true,
          fieldSuffixes: {
             giftShopEl: 'GiftShop',

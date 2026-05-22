@@ -1,6 +1,7 @@
 from ... import zoo
 from ...shared.strings import SharedStrings
 from .gift_shop_opening_schedule import GiftShopOpeningSchedule
+from .gift_shop_schedule_override import GiftShopScheduleOverride
 
 
 def build_gift_shop_closed_schedule(
@@ -63,4 +64,24 @@ def build_gift_shop_opening_schedule(
       saturday=saturday,
       sunday=sunday,
       holidays_only=holidays_only,
+      message=message )
+
+
+def build_gift_shop_closure_override(
+      gift_shop,
+      start_date,
+      end_date,
+      message ):
+   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+      start_date=start_date,
+      end_date=end_date )
+
+   if not message:
+      message = SharedStrings.Locations.temporarily_closed( gift_shop )
+
+   return GiftShopScheduleOverride(
+      gift_shop=gift_shop,
+      start_date=date_range.start_date,
+      end_date=date_range.end_date,
+      is_closed=True,
       message=message )
