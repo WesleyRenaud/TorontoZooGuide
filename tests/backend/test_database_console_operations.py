@@ -272,6 +272,22 @@ def test_set_zoomobile_station_closed_and_open_changes_route_results( db, freeze
    assert any( station.name == 'Africa Zoomobile Station' for station in route.zoomobile_stations )
 
 
+def test_create_update_uses_today_when_start_date_is_blank( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert UpdateController.create_update(
+      title='Zoomobile update',
+      description='Route change today.',
+      update_type='Closure',
+      start_date='',
+      end_date=None )
+
+   updates = UpdateController.get_updates_for_visit_date( month='June', day=15, year=2026 )
+
+   assert len( updates ) == 1
+   assert updates[ 0 ].start_date == '2026-06-15'
+
+
 def test_create_end_and_edit_updates_change_active_update_results( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
 
