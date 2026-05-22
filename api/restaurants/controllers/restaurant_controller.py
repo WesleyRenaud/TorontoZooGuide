@@ -1,10 +1,13 @@
 from ..data_access.restaurant import fetch_restaurant_names
 from ..data_access.restaurant import fetch_restaurant_records
+from ..data_access.restaurant import fetch_restaurant_schedule_override_records
 from ..data_access.restaurant import fetch_restaurant_schedule_records
 from ..data_access.restaurant_schedule import save_restaurant_opening_schedule
+from ..data_access.restaurant_schedule import save_restaurant_schedule_override
 from ..logic.restaurant import build_restaurants
 from ..logic.restaurant import resolve_restaurant_context
 from ..logic.restaurant_status import build_restaurant_closed_schedule
+from ..logic.restaurant_status import build_restaurant_closure_override
 from ..logic.restaurant_status import build_restaurant_opening_schedule
 from ..logic.restaurants_matching_query import build_restaurants_matching_query
 from ...request_connection import get_connection
@@ -38,6 +41,8 @@ class RestaurantController():
             month=context.normalized_month,
             day=context.normalized_day ),
          schedule_records=fetch_restaurant_schedule_records( get_connection() ),
+         schedule_override_records=fetch_restaurant_schedule_override_records(
+            get_connection() ),
          context=context,
          include_closed_restaurants=include_closed_restaurants,
          restaurants_to_include=restaurants_to_include )
@@ -79,6 +84,24 @@ class RestaurantController():
       return save_restaurant_opening_schedule(
          get_connection(),
          schedule=schedule )
+
+
+   @classmethod
+   def set_restaurant_closure_override(
+         cls,
+         restaurant,
+         start_date,
+         end_date,
+         message ):
+      override = build_restaurant_closure_override(
+         restaurant=restaurant,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      return save_restaurant_schedule_override(
+         get_connection(),
+         override=override )
 
 
    @classmethod

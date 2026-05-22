@@ -13,6 +13,7 @@ import { createDrinkingFountainsOpenController } from '../drinkingFountains/cont
 import { createExhibitClosedController } from '../exhibits/controllers/exhibitClosed.js';
 import { createExhibitOpenController } from '../exhibits/controllers/exhibitOpen.js';
 import { createGiftShopClosedController } from '../giftShops/controllers/giftShopClosed.js';
+import { createGiftShopClosureOverrideController } from '../giftShops/controllers/giftShopClosureOverride.js';
 import { createGiftShopOpenController } from '../giftShops/controllers/giftShopOpen.js';
 import { createCancelGuardiansTalkOccurrenceController } from '../guardiansTalks/controllers/cancelGuardiansTalkOccurrence.js';
 import { createEndGuardiansTalkScheduleController } from '../guardiansTalks/controllers/endGuardiansTalkSchedule.js';
@@ -20,6 +21,7 @@ import { createGuardiansTalkLocationFilterController } from '../guardiansTalks/c
 import { createGuardiansTalkOccurrenceFilterController } from '../guardiansTalks/controllers/guardiansTalkOccurrenceFilter.js';
 import { createGuardiansTalkScheduleController } from '../guardiansTalks/controllers/guardiansTalkSchedule.js';
 import { createRestaurantClosedController } from '../restaurants/controllers/restaurantClosed.js';
+import { createRestaurantClosureOverrideController } from '../restaurants/controllers/restaurantClosureOverride.js';
 import { createRestaurantOpenController } from '../restaurants/controllers/restaurantOpen.js';
 import { createRemoveRestroomAlertController } from '../restrooms/controllers/removeRestroomAlert.js';
 import { createRestroomAlertController } from '../restrooms/controllers/restroomAlert.js';
@@ -83,6 +85,10 @@ const CONTROLLER_BINDINGS = [
       getRefs: refs => refs.restaurants.closed,
    },
    {
+      createController: createRestaurantClosureOverrideController,
+      getRefs: refs => refs.restaurants.closureOverride,
+   },
+   {
       createController: createRestaurantOpenController,
       getRefs: refs => refs.restaurants.open,
    },
@@ -105,6 +111,10 @@ const CONTROLLER_BINDINGS = [
    {
       createController: createGiftShopClosedController,
       getRefs: refs => refs.giftShops.closed,
+   },
+   {
+      createController: createGiftShopClosureOverrideController,
+      getRefs: refs => refs.giftShops.closureOverride,
    },
    {
       createController: createGiftShopOpenController,

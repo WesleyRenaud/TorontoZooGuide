@@ -272,7 +272,7 @@ def create_schema( cursor ):
                         SUNDAY                BOOL        NOT NULL DEFAULT 0,
                         HOLIDAYS_ONLY         BOOL        NOT NULL DEFAULT 0,
                         SCHEDULE_MESSAGE      TEXT,
-                        PRIMARY KEY (RESTAURANT),
+                        PRIMARY KEY (RESTAURANT, SCHEDULE_START_DATE),
                         FOREIGN KEY (RESTAURANT) REFERENCES Restaurant(NAME) ); ''' )
 
    restaurant_schedule_columns = {
@@ -334,6 +334,39 @@ def create_schema( cursor ):
          'ALTER TABLE RestaurantOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
       )
 
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS RestaurantScheduleOverride
+                     (  RESTAURANT            VARCHAR(64) NOT NULL,
+                        OVERRIDE_START_DATE   DATE        NOT NULL,
+                        OVERRIDE_END_DATE     DATE,
+                        IS_CLOSED             BOOL        NOT NULL DEFAULT 1,
+                        OVERRIDE_MESSAGE      TEXT,
+                        PRIMARY KEY (RESTAURANT, OVERRIDE_START_DATE),
+                        FOREIGN KEY (RESTAURANT) REFERENCES Restaurant(NAME) ); ''' )
+
+   restaurant_schedule_override_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( RestaurantScheduleOverride );' ).fetchall()
+   }
+
+   if 'OVERRIDE_START_DATE' not in restaurant_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE RestaurantScheduleOverride ADD COLUMN OVERRIDE_START_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+      )
+
+   if 'OVERRIDE_END_DATE' not in restaurant_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE RestaurantScheduleOverride ADD COLUMN OVERRIDE_END_DATE DATE;'
+      )
+
+   if 'IS_CLOSED' not in restaurant_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE RestaurantScheduleOverride ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 1;'
+      )
+
+   if 'OVERRIDE_MESSAGE' not in restaurant_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE RestaurantScheduleOverride ADD COLUMN OVERRIDE_MESSAGE TEXT;'
+      )
+
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS GiftShopOpeningSchedule
                      (  GIFT_SHOP             VARCHAR(64) NOT NULL,
                         SCHEDULE_START_DATE   DATE        NOT NULL,
@@ -347,7 +380,7 @@ def create_schema( cursor ):
                         SUNDAY                BOOL        NOT NULL DEFAULT 0,
                         HOLIDAYS_ONLY         BOOL        NOT NULL DEFAULT 0,
                         SCHEDULE_MESSAGE      TEXT,
-                        PRIMARY KEY (GIFT_SHOP),
+                        PRIMARY KEY (GIFT_SHOP, SCHEDULE_START_DATE),
                         FOREIGN KEY (GIFT_SHOP) REFERENCES GiftShop(NAME) ); ''' )
 
    gift_shop_schedule_columns = {
@@ -407,6 +440,39 @@ def create_schema( cursor ):
    if 'SCHEDULE_MESSAGE' not in gift_shop_schedule_columns:
       cursor.execute(
          'ALTER TABLE GiftShopOpeningSchedule ADD COLUMN SCHEDULE_MESSAGE TEXT;'
+      )
+
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS GiftShopScheduleOverride
+                     (  GIFT_SHOP             VARCHAR(64) NOT NULL,
+                        OVERRIDE_START_DATE   DATE        NOT NULL,
+                        OVERRIDE_END_DATE     DATE,
+                        IS_CLOSED             BOOL        NOT NULL DEFAULT 1,
+                        OVERRIDE_MESSAGE      TEXT,
+                        PRIMARY KEY (GIFT_SHOP, OVERRIDE_START_DATE),
+                        FOREIGN KEY (GIFT_SHOP) REFERENCES GiftShop(NAME) ); ''' )
+
+   gift_shop_schedule_override_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( GiftShopScheduleOverride );' ).fetchall()
+   }
+
+   if 'OVERRIDE_START_DATE' not in gift_shop_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE GiftShopScheduleOverride ADD COLUMN OVERRIDE_START_DATE DATE NOT NULL DEFAULT CURRENT_DATE;'
+      )
+
+   if 'OVERRIDE_END_DATE' not in gift_shop_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE GiftShopScheduleOverride ADD COLUMN OVERRIDE_END_DATE DATE;'
+      )
+
+   if 'IS_CLOSED' not in gift_shop_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE GiftShopScheduleOverride ADD COLUMN IS_CLOSED BOOL NOT NULL DEFAULT 1;'
+      )
+
+   if 'OVERRIDE_MESSAGE' not in gift_shop_schedule_override_columns:
+      cursor.execute(
+         'ALTER TABLE GiftShopScheduleOverride ADD COLUMN OVERRIDE_MESSAGE TEXT;'
       )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS AppSetting

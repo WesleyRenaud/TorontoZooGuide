@@ -1,4 +1,5 @@
 from .gift_shop_mapper import map_gift_shop_records
+from .gift_shop_mapper import map_gift_shop_schedule_override_records
 from .gift_shop_mapper import map_gift_shop_schedule_records
 
 
@@ -66,6 +67,26 @@ def fetch_gift_shop_schedule_records( conn ):
          """ )
 
       return map_gift_shop_schedule_records( data.fetchall() )
+
+   finally:
+      cur.close()
+
+
+def fetch_gift_shop_schedule_override_records( conn ):
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  o.GIFT_SHOP,
+                  o.OVERRIDE_START_DATE,
+                  o.OVERRIDE_END_DATE,
+                  o.IS_CLOSED,
+                  o.OVERRIDE_MESSAGE
+               FROM GiftShopScheduleOverride o;
+         """ )
+
+      return map_gift_shop_schedule_override_records( data.fetchall() )
 
    finally:
       cur.close()

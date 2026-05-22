@@ -1,10 +1,13 @@
 from ..data_access.gift_shop import fetch_gift_shop_names
 from ..data_access.gift_shop import fetch_gift_shop_records
+from ..data_access.gift_shop import fetch_gift_shop_schedule_override_records
 from ..data_access.gift_shop import fetch_gift_shop_schedule_records
 from ..data_access.gift_shop_schedule import save_gift_shop_opening_schedule
+from ..data_access.gift_shop_schedule import save_gift_shop_schedule_override
 from ..logic.gift_shop import build_gift_shops
 from ..logic.gift_shop import resolve_gift_shop_context
 from ..logic.gift_shop_status import build_gift_shop_closed_schedule
+from ..logic.gift_shop_status import build_gift_shop_closure_override
 from ..logic.gift_shop_status import build_gift_shop_opening_schedule
 from ..logic.gift_shops_matching_query import build_gift_shops_matching_query
 from ...request_connection import get_connection
@@ -38,6 +41,8 @@ class GiftShopController():
             month=context.normalized_month,
             day=context.normalized_day ),
          schedule_records=fetch_gift_shop_schedule_records( get_connection() ),
+         schedule_override_records=fetch_gift_shop_schedule_override_records(
+            get_connection() ),
          context=context,
          include_closed_gift_shops=include_closed_gift_shops,
          gift_shops_to_include=gift_shops_to_include )
@@ -78,6 +83,24 @@ class GiftShopController():
       return save_gift_shop_opening_schedule(
          get_connection(),
          schedule=schedule )
+
+
+   @classmethod
+   def set_gift_shop_closure_override(
+         cls,
+         gift_shop,
+         start_date,
+         end_date,
+         message ):
+      override = build_gift_shop_closure_override(
+         gift_shop=gift_shop,
+         start_date=start_date,
+         end_date=end_date,
+         message=message )
+
+      return save_gift_shop_schedule_override(
+         get_connection(),
+         override=override )
 
 
    @classmethod

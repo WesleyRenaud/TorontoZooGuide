@@ -80,6 +80,10 @@ export function setRestaurantClosed(payload) {
    return postJson('/set-restaurant-closed', payload);
 }
 
+export function setRestaurantClosureOverride(payload) {
+   return postJson('/set-restaurant-closure-override', payload);
+}
+
 export function setRestroomOpen(payload) {
    return postJson('/set-restroom-open', payload);
 }
@@ -114,6 +118,10 @@ export function setGiftShopOpeningSchedule(payload) {
 
 export function setGiftShopClosed(payload) {
    return postJson('/set-gift-shop-closed', payload);
+}
+
+export function setGiftShopClosureOverride(payload) {
+   return postJson('/set-gift-shop-closure-override', payload);
 }
 
 export function setAttractionOpeningSchedule(payload) {
