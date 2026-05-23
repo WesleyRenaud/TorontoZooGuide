@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...models import GuestService
 from ..data_access.guest_service import fetch_guest_services
+from ...models import GuestService
 from ...request_connection import get_connection
 
 

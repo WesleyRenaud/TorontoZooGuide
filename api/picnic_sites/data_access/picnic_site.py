@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from ...models import PicnicSite
-from ...types import Connection
 from .picnic_site_mapper import map_picnic_site_records
+from ...types import Connection
 
 
 def fetch_picnic_sites( conn: Connection ) -> list[ PicnicSite ]:

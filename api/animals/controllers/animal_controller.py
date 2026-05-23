@@ -1,25 +1,25 @@
 from __future__ import annotations
 
-from ...models import Animal
-from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ...types import DateInput, MonthInput, VisitDay, VisitMonth, VisitYear
 from ..data_access.animal_information import fetch_animal_information
 from ..data_access.animal_species_name import fetch_animal_species_names
 from ..data_access.animal_status import save_animal_off_display_status
 from ..data_access.animal_status import save_animal_on_display_status
-from ..data_access.animal_visibility_schedule import delete_animal_visibility_schedule
-from ..data_access.animal_visibility_schedule import save_animal_limited_viewing_schedule
+from ..data_access.animal_viewable_on_day import fetch_animals_viewable_on_day_records
 from ..data_access.animal_viewing_alert import delete_animal_viewing_alert
 from ..data_access.animal_viewing_alert import save_animal_viewing_alert
-from ..data_access.animal_viewable_on_day import fetch_animals_viewable_on_day_records
+from ..data_access.animal_visibility_schedule import delete_animal_visibility_schedule
+from ..data_access.animal_visibility_schedule import save_animal_limited_viewing_schedule
+from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..logic.animal_status import build_animal_off_display_status
-from ..logic.animal_visibility_schedule import build_animal_limited_viewing_schedule
-from ..logic.animal_viewing_alert_builder import build_animal_viewing_alert
 from ..logic.animal_viewability import build_viewable_animals_on_day
 from ..logic.animal_viewability import resolve_animal_viewability_context
+from ..logic.animal_viewing_alert_builder import build_animal_viewing_alert
+from ..logic.animal_visibility_schedule import build_animal_limited_viewing_schedule
 from ..logic.animals_matching_query import build_animals_matching_query
 from ..logic.itinerary_animals import build_itinerary_animals
+from ...models import Animal
 from ...request_connection import get_connection
+from ...types import DateInput, MonthInput, VisitDay, VisitMonth, VisitYear
 
 
 class AnimalController():

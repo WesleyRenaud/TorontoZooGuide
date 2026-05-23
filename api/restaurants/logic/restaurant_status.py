@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from .restaurant_opening_schedule import RestaurantOpeningSchedule
+from .restaurant_schedule_override import RestaurantScheduleOverride
 from ...shared.date_values import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
-from .restaurant_opening_schedule import RestaurantOpeningSchedule
-from .restaurant_schedule_override import RestaurantScheduleOverride
 
 
 def build_restaurant_closed_schedule(

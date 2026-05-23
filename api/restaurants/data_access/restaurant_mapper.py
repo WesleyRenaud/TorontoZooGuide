@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...types import Row
 from .restaurant_record import RestaurantRecord
 from .restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
 from .restaurant_schedule_record import RestaurantScheduleRecord
+from ...types import Row
 
 
 def map_restaurant_record( row: Row ) -> RestaurantRecord:

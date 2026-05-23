@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..types import ScheduleTimeKey
 from ..shared.value_conversion import ValueConversion
+from ..types import ScheduleTimeKey
 
 
 class WildEncounterDiff:

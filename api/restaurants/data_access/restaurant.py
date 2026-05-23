@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from ...types import Connection, VisitDay, VisitMonth
 from .restaurant_mapper import map_restaurant_records
 from .restaurant_mapper import map_restaurant_schedule_override_records
 from .restaurant_mapper import map_restaurant_schedule_records
 from .restaurant_record import RestaurantRecord
 from .restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
 from .restaurant_schedule_record import RestaurantScheduleRecord
+from ...types import Connection, VisitDay, VisitMonth
 
 
 def fetch_restaurant_names( conn: Connection ) -> list[ str ]:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, time
+from datetime import date, datetime, time, timedelta
 
 from ..models.date_range import DateRange
 from ..types import DateInput, DateKey

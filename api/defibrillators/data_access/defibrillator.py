@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from .defibrillator_mapper import map_defibrillator_records
 from ...models import Defibrillator
 from ...types import Connection
-from .defibrillator_mapper import map_defibrillator_records
 
 
 def fetch_defibrillators( conn: Connection ) -> list[ Defibrillator ]:

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ...types import Connection, VisitDay, VisitMonth
 from .animal_viewability_mapper import map_animal_viewability_rows
 from .animal_viewability_record import AnimalViewabilityRecord
+from ...types import Connection, VisitDay, VisitMonth
 
 
 _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL = """   SELECT

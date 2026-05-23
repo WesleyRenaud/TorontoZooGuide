@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from ...models import GiftShop
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.gift_shop import fetch_gift_shop_names
 from ..data_access.gift_shop import fetch_gift_shop_records
 from ..data_access.gift_shop import fetch_gift_shop_schedule_override_records
@@ -10,13 +8,15 @@ from ..data_access.gift_shop_schedule import save_gift_shop_opening_schedule
 from ..data_access.gift_shop_schedule import save_gift_shop_schedule_override
 from ..logic.gift_shop import build_gift_shops
 from ..logic.gift_shop import resolve_gift_shop_context
+from ..logic.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_replacing_overlaps
+from ..logic.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_trimming_overlaps
 from ..logic.gift_shop_status import build_gift_shop_closed_schedule
 from ..logic.gift_shop_status import build_gift_shop_closure_override
 from ..logic.gift_shop_status import build_gift_shop_opening_schedule
-from ..logic.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_replacing_overlaps
-from ..logic.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_trimming_overlaps
 from ..logic.gift_shops_matching_query import build_gift_shops_matching_query
+from ...models import GiftShop
 from ...request_connection import get_connection
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class GiftShopController():

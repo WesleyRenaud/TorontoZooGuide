@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...types import Row
 from .drinking_fountain_status_record import DrinkingFountainStatusRecord
+from ...types import Row
 
 
 def map_drinking_fountain_status_record( row: Row ) -> DrinkingFountainStatusRecord:

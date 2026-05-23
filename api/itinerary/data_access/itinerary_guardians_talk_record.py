@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...types import ScheduleTimeKey
 from .itinerary_name_key import itinerary_name_key
+from ...types import ScheduleTimeKey
 
 
 @dataclass( frozen=True )

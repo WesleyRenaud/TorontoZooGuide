@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..types import Coordinate, ScheduleTimeKey
 from ..shared.value_conversion import ValueConversion
+from ..types import Coordinate, ScheduleTimeKey
 
 
 class WildEncounter:

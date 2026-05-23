@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...types import Row
 from .exhibit_closure_record import ExhibitClosureRecord
+from ...types import Row
 
 
 def map_exhibit_closure_record( row: Row ) -> ExhibitClosureRecord:

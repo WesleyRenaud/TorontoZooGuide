@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...types import Row
 from .itinerary_attraction_record import ItineraryAttractionRecord
+from ...types import Row
 
 
 def map_itinerary_attraction_record( row: Row ) -> ItineraryAttractionRecord:

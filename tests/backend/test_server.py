@@ -7,7 +7,6 @@ from typing import Any
 
 import pytest
 
-import api.server as server
 from api.models import Animal
 from api.models import Attraction
 from api.models import Defibrillator
@@ -30,6 +29,7 @@ from api.models import WildEncounter
 from api.models import ZooHours
 from api.models import ZoomobileStation
 from api.models.zoomobile_route import ZoomobileRoute
+import api.server as server
 from api.types import Connection
 from conftest import FakeHandler
 

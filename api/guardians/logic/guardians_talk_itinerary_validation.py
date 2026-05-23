@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from .guardians_talk_schedule import find_guardians_talk_on_day_schedule
 from ...models import GuardiansTalk
 from ...models import GuardiansTalkDiff
 from ...shared.date_values import DateValues
-from .guardians_talk_schedule import find_guardians_talk_on_day_schedule
 
 
 def build_guardians_talk_diff_for_visit_day(

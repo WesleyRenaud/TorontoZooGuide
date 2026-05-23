@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...types import Row
 from .attraction_record import AttractionRecord
-from .attraction_schedule_record import AttractionScheduleRecord
 from .attraction_schedule_override_record import AttractionScheduleOverrideRecord
+from .attraction_schedule_record import AttractionScheduleRecord
+from ...types import Row
 
 
 def map_attraction_record( row: Row ) -> AttractionRecord:

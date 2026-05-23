@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...types import Row
 from .guardians_talk_cancellation_record import GuardiansTalkCancellationRecord
+from ...types import Row
 
 
 def map_guardians_talk_cancellation_record( row: Row ) -> GuardiansTalkCancellationRecord:

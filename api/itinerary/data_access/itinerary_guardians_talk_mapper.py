@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from ...shared.value_conversion import ValueConversion
 from ...types import Row
-from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 
 
 def map_itinerary_guardians_talk_record( row: Row ) -> ItineraryGuardiansTalkRecord:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...models import Defibrillator
 from ..data_access.defibrillator import fetch_defibrillators
+from ...models import Defibrillator
 from ...request_connection import get_connection
 
 

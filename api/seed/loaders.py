@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..types import Cursor
 from .tables import static_tables
+from ..types import Cursor
 
 
 def seed_static_data( cursor: Cursor ) -> None:

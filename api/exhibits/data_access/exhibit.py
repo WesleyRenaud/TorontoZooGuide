@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ...types import Connection
 from .exhibit_mapper import map_region_exhibit_rows
 from .region_exhibit_record import RegionExhibitRecord
+from ...types import Connection
 
 
 def fetch_exhibit_names( conn: Connection ) -> list[ str ]:

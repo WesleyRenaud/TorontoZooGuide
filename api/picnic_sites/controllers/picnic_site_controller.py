@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...models import PicnicSite
 from ..data_access.picnic_site import fetch_picnic_sites
+from ...models import PicnicSite
 from ...request_connection import get_connection
 
 

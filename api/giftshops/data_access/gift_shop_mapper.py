@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...types import Row
 from .gift_shop_record import GiftShopRecord
 from .gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from .gift_shop_schedule_record import GiftShopScheduleRecord
+from ...types import Row
 
 
 def map_gift_shop_record( row: Row ) -> GiftShopRecord:

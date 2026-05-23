@@ -3,8 +3,8 @@ from __future__ import annotations
 import calendar
 import math
 
-from ..types import MonthInput, VisitDay
 from .calendar_dates import CalendarDates
+from ..types import MonthInput, VisitDay
 
 
 class Weather:

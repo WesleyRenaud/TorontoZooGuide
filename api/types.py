@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import sqlite3
 from datetime import date, datetime
+import sqlite3
 from typing import TypeAlias
 
 Connection: TypeAlias = sqlite3.Connection

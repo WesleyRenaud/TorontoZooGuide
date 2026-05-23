@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...models import WildEncounter
 from ..data_access.wild_encounter_record import WildEncounterRecord
+from ...models import WildEncounter
 from .wild_encounter_include_filter import WildEncounterIncludeFilter
 
 
