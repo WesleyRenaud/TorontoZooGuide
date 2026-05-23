@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from datetime import date
 
-from ... import zoo
+from ...models import ZoomobileStation
+from ...zoo_util import ZooUtil
 from ...shared.enums.zoomobile_route import ZoomobileRouteId
 from ...types import MonthInput, VisitDay, VisitYear
 from ..data_access.zoomobile_station_record import ZoomobileStationRecord
@@ -17,7 +18,7 @@ def resolve_zoomobile_station_context(
       day: VisitDay,
       zoomobile_stations_to_include: list[ str ] | None = None ) -> ZoomobileStationContext:
 
-   target_date = zoo.ZooUtil.visit_target_date(
+   target_date = ZooUtil.visit_target_date(
       month=month,
       day=day,
       year=year )
@@ -55,7 +56,7 @@ def is_zoomobile_station_closed(
       status_records: list[ ZoomobileStationStatusRecord ],
       target_date: date ) -> bool:
    for status_record in status_records:
-      is_active = zoo.ZooUtil.is_date_in_range(
+      is_active = ZooUtil.is_date_in_range(
          target_date=target_date,
          start_date_value=status_record.closed_start,
          end_date_value=status_record.closed_end )
@@ -67,8 +68,8 @@ def is_zoomobile_station_closed(
 
 
 def build_zoomobile_station(
-      station_record: ZoomobileStationRecord ) -> zoo.ZoomobileStation:
-   return zoo.ZoomobileStation(
+      station_record: ZoomobileStationRecord ) -> ZoomobileStation:
+   return ZoomobileStation(
       name=station_record.name,
       description=station_record.description,
       x_coord=station_record.x_coord,
@@ -78,7 +79,7 @@ def build_zoomobile_station(
 def build_zoomobile_stations(
       station_records: list[ ZoomobileStationRecord ],
       status_records: list[ ZoomobileStationStatusRecord ],
-      context: ZoomobileStationContext ) -> list[ zoo.ZoomobileStation ]:
+      context: ZoomobileStationContext ) -> list[ ZoomobileStation ]:
 
    status_records_by_station = group_zoomobile_station_status_records_by_station(
       status_records )

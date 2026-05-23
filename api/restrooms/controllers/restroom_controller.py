@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Restroom
+from ...zoo_util import ZooUtil
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.restroom import fetch_restroom_names
 from ..data_access.restroom import fetch_restroom_records
@@ -30,7 +31,7 @@ class RestroomController():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear,
-         include_closed_restrooms: bool = False ) -> list[ zoo.Restroom ]:
+         include_closed_restrooms: bool = False ) -> list[ Restroom ]:
 
       return build_restrooms(
          restroom_records=fetch_restroom_records( get_connection() ),
@@ -48,7 +49,7 @@ class RestroomController():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear,
-         include_closed_restrooms: bool ) -> list[ zoo.Restroom ]:
+         include_closed_restrooms: bool ) -> list[ Restroom ]:
 
       restrooms = cls.get_restrooms(
          day=day,
@@ -88,7 +89,7 @@ class RestroomController():
          restroom: str,
          start_date: DateInput,
          end_date: DateInput ) -> bool:
-      date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+      date_range = ZooUtil.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
 

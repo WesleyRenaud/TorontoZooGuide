@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Restroom
 
 
-def restroom_title_key( restroom: zoo.Restroom ) -> str:
+def restroom_title_key( restroom: Restroom ) -> str:
    return ( restroom.title or '' ).strip().lower()
 
 
 def filter_restrooms_matching_query(
-      restrooms: list[ zoo.Restroom ],
-      query: str ) -> list[ zoo.Restroom ]:
+      restrooms: list[ Restroom ],
+      query: str ) -> list[ Restroom ]:
    if not query:
       return list( restrooms )
 
@@ -21,8 +21,8 @@ def filter_restrooms_matching_query(
 
 
 def build_restrooms_matching_query(
-      restrooms: list[ zoo.Restroom ],
-      query: str ) -> list[ zoo.Restroom ]:
+      restrooms: list[ Restroom ],
+      query: str ) -> list[ Restroom ]:
    return filter_restrooms_matching_query(
       restrooms,
       query )

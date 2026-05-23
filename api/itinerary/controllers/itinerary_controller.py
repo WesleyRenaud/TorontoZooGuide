@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Itinerary
 from ...animals.controllers.animal_controller import AnimalController
 from ...attractions.controllers.attraction_controller import AttractionController
 from ...guardians.controllers.guardians_controller import GuardiansController
@@ -18,7 +18,7 @@ class ItineraryController():
 
 
    @classmethod
-   def get_itinerary( cls ) -> zoo.Itinerary:
+   def get_itinerary( cls ) -> Itinerary:
       return build_current_itinerary(
          saved_itinerary=fetch_saved_itinerary( get_connection() ),
          animal_controller=AnimalController,

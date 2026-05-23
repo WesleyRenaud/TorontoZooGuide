@@ -2,15 +2,16 @@ from __future__ import annotations
 
 from datetime import date
 
-from ... import zoo
+from ...models import WildEncounter
+from ...zoo_util import ZooUtil
 from ...shared.strings import SharedStrings
 from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from .wild_encounter_name_filter import WildEncounterNameFilter
 
 
 def find_wild_encounter_on_day_schedule(
-      day_schedule: list[ zoo.WildEncounter ],
-      encounter_name: str ) -> zoo.WildEncounter | None:
+      day_schedule: list[ WildEncounter ],
+      encounter_name: str ) -> WildEncounter | None:
    encounter_filter = WildEncounterNameFilter( name=encounter_name )
 
    if encounter_filter.should_return_empty():
@@ -24,7 +25,7 @@ def find_wild_encounter_on_day_schedule(
 
 
 def filter_available_wild_encounters(
-      wild_encounters: list[ zoo.WildEncounter ] ) -> list[ zoo.WildEncounter ]:
+      wild_encounters: list[ WildEncounter ] ) -> list[ WildEncounter ]:
    return [
       wild_encounter
       for wild_encounter in wild_encounters
@@ -34,23 +35,23 @@ def filter_available_wild_encounters(
 
 def build_wild_encounter_schedule_for_target_date(
       records: list[ WildEncounterScheduleRecord ],
-      target_date: date ) -> list[ zoo.WildEncounter ]:
+      target_date: date ) -> list[ WildEncounter ]:
 
    target_weekday = target_date.weekday()
 
-   wild_encounters: list[ zoo.WildEncounter ] = []
+   wild_encounters: list[ WildEncounter ] = []
 
    for record in records:
       name = record.name
       encounter_time = record.encounter_time
 
-      date_range_ok = zoo.ZooUtil.is_date_in_range(
+      date_range_ok = ZooUtil.is_date_in_range(
          target_date=target_date,
          start_date_value=record.schedule_start_date,
          end_date_value=record.schedule_end_date )
       unavailable_message: str | None = None
 
-      weekday_ok = zoo.ZooUtil.schedule_includes_weekday(
+      weekday_ok = ZooUtil.schedule_includes_weekday(
          target_weekday,
          (
             record.monday,
@@ -75,7 +76,7 @@ def build_wild_encounter_schedule_for_target_date(
             unavailable_message = SharedStrings.VisitDaySchedule.cancelled_for_this_date( name )
 
       wild_encounters.append(
-         zoo.WildEncounter(
+         WildEncounter(
             name=name,
             meeting_spot=record.meeting_spot,
             link=record.link,

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 
-from ... import zoo
+from ...zoo_util import ZooUtil
 from ...types import DateInput
 from .itinerary_animal_record import ItineraryAnimalRecord
 from .itinerary_attraction_record import ItineraryAttractionRecord
@@ -25,7 +25,7 @@ class SavedItinerary:
 
 
    def itinerary_date( self ) -> date:
-      return zoo.ZooUtil.parse_date_value( self.date_value )
+      return ZooUtil.parse_date_value( self.date_value )
 
 
    def month( self ) -> int:

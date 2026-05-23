@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Attraction
 
 
-def attraction_name_key( attraction: zoo.Attraction ) -> str:
+def attraction_name_key( attraction: Attraction ) -> str:
    return ( attraction.name or '' ).strip().lower()
 
 
 def filter_attractions_matching_query(
-      attractions: list[ zoo.Attraction ],
-      query: str ) -> list[ zoo.Attraction ]:
+      attractions: list[ Attraction ],
+      query: str ) -> list[ Attraction ]:
    if not query:
       return list( attractions )
 
@@ -21,8 +21,8 @@ def filter_attractions_matching_query(
 
 
 def build_attractions_matching_query(
-      attractions: list[ zoo.Attraction ],
-      query: str ) -> list[ zoo.Attraction ]:
+      attractions: list[ Attraction ],
+      query: str ) -> list[ Attraction ]:
    return filter_attractions_matching_query(
       attractions,
       query )

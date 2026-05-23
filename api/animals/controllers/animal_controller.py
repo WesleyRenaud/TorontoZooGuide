@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Animal
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...types import DateInput, MonthInput, VisitDay, VisitMonth, VisitYear
 from ..data_access.animal_information import fetch_animal_information
@@ -34,7 +34,7 @@ class AnimalController():
          temp: float | None = None,
          include_off_display_animals: bool = False,
          threshold: int = 0,
-         exhibits_to_include: list[ str ] | None = None ) -> list[ zoo.Animal ]:
+         exhibits_to_include: list[ str ] | None = None ) -> list[ Animal ]:
 
       exhibits_to_include = exhibits_to_include or []
       context = resolve_animal_viewability_context(
@@ -59,7 +59,7 @@ class AnimalController():
 
 
    @classmethod
-   def get_animal_information( cls, species: str ) -> zoo.Animal | None:
+   def get_animal_information( cls, species: str ) -> Animal | None:
       return fetch_animal_information(
          get_connection(),
          species=species )
@@ -180,7 +180,7 @@ class AnimalController():
          month: MonthInput,
          year: VisitYear,
          saved_animals: list[ ItineraryAnimalRecord ],
-         temp: float | None = None ) -> list[ zoo.Animal ]:
+         temp: float | None = None ) -> list[ Animal ]:
 
       if not saved_animals:
          return []
@@ -212,7 +212,7 @@ class AnimalController():
          month: MonthInput,
          year: VisitYear,
          temp: float | None = None,
-         include_off_display_animals: bool = False ) -> list[ zoo.Animal ]:
+         include_off_display_animals: bool = False ) -> list[ Animal ]:
 
       animals = cls.get_animals_viewable_on_day(
          day=day,

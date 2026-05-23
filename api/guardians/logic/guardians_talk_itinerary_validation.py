@@ -1,25 +1,27 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import GuardiansTalk
+from ...models import GuardiansTalkDiff
+from ...zoo_util import ZooUtil
 from .guardians_talk_schedule import find_guardians_talk_on_day_schedule
 
 
 def build_guardians_talk_diff_for_visit_day(
       name: str,
-      talk: zoo.GuardiansTalk | None ) -> zoo.GuardiansTalkDiff:
+      talk: GuardiansTalk | None ) -> GuardiansTalkDiff:
    if talk is None:
-      return zoo.GuardiansTalkDiff(
+      return GuardiansTalkDiff(
          name=name,
          is_deleted=True,
          start_time=None,
          end_time=None,
       )
 
-   end_time = zoo.ZooUtil.add_minutes_to_time(
+   end_time = ZooUtil.add_minutes_to_time(
       talk.start_time,
       talk.maximum_duration )
 
-   return zoo.GuardiansTalkDiff(
+   return GuardiansTalkDiff(
       name=name,
       is_deleted=False,
       start_time=talk.start_time,
@@ -29,9 +31,9 @@ def build_guardians_talk_diff_for_visit_day(
 
 def validate_guardians_talks_for_itinerary(
       guardians_talks_to_include: list[ str ] | None,
-      day_schedule: list[ zoo.GuardiansTalk ] ) -> list[ zoo.GuardiansTalkDiff ]:
+      day_schedule: list[ GuardiansTalk ] ) -> list[ GuardiansTalkDiff ]:
 
-   diffs: list[ zoo.GuardiansTalkDiff ] = []
+   diffs: list[ GuardiansTalkDiff ] = []
 
    for talk_name in guardians_talks_to_include or []:
       talk = find_guardians_talk_on_day_schedule(

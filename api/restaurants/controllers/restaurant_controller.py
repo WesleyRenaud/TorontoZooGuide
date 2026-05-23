@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Restaurant
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.restaurant import fetch_restaurant_names
 from ..data_access.restaurant import fetch_restaurant_records
@@ -34,7 +34,7 @@ class RestaurantController():
          month: MonthInput,
          year: VisitYear,
          include_closed_restaurants: bool,
-         restaurants_to_include: list[ str ] | None = None ) -> list[ zoo.Restaurant ]:
+         restaurants_to_include: list[ str ] | None = None ) -> list[ Restaurant ]:
 
       context = resolve_restaurant_context(
          month=month,
@@ -61,7 +61,7 @@ class RestaurantController():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear,
-         include_closed_restaurants: bool ) -> list[ zoo.Restaurant ]:
+         include_closed_restaurants: bool ) -> list[ Restaurant ]:
 
       restaurants = cls.get_restaurants(
          day=day,

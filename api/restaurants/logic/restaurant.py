@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from datetime import date
 
-from ... import zoo
+from ...models import Restaurant
+from ...zoo_util import ZooUtil
 from ...shared.enums import ScheduleStatus
 from ...types import MonthInput, SeasonalMultiplier, VisitDay, VisitYear
 from ..data_access.restaurant_record import RestaurantRecord
@@ -15,14 +16,14 @@ def resolve_restaurant_context(
       day: VisitDay,
       month: MonthInput,
       year: VisitYear ) -> RestaurantContext:
-   target_date = zoo.ZooUtil.visit_target_date(
+   target_date = ZooUtil.visit_target_date(
       month=month,
       day=day,
       year=year )
    weekday = target_date.weekday()
    is_weekend_or_holiday = (
       weekday >= 5
-      or zoo.ZooUtil.is_holiday( d=target_date ) )
+      or ZooUtil.is_holiday( d=target_date ) )
 
    return RestaurantContext(
       normalized_month=target_date.month,
@@ -98,7 +99,7 @@ def get_active_restaurant_schedule_status(
       return ScheduleStatus.UNKNOWN, None
 
    for schedule_record in schedule_records:
-      is_active = zoo.ZooUtil.is_date_in_range(
+      is_active = ZooUtil.is_date_in_range(
          target_date=target_date,
          start_date_value=schedule_record.schedule_start_date,
          end_date_value=schedule_record.schedule_end_date )
@@ -106,7 +107,7 @@ def get_active_restaurant_schedule_status(
       if not is_active:
          continue
 
-      is_holiday = zoo.ZooUtil.is_holiday( d=target_date )
+      is_holiday = ZooUtil.is_holiday( d=target_date )
 
       if is_restaurant_open_on_day(
             schedule_record=schedule_record,
@@ -124,7 +125,7 @@ def get_active_restaurant_schedule_override_status(
       target_date: date ) -> tuple[ ScheduleStatus, str | None ]:
 
    for override_record in override_records:
-      is_active = zoo.ZooUtil.is_date_in_range(
+      is_active = ZooUtil.is_date_in_range(
          target_date=target_date,
          start_date_value=override_record.override_start_date,
          end_date_value=override_record.override_end_date )
@@ -154,7 +155,7 @@ def build_restaurant(
       restaurant_record: RestaurantRecord,
       schedule_records: list[ RestaurantScheduleRecord ],
       schedule_override_records: list[ RestaurantScheduleOverrideRecord ],
-      context: RestaurantContext ) -> zoo.Restaurant:
+      context: RestaurantContext ) -> Restaurant:
 
    likelihood = 100
    closed_message = None
@@ -165,7 +166,7 @@ def build_restaurant(
    if override_status == ScheduleStatus.CLOSED:
       likelihood = 0
       closed_message = override_message
-      return zoo.Restaurant(
+      return Restaurant(
          name=restaurant_record.name,
          location=restaurant_record.location,
          sub_location=restaurant_record.sub_location,
@@ -194,7 +195,7 @@ def build_restaurant(
       if likelihood == 0:
          closed_message = f'The { restaurant_record.name } is most likely not open on this day.'
 
-   return zoo.Restaurant(
+   return Restaurant(
       name=restaurant_record.name,
       location=restaurant_record.location,
       sub_location=restaurant_record.sub_location,
@@ -213,13 +214,13 @@ def build_restaurants(
       schedule_override_records: list[ RestaurantScheduleOverrideRecord ],
       context: RestaurantContext,
       include_closed_restaurants: bool,
-      restaurants_to_include: list[ str ] | None = None ) -> list[ zoo.Restaurant ]:
+      restaurants_to_include: list[ str ] | None = None ) -> list[ Restaurant ]:
 
    restaurants_to_include = restaurants_to_include or []
    schedule_records_by_name = group_restaurant_schedule_records_by_name( schedule_records )
    schedule_override_records_by_name = group_restaurant_schedule_override_records_by_name(
       schedule_override_records )
-   restaurants: list[ zoo.Restaurant ] = []
+   restaurants: list[ Restaurant ] = []
 
    for restaurant_record in restaurant_records:
       restaurant = build_restaurant(

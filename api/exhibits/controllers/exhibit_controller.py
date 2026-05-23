@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Region
+from ...models import RegionWithExhibits
+from ...zoo_util import ZooUtil
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.exhibit import fetch_animal_names_in_exhibit
 from ..data_access.exhibit import fetch_exhibit_names
@@ -32,13 +34,13 @@ class ExhibitController():
 
 
    @classmethod
-   def get_regions( cls ) -> list[ zoo.Region ]:
+   def get_regions( cls ) -> list[ Region ]:
       return build_region_options(
          fetch_region_exhibit_rows( get_connection() ) )
 
 
    @classmethod
-   def get_regions_with_exhibits( cls ) -> list[ zoo.RegionWithExhibits ]:
+   def get_regions_with_exhibits( cls ) -> list[ RegionWithExhibits ]:
       return build_regions_with_exhibits(
          fetch_region_exhibit_rows( get_connection() ) )
 
@@ -56,7 +58,7 @@ class ExhibitController():
          month: MonthInput,
          day: VisitDay,
          year: VisitYear ) -> list[ str ]:
-      target_date = zoo.ZooUtil.visit_target_date(
+      target_date = ZooUtil.visit_target_date(
          month=month,
          day=day,
          year=year )
@@ -93,7 +95,7 @@ class ExhibitController():
          exhibit: str,
          start_date: DateInput,
          end_date: DateInput ) -> bool:
-      date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+      date_range = ZooUtil.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
 

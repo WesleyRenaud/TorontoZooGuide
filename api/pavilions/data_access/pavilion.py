@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Pavilion
 from ...types import Connection
 
 
-def fetch_pavilions( conn: Connection ) -> list[ zoo.Pavilion ]:
+def fetch_pavilions( conn: Connection ) -> list[ Pavilion ]:
    cur = conn.cursor()
 
    try:
@@ -19,7 +19,7 @@ def fetch_pavilions( conn: Connection ) -> list[ zoo.Pavilion ]:
          """ )
 
       return [
-         zoo.Pavilion(
+         Pavilion(
             name=row[ 'NAME' ],
             region=row[ 'REGION' ],
             description=row[ 'DESCRIPTION' ],

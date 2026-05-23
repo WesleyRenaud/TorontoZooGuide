@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import GuardiansTalk
 
 
-def guardians_talk_name_key( guardians_talk: zoo.GuardiansTalk ) -> str:
+def guardians_talk_name_key( guardians_talk: GuardiansTalk ) -> str:
    return ( guardians_talk.name or '' ).strip().lower()
 
 
 def filter_guardians_talks_matching_query(
-      guardians_talks: list[ zoo.GuardiansTalk ],
-      query: str ) -> list[ zoo.GuardiansTalk ]:
+      guardians_talks: list[ GuardiansTalk ],
+      query: str ) -> list[ GuardiansTalk ]:
    if not query:
       return list( guardians_talks )
 
@@ -21,8 +21,8 @@ def filter_guardians_talks_matching_query(
 
 
 def build_guardians_talks_matching_query(
-      guardians_talks: list[ zoo.GuardiansTalk ],
-      query: str ) -> list[ zoo.GuardiansTalk ]:
+      guardians_talks: list[ GuardiansTalk ],
+      query: str ) -> list[ GuardiansTalk ]:
    return filter_guardians_talks_matching_query(
       guardians_talks,
       query )

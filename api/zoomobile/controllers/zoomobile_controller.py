@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from datetime import date
 
-from ... import zoo
+from ...models import ZoomobileRoute
+from ...models import ZoomobileStation
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.zoomobile_station import fetch_active_zoomobile_route
 from ..data_access.zoomobile_station import fetch_zoomobile_day_route
@@ -39,7 +40,7 @@ class ZoomobileController():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear,
-         zoomobile_stations_to_include: list[ str ] | None = None ) -> list[ zoo.ZoomobileStation ]:
+         zoomobile_stations_to_include: list[ str ] | None = None ) -> list[ ZoomobileStation ]:
 
       return build_zoomobile_stations(
          station_records=fetch_zoomobile_station_records( get_connection() ),
@@ -59,7 +60,7 @@ class ZoomobileController():
          route: str,
          day: VisitDay,
          month: MonthInput,
-         year: VisitYear ) -> list[ zoo.ZoomobileStation ]:
+         year: VisitYear ) -> list[ ZoomobileStation ]:
 
       zoomobile_stations = cls.get_zoomobile_stations(
          route=route,
@@ -79,7 +80,7 @@ class ZoomobileController():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear,
-         zoomobile_stations_to_include: list[ str ] | None = None ) -> zoo.ZoomobileRoute:
+         zoomobile_stations_to_include: list[ str ] | None = None ) -> ZoomobileRoute:
 
       route_context = resolve_zoomobile_route_context(
          day=day,

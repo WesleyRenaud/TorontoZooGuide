@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Update
+from ...zoo_util import ZooUtil
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.update import edit_update_record
 from ..data_access.update import fetch_updates
@@ -21,8 +22,8 @@ class UpdateController():
          cls,
          month: MonthInput,
          day: VisitDay,
-         year: VisitYear ) -> list[ zoo.Update ]:
-      target_date = zoo.ZooUtil.visit_target_date(
+         year: VisitYear ) -> list[ Update ]:
+      target_date = ZooUtil.visit_target_date(
          month=month,
          day=day,
          year=year )
@@ -35,8 +36,8 @@ class UpdateController():
 
 
    @classmethod
-   def get_unexpired_updates( cls ) -> list[ zoo.Update ]:
-      as_of_date = zoo.ZooUtil.today_date_key()
+   def get_unexpired_updates( cls ) -> list[ Update ]:
+      as_of_date = ZooUtil.today_date_key()
 
       return fetch_updates( get_connection(), as_of_date )
 

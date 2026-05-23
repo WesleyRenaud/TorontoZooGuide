@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ... import zoo
+from ...zoo_util import ZooUtil
 from ...types import DateInput
 from ..data_access.exhibit_closure_record import ExhibitClosureRecord
 
@@ -15,7 +15,7 @@ def is_exhibit_closure_active_on_visit_date(
    if not is_closed or target_date is None:
       return False
 
-   return zoo.ZooUtil.is_date_in_range(
+   return ZooUtil.is_date_in_range(
       target_date=target_date,
       start_date_value=closed_start,
       end_date_value=closed_end )
