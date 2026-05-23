@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from ... import zoo
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.update import edit_update_record
 from ..data_access.update import fetch_updates
 from ..data_access.update import insert_update
@@ -14,7 +17,11 @@ class UpdateController():
 
 
    @classmethod
-   def get_updates_for_visit_date( cls, month, day, year ):
+   def get_updates_for_visit_date(
+         cls,
+         month: MonthInput,
+         day: VisitDay,
+         year: VisitYear ) -> list[ zoo.Update ]:
       target_date = zoo.ZooUtil.visit_target_date(
          month=month,
          day=day,
@@ -28,7 +35,7 @@ class UpdateController():
 
 
    @classmethod
-   def get_unexpired_updates( cls ):
+   def get_unexpired_updates( cls ) -> list[ zoo.Update ]:
       as_of_date = zoo.ZooUtil.today_date_key()
 
       return fetch_updates( get_connection(), as_of_date )
@@ -37,11 +44,11 @@ class UpdateController():
    @classmethod
    def create_update(
          cls,
-         title,
-         description,
-         update_type,
-         start_date,
-         end_date ):
+         title: str,
+         description: str,
+         update_type: str,
+         start_date: DateInput,
+         end_date: DateInput ) -> bool:
       update = build_update_create_input(
          title=title,
          description=description,
@@ -55,7 +62,11 @@ class UpdateController():
 
 
    @classmethod
-   def end_update( cls, title, start_date, end_date ):
+   def end_update(
+         cls,
+         title: str,
+         start_date: DateInput,
+         end_date: DateInput ) -> bool:
       update = build_update_end_input(
          title=title,
          start_date=start_date,
@@ -69,11 +80,11 @@ class UpdateController():
    @classmethod
    def edit_update(
          cls,
-         title,
-         start_date,
-         description,
-         update_type,
-         end_date ):
+         title: str,
+         start_date: DateInput,
+         description: str,
+         update_type: str,
+         end_date: DateInput ) -> bool:
       update = build_update_edit_input(
          title=title,
          start_date=start_date,

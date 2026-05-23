@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+from ...types import Row
 from .exhibit_closure_record import ExhibitClosureRecord
 
 
-def map_exhibit_closure_record( row ):
+def map_exhibit_closure_record( row: Row ) -> ExhibitClosureRecord:
    return ExhibitClosureRecord(
       exhibit=row[ 'EXHIBIT' ],
       closed_start=row[ 'CLOSED_START' ],
@@ -9,7 +14,7 @@ def map_exhibit_closure_record( row ):
 
 
 
-def map_exhibit_closure_records( rows ):
+def map_exhibit_closure_records( rows: Iterable[ Row ] ) -> list[ ExhibitClosureRecord ]:
    return [
       map_exhibit_closure_record( row )
       for row in rows

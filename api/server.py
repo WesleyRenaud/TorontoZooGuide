@@ -1,4 +1,6 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from __future__ import annotations
+
+from collections.abc import Callable
 from functools import wraps
 import html
 import json
@@ -7,6 +9,8 @@ import os
 import re
 import subprocess
 import sys
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import Any
 from urllib.parse import unquote, urlparse
 
 from . import connection
@@ -38,7 +42,9 @@ STRING_EXPORT_SCRIPT = './tools/exportStringValues.mjs'
 HTML_STRING_TOKEN_RE = re.compile( r'\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}' )
 
 
-def _flatten_string_values( values, prefix='' ):
+def _flatten_string_values(
+      values: dict[ str, Any ],
+      prefix: str = '' ) -> dict[ str, str ]:
    flattened = {}
 
    for key, value in values.items():
@@ -52,7 +58,7 @@ def _flatten_string_values( values, prefix='' ):
    return flattened
 
 
-def get_html_string_values():
+def get_html_string_values() -> dict[ str, str ]:
    result = subprocess.run(
       [ 'node', STRING_EXPORT_SCRIPT ],
       check=True,
@@ -63,10 +69,10 @@ def get_html_string_values():
    return _flatten_string_values( json.loads( result.stdout ) )
 
 
-def render_html_strings( content ):
+def render_html_strings( content: str ) -> str:
    string_values = get_html_string_values()
 
-   def replace_token( match ):
+   def replace_token( match: re.Match[ str ] ) -> str:
       key = match.group( 1 )
       value = string_values.get( key )
 
@@ -78,9 +84,10 @@ def render_html_strings( content ):
    return HTML_STRING_TOKEN_RE.sub( replace_token, content )
 
 
-def with_controllers( handler ):
+def with_controllers(
+      handler: Callable[ ..., Any ] ) -> Callable[ ..., Any ]:
    @wraps( handler )
-   def wrapped( self, *args, **kwargs ):
+   def wrapped( self: MyHandler, *args: Any, **kwargs: Any ) -> Any:
       conn = connection.open_connection()
 
       try:
@@ -96,7 +103,10 @@ def with_controllers( handler ):
 class MyHandler( BaseHTTPRequestHandler ):
    pass
 
-   def _send_file( self, filepath, content_type=None ):
+   def _send_file(
+         self,
+         filepath: str,
+         content_type: str | None = None ) -> None:
       if not os.path.isfile( filepath ):
          self.send_error( 404, "Not Found" )
          return
@@ -120,7 +130,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                self.wfile.write( chunk )
 
 
-   def do_GET( self ):
+   def do_GET( self ) -> None:
       parsed = urlparse( self.path )
       path = unquote( parsed.path )  # handles %20 etc
 
@@ -147,7 +157,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
    @with_controllers
-   def do_POST( self ):
+   def do_POST( self ) -> None:
       if self.path == '/get-visible-animals':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
@@ -964,7 +974,8 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          wild_encounter = data.get( 'wildEncounter' )
 
-         occurrences = WildEncounterController.get_wild_encounter_occurrences( wild_encounter=wild_encounter )
+         occurrences = WildEncounterController.get_wild_encounter_occurrences(
+            wild_encounter_name=wild_encounter )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -2479,7 +2490,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          message = data.get( 'message' )
 
          success = WildEncounterController.set_wild_encounter_schedule(
-            wild_encounter=wild_encounter,
+            wild_encounter_name=wild_encounter,
             start_date=schedule_start_date,
             end_date=schedule_end_date,
             encounter_time=encounter_time,
@@ -2527,7 +2538,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          schedule_end_date = data.get( 'endDate' )
 
          success = WildEncounterController.end_wild_encounter_schedule(
-            wild_encounter=wild_encounter,
+            wild_encounter_name=wild_encounter,
             schedule_end_date=schedule_end_date )
 
          self.send_response( 200 )
@@ -2556,7 +2567,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          time = data.get( 'time' )
 
          success = WildEncounterController.cancel_wild_encounter_occurrence(
-            wild_encounter=wild_encounter,
+            wild_encounter_name=wild_encounter,
             date=date,
             time=time )
 

@@ -1,15 +1,22 @@
+from __future__ import annotations
+
 from datetime import date
 from datetime import timedelta
 
+from ...types import Connection, DateInput, DateKey
+from ...zoo_util import ZooUtil
 from ..data_access.restaurant_schedule import delete_restaurant_opening_schedule
 from ..data_access.restaurant_schedule import fetch_restaurant_opening_schedule_conflicts
 from ..data_access.restaurant_schedule import insert_copied_restaurant_opening_schedule
 from ..data_access.restaurant_schedule import insert_or_update_restaurant_opening_schedule
 from ..data_access.restaurant_schedule import update_restaurant_opening_schedule_dates
-from ...zoo_util import ZooUtil
+from ..data_access.restaurant_schedule_record import RestaurantScheduleRecord
+from .restaurant_opening_schedule import RestaurantOpeningSchedule
 
 
-def save_restaurant_opening_schedule_replacing_overlaps( conn, schedule ):
+def save_restaurant_opening_schedule_replacing_overlaps(
+      conn: Connection,
+      schedule: RestaurantOpeningSchedule ) -> bool:
    conflicts = fetch_restaurant_opening_schedule_conflicts( conn, schedule )
 
    for conflict in conflicts:
@@ -20,7 +27,9 @@ def save_restaurant_opening_schedule_replacing_overlaps( conn, schedule ):
    return True
 
 
-def save_restaurant_opening_schedule_trimming_overlaps( conn, schedule ):
+def save_restaurant_opening_schedule_trimming_overlaps(
+      conn: Connection,
+      schedule: RestaurantOpeningSchedule ) -> bool:
    conflicts = fetch_restaurant_opening_schedule_conflicts( conn, schedule )
 
    for conflict in conflicts:
@@ -31,7 +40,10 @@ def save_restaurant_opening_schedule_trimming_overlaps( conn, schedule ):
    return True
 
 
-def trim_restaurant_opening_schedule_conflict( conn, conflict, schedule ):
+def trim_restaurant_opening_schedule_conflict(
+      conn: Connection,
+      conflict: RestaurantScheduleRecord,
+      schedule: RestaurantOpeningSchedule ) -> None:
    new_start_date = ZooUtil.parse_date_value( schedule.start_date )
    new_end_date = parse_opening_schedule_end_date( schedule.end_date )
    conflict_start_date = ZooUtil.parse_date_value( conflict.schedule_start_date )
@@ -78,14 +90,14 @@ def trim_restaurant_opening_schedule_conflict( conn, conflict, schedule ):
       end_date=conflict.schedule_end_date )
 
 
-def parse_opening_schedule_end_date( value ):
+def parse_opening_schedule_end_date( value: DateInput ) -> date:
    if value == None:
       return date.max
 
    return ZooUtil.parse_date_value( value )
 
 
-def format_opening_schedule_date( value ):
+def format_opening_schedule_date( value: date ) -> DateKey | None:
    if value == date.max:
       return None
 

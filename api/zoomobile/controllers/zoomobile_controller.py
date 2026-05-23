@@ -1,3 +1,9 @@
+from __future__ import annotations
+
+from datetime import date
+
+from ... import zoo
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.zoomobile_station import fetch_active_zoomobile_route
 from ..data_access.zoomobile_station import fetch_zoomobile_day_route
 from ..data_access.zoomobile_station import fetch_zoomobile_station_names
@@ -22,18 +28,18 @@ class ZoomobileController():
 
 
    @classmethod
-   def get_zoomobile_station_names( cls ):
+   def get_zoomobile_station_names( cls ) -> list[ str ]:
       return fetch_zoomobile_station_names( get_connection() )
 
 
    @classmethod
    def get_zoomobile_stations(
          cls,
-         route,
-         day,
-         month,
-         year,
-         zoomobile_stations_to_include=None ):
+         route: str,
+         day: VisitDay,
+         month: MonthInput,
+         year: VisitYear,
+         zoomobile_stations_to_include: list[ str ] | None = None ) -> list[ zoo.ZoomobileStation ]:
 
       return build_zoomobile_stations(
          station_records=fetch_zoomobile_station_records( get_connection() ),
@@ -49,11 +55,11 @@ class ZoomobileController():
    @classmethod
    def get_zoomobile_stations_matching_query(
          cls,
-         query,
-         route,
-         day,
-         month,
-         year ):
+         query: str,
+         route: str,
+         day: VisitDay,
+         month: MonthInput,
+         year: VisitYear ) -> list[ zoo.ZoomobileStation ]:
 
       zoomobile_stations = cls.get_zoomobile_stations(
          route=route,
@@ -69,11 +75,11 @@ class ZoomobileController():
    @classmethod
    def get_zoomobile_route(
          cls,
-         route,
-         day,
-         month,
-         year,
-         zoomobile_stations_to_include=None ):
+         route: str,
+         day: VisitDay,
+         month: MonthInput,
+         year: VisitYear,
+         zoomobile_stations_to_include: list[ str ] | None = None ) -> zoo.ZoomobileRoute:
 
       route_context = resolve_zoomobile_route_context(
          day=day,
@@ -101,7 +107,7 @@ class ZoomobileController():
 
 
    @classmethod
-   def get_active_zoomobile_route( cls, target_date ):
+   def get_active_zoomobile_route( cls, target_date: date ) -> str | None:
       route = fetch_active_zoomobile_route(
          get_connection(),
          target_date=target_date )
@@ -113,7 +119,7 @@ class ZoomobileController():
 
 
    @classmethod
-   def get_zoomobile_day_route( cls, month, day ):
+   def get_zoomobile_day_route( cls, month: MonthInput, day: VisitDay ) -> str | None:
       route = fetch_zoomobile_day_route(
          get_connection(),
          month=month,
@@ -128,10 +134,10 @@ class ZoomobileController():
    @classmethod
    def set_zoomobile_station_as_closed(
          cls,
-         zoomobile_station,
-         start_date,
-         end_date,
-         message ):
+         zoomobile_station: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         message: str ) -> bool:
       status = build_zoomobile_station_closed_status(
          zoomobile_station=zoomobile_station,
          start_date=start_date,
@@ -144,14 +150,18 @@ class ZoomobileController():
 
 
    @classmethod
-   def set_zoomobile_station_as_open( cls, zoomobile_station ):
+   def set_zoomobile_station_as_open( cls, zoomobile_station: str ) -> bool:
       return save_zoomobile_station_open_status(
          get_connection(),
          zoomobile_station=zoomobile_station )
 
 
    @classmethod
-   def set_current_zoomobile_route( cls, route, start_date, end_date ):
+   def set_current_zoomobile_route(
+         cls,
+         route: str,
+         start_date: DateInput,
+         end_date: DateInput ) -> bool:
       schedule = build_current_zoomobile_route_schedule(
          route=route,
          start_date=start_date,

@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+from ...types import Connection, VisitDay, VisitMonth
 from .restaurant_mapper import map_restaurant_records
 from .restaurant_mapper import map_restaurant_schedule_override_records
 from .restaurant_mapper import map_restaurant_schedule_records
+from .restaurant_record import RestaurantRecord
+from .restaurant_schedule_override_record import RestaurantScheduleOverrideRecord
+from .restaurant_schedule_record import RestaurantScheduleRecord
 
 
-def fetch_restaurant_names( conn ):
+def fetch_restaurant_names( conn: Connection ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -19,7 +25,10 @@ def fetch_restaurant_names( conn ):
       cur.close()
 
 
-def fetch_restaurant_records( conn, month, day ):
+def fetch_restaurant_records(
+      conn: Connection,
+      month: VisitMonth,
+      day: VisitDay ) -> list[ RestaurantRecord ]:
    cur = conn.cursor()
 
    try:
@@ -47,7 +56,7 @@ def fetch_restaurant_records( conn, month, day ):
       cur.close()
 
 
-def fetch_restaurant_schedule_records( conn ):
+def fetch_restaurant_schedule_records( conn: Connection ) -> list[ RestaurantScheduleRecord ]:
    cur = conn.cursor()
 
    try:
@@ -74,7 +83,8 @@ def fetch_restaurant_schedule_records( conn ):
       cur.close()
 
 
-def fetch_restaurant_schedule_override_records( conn ):
+def fetch_restaurant_schedule_override_records(
+      conn: Connection ) -> list[ RestaurantScheduleOverrideRecord ]:
    cur = conn.cursor()
 
    try:

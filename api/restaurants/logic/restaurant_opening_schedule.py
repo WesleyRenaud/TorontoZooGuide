@@ -1,18 +1,23 @@
+from __future__ import annotations
+
+from ...types import DateKey
+
+
 class RestaurantOpeningSchedule:
    def __init__(
          self,
-         restaurant,
-         start_date,
-         end_date,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         holidays_only,
-         message ):
+         restaurant: str,
+         start_date: DateKey,
+         end_date: DateKey | None,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str | None ) -> None:
       self.restaurant = restaurant
       self.start_date = start_date
       self.end_date = end_date

@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+
+from ...types import DateKey
 
 
 @dataclass( frozen=True )
 class AttractionScheduleOverrideRecord:
-   attraction: object
-   override_start_date: object
-   override_end_date: object
-   is_closed: object
-   override_message: object
+   attraction: str
+   override_start_date: DateKey
+   override_end_date: DateKey | None
+   is_closed: bool
+   override_message: str | None

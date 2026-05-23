@@ -1,13 +1,17 @@
+from __future__ import annotations
+
 from datetime import timedelta
 
 from ... import zoo
+from ..data_access.guardians_talk_cancellation_record import GuardiansTalkCancellationRecord
+from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from .guardians_talk_weekday_time import guardians_talk_time_for_weekday
 
 
 def build_guardians_talk_occurrences(
-      schedule_record,
-      cancellation_records,
-      days_ahead ):
+      schedule_record: GuardiansTalkScheduleRecord | None,
+      cancellation_records: list[ GuardiansTalkCancellationRecord ],
+      days_ahead: int ) -> list[ zoo.ScheduledOccurrence ]:
    if schedule_record == None:
       return []
 
@@ -31,7 +35,7 @@ def build_guardians_talk_occurrences(
    if schedule_end_date < schedule_start_date:
       return []
 
-   occurrences = []
+   occurrences: list[ zoo.ScheduledOccurrence ] = []
    current_date = schedule_start_date
 
    while current_date <= schedule_end_date:
@@ -57,9 +61,9 @@ def build_guardians_talk_occurrences(
 
 
 def guardians_talk_occurrence_is_cancelled(
-      cancellation_records,
-      occurrence_date,
-      talk_time ):
+      cancellation_records: list[ GuardiansTalkCancellationRecord ],
+      occurrence_date: str,
+      talk_time: str ) -> bool:
    return any(
       cancellation.cancellation_date == occurrence_date
       and cancellation.talk_time == talk_time

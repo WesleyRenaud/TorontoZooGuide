@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 from ... import zoo
 from ...models.zoomobile_route import ZoomobileRoute
 from ...shared.enums.zoomobile_route import ZoomobileRouteId
 from ...shared.enums.zoomobile_route import ZoomobileRouteSource
+from ...types import MonthInput, VisitDay, VisitYear
 from .zoomobile_route_context import ZoomobileRouteContext
 
 
-def is_valid_zoomobile_route( route ):
+def is_valid_zoomobile_route( route: str | None ) -> bool:
    if route is None:
       return False
 
@@ -16,7 +19,10 @@ def is_valid_zoomobile_route( route ):
       return False
 
 
-def resolve_zoomobile_route_context( day, month, year ):
+def resolve_zoomobile_route_context(
+      day: VisitDay,
+      month: MonthInput,
+      year: VisitYear ) -> ZoomobileRouteContext:
    target_date = zoo.ZooUtil.visit_target_date(
       month=month,
       day=day,
@@ -30,9 +36,9 @@ def resolve_zoomobile_route_context( day, month, year ):
 
 
 def resolve_zoomobile_route(
-      requested_route,
-      active_route,
-      day_route ):
+      requested_route: str,
+      active_route: str | None,
+      day_route: str | None ) -> tuple[ str, str ]:
 
    route = requested_route
    route_source = ZoomobileRouteSource.MANUAL
@@ -53,9 +59,9 @@ def resolve_zoomobile_route(
 
 
 def build_zoomobile_route_response(
-      route,
-      route_source,
-      zoomobile_stations ):
+      route: str,
+      route_source: str,
+      zoomobile_stations: list[ zoo.ZoomobileStation ] ) -> ZoomobileRoute:
 
    return ZoomobileRoute(
       route=route,

@@ -1,17 +1,20 @@
+from __future__ import annotations
+
 import sqlite3
 
 from api.seed import data
 from api.seed.schema import create_schema
+from api.types import Cursor, Row
 
 
-def column_names( cursor, table ):
+def column_names( cursor: Cursor, table: str ) -> set[ str ]:
    return {
       row[ 1 ]
       for row in cursor.execute( f'PRAGMA table_info( { table } );' ).fetchall()
    }
 
 
-def column_info( cursor, table, column ):
+def column_info( cursor: Cursor, table: str, column: str ) -> Row:
    return next(
       row
       for row in cursor.execute( f'PRAGMA table_info( { table } );' ).fetchall()
@@ -19,7 +22,7 @@ def column_info( cursor, table, column ):
    )
 
 
-def test_seed_data_exports_all_static_table_rows():
+def test_seed_data_exports_all_static_table_rows() -> None:
    assert data.regions
    assert data.exhibits
    assert data.exhibit_day_seasonal_availability_multipliers
@@ -50,7 +53,7 @@ def test_seed_data_exports_all_static_table_rows():
    assert data.zoo_hours
 
 
-def test_create_schema_migrates_partial_dynamic_tables():
+def test_create_schema_migrates_partial_dynamic_tables() -> None:
    conn = sqlite3.connect( ':memory:' )
    cursor = conn.cursor()
 

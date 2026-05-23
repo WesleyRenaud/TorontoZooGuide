@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
+
 from ... import zoo
+from ...types import Row
 
 
-def map_update_record( row ):
+def map_update_record( row: Row ) -> zoo.Update:
    return zoo.Update(
       title=row[ 'TITLE' ],
       description=row[ 'DESCRIPTION' ],
@@ -11,7 +16,7 @@ def map_update_record( row ):
 
 
 
-def map_update_records( rows ):
+def map_update_records( rows: Iterable[ Row ] ) -> list[ zoo.Update ]:
    return [
       map_update_record( row )
       for row in rows

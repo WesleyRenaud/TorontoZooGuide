@@ -10,11 +10,25 @@ exclude = [
 [tool.ruff.lint]
 select = [
    "F841",
-   "W293"
+   "W293",
+   "ANN001",
+   "ANN201",
+   "ANN202",
+   "ANN204",
+   "ANN205",
+   "ANN206"
 ]
+ignore = [
+   "ANN401"
+]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+mypy-init-return = true
 
 [tool.tzg_python_style]
 blank_lines_between_methods = 2
+enforce_typing = true
 exclude = [
    "scripts/capture_readme_screenshots.py",
    "api/seed/tables/animal.py",

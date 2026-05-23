@@ -1,8 +1,15 @@
-def restroom_title_key( restroom ):
+from __future__ import annotations
+
+from ... import zoo
+
+
+def restroom_title_key( restroom: zoo.Restroom ) -> str:
    return ( restroom.title or '' ).strip().lower()
 
 
-def filter_restrooms_matching_query( restrooms, query ):
+def filter_restrooms_matching_query(
+      restrooms: list[ zoo.Restroom ],
+      query: str ) -> list[ zoo.Restroom ]:
    if not query:
       return list( restrooms )
 
@@ -13,7 +20,9 @@ def filter_restrooms_matching_query( restrooms, query ):
    ]
 
 
-def build_restrooms_matching_query( restrooms, query ):
+def build_restrooms_matching_query(
+      restrooms: list[ zoo.Restroom ],
+      query: str ) -> list[ zoo.Restroom ]:
    return filter_restrooms_matching_query(
       restrooms,
       query )

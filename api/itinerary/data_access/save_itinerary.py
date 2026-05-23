@@ -1,4 +1,16 @@
-def save_itinerary_date( cur, visit_date ):
+from __future__ import annotations
+
+from datetime import date
+
+from ...models.animal_diff import AnimalDiff
+from ...models.attraction_diff import AttractionDiff
+from ...models.guardians_talk_diff import GuardiansTalkDiff
+from ...models.wild_encounter_diff import WildEncounterDiff
+from ...types import Connection, Cursor
+from ..data_access.validated_itinerary import ValidatedItinerary
+
+
+def save_itinerary_date( cur: Cursor, visit_date: date ) -> None:
    cur.execute(
       """   INSERT INTO ItineraryDate ( ITINERARY_DATE )
             VALUES ( ? );
@@ -6,7 +18,7 @@ def save_itinerary_date( cur, visit_date ):
       ( visit_date, ) )
 
 
-def save_itinerary_animals( cur, animals ):
+def save_itinerary_animals( cur: Cursor, animals: list[ AnimalDiff ] ) -> None:
    if not animals:
       return
 
@@ -28,7 +40,7 @@ def save_itinerary_animals( cur, animals ):
          ) )
 
 
-def save_itinerary_attractions( cur, attractions ):
+def save_itinerary_attractions( cur: Cursor, attractions: list[ AttractionDiff ] ) -> None:
    if not attractions:
       return
 
@@ -48,7 +60,7 @@ def save_itinerary_attractions( cur, attractions ):
          ) )
 
 
-def save_itinerary_guardians_talks( cur, guardians_talks ):
+def save_itinerary_guardians_talks( cur: Cursor, guardians_talks: list[ GuardiansTalkDiff ] ) -> None:
    if not guardians_talks:
       return
 
@@ -70,7 +82,7 @@ def save_itinerary_guardians_talks( cur, guardians_talks ):
          ) )
 
 
-def save_itinerary_wild_encounters( cur, wild_encounters ):
+def save_itinerary_wild_encounters( cur: Cursor, wild_encounters: list[ WildEncounterDiff ] ) -> None:
    if not wild_encounters:
       return
 
@@ -92,7 +104,10 @@ def save_itinerary_wild_encounters( cur, wild_encounters ):
          ) )
 
 
-def save_validated_itinerary( conn, visit_date, validated_itinerary ):
+def save_validated_itinerary(
+      conn: Connection,
+      visit_date: date,
+      validated_itinerary: ValidatedItinerary ) -> bool:
    cur = conn.cursor()
 
    try:

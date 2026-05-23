@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 from ... import zoo
 from ...shared.strings import SharedStrings
+from ...types import DateInput
 from .attraction_opening_schedule import AttractionOpeningSchedule
 from .attraction_schedule_override import AttractionScheduleOverride
 
 
 def build_attraction_closed_schedule(
-      attraction,
-      start_date,
-      end_date,
-      message ):
+      attraction: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      message: str ) -> AttractionOpeningSchedule:
    date_range = zoo.ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
@@ -32,18 +35,18 @@ def build_attraction_closed_schedule(
 
 
 def build_attraction_opening_schedule(
-      attraction,
-      start_date,
-      end_date,
-      monday,
-      tuesday,
-      wednesday,
-      thursday,
-      friday,
-      saturday,
-      sunday,
-      holidays_only,
-      message ):
+      attraction: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      monday: bool,
+      tuesday: bool,
+      wednesday: bool,
+      thursday: bool,
+      friday: bool,
+      saturday: bool,
+      sunday: bool,
+      holidays_only: bool,
+      message: str ) -> AttractionOpeningSchedule:
    date_range = zoo.ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
@@ -68,10 +71,10 @@ def build_attraction_opening_schedule(
 
 
 def build_attraction_closure_override(
-      attraction,
-      start_date,
-      end_date,
-      message ):
+      attraction: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      message: str ) -> AttractionScheduleOverride:
    date_range = zoo.ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )

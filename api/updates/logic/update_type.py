@@ -1,4 +1,7 @@
-def normalize_update_type( update_type ):
+from __future__ import annotations
+
+
+def normalize_update_type( update_type: str ) -> str | None:
    update_type_labels = {
       'animal birth': 'Animal Birth',
       'animal_birth': 'Animal Birth',

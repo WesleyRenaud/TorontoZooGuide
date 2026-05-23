@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 from ...models import Region
+from ..data_access.region_exhibit_record import RegionExhibitRecord
 
 
-def build_region_options( region_exhibit_rows ):
-   exhibits_by_region = {}
+def build_region_options( region_exhibit_rows: list[ RegionExhibitRecord ] ) -> list[ Region ]:
+   exhibits_by_region: dict[ str, list[ str ] ] = {}
 
    for region_exhibit in region_exhibit_rows:
       region_name = region_exhibit.region_name

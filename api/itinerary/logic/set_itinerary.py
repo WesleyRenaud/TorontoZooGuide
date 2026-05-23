@@ -1,3 +1,10 @@
+from __future__ import annotations
+
+from ...animals.controllers.animal_controller import AnimalController
+from ...attractions.controllers.attraction_controller import AttractionController
+from ...guardians.controllers.guardians_controller import GuardiansController
+from ...types import Connection, DateInput
+from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from ..data_access.itinerary import fetch_itinerary_date
 from ..data_access.clear_itinerary import clear_itinerary
 from ..data_access.save_itinerary import save_validated_itinerary
@@ -6,16 +13,16 @@ from .itinerary_validation import validate_itinerary_for_save
 
 
 def set_itinerary(
-      conn,
-      date,
-      animals,
-      attractions,
-      guardians_talks,
-      wild_encounters,
-      animal_controller,
-      attraction_controller,
-      guardians_controller,
-      wild_encounter_controller ):
+      conn: Connection,
+      date: DateInput,
+      animals: list[ dict[ str, str ] ],
+      attractions: list[ str ],
+      guardians_talks: list[ str ],
+      wild_encounters: list[ str ],
+      animal_controller: type[ AnimalController ],
+      attraction_controller: type[ AttractionController ],
+      guardians_controller: type[ GuardiansController ],
+      wild_encounter_controller: type[ WildEncounterController ] ) -> bool:
    save_input = map_itinerary_save_input(
       date,
       animals,

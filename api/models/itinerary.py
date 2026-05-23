@@ -1,13 +1,27 @@
+from __future__ import annotations
+
+from .animal import Animal
+from .attraction import Attraction
+from .guardians_talk import GuardiansTalk
+from .wild_encounter import WildEncounter
+
+
 class Itinerary:
-   def __init__( self, date, animals=[], attractions=[], guardians_talks=[], wild_encounters=[] ):
+   def __init__(
+         self,
+         date: str,
+         animals: list[ Animal ] | None = None,
+         attractions: list[ Attraction ] | None = None,
+         guardians_talks: list[ GuardiansTalk ] | None = None,
+         wild_encounters: list[ WildEncounter ] | None = None ) -> None:
       self.date = date
-      self.animals = animals
-      self.attractions = attractions
-      self.guardians_talks = guardians_talks
-      self.wild_encounters = wild_encounters
+      self.animals = animals or []
+      self.attractions = attractions or []
+      self.guardians_talks = guardians_talks or []
+      self.wild_encounters = wild_encounters or []
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'date': self.date,
          'animals': [
@@ -25,7 +39,10 @@ class Itinerary:
       }
 
 
-   def _to_dict_with_type( self, obj, fallback_type ):
+   def _to_dict_with_type(
+         self,
+         obj: Animal | Attraction | GuardiansTalk | WildEncounter | dict[ str, object ],
+         fallback_type: str ) -> dict[ str, object ]:
       if hasattr( obj, 'to_dict' ):
          d = obj.to_dict()
       else:

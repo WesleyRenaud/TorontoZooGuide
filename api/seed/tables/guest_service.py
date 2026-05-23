@@ -1,4 +1,8 @@
-def create_table( cursor ):
+from __future__ import annotations
+
+from ...types import Cursor
+
+def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS GuestService;' )
    cursor.execute( ''' CREATE TABLE GuestService
                      (  SERVICE_TYPE  TEXT  NOT NULL,
@@ -41,7 +45,7 @@ guest_services = [
 ]
 
 
-def insert_rows( cursor ):
+def insert_rows( cursor: Cursor ) -> None:
    cursor.executemany( ''' INSERT INTO GuestService (
                               SERVICE_TYPE,
                               X_COORD,

@@ -1,11 +1,16 @@
+from __future__ import annotations
+
+from ..types import DateKey, ScheduleTimeKey
+
+
 class ZooHours:
    def __init__(
          self,
-         date,
-         early_admission_time,
-         open_time,
-         last_admission_time,
-         close_time ):
+         date: DateKey,
+         early_admission_time: ScheduleTimeKey,
+         open_time: ScheduleTimeKey,
+         last_admission_time: ScheduleTimeKey,
+         close_time: ScheduleTimeKey ) -> None:
 
       self.date = date
       self.early_admission_time = early_admission_time
@@ -14,7 +19,7 @@ class ZooHours:
       self.close_time = close_time
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'date': self.date,
          'earlyAdmissionTime': self.early_admission_time,

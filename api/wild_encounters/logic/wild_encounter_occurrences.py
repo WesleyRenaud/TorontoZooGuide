@@ -1,12 +1,16 @@
+from __future__ import annotations
+
 from datetime import timedelta
 
 from ... import zoo
+from ..data_access.wild_encounter_cancellation_record import WildEncounterCancellationRecord
+from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 
 
 def build_wild_encounter_occurrences(
-      schedule_record,
-      cancellation_records,
-      days_ahead ):
+      schedule_record: WildEncounterScheduleRecord | None,
+      cancellation_records: list[ WildEncounterCancellationRecord ],
+      days_ahead: int ) -> list[ zoo.ScheduledOccurrence ]:
    if schedule_record == None:
       return []
 
@@ -41,7 +45,7 @@ def build_wild_encounter_occurrences(
       schedule_record.sunday,
    )
 
-   occurrences = []
+   occurrences: list[ zoo.ScheduledOccurrence ] = []
    current_date = schedule_start_date
 
    while current_date <= schedule_end_date:
@@ -66,9 +70,9 @@ def build_wild_encounter_occurrences(
 
 
 def wild_encounter_occurrence_is_cancelled(
-      cancellation_records,
-      occurrence_date,
-      encounter_time ):
+      cancellation_records: list[ WildEncounterCancellationRecord ],
+      occurrence_date: str,
+      encounter_time: str ) -> bool:
    return any(
       cancellation.cancellation_date == occurrence_date
       and cancellation.encounter_time == encounter_time

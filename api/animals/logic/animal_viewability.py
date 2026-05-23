@@ -1,9 +1,18 @@
+from __future__ import annotations
+
+from datetime import date
+
 from ... import zoo
 from ...shared.enums import ScheduleStatus
+from ...types import MonthInput, VisitDay, VisitYear
+from ..data_access.animal_viewability_record import AnimalViewabilityRecord
 from .animal_viewability_context import AnimalViewabilityContext
 
 
-def resolve_temperature_likelihood_context( month, day, temp=None ):
+def resolve_temperature_likelihood_context(
+      month: int,
+      day: int,
+      temp: float | None = None ) -> tuple[ float, int ]:
    if temp is None:
       # Historical average temperatures are less precise than a user-supplied forecast/current temperature,
       # so the likelihood model uses a wider distribution when falling back to seasonal averages.
@@ -14,7 +23,11 @@ def resolve_temperature_likelihood_context( month, day, temp=None ):
    return ( temp, 2 )
 
 
-def resolve_animal_viewability_context( day, month, year, temp=None ):
+def resolve_animal_viewability_context(
+      day: VisitDay,
+      month: MonthInput,
+      year: VisitYear,
+      temp: float | None = None ) -> AnimalViewabilityContext:
    target_date = zoo.ZooUtil.visit_target_date( month, day, year )
    calendar_month = target_date.month
    day_of_month = target_date.day
@@ -31,7 +44,9 @@ def resolve_animal_viewability_context( day, month, year, temp=None ):
       sigma=sigma )
 
 
-def get_active_off_display_status( animal, target_date ):
+def get_active_off_display_status(
+      animal: AnimalViewabilityRecord,
+      target_date: date ) -> tuple[ bool, str | None ]:
    stored_is_off_display = bool( animal.is_off_display ) if animal.is_off_display != None else False
 
    if not stored_is_off_display:
@@ -52,7 +67,9 @@ def get_active_off_display_status( animal, target_date ):
    return False, None
 
 
-def get_active_limited_viewing_status( animal, target_date ):
+def get_active_limited_viewing_status(
+      animal: AnimalViewabilityRecord,
+      target_date: date ) -> tuple[ bool, str | None ]:
    schedule_start_date = animal.schedule_start_date
    schedule_end_date = animal.schedule_end_date
    daily_start_time = animal.daily_start_time
@@ -70,7 +87,9 @@ def get_active_limited_viewing_status( animal, target_date ):
    return False, None
 
 
-def get_active_viewing_alert_status( animal, target_date ):
+def get_active_viewing_alert_status(
+      animal: AnimalViewabilityRecord,
+      target_date: date ) -> tuple[ bool, str | None ]:
    alert_message = animal.alert_message
    alert_start_date = animal.alert_start_date
    alert_end_date = animal.alert_end_date
@@ -86,7 +105,9 @@ def get_active_viewing_alert_status( animal, target_date ):
    return False, None
 
 
-def get_active_exhibit_status( animal, target_date ):
+def get_active_exhibit_status(
+      animal: AnimalViewabilityRecord,
+      target_date: date ) -> tuple[ ScheduleStatus, str | None ]:
    if animal.is_closed == None:
       return ScheduleStatus.UNKNOWN, None
 
@@ -108,12 +129,12 @@ def get_active_exhibit_status( animal, target_date ):
 
 
 def calculate_animal_likelihood(
-      temp,
-      sigma,
-      enclosure_type,
-      min_temperature,
-      day_seasonal_multiplier,
-      exhibit_day_seasonal_availability_multiplier=1.0 ):
+      temp: float,
+      sigma: int,
+      enclosure_type: str | None,
+      min_temperature: float | None,
+      day_seasonal_multiplier: float | None,
+      exhibit_day_seasonal_availability_multiplier: float = 1.0 ) -> int:
    normalized_enclosure_type = str( enclosure_type ).strip().lower() if enclosure_type is not None else None
 
    if normalized_enclosure_type == 'indoor':
@@ -147,13 +168,13 @@ def calculate_animal_likelihood(
 
 
 def build_viewable_animals_on_day(
-      animal_records,
-      target_date,
-      temp,
-      sigma,
-      include_off_display_animals=False,
-      threshold=0 ):
-   animals = []
+      animal_records: list[ AnimalViewabilityRecord ],
+      target_date: date,
+      temp: float,
+      sigma: int,
+      include_off_display_animals: bool = False,
+      threshold: int = 0 ) -> list[ zoo.Animal ]:
+   animals: list[ zoo.Animal ] = []
 
    for animal_record in animal_records:
       animal = build_viewable_animal_from_record(
@@ -171,10 +192,10 @@ def build_viewable_animals_on_day(
 
 
 def build_viewable_animal_from_record(
-      animal,
-      target_date,
-      temp,
-      sigma ):
+      animal: AnimalViewabilityRecord,
+      target_date: date,
+      temp: float,
+      sigma: int ) -> zoo.Animal:
    exhibit_day_seasonal_availability_multiplier = animal.exhibit_day_seasonal_availability_multiplier
 
    is_off_display, off_display_message = get_active_off_display_status(
@@ -235,11 +256,11 @@ def build_viewable_animal_from_record(
 
 
 def calculate_viewable_animal_likelihood(
-      animal,
-      temp,
-      sigma,
-      is_off_display,
-      exhibit_status ):
+      animal: AnimalViewabilityRecord,
+      temp: float,
+      sigma: int,
+      is_off_display: bool,
+      exhibit_status: ScheduleStatus ) -> int:
    if is_off_display or exhibit_status == ScheduleStatus.CLOSED:
       return 0
 
@@ -258,13 +279,13 @@ def calculate_viewable_animal_likelihood(
 
 
 def get_viewable_animal_display_message(
-      animal,
-      likelihood,
-      is_off_display,
-      off_display_message,
-      exhibit_status,
-      exhibit_closed_message,
-      exhibit_day_seasonal_availability_multiplier ):
+      animal: AnimalViewabilityRecord,
+      likelihood: int,
+      is_off_display: bool,
+      off_display_message: str | None,
+      exhibit_status: ScheduleStatus,
+      exhibit_closed_message: str | None,
+      exhibit_day_seasonal_availability_multiplier: float | None ) -> str | None:
    if is_off_display:
       return off_display_message
 

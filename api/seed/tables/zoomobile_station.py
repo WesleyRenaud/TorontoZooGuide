@@ -1,4 +1,8 @@
-def create_table( cursor ):
+from __future__ import annotations
+
+from ...types import Cursor
+
+def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS ZoomobileStation;' )
    cursor.execute( ''' CREATE TABLE ZoomobileStation
                      (  NAME              VARCHAR(64) NOT NULL,
@@ -59,7 +63,7 @@ zoomobile_stations = [
    ),
 ]
 
-def insert_rows( cursor ):
+def insert_rows( cursor: Cursor ) -> None:
    cursor.executemany( ''' INSERT INTO ZoomobileStation (
                               NAME,
                               ON_WINTER_ROUTE,

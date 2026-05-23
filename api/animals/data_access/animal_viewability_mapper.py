@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+from ...types import Row
 from .animal_viewability_record import AnimalViewabilityRecord
 
 
-def map_animal_viewability_row( row ):
+def map_animal_viewability_row( row: Row ) -> AnimalViewabilityRecord:
    return AnimalViewabilityRecord(
       species=row[ 'SPECIES' ],
       latin_name=row[ 'LATIN_NAME' ],
@@ -42,7 +47,7 @@ def map_animal_viewability_row( row ):
       exhibit_day_seasonal_availability_multiplier=row[ 'EXHIBIT_DAY_SEASONAL_AVAILABILITY_MULTIPLIER' ] )
 
 
-def map_animal_viewability_rows( rows ):
+def map_animal_viewability_rows( rows: Iterable[ Row ] ) -> list[ AnimalViewabilityRecord ]:
    return [
       map_animal_viewability_row( row )
       for row in rows

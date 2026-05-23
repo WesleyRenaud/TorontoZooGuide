@@ -1,20 +1,24 @@
+from __future__ import annotations
+
 import sqlite3
 from pathlib import Path
+
+from ...types import Cursor
 
 
 MIGRATIONS_DIR = Path( __file__ ).parent
 
 
-def migration_files():
+def migration_files() -> list[ Path ]:
    return sorted( MIGRATIONS_DIR.glob( '*.sql' ) )
 
 
-def ensure_migration_table( cursor ):
+def ensure_migration_table( cursor: Cursor ) -> None:
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS SchemaMigration
                      (  MIGRATION_NAME   TEXT NOT NULL PRIMARY KEY ); ''' )
 
 
-def applied_migrations( cursor ):
+def applied_migrations( cursor: Cursor ) -> set[ str ]:
    ensure_migration_table( cursor )
 
    return {
@@ -25,7 +29,7 @@ def applied_migrations( cursor ):
    }
 
 
-def run_migrations( db_path='animals.db' ):
+def run_migrations( db_path: str = 'animals.db' ) -> None:
    conn = sqlite3.connect( db_path )
    cursor = conn.cursor()
 

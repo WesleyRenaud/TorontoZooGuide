@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 from ... import zoo
 from .wild_encounter_schedule import find_wild_encounter_on_day_schedule
 
 
-def build_wild_encounter_diff_for_visit_day( name, encounter ):
+def build_wild_encounter_diff_for_visit_day(
+      name: str,
+      encounter: zoo.WildEncounter | None ) -> zoo.WildEncounterDiff:
    if encounter is None:
       return zoo.WildEncounterDiff(
          name=name,
@@ -24,10 +28,10 @@ def build_wild_encounter_diff_for_visit_day( name, encounter ):
 
 
 def validate_wild_encounters_for_itinerary(
-      wild_encounters_to_include,
-      day_schedule ):
+      wild_encounters_to_include: list[ str ] | None,
+      day_schedule: list[ zoo.WildEncounter ] ) -> list[ zoo.WildEncounterDiff ]:
 
-   diffs = []
+   diffs: list[ zoo.WildEncounterDiff ] = []
 
    for encounter_name in wild_encounters_to_include or []:
       encounter = find_wild_encounter_on_day_schedule(

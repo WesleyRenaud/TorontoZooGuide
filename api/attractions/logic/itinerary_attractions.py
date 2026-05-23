@@ -1,7 +1,15 @@
+from __future__ import annotations
+
+from datetime import date
+
+from ... import zoo
+from ...itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...itinerary.data_access.itinerary_name_key import itinerary_name_key
 
 
-def build_itinerary_attractions( attractions, saved_attractions ):
+def build_itinerary_attractions(
+      attractions: list[ zoo.Attraction ],
+      saved_attractions: list[ ItineraryAttractionRecord ] ) -> list[ zoo.Attraction ]:
    attractions_filter = {
       saved_attraction.name_key()
       for saved_attraction in saved_attractions

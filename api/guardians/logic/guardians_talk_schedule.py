@@ -1,10 +1,19 @@
+from __future__ import annotations
+
+from collections.abc import Callable
+from datetime import date
+
 from ... import zoo
 from ...shared.strings import SharedStrings
+from ...types import DateKey, ScheduleTimeKey
+from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from .guardians_talk_name_filter import GuardiansTalkNameFilter
 from .guardians_talk_weekday_time import guardians_talk_time_for_weekday
 
 
-def find_guardians_talk_on_day_schedule( day_schedule, talk_name ):
+def find_guardians_talk_on_day_schedule(
+      day_schedule: list[ zoo.GuardiansTalk ],
+      talk_name: str ) -> zoo.GuardiansTalk | None:
    talk_filter = GuardiansTalkNameFilter( name=talk_name )
 
    if talk_filter.should_return_empty():
@@ -18,14 +27,17 @@ def find_guardians_talk_on_day_schedule( day_schedule, talk_name ):
 
 
 def build_guardians_talk_schedule_for_target_date(
-      records,
-      target_date,
-      occurrence_is_cancelled ):
+      records: list[ GuardiansTalkScheduleRecord ],
+      target_date: date,
+      occurrence_is_cancelled: Callable[
+         [ str, str, DateKey, ScheduleTimeKey ],
+         bool,
+      ] ) -> list[ zoo.GuardiansTalk ]:
 
    target_weekday = target_date.weekday()
    target_date_str = target_date.isoformat()
 
-   guardians_talks = []
+   guardians_talks: list[ zoo.GuardiansTalk ] = []
 
    for record in records:
       name = record.name
@@ -38,7 +50,7 @@ def build_guardians_talk_schedule_for_target_date(
          target_date=target_date,
          start_date_value=record.schedule_start_date,
          end_date_value=record.schedule_end_date )
-      unavailable_message = None
+      unavailable_message: str | None = None
 
       weekday_ok = talk_time != None
 

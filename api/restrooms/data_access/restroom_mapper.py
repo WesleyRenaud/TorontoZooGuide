@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+from ...types import Row
 from .restroom_record import RestroomRecord
 
 
-def map_restroom_record( row ):
+def map_restroom_record( row: Row ) -> RestroomRecord:
    return RestroomRecord(
       title=row[ 'TITLE' ],
       x_coord=row[ 'X_COORD' ],
@@ -15,7 +20,7 @@ def map_restroom_record( row ):
       alert_end_date=row[ 'ALERT_END_DATE' ] )
 
 
-def map_restroom_records( rows ):
+def map_restroom_records( rows: Iterable[ Row ] ) -> list[ RestroomRecord ]:
    return [
       map_restroom_record( row )
       for row in rows

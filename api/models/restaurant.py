@@ -1,9 +1,21 @@
+from __future__ import annotations
+
 from ..zoo_util import ZooUtil
 
 
 class Restaurant:
-   def __init__( self, name, location, sub_location, description=None, menu_link=None, x_coord=None, y_coord=None, is_closed=None,
-                 closed_message=None, likelihood=None ):
+   def __init__(
+         self,
+         name: str,
+         location: str,
+         sub_location: str,
+         description: str | None = None,
+         menu_link: str | None = None,
+         x_coord: float | None = None,
+         y_coord: float | None = None,
+         is_closed: bool | None = None,
+         closed_message: str | None = None,
+         likelihood: int | None = None ) -> None:
       self.name = name
       self.location = location
       self.sub_location = sub_location
@@ -16,7 +28,7 @@ class Restaurant:
       self.likelihood = likelihood
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'name': self.name,
          'location': self.location,

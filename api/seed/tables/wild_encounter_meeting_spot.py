@@ -1,4 +1,8 @@
-def create_table( cursor ):
+from __future__ import annotations
+
+from ...types import Cursor
+
+def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS WildEncounterMeetingSpot;' )
    cursor.execute( ''' CREATE TABLE WildEncounterMeetingSpot
                      (  NAME     TEXT  NOT NULL,
@@ -54,7 +58,7 @@ wild_encounter_meeting_spots = [
    )
 ]
 
-def insert_rows( cursor ):
+def insert_rows( cursor: Cursor ) -> None:
    cursor.executemany( ''' INSERT INTO WildEncounterMeetingSpot (
                               NAME,
                               X_COORD,

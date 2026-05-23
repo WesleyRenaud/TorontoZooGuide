@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 from ...models import RegionWithExhibits
+from ..data_access.region_exhibit_record import RegionExhibitRecord
 
 
-def build_regions_with_exhibits( region_exhibit_records ):
-   regions = []
-   current_region = None
+def build_regions_with_exhibits(
+      region_exhibit_records: list[ RegionExhibitRecord ] ) -> list[ RegionWithExhibits ]:
+   regions: list[ RegionWithExhibits ] = []
+   current_region: RegionWithExhibits | None = None
 
    for record in region_exhibit_records:
       region_name = record.region_name

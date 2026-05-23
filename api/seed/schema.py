@@ -1,7 +1,10 @@
+from __future__ import annotations
+
+from ..types import Cursor
 from .tables import static_tables
 
 
-def create_schema( cursor ):
+def create_schema( cursor: Cursor ) -> None:
    for table in static_tables:
       table.create_table( cursor )
 

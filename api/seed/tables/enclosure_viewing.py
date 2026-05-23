@@ -1,4 +1,8 @@
-def create_table( cursor ):
+from __future__ import annotations
+
+from ...types import Cursor
+
+def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS EnclosureViewing;' )
    cursor.execute( ''' CREATE TABLE EnclosureViewing
                      (  SPECIES                          VARCHAR(64) NOT NULL,
@@ -2119,7 +2123,7 @@ enclosure_viewings =\
    )
 ]
 
-def insert_rows( cursor ):
+def insert_rows( cursor: Cursor ) -> None:
    cursor.executemany( ''' INSERT INTO EnclosureViewing (
                               SPECIES,
                               EXHIBIT,

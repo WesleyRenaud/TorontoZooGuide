@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+
+from ...types import DateKey, ScheduleTimeKey
 
 
 @dataclass( frozen=True )
 class ZooHoursRecord:
-   operating_date: object
-   early_admission_time: object
-   open_time: object
-   last_admission_time: object
-   close_time: object
+   operating_date: DateKey
+   early_admission_time: ScheduleTimeKey
+   open_time: ScheduleTimeKey
+   last_admission_time: ScheduleTimeKey
+   close_time: ScheduleTimeKey

@@ -1,7 +1,10 @@
+from __future__ import annotations
+
+from ...types import Row
 from .drinking_fountain_status_record import DrinkingFountainStatusRecord
 
 
-def map_drinking_fountain_status_record( row ):
+def map_drinking_fountain_status_record( row: Row ) -> DrinkingFountainStatusRecord:
    return DrinkingFountainStatusRecord(
       is_closed=row[ 'IS_CLOSED' ],
       start_date=row[ 'START_DATE' ],
