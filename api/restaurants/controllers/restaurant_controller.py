@@ -9,6 +9,8 @@ from ..logic.restaurant import resolve_restaurant_context
 from ..logic.restaurant_status import build_restaurant_closed_schedule
 from ..logic.restaurant_status import build_restaurant_closure_override
 from ..logic.restaurant_status import build_restaurant_opening_schedule
+from ..logic.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_replacing_overlaps
+from ..logic.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_trimming_overlaps
 from ..logic.restaurants_matching_query import build_restaurants_matching_query
 from ...request_connection import get_connection
 
@@ -134,5 +136,73 @@ class RestaurantController():
          message=message )
 
       return save_restaurant_opening_schedule(
+         get_connection(),
+         schedule=schedule )
+
+
+   @classmethod
+   def replace_restaurant_opening_schedule_overlaps(
+         cls,
+         restaurant,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message ):
+      schedule = build_restaurant_opening_schedule(
+         restaurant=restaurant,
+         start_date=start_date,
+         end_date=end_date,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         holidays_only=holidays_only,
+         message=message )
+
+      return save_restaurant_opening_schedule_replacing_overlaps(
+         get_connection(),
+         schedule=schedule )
+
+
+   @classmethod
+   def trim_restaurant_opening_schedule_overlaps(
+         cls,
+         restaurant,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message ):
+      schedule = build_restaurant_opening_schedule(
+         restaurant=restaurant,
+         start_date=start_date,
+         end_date=end_date,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         holidays_only=holidays_only,
+         message=message )
+
+      return save_restaurant_opening_schedule_trimming_overlaps(
          get_connection(),
          schedule=schedule )

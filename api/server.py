@@ -1619,6 +1619,127 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not set opening schedule for "{ restaurant }".'
+            response[ 'errorType' ] = 'overlappingSchedule'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/replace-restaurant-opening-schedule-overlaps':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restaurant = data.get( 'restaurant' )
+         schedule_start_date = data.get( 'scheduleStartDate' )
+         schedule_end_date = data.get( 'scheduleEndDate' )
+
+         monday = data.get( 'monday' )
+         tuesday = data.get( 'tuesday' )
+         wednesday = data.get( 'wednesday' )
+         thursday = data.get( 'thursday' )
+         friday = data.get( 'friday' )
+         saturday = data.get( 'saturday' )
+         sunday = data.get( 'sunday' )
+         holidays_only = data.get( 'holidaysOnly' )
+
+         message = data.get( 'message' )
+
+         success = RestaurantController.replace_restaurant_opening_schedule_overlaps(
+            restaurant=restaurant,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            holidays_only=holidays_only,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restaurant': restaurant,
+            'scheduleStartDate': schedule_start_date,
+            'scheduleEndDate': schedule_end_date,
+            'monday': monday,
+            'tuesday': tuesday,
+            'wednesday': wednesday,
+            'thursday': thursday,
+            'friday': friday,
+            'saturday': saturday,
+            'sunday': sunday,
+            'holidaysOnly': holidays_only,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not replace opening schedule overlaps for "{ restaurant }".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/trim-restaurant-opening-schedule-overlaps':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         restaurant = data.get( 'restaurant' )
+         schedule_start_date = data.get( 'scheduleStartDate' )
+         schedule_end_date = data.get( 'scheduleEndDate' )
+
+         monday = data.get( 'monday' )
+         tuesday = data.get( 'tuesday' )
+         wednesday = data.get( 'wednesday' )
+         thursday = data.get( 'thursday' )
+         friday = data.get( 'friday' )
+         saturday = data.get( 'saturday' )
+         sunday = data.get( 'sunday' )
+         holidays_only = data.get( 'holidaysOnly' )
+
+         message = data.get( 'message' )
+
+         success = RestaurantController.trim_restaurant_opening_schedule_overlaps(
+            restaurant=restaurant,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            holidays_only=holidays_only,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'restaurant': restaurant,
+            'scheduleStartDate': schedule_start_date,
+            'scheduleEndDate': schedule_end_date,
+            'monday': monday,
+            'tuesday': tuesday,
+            'wednesday': wednesday,
+            'thursday': thursday,
+            'friday': friday,
+            'saturday': saturday,
+            'sunday': sunday,
+            'holidaysOnly': holidays_only,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not trim opening schedule overlaps for "{ restaurant }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -1713,6 +1834,127 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not set opening schedule for "{ gift_shop }".'
+            response[ 'errorType' ] = 'overlappingSchedule'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/replace-gift-shop-opening-schedule-overlaps':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         gift_shop = data.get( 'giftShop' )
+         schedule_start_date = data.get( 'scheduleStartDate' )
+         schedule_end_date = data.get( 'scheduleEndDate' )
+
+         monday = data.get( 'monday' )
+         tuesday = data.get( 'tuesday' )
+         wednesday = data.get( 'wednesday' )
+         thursday = data.get( 'thursday' )
+         friday = data.get( 'friday' )
+         saturday = data.get( 'saturday' )
+         sunday = data.get( 'sunday' )
+         holidays_only = data.get( 'holidaysOnly' )
+
+         message = data.get( 'message' )
+
+         success = GiftShopController.replace_gift_shop_opening_schedule_overlaps(
+            gift_shop=gift_shop,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            holidays_only=holidays_only,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'gift_shop': gift_shop,
+            'scheduleStartDate': schedule_start_date,
+            'scheduleEndDate': schedule_end_date,
+            'monday': monday,
+            'tuesday': tuesday,
+            'wednesday': wednesday,
+            'thursday': thursday,
+            'friday': friday,
+            'saturday': saturday,
+            'sunday': sunday,
+            'holidaysOnly': holidays_only,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not replace opening schedule overlaps for "{ gift_shop }".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/trim-gift-shop-opening-schedule-overlaps':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         gift_shop = data.get( 'giftShop' )
+         schedule_start_date = data.get( 'scheduleStartDate' )
+         schedule_end_date = data.get( 'scheduleEndDate' )
+
+         monday = data.get( 'monday' )
+         tuesday = data.get( 'tuesday' )
+         wednesday = data.get( 'wednesday' )
+         thursday = data.get( 'thursday' )
+         friday = data.get( 'friday' )
+         saturday = data.get( 'saturday' )
+         sunday = data.get( 'sunday' )
+         holidays_only = data.get( 'holidaysOnly' )
+
+         message = data.get( 'message' )
+
+         success = GiftShopController.trim_gift_shop_opening_schedule_overlaps(
+            gift_shop=gift_shop,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            holidays_only=holidays_only,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'gift_shop': gift_shop,
+            'scheduleStartDate': schedule_start_date,
+            'scheduleEndDate': schedule_end_date,
+            'monday': monday,
+            'tuesday': tuesday,
+            'wednesday': wednesday,
+            'thursday': thursday,
+            'friday': friday,
+            'saturday': saturday,
+            'sunday': sunday,
+            'holidaysOnly': holidays_only,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not trim opening schedule overlaps for "{ gift_shop }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -1875,6 +2117,127 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not set opening schedule for "{ attraction }".'
+            response[ 'errorType' ] = 'overlappingSchedule'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/replace-attraction-opening-schedule-overlaps':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         attraction = data.get( 'attraction' )
+         schedule_start_date = data.get( 'scheduleStartDate' )
+         schedule_end_date = data.get( 'scheduleEndDate' )
+
+         monday = data.get( 'monday' )
+         tuesday = data.get( 'tuesday' )
+         wednesday = data.get( 'wednesday' )
+         thursday = data.get( 'thursday' )
+         friday = data.get( 'friday' )
+         saturday = data.get( 'saturday' )
+         sunday = data.get( 'sunday' )
+         holidays_only = data.get( 'holidaysOnly' )
+
+         message = data.get( 'message' )
+
+         success = AttractionController.replace_attraction_opening_schedule_overlaps(
+            attraction=attraction,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            holidays_only=holidays_only,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'attraction': attraction,
+            'scheduleStartDate': schedule_start_date,
+            'scheduleEndDate': schedule_end_date,
+            'monday': monday,
+            'tuesday': tuesday,
+            'wednesday': wednesday,
+            'thursday': thursday,
+            'friday': friday,
+            'saturday': saturday,
+            'sunday': sunday,
+            'holidaysOnly': holidays_only,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not replace opening schedule overlaps for "{ attraction }".'
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/trim-attraction-opening-schedule-overlaps':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         attraction = data.get( 'attraction' )
+         schedule_start_date = data.get( 'scheduleStartDate' )
+         schedule_end_date = data.get( 'scheduleEndDate' )
+
+         monday = data.get( 'monday' )
+         tuesday = data.get( 'tuesday' )
+         wednesday = data.get( 'wednesday' )
+         thursday = data.get( 'thursday' )
+         friday = data.get( 'friday' )
+         saturday = data.get( 'saturday' )
+         sunday = data.get( 'sunday' )
+         holidays_only = data.get( 'holidaysOnly' )
+
+         message = data.get( 'message' )
+
+         success = AttractionController.trim_attraction_opening_schedule_overlaps(
+            attraction=attraction,
+            start_date=schedule_start_date,
+            end_date=schedule_end_date,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            holidays_only=holidays_only,
+            message=message )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'attraction': attraction,
+            'scheduleStartDate': schedule_start_date,
+            'scheduleEndDate': schedule_end_date,
+            'monday': monday,
+            'tuesday': tuesday,
+            'wednesday': wednesday,
+            'thursday': thursday,
+            'friday': friday,
+            'saturday': saturday,
+            'sunday': sunday,
+            'holidaysOnly': holidays_only,
+            'message': message
+         }
+
+         if not success:
+            response[ 'error' ] = f'Could not trim opening schedule overlaps for "{ attraction }".'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

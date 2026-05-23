@@ -76,6 +76,14 @@ export function setRestaurantOpeningSchedule(payload) {
    return postJson('/set-restaurant-opening-schedule', payload);
 }
 
+export function replaceRestaurantOpeningScheduleOverlaps(payload) {
+   return postJson('/replace-restaurant-opening-schedule-overlaps', payload);
+}
+
+export function trimRestaurantOpeningScheduleOverlaps(payload) {
+   return postJson('/trim-restaurant-opening-schedule-overlaps', payload);
+}
+
 export function setRestaurantClosed(payload) {
    return postJson('/set-restaurant-closed', payload);
 }
@@ -116,6 +124,14 @@ export function setGiftShopOpeningSchedule(payload) {
    return postJson('/set-gift-shop-opening-schedule', payload);
 }
 
+export function replaceGiftShopOpeningScheduleOverlaps(payload) {
+   return postJson('/replace-gift-shop-opening-schedule-overlaps', payload);
+}
+
+export function trimGiftShopOpeningScheduleOverlaps(payload) {
+   return postJson('/trim-gift-shop-opening-schedule-overlaps', payload);
+}
+
 export function setGiftShopClosed(payload) {
    return postJson('/set-gift-shop-closed', payload);
 }
@@ -126,6 +142,14 @@ export function setGiftShopClosureOverride(payload) {
 
 export function setAttractionOpeningSchedule(payload) {
    return postJson('/set-attraction-opening-schedule', payload);
+}
+
+export function replaceAttractionOpeningScheduleOverlaps(payload) {
+   return postJson('/replace-attraction-opening-schedule-overlaps', payload);
+}
+
+export function trimAttractionOpeningScheduleOverlaps(payload) {
+   return postJson('/trim-attraction-opening-schedule-overlaps', payload);
 }
 
 export function setAttractionClosed(payload) {

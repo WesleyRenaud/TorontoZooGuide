@@ -140,6 +140,15 @@ export const status = {
    zoomobileRouteSet: result => `Zoomobile route was set to ${result.route}.`,
 };
 
+export const confirm = {
+   deleteOldSchedules: 'Delete Old Schedules',
+   openingScheduleOverlapMessage: (
+      'This schedule overlaps one or more existing schedules. Choose how to resolve the conflict.'
+   ),
+   openingScheduleOverlapTitle: 'Schedule conflict',
+   trimOldSchedules: 'Trim Old Schedules',
+};
+
 export const updateTypes = [
    { value: 'Animal Birth' },
    { value: 'Animal Passing' },
