@@ -2103,14 +2103,13 @@ def test_opening_schedule_overlap_failure_returns_error_type(
             'location': 'Africa Savanna',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
-            'time': '10:00',
-            'monday': True,
-            'tuesday': False,
-            'wednesday': True,
-            'thursday': False,
-            'friday': True,
-            'saturday': False,
-            'sunday': True,
+            'mondayTime': '10:00',
+            'tuesdayTime': None,
+            'wednesdayTime': '11:00',
+            'thursdayTime': None,
+            'fridayTime': '12:00',
+            'saturdayTime': None,
+            'sundayTime': None,
             'message': 'Schedule.'
          },
          (
@@ -2120,14 +2119,13 @@ def test_opening_schedule_overlap_failure_returns_error_type(
                'location': 'Africa Savanna',
                'start_date': '2026-06-01',
                'end_date': '2026-06-30',
-               'talk_time': '10:00',
-               'monday': True,
-               'tuesday': False,
-               'wednesday': True,
-               'thursday': False,
-               'friday': True,
-               'saturday': False,
-               'sunday': True,
+               'monday_time': '10:00',
+               'tuesday_time': None,
+               'wednesday_time': '11:00',
+               'thursday_time': None,
+               'friday_time': '12:00',
+               'saturday_time': None,
+               'sunday_time': None,
                'message': 'Schedule.'
             }
          ),
@@ -2136,7 +2134,9 @@ def test_opening_schedule_overlap_failure_returns_error_type(
             'location': 'Africa Savanna',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
-            'time': '10:00'
+            'mondayTime': '10:00',
+            'wednesdayTime': '11:00',
+            'fridayTime': '12:00'
          }
       ),
       (

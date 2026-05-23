@@ -383,19 +383,18 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results( db, fr
    freeze_database_today( date( 2026, 6, 15 ) )
 
    assert GuardiansController.set_guardians_talk_schedule(
-      'African Lion',
-      'Africa Savanna',
-      '2026-06-01',
-      '2026-06-30',
-      '10:00',
-      True,
-      False,
-      False,
-      False,
-      False,
-      False,
-      False,
-      ''
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday_time='10:00',
+      tuesday_time=None,
+      wednesday_time=None,
+      thursday_time=None,
+      friday_time=None,
+      saturday_time=None,
+      sunday_time=None,
+      message=''
    )
 
    talks = GuardiansController.get_guardians_talk_schedule( month='June', day=15, year=2026 )
@@ -409,19 +408,18 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results( db, fr
    assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00' ) for talk in talks )
 
    assert GuardiansController.set_guardians_talk_schedule(
-      'African Lion',
-      'Africa Savanna',
-      '2026-06-01',
-      '2026-06-30',
-      '10:00',
-      True,
-      False,
-      False,
-      False,
-      False,
-      False,
-      False,
-      ''
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday_time='10:00',
+      tuesday_time=None,
+      wednesday_time=None,
+      thursday_time=None,
+      friday_time=None,
+      saturday_time=None,
+      sunday_time=None,
+      message=''
    )
    assert GuardiansController.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', '10:00' )
 

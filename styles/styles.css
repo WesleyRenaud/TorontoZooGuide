@@ -737,6 +737,11 @@ html.home-page {
    position: relative;
 }
 
+.console-operations-workspace.map-container {
+   overflow-x: hidden;
+   overflow-y: auto;
+}
+
 #mapInner {
    flex: 1 1 auto;
    min-width: 0;
@@ -3143,6 +3148,7 @@ nav ul li a:hover {
    min-height: 0;
    overflow-y: auto;
    overflow-x: hidden;
+   -webkit-overflow-scrolling: touch;
 
    padding: 56px 56px 72px 56px;
 
@@ -3169,7 +3175,16 @@ nav ul li a:hover {
 }
 
 .console-operations-panel.active {
-   display: block;
+   display: flex;
+   flex-direction: column;
+   max-height: calc(100vh - 8vh - 56px);
+   margin-bottom: 56px;
+}
+
+.console-operations-panel.active .console-operations-panel-body {
+   overflow-y: auto;
+   min-height: 0;
+   -webkit-overflow-scrolling: touch;
 }
 
 .console-operations-panel-header {
@@ -3202,6 +3217,10 @@ nav ul li a:hover {
    flex-direction: column;
    gap: 14px;
    position: relative;
+}
+
+.console-operations-field[hidden] {
+   display: none !important;
 }
 
 .console-operations-label {

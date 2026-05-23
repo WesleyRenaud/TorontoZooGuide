@@ -1,6 +1,7 @@
 import {
    initDateRangePickers,
    initScheduleDateTimePickers,
+   initTimePicker,
 } from '../../datePickers/consoleDatePickers.js';
 
 const DATE_PICKER_BINDINGS = {
@@ -43,7 +44,16 @@ const DATE_PICKER_BINDINGS = {
       },
       {
          path: ['guardiansTalks', 'schedule'],
-         startTimeKey: 'timeEl',
+         timeFieldKeys: [
+            'dailyTimeEl',
+            'mondayTimeEl',
+            'tuesdayTimeEl',
+            'wednesdayTimeEl',
+            'thursdayTimeEl',
+            'fridayTimeEl',
+            'saturdayTimeEl',
+            'sundayTimeEl',
+         ],
       },
       {
          path: ['wildEncounters', 'schedule'],
@@ -79,8 +89,16 @@ function initDateTimePickerBinding(refs, {
    path,
    startTimeKey,
    endTimeKey = null,
+   timeFieldKeys = [],
 } = {}) {
    const binding = getNestedValue(refs, path);
+
+   if (timeFieldKeys.length) {
+      timeFieldKeys.forEach((fieldKey) => {
+         initTimePicker(binding?.[fieldKey]);
+      });
+      return;
+   }
 
    initScheduleDateTimePickers(
       binding?.startDateEl,
