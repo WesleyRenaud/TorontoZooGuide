@@ -372,3 +372,39 @@ test('buildGuardiansRows and buildWildRows render schedule metadata', () => {
       'Meeting Spot: Wild Encounter - Africa Meeting Spot'
    );
 });
+
+test('buildGuardiansRows and buildWildRows sort scheduled rows by start time', () => {
+   const talkRows = buildGuardiansRows([
+      {
+         name: 'Late Talk',
+         location: 'Eurasia Wilds',
+         start_time: '1:30 PM',
+      },
+      {
+         name: 'Early Talk',
+         location: 'Africa Savanna',
+         start_time: '10:00 AM',
+      },
+   ]);
+   const wildRows = buildWildRows([
+      {
+         name: 'Afternoon Encounter',
+         meeting_spot: 'Wild Encounter - Africa Meeting Spot',
+         start_time: '14:00',
+      },
+      {
+         name: 'Morning Encounter',
+         meeting_spot: 'Wild Encounter - Australasia Meeting Spot',
+         start_time: '11:00',
+      },
+   ]);
+
+   assert.deepEqual(
+      talkRows.map((row) => textFor(row, '.itin-panel-name')),
+      ['Early Talk', 'Late Talk']
+   );
+   assert.deepEqual(
+      wildRows.map((row) => textFor(row, '.itin-panel-name')),
+      ['Morning Encounter', 'Afternoon Encounter']
+   );
+});

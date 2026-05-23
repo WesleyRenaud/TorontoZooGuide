@@ -3,6 +3,7 @@ import './apiNormalizeValues.test.mjs';
 import './exploreFilter.test.mjs';
 import './searchResponse.test.mjs';
 import './searchRows.test.mjs';
+import './scheduledOccurrenceSelector.test.mjs';
 import './visitDateRules.test.mjs';
 import './assetNormalization.test.mjs';
 import './likelihood.test.mjs';
