@@ -5,6 +5,7 @@ import {
    resetFormFields,
    validateOptionalDateRange,
 } from '../helpers/controllerUtils.js';
+import { resultHasOpeningScheduleOverlap } from './openingScheduleOverlap.js';
 import { setStatus } from '../shell/status.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -35,6 +36,7 @@ export function createWeeklyAvailabilityFormController({
    optionsLabel = APP_STRINGS.entityLabels.items,
    payloadKey = 'item',
    resultName = result => result?.[payloadKey] ?? '',
+   resolveOverlapConflict = null,
 } = {}) {
 
    function getDayCheckboxes() {
@@ -174,6 +176,37 @@ export function createWeeklyAvailabilityFormController({
       });
    }
 
+   function buildPayload(entity, startDate, endDate, message) {
+      return {
+            [payloadKey]: entity,
+            scheduleStartDate: startDate || null,
+            scheduleEndDate: endDate || null,
+            monday: Boolean(mondayEl?.checked),
+            tuesday: Boolean(tuesdayEl?.checked),
+            wednesday: Boolean(wednesdayEl?.checked),
+            thursday: Boolean(thursdayEl?.checked),
+            friday: Boolean(fridayEl?.checked),
+            saturday: Boolean(saturdayEl?.checked),
+            sunday: Boolean(sundayEl?.checked),
+            holidaysOnly: Boolean(holidaysOnlyEl?.checked),
+            message
+      };
+   }
+
+
+   function handleSubmitSuccess(result, entity) {
+      const name = resultName(result) || entity;
+
+      setStatus(
+         statusEl,
+         APP_STRINGS.status.openingScheduleSaved(name),
+         'is-success'
+      );
+
+      resetForm();
+   }
+
+
    async function onSubmitClick() {
       const entity = entityEl?.value.trim() ?? '';
       const startDate = startDateEl?.value.trim() ?? '';
@@ -199,36 +232,37 @@ export function createWeeklyAvailabilityFormController({
          return;
       }
 
+      const payload = buildPayload(entity, startDate, endDate, message);
+
       try {
-         const result = await submitSchedule({
-            [payloadKey]: entity,
-            scheduleStartDate: startDate || null,
-            scheduleEndDate: endDate || null,
-            monday: Boolean(mondayEl?.checked),
-            tuesday: Boolean(tuesdayEl?.checked),
-            wednesday: Boolean(wednesdayEl?.checked),
-            thursday: Boolean(thursdayEl?.checked),
-            friday: Boolean(fridayEl?.checked),
-            saturday: Boolean(saturdayEl?.checked),
-            sunday: Boolean(sundayEl?.checked),
-            holidaysOnly: Boolean(holidaysOnlyEl?.checked),
-            message
-         });
+         const result = await submitSchedule(payload);
 
          if (result.success) {
-            const name = resultName(result) || entity;
+            handleSubmitSuccess(result, entity);
+            return;
+         }
+
+         if (resultHasOpeningScheduleOverlap(result) && resolveOverlapConflict) {
+            const resolvedResult = await resolveOverlapConflict(payload);
+
+            if (resolvedResult?.success) {
+               handleSubmitSuccess(resolvedResult, entity);
+               return;
+            }
+
+            if (!resolvedResult) {
+               return;
+            }
 
             setStatus(
                statusEl,
-               APP_STRINGS.status.openingScheduleSaved(name),
-               'is-success'
+               resolvedResult.error || APP_STRINGS.common.genericFailed,
+               'is-error'
             );
+            return;
+         }
 
-            resetForm();
-         }
-         else {
-            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
-         }
+         setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
       }
       catch(err) {
          setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');

@@ -1,4 +1,10 @@
-import { setGiftShopOpeningSchedule } from '../../../api/consoleOperationsApi.js';
+import {
+   replaceGiftShopOpeningScheduleOverlaps,
+   setGiftShopOpeningSchedule,
+   trimGiftShopOpeningScheduleOverlaps,
+} from '../../../api/consoleOperationsApi.js';
+import { OPENING_SCHEDULE_OVERLAP_RESOLUTION } from '../../forms/openingScheduleOverlap.js';
+import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { createWeeklyAvailabilityFormController } from '../../forms/weeklyAvailabilityFormController.js';
 import { populateGiftShopDropdown } from '../../options/dropdowns.js';
 import { loadGiftShops } from '../../options/loaders.js';
@@ -18,5 +24,18 @@ export function createGiftShopOpeningScheduleController({
       optionsLabel: APP_STRINGS.entityLabels.giftShops,
       payloadKey: 'giftShop',
       resultName: result => result.gift_shop,
+      resolveOverlapConflict: async payload => {
+         const resolution = await showOpeningScheduleOverlapDialog();
+
+         if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
+            return replaceGiftShopOpeningScheduleOverlaps(payload);
+         }
+
+         if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
+            return trimGiftShopOpeningScheduleOverlaps(payload);
+         }
+
+         return null;
+      },
    });
 }
