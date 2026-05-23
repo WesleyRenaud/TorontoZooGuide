@@ -2343,15 +2343,13 @@ class MyHandler( BaseHTTPRequestHandler ):
          location = data.get( 'location' )
          schedule_start_date = data.get( 'startDate' )
          schedule_end_date = data.get( 'endDate' )
-         talk_time = data.get( 'time' )
-
-         monday = data.get( 'monday' )
-         tuesday = data.get( 'tuesday' )
-         wednesday = data.get( 'wednesday' )
-         thursday = data.get( 'thursday' )
-         friday = data.get( 'friday' )
-         saturday = data.get( 'saturday' )
-         sunday = data.get( 'sunday' )
+         monday_time = data.get( 'mondayTime' )
+         tuesday_time = data.get( 'tuesdayTime' )
+         wednesday_time = data.get( 'wednesdayTime' )
+         thursday_time = data.get( 'thursdayTime' )
+         friday_time = data.get( 'fridayTime' )
+         saturday_time = data.get( 'saturdayTime' )
+         sunday_time = data.get( 'sundayTime' )
 
          message = data.get( 'message' )
 
@@ -2360,14 +2358,13 @@ class MyHandler( BaseHTTPRequestHandler ):
             location=location,
             start_date=schedule_start_date,
             end_date=schedule_end_date,
-            talk_time=talk_time,
-            monday=monday,
-            tuesday=tuesday,
-            wednesday=wednesday,
-            thursday=thursday,
-            friday=friday,
-            saturday=saturday,
-            sunday=sunday,
+            monday_time=monday_time,
+            tuesday_time=tuesday_time,
+            wednesday_time=wednesday_time,
+            thursday_time=thursday_time,
+            friday_time=friday_time,
+            saturday_time=saturday_time,
+            sunday_time=sunday_time,
             message=message )
 
          self.send_response( 200 )
@@ -2380,14 +2377,13 @@ class MyHandler( BaseHTTPRequestHandler ):
             'location': location,
             'startDate': schedule_start_date,
             'endDate': schedule_end_date,
-            'time': talk_time,
-            'monday': monday,
-            'tuesday': tuesday,
-            'wednesday': wednesday,
-            'thursday': thursday,
-            'friday': friday,
-            'saturday': saturday,
-            'sunday': sunday,
+            'mondayTime': monday_time,
+            'tuesdayTime': tuesday_time,
+            'wednesdayTime': wednesday_time,
+            'thursdayTime': thursday_time,
+            'fridayTime': friday_time,
+            'saturdayTime': saturday_time,
+            'sundayTime': sunday_time,
             'message': message
          }
 

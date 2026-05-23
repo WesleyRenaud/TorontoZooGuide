@@ -666,14 +666,13 @@ def create_schema( cursor ):
                         LOCATION               VARCHAR(64) NOT NULL,
                         SCHEDULE_START_DATE    DATE        NOT NULL,
                         SCHEDULE_END_DATE      DATE,
-                        MONDAY                 BOOL        NOT NULL DEFAULT 0,
-                        TUESDAY                BOOL        NOT NULL DEFAULT 0,
-                        WEDNESDAY              BOOL        NOT NULL DEFAULT 0,
-                        THURSDAY               BOOL        NOT NULL DEFAULT 0,
-                        FRIDAY                 BOOL        NOT NULL DEFAULT 0,
-                        SATURDAY               BOOL        NOT NULL DEFAULT 0,
-                        SUNDAY                 BOOL        NOT NULL DEFAULT 0,
-                        TALK_TIME              TEXT        NOT NULL,
+                        MONDAY_TIME            VARCHAR(5),
+                        TUESDAY_TIME           VARCHAR(5),
+                        WEDNESDAY_TIME         VARCHAR(5),
+                        THURSDAY_TIME          VARCHAR(5),
+                        FRIDAY_TIME            VARCHAR(5),
+                        SATURDAY_TIME          VARCHAR(5),
+                        SUNDAY_TIME            VARCHAR(5),
                         SCHEDULE_MESSAGE       TEXT,
                         PRIMARY KEY (TALK_NAME, LOCATION),
                         FOREIGN KEY (TALK_NAME, LOCATION) REFERENCES MeetTheGuardiansTalk(NAME, LOCATION) ); ''' )
@@ -692,44 +691,39 @@ def create_schema( cursor ):
          'ALTER TABLE GuardiansTalkSchedule ADD COLUMN SCHEDULE_END_DATE DATE;'
       )
 
-   if 'MONDAY' not in guardians_talk_schedule_columns:
+   if 'MONDAY_TIME' not in guardians_talk_schedule_columns:
       cursor.execute(
-         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN MONDAY BOOL NOT NULL DEFAULT 0;'
+         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN MONDAY_TIME VARCHAR(5);'
       )
 
-   if 'TUESDAY' not in guardians_talk_schedule_columns:
+   if 'TUESDAY_TIME' not in guardians_talk_schedule_columns:
       cursor.execute(
-         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN TUESDAY BOOL NOT NULL DEFAULT 0;'
+         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN TUESDAY_TIME VARCHAR(5);'
       )
 
-   if 'WEDNESDAY' not in guardians_talk_schedule_columns:
+   if 'WEDNESDAY_TIME' not in guardians_talk_schedule_columns:
       cursor.execute(
-         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN WEDNESDAY BOOL NOT NULL DEFAULT 0;'
+         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN WEDNESDAY_TIME VARCHAR(5);'
       )
 
-   if 'THURSDAY' not in guardians_talk_schedule_columns:
+   if 'THURSDAY_TIME' not in guardians_talk_schedule_columns:
       cursor.execute(
-         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN THURSDAY BOOL NOT NULL DEFAULT 0;'
+         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN THURSDAY_TIME VARCHAR(5);'
       )
 
-   if 'FRIDAY' not in guardians_talk_schedule_columns:
+   if 'FRIDAY_TIME' not in guardians_talk_schedule_columns:
       cursor.execute(
-         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN FRIDAY BOOL NOT NULL DEFAULT 0;'
+         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN FRIDAY_TIME VARCHAR(5);'
       )
 
-   if 'SATURDAY' not in guardians_talk_schedule_columns:
+   if 'SATURDAY_TIME' not in guardians_talk_schedule_columns:
       cursor.execute(
-         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN SATURDAY BOOL NOT NULL DEFAULT 0;'
+         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN SATURDAY_TIME VARCHAR(5);'
       )
 
-   if 'SUNDAY' not in guardians_talk_schedule_columns:
+   if 'SUNDAY_TIME' not in guardians_talk_schedule_columns:
       cursor.execute(
-         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN SUNDAY BOOL NOT NULL DEFAULT 0;'
-      )
-
-   if 'TALK_TIME' not in guardians_talk_schedule_columns:
-      cursor.execute(
-         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN TALK_TIME TEXT NOT NULL DEFAULT "";'
+         'ALTER TABLE GuardiansTalkSchedule ADD COLUMN SUNDAY_TIME VARCHAR(5);'
       )
 
    if 'SCHEDULE_MESSAGE' not in guardians_talk_schedule_columns:

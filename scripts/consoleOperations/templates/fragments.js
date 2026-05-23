@@ -122,6 +122,7 @@ export function createSelectField({
    inputId,
    emptyOptionLabel,
    options = [],
+   includeEmptyOption = true,
 } = {}) {
    const fieldEl = createFieldWrapper();
    const labelEl = createLabel({
@@ -132,10 +133,13 @@ export function createSelectField({
    const selectEl = document.createElement('select');
    selectEl.id = inputId;
    selectEl.className = 'console-operations-input console-operations-select';
-   selectEl.appendChild(createOption({
-      value: '',
-      label: emptyOptionLabel,
-   }));
+
+   if (includeEmptyOption) {
+      selectEl.appendChild(createOption({
+         value: '',
+         label: emptyOptionLabel,
+      }));
+   }
 
    options.forEach((option) => {
       selectEl.appendChild(createOption(option));
@@ -379,6 +383,10 @@ export function createRadioGroupField({
          value: option.value,
       });
       inputEl.name = name;
+
+      if (option.checked) {
+         inputEl.checked = true;
+      }
 
       const textEl = document.createElement('span');
       textEl.textContent = option.label;

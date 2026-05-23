@@ -19,7 +19,7 @@ function initDatePicker(inputEl, options = {}) {
    });
 }
 
-function initTimePicker(inputEl, options = {}) {
+export function initTimePicker(inputEl, options = {}) {
    return initFlatpickr(inputEl, {
       ...TIME_PICKER_OPTIONS,
       ...options,

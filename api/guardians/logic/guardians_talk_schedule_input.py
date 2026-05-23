@@ -7,12 +7,11 @@ class GuardiansTalkScheduleInput:
    location: str
    start_date: str
    end_date: object
-   talk_time: str
-   monday: bool
-   tuesday: bool
-   wednesday: bool
-   thursday: bool
-   friday: bool
-   saturday: bool
-   sunday: bool
+   monday_time: object
+   tuesday_time: object
+   wednesday_time: object
+   thursday_time: object
+   friday_time: object
+   saturday_time: object
+   sunday_time: object
    message: str
