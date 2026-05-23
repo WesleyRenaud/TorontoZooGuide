@@ -7,6 +7,7 @@ import {
 } from './base/storedSelection.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
+import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
 import { APP_STRINGS } from '../../strings.js';
 
 function getOccurrenceName(row) {
@@ -211,7 +212,9 @@ export function createScheduledOccurrenceSelectorController({
          [searchFlag]: true,
       }),
 
-      extractRows: (response) => response[responseKey],
+      extractRows: (response) => sortScheduledOccurrencesByStartTime(
+         response[responseKey],
+         getTimeOfDay),
 
       getId,
       getTitle: (row) => getName(row) || defaultTitle,
