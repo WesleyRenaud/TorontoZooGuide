@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import date
 
 from ...models import GiftShop
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
+from ...shared.calendar_dates import CalendarDates
 from ...shared.enums import ScheduleStatus
 from ...types import MonthInput, SeasonalMultiplier, VisitDay, VisitYear
 from ..data_access.gift_shop_record import GiftShopRecord
@@ -16,14 +17,14 @@ def resolve_gift_shop_context(
       day: VisitDay,
       month: MonthInput,
       year: VisitYear ) -> GiftShopContext:
-   target_date = ZooUtil.visit_target_date(
+   target_date = CalendarDates.visit_target_date(
       month=month,
       day=day,
       year=year )
    weekday = target_date.weekday()
    is_weekend_or_holiday = (
       weekday >= 5
-      or ZooUtil.is_holiday( d=target_date ) )
+      or CalendarDates.is_holiday( d=target_date ) )
 
    return GiftShopContext(
       normalized_month=target_date.month,
@@ -99,7 +100,7 @@ def get_active_gift_shop_schedule_status(
       return ScheduleStatus.UNKNOWN, None
 
    for schedule_record in schedule_records:
-      is_active = ZooUtil.is_date_in_range(
+      is_active = DateValues.is_date_in_range(
          target_date=target_date,
          start_date_value=schedule_record.schedule_start_date,
          end_date_value=schedule_record.schedule_end_date )
@@ -107,7 +108,7 @@ def get_active_gift_shop_schedule_status(
       if not is_active:
          continue
 
-      is_holiday = ZooUtil.is_holiday( d=target_date )
+      is_holiday = CalendarDates.is_holiday( d=target_date )
 
       if is_gift_shop_open_on_day(
             schedule_record=schedule_record,
@@ -125,7 +126,7 @@ def get_active_gift_shop_schedule_override_status(
       target_date: date ) -> tuple[ ScheduleStatus, str | None ]:
 
    for override_record in override_records:
-      is_active = ZooUtil.is_date_in_range(
+      is_active = DateValues.is_date_in_range(
          target_date=target_date,
          start_date_value=override_record.override_start_date,
          end_date_value=override_record.override_end_date )

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from ...types import DateInput
 from .update_create_input import UpdateCreateInput
 from .update_type import normalize_update_type
@@ -13,11 +13,11 @@ def build_update_create_input(
       start_date: DateInput,
       end_date: DateInput ) -> UpdateCreateInput | None:
    normalized_update_type = normalize_update_type( update_type )
-   date_range = ZooUtil.resolve_open_ended_date_range(
+   date_range = DateValues.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
 
-   if not ZooUtil.is_date_range_ordered(
+   if not DateValues.is_date_range_ordered(
          start_date_value=date_range.start_date,
          end_date_value=date_range.end_date ):
       return None

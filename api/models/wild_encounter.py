@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..types import Coordinate, ScheduleTimeKey
-from ..zoo_util import ZooUtil
+from ..shared.value_conversion import ValueConversion
 
 
 class WildEncounter:
@@ -41,7 +41,7 @@ class WildEncounter:
          'end_time': self.end_time,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'is_available': ZooUtil.as_boolean( self.is_available ),
+         'is_available': ValueConversion.as_boolean( self.is_available ),
          'unavailable_message': self.unavailable_message,
-         'is_deleted': ZooUtil.as_boolean( self.is_deleted )
+         'is_deleted': ValueConversion.as_boolean( self.is_deleted )
       }

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ...models import Restroom
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.restroom import fetch_restroom_names
 from ..data_access.restroom import fetch_restroom_records
@@ -89,7 +89,7 @@ class RestroomController():
          restroom: str,
          start_date: DateInput,
          end_date: DateInput ) -> bool:
-      date_range = ZooUtil.resolve_open_ended_date_range(
+      date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
 

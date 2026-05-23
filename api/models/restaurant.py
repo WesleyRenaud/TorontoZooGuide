@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..zoo_util import ZooUtil
+from ..shared.value_conversion import ValueConversion
 
 
 class Restaurant:
@@ -37,7 +37,7 @@ class Restaurant:
          'menu_link': self.menu_link,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'is_closed': ZooUtil.as_boolean( self.is_closed ),
+         'is_closed': ValueConversion.as_boolean( self.is_closed ),
          'closed_message': self.closed_message,
          'likelihood': self.likelihood
       }

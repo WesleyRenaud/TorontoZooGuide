@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from ...models import GuardiansTalk
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateKey, ScheduleTimeKey
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
@@ -47,7 +47,7 @@ def build_guardians_talk_schedule_for_target_date(
          record,
          target_weekday )
 
-      date_range_ok = ZooUtil.is_date_in_range(
+      date_range_ok = DateValues.is_date_in_range(
          target_date=target_date,
          start_date_value=record.schedule_start_date,
          end_date_value=record.schedule_end_date )

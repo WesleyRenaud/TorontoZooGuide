@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from ...types import DateInput
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_save_input import ItinerarySaveInput
@@ -35,7 +35,7 @@ def map_itinerary_save_input(
       wild_encounters: Iterable[ str ] | None ) -> ItinerarySaveInput:
 
    return ItinerarySaveInput(
-      date=ZooUtil.parse_date_value( date ),
+      date=DateValues.parse_date_value( date ),
       animals=map_animal_inputs( animals ),
       attractions=map_named_strings( attractions ),
       guardians_talks=map_named_strings( guardians_talks ),

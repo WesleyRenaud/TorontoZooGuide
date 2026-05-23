@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ...models import ZoomobileStation
-from ...zoo_util import ZooUtil
+from ...shared.calendar_dates import CalendarDates
 from ...models.zoomobile_route import ZoomobileRoute
 from ...shared.enums.zoomobile_route import ZoomobileRouteId
 from ...shared.enums.zoomobile_route import ZoomobileRouteSource
@@ -24,7 +24,7 @@ def resolve_zoomobile_route_context(
       day: VisitDay,
       month: MonthInput,
       year: VisitYear ) -> ZoomobileRouteContext:
-   target_date = ZooUtil.visit_target_date(
+   target_date = CalendarDates.visit_target_date(
       month=month,
       day=day,
       year=year )

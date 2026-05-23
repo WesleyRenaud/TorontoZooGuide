@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ...models import WildEncounter
 from ...models import WildEncounterDiff
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from .wild_encounter_schedule import find_wild_encounter_on_day_schedule
 
 
@@ -17,7 +17,7 @@ def build_wild_encounter_diff_for_visit_day(
          end_time=None,
       )
 
-   end_time = ZooUtil.add_minutes_to_time(
+   end_time = DateValues.add_minutes_to_time(
       encounter.start_time,
       encounter.maximum_duration )
 

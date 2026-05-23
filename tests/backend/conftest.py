@@ -90,7 +90,7 @@ class FrozenDateTime( datetime ):
 
 @pytest.fixture
 def freeze_database_today( monkeypatch: pytest.MonkeyPatch ) -> Callable[ [ date ], None ]:
-   frozen_datetime_targets = ( 'api.zoo_util.datetime', )
+   frozen_datetime_targets = ( 'api.shared.date_values.datetime', )
 
    def freeze( value: date ) -> None:
       FrozenDateTime.frozen_now = datetime.combine( value, datetime.min.time() )

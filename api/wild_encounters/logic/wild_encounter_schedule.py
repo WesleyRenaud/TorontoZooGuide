@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import date
 
 from ...models import WildEncounter
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
+from ...shared.calendar_dates import CalendarDates
 from ...shared.strings import SharedStrings
 from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from .wild_encounter_name_filter import WildEncounterNameFilter
@@ -45,13 +46,13 @@ def build_wild_encounter_schedule_for_target_date(
       name = record.name
       encounter_time = record.encounter_time
 
-      date_range_ok = ZooUtil.is_date_in_range(
+      date_range_ok = DateValues.is_date_in_range(
          target_date=target_date,
          start_date_value=record.schedule_start_date,
          end_date_value=record.schedule_end_date )
       unavailable_message: str | None = None
 
-      weekday_ok = ZooUtil.schedule_includes_weekday(
+      weekday_ok = CalendarDates.schedule_includes_weekday(
          target_weekday,
          (
             record.monday,

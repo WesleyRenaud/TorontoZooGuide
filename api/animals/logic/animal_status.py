@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 from .animal_off_display_status import AnimalOffDisplayStatus
@@ -15,7 +15,7 @@ def build_animal_off_display_status(
    if not message:
       message = SharedStrings.Animals.temporarily_off_display( species )
 
-   date_range = ZooUtil.resolve_open_ended_date_range(
+   date_range = DateValues.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
 

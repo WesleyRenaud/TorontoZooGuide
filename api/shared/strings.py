@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ..zoo_util import ZooUtil
+from .date_values import DateValues
 
 
 class SharedStrings:
@@ -36,7 +36,7 @@ class SharedStrings:
          return (
             f'The { species } is viewable daily only from '
             f'{ daily_start_time } to { daily_end_time }until '
-            f'{ ZooUtil.format_display_date_value( end_date ) }.' )
+            f'{ DateValues.format_display_date_value( end_date ) }.' )
 
 
    class Attractions:

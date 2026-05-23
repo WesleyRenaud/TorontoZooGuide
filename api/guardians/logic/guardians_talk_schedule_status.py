@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput, ScheduleTimeKey
 from .guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
@@ -20,7 +20,7 @@ def build_guardians_talk_schedule(
       saturday_time: ScheduleTimeKey,
       sunday_time: ScheduleTimeKey,
       message: str ) -> GuardiansTalkScheduleInput:
-   date_range = ZooUtil.resolve_open_ended_date_range(
+   date_range = DateValues.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
 
