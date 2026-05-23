@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import ZoomobileStation
+from ...zoo_util import ZooUtil
 from ...models.zoomobile_route import ZoomobileRoute
 from ...shared.enums.zoomobile_route import ZoomobileRouteId
 from ...shared.enums.zoomobile_route import ZoomobileRouteSource
@@ -23,7 +24,7 @@ def resolve_zoomobile_route_context(
       day: VisitDay,
       month: MonthInput,
       year: VisitYear ) -> ZoomobileRouteContext:
-   target_date = zoo.ZooUtil.visit_target_date(
+   target_date = ZooUtil.visit_target_date(
       month=month,
       day=day,
       year=year )
@@ -61,7 +62,7 @@ def resolve_zoomobile_route(
 def build_zoomobile_route_response(
       route: str,
       route_source: str,
-      zoomobile_stations: list[ zoo.ZoomobileStation ] ) -> ZoomobileRoute:
+      zoomobile_stations: list[ ZoomobileStation ] ) -> ZoomobileRoute:
 
    return ZoomobileRoute(
       route=route,

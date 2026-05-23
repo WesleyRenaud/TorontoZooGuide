@@ -1,23 +1,23 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Animal
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from .animals_matching_query import filter_animals_by_species_exhibit_keys
 from .animals_matching_query import sort_animals_by_species_and_exhibit
 from .animals_matching_query import species_exhibit_key
 
 
-def species_key( animal: zoo.Animal ) -> str:
+def species_key( animal: Animal ) -> str:
    return species_exhibit_key( animal )[ 0 ]
 
 
-def keep_viewable_animals_per_species( animals: list[ zoo.Animal ] ) -> list[ zoo.Animal ]:
-   animals_by_species: dict[ str, list[ zoo.Animal ] ] = {}
+def keep_viewable_animals_per_species( animals: list[ Animal ] ) -> list[ Animal ]:
+   animals_by_species: dict[ str, list[ Animal ] ] = {}
 
    for animal in animals:
       animals_by_species.setdefault( species_key( animal ), [] ).append( animal )
 
-   kept_animals: list[ zoo.Animal ] = []
+   kept_animals: list[ Animal ] = []
 
    for species_animals in animals_by_species.values():
       viewable_animals = [
@@ -34,7 +34,7 @@ def keep_viewable_animals_per_species( animals: list[ zoo.Animal ] ) -> list[ zo
 
 
 def apply_itinerary_animal_old_likelihood(
-      animals: list[ zoo.Animal ],
+      animals: list[ Animal ],
       saved_animals: list[ ItineraryAnimalRecord ] ) -> None:
    saved_animal_by_pair = {
       saved_animal.species_exhibit_key(): saved_animal
@@ -51,8 +51,8 @@ def apply_itinerary_animal_old_likelihood(
 
 
 def build_itinerary_animals(
-      viewable_animals: list[ zoo.Animal ],
-      saved_animals: list[ ItineraryAnimalRecord ] ) -> list[ zoo.Animal ]:
+      viewable_animals: list[ Animal ],
+      saved_animals: list[ ItineraryAnimalRecord ] ) -> list[ Animal ]:
    species_exhibit_pairs = [
       saved_animal.species_exhibit_key()
       for saved_animal in saved_animals

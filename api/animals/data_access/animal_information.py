@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Animal
 from ...types import Connection
 
 
-def fetch_animal_information( conn: Connection, species: str ) -> zoo.Animal | None:
+def fetch_animal_information( conn: Connection, species: str ) -> Animal | None:
    cur = conn.cursor()
 
    try:
@@ -35,7 +35,7 @@ def fetch_animal_information( conn: Connection, species: str ) -> zoo.Animal | N
       if row == None:
          return None
 
-      return zoo.Animal(
+      return Animal(
          species=species,
          latin_name=row[ 'LATIN_NAME' ],
          general_viewing_tips=row[ 'GENERAL_VIEWING_TIPS' ],

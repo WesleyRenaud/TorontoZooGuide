@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import GiftShop
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.gift_shop import fetch_gift_shop_names
 from ..data_access.gift_shop import fetch_gift_shop_records
@@ -34,7 +34,7 @@ class GiftShopController():
          month: MonthInput,
          year: VisitYear,
          include_closed_gift_shops: bool,
-         gift_shops_to_include: list[ str ] | None = None ) -> list[ zoo.GiftShop ]:
+         gift_shops_to_include: list[ str ] | None = None ) -> list[ GiftShop ]:
 
       context = resolve_gift_shop_context(
          day=day,
@@ -60,7 +60,7 @@ class GiftShopController():
          query: str,
          day: VisitDay,
          month: MonthInput,
-         year: VisitYear ) -> list[ zoo.GiftShop ]:
+         year: VisitYear ) -> list[ GiftShop ]:
 
       gift_shops = cls.get_gift_shops(
          day=day,

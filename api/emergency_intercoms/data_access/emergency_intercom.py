@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import EmergencyIntercom
 from ...types import Connection
 from .emergency_intercom_mapper import map_emergency_intercom_records
 
 
-def fetch_emergency_intercoms( conn: Connection ) -> list[ zoo.EmergencyIntercom ]:
+def fetch_emergency_intercoms( conn: Connection ) -> list[ EmergencyIntercom ]:
    cur = conn.cursor()
 
    try:

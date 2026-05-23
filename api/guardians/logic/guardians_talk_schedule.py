@@ -3,7 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from ... import zoo
+from ...models import GuardiansTalk
+from ...zoo_util import ZooUtil
 from ...shared.strings import SharedStrings
 from ...types import DateKey, ScheduleTimeKey
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
@@ -12,8 +13,8 @@ from .guardians_talk_weekday_time import guardians_talk_time_for_weekday
 
 
 def find_guardians_talk_on_day_schedule(
-      day_schedule: list[ zoo.GuardiansTalk ],
-      talk_name: str ) -> zoo.GuardiansTalk | None:
+      day_schedule: list[ GuardiansTalk ],
+      talk_name: str ) -> GuardiansTalk | None:
    talk_filter = GuardiansTalkNameFilter( name=talk_name )
 
    if talk_filter.should_return_empty():
@@ -32,12 +33,12 @@ def build_guardians_talk_schedule_for_target_date(
       occurrence_is_cancelled: Callable[
          [ str, str, DateKey, ScheduleTimeKey ],
          bool,
-      ] ) -> list[ zoo.GuardiansTalk ]:
+      ] ) -> list[ GuardiansTalk ]:
 
    target_weekday = target_date.weekday()
    target_date_str = target_date.isoformat()
 
-   guardians_talks: list[ zoo.GuardiansTalk ] = []
+   guardians_talks: list[ GuardiansTalk ] = []
 
    for record in records:
       name = record.name
@@ -46,7 +47,7 @@ def build_guardians_talk_schedule_for_target_date(
          record,
          target_weekday )
 
-      date_range_ok = zoo.ZooUtil.is_date_in_range(
+      date_range_ok = ZooUtil.is_date_in_range(
          target_date=target_date,
          start_date_value=record.schedule_start_date,
          end_date_value=record.schedule_end_date )
@@ -78,7 +79,7 @@ def build_guardians_talk_schedule_for_target_date(
 
       if is_available:
          guardians_talks.append(
-            zoo.GuardiansTalk(
+            GuardiansTalk(
                name=name,
                location=location,
                x_coord=record.x_coord,

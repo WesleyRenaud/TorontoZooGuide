@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Animal
+from ...models import Attraction
+from ...models import GuardiansTalk
+from ...models import Itinerary
+from ...models import WildEncounter
 from ...animals.controllers.animal_controller import AnimalController
 from ...attractions.controllers.attraction_controller import AttractionController
 from ...guardians.controllers.guardians_controller import GuardiansController
@@ -9,8 +13,8 @@ from ...types import DateInput
 from ..data_access.saved_itinerary import SavedItinerary
 
 
-def empty_itinerary() -> zoo.Itinerary:
-   return zoo.Itinerary(
+def empty_itinerary() -> Itinerary:
+   return Itinerary(
       date='',
       animals=[],
       attractions=[],
@@ -20,12 +24,12 @@ def empty_itinerary() -> zoo.Itinerary:
 
 def build_itinerary(
       date: DateInput,
-      animals: list[ zoo.Animal ],
-      attractions: list[ zoo.Attraction ],
-      guardians_talks: list[ zoo.GuardiansTalk ],
-      wild_encounters: list[ zoo.WildEncounter ] ) -> zoo.Itinerary:
+      animals: list[ Animal ],
+      attractions: list[ Attraction ],
+      guardians_talks: list[ GuardiansTalk ],
+      wild_encounters: list[ WildEncounter ] ) -> Itinerary:
 
-   return zoo.Itinerary(
+   return Itinerary(
       date=date,
       animals=animals,
       attractions=attractions,
@@ -38,7 +42,7 @@ def build_current_itinerary(
       animal_controller: type[ AnimalController ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ] ) -> zoo.Itinerary:
+      wild_encounter_controller: type[ WildEncounterController ] ) -> Itinerary:
 
    if saved_itinerary.is_empty():
       return empty_itinerary()

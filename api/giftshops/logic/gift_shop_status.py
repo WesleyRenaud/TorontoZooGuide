@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...zoo_util import ZooUtil
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 from .gift_shop_opening_schedule import GiftShopOpeningSchedule
@@ -12,7 +12,7 @@ def build_gift_shop_closed_schedule(
       start_date: DateInput,
       end_date: DateInput,
       message: str ) -> GiftShopOpeningSchedule:
-   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+   date_range = ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
 
@@ -47,7 +47,7 @@ def build_gift_shop_opening_schedule(
       sunday: bool,
       holidays_only: bool,
       message: str ) -> GiftShopOpeningSchedule:
-   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+   date_range = ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
 
@@ -75,7 +75,7 @@ def build_gift_shop_closure_override(
       start_date: DateInput,
       end_date: DateInput,
       message: str ) -> GiftShopScheduleOverride:
-   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+   date_range = ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
 

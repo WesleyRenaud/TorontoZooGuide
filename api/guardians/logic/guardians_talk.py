@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import GuardiansTalk
 from ..data_access.meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
 from .guardians_talk_include_filter import GuardiansTalkIncludeFilter
 
 
 def meet_the_guardians_talk_record_to_model(
-      record: MeetTheGuardiansTalkRecord ) -> zoo.GuardiansTalk:
-   return zoo.GuardiansTalk(
+      record: MeetTheGuardiansTalkRecord ) -> GuardiansTalk:
+   return GuardiansTalk(
       name=record.name,
       location=record.location,
       x_coord=record.x_coord,
@@ -18,14 +18,14 @@ def meet_the_guardians_talk_record_to_model(
 
 def build_guardians_talk_details(
       talk_records: list[ MeetTheGuardiansTalkRecord ],
-      guardians_talks_to_include: list[ str ] | None = None ) -> list[ zoo.GuardiansTalk ]:
+      guardians_talks_to_include: list[ str ] | None = None ) -> list[ GuardiansTalk ]:
    include_filter = GuardiansTalkIncludeFilter.from_optional_list(
       guardians_talks_to_include )
 
    if include_filter.should_return_empty():
       return []
 
-   talks: list[ zoo.GuardiansTalk ] = []
+   talks: list[ GuardiansTalk ] = []
 
    for record in talk_records:
       if not include_filter.allows_talk_name( record.name ):

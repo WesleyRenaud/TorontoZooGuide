@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta, time
 import calendar
 import math
-import sys
 from collections.abc import Sequence
 from typing import Any
 
@@ -389,9 +388,7 @@ class ZooUtil:
       if calendar_year is not None:
          return int( calendar_year )
 
-      zoo_module = sys.modules.get( 'api.zoo' )
-      datetime_class = getattr( zoo_module, 'datetime', datetime )
-      return datetime_class.now().year
+      return ZooUtil.parse_date_value( ZooUtil.today_date_key() ).year
 
 
    @staticmethod

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import WildEncounter
 from ...itinerary.data_access.itinerary_name_key import itinerary_name_key
 from ...itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 
 
 def build_itinerary_wild_encounters(
-      wild_encounters: list[ zoo.WildEncounter ],
-      saved_wild_encounters: list[ ItineraryWildEncounterRecord ] ) -> list[ zoo.WildEncounter ]:
+      wild_encounters: list[ WildEncounter ],
+      saved_wild_encounters: list[ ItineraryWildEncounterRecord ] ) -> list[ WildEncounter ]:
    wild_encounter_by_name = {
       saved_encounter.name_key(): saved_encounter
       for saved_encounter in saved_wild_encounters

@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Restaurant
 
 
-def restaurant_name_key( restaurant: zoo.Restaurant ) -> str:
+def restaurant_name_key( restaurant: Restaurant ) -> str:
    return ( restaurant.name or '' ).strip().lower()
 
 
 def filter_restaurants_matching_query(
-      restaurants: list[ zoo.Restaurant ],
-      query: str ) -> list[ zoo.Restaurant ]:
+      restaurants: list[ Restaurant ],
+      query: str ) -> list[ Restaurant ]:
    if not query:
       return list( restaurants )
 
@@ -21,8 +21,8 @@ def filter_restaurants_matching_query(
 
 
 def build_restaurants_matching_query(
-      restaurants: list[ zoo.Restaurant ],
-      query: str ) -> list[ zoo.Restaurant ]:
+      restaurants: list[ Restaurant ],
+      query: str ) -> list[ Restaurant ]:
    return filter_restaurants_matching_query(
       restaurants,
       query )

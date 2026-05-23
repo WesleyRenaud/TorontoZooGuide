@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from datetime import date
 
-from ... import zoo
+from ...models import Animal
+from ...models import AnimalDiff
+from ...models import Attraction
+from ...models import AttractionDiff
 from ...animals.controllers.animal_controller import AnimalController
 from ...attractions.controllers.attraction_controller import AttractionController
 from ...guardians.controllers.guardians_controller import GuardiansController
@@ -25,7 +28,7 @@ def validate_itinerary_animals(
       new_visit_date: date,
       new_visit_date_temp: float | None = None,
       old_visit_date: DateKey | None = None,
-      saved_itinerary_animal_rows: list[ ItineraryAnimalRecord ] | None = None ) -> list[ zoo.AnimalDiff ]:
+      saved_itinerary_animal_rows: list[ ItineraryAnimalRecord ] | None = None ) -> list[ AnimalDiff ]:
    old_likelihood_by_pair: dict[ tuple[ str, str ], int | None ] = {}
 
    if old_visit_date != None and saved_itinerary_animal_rows:
@@ -34,7 +37,7 @@ def validate_itinerary_animals(
             ( row.species, row.exhibit )
          ] = row.new_likelihood
 
-   diffs: list[ zoo.AnimalDiff ] = []
+   diffs: list[ AnimalDiff ] = []
 
    for animal in animals:
       species = animal.species
@@ -64,7 +67,7 @@ def validate_itinerary_animals(
          else saved_animals[ 0 ].likelihood )
 
       diffs.append(
-         zoo.AnimalDiff(
+         AnimalDiff(
             species=species,
             exhibit=exhibit,
             old_likelihood=old_likelihood,
@@ -81,7 +84,7 @@ def validate_itinerary_attractions(
       attractions: tuple[ str, ... ],
       new_visit_date: date,
       old_visit_date: DateKey | None = None,
-      saved_itinerary_attraction_rows: list[ ItineraryAttractionRecord ] | None = None ) -> list[ zoo.AttractionDiff ]:
+      saved_itinerary_attraction_rows: list[ ItineraryAttractionRecord ] | None = None ) -> list[ AttractionDiff ]:
 
    old_likelihood_by_name: dict[ str, int | None ] = {}
 
@@ -89,7 +92,7 @@ def validate_itinerary_attractions(
       for row in saved_itinerary_attraction_rows:
          old_likelihood_by_name[ row.attraction ] = row.new_likelihood
 
-   diffs: list[ zoo.AttractionDiff ] = []
+   diffs: list[ AttractionDiff ] = []
 
    for attraction_name in attractions:
 
@@ -103,7 +106,7 @@ def validate_itinerary_attractions(
          attraction_name=attraction_name )
 
       diffs.append(
-         zoo.AttractionDiff(
+         AttractionDiff(
             name=attraction_name,
             old_likelihood=old_likelihood,
             new_likelihood=new_likelihood,

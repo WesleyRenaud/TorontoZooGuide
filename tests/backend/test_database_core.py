@@ -5,7 +5,7 @@ from datetime import date, datetime
 
 import pytest
 
-from api import zoo
+from api.zoo_util import ZooUtil
 from api.animals.controllers.animal_controller import AnimalController
 from api.animals.data_access.animal_viewability_record import AnimalViewabilityRecord
 from api.animals.logic.animal_viewability import calculate_animal_likelihood
@@ -88,7 +88,7 @@ def test_close_is_idempotent( db: DbControllers ) -> None:
    ]
 )
 def test_parse_date_value( value: DateInput, expected: date | None ) -> None:
-   assert zoo.ZooUtil.parse_date_value( value ) == expected
+   assert ZooUtil.parse_date_value( value ) == expected
 
 
 @pytest.mark.parametrize(
@@ -103,15 +103,15 @@ def test_parse_date_value( value: DateInput, expected: date | None ) -> None:
    ]
 )
 def test_normalize_date_key( value: DateInput, expected: DateKey | None ) -> None:
-   assert zoo.ZooUtil.normalize_date_key( value ) == expected
+   assert ZooUtil.normalize_date_key( value ) == expected
 
 
 def test_normalize_date_key_returns_none_for_unsupported_date_strings() -> None:
-   assert zoo.ZooUtil.normalize_date_key( 'June 15, 2026' ) is None
+   assert ZooUtil.normalize_date_key( 'June 15, 2026' ) is None
 
 
 def test_resolve_open_ended_date_range_keeps_open_end_date() -> None:
-   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+   date_range = ZooUtil.resolve_open_ended_date_range(
       start_date='2026-06-01',
       end_date=None )
 
@@ -123,7 +123,7 @@ def test_resolve_open_ended_date_range_uses_today_for_missing_start(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+   date_range = ZooUtil.resolve_open_ended_date_range(
       start_date=None,
       end_date=None )
 
@@ -141,15 +141,15 @@ def test_resolve_open_ended_date_range_uses_today_for_missing_start(
    ]
 )
 def test_parse_datetime_value( value: str | None, expected: datetime | None ) -> None:
-   assert zoo.ZooUtil.parse_datetime_value( value ) == expected
+   assert ZooUtil.parse_datetime_value( value ) == expected
 
 
 def test_parse_values_raise_for_unsupported_formats() -> None:
    with pytest.raises( ValueError ):
-      zoo.ZooUtil.parse_date_value( 'June 15, 2026' )
+      ZooUtil.parse_date_value( 'June 15, 2026' )
 
    with pytest.raises( ValueError ):
-      zoo.ZooUtil.parse_datetime_value( 'June 15, 2026 9:30' )
+      ZooUtil.parse_datetime_value( 'June 15, 2026 9:30' )
 
 
 @pytest.mark.parametrize(
@@ -162,7 +162,7 @@ def test_parse_values_raise_for_unsupported_formats() -> None:
    ]
 )
 def test_is_date_on_or_after( left: date, right: DateInput, expected: bool ) -> None:
-   assert zoo.ZooUtil.is_date_on_or_after( left, right ) is expected
+   assert ZooUtil.is_date_on_or_after( left, right ) is expected
 
 
 @pytest.mark.parametrize(
@@ -175,7 +175,7 @@ def test_is_date_on_or_after( left: date, right: DateInput, expected: bool ) -> 
    ]
 )
 def test_is_date_on_or_before( left: date, right: DateInput, expected: bool ) -> None:
-   assert zoo.ZooUtil.is_date_on_or_before( left, right ) is expected
+   assert ZooUtil.is_date_on_or_before( left, right ) is expected
 
 
 @pytest.mark.parametrize(
@@ -192,7 +192,7 @@ def test_is_date_in_range(
       start: DateInput,
       end: DateInput,
       expected: bool ) -> None:
-   assert zoo.ZooUtil.is_date_in_range( target_date=target, start_date_value=start, end_date_value=end ) is expected
+   assert ZooUtil.is_date_in_range( target_date=target, start_date_value=start, end_date_value=end ) is expected
 
 
 LikelihoodCalculator = Callable[ [ SeasonalMultiplier ], int ]

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import PicnicSite
 from ...types import Connection
 from .picnic_site_mapper import map_picnic_site_records
 
 
-def fetch_picnic_sites( conn: Connection ) -> list[ zoo.PicnicSite ]:
+def fetch_picnic_sites( conn: Connection ) -> list[ PicnicSite ]:
    cur = conn.cursor()
 
    try:

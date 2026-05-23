@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...zoo_util import ZooUtil
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 from .wild_encounter_schedule_end_input import WildEncounterScheduleEndInput
@@ -20,7 +20,7 @@ def build_wild_encounter_schedule(
       saturday: bool,
       sunday: bool,
       message: str ) -> WildEncounterScheduleInput:
-   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+   date_range = ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
 

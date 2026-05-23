@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from datetime import date
 
-from ... import zoo
+from ...models import Restroom
+from ...zoo_util import ZooUtil
 from ...types import MonthInput, VisitDay, VisitYear
 from ..data_access.restroom_record import RestroomRecord
 from .restroom_context import RestroomContext
@@ -13,7 +14,7 @@ def resolve_restroom_context(
       month: MonthInput,
       year: VisitYear ) -> RestroomContext:
    return RestroomContext(
-      target_date=zoo.ZooUtil.visit_target_date(
+      target_date=ZooUtil.visit_target_date(
          month=month,
          day=day,
          year=year ) )
@@ -25,7 +26,7 @@ def is_restroom_status_active(
    if restroom_record.is_closed == None:
       return False
 
-   return zoo.ZooUtil.is_date_in_range(
+   return ZooUtil.is_date_in_range(
       target_date=target_date,
       start_date_value=restroom_record.closed_start,
       end_date_value=restroom_record.closed_end )
@@ -37,7 +38,7 @@ def is_restroom_alert_active(
    if restroom_record.alert_message == None:
       return False
 
-   return zoo.ZooUtil.is_date_in_range(
+   return ZooUtil.is_date_in_range(
       target_date=target_date,
       start_date_value=restroom_record.alert_start_date,
       end_date_value=restroom_record.alert_end_date )
@@ -45,7 +46,7 @@ def is_restroom_alert_active(
 
 def build_restroom(
       restroom_record: RestroomRecord,
-      context: RestroomContext ) -> zoo.Restroom:
+      context: RestroomContext ) -> Restroom:
    is_closed = (
       bool( restroom_record.is_closed )
       and is_restroom_status_active(
@@ -55,7 +56,7 @@ def build_restroom(
       restroom_record=restroom_record,
       target_date=context.target_date )
 
-   return zoo.Restroom(
+   return Restroom(
       title=restroom_record.title,
       x_coord=restroom_record.x_coord,
       y_coord=restroom_record.y_coord,
@@ -68,7 +69,7 @@ def build_restroom(
 def build_restrooms(
       restroom_records: list[ RestroomRecord ],
       context: RestroomContext,
-      include_closed_restrooms: bool ) -> list[ zoo.Restroom ]:
+      include_closed_restrooms: bool ) -> list[ Restroom ]:
 
    restrooms = []
 
