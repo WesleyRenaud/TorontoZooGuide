@@ -1,5 +1,44 @@
 # Changelog
 
+## Release 1.2.0
+
+Release 1.2.0 covers the git history after `2f3fdea Merge pull request #53 from WesleyRenaud/release/1.1` through `6ec3d06 Merge pull request #201 from WesleyRenaud/improvement/add-python-import-ordering-rule`.
+
+### Itinerary planning and day planner
+
+- Added the itinerary day planner view, including zoo-hours-aware scheduling, early admission support, unscheduled sections, edit and clear actions, and a focused itinerary map.
+- Added scheduled Meet the Guardians talks and Wild Encounters to itinerary planning, validation, map display, and day planner rendering.
+- Added backend support for itinerary item start times, maximum durations, deleted scheduled items, and diff objects for removed talks and encounters.
+- Moved itinerary validation into the backend set-itinerary flow so saved plans are revalidated consistently.
+- Added an itinerary diff/update flow that can show removed items and changed animal or attraction availability when saved itinerary data is refreshed.
+- Fixed itinerary builder edge cases around blank itineraries, date changes, confirmation prompts, scrollability, batch animal selection, and date-step navigation.
+- Sorted scheduled Meet the Guardians talks and Wild Encounters by start time in itinerary builder and panel views.
+
+### Map, weather, and guest-facing availability
+
+- Added live zoo hours to itinerary planning and post-close date behavior so map and itinerary views move to the next visit day after zoo close.
+- Fixed current-day map temperature handling near closing time by using current weather for today and forecast weather for future dates.
+- Fixed itinerary map rendering, navigation button ordering, Meet the Guardians map visibility, and animal-page navigation ordering.
+- Added and refreshed animal images and animal/location status data, including attraction alerts, off-display notices, Wild Encounter schedules, restaurant status curves, and Zoomobile updates.
+- Added data updates for live notices, Cormorant, Cheetahs, Savanna closure dates, May 23 attraction closures, Wild Encounters, and other current zoo content.
+
+### Scheduling and console operations
+
+- Added support for multiple non-overlapping opening schedules for attractions, restaurants, and gift shops.
+- Added closure override support and conflict resolution flows for amenity schedules, including deleting or trimming older conflicting schedules.
+- Renamed amenity schedule console operations to distinguish opening schedules from one-off closures.
+- Added URL state for console operation forms so refreshing the page preserves the active form.
+- Added support for Meet the Guardians talks having different scheduled times on different weekdays, using nullable weekday time fields instead of separate weekday boolean flags.
+
+### Backend architecture and maintainability
+
+- Completed the major backend refactor away from `database.py`, moving endpoint behavior into controllers, data access, logic modules, and feature-specific folders.
+- Removed `api/zoo.py` and split `ZooUtil` into purpose-specific shared helpers for date values, calendar dates, weather, and value conversion.
+- Added Python parameter typing across backend methods and enforced it with linting.
+- Added backend import-order linting with an automatic fixer, matching the existing frontend import-order workflow.
+- Added a clean command, expanded migrations, and improved shared backend strings/enums.
+- Expanded backend and frontend test coverage around itinerary validation, scheduling, map date context, weather handling, console forms, and refactored controller/data-access flows.
+
 ## Release 1.1
 
 Release 1.1 covers the git history from `8fc78b6 Merge pull request #30 from WesleyRenaud/release/1.0` through `256e675 Merge pull request #50 from WesleyRenaud/improvement/make-updates-collapsable`.

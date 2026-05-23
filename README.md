@@ -1,8 +1,8 @@
 # Toronto Zoo Guide
 
-Version 1.1
+Version 1.2.0
 
-Toronto Zoo Guide is a customer-facing web app designed to help guests plan and navigate a day at the Toronto Zoo. Version 1.1 focuses on four core experiences:
+Toronto Zoo Guide is a customer-facing web app designed to help guests plan and navigate a day at the Toronto Zoo. Version 1.2.0 focuses on four core experiences:
 
 - an interactive map for live exploration of the zoo grounds
 - date-based updates for guest-facing notices and closures
@@ -12,6 +12,19 @@ Toronto Zoo Guide is a customer-facing web app designed to help guests plan and 
 This README covers the guest-facing functionality in those areas. It intentionally does not document internal console or operations tools.
 
 For release history, see [CHANGELOG.md](CHANGELOG.md).
+
+## Version 1.2.0 Highlights
+
+Version 1.2.0 expands the date-aware planning experience.
+
+Highlights include:
+
+- an itinerary day planner that places saved items into a schedule-aware view
+- scheduled Meet the Guardians talks and Wild Encounters in itinerary planning
+- support for talks with different times on different weekdays
+- post-close map and itinerary date behavior based on live zoo hours
+- current-day weather handling for animal visibility on the map
+- more precise opening schedules and closure overrides for attractions, restaurants, and gift shops
 
 ## What the App Helps Visitors Do
 
@@ -80,7 +93,9 @@ Depending on the chosen day, the app can adjust:
 - Zoomobile route selection
 - active guest updates
 
-For dates within the near-term forecast window, the app also attempts to account for forecast temperature so animal visibility can be more relevant to actual conditions.
+For dates within the near-term weather window, the app also attempts to account for actual or forecast temperature so animal visibility can be more relevant to real conditions. Current-day map views use current weather, while future near-term dates use forecast data.
+
+When the current local time is at or after the zoo's closing time, default map and itinerary date behavior moves to the next visit day.
 
 ### Explore panel controls
 
@@ -200,6 +215,8 @@ Meet the Guardians markers can show:
 - location
 - start time
 - a general description of the talk experience
+
+Talk schedules can vary by weekday, so the time shown reflects the selected date.
 
 Wild Encounter markers can show:
 
@@ -366,12 +383,13 @@ The visitor can move forward step by step, go back, or finish early once they ar
 
 The first step asks the visitor to choose a visit date.
 
-Date behavior in version 1.1 includes:
+Date behavior in version 1.2.0 includes:
 
 - calendar-based selection
 - no manual text entry required
 - dates limited to today through the allowed future booking window
 - persistence of the selected date while building
+- post-close defaults that move new planning sessions to the next visit day
 
 The selected visit date becomes the basis for itinerary validation and availability filtering.
 
@@ -428,7 +446,7 @@ Each result can include:
 - time of day
 - event image
 
-This helps visitors schedule educational talks around their route through the zoo.
+Talk times are date-aware and can differ by weekday. This helps visitors schedule educational talks around their route through the zoo.
 
 ### Adding Wild Encounters
 
@@ -443,6 +461,20 @@ Each result can include:
 - external information link
 
 This makes it possible for visitors to include special experiences alongside standard exhibit visits.
+
+### Day planner view
+
+Saved itineraries include a day planner view that arranges scheduled items around zoo hours.
+
+The day planner can show:
+
+- early admission and regular opening context when available
+- scheduled Meet the Guardians talks
+- scheduled Wild Encounters
+- selected animals and attractions that do not have fixed times
+- empty sections when there are no scheduled or unscheduled items
+
+This gives the visitor a more practical view of when fixed-time experiences happen during the visit.
 
 ### Finishing and saving an itinerary
 
@@ -467,7 +499,7 @@ This reduces accidental loss of planning work.
 
 ### Date-change validation
 
-One of the most important itinerary features in version 1.1 is date-based validation.
+A core itinerary feature is date-based validation.
 
 When the visit date changes, the app re-checks the existing itinerary against the newly selected day. It can then:
 
@@ -503,6 +535,7 @@ The saved panel includes:
 - a `Clear` button with confirmation
 - a visit date card
 - separate sections for Animals, Attractions, Meet the Guardians, and Wild Encounters
+- access to a schedule-oriented day planner view
 
 Each section shows a count and supports section editing.
 
@@ -577,6 +610,7 @@ The current release is especially focused on:
 
 - helping guests discover what is available on a given day
 - surfacing important date-based updates in the Explore panel
+- making fixed-time talks and encounters easier to plan around
 - connecting species education with navigation
 - keeping planning practical through availability checks and visibility guidance
 - making saved plans easy to review and revise
@@ -599,4 +633,4 @@ The repo now includes separate linting for JavaScript and Python.
 - run Python linting with `npm run lint:py`
 - run both with `npm run lint`
 
-The JavaScript lint setup uses ESLint and is configured for the browser-based module structure in `scripts/`, including the CDN-loaded globals used by the app. The Python lint setup uses Ruff and is intentionally scoped to correctness-focused checks so it does not fight the existing Python formatting style in the project.
+The JavaScript lint setup uses ESLint and is configured for the browser-based module structure in `scripts/`, including the CDN-loaded globals used by the app. The Python lint setup uses Ruff plus project-specific checks for typing, house style, and import ordering.
