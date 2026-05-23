@@ -1,4 +1,8 @@
-def create_table( cursor ):
+from __future__ import annotations
+
+from ...types import Cursor
+
+def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS EventSite;' )
    cursor.execute( ''' CREATE TABLE EventSite
                      (  NAME     TEXT  NOT NULL PRIMARY KEY,
@@ -40,7 +44,7 @@ event_sites = [
 ]
 
 
-def insert_rows( cursor ):
+def insert_rows( cursor: Cursor ) -> None:
    cursor.executemany( ''' INSERT INTO EventSite (
                               NAME,
                               X_COORD,

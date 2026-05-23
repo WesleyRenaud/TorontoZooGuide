@@ -1,20 +1,23 @@
+from __future__ import annotations
+
+from ..types import Coordinate, ScheduleTimeKey
 from ..zoo_util import ZooUtil
 
 
 class WildEncounter:
    def __init__(
          self,
-         name,
-         meeting_spot,
-         link,
-         start_time=None,
-         maximum_duration=None,
-         end_time=None,
-         x_coord=None,
-         y_coord=None,
-         is_available=True,
-         unavailable_message=None,
-         is_deleted=False ):
+         name: str,
+         meeting_spot: str,
+         link: str,
+         start_time: ScheduleTimeKey = None,
+         maximum_duration: int | None = None,
+         end_time: ScheduleTimeKey = None,
+         x_coord: float | None = None,
+         y_coord: float | None = None,
+         is_available: bool = True,
+         unavailable_message: str | None = None,
+         is_deleted: bool = False ) -> None:
       self.name = name
       self.meeting_spot = meeting_spot
       self.link = link
@@ -28,7 +31,7 @@ class WildEncounter:
       self.is_deleted = is_deleted
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'name': self.name,
          'meeting_spot': self.meeting_spot,

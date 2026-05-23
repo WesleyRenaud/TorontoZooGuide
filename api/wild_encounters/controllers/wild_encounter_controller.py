@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 from ... import zoo
+from ...itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
+from ...types import DateInput, DateKey, MonthInput, VisitDay, VisitYear
 from ..data_access.wild_encounter import fetch_wild_encounter_names
 from ..data_access.wild_encounter import fetch_wild_encounter_records
 from ..data_access.wild_encounter_cancellation import save_wild_encounter_cancellation
@@ -24,18 +28,21 @@ class WildEncounterController():
 
 
    @classmethod
-   def get_wild_encounter_names( cls ):
+   def get_wild_encounter_names( cls ) -> list[ str ]:
       return fetch_wild_encounter_names( get_connection() )
 
 
    @classmethod
-   def get_wild_encounter_occurrences( cls, wild_encounter, days_ahead=60 ):
+   def get_wild_encounter_occurrences(
+         cls,
+         wild_encounter_name: str,
+         days_ahead: int = 60 ) -> list[ zoo.ScheduledOccurrence ]:
       schedule_record = fetch_wild_encounter_schedule_record_for_occurrences(
          get_connection(),
-         wild_encounter=wild_encounter )
+         wild_encounter=wild_encounter_name )
       cancellation_records = fetch_wild_encounter_cancellation_records(
          get_connection(),
-         wild_encounter=wild_encounter )
+         wild_encounter=wild_encounter_name )
 
       return build_wild_encounter_occurrences(
          schedule_record=schedule_record,
@@ -44,7 +51,9 @@ class WildEncounterController():
 
 
    @classmethod
-   def get_wild_encounter_details( cls, wild_encounters_to_include=None ):
+   def get_wild_encounter_details(
+         cls,
+         wild_encounters_to_include: list[ str ] | None = None ) -> list[ zoo.WildEncounter ]:
       wild_encounter_records = fetch_wild_encounter_records( get_connection() )
 
       return build_wild_encounter_details(
@@ -55,20 +64,20 @@ class WildEncounterController():
    @classmethod
    def set_wild_encounter_schedule(
          cls,
-         wild_encounter,
-         start_date,
-         end_date,
-         encounter_time,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         message ):
+         wild_encounter_name: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         encounter_time: str,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         message: str ) -> bool:
       schedule = build_wild_encounter_schedule(
-         wild_encounter=wild_encounter,
+         wild_encounter=wild_encounter_name,
          start_date=start_date,
          end_date=end_date,
          encounter_time=encounter_time,
@@ -87,9 +96,12 @@ class WildEncounterController():
 
 
    @classmethod
-   def end_wild_encounter_schedule( cls, wild_encounter, schedule_end_date ):
+   def end_wild_encounter_schedule(
+         cls,
+         wild_encounter_name: str,
+         schedule_end_date: DateInput ) -> bool:
       schedule_end = build_wild_encounter_schedule_end(
-         wild_encounter=wild_encounter,
+         wild_encounter=wild_encounter_name,
          schedule_end_date=schedule_end_date )
 
       return save_wild_encounter_schedule_end(
@@ -98,9 +110,13 @@ class WildEncounterController():
 
 
    @classmethod
-   def cancel_wild_encounter_occurrence( cls, wild_encounter, date, time ):
+   def cancel_wild_encounter_occurrence(
+         cls,
+         wild_encounter_name: str,
+         date: DateKey,
+         time: str ) -> bool:
       cancellation = build_wild_encounter_cancellation(
-         wild_encounter=wild_encounter,
+         wild_encounter=wild_encounter_name,
          date=date,
          time=time )
 
@@ -110,7 +126,9 @@ class WildEncounterController():
 
 
    @classmethod
-   def get_wild_encounters_for_saved_itinerary( cls, saved_wild_encounters ):
+   def get_wild_encounters_for_saved_itinerary(
+         cls,
+         saved_wild_encounters: list[ ItineraryWildEncounterRecord ] ) -> list[ zoo.WildEncounter ]:
       if not saved_wild_encounters:
          return []
 
@@ -128,7 +146,11 @@ class WildEncounterController():
 
 
    @classmethod
-   def get_wild_encounter_schedule( cls, month, day, year ):
+   def get_wild_encounter_schedule(
+         cls,
+         month: MonthInput,
+         day: VisitDay,
+         year: VisitYear ) -> list[ zoo.WildEncounter ]:
       target_date = zoo.ZooUtil.visit_target_date(
          month=month,
          day=day,
@@ -146,11 +168,11 @@ class WildEncounterController():
    @classmethod
    def get_wild_encounter_on_day_schedule(
          cls,
-         month,
-         day,
-         encounter_name,
-         year,
-         day_schedule=None ):
+         month: MonthInput,
+         day: VisitDay,
+         encounter_name: str,
+         year: VisitYear,
+         day_schedule: list[ zoo.WildEncounter ] | None = None ) -> zoo.WildEncounter | None:
       rows = (
          day_schedule
          if day_schedule is not None
@@ -166,7 +188,11 @@ class WildEncounterController():
 
 
    @classmethod
-   def get_available_wild_encounters( cls, month, day, year ):
+   def get_available_wild_encounters(
+         cls,
+         month: MonthInput,
+         day: VisitDay,
+         year: VisitYear ) -> list[ zoo.WildEncounter ]:
       return filter_available_wild_encounters(
          cls.get_wild_encounter_schedule(
             month=month,
@@ -175,7 +201,12 @@ class WildEncounterController():
 
 
    @classmethod
-   def get_wild_encounters_matching_query( cls, query, month, day, year ):
+   def get_wild_encounters_matching_query(
+         cls,
+         query: str,
+         month: MonthInput,
+         day: VisitDay,
+         year: VisitYear ) -> list[ zoo.WildEncounter ]:
       wild_encounters = cls.get_available_wild_encounters(
          month=month,
          day=day,

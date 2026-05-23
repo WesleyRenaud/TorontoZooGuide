@@ -1,8 +1,17 @@
+from __future__ import annotations
+
+from datetime import date
+
 from ... import zoo
+from ...types import MonthInput, VisitDay, VisitYear
+from ..data_access.restroom_record import RestroomRecord
 from .restroom_context import RestroomContext
 
 
-def resolve_restroom_context( day, month, year ):
+def resolve_restroom_context(
+      day: VisitDay,
+      month: MonthInput,
+      year: VisitYear ) -> RestroomContext:
    return RestroomContext(
       target_date=zoo.ZooUtil.visit_target_date(
          month=month,
@@ -10,7 +19,9 @@ def resolve_restroom_context( day, month, year ):
          year=year ) )
 
 
-def is_restroom_status_active( restroom_record, target_date ):
+def is_restroom_status_active(
+      restroom_record: RestroomRecord,
+      target_date: date ) -> bool:
    if restroom_record.is_closed == None:
       return False
 
@@ -20,7 +31,9 @@ def is_restroom_status_active( restroom_record, target_date ):
       end_date_value=restroom_record.closed_end )
 
 
-def is_restroom_alert_active( restroom_record, target_date ):
+def is_restroom_alert_active(
+      restroom_record: RestroomRecord,
+      target_date: date ) -> bool:
    if restroom_record.alert_message == None:
       return False
 
@@ -30,7 +43,9 @@ def is_restroom_alert_active( restroom_record, target_date ):
       end_date_value=restroom_record.alert_end_date )
 
 
-def build_restroom( restroom_record, context ):
+def build_restroom(
+      restroom_record: RestroomRecord,
+      context: RestroomContext ) -> zoo.Restroom:
    is_closed = (
       bool( restroom_record.is_closed )
       and is_restroom_status_active(
@@ -51,9 +66,9 @@ def build_restroom( restroom_record, context ):
 
 
 def build_restrooms(
-      restroom_records,
-      context,
-      include_closed_restrooms ):
+      restroom_records: list[ RestroomRecord ],
+      context: RestroomContext,
+      include_closed_restrooms: bool ) -> list[ zoo.Restroom ]:
 
    restrooms = []
 

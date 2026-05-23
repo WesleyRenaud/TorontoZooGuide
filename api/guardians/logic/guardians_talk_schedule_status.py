@@ -1,22 +1,25 @@
+from __future__ import annotations
+
 from ... import zoo
 from ...shared.strings import SharedStrings
+from ...types import DateInput, ScheduleTimeKey
 from .guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
 from .guardians_talk_schedule_input import GuardiansTalkScheduleInput
 
 
 def build_guardians_talk_schedule(
-      talk,
-      location,
-      start_date,
-      end_date,
-      monday_time,
-      tuesday_time,
-      wednesday_time,
-      thursday_time,
-      friday_time,
-      saturday_time,
-      sunday_time,
-      message ):
+      talk: str,
+      location: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      monday_time: ScheduleTimeKey,
+      tuesday_time: ScheduleTimeKey,
+      wednesday_time: ScheduleTimeKey,
+      thursday_time: ScheduleTimeKey,
+      friday_time: ScheduleTimeKey,
+      saturday_time: ScheduleTimeKey,
+      sunday_time: ScheduleTimeKey,
+      message: str ) -> GuardiansTalkScheduleInput:
    date_range = zoo.ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
@@ -41,7 +44,10 @@ def build_guardians_talk_schedule(
       message=message )
 
 
-def build_guardians_talk_schedule_end( talk, location, schedule_end_date ):
+def build_guardians_talk_schedule_end(
+      talk: str,
+      location: str,
+      schedule_end_date: str ) -> GuardiansTalkScheduleEndInput:
    return GuardiansTalkScheduleEndInput(
       talk_name=talk,
       location=location,

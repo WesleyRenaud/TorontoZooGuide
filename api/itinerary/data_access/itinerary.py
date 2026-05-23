@@ -1,12 +1,19 @@
+from __future__ import annotations
+
 from ... import zoo
+from ...types import Connection, DateKey
 from .itinerary_animal_mapper import map_itinerary_animal_records
 from .itinerary_attraction_mapper import map_itinerary_attraction_records
 from .itinerary_guardians_talk_mapper import map_itinerary_guardians_talk_records
 from .itinerary_wild_encounter_mapper import map_itinerary_wild_encounter_records
+from .itinerary_animal_record import ItineraryAnimalRecord
+from .itinerary_attraction_record import ItineraryAttractionRecord
+from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from .saved_itinerary import SavedItinerary
 
 
-def fetch_itinerary_date( conn ):
+def fetch_itinerary_date( conn: Connection ) -> DateKey | None:
    cur = conn.cursor()
 
    date_row = cur.execute(
@@ -24,7 +31,7 @@ def fetch_itinerary_date( conn ):
    return zoo.ZooUtil.normalize_date_key( date_row[ 'ITINERARY_DATE' ] )
 
 
-def fetch_itinerary_animal_rows( conn ):
+def fetch_itinerary_animal_rows( conn: Connection ) -> list[ ItineraryAnimalRecord ]:
    cur = conn.cursor()
 
    rows = cur.execute(
@@ -41,7 +48,7 @@ def fetch_itinerary_animal_rows( conn ):
    return map_itinerary_animal_records( rows )
 
 
-def fetch_itinerary_attraction_rows( conn ):
+def fetch_itinerary_attraction_rows( conn: Connection ) -> list[ ItineraryAttractionRecord ]:
    cur = conn.cursor()
 
    rows = cur.execute(
@@ -57,7 +64,7 @@ def fetch_itinerary_attraction_rows( conn ):
    return map_itinerary_attraction_records( rows )
 
 
-def fetch_itinerary_guardians_talk_rows( conn ):
+def fetch_itinerary_guardians_talk_rows( conn: Connection ) -> list[ ItineraryGuardiansTalkRecord ]:
    cur = conn.cursor()
 
    rows = cur.execute(
@@ -74,7 +81,7 @@ def fetch_itinerary_guardians_talk_rows( conn ):
    return map_itinerary_guardians_talk_records( rows )
 
 
-def fetch_itinerary_wild_encounter_rows( conn ):
+def fetch_itinerary_wild_encounter_rows( conn: Connection ) -> list[ ItineraryWildEncounterRecord ]:
    cur = conn.cursor()
 
    rows = cur.execute(
@@ -91,7 +98,7 @@ def fetch_itinerary_wild_encounter_rows( conn ):
    return map_itinerary_wild_encounter_records( rows )
 
 
-def fetch_saved_itinerary( conn ):
+def fetch_saved_itinerary( conn: Connection ) -> SavedItinerary:
    date_value = fetch_itinerary_date( conn )
 
    if date_value == None:

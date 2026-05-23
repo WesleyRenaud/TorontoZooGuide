@@ -1,4 +1,8 @@
-def create_table( cursor ):
+from __future__ import annotations
+
+from ...types import Cursor
+
+def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS DrinkingFountain;' )
    cursor.execute( ''' CREATE TABLE DrinkingFountain
                      (  X_COORD  FLOAT NOT NULL,
@@ -74,7 +78,7 @@ drinking_fountains = [
 ]
 
 
-def insert_rows( cursor ):
+def insert_rows( cursor: Cursor ) -> None:
    cursor.executemany( ''' INSERT INTO DrinkingFountain (
                               X_COORD,
                               Y_COORD

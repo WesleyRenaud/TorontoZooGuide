@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from ... import zoo
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.restaurant import fetch_restaurant_names
 from ..data_access.restaurant import fetch_restaurant_records
 from ..data_access.restaurant import fetch_restaurant_schedule_override_records
@@ -19,18 +23,18 @@ class RestaurantController():
 
 
    @classmethod
-   def get_restaurant_names( cls ):
+   def get_restaurant_names( cls ) -> list[ str ]:
       return fetch_restaurant_names( get_connection() )
 
 
    @classmethod
    def get_restaurants(
          cls,
-         day,
-         month,
-         year,
-         include_closed_restaurants,
-         restaurants_to_include=None ):
+         day: VisitDay,
+         month: MonthInput,
+         year: VisitYear,
+         include_closed_restaurants: bool,
+         restaurants_to_include: list[ str ] | None = None ) -> list[ zoo.Restaurant ]:
 
       context = resolve_restaurant_context(
          month=month,
@@ -53,11 +57,11 @@ class RestaurantController():
    @classmethod
    def get_restaurants_matching_query(
          cls,
-         query,
-         day,
-         month,
-         year,
-         include_closed_restaurants ):
+         query: str,
+         day: VisitDay,
+         month: MonthInput,
+         year: VisitYear,
+         include_closed_restaurants: bool ) -> list[ zoo.Restaurant ]:
 
       restaurants = cls.get_restaurants(
          day=day,
@@ -73,10 +77,10 @@ class RestaurantController():
    @classmethod
    def set_restaurant_as_closed(
          cls,
-         restaurant,
-         start_date,
-         end_date,
-         message ):
+         restaurant: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         message: str ) -> bool:
       schedule = build_restaurant_closed_schedule(
          restaurant=restaurant,
          start_date=start_date,
@@ -91,10 +95,10 @@ class RestaurantController():
    @classmethod
    def set_restaurant_closure_override(
          cls,
-         restaurant,
-         start_date,
-         end_date,
-         message ):
+         restaurant: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         message: str ) -> bool:
       override = build_restaurant_closure_override(
          restaurant=restaurant,
          start_date=start_date,
@@ -109,18 +113,18 @@ class RestaurantController():
    @classmethod
    def set_restaurant_opening_schedule(
          cls,
-         restaurant,
-         start_date,
-         end_date,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         holidays_only,
-         message ):
+         restaurant: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
       schedule = build_restaurant_opening_schedule(
          restaurant=restaurant,
          start_date=start_date,
@@ -143,18 +147,18 @@ class RestaurantController():
    @classmethod
    def replace_restaurant_opening_schedule_overlaps(
          cls,
-         restaurant,
-         start_date,
-         end_date,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         holidays_only,
-         message ):
+         restaurant: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
       schedule = build_restaurant_opening_schedule(
          restaurant=restaurant,
          start_date=start_date,
@@ -177,18 +181,18 @@ class RestaurantController():
    @classmethod
    def trim_restaurant_opening_schedule_overlaps(
          cls,
-         restaurant,
-         start_date,
-         end_date,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         holidays_only,
-         message ):
+         restaurant: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
       schedule = build_restaurant_opening_schedule(
          restaurant=restaurant,
          start_date=start_date,

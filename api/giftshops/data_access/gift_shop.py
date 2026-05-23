@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+from ...types import Connection, VisitDay, VisitMonth
 from .gift_shop_mapper import map_gift_shop_records
 from .gift_shop_mapper import map_gift_shop_schedule_override_records
 from .gift_shop_mapper import map_gift_shop_schedule_records
+from .gift_shop_record import GiftShopRecord
+from .gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
+from .gift_shop_schedule_record import GiftShopScheduleRecord
 
 
-def fetch_gift_shop_names( conn ):
+def fetch_gift_shop_names( conn: Connection ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -19,7 +25,10 @@ def fetch_gift_shop_names( conn ):
       cur.close()
 
 
-def fetch_gift_shop_records( conn, month, day ):
+def fetch_gift_shop_records(
+      conn: Connection,
+      month: VisitMonth,
+      day: VisitDay ) -> list[ GiftShopRecord ]:
    cur = conn.cursor()
 
    try:
@@ -45,7 +54,7 @@ def fetch_gift_shop_records( conn, month, day ):
       cur.close()
 
 
-def fetch_gift_shop_schedule_records( conn ):
+def fetch_gift_shop_schedule_records( conn: Connection ) -> list[ GiftShopScheduleRecord ]:
    cur = conn.cursor()
 
    try:
@@ -72,7 +81,8 @@ def fetch_gift_shop_schedule_records( conn ):
       cur.close()
 
 
-def fetch_gift_shop_schedule_override_records( conn ):
+def fetch_gift_shop_schedule_override_records(
+      conn: Connection ) -> list[ GiftShopScheduleOverrideRecord ]:
    cur = conn.cursor()
 
    try:

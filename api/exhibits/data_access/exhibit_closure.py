@@ -1,12 +1,16 @@
+from __future__ import annotations
+
+from ...types import Connection, DateInput
 from .exhibit_closure_mapper import map_exhibit_closure_records
+from .exhibit_closure_record import ExhibitClosureRecord
 
 
 def save_exhibit_closed_status(
-      conn,
-      exhibit,
-      start_date,
-      end_date,
-      message ):
+      conn: Connection,
+      exhibit: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      message: str ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -40,10 +44,10 @@ def save_exhibit_closed_status(
 
 
 def save_exhibit_open_status(
-      conn,
-      exhibit,
-      start_date,
-      end_date ):
+      conn: Connection,
+      exhibit: str,
+      start_date: DateInput,
+      end_date: DateInput ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -75,7 +79,7 @@ def save_exhibit_open_status(
       cur.close()
 
 
-def fetch_exhibit_closure_records( conn ):
+def fetch_exhibit_closure_records( conn: Connection ) -> list[ ExhibitClosureRecord ]:
    cur = conn.cursor()
 
    try:

@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+
+from ...types import Coordinate
 
 
 @dataclass( frozen=True )
 class WildEncounterRecord:
-   name: object
-   meeting_spot: object
-   link: object
-   maximum_duration: object
-   x_coord: object
-   y_coord: object
+   name: str
+   meeting_spot: str
+   link: str | None
+   maximum_duration: int | None
+   x_coord: Coordinate
+   y_coord: Coordinate

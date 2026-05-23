@@ -1,3 +1,10 @@
+from __future__ import annotations
+
+from datetime import date
+
+from ... import zoo
+from ...itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.attraction import fetch_attraction_record_for_calendar_day
 from ..data_access.attraction import fetch_attraction_names
 from ..data_access.attraction import fetch_attraction_records
@@ -22,17 +29,17 @@ class AttractionController():
 
 
    @classmethod
-   def get_attraction_names( cls ):
+   def get_attraction_names( cls ) -> list[ str ]:
       return fetch_attraction_names( get_connection() )
 
 
    @classmethod
    def get_attractions(
          cls,
-         day,
-         month,
-         year,
-         include_closed_attractions=False ):
+         day: VisitDay,
+         month: MonthInput,
+         year: VisitYear,
+         include_closed_attractions: bool = False ) -> list[ zoo.Attraction ]:
 
       context = resolve_attraction_context(
          day=day,
@@ -54,10 +61,10 @@ class AttractionController():
    @classmethod
    def get_attractions_for_saved_itinerary(
          cls,
-         day,
-         month,
-         year,
-         saved_attractions ):
+         day: VisitDay,
+         month: MonthInput,
+         year: VisitYear,
+         saved_attractions: list[ ItineraryAttractionRecord ] ) -> list[ zoo.Attraction ]:
 
       if not saved_attractions:
          return []
@@ -76,11 +83,11 @@ class AttractionController():
    @classmethod
    def get_attractions_matching_query(
          cls,
-         query,
-         day,
-         month,
-         year,
-         include_closed_attractions ):
+         query: str,
+         day: VisitDay,
+         month: MonthInput,
+         year: VisitYear,
+         include_closed_attractions: bool ) -> list[ zoo.Attraction ]:
 
       attractions = cls.get_attractions(
          day=day,
@@ -96,8 +103,8 @@ class AttractionController():
    @classmethod
    def get_attraction_likelihood_for_visit_date(
          cls,
-         visit_date,
-         attraction_name ):
+         visit_date: date,
+         attraction_name: str ) -> int | None:
 
       attraction_record = fetch_attraction_record_for_calendar_day(
          get_connection(),
@@ -121,10 +128,10 @@ class AttractionController():
    @classmethod
    def set_attraction_as_closed(
          cls,
-         attraction,
-         start_date,
-         end_date,
-         message ):
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         message: str ) -> bool:
       schedule = build_attraction_closed_schedule(
          attraction=attraction,
          start_date=start_date,
@@ -139,18 +146,18 @@ class AttractionController():
    @classmethod
    def replace_attraction_opening_schedule_overlaps(
          cls,
-         attraction,
-         start_date,
-         end_date,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         holidays_only,
-         message ):
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
       schedule = build_attraction_opening_schedule(
          attraction=attraction,
          start_date=start_date,
@@ -173,18 +180,18 @@ class AttractionController():
    @classmethod
    def trim_attraction_opening_schedule_overlaps(
          cls,
-         attraction,
-         start_date,
-         end_date,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         holidays_only,
-         message ):
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
       schedule = build_attraction_opening_schedule(
          attraction=attraction,
          start_date=start_date,
@@ -207,10 +214,10 @@ class AttractionController():
    @classmethod
    def set_attraction_closure_override(
          cls,
-         attraction,
-         start_date,
-         end_date,
-         message ):
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         message: str ) -> bool:
       override = build_attraction_closure_override(
          attraction=attraction,
          start_date=start_date,
@@ -225,18 +232,18 @@ class AttractionController():
    @classmethod
    def set_attraction_opening_schedule(
          cls,
-         attraction,
-         start_date,
-         end_date,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         holidays_only,
-         message ):
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
       schedule = build_attraction_opening_schedule(
          attraction=attraction,
          start_date=start_date,

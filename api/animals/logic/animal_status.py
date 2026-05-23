@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 from ... import zoo
 from ...shared.strings import SharedStrings
+from ...types import DateInput
 from .animal_off_display_status import AnimalOffDisplayStatus
 
 
 def build_animal_off_display_status(
-      species,
-      exhibit,
-      start_date,
-      end_date,
-   message ):
+      species: str,
+      exhibit: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      message: str ) -> AnimalOffDisplayStatus:
    if not message:
       message = SharedStrings.Animals.temporarily_off_display( species )
 

@@ -1,4 +1,16 @@
-def save_wild_encounter_cancellation( conn, cancellation ):
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from ...types import Connection
+
+if TYPE_CHECKING:
+   from ..logic.wild_encounter_cancellation_input import WildEncounterCancellationInput
+
+
+def save_wild_encounter_cancellation(
+      conn: Connection,
+      cancellation: WildEncounterCancellationInput ) -> bool:
    cur = conn.cursor()
 
    try:

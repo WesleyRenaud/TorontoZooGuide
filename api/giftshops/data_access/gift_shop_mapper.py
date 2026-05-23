@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+from ...types import Row
 from .gift_shop_record import GiftShopRecord
 from .gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from .gift_shop_schedule_record import GiftShopScheduleRecord
 
 
-def map_gift_shop_record( row ):
+def map_gift_shop_record( row: Row ) -> GiftShopRecord:
    return GiftShopRecord(
       name=row[ 'NAME' ],
       location=row[ 'LOCATION' ],
@@ -14,14 +19,14 @@ def map_gift_shop_record( row ):
       weekend_holiday_multiplier=row[ 'GIFT_SHOP_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ] )
 
 
-def map_gift_shop_records( rows ):
+def map_gift_shop_records( rows: Iterable[ Row ] ) -> list[ GiftShopRecord ]:
    return [
       map_gift_shop_record( row )
       for row in rows
    ]
 
 
-def map_gift_shop_schedule_record( row ):
+def map_gift_shop_schedule_record( row: Row ) -> GiftShopScheduleRecord:
    return GiftShopScheduleRecord(
       gift_shop=row[ 'GIFT_SHOP' ],
       schedule_start_date=row[ 'SCHEDULE_START_DATE' ],
@@ -37,14 +42,14 @@ def map_gift_shop_schedule_record( row ):
       schedule_message=row[ 'SCHEDULE_MESSAGE' ] )
 
 
-def map_gift_shop_schedule_records( rows ):
+def map_gift_shop_schedule_records( rows: Iterable[ Row ] ) -> list[ GiftShopScheduleRecord ]:
    return [
       map_gift_shop_schedule_record( row )
       for row in rows
    ]
 
 
-def map_gift_shop_schedule_override_record( row ):
+def map_gift_shop_schedule_override_record( row: Row ) -> GiftShopScheduleOverrideRecord:
    return GiftShopScheduleOverrideRecord(
       gift_shop=row[ 'GIFT_SHOP' ],
       override_start_date=row[ 'OVERRIDE_START_DATE' ],
@@ -53,7 +58,7 @@ def map_gift_shop_schedule_override_record( row ):
       override_message=row[ 'OVERRIDE_MESSAGE' ] )
 
 
-def map_gift_shop_schedule_override_records( rows ):
+def map_gift_shop_schedule_override_records( rows: Iterable[ Row ] ) -> list[ GiftShopScheduleOverrideRecord ]:
    return [
       map_gift_shop_schedule_override_record( row )
       for row in rows

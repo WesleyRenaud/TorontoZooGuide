@@ -1,4 +1,16 @@
-def save_guardians_talk_cancellation( conn, cancellation ):
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from ...types import Connection
+
+if TYPE_CHECKING:
+   from ..logic.guardians_talk_cancellation_input import GuardiansTalkCancellationInput
+
+
+def save_guardians_talk_cancellation(
+      conn: Connection,
+      cancellation: GuardiansTalkCancellationInput ) -> bool:
    cur = conn.cursor()
 
    try:

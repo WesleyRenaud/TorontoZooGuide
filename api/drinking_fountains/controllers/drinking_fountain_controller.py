@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from ... import zoo
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.drinking_fountain import fetch_drinking_fountain_records
 from ..data_access.drinking_fountain_status import save_drinking_fountain_closed_status
 from ..data_access.drinking_fountain_status import save_drinking_fountain_open_status
@@ -17,7 +20,11 @@ class DrinkingFountainController():
 
 
    @classmethod
-   def get_drinking_fountains( cls, month, day, year ):
+   def get_drinking_fountains(
+         cls,
+         month: MonthInput,
+         day: VisitDay,
+         year: VisitYear ) -> list[ zoo.DrinkingFountain ]:
       target_date = zoo.ZooUtil.visit_target_date(
          month=month,
          day=day,
@@ -45,7 +52,11 @@ class DrinkingFountainController():
 
 
    @classmethod
-   def set_drinking_fountains_as_closed( cls, start_date=None, end_date=None, message=None ):
+   def set_drinking_fountains_as_closed(
+         cls,
+         start_date: DateInput | None = None,
+         end_date: DateInput | None = None,
+         message: str | None = None ) -> bool:
       status = build_drinking_fountain_closed_status(
          start_date=start_date,
          end_date=end_date,
@@ -57,7 +68,10 @@ class DrinkingFountainController():
 
 
    @classmethod
-   def set_drinking_fountains_as_open( cls, start_date=None, end_date=None ):
+   def set_drinking_fountains_as_open(
+         cls,
+         start_date: DateInput | None = None,
+         end_date: DateInput | None = None ) -> bool:
       status = build_drinking_fountain_open_status(
          start_date=start_date,
          end_date=end_date )

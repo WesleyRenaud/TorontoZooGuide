@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 
@@ -8,7 +10,9 @@ class WildEncounterIncludeFilter:
 
 
    @classmethod
-   def from_optional_list( cls, wild_encounters_to_include=None ):
+   def from_optional_list(
+         cls,
+         wild_encounters_to_include: list[ str ] | None ) -> WildEncounterIncludeFilter:
       if wild_encounters_to_include is None:
          return cls(
             normalized_names=frozenset(),
@@ -26,11 +30,11 @@ class WildEncounterIncludeFilter:
       )
 
 
-   def should_return_empty( self ):
+   def should_return_empty( self ) -> bool:
       return self.provisioned_explicitly and not self.normalized_names
 
 
-   def allows_wild_encounter_name( self, name ):
+   def allows_wild_encounter_name( self, name: str | None ) -> bool:
       if not self.provisioned_explicitly:
          return True
 

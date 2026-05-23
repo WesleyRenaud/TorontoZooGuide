@@ -1,8 +1,15 @@
+from __future__ import annotations
+
+from datetime import date
+
+from ...types import Connection
 from .zoomobile_station_mapper import map_zoomobile_station_records
 from .zoomobile_station_mapper import map_zoomobile_station_status_records
+from .zoomobile_station_record import ZoomobileStationRecord
+from .zoomobile_station_status_record import ZoomobileStationStatusRecord
 
 
-def fetch_zoomobile_station_names( conn ):
+def fetch_zoomobile_station_names( conn: Connection ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -18,7 +25,8 @@ def fetch_zoomobile_station_names( conn ):
       cur.close()
 
 
-def fetch_zoomobile_station_records( conn ):
+def fetch_zoomobile_station_records(
+      conn: Connection ) -> list[ ZoomobileStationRecord ]:
    cur = conn.cursor()
 
    try:
@@ -38,7 +46,8 @@ def fetch_zoomobile_station_records( conn ):
       cur.close()
 
 
-def fetch_zoomobile_station_status_records( conn ):
+def fetch_zoomobile_station_status_records(
+      conn: Connection ) -> list[ ZoomobileStationStatusRecord ]:
    cur = conn.cursor()
 
    try:
@@ -58,7 +67,9 @@ def fetch_zoomobile_station_status_records( conn ):
       cur.close()
 
 
-def fetch_active_zoomobile_route( conn, target_date ):
+def fetch_active_zoomobile_route(
+      conn: Connection,
+      target_date: date ) -> str | None:
    cur = conn.cursor()
 
    try:
@@ -86,7 +97,10 @@ def fetch_active_zoomobile_route( conn, target_date ):
       cur.close()
 
 
-def fetch_zoomobile_day_route( conn, month, day ):
+def fetch_zoomobile_day_route(
+      conn: Connection,
+      month: int,
+      day: int ) -> str | None:
    cur = conn.cursor()
 
    try:

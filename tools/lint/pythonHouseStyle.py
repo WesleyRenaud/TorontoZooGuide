@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 import ast
-from pathlib import Path
 from io import BytesIO
 from fnmatch import fnmatch
 import sys
 import tokenize
 import tomllib
+from pathlib import Path
+from typing import Any
 
 
-def find_root():
+def find_root() -> Path:
    current = Path( __file__ ).resolve().parent
 
    while current != current.parent:
@@ -40,7 +43,7 @@ CLOSERS = {
 }
 
 
-def get_display_path( path ):
+def get_display_path( path: Path ) -> str:
    try:
       return path.relative_to( ROOT ).as_posix()
 
@@ -48,7 +51,7 @@ def get_display_path( path ):
       return path.as_posix()
 
 
-def load_style_config():
+def load_style_config() -> dict[ str, Any ]:
    pyproject_path = ROOT / 'pyproject.toml'
 
    if not pyproject_path.exists():
@@ -61,21 +64,156 @@ def load_style_config():
    )
 
 
-def get_definition_start_line( node ):
+def get_definition_start_line( node: ast.AST ) -> int:
    if getattr( node, 'decorator_list', None ):
       return min( decorator.lineno for decorator in node.decorator_list )
 
    return node.lineno
 
 
-def check_method_spacing( path, file_text, blank_lines_between_methods ):
+def is_str_object_mapping_annotation( node: ast.expr ) -> bool:
+   if not isinstance( node, ast.Subscript ):
+      return False
+
+   if not isinstance( node.value, ast.Name ) or node.value.id not in { 'dict', 'Mapping' }:
+      return False
+
+   if not isinstance( node.slice, ast.Tuple ) or len( node.slice.elts ) != 2:
+      return False
+
+   key_type, value_type = node.slice.elts
+
+   return (
+      isinstance( key_type, ast.Name )
+      and key_type.id == 'str'
+      and isinstance( value_type, ast.Name )
+      and value_type.id == 'object' )
+
+
+def allowed_object_name_nodes( annotation: ast.expr | None ) -> set[ ast.AST ]:
+   if annotation is None:
+      return set()
+
+   allowed_object_nodes: set[ ast.AST ] = set()
+
+   for node in ast.walk( annotation ):
+      if is_str_object_mapping_annotation( node ):
+         allowed_object_nodes.add( node.slice.elts[ 1 ] )
+
+   return allowed_object_nodes
+
+
+def annotation_uses_disallowed_object( annotation: ast.expr | None ) -> bool:
+   if annotation is None:
+      return False
+
+   allowed_object_nodes = allowed_object_name_nodes( annotation )
+
+   for child in ast.walk( annotation ):
+      if isinstance( child, ast.Name ) and child.id == 'object' and child not in allowed_object_nodes:
+         return True
+
+   return False
+
+
+def check_typing_annotations(
+      path: Path,
+      file_text: str ) -> list[ tuple[ str, int, int, str ] ]:
+   try:
+      tree = ast.parse( file_text )
+   except SyntaxError:
+      return []
+
+   violations: list[ tuple[ str, int, int, str ] ] = []
+
+   for node in ast.walk( tree ):
+      if not isinstance( node, ( ast.FunctionDef, ast.AsyncFunctionDef ) ):
+         continue
+
+      all_arguments = [
+         *node.args.posonlyargs,
+         *node.args.args,
+         *node.args.kwonlyargs,
+      ]
+
+      for arg in all_arguments:
+         if arg.arg in { 'self', 'cls' }:
+            continue
+
+         if arg.annotation is None:
+            add_violation(
+               violations,
+               path,
+               arg.lineno or node.lineno,
+               ( arg.col_offset or 0 ) + 1,
+               f'Missing type annotation for argument "{ arg.arg }".' )
+            continue
+
+         if annotation_uses_disallowed_object( arg.annotation ):
+            add_violation(
+               violations,
+               path,
+               arg.lineno or node.lineno,
+               ( arg.col_offset or 0 ) + 1,
+               (
+                  f'Do not use "object" as a type for "{ arg.arg }"; '
+                  'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
+
+      if node.args.vararg and node.args.vararg.annotation is None:
+         add_violation(
+            violations,
+            path,
+            node.args.vararg.lineno or node.lineno,
+            ( node.args.vararg.col_offset or 0 ) + 1,
+            f'Missing type annotation for "*{ node.args.vararg.arg }".' )
+
+      if node.args.kwarg and node.args.kwarg.annotation is None:
+         add_violation(
+            violations,
+            path,
+            node.args.kwarg.lineno or node.lineno,
+            ( node.args.kwarg.col_offset or 0 ) + 1,
+            f'Missing type annotation for "**{ node.args.kwarg.arg }".' )
+
+      if node.name == '__init__':
+         if node.returns is None:
+            add_violation(
+               violations,
+               path,
+               node.lineno,
+               1,
+               'Missing return type annotation for "__init__" (use "-> None").' )
+      elif node.returns is None:
+         add_violation(
+            violations,
+            path,
+            node.lineno,
+            1,
+            f'Missing return type annotation for "{ node.name }".' )
+      elif annotation_uses_disallowed_object( node.returns ):
+         add_violation(
+            violations,
+            path,
+            node.returns.lineno or node.lineno,
+            ( node.returns.col_offset or 0 ) + 1,
+            (
+               f'Do not use "object" as the return type for "{ node.name }"; '
+               'use a concrete type (dict[str, object] is allowed for JSON payloads).' ) )
+
+   return violations
+
+
+def check_method_spacing(
+      path: Path,
+      file_text: str,
+      blank_lines_between_methods: int ) -> list[ tuple[ str, int, int, str ] ]:
    try:
       tree = ast.parse( file_text )
    except SyntaxError:
       return []
 
    lines = file_text.splitlines()
-   violations = []
+   violations: list[ tuple[ str, int, int, str ] ] = []
 
    for node in ast.walk( tree ):
       if not isinstance( node, ast.ClassDef ):
@@ -113,7 +251,7 @@ def check_method_spacing( path, file_text, blank_lines_between_methods ):
    return violations
 
 
-def is_excluded_path( path, excluded_patterns ):
+def is_excluded_path( path: Path, excluded_patterns: list[ str ] ) -> bool:
    relative_path = path.relative_to( ROOT ).as_posix()
 
    if any( part in { '.git', '__pycache__', 'node_modules' } for part in path.parts ):
@@ -126,7 +264,10 @@ def is_excluded_path( path, excluded_patterns ):
    return False
 
 
-def get_significant_token( tokens, start_index, step ):
+def get_significant_token(
+      tokens: list[ tokenize.TokenInfo ],
+      start_index: int,
+      step: int ) -> tokenize.TokenInfo | None:
    index = start_index
 
    while 0 <= index < len( tokens ):
@@ -140,13 +281,20 @@ def get_significant_token( tokens, start_index, step ):
    return None
 
 
-def add_violation( violations, path, line, column, message ):
+def add_violation(
+      violations: list[ tuple[ str, int, int, str ] ],
+      path: Path,
+      line: int,
+      column: int,
+      message: str ) -> None:
    violations.append( ( get_display_path( path ), line, column, message ) )
 
 
-def build_char_positions( text, start ):
+def build_char_positions(
+      text: str,
+      start: tuple[ int, int ] ) -> list[ tuple[ int, int ] ]:
    line, column = start
-   positions = []
+   positions: list[ tuple[ int, int ] ] = []
 
    for character in text:
       positions.append( ( line, column ) )
@@ -161,7 +309,12 @@ def build_char_positions( text, start ):
    return positions
 
 
-def check_opening_spacing( violations, path, positions, text, index ):
+def check_opening_spacing(
+      violations: list[ tuple[ str, int, int, str ] ],
+      path: Path,
+      positions: list[ tuple[ int, int ] ],
+      text: str,
+      index: int ) -> None:
    if index + 1 >= len( text ):
       return
 
@@ -180,7 +333,12 @@ def check_opening_spacing( violations, path, positions, text, index ):
    )
 
 
-def check_closing_spacing( violations, path, positions, text, index ):
+def check_closing_spacing(
+      violations: list[ tuple[ str, int, int, str ] ],
+      path: Path,
+      positions: list[ tuple[ int, int ] ],
+      text: str,
+      index: int ) -> None:
    if index == 0:
       return
 
@@ -199,7 +357,7 @@ def check_closing_spacing( violations, path, positions, text, index ):
    )
 
 
-def skip_string_literal( text, index ):
+def skip_string_literal( text: str, index: int ) -> int:
    quote_character = text[ index ]
    is_triple_quoted = text[ index:index + 3 ] == quote_character * 3
 
@@ -233,7 +391,7 @@ def skip_string_literal( text, index ):
    return len( text )
 
 
-def is_f_string_token( token_string ):
+def is_f_string_token( token_string: str ) -> bool:
    prefix = []
    index = 0
 
@@ -244,7 +402,12 @@ def is_f_string_token( token_string ):
    return 'f' in ''.join( prefix ).lower()
 
 
-def check_f_string_field( violations, path, positions, text, start_index ):
+def check_f_string_field(
+      violations: list[ tuple[ str, int, int, str ] ],
+      path: Path,
+      positions: list[ tuple[ int, int ] ],
+      text: str,
+      start_index: int ) -> int:
    stack = [ '{' ]
    index = start_index
 
@@ -278,12 +441,14 @@ def check_f_string_field( violations, path, positions, text, start_index ):
    return index
 
 
-def check_f_string_token( path, token ):
+def check_f_string_token(
+      path: Path,
+      token: tokenize.TokenInfo ) -> list[ tuple[ str, int, int, str ] ]:
    if token.type != tokenize.STRING or not is_f_string_token( token.string ):
       return []
 
    positions = build_char_positions( token.string, token.start )
-   violations = []
+   violations: list[ tuple[ str, int, int, str ] ] = []
    index = 0
 
    while index < len( token.string ):
@@ -301,7 +466,10 @@ def check_f_string_token( path, token ):
    return violations
 
 
-def check_file( path, blank_lines_between_methods ):
+def check_file(
+      path: Path,
+      blank_lines_between_methods: int,
+      enforce_typing: bool ) -> list[ tuple[ str, int, int, str ] ]:
    file_text = path.read_text()
    tokens = [
       token
@@ -309,6 +477,9 @@ def check_file( path, blank_lines_between_methods ):
       if token.type != tokenize.ENDMARKER
    ]
    violations = check_method_spacing( path, file_text, blank_lines_between_methods )
+
+   if enforce_typing:
+      violations.extend( check_typing_annotations( path, file_text ) )
 
    for index, token in enumerate( tokens ):
       if token.type == tokenize.STRING:
@@ -357,17 +528,22 @@ def check_file( path, blank_lines_between_methods ):
    return violations
 
 
-def main():
+def main() -> int:
    style_config = load_style_config()
    excluded_patterns = style_config.get( 'exclude', [] )
    blank_lines_between_methods = style_config.get( 'blank_lines_between_methods', 2 )
-   violations = []
+   enforce_typing = style_config.get( 'enforce_typing', True )
+   violations: list[ tuple[ str, int, int, str ] ] = []
 
    for path in sorted( ROOT.rglob( '*.py' ) ):
       if is_excluded_path( path, excluded_patterns ):
          continue
 
-      violations.extend( check_file( path, blank_lines_between_methods ) )
+      violations.extend(
+         check_file(
+            path,
+            blank_lines_between_methods,
+            enforce_typing ) )
 
    if not violations:
       return 0

@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from ...types import Connection, Cursor, DateInput
+
+
 def save_restroom_alert(
-      conn,
-      restroom,
-      alert_start_date,
-      alert_end_date,
-      message ):
+      conn: Connection,
+      restroom: str,
+      alert_start_date: DateInput,
+      alert_end_date: DateInput,
+      message: str ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -23,7 +28,9 @@ def save_restroom_alert(
       cur.close()
 
 
-def clear_restroom_alert_with_cursor( cur, restroom ):
+def clear_restroom_alert_with_cursor(
+      cur: Cursor,
+      restroom: str ) -> None:
    cur.execute(
       """ DELETE FROM RestroomAlert
           WHERE RESTROOM = ?;
@@ -31,7 +38,7 @@ def clear_restroom_alert_with_cursor( cur, restroom ):
       ( restroom, ) )
 
 
-def delete_restroom_alert( conn, restroom ):
+def delete_restroom_alert( conn: Connection, restroom: str ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -46,11 +53,11 @@ def delete_restroom_alert( conn, restroom ):
 
 
 def insert_restroom_alert_with_cursor(
-      cur,
-      restroom,
-      alert_start_date,
-      alert_end_date,
-      message ):
+      cur: Cursor,
+      restroom: str,
+      alert_start_date: DateInput,
+      alert_end_date: DateInput,
+      message: str ) -> None:
    cur.execute(
       """   INSERT INTO RestroomAlert (
                RESTROOM,

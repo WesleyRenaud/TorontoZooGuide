@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
+
 from ... import zoo
+from ...types import DateInput
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_save_input import ItinerarySaveInput
 
 
-def map_named_strings( names ):
+def map_named_strings( names: Iterable[ str ] | None ) -> tuple[ str, ... ]:
    return tuple(
       name.strip()
       for name in names or []
@@ -12,7 +17,7 @@ def map_named_strings( names ):
 
 
 
-def map_animal_inputs( animals ):
+def map_animal_inputs( animals: Iterable[ dict[ str, str ] ] | None ) -> tuple[ ItineraryAnimalInput, ... ]:
    return tuple(
       ItineraryAnimalInput(
          species=animal[ 'species' ],
@@ -23,11 +28,11 @@ def map_animal_inputs( animals ):
 
 
 def map_itinerary_save_input(
-      date,
-      animals,
-      attractions,
-      guardians_talks,
-      wild_encounters ):
+      date: DateInput,
+      animals: Iterable[ dict[ str, str ] ] | None,
+      attractions: Iterable[ str ] | None,
+      guardians_talks: Iterable[ str ] | None,
+      wild_encounters: Iterable[ str ] | None ) -> ItinerarySaveInput:
 
    return ItinerarySaveInput(
       date=zoo.ZooUtil.parse_date_value( date ),

@@ -1,10 +1,16 @@
+from __future__ import annotations
+
+from ...types import Connection, VisitDay, VisitMonth
 from .attraction_mapper import map_attraction_record
 from .attraction_mapper import map_attraction_records
 from .attraction_mapper import map_attraction_schedule_override_records
 from .attraction_mapper import map_attraction_schedule_records
+from .attraction_record import AttractionRecord
+from .attraction_schedule_override_record import AttractionScheduleOverrideRecord
+from .attraction_schedule_record import AttractionScheduleRecord
 
 
-def fetch_attraction_names( conn ):
+def fetch_attraction_names( conn: Connection ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -20,7 +26,10 @@ def fetch_attraction_names( conn ):
       cur.close()
 
 
-def fetch_attraction_records( conn, month, day ):
+def fetch_attraction_records(
+      conn: Connection,
+      month: VisitMonth,
+      day: VisitDay ) -> list[ AttractionRecord ]:
    cur = conn.cursor()
 
    try:
@@ -49,10 +58,10 @@ def fetch_attraction_records( conn, month, day ):
 
 
 def fetch_attraction_record_for_calendar_day(
-      conn,
-      attraction_name,
-      month,
-      day ):
+      conn: Connection,
+      attraction_name: str,
+      month: VisitMonth,
+      day: VisitDay ) -> AttractionRecord | None:
 
    cur = conn.cursor()
 
@@ -84,7 +93,7 @@ def fetch_attraction_record_for_calendar_day(
       cur.close()
 
 
-def fetch_attraction_schedule_records( conn ):
+def fetch_attraction_schedule_records( conn: Connection ) -> list[ AttractionScheduleRecord ]:
    cur = conn.cursor()
 
    try:
@@ -111,7 +120,8 @@ def fetch_attraction_schedule_records( conn ):
       cur.close()
 
 
-def fetch_attraction_schedule_override_records( conn ):
+def fetch_attraction_schedule_override_records(
+      conn: Connection ) -> list[ AttractionScheduleOverrideRecord ]:
    cur = conn.cursor()
 
    try:

@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from ...types import Connection, DateInput
+
+
 def save_restroom_closed_status(
-      conn,
-      restroom,
-      start_date,
-      end_date,
-      message ):
+      conn: Connection,
+      restroom: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      message: str ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -37,10 +42,10 @@ def save_restroom_closed_status(
 
 
 def save_restroom_open_status(
-      conn,
-      restroom,
-      start_date,
-      end_date ):
+      conn: Connection,
+      restroom: str,
+      start_date: DateInput,
+      end_date: DateInput ) -> bool:
    cur = conn.cursor()
 
    try:

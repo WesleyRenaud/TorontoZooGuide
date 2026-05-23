@@ -1,4 +1,8 @@
-def create_table( cursor ):
+from __future__ import annotations
+
+from ...types import Cursor
+
+def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS GiftShopDaySeasonalAvailabilityMultiplier;' )
    cursor.execute( ''' CREATE TABLE GiftShopDaySeasonalAvailabilityMultiplier
                      (  GIFT_SHOP              VARCHAR(64) NOT NULL,
@@ -1847,7 +1851,7 @@ gift_shop_day_seasonal_availability_multipliers = [
    ( 'Twiga Market', 12, 30, 0.0, 0.0 ),
    ( 'Twiga Market', 12, 31, 0.0, 0.0 ),
 ]
-def insert_rows( cursor ):
+def insert_rows( cursor: Cursor ) -> None:
    cursor.executemany( ''' INSERT INTO GiftShopDaySeasonalAvailabilityMultiplier (
                               GIFT_SHOP,
                               MONTH,

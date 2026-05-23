@@ -1,4 +1,8 @@
-def create_table( cursor ):
+from __future__ import annotations
+
+from ...types import Cursor
+
+def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS Restroom;' )
    cursor.execute( ''' CREATE TABLE Restroom
                      (  TITLE    VARCHAR(64) NOT NULL,
@@ -59,7 +63,7 @@ restrooms = [
    )
 ]
 
-def insert_rows( cursor ):
+def insert_rows( cursor: Cursor ) -> None:
    cursor.executemany( ''' INSERT INTO Restroom (
                               TITLE,
                               X_COORD,

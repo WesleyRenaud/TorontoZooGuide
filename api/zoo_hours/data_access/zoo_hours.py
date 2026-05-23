@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from ...types import Connection, DateKey
 from .zoo_hours_mapper import map_zoo_hours_record
+from .zoo_hours_record import ZooHoursRecord
 
 
-def fetch_zoo_hours_record( conn, operating_date ):
+def fetch_zoo_hours_record( conn: Connection, operating_date: DateKey ) -> ZooHoursRecord | None:
    cur = conn.cursor()
 
    try:

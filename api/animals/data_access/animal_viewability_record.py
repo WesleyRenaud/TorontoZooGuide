@@ -1,42 +1,46 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+
+from ...types import Coordinate, DateKey, ScheduleTimeKey, SeasonalMultiplier
 
 
 @dataclass( frozen=True )
 class AnimalViewabilityRecord:
-   species: object
-   latin_name: object
-   min_temperature: object
-   general_viewing_tips: object
-   seasonal_viewing_tips: object
-   identification: object
-   habitat_and_range: object
-   diet_and_feeding: object
-   behaviour_and_social_life: object
-   adaptations: object
-   reproduction_and_life_cycle: object
-   animals_at_the_zoo: object
-   exhibit: object
-   seasonal_viewing_summary: object
-   seasonal_viewing_information: object
-   enclosure_type: object
-   seasonally_off_display_message: object
-   x_coord: object
-   y_coord: object
-   is_off_display: object
-   off_display_message: object
-   off_display_start: object
-   off_display_end: object
-   schedule_start_date: object
-   schedule_end_date: object
-   daily_start_time: object
-   daily_end_time: object
-   viewing_message: object
-   alert_message: object
-   alert_start_date: object
-   alert_end_date: object
-   is_closed: object
-   closed_message: object
-   closed_start: object
-   closed_end: object
-   animal_day_seasonal_multiplier: object
-   exhibit_day_seasonal_availability_multiplier: object
+   species: str
+   latin_name: str | None
+   min_temperature: float | None
+   general_viewing_tips: str | None
+   seasonal_viewing_tips: str | None
+   identification: str | None
+   habitat_and_range: str | None
+   diet_and_feeding: str | None
+   behaviour_and_social_life: str | None
+   adaptations: str | None
+   reproduction_and_life_cycle: str | None
+   animals_at_the_zoo: str | None
+   exhibit: str
+   seasonal_viewing_summary: str | None
+   seasonal_viewing_information: str | None
+   enclosure_type: str | None
+   seasonally_off_display_message: str | None
+   x_coord: Coordinate
+   y_coord: Coordinate
+   is_off_display: bool | None
+   off_display_message: str | None
+   off_display_start: DateKey | None
+   off_display_end: DateKey | None
+   schedule_start_date: DateKey | None
+   schedule_end_date: DateKey | None
+   daily_start_time: ScheduleTimeKey
+   daily_end_time: ScheduleTimeKey
+   viewing_message: str | None
+   alert_message: str | None
+   alert_start_date: DateKey | None
+   alert_end_date: DateKey | None
+   is_closed: bool | None
+   closed_message: str | None
+   closed_start: DateKey | None
+   closed_end: DateKey | None
+   animal_day_seasonal_multiplier: SeasonalMultiplier
+   exhibit_day_seasonal_availability_multiplier: SeasonalMultiplier

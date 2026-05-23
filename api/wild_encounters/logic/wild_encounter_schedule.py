@@ -1,9 +1,16 @@
+from __future__ import annotations
+
+from datetime import date
+
 from ... import zoo
 from ...shared.strings import SharedStrings
+from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 from .wild_encounter_name_filter import WildEncounterNameFilter
 
 
-def find_wild_encounter_on_day_schedule( day_schedule, encounter_name ):
+def find_wild_encounter_on_day_schedule(
+      day_schedule: list[ zoo.WildEncounter ],
+      encounter_name: str ) -> zoo.WildEncounter | None:
    encounter_filter = WildEncounterNameFilter( name=encounter_name )
 
    if encounter_filter.should_return_empty():
@@ -16,7 +23,8 @@ def find_wild_encounter_on_day_schedule( day_schedule, encounter_name ):
    return None
 
 
-def filter_available_wild_encounters( wild_encounters ):
+def filter_available_wild_encounters(
+      wild_encounters: list[ zoo.WildEncounter ] ) -> list[ zoo.WildEncounter ]:
    return [
       wild_encounter
       for wild_encounter in wild_encounters
@@ -25,12 +33,12 @@ def filter_available_wild_encounters( wild_encounters ):
 
 
 def build_wild_encounter_schedule_for_target_date(
-      records,
-      target_date ):
+      records: list[ WildEncounterScheduleRecord ],
+      target_date: date ) -> list[ zoo.WildEncounter ]:
 
    target_weekday = target_date.weekday()
 
-   wild_encounters = []
+   wild_encounters: list[ zoo.WildEncounter ] = []
 
    for record in records:
       name = record.name
@@ -40,7 +48,7 @@ def build_wild_encounter_schedule_for_target_date(
          target_date=target_date,
          start_date_value=record.schedule_start_date,
          end_date_value=record.schedule_end_date )
-      unavailable_message = None
+      unavailable_message: str | None = None
 
       weekday_ok = zoo.ZooUtil.schedule_includes_weekday(
          target_weekday,

@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from ...types import Connection
 from .exhibit_mapper import map_region_exhibit_rows
+from .region_exhibit_record import RegionExhibitRecord
 
 
-def fetch_exhibit_names( conn ):
+def fetch_exhibit_names( conn: Connection ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -17,7 +21,7 @@ def fetch_exhibit_names( conn ):
       cur.close()
 
 
-def fetch_exhibit_names_in_region( conn, region ):
+def fetch_exhibit_names_in_region( conn: Connection, region: str ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -34,7 +38,7 @@ def fetch_exhibit_names_in_region( conn, region ):
       cur.close()
 
 
-def fetch_region_exhibit_rows( conn ):
+def fetch_region_exhibit_rows( conn: Connection ) -> list[ RegionExhibitRecord ]:
    cur = conn.cursor()
 
    try:
@@ -54,7 +58,7 @@ def fetch_region_exhibit_rows( conn ):
       cur.close()
 
 
-def fetch_animal_names_in_exhibit( conn, exhibit ):
+def fetch_animal_names_in_exhibit( conn: Connection, exhibit: str ) -> list[ str ]:
    cur = conn.cursor()
 
    try:

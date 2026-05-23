@@ -1,10 +1,15 @@
+from __future__ import annotations
+
+from ...types import Connection, DateInput
+
+
 def save_animal_off_display_status(
-      conn,
-      species,
-      exhibit,
-      start_date,
-      end_date,
-      message ):
+      conn: Connection,
+      species: str,
+      exhibit: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      message: str ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -39,7 +44,7 @@ def save_animal_off_display_status(
       cur.close()
 
 
-def save_animal_on_display_status( conn, species, exhibit ):
+def save_animal_on_display_status( conn: Connection, species: str, exhibit: str ) -> bool:
    cur = conn.cursor()
 
    try:

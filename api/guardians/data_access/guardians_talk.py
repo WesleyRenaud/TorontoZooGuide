@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from ...types import Connection
 from .meet_the_guardians_talk_mapper import map_meet_the_guardians_talk_records
+from .meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
 
 
-def fetch_guardians_talk_locations( conn ):
+def fetch_guardians_talk_locations( conn: Connection ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -19,7 +23,7 @@ def fetch_guardians_talk_locations( conn ):
       cur.close()
 
 
-def fetch_guardians_talk_names( conn ):
+def fetch_guardians_talk_names( conn: Connection ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -35,7 +39,7 @@ def fetch_guardians_talk_names( conn ):
       cur.close()
 
 
-def fetch_guardians_talk_names_at_location( conn, location ):
+def fetch_guardians_talk_names_at_location( conn: Connection, location: str ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -53,7 +57,7 @@ def fetch_guardians_talk_names_at_location( conn, location ):
       cur.close()
 
 
-def fetch_meet_the_guardians_talk_records( conn ):
+def fetch_meet_the_guardians_talk_records( conn: Connection ) -> list[ MeetTheGuardiansTalkRecord ]:
    cur = conn.cursor()
 
    try:

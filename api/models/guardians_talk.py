@@ -1,19 +1,22 @@
+from __future__ import annotations
+
+from ..types import Coordinate, ScheduleTimeKey
 from ..zoo_util import ZooUtil
 
 
 class GuardiansTalk:
    def __init__(
          self,
-         name,
-         location,
-         x_coord,
-         y_coord,
-         start_time=None,
-         maximum_duration=None,
-         end_time=None,
-         is_available=True,
-         unavailable_message=None,
-         is_deleted=False ):
+         name: str,
+         location: str,
+         x_coord: Coordinate,
+         y_coord: Coordinate,
+         start_time: ScheduleTimeKey = None,
+         maximum_duration: int | None = None,
+         end_time: ScheduleTimeKey = None,
+         is_available: bool = True,
+         unavailable_message: str | None = None,
+         is_deleted: bool = False ) -> None:
       self.name = name
       self.location = location
       self.x_coord = x_coord
@@ -26,7 +29,7 @@ class GuardiansTalk:
       self.is_deleted = is_deleted
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'name': self.name,
          'location': self.location,

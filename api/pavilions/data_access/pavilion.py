@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from ... import zoo
+from ...types import Connection
 
 
-def fetch_pavilions( conn ):
+def fetch_pavilions( conn: Connection ) -> list[ zoo.Pavilion ]:
    cur = conn.cursor()
 
    try:

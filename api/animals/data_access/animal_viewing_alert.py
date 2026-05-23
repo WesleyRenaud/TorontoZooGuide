@@ -1,10 +1,15 @@
+from __future__ import annotations
+
+from ...types import Connection, Cursor, DateInput
+
+
 def save_animal_viewing_alert(
-      conn,
-      species,
-      exhibit,
-      alert_start_date,
-      alert_end_date,
-      message ):
+      conn: Connection,
+      species: str,
+      exhibit: str,
+      alert_start_date: DateInput,
+      alert_end_date: DateInput,
+      message: str ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -26,7 +31,10 @@ def save_animal_viewing_alert(
       cur.close()
 
 
-def clear_animal_viewing_alert_with_cursor( cur, species, exhibit ):
+def clear_animal_viewing_alert_with_cursor(
+      cur: Cursor,
+      species: str,
+      exhibit: str ) -> None:
    cur.execute(
       """ DELETE FROM AnimalViewingAlert
           WHERE SPECIES = ?
@@ -38,7 +46,7 @@ def clear_animal_viewing_alert_with_cursor( cur, species, exhibit ):
       ) )
 
 
-def delete_animal_viewing_alert( conn, species, exhibit ):
+def delete_animal_viewing_alert( conn: Connection, species: str, exhibit: str ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -54,12 +62,12 @@ def delete_animal_viewing_alert( conn, species, exhibit ):
 
 
 def insert_animal_viewing_alert_with_cursor(
-      cur,
-      species,
-      exhibit,
-      alert_start_date,
-      alert_end_date,
-      message ):
+      cur: Cursor,
+      species: str,
+      exhibit: str,
+      alert_start_date: DateInput,
+      alert_end_date: DateInput,
+      message: str ) -> None:
    cur.execute(
       """   INSERT INTO AnimalViewingAlert (
                SPECIES,

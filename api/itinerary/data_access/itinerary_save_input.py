@@ -1,23 +1,27 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import date
+
+from .itinerary_animal_input import ItineraryAnimalInput
 
 
 @dataclass( frozen=True )
 class ItinerarySaveInput:
    date: date
-   animals: tuple
-   attractions: tuple
-   guardians_talks: tuple
-   wild_encounters: tuple
+   animals: tuple[ ItineraryAnimalInput, ... ]
+   attractions: tuple[ str, ... ]
+   guardians_talks: tuple[ str, ... ]
+   wild_encounters: tuple[ str, ... ]
 
 
-   def month( self ):
+   def month( self ) -> int:
       return self.date.month
 
 
-   def day( self ):
+   def day( self ) -> int:
       return self.date.day
 
 
-   def year( self ):
+   def year( self ) -> int:
       return self.date.year

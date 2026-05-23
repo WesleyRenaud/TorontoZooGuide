@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from ... import zoo
+from ...types import Connection
 
 
-def fetch_animal_information( conn, species ):
+def fetch_animal_information( conn: Connection, species: str ) -> zoo.Animal | None:
    cur = conn.cursor()
 
    try:

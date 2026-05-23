@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 
@@ -9,7 +11,9 @@ class GuardiansTalkIncludeFilter:
 
 
    @classmethod
-   def from_optional_list( cls, guardians_talks_to_include=None ):
+   def from_optional_list(
+         cls,
+         guardians_talks_to_include: list[ str ] | None ) -> GuardiansTalkIncludeFilter:
       if guardians_talks_to_include is None:
          return cls(
             normalized_names=frozenset(),
@@ -27,11 +31,11 @@ class GuardiansTalkIncludeFilter:
       )
 
 
-   def should_return_empty( self ):
+   def should_return_empty( self ) -> bool:
       return self.provisioned_explicitly and not self.normalized_names
 
 
-   def allows_talk_name( self, name ):
+   def allows_talk_name( self, name: str | None ) -> bool:
       if not self.provisioned_explicitly:
          return True
 

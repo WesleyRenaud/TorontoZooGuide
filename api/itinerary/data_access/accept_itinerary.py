@@ -1,4 +1,9 @@
-def remove_declined_itinerary_animals( cur ):
+from __future__ import annotations
+
+from ...types import Connection, Cursor
+
+
+def remove_declined_itinerary_animals( cur: Cursor ) -> None:
    cur.execute(
       """   DELETE FROM ItineraryAnimal
             WHERE OLD_LIKELIHOOD IS NOT NULL
@@ -7,7 +12,7 @@ def remove_declined_itinerary_animals( cur ):
       """ )
 
 
-def remove_declined_itinerary_attractions( cur ):
+def remove_declined_itinerary_attractions( cur: Cursor ) -> None:
    cur.execute(
       """   DELETE FROM ItineraryAttraction
             WHERE OLD_LIKELIHOOD IS NOT NULL
@@ -16,21 +21,21 @@ def remove_declined_itinerary_attractions( cur ):
       """ )
 
 
-def remove_deleted_itinerary_guardians_talks( cur ):
+def remove_deleted_itinerary_guardians_talks( cur: Cursor ) -> None:
    cur.execute(
       """   DELETE FROM ItineraryGuardiansTalk
             WHERE IS_DELETED = 1;
       """ )
 
 
-def remove_deleted_itinerary_wild_encounters( cur ):
+def remove_deleted_itinerary_wild_encounters( cur: Cursor ) -> None:
    cur.execute(
       """   DELETE FROM ItineraryWildEncounter
             WHERE IS_DELETED = 1;
       """ )
 
 
-def accept_itinerary( conn ):
+def accept_itinerary( conn: Connection ) -> bool:
    cur = conn.cursor()
 
    try:

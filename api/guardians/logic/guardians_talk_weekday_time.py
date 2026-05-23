@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from ...types import ScheduleTimeKey
+from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
+
 WEEKDAY_TIME_FIELDS = (
    'monday_time',
    'tuesday_time',
@@ -9,7 +14,9 @@ WEEKDAY_TIME_FIELDS = (
 )
 
 
-def guardians_talk_time_for_weekday( schedule_record, weekday ):
+def guardians_talk_time_for_weekday(
+      schedule_record: GuardiansTalkScheduleRecord,
+      weekday: int ) -> ScheduleTimeKey:
    return getattr(
       schedule_record,
       WEEKDAY_TIME_FIELDS[ weekday ] )

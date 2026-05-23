@@ -1,20 +1,27 @@
-def species_exhibit_key_from_values( species, exhibit ):
+from __future__ import annotations
+
+from ... import zoo
+
+
+def species_exhibit_key_from_values( species: str, exhibit: str ) -> tuple[ str, str ]:
    return (
       ( species or '' ).strip().lower(),
       ( exhibit or '' ).strip().lower(),
    )
 
 
-def species_exhibit_key( animal ):
+def species_exhibit_key( animal: zoo.Animal ) -> tuple[ str, str ]:
    return species_exhibit_key_from_values( animal.species, animal.exhibit )
 
 
-def animal_matches_query( animal, query_lower ):
+def animal_matches_query( animal: zoo.Animal, query_lower: str ) -> bool:
    species, exhibit = species_exhibit_key( animal )
    return query_lower in species or query_lower in exhibit
 
 
-def filter_animals_matching_query( animals, query ):
+def filter_animals_matching_query(
+      animals: list[ zoo.Animal ],
+      query: str ) -> list[ zoo.Animal ]:
    if not query:
       return list( animals )
 
@@ -25,7 +32,9 @@ def filter_animals_matching_query( animals, query ):
    ]
 
 
-def filter_animals_by_species_exhibit_keys( animals, species_exhibit_keys ):
+def filter_animals_by_species_exhibit_keys(
+      animals: list[ zoo.Animal ],
+      species_exhibit_keys: list[ tuple[ str, str ] ] ) -> list[ zoo.Animal ]:
    keys = set( species_exhibit_keys )
 
    if not keys:
@@ -37,8 +46,9 @@ def filter_animals_by_species_exhibit_keys( animals, species_exhibit_keys ):
    ]
 
 
-def dedupe_animals_by_species_and_exhibit( animals ):
-   best_by_species_and_exhibit = {}
+def dedupe_animals_by_species_and_exhibit(
+      animals: list[ zoo.Animal ] ) -> list[ zoo.Animal ]:
+   best_by_species_and_exhibit: dict[ tuple[ str, str ], zoo.Animal ] = {}
 
    for animal in animals:
       key = species_exhibit_key( animal )
@@ -49,13 +59,16 @@ def dedupe_animals_by_species_and_exhibit( animals ):
    return list( best_by_species_and_exhibit.values() )
 
 
-def sort_animals_by_species_and_exhibit( animals ):
+def sort_animals_by_species_and_exhibit(
+      animals: list[ zoo.Animal ] ) -> list[ zoo.Animal ]:
    sorted_animals = list( animals )
    sorted_animals.sort( key=species_exhibit_key )
    return sorted_animals
 
 
-def build_animals_matching_query( animals, query ):
+def build_animals_matching_query(
+      animals: list[ zoo.Animal ],
+      query: str ) -> list[ zoo.Animal ]:
    animals = filter_animals_matching_query( animals, query )
    animals = dedupe_animals_by_species_and_exhibit( animals )
    return sort_animals_by_species_and_exhibit( animals )
