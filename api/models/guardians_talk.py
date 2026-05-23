@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..types import Coordinate, ScheduleTimeKey
-from ..zoo_util import ZooUtil
+from ..shared.value_conversion import ValueConversion
 
 
 class GuardiansTalk:
@@ -38,7 +38,7 @@ class GuardiansTalk:
          'start_time': self.start_time,
          'maximum_duration': self.maximum_duration,
          'end_time': self.end_time,
-         'is_available': ZooUtil.as_boolean( self.is_available ),
+         'is_available': ValueConversion.as_boolean( self.is_available ),
          'unavailable_message': self.unavailable_message,
-         'is_deleted': ZooUtil.as_boolean( self.is_deleted )
+         'is_deleted': ValueConversion.as_boolean( self.is_deleted )
       }

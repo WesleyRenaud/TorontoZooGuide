@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..zoo_util import ZooUtil
+from ..shared.value_conversion import ValueConversion
 
 
 class Animal:
@@ -79,10 +79,10 @@ class Animal:
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'likelihood': self.likelihood,
-         'has_limited_viewing_schedule': ZooUtil.as_boolean( self.has_limited_viewing_schedule ),
+         'has_limited_viewing_schedule': ValueConversion.as_boolean( self.has_limited_viewing_schedule ),
          'limited_viewing_message': self.limited_viewing_message,
-         'has_viewing_alert': ZooUtil.as_boolean( self.has_viewing_alert ),
+         'has_viewing_alert': ValueConversion.as_boolean( self.has_viewing_alert ),
          'viewing_alert_message': self.viewing_alert_message,
-         'is_deleted': ZooUtil.as_boolean( self.is_deleted ),
+         'is_deleted': ValueConversion.as_boolean( self.is_deleted ),
          'old_likelihood': self.old_likelihood
       }

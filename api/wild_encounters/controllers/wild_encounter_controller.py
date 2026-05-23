@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ...models import ScheduledOccurrence
 from ...models import WildEncounter
-from ...zoo_util import ZooUtil
+from ...shared.calendar_dates import CalendarDates
 from ...itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...types import DateInput, DateKey, MonthInput, VisitDay, VisitYear
 from ..data_access.wild_encounter import fetch_wild_encounter_names
@@ -153,7 +153,7 @@ class WildEncounterController():
          month: MonthInput,
          day: VisitDay,
          year: VisitYear ) -> list[ WildEncounter ]:
-      target_date = ZooUtil.visit_target_date(
+      target_date = CalendarDates.visit_target_date(
          month=month,
          day=day,
          year=year )

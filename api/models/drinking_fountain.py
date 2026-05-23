@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..types import Coordinate
-from ..zoo_util import ZooUtil
+from ..shared.value_conversion import ValueConversion
 
 
 class DrinkingFountain:
@@ -14,7 +14,7 @@ class DrinkingFountain:
          likelihood: int | None = None ) -> None:
       self.x_coord = x_coord
       self.y_coord = y_coord
-      self.is_closed = ZooUtil.as_boolean( is_closed )
+      self.is_closed = ValueConversion.as_boolean( is_closed )
       self.closed_message = closed_message
       self.likelihood = likelihood
 

@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import timedelta
 
 from ...models import ScheduledOccurrence
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
+from ...shared.calendar_dates import CalendarDates
 from ..data_access.wild_encounter_cancellation_record import WildEncounterCancellationRecord
 from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
 
@@ -15,18 +16,18 @@ def build_wild_encounter_occurrences(
    if schedule_record == None:
       return []
 
-   today = ZooUtil.parse_date_value( ZooUtil.today_date_key() )
+   today = DateValues.parse_date_value( DateValues.today_date_key() )
    schedule_start_date = today
    schedule_end_date = today + timedelta( days=days_ahead )
 
-   parsed_start_date = ZooUtil.parse_date_value(
+   parsed_start_date = DateValues.parse_date_value(
       value=schedule_record.schedule_start_date )
 
    if parsed_start_date > schedule_start_date:
       schedule_start_date = parsed_start_date
 
    if schedule_record.schedule_end_date != None:
-      parsed_end_date = ZooUtil.parse_date_value(
+      parsed_end_date = DateValues.parse_date_value(
          value=schedule_record.schedule_end_date )
 
       if parsed_end_date < schedule_end_date:
@@ -53,7 +54,7 @@ def build_wild_encounter_occurrences(
       current_date_key = current_date.isoformat()
 
       if (
-            ZooUtil.schedule_includes_weekday(
+            CalendarDates.schedule_includes_weekday(
                current_date.weekday(),
                weekday_flags )
             and not wild_encounter_occurrence_is_cancelled(

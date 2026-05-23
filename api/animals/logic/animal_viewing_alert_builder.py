@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 from .animal_viewing_alert import AnimalViewingAlert
@@ -12,7 +12,7 @@ def build_animal_viewing_alert(
       alert_start_date: DateInput,
       alert_end_date: DateInput,
       message: str ) -> AnimalViewingAlert:
-   date_range = ZooUtil.resolve_open_ended_date_range(
+   date_range = DateValues.resolve_open_ended_date_range(
       start_date=alert_start_date,
       end_date=alert_end_date )
 

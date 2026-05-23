@@ -4,7 +4,7 @@ from datetime import date
 from datetime import timedelta
 
 from ...types import Connection, DateInput, DateKey
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from ..data_access.restaurant_schedule import delete_restaurant_opening_schedule
 from ..data_access.restaurant_schedule import fetch_restaurant_opening_schedule_conflicts
 from ..data_access.restaurant_schedule import insert_copied_restaurant_opening_schedule
@@ -44,9 +44,9 @@ def trim_restaurant_opening_schedule_conflict(
       conn: Connection,
       conflict: RestaurantScheduleRecord,
       schedule: RestaurantOpeningSchedule ) -> None:
-   new_start_date = ZooUtil.parse_date_value( schedule.start_date )
+   new_start_date = DateValues.parse_date_value( schedule.start_date )
    new_end_date = parse_opening_schedule_end_date( schedule.end_date )
-   conflict_start_date = ZooUtil.parse_date_value( conflict.schedule_start_date )
+   conflict_start_date = DateValues.parse_date_value( conflict.schedule_start_date )
    conflict_end_date = parse_opening_schedule_end_date(
       conflict.schedule_end_date )
 
@@ -94,7 +94,7 @@ def parse_opening_schedule_end_date( value: DateInput ) -> date:
    if value == None:
       return date.max
 
-   return ZooUtil.parse_date_value( value )
+   return DateValues.parse_date_value( value )
 
 
 def format_opening_schedule_date( value: date ) -> DateKey | None:

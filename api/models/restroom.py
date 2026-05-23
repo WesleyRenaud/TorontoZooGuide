@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..zoo_util import ZooUtil
+from ..shared.value_conversion import ValueConversion
 
 
 class Restroom:
@@ -27,8 +27,8 @@ class Restroom:
          'title': self.title,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'is_closed': ZooUtil.as_boolean( self.is_closed ),
+         'is_closed': ValueConversion.as_boolean( self.is_closed ),
          'closed_message': self.closed_message,
-         'has_alert': ZooUtil.as_boolean( self.has_alert ),
+         'has_alert': ValueConversion.as_boolean( self.has_alert ),
          'alert_message': self.alert_message
       }

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ...models import DrinkingFountain
-from ...zoo_util import ZooUtil
+from ...shared.calendar_dates import CalendarDates
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.drinking_fountain import fetch_drinking_fountain_records
 from ..data_access.drinking_fountain_status import save_drinking_fountain_closed_status
@@ -26,7 +26,7 @@ class DrinkingFountainController():
          month: MonthInput,
          day: VisitDay,
          year: VisitYear ) -> list[ DrinkingFountain ]:
-      target_date = ZooUtil.visit_target_date(
+      target_date = CalendarDates.visit_target_date(
          month=month,
          day=day,
          year=year )
