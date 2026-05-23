@@ -1144,14 +1144,13 @@ def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
       location='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      talk_time='10:00',
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      monday_time='10:00',
+      tuesday_time=None,
+      wednesday_time=None,
+      thursday_time=None,
+      friday_time=None,
+      saturday_time=None,
+      sunday_time=None,
       message=None
    )
 
@@ -1175,6 +1174,42 @@ def test_guardians_talk_schedule_and_cancellation( db, freeze_database_today ):
    assert GuardiansController.get_guardians_talk_schedule( month='June', day=16, year=2026 ) == []
 
 
+def test_guardians_talk_schedule_supports_different_weekday_times( db, freeze_database_today ):
+   freeze_database_today( date( 2026, 6, 15 ) )
+   assert GuardiansController.set_guardians_talk_schedule(
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday_time=None,
+      tuesday_time=None,
+      wednesday_time='13:00',
+      thursday_time='14:00',
+      friday_time=None,
+      saturday_time=None,
+      sunday_time=None,
+      message=None
+   )
+
+   wednesday_talks = GuardiansController.get_guardians_talk_schedule(
+      month='June',
+      day=17,
+      year=2026 )
+   thursday_talks = GuardiansController.get_guardians_talk_schedule(
+      month='June',
+      day=18,
+      year=2026 )
+
+   assert any(
+      talk.name == 'African Lion' and talk.start_time == '13:00'
+      for talk in wednesday_talks
+   )
+   assert any(
+      talk.name == 'African Lion' and talk.start_time == '14:00'
+      for talk in thursday_talks
+   )
+
+
 def test_guardians_talk_occurrences_cover_all_weekdays_and_cancellations( db, freeze_database_today ):
    freeze_database_today( date( 2026, 6, 15 ) )
    assert GuardiansController.set_guardians_talk_schedule(
@@ -1182,14 +1217,13 @@ def test_guardians_talk_occurrences_cover_all_weekdays_and_cancellations( db, fr
       location='Africa Savanna',
       start_date='2026-06-15',
       end_date='2026-06-21',
-      talk_time='10:00',
-      monday=True,
-      tuesday=True,
-      wednesday=True,
-      thursday=True,
-      friday=True,
-      saturday=True,
-      sunday=True,
+      monday_time='10:00',
+      tuesday_time='10:00',
+      wednesday_time='10:00',
+      thursday_time='10:00',
+      friday_time='10:00',
+      saturday_time='10:00',
+      sunday_time='10:00',
       message=None
    )
    assert GuardiansController.cancel_guardians_talk_occurrence(

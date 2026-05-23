@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from ... import zoo
+from .guardians_talk_weekday_time import guardians_talk_time_for_weekday
 
 
 def build_guardians_talk_occurrences(
@@ -30,27 +31,17 @@ def build_guardians_talk_occurrences(
    if schedule_end_date < schedule_start_date:
       return []
 
-   talk_time = schedule_record.talk_time
-   weekday_flags = (
-      schedule_record.monday,
-      schedule_record.tuesday,
-      schedule_record.wednesday,
-      schedule_record.thursday,
-      schedule_record.friday,
-      schedule_record.saturday,
-      schedule_record.sunday,
-   )
-
    occurrences = []
    current_date = schedule_start_date
 
    while current_date <= schedule_end_date:
       current_date_key = current_date.isoformat()
+      talk_time = guardians_talk_time_for_weekday(
+         schedule_record,
+         current_date.weekday() )
 
       if (
-            zoo.ZooUtil.schedule_includes_weekday(
-               current_date.weekday(),
-               weekday_flags )
+            talk_time != None
             and not guardians_talk_occurrence_is_cancelled(
                cancellation_records,
                current_date_key,

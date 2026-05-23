@@ -1,6 +1,7 @@
 from ... import zoo
 from ...shared.strings import SharedStrings
 from .guardians_talk_name_filter import GuardiansTalkNameFilter
+from .guardians_talk_weekday_time import guardians_talk_time_for_weekday
 
 
 def find_guardians_talk_on_day_schedule( day_schedule, talk_name ):
@@ -29,7 +30,9 @@ def build_guardians_talk_schedule_for_target_date(
    for record in records:
       name = record.name
       location = record.location
-      talk_time = record.talk_time
+      talk_time = guardians_talk_time_for_weekday(
+         record,
+         target_weekday )
 
       date_range_ok = zoo.ZooUtil.is_date_in_range(
          target_date=target_date,
@@ -37,23 +40,17 @@ def build_guardians_talk_schedule_for_target_date(
          end_date_value=record.schedule_end_date )
       unavailable_message = None
 
-      weekday_ok = zoo.ZooUtil.schedule_includes_weekday(
-         target_weekday,
-         (
-            record.monday,
-            record.tuesday,
-            record.wednesday,
-            record.thursday,
-            record.friday,
-            record.saturday,
-            record.sunday,
-         ) )
+      weekday_ok = talk_time != None
 
-      is_cancelled = occurrence_is_cancelled(
-         name,
-         location,
+      is_cancelled = (
+         occurrence_is_cancelled(
+            name,
+            location,
             target_date_str,
             talk_time )
+         if weekday_ok
+         else False
+      )
 
       is_available = date_range_ok and weekday_ok and not is_cancelled
 

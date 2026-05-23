@@ -16,14 +16,13 @@ def fetch_guardians_talk_schedule_records( conn ):
                   t.MAXIMUM_DURATION,
                   s.SCHEDULE_START_DATE,
                   s.SCHEDULE_END_DATE,
-                  s.MONDAY,
-                  s.TUESDAY,
-                  s.WEDNESDAY,
-                  s.THURSDAY,
-                  s.FRIDAY,
-                  s.SATURDAY,
-                  s.SUNDAY,
-                  s.TALK_TIME
+                  s.MONDAY_TIME,
+                  s.TUESDAY_TIME,
+                  s.WEDNESDAY_TIME,
+                  s.THURSDAY_TIME,
+                  s.FRIDAY_TIME,
+                  s.SATURDAY_TIME,
+                  s.SUNDAY_TIME
                FROM MeetTheGuardiansTalk t
                JOIN GuardiansTalkSchedule s
                   ON t.NAME = s.TALK_NAME
@@ -49,14 +48,13 @@ def fetch_guardians_talk_schedule_record_for_occurrences( conn, talk_name, locat
                   t.MAXIMUM_DURATION,
                   s.SCHEDULE_START_DATE,
                   s.SCHEDULE_END_DATE,
-                  s.MONDAY,
-                  s.TUESDAY,
-                  s.WEDNESDAY,
-                  s.THURSDAY,
-                  s.FRIDAY,
-                  s.SATURDAY,
-                  s.SUNDAY,
-                  s.TALK_TIME
+                  s.MONDAY_TIME,
+                  s.TUESDAY_TIME,
+                  s.WEDNESDAY_TIME,
+                  s.THURSDAY_TIME,
+                  s.FRIDAY_TIME,
+                  s.SATURDAY_TIME,
+                  s.SUNDAY_TIME
                FROM MeetTheGuardiansTalk t
                JOIN GuardiansTalkSchedule s
                   ON t.NAME = s.TALK_NAME
@@ -146,28 +144,26 @@ def save_guardians_talk_schedule( conn, schedule ):
                   LOCATION,
                   SCHEDULE_START_DATE,
                   SCHEDULE_END_DATE,
-                  TALK_TIME,
-                  MONDAY,
-                  TUESDAY,
-                  WEDNESDAY,
-                  THURSDAY,
-                  FRIDAY,
-                  SATURDAY,
-                  SUNDAY,
+                  MONDAY_TIME,
+                  TUESDAY_TIME,
+                  WEDNESDAY_TIME,
+                  THURSDAY_TIME,
+                  FRIDAY_TIME,
+                  SATURDAY_TIME,
+                  SUNDAY_TIME,
                   SCHEDULE_MESSAGE
                )
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                ON CONFLICT(TALK_NAME, LOCATION) DO UPDATE SET
                   SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
                   SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
-                  TALK_TIME = excluded.TALK_TIME,
-                  MONDAY = excluded.MONDAY,
-                  TUESDAY = excluded.TUESDAY,
-                  WEDNESDAY = excluded.WEDNESDAY,
-                  THURSDAY = excluded.THURSDAY,
-                  FRIDAY = excluded.FRIDAY,
-                  SATURDAY = excluded.SATURDAY,
-                  SUNDAY = excluded.SUNDAY,
+                  MONDAY_TIME = excluded.MONDAY_TIME,
+                  TUESDAY_TIME = excluded.TUESDAY_TIME,
+                  WEDNESDAY_TIME = excluded.WEDNESDAY_TIME,
+                  THURSDAY_TIME = excluded.THURSDAY_TIME,
+                  FRIDAY_TIME = excluded.FRIDAY_TIME,
+                  SATURDAY_TIME = excluded.SATURDAY_TIME,
+                  SUNDAY_TIME = excluded.SUNDAY_TIME,
                   SCHEDULE_MESSAGE = excluded.SCHEDULE_MESSAGE;
          """,
          (
@@ -175,14 +171,13 @@ def save_guardians_talk_schedule( conn, schedule ):
             schedule.location,
             schedule.start_date,
             schedule.end_date,
-            schedule.talk_time,
-            schedule.monday,
-            schedule.tuesday,
-            schedule.wednesday,
-            schedule.thursday,
-            schedule.friday,
-            schedule.saturday,
-            schedule.sunday,
+            schedule.monday_time,
+            schedule.tuesday_time,
+            schedule.wednesday_time,
+            schedule.thursday_time,
+            schedule.friday_time,
+            schedule.saturday_time,
+            schedule.sunday_time,
             schedule.message,
          ) )
 

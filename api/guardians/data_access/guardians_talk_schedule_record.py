@@ -10,11 +10,10 @@ class GuardiansTalkScheduleRecord:
    maximum_duration: object
    schedule_start_date: object
    schedule_end_date: object
-   monday: object
-   tuesday: object
-   wednesday: object
-   thursday: object
-   friday: object
-   saturday: object
-   sunday: object
-   talk_time: object
+   monday_time: object
+   tuesday_time: object
+   wednesday_time: object
+   thursday_time: object
+   friday_time: object
+   saturday_time: object
+   sunday_time: object
