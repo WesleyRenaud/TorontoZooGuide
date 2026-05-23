@@ -5,12 +5,32 @@ from typing import Any
 
 import pytest
 
-from api import zoo
+from api.models import Animal
+from api.models import Attraction
+from api.models import Defibrillator
+from api.models import DrinkingFountain
+from api.models import EmergencyIntercom
+from api.models import EventSite
+from api.models import GiftShop
+from api.models import GuardiansTalk
+from api.models import GuestService
+from api.models import Itinerary
+from api.models import Pavilion
+from api.models import PicnicSite
+from api.models import Restaurant
+from api.models import Restroom
+from api.models import Update
+from api.models import WildEncounter
+from api.models import ZoomobileRoute
+from api.models import ZoomobileRouteMarker
+from api.models import ZoomobileStation
+import api.zoo_util as zoo_util
+from api.zoo_util import ZooUtil
 from api.types import MonthInput, VisitMonth
 
 
 def test_domain_objects_serialize_to_frontend_shapes() -> None:
-   assert zoo.Pavilion( name='Pavilion', region='Region', x_coord=1, y_coord=2 ).to_dict() == {
+   assert Pavilion( name='Pavilion', region='Region', x_coord=1, y_coord=2 ).to_dict() == {
       'name': 'Pavilion',
       'region': 'Region',
       'description': None,
@@ -18,7 +38,7 @@ def test_domain_objects_serialize_to_frontend_shapes() -> None:
       'y_coord': 2
    }
 
-   assert zoo.Restaurant(
+   assert Restaurant(
       name='Cafe',
       location='North',
       sub_location='Inside',
@@ -26,32 +46,32 @@ def test_domain_objects_serialize_to_frontend_shapes() -> None:
       likelihood=0
    ).to_dict()[ 'is_closed' ] is True
 
-   assert zoo.GiftShop( name='Shop', location='Gate', is_closed=0 ).to_dict()[ 'is_closed' ] is False
-   assert zoo.Attraction( name='Ride', free_with_admission=1 ).to_dict()[ 'free_with_admission' ] is True
-   assert zoo.Attraction( name='Ride', free_with_admission=1 ).to_dict()[ 'is_deleted' ] is False
-   assert zoo.Restroom( title='Restroom', x_coord=3, y_coord=4 ).to_dict()[ 'title' ] == 'Restroom'
-   assert zoo.ZoomobileStation( name='Station' ).to_dict()[ 'name' ] == 'Station'
-   assert zoo.ZoomobileRouteMarker( route_type='summer', x_coord=1, y_coord=2 ).to_dict()[ 'route_type' ] == 'summer'
-   assert zoo.GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_available' ] is True
-   assert zoo.GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_deleted' ] is False
-   assert zoo.WildEncounter( name='Encounter', meeting_spot='Spot', link='https://example.test' ).to_dict()[ 'is_available' ] is True
-   assert zoo.WildEncounter( name='Encounter', meeting_spot='Spot', link='https://example.test' ).to_dict()[ 'is_deleted' ] is False
-   assert zoo.DrinkingFountain( x_coord=1, y_coord=2, is_closed=1, likelihood=0.0 ).to_dict() == {
+   assert GiftShop( name='Shop', location='Gate', is_closed=0 ).to_dict()[ 'is_closed' ] is False
+   assert Attraction( name='Ride', free_with_admission=1 ).to_dict()[ 'free_with_admission' ] is True
+   assert Attraction( name='Ride', free_with_admission=1 ).to_dict()[ 'is_deleted' ] is False
+   assert Restroom( title='Restroom', x_coord=3, y_coord=4 ).to_dict()[ 'title' ] == 'Restroom'
+   assert ZoomobileStation( name='Station' ).to_dict()[ 'name' ] == 'Station'
+   assert ZoomobileRouteMarker( route_type='summer', x_coord=1, y_coord=2 ).to_dict()[ 'route_type' ] == 'summer'
+   assert GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_available' ] is True
+   assert GuardiansTalk( name='Talk', location='Habitat', x_coord=1, y_coord=2 ).to_dict()[ 'is_deleted' ] is False
+   assert WildEncounter( name='Encounter', meeting_spot='Spot', link='https://example.test' ).to_dict()[ 'is_available' ] is True
+   assert WildEncounter( name='Encounter', meeting_spot='Spot', link='https://example.test' ).to_dict()[ 'is_deleted' ] is False
+   assert DrinkingFountain( x_coord=1, y_coord=2, is_closed=1, likelihood=0.0 ).to_dict() == {
       'x_coord': 1,
       'y_coord': 2,
       'is_closed': True,
       'closed_message': None,
       'likelihood': 0.0
    }
-   assert zoo.Defibrillator( x_coord=5, y_coord=6 ).to_dict() == {
+   assert Defibrillator( x_coord=5, y_coord=6 ).to_dict() == {
       'x_coord': 5,
       'y_coord': 6
    }
-   assert zoo.EmergencyIntercom( x_coord=7, y_coord=8 ).to_dict() == {
+   assert EmergencyIntercom( x_coord=7, y_coord=8 ).to_dict() == {
       'x_coord': 7,
       'y_coord': 8
    }
-   assert zoo.GuestService(
+   assert GuestService(
       service_type='Information',
       x_coord=9,
       y_coord=10
@@ -60,14 +80,14 @@ def test_domain_objects_serialize_to_frontend_shapes() -> None:
       'x_coord': 9,
       'y_coord': 10
    }
-   assert zoo.PicnicSite(
+   assert PicnicSite(
       x_coord=11,
       y_coord=12
    ).to_dict() == {
       'x_coord': 11,
       'y_coord': 12
    }
-   assert zoo.EventSite(
+   assert EventSite(
       name='Special Events Center',
       x_coord=13,
       y_coord=14
@@ -76,7 +96,7 @@ def test_domain_objects_serialize_to_frontend_shapes() -> None:
       'x_coord': 13,
       'y_coord': 14
    }
-   assert zoo.Update(
+   assert Update(
       title='New baby giraffe',
       description='Come meet the new calf.',
       update_type='New Arrival',
@@ -92,7 +112,7 @@ def test_domain_objects_serialize_to_frontend_shapes() -> None:
 
 
 def test_animal_to_dict_converts_boolean_flags() -> None:
-   animal = zoo.Animal(
+   animal = Animal(
       species='Amur Tiger',
       has_limited_viewing_schedule=1,
       has_viewing_alert=0
@@ -107,10 +127,10 @@ def test_animal_to_dict_converts_boolean_flags() -> None:
 
 
 def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
-   itinerary = zoo.Itinerary(
+   itinerary = Itinerary(
       date='2026-06-15',
       animals=[
-         zoo.Animal(
+         Animal(
             species='Amur Tiger',
             latin_name='Panthera tigris altaica',
             general_viewing_tips='Look near the shaded areas.',
@@ -144,7 +164,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
          }
       ],
       guardians_talks=[
-         zoo.GuardiansTalk(
+         GuardiansTalk(
             name='Tiger Talk',
             location='Eurasia Wilds',
             x_coord=1,
@@ -154,7 +174,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
             is_available=1 )
       ],
       wild_encounters=[
-         zoo.WildEncounter(
+         WildEncounter(
             name='Encounter',
             meeting_spot='Spot',
             link='link',
@@ -253,7 +273,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
    ]
 )
 def test_as_boolean( value: Any, expected: bool ) -> None:
-   assert zoo.ZooUtil.as_boolean( value ) is expected
+   assert ZooUtil.as_boolean( value ) is expected
 
 
 @pytest.mark.parametrize(
@@ -273,7 +293,7 @@ def test_as_boolean( value: Any, expected: bool ) -> None:
 def test_normalize_month_documents_current_inputs(
       value: MonthInput,
       expected: VisitMonth | None ) -> None:
-   assert zoo.ZooUtil.normalize_month( value ) == expected
+   assert ZooUtil.normalize_month( value ) == expected
 
 
 @pytest.mark.parametrize(
@@ -287,12 +307,12 @@ def test_normalize_month_documents_current_inputs(
    ]
 )
 def test_get_month_abbreviation( value: MonthInput, expected: str ) -> None:
-   assert zoo.ZooUtil.get_month_abbreviation( value ) == expected
+   assert ZooUtil.get_month_abbreviation( value ) == expected
 
 
 def test_get_month_abbreviation_rejects_invalid_values() -> None:
    with pytest.raises( ValueError ):
-      zoo.ZooUtil.get_month_abbreviation( 13 )
+      ZooUtil.get_month_abbreviation( 13 )
 
 
 @pytest.mark.parametrize(
@@ -310,23 +330,23 @@ def test_get_month_abbreviation_rejects_invalid_values() -> None:
 def test_resolve_visit_calendar_month_returns_int_one_through_twelve(
       value: MonthInput,
       expected: VisitMonth ) -> None:
-   got = zoo.ZooUtil.resolve_visit_calendar_month( value )
+   got = ZooUtil.resolve_visit_calendar_month( value )
    assert got == expected
    assert isinstance( got, int )
 
 
 def test_resolve_visit_calendar_month_rejects_invalid_values() -> None:
    with pytest.raises( ValueError ):
-      zoo.ZooUtil.resolve_visit_calendar_month( 13 )
+      ZooUtil.resolve_visit_calendar_month( 13 )
 
 
 def test_resolve_visit_day_of_month() -> None:
-   assert zoo.ZooUtil.resolve_visit_day_of_month( '15' ) == 15
-   assert zoo.ZooUtil.resolve_visit_day_of_month( 7 ) == 7
+   assert ZooUtil.resolve_visit_day_of_month( '15' ) == 15
+   assert ZooUtil.resolve_visit_day_of_month( 7 ) == 7
 
 
 def test_resolve_visit_calendar_year_explicit() -> None:
-   assert zoo.ZooUtil.resolve_visit_calendar_year( 2029 ) == 2029
+   assert ZooUtil.resolve_visit_calendar_year( 2029 ) == 2029
 
 
 def test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -337,45 +357,45 @@ def test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch: pyt
       def now( cls, tz: datetime.tzinfo | None = None ) -> datetime:
          return std_datetime( 2032, 3, 1, 0, 0, 0 )
 
-   monkeypatch.setattr( zoo, 'datetime', Fixed )
-   assert zoo.ZooUtil.resolve_visit_calendar_year( None ) == 2032
+   monkeypatch.setattr( zoo_util, 'datetime', Fixed )
+   assert ZooUtil.resolve_visit_calendar_year( None ) == 2032
 
 
 def test_visit_target_date() -> None:
    from datetime import date as date_cls
 
-   assert zoo.ZooUtil.visit_target_date( 'June', 15, 2026 ) == date_cls( 2026, 6, 15 )
-   assert zoo.ZooUtil.visit_target_date( 6, 15, 2026 ) == date_cls( 2026, 6, 15 )
-   assert zoo.ZooUtil.visit_target_date( 'January', 10, '2028' ) == date_cls( 2028, 1, 10 )
+   assert ZooUtil.visit_target_date( 'June', 15, 2026 ) == date_cls( 2026, 6, 15 )
+   assert ZooUtil.visit_target_date( 6, 15, 2026 ) == date_cls( 2026, 6, 15 )
+   assert ZooUtil.visit_target_date( 'January', 10, '2028' ) == date_cls( 2028, 1, 10 )
 
 
 def test_schedule_includes_weekday_monday_first() -> None:
    flags = ( True, False, False, False, False, False, False )
 
-   assert zoo.ZooUtil.schedule_includes_weekday( 0, flags ) is True
-   assert zoo.ZooUtil.schedule_includes_weekday( 1, flags ) is False
+   assert ZooUtil.schedule_includes_weekday( 0, flags ) is True
+   assert ZooUtil.schedule_includes_weekday( 1, flags ) is False
 
 
 def test_schedule_includes_weekday_rejects_bad_index() -> None:
    flags = ( True, ) * 7
 
-   assert zoo.ZooUtil.schedule_includes_weekday( -1, flags ) is False
-   assert zoo.ZooUtil.schedule_includes_weekday( 7, flags ) is False
+   assert ZooUtil.schedule_includes_weekday( -1, flags ) is False
+   assert ZooUtil.schedule_includes_weekday( 7, flags ) is False
 
 
 def test_temperature_helpers_are_stable() -> None:
-   assert zoo.ZooUtil.get_average_temperature( 'Jan', 1 ) == -5.0
-   assert zoo.ZooUtil.get_average_temperature( 'Jul', 1 ) == 26.0
-   assert zoo.ZooUtil.get_temperature_probability( mu=20, sigma=2, min_temperature=20 ) == 0.5
-   assert zoo.ZooUtil.get_temperature_probability( mu=25, sigma=2, min_temperature=20 ) > 0.99
+   assert ZooUtil.get_average_temperature( 'Jan', 1 ) == -5.0
+   assert ZooUtil.get_average_temperature( 'Jul', 1 ) == 26.0
+   assert ZooUtil.get_temperature_probability( mu=20, sigma=2, min_temperature=20 ) == 0.5
+   assert ZooUtil.get_temperature_probability( mu=25, sigma=2, min_temperature=20 ) > 0.99
 
 
 def test_calendar_helpers_for_fixed_years() -> None:
-   assert zoo.ZooUtil.get_family_day( 2026 ) == date( 2026, 2, 16 )
-   assert zoo.ZooUtil.get_good_friday( 2026 ) == date( 2026, 4, 3 )
-   assert zoo.ZooUtil.get_victoria_day( 2026 ) == date( 2026, 5, 18 )
-   assert zoo.ZooUtil.get_civic_holiday( 2026 ) == date( 2026, 8, 3 )
-   assert zoo.ZooUtil.get_labour_day( 2026 ) == date( 2026, 9, 7 )
-   assert zoo.ZooUtil.get_thanksgiving( 2026 ) == date( 2026, 10, 12 )
-   assert zoo.ZooUtil.is_holiday( date( 2026, 12, 25 ) ) is True
-   assert zoo.ZooUtil.is_holiday( date( 2026, 12, 24 ) ) is False
+   assert ZooUtil.get_family_day( 2026 ) == date( 2026, 2, 16 )
+   assert ZooUtil.get_good_friday( 2026 ) == date( 2026, 4, 3 )
+   assert ZooUtil.get_victoria_day( 2026 ) == date( 2026, 5, 18 )
+   assert ZooUtil.get_civic_holiday( 2026 ) == date( 2026, 8, 3 )
+   assert ZooUtil.get_labour_day( 2026 ) == date( 2026, 9, 7 )
+   assert ZooUtil.get_thanksgiving( 2026 ) == date( 2026, 10, 12 )
+   assert ZooUtil.is_holiday( date( 2026, 12, 25 ) ) is True
+   assert ZooUtil.is_holiday( date( 2026, 12, 24 ) ) is False

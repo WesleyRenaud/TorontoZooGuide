@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import WildEncounter
 
 
-def wild_encounter_name_key( wild_encounter: zoo.WildEncounter ) -> str:
+def wild_encounter_name_key( wild_encounter: WildEncounter ) -> str:
    return ( wild_encounter.name or '' ).strip().lower()
 
 
 def filter_wild_encounters_matching_query(
-      wild_encounters: list[ zoo.WildEncounter ],
-      query: str ) -> list[ zoo.WildEncounter ]:
+      wild_encounters: list[ WildEncounter ],
+      query: str ) -> list[ WildEncounter ]:
    if not query:
       return list( wild_encounters )
 
@@ -21,8 +21,8 @@ def filter_wild_encounters_matching_query(
 
 
 def build_wild_encounters_matching_query(
-      wild_encounters: list[ zoo.WildEncounter ],
-      query: str ) -> list[ zoo.WildEncounter ]:
+      wild_encounters: list[ WildEncounter ],
+      query: str ) -> list[ WildEncounter ]:
    return filter_wild_encounters_matching_query(
       wild_encounters,
       query )

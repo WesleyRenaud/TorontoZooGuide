@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...zoo_util import ZooUtil
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 from .animal_limited_viewing_schedule import AnimalLimitedViewingSchedule
@@ -14,7 +14,7 @@ def build_animal_limited_viewing_schedule(
       daily_start_time: str,
       daily_end_time: str,
       message: str ) -> AnimalLimitedViewingSchedule:
-   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+   date_range = ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
 
@@ -40,9 +40,9 @@ def build_limited_viewing_schedule_message(
       daily_start_time: str,
       daily_end_time: str,
       end_date: DateInput ) -> str:
-   formatted_daily_start_time = zoo.ZooUtil.format_display_time_value(
+   formatted_daily_start_time = ZooUtil.format_display_time_value(
       daily_start_time )
-   formatted_daily_end_time = zoo.ZooUtil.format_display_time_value(
+   formatted_daily_end_time = ZooUtil.format_display_time_value(
       daily_end_time )
 
    if end_date != None:

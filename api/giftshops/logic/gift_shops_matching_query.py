@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import GiftShop
 
 
-def gift_shop_name_key( gift_shop: zoo.GiftShop ) -> str:
+def gift_shop_name_key( gift_shop: GiftShop ) -> str:
    return ( gift_shop.name or '' ).strip().lower()
 
 
 def filter_gift_shops_matching_query(
-      gift_shops: list[ zoo.GiftShop ],
-      query: str ) -> list[ zoo.GiftShop ]:
+      gift_shops: list[ GiftShop ],
+      query: str ) -> list[ GiftShop ]:
    if not query:
       return list( gift_shops )
 
@@ -21,8 +21,8 @@ def filter_gift_shops_matching_query(
 
 
 def build_gift_shops_matching_query(
-      gift_shops: list[ zoo.GiftShop ],
-      query: str ) -> list[ zoo.GiftShop ]:
+      gift_shops: list[ GiftShop ],
+      query: str ) -> list[ GiftShop ]:
    return filter_gift_shops_matching_query(
       gift_shops,
       query )

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ... import zoo
+from ...models import Attraction
 from ...itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.attraction import fetch_attraction_record_for_calendar_day
@@ -39,7 +39,7 @@ class AttractionController():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear,
-         include_closed_attractions: bool = False ) -> list[ zoo.Attraction ]:
+         include_closed_attractions: bool = False ) -> list[ Attraction ]:
 
       context = resolve_attraction_context(
          day=day,
@@ -64,7 +64,7 @@ class AttractionController():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear,
-         saved_attractions: list[ ItineraryAttractionRecord ] ) -> list[ zoo.Attraction ]:
+         saved_attractions: list[ ItineraryAttractionRecord ] ) -> list[ Attraction ]:
 
       if not saved_attractions:
          return []
@@ -87,7 +87,7 @@ class AttractionController():
          day: VisitDay,
          month: MonthInput,
          year: VisitYear,
-         include_closed_attractions: bool ) -> list[ zoo.Attraction ]:
+         include_closed_attractions: bool ) -> list[ Attraction ]:
 
       attractions = cls.get_attractions(
          day=day,

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ... import zoo
+from ...models import Update
 from ...types import Row
 
 
-def map_update_record( row: Row ) -> zoo.Update:
-   return zoo.Update(
+def map_update_record( row: Row ) -> Update:
+   return Update(
       title=row[ 'TITLE' ],
       description=row[ 'DESCRIPTION' ],
       update_type=row[ 'UPDATE_TYPE' ],
@@ -16,7 +16,7 @@ def map_update_record( row: Row ) -> zoo.Update:
 
 
 
-def map_update_records( rows: Iterable[ Row ] ) -> list[ zoo.Update ]:
+def map_update_records( rows: Iterable[ Row ] ) -> list[ Update ]:
    return [
       map_update_record( row )
       for row in rows

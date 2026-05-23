@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import ScheduledOccurrence
+from ...models import WildEncounter
+from ...zoo_util import ZooUtil
 from ...itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...types import DateInput, DateKey, MonthInput, VisitDay, VisitYear
 from ..data_access.wild_encounter import fetch_wild_encounter_names
@@ -36,7 +38,7 @@ class WildEncounterController():
    def get_wild_encounter_occurrences(
          cls,
          wild_encounter_name: str,
-         days_ahead: int = 60 ) -> list[ zoo.ScheduledOccurrence ]:
+         days_ahead: int = 60 ) -> list[ ScheduledOccurrence ]:
       schedule_record = fetch_wild_encounter_schedule_record_for_occurrences(
          get_connection(),
          wild_encounter=wild_encounter_name )
@@ -53,7 +55,7 @@ class WildEncounterController():
    @classmethod
    def get_wild_encounter_details(
          cls,
-         wild_encounters_to_include: list[ str ] | None = None ) -> list[ zoo.WildEncounter ]:
+         wild_encounters_to_include: list[ str ] | None = None ) -> list[ WildEncounter ]:
       wild_encounter_records = fetch_wild_encounter_records( get_connection() )
 
       return build_wild_encounter_details(
@@ -128,7 +130,7 @@ class WildEncounterController():
    @classmethod
    def get_wild_encounters_for_saved_itinerary(
          cls,
-         saved_wild_encounters: list[ ItineraryWildEncounterRecord ] ) -> list[ zoo.WildEncounter ]:
+         saved_wild_encounters: list[ ItineraryWildEncounterRecord ] ) -> list[ WildEncounter ]:
       if not saved_wild_encounters:
          return []
 
@@ -150,8 +152,8 @@ class WildEncounterController():
          cls,
          month: MonthInput,
          day: VisitDay,
-         year: VisitYear ) -> list[ zoo.WildEncounter ]:
-      target_date = zoo.ZooUtil.visit_target_date(
+         year: VisitYear ) -> list[ WildEncounter ]:
+      target_date = ZooUtil.visit_target_date(
          month=month,
          day=day,
          year=year )
@@ -172,7 +174,7 @@ class WildEncounterController():
          day: VisitDay,
          encounter_name: str,
          year: VisitYear,
-         day_schedule: list[ zoo.WildEncounter ] | None = None ) -> zoo.WildEncounter | None:
+         day_schedule: list[ WildEncounter ] | None = None ) -> WildEncounter | None:
       rows = (
          day_schedule
          if day_schedule is not None
@@ -192,7 +194,7 @@ class WildEncounterController():
          cls,
          month: MonthInput,
          day: VisitDay,
-         year: VisitYear ) -> list[ zoo.WildEncounter ]:
+         year: VisitYear ) -> list[ WildEncounter ]:
       return filter_available_wild_encounters(
          cls.get_wild_encounter_schedule(
             month=month,
@@ -206,7 +208,7 @@ class WildEncounterController():
          query: str,
          month: MonthInput,
          day: VisitDay,
-         year: VisitYear ) -> list[ zoo.WildEncounter ]:
+         year: VisitYear ) -> list[ WildEncounter ]:
       wild_encounters = cls.get_available_wild_encounters(
          month=month,
          day=day,

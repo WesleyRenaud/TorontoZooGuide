@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...zoo_util import ZooUtil
 from ...types import DateInput, DateKey
 from .update_end_input import UpdateEndInput
 
@@ -10,7 +10,7 @@ def build_update_end_input(
       start_date: DateKey,
       end_date: DateInput ) -> UpdateEndInput:
    if not end_date:
-      end_date = zoo.ZooUtil.today_date_key()
+      end_date = ZooUtil.today_date_key()
 
    return UpdateEndInput(
       title=title,

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Defibrillator
 from ...types import Connection
 from .defibrillator_mapper import map_defibrillator_records
 
 
-def fetch_defibrillators( conn: Connection ) -> list[ zoo.Defibrillator ]:
+def fetch_defibrillators( conn: Connection ) -> list[ Defibrillator ]:
    cur = conn.cursor()
 
    try:

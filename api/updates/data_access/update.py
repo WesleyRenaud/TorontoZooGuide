@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Update
 from ...types import Connection, DateKey
 from .update_mapper import map_update_records
 
 
-def insert_update( conn: Connection, update: zoo.Update ) -> bool:
+def insert_update( conn: Connection, update: Update ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -35,7 +35,7 @@ def insert_update( conn: Connection, update: zoo.Update ) -> bool:
       cur.close()
 
 
-def update_end_date( conn: Connection, update: zoo.Update ) -> bool:
+def update_end_date( conn: Connection, update: Update ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -58,7 +58,7 @@ def update_end_date( conn: Connection, update: zoo.Update ) -> bool:
       cur.close()
 
 
-def edit_update_record( conn: Connection, update: zoo.Update ) -> bool:
+def edit_update_record( conn: Connection, update: Update ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -87,7 +87,7 @@ def edit_update_record( conn: Connection, update: zoo.Update ) -> bool:
 
 def fetch_updates(
       conn: Connection,
-      as_of_date: DateKey ) -> list[ zoo.Update ]:
+      as_of_date: DateKey ) -> list[ Update ]:
    cur = conn.cursor()
 
    try:

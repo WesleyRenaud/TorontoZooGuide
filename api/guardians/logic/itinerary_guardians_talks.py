@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import GuardiansTalk
 from ...itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from ...itinerary.data_access.itinerary_name_key import itinerary_name_key
 
 
 def build_itinerary_guardians_talks(
-      guardians_talks: list[ zoo.GuardiansTalk ],
-      saved_guardians_talks: list[ ItineraryGuardiansTalkRecord ] ) -> list[ zoo.GuardiansTalk ]:
+      guardians_talks: list[ GuardiansTalk ],
+      saved_guardians_talks: list[ ItineraryGuardiansTalkRecord ] ) -> list[ GuardiansTalk ]:
    guardians_talk_by_name = {
       saved_talk.name_key(): saved_talk
       for saved_talk in saved_guardians_talks

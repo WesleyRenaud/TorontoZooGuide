@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import ZoomobileStation
 
 
-def zoomobile_station_name_key( zoomobile_station: zoo.ZoomobileStation ) -> str:
+def zoomobile_station_name_key( zoomobile_station: ZoomobileStation ) -> str:
    return ( zoomobile_station.name or '' ).strip().lower()
 
 
 def filter_zoomobile_stations_matching_query(
-      zoomobile_stations: list[ zoo.ZoomobileStation ],
-      query: str ) -> list[ zoo.ZoomobileStation ]:
+      zoomobile_stations: list[ ZoomobileStation ],
+      query: str ) -> list[ ZoomobileStation ]:
    if not query:
       return list( zoomobile_stations )
 
@@ -21,8 +21,8 @@ def filter_zoomobile_stations_matching_query(
 
 
 def build_zoomobile_stations_matching_query(
-      zoomobile_stations: list[ zoo.ZoomobileStation ],
-      query: str ) -> list[ zoo.ZoomobileStation ]:
+      zoomobile_stations: list[ ZoomobileStation ],
+      query: str ) -> list[ ZoomobileStation ]:
    return filter_zoomobile_stations_matching_query(
       zoomobile_stations,
       query )

@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from ... import zoo
+from ...models import ScheduledOccurrence
+from ...zoo_util import ZooUtil
 from ..data_access.guardians_talk_cancellation_record import GuardiansTalkCancellationRecord
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from .guardians_talk_weekday_time import guardians_talk_time_for_weekday
@@ -11,22 +12,22 @@ from .guardians_talk_weekday_time import guardians_talk_time_for_weekday
 def build_guardians_talk_occurrences(
       schedule_record: GuardiansTalkScheduleRecord | None,
       cancellation_records: list[ GuardiansTalkCancellationRecord ],
-      days_ahead: int ) -> list[ zoo.ScheduledOccurrence ]:
+      days_ahead: int ) -> list[ ScheduledOccurrence ]:
    if schedule_record == None:
       return []
 
-   today = zoo.ZooUtil.parse_date_value( zoo.ZooUtil.today_date_key() )
+   today = ZooUtil.parse_date_value( ZooUtil.today_date_key() )
    schedule_start_date = today
    schedule_end_date = today + timedelta( days=days_ahead )
 
-   parsed_start_date = zoo.ZooUtil.parse_date_value(
+   parsed_start_date = ZooUtil.parse_date_value(
       value=schedule_record.schedule_start_date )
 
    if parsed_start_date > schedule_start_date:
       schedule_start_date = parsed_start_date
 
    if schedule_record.schedule_end_date != None:
-      parsed_end_date = zoo.ZooUtil.parse_date_value(
+      parsed_end_date = ZooUtil.parse_date_value(
          value=schedule_record.schedule_end_date )
 
       if parsed_end_date < schedule_end_date:
@@ -35,7 +36,7 @@ def build_guardians_talk_occurrences(
    if schedule_end_date < schedule_start_date:
       return []
 
-   occurrences: list[ zoo.ScheduledOccurrence ] = []
+   occurrences: list[ ScheduledOccurrence ] = []
    current_date = schedule_start_date
 
    while current_date <= schedule_end_date:
@@ -51,7 +52,7 @@ def build_guardians_talk_occurrences(
                current_date_key,
                talk_time ) ):
          occurrences.append(
-            zoo.ScheduledOccurrence(
+            ScheduledOccurrence(
                date=current_date_key,
                time=talk_time ) )
 

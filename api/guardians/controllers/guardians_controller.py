@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from datetime import date
 
-from ... import zoo
+from ...models import GuardiansTalk
+from ...models import ScheduledOccurrence
+from ...zoo_util import ZooUtil
 from ...itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from ...types import DateKey, DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.guardians_talk import fetch_guardians_talk_locations
@@ -53,7 +55,7 @@ class GuardiansController():
          cls,
          talk: str,
          location: str,
-         days_ahead: int = 60 ) -> list[ zoo.ScheduledOccurrence ]:
+         days_ahead: int = 60 ) -> list[ ScheduledOccurrence ]:
       schedule_record = fetch_guardians_talk_schedule_record_for_occurrences(
          get_connection(),
          talk_name=talk,
@@ -72,7 +74,7 @@ class GuardiansController():
    @classmethod
    def get_guardians_talk_details(
          cls,
-         guardians_talks_to_include: list[ str ] | None = None ) -> list[ zoo.GuardiansTalk ]:
+         guardians_talks_to_include: list[ str ] | None = None ) -> list[ GuardiansTalk ]:
       talk_records = fetch_meet_the_guardians_talk_records( get_connection() )
 
       return build_guardians_talk_details(
@@ -151,7 +153,7 @@ class GuardiansController():
    @classmethod
    def get_guardians_talks_for_saved_itinerary(
          cls,
-         saved_guardians_talks: list[ ItineraryGuardiansTalkRecord ] ) -> list[ zoo.GuardiansTalk ]:
+         saved_guardians_talks: list[ ItineraryGuardiansTalkRecord ] ) -> list[ GuardiansTalk ]:
       if not saved_guardians_talks:
          return []
 
@@ -173,8 +175,8 @@ class GuardiansController():
          cls,
          month: MonthInput,
          day: VisitDay,
-         year: VisitYear ) -> list[ zoo.GuardiansTalk ]:
-      target_date = zoo.ZooUtil.visit_target_date(
+         year: VisitYear ) -> list[ GuardiansTalk ]:
+      target_date = ZooUtil.visit_target_date(
          month=month,
          day=day,
          year=year )
@@ -188,7 +190,7 @@ class GuardiansController():
          query: str,
          month: MonthInput,
          day: VisitDay,
-         year: VisitYear ) -> list[ zoo.GuardiansTalk ]:
+         year: VisitYear ) -> list[ GuardiansTalk ]:
       guardians_talks = cls.get_guardians_talk_schedule(
          month=month,
          day=day,
@@ -206,7 +208,7 @@ class GuardiansController():
          day: VisitDay,
          talk_name: str,
          year: VisitYear,
-         day_schedule: list[ zoo.GuardiansTalk ] | None = None ) -> zoo.GuardiansTalk | None:
+         day_schedule: list[ GuardiansTalk ] | None = None ) -> GuardiansTalk | None:
       rows = (
          day_schedule
          if day_schedule is not None
@@ -239,7 +241,7 @@ class GuardiansController():
    @classmethod
    def get_guardians_talk_schedule_for_target_date(
          cls,
-         target_date: date ) -> list[ zoo.GuardiansTalk ]:
+         target_date: date ) -> list[ GuardiansTalk ]:
       records = fetch_guardians_talk_schedule_records( get_connection() )
 
       return build_guardians_talk_schedule_for_target_date(

@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import Pavilion
 
 
-def pavilion_name_key( pavilion: zoo.Pavilion ) -> str:
+def pavilion_name_key( pavilion: Pavilion ) -> str:
    return ( pavilion.name or '' ).strip().lower()
 
 
 def filter_pavilions_matching_query(
-      pavilions: list[ zoo.Pavilion ],
-      query: str ) -> list[ zoo.Pavilion ]:
+      pavilions: list[ Pavilion ],
+      query: str ) -> list[ Pavilion ]:
    if not query:
       return list( pavilions )
 
@@ -21,14 +21,14 @@ def filter_pavilions_matching_query(
 
 
 def sort_pavilions_by_name(
-      pavilions: list[ zoo.Pavilion ] ) -> list[ zoo.Pavilion ]:
+      pavilions: list[ Pavilion ] ) -> list[ Pavilion ]:
    sorted_pavilions = list( pavilions )
    sorted_pavilions.sort( key=pavilion_name_key )
    return sorted_pavilions
 
 
 def build_pavilions_matching_query(
-      pavilions: list[ zoo.Pavilion ],
-      query: str ) -> list[ zoo.Pavilion ]:
+      pavilions: list[ Pavilion ],
+      query: str ) -> list[ Pavilion ]:
    pavilions = filter_pavilions_matching_query( pavilions, query )
    return sort_pavilions_by_name( pavilions )

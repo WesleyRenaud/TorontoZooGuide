@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ... import zoo
+from ...zoo_util import ZooUtil
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 from ..data_access.drinking_fountain_status_record import DrinkingFountainStatusRecord
@@ -36,7 +36,7 @@ def build_drinking_fountain_closed_status(
 def drinking_fountain_status_applies_to_date(
       status_record: DrinkingFountainStatusRecord,
       target_date: date ) -> bool:
-   return zoo.ZooUtil.is_date_in_range(
+   return ZooUtil.is_date_in_range(
       target_date=target_date,
       start_date_value=status_record.start_date,
       end_date_value=status_record.end_date )

@@ -8,7 +8,27 @@ from typing import Any
 import pytest
 
 import api.server as server
-from api import zoo
+from api.models import Animal
+from api.models import Attraction
+from api.models import Defibrillator
+from api.models import DrinkingFountain
+from api.models import EmergencyIntercom
+from api.models import EventSite
+from api.models import GiftShop
+from api.models import GuardiansTalk
+from api.models import GuestService
+from api.models import Itinerary
+from api.models import Pavilion
+from api.models import PicnicSite
+from api.models import Region
+from api.models import RegionWithExhibits
+from api.models import Restaurant
+from api.models import Restroom
+from api.models import ScheduledOccurrence
+from api.models import Update
+from api.models import WildEncounter
+from api.models import ZooHours
+from api.models import ZoomobileStation
 from api.models.zoomobile_route import ZoomobileRoute
 from api.types import Connection
 from conftest import FakeHandler
@@ -105,9 +125,9 @@ class StubZooControllers:
       self.conn = None
 
 
-   def get_animals_viewable_on_day( self, **kwargs: Any ) -> list[ zoo.Animal ]:
+   def get_animals_viewable_on_day( self, **kwargs: Any ) -> list[ Animal ]:
       self.calls.append( ( 'get_animals_viewable_on_day', kwargs ) )
-      return [ zoo.Animal( species=ANIMAL_NAME, exhibit=ANIMAL_EXHIBIT, likelihood=100 ) ]
+      return [ Animal( species=ANIMAL_NAME, exhibit=ANIMAL_EXHIBIT, likelihood=100 ) ]
 
 
    def get_exhibits_in_region( self, region: str ) -> list[ str ]:
@@ -115,9 +135,9 @@ class StubZooControllers:
       return [ ANIMAL_EXHIBIT ]
 
 
-   def get_regions( self ) -> list[ zoo.Region ]:
+   def get_regions( self ) -> list[ Region ]:
       self.calls.append( ( 'get_regions', {} ) )
-      return [ zoo.Region( name='Africa', has_exhibits=True ) ]
+      return [ Region( name='Africa', has_exhibits=True ) ]
 
 
    def get_names_of_animals_in_exhibit( self, exhibit: str ) -> list[ str ]:
@@ -125,34 +145,34 @@ class StubZooControllers:
       return [ ANIMAL_NAME ]
 
 
-   def get_animal_information( self, species: str ) -> zoo.Animal:
+   def get_animal_information( self, species: str ) -> Animal:
       self.calls.append( ( 'get_animal_information', { 'species': species } ) )
-      return zoo.Animal( species=species, exhibit=ANIMAL_EXHIBIT )
+      return Animal( species=species, exhibit=ANIMAL_EXHIBIT )
 
 
-   def get_pavilions( self ) -> list[ zoo.Pavilion ]:
+   def get_pavilions( self ) -> list[ Pavilion ]:
       self.calls.append( ( 'get_pavilions', {} ) )
-      return [ zoo.Pavilion( name=PAVILION_NAME, region='Africa' ) ]
+      return [ Pavilion( name=PAVILION_NAME, region='Africa' ) ]
 
 
-   def get_restaurants( self, **kwargs: Any ) -> list[ zoo.Restaurant ]:
+   def get_restaurants( self, **kwargs: Any ) -> list[ Restaurant ]:
       self.calls.append( ( 'get_restaurants', kwargs ) )
-      return [ zoo.Restaurant( name=RESTAURANT_NAME, location='Africa', sub_location=None ) ]
+      return [ Restaurant( name=RESTAURANT_NAME, location='Africa', sub_location=None ) ]
 
 
-   def get_restrooms( self, **kwargs: Any ) -> list[ zoo.Restroom ]:
+   def get_restrooms( self, **kwargs: Any ) -> list[ Restroom ]:
       self.calls.append( ( 'get_restrooms', kwargs ) )
-      return [ zoo.Restroom( title=RESTROOM_NAME ) ]
+      return [ Restroom( title=RESTROOM_NAME ) ]
 
 
-   def get_gift_shops( self, **kwargs: Any ) -> list[ zoo.GiftShop ]:
+   def get_gift_shops( self, **kwargs: Any ) -> list[ GiftShop ]:
       self.calls.append( ( 'get_gift_shops', kwargs ) )
-      return [ zoo.GiftShop( name=GIFT_SHOP_NAME, location='Learning & Engagement Centre' ) ]
+      return [ GiftShop( name=GIFT_SHOP_NAME, location='Learning & Engagement Centre' ) ]
 
 
-   def get_attractions( self, **kwargs: Any ) -> list[ zoo.Attraction ]:
+   def get_attractions( self, **kwargs: Any ) -> list[ Attraction ]:
       self.calls.append( ( 'get_attractions', kwargs ) )
-      return [ zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ]
+      return [ Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ]
 
 
    def get_zoomobile_route( self, **kwargs: Any ) -> ZoomobileRoute:
@@ -160,77 +180,77 @@ class StubZooControllers:
       return ZoomobileRoute(
          route='summer',
          route_source='manual',
-         zoomobile_stations=( zoo.ZoomobileStation( name=ZOOMOBILE_STATION_NAME ), ),
+         zoomobile_stations=( ZoomobileStation( name=ZOOMOBILE_STATION_NAME ), ),
       )
 
 
-   def get_guardians_talk_schedule( self, **kwargs: Any ) -> list[ zoo.GuardiansTalk ]:
+   def get_guardians_talk_schedule( self, **kwargs: Any ) -> list[ GuardiansTalk ]:
       self.calls.append( ( 'get_guardians_talk_schedule', kwargs ) )
-      return [ zoo.GuardiansTalk( name=GUARDIANS_TALK_NAME, location=GUARDIANS_TALK_LOCATION, x_coord=51.138, y_coord=41.279 ) ]
+      return [ GuardiansTalk( name=GUARDIANS_TALK_NAME, location=GUARDIANS_TALK_LOCATION, x_coord=51.138, y_coord=41.279 ) ]
 
 
-   def get_available_wild_encounters( self, **kwargs: Any ) -> list[ zoo.WildEncounter ]:
+   def get_available_wild_encounters( self, **kwargs: Any ) -> list[ WildEncounter ]:
       self.calls.append( ( 'get_available_wild_encounters', kwargs ) )
       return [
-         zoo.WildEncounter(
+         WildEncounter(
             name=WILD_ENCOUNTER_NAME,
             meeting_spot=WILD_ENCOUNTER_MEETING_SPOT,
             link=WILD_ENCOUNTER_LINK )
       ]
 
 
-   def get_drinking_fountains( self, **kwargs: Any ) -> list[ zoo.DrinkingFountain ]:
+   def get_drinking_fountains( self, **kwargs: Any ) -> list[ DrinkingFountain ]:
       self.calls.append( ( 'get_drinking_fountains', kwargs ) )
       return [
-         zoo.DrinkingFountain(
+         DrinkingFountain(
             x_coord=DRINKING_FOUNTAIN_X_COORD,
             y_coord=DRINKING_FOUNTAIN_Y_COORD )
       ]
 
 
-   def get_defibrillators( self ) -> list[ zoo.Defibrillator ]:
+   def get_defibrillators( self ) -> list[ Defibrillator ]:
       self.calls.append( ( 'get_defibrillators', {} ) )
-      return [ zoo.Defibrillator( x_coord=12.345, y_coord=67.890 ) ]
+      return [ Defibrillator( x_coord=12.345, y_coord=67.890 ) ]
 
 
-   def get_emergency_intercoms( self ) -> list[ zoo.EmergencyIntercom ]:
+   def get_emergency_intercoms( self ) -> list[ EmergencyIntercom ]:
       self.calls.append( ( 'get_emergency_intercoms', {} ) )
-      return [ zoo.EmergencyIntercom( x_coord=23.456, y_coord=78.901 ) ]
+      return [ EmergencyIntercom( x_coord=23.456, y_coord=78.901 ) ]
 
 
-   def get_guest_services( self ) -> list[ zoo.GuestService ]:
+   def get_guest_services( self ) -> list[ GuestService ]:
       self.calls.append( ( 'get_guest_services', {} ) )
       return [
-         zoo.GuestService(
+         GuestService(
             service_type='Information',
             x_coord=34.567,
             y_coord=89.012 )
       ]
 
 
-   def get_picnic_sites( self ) -> list[ zoo.PicnicSite ]:
+   def get_picnic_sites( self ) -> list[ PicnicSite ]:
       self.calls.append( ( 'get_picnic_sites', {} ) )
       return [
-         zoo.PicnicSite(
+         PicnicSite(
             x_coord=45.678,
             y_coord=90.123 )
       ]
 
 
-   def get_event_sites( self ) -> list[ zoo.EventSite ]:
+   def get_event_sites( self ) -> list[ EventSite ]:
       self.calls.append( ( 'get_event_sites', {} ) )
       return [
-         zoo.EventSite(
+         EventSite(
             name='Special Events Center',
             x_coord=56.789,
             y_coord=12.345 )
       ]
 
 
-   def get_updates_for_visit_date( self, **kwargs: Any ) -> list[ zoo.Update ]:
+   def get_updates_for_visit_date( self, **kwargs: Any ) -> list[ Update ]:
       self.calls.append( ( 'get_updates_for_visit_date', kwargs ) )
       return [
-         zoo.Update(
+         Update(
             title=UPDATE_TITLE,
             description='Come meet the new calf.',
             update_type='New Arrival',
@@ -248,50 +268,50 @@ class StubZooControllers:
       return self.get_closed_exhibits( **kwargs )
 
 
-   def get_animals_matching_query( self, **kwargs: Any ) -> list[ zoo.Animal ]:
+   def get_animals_matching_query( self, **kwargs: Any ) -> list[ Animal ]:
       self.calls.append( ( 'get_animals_matching_query', kwargs ) )
-      return [ zoo.Animal( species=ANIMAL_NAME, exhibit=ANIMAL_EXHIBIT, likelihood=100 ) ]
+      return [ Animal( species=ANIMAL_NAME, exhibit=ANIMAL_EXHIBIT, likelihood=100 ) ]
 
 
-   def get_pavilions_matching_query( self, query: str ) -> list[ zoo.Pavilion ]:
+   def get_pavilions_matching_query( self, query: str ) -> list[ Pavilion ]:
       self.calls.append( ( 'get_pavilions_matching_query', { 'query': query } ) )
-      return [ zoo.Pavilion( name=PAVILION_NAME, region='Africa' ) ]
+      return [ Pavilion( name=PAVILION_NAME, region='Africa' ) ]
 
 
-   def get_restaurants_matching_query( self, **kwargs: Any ) -> list[ zoo.Restaurant ]:
+   def get_restaurants_matching_query( self, **kwargs: Any ) -> list[ Restaurant ]:
       self.calls.append( ( 'get_restaurants_matching_query', kwargs ) )
-      return [ zoo.Restaurant( name=RESTAURANT_NAME, location='Africa', sub_location=None ) ]
+      return [ Restaurant( name=RESTAURANT_NAME, location='Africa', sub_location=None ) ]
 
 
-   def get_restrooms_matching_query( self, **kwargs: Any ) -> list[ zoo.Restroom ]:
+   def get_restrooms_matching_query( self, **kwargs: Any ) -> list[ Restroom ]:
       self.calls.append( ( 'get_restrooms_matching_query', kwargs ) )
-      return [ zoo.Restroom( title=RESTROOM_NAME ) ]
+      return [ Restroom( title=RESTROOM_NAME ) ]
 
 
-   def get_gift_shops_matching_query( self, **kwargs: Any ) -> list[ zoo.GiftShop ]:
+   def get_gift_shops_matching_query( self, **kwargs: Any ) -> list[ GiftShop ]:
       self.calls.append( ( 'get_gift_shops_matching_query', kwargs ) )
-      return [ zoo.GiftShop( name=GIFT_SHOP_NAME, location='Learning & Engagement Centre' ) ]
+      return [ GiftShop( name=GIFT_SHOP_NAME, location='Learning & Engagement Centre' ) ]
 
 
-   def get_attractions_matching_query( self, **kwargs: Any ) -> list[ zoo.Attraction ]:
+   def get_attractions_matching_query( self, **kwargs: Any ) -> list[ Attraction ]:
       self.calls.append( ( 'get_attractions_matching_query', kwargs ) )
-      return [ zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ]
+      return [ Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ]
 
 
-   def get_zoomobile_stations_matching_query( self, **kwargs: Any ) -> list[ zoo.ZoomobileStation ]:
+   def get_zoomobile_stations_matching_query( self, **kwargs: Any ) -> list[ ZoomobileStation ]:
       self.calls.append( ( 'get_zoomobile_stations_matching_query', kwargs ) )
-      return [ zoo.ZoomobileStation( name=ZOOMOBILE_STATION_NAME ) ]
+      return [ ZoomobileStation( name=ZOOMOBILE_STATION_NAME ) ]
 
 
-   def get_guardians_talks_matching_query( self, **kwargs: Any ) -> list[ zoo.GuardiansTalk ]:
+   def get_guardians_talks_matching_query( self, **kwargs: Any ) -> list[ GuardiansTalk ]:
       self.calls.append( ( 'get_guardians_talks_matching_query', kwargs ) )
-      return [ zoo.GuardiansTalk( name=GUARDIANS_TALK_NAME, location=GUARDIANS_TALK_LOCATION, x_coord=51.138, y_coord=41.279 ) ]
+      return [ GuardiansTalk( name=GUARDIANS_TALK_NAME, location=GUARDIANS_TALK_LOCATION, x_coord=51.138, y_coord=41.279 ) ]
 
 
-   def get_wild_encounters_matching_query( self, **kwargs: Any ) -> list[ zoo.WildEncounter ]:
+   def get_wild_encounters_matching_query( self, **kwargs: Any ) -> list[ WildEncounter ]:
       self.calls.append( ( 'get_wild_encounters_matching_query', kwargs ) )
       return [
-         zoo.WildEncounter(
+         WildEncounter(
             name=WILD_ENCOUNTER_NAME,
             meeting_spot=WILD_ENCOUNTER_MEETING_SPOT,
             link=WILD_ENCOUNTER_LINK )
@@ -303,9 +323,9 @@ class StubZooControllers:
       return True
 
 
-   def get_itinerary( self ) -> zoo.Itinerary:
+   def get_itinerary( self ) -> Itinerary:
       self.calls.append( ( 'get_itinerary', {} ) )
-      return zoo.Itinerary( date='2026-06-15' )
+      return Itinerary( date='2026-06-15' )
 
 
    def accept_itinerary( self ) -> bool:
@@ -313,11 +333,11 @@ class StubZooControllers:
       return True
 
 
-   def get_zoo_hours( self, day: int, month: str, year: int ) -> zoo.ZooHours:
+   def get_zoo_hours( self, day: int, month: str, year: int ) -> ZooHours:
       self.calls.append(
          ( 'get_zoo_hours', { 'day': day, 'month': month, 'year': year } ) )
 
-      return zoo.ZooHours(
+      return ZooHours(
          date='2026-06-20',
          early_admission_time='09:00',
          open_time='09:30',
@@ -340,10 +360,10 @@ class StubZooControllers:
       return [ ANIMAL_EXHIBIT, 'Eurasia Wilds' ]
 
 
-   def get_regions_with_exhibits( self, **kwargs: Any ) -> list[ zoo.RegionWithExhibits ]:
+   def get_regions_with_exhibits( self, **kwargs: Any ) -> list[ RegionWithExhibits ]:
       self.calls.append( ( 'get_regions_with_exhibits', kwargs ) )
       return [
-         zoo.RegionWithExhibits(
+         RegionWithExhibits(
             name='Africa',
             exhibits=[ ANIMAL_EXHIBIT ] )
       ]
@@ -389,10 +409,10 @@ class StubZooControllers:
       return [ GUARDIANS_TALK_NAME ]
 
 
-   def get_guardians_talk_occurrences( self, **kwargs: Any ) -> list[ zoo.ScheduledOccurrence ]:
+   def get_guardians_talk_occurrences( self, **kwargs: Any ) -> list[ ScheduledOccurrence ]:
       self.calls.append( ( 'get_guardians_talk_occurrences', kwargs ) )
       return [
-         zoo.ScheduledOccurrence(
+         ScheduledOccurrence(
             date='2026-06-15',
             time='10:00' )
       ]
@@ -403,19 +423,19 @@ class StubZooControllers:
       return [ WILD_ENCOUNTER_NAME ]
 
 
-   def get_wild_encounter_occurrences( self, **kwargs: Any ) -> list[ zoo.ScheduledOccurrence ]:
+   def get_wild_encounter_occurrences( self, **kwargs: Any ) -> list[ ScheduledOccurrence ]:
       self.calls.append( ( 'get_wild_encounter_occurrences', kwargs ) )
       return [
-         zoo.ScheduledOccurrence(
+         ScheduledOccurrence(
             date='2026-06-15',
             time='14:00' )
       ]
 
 
-   def get_unexpired_updates( self ) -> list[ zoo.Update ]:
+   def get_unexpired_updates( self ) -> list[ Update ]:
       self.calls.append( ( 'get_unexpired_updates', {} ) )
       return [
-         zoo.Update(
+         Update(
             title=UPDATE_TITLE,
             description='Come meet the new calf.',
             update_type='New Arrival',

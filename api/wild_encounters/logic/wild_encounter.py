@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import WildEncounter
 from ..data_access.wild_encounter_record import WildEncounterRecord
 from .wild_encounter_include_filter import WildEncounterIncludeFilter
 
 
-def wild_encounter_record_to_model( record: WildEncounterRecord ) -> zoo.WildEncounter:
-   return zoo.WildEncounter(
+def wild_encounter_record_to_model( record: WildEncounterRecord ) -> WildEncounter:
+   return WildEncounter(
       name=record.name,
       meeting_spot=record.meeting_spot,
       link=record.link,
@@ -18,14 +18,14 @@ def wild_encounter_record_to_model( record: WildEncounterRecord ) -> zoo.WildEnc
 
 def build_wild_encounter_details(
       wild_encounter_records: list[ WildEncounterRecord ],
-      wild_encounters_to_include: list[ str ] | None = None ) -> list[ zoo.WildEncounter ]:
+      wild_encounters_to_include: list[ str ] | None = None ) -> list[ WildEncounter ]:
    include_filter = WildEncounterIncludeFilter.from_optional_list(
       wild_encounters_to_include )
 
    if include_filter.should_return_empty():
       return []
 
-   wild_encounters: list[ zoo.WildEncounter ] = []
+   wild_encounters: list[ WildEncounter ] = []
 
    for record in wild_encounter_records:
       if not include_filter.allows_wild_encounter_name( record.name ):

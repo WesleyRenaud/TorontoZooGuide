@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...zoo_util import ZooUtil
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 from .restroom_closed_status import RestroomClosedStatus
@@ -11,7 +11,7 @@ def build_restroom_closed_status(
       start_date: DateInput,
       end_date: DateInput,
       message: str ) -> RestroomClosedStatus:
-   date_range = zoo.ZooUtil.resolve_open_ended_date_range(
+   date_range = ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
 

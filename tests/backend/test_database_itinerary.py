@@ -3,7 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api import zoo
+from api.models import GuardiansTalk
+from api.models import WildEncounter
 from api.animals.controllers.animal_controller import AnimalController
 from api.animals.logic.itinerary_animals import build_itinerary_animals
 from api.attractions.controllers.attraction_controller import AttractionController
@@ -335,7 +336,7 @@ def test_validate_attractions_removes_closure_override_entries(
 
 def test_validate_guardians_talks_splits_available_and_unavailable_entries() -> None:
    day_schedule = [
-      zoo.GuardiansTalk(
+      GuardiansTalk(
          name='African Lion',
          location='Africa Savanna',
          x_coord=51.138,
@@ -360,14 +361,14 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries() -> 
 
 def test_validate_wild_encounters_splits_available_and_unavailable_entries() -> None:
    day_schedule = [
-      zoo.WildEncounter(
+      WildEncounter(
          name='Kangaroo',
          meeting_spot='Wild Encounter - Eurasia Meeting Spot',
          link='https://www.torontozoo.com/tickets/wekangaroo',
          start_time='13:00',
          maximum_duration=45,
          is_available=True ),
-      zoo.WildEncounter(
+      WildEncounter(
          name='African Rainforest',
          meeting_spot='Wild Encounter - Africa Meeting Spot',
          link='https://www.torontozoo.com/tickets/weafricarainforest',

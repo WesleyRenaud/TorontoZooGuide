@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ... import zoo
+from ...models import DrinkingFountain
 from ..data_access.drinking_fountain_record import DrinkingFountainRecord
 
 
@@ -8,8 +8,8 @@ def drinking_fountain_record_to_model(
       record: DrinkingFountainRecord,
       is_closed: bool,
       closed_message: str | None,
-      likelihood: float ) -> zoo.DrinkingFountain:
-   return zoo.DrinkingFountain(
+      likelihood: float ) -> DrinkingFountain:
+   return DrinkingFountain(
       x_coord=record.x_coord,
       y_coord=record.y_coord,
       is_closed=is_closed,
@@ -22,7 +22,7 @@ def build_drinking_fountains(
       fountain_records: list[ DrinkingFountainRecord ],
       is_closed: bool,
       closed_message: str | None,
-      likelihood: float ) -> list[ zoo.DrinkingFountain ]:
+      likelihood: float ) -> list[ DrinkingFountain ]:
    return [
       drinking_fountain_record_to_model(
          record,
