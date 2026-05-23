@@ -25,13 +25,18 @@ function initConsoleOperationPanels(workspaceEl) {
 }
 
 function initConsoleOperationControllers(refs) {
-   const { activatePanel } = createConsolePanelNavigator(document);
+   const {
+      activatePanel,
+      restorePanelFromUrl,
+   } = createConsolePanelNavigator(document);
 
    wireConsoleOperationControllers({
       refs,
       activatePanel,
       ...createConsoleOperationSpecialControllers(refs),
    });
+
+   restorePanelFromUrl();
 }
 
 function initConsoleOperationDateControls(refs) {
