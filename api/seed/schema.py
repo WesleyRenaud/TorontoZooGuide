@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..types import Cursor
 from .tables import static_tables
+from ..types import Cursor
 
 
 def create_schema( cursor: Cursor ) -> None:

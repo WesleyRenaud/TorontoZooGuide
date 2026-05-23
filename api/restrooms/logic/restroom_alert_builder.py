@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from .restroom_alert import RestroomAlert
 from ...shared.date_values import DateValues
 from ...types import DateInput
-from .restroom_alert import RestroomAlert
 
 
 def build_restroom_alert(

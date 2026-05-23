@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from .animal_viewing_alert import AnimalViewingAlert
 from ...shared.date_values import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
-from .animal_viewing_alert import AnimalViewingAlert
 
 
 def build_animal_viewing_alert(

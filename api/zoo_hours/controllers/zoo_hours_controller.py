@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ...models import ZooHours
-from ...shared.calendar_dates import CalendarDates
-from ...types import MonthInput, VisitDay, VisitYear
 from ..data_access.zoo_hours import fetch_zoo_hours_record
 from ..logic.zoo_hours import build_zoo_hours
+from ...models import ZooHours
 from ...request_connection import get_connection
+from ...shared.calendar_dates import CalendarDates
+from ...types import MonthInput, VisitDay, VisitYear
 
 
 class ZooHoursController():

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...types import Connection
 from ..logic.zoomobile_station_closed_status import ZoomobileStationClosedStatus
+from ...types import Connection
 
 
 def save_zoomobile_station_closed_status(

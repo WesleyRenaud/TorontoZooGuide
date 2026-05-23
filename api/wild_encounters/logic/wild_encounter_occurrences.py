@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from ...models import ScheduledOccurrence
-from ...shared.date_values import DateValues
-from ...shared.calendar_dates import CalendarDates
 from ..data_access.wild_encounter_cancellation_record import WildEncounterCancellationRecord
 from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
+from ...models import ScheduledOccurrence
+from ...shared.calendar_dates import CalendarDates
+from ...shared.date_values import DateValues
 
 
 def build_wild_encounter_occurrences(

@@ -3,19 +3,17 @@ from __future__ import annotations
 from collections.abc import Callable
 from functools import wraps
 import html
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import mimetypes
 import os
 import re
 import subprocess
 import sys
-from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 from urllib.parse import unquote, urlparse
 
 from . import connection
-from .request_connection import clear_connection
-from .request_connection import set_connection
 from .animals.controllers.animal_controller import AnimalController
 from .attractions.controllers.attraction_controller import AttractionController
 from .defibrillators.controllers.defibrillator_controller import DefibrillatorController
@@ -29,6 +27,8 @@ from .guest_services.controllers.guest_service_controller import GuestServiceCon
 from .itinerary.controllers.itinerary_controller import ItineraryController
 from .pavilions.controllers.pavilion_controller import PavilionController
 from .picnic_sites.controllers.picnic_site_controller import PicnicSiteController
+from .request_connection import clear_connection
+from .request_connection import set_connection
 from .restaurants.controllers.restaurant_controller import RestaurantController
 from .restrooms.controllers.restroom_controller import RestroomController
 from .updates.controllers.update_controller import UpdateController

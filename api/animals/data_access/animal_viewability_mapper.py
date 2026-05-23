@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...types import Row
 from .animal_viewability_record import AnimalViewabilityRecord
+from ...types import Row
 
 
 def map_animal_viewability_row( row: Row ) -> AnimalViewabilityRecord:

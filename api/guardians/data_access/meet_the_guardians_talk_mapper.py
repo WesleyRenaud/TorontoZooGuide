@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...types import Row
 from .meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
+from ...types import Row
 
 
 def map_meet_the_guardians_talk_record( row: Row ) -> MeetTheGuardiansTalkRecord:

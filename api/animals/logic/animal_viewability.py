@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...models import Animal
-from ...shared.date_values import DateValues
-from ...shared.calendar_dates import CalendarDates
-from ...shared.weather import Weather
-from ...shared.enums import ScheduleStatus
-from ...types import MonthInput, VisitDay, VisitYear
-from ..data_access.animal_viewability_record import AnimalViewabilityRecord
 from .animal_viewability_context import AnimalViewabilityContext
+from ..data_access.animal_viewability_record import AnimalViewabilityRecord
+from ...models import Animal
+from ...shared.calendar_dates import CalendarDates
+from ...shared.date_values import DateValues
+from ...shared.enums import ScheduleStatus
+from ...shared.weather import Weather
+from ...types import MonthInput, VisitDay, VisitYear
 
 
 def resolve_temperature_likelihood_context(

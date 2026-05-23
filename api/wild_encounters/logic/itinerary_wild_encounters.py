@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ...models import WildEncounter
 from ...itinerary.data_access.itinerary_name_key import itinerary_name_key
 from ...itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
+from ...models import WildEncounter
 
 
 def build_itinerary_wild_encounters(

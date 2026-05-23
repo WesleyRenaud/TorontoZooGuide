@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ...shared.constants import OPEN_ENDED_SQL_DATE
-from ...types import Connection, DateKey
+from .gift_shop_schedule_record import GiftShopScheduleRecord
 from ..logic.gift_shop_opening_schedule import GiftShopOpeningSchedule
 from ..logic.gift_shop_schedule_override import GiftShopScheduleOverride
-from .gift_shop_schedule_record import GiftShopScheduleRecord
+from ...shared.constants import OPEN_ENDED_SQL_DATE
+from ...types import Connection, DateKey
 
 
 def gift_shop_schedule_overlaps_existing_schedule(

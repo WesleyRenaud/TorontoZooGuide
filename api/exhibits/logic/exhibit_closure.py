@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from datetime import date
 
+from ..data_access.exhibit_closure_record import ExhibitClosureRecord
 from ...shared.date_values import DateValues
 from ...types import DateInput
-from ..data_access.exhibit_closure_record import ExhibitClosureRecord
 
 
 def is_exhibit_closure_active_on_visit_date(

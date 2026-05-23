@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from .event_site_mapper import map_event_site_records
 from ...models import EventSite
 from ...types import Connection
-from .event_site_mapper import map_event_site_records
 
 
 def fetch_event_sites( conn: Connection ) -> list[ EventSite ]:

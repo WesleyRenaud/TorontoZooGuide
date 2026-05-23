@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from ...models import Restroom
-from ...shared.date_values import DateValues
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.restroom import fetch_restroom_names
 from ..data_access.restroom import fetch_restroom_records
 from ..data_access.restroom_alert import delete_restroom_alert
@@ -10,11 +7,14 @@ from ..data_access.restroom_alert import save_restroom_alert
 from ..data_access.restroom_status import save_restroom_closed_status
 from ..data_access.restroom_status import save_restroom_open_status
 from ..logic.restroom import build_restrooms
-from ..logic.restroom_alert_builder import build_restroom_alert
 from ..logic.restroom import resolve_restroom_context
+from ..logic.restroom_alert_builder import build_restroom_alert
 from ..logic.restroom_status import build_restroom_closed_status
 from ..logic.restrooms_matching_query import build_restrooms_matching_query
+from ...models import Restroom
 from ...request_connection import get_connection
+from ...shared.date_values import DateValues
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class RestroomController():

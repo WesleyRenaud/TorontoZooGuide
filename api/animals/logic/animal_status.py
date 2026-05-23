@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from .animal_off_display_status import AnimalOffDisplayStatus
 from ...shared.date_values import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
-from .animal_off_display_status import AnimalOffDisplayStatus
 
 
 def build_animal_off_display_status(

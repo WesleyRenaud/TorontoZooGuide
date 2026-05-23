@@ -5,7 +5,6 @@ from datetime import date, datetime
 
 import pytest
 
-from api.shared.date_values import DateValues
 from api.animals.controllers.animal_controller import AnimalController
 from api.animals.data_access.animal_viewability_record import AnimalViewabilityRecord
 from api.animals.logic.animal_viewability import calculate_animal_likelihood
@@ -16,6 +15,7 @@ from api.animals.logic.animal_viewability import get_active_viewing_alert_status
 from api.attractions.logic.attraction import calculate_attraction_likelihood
 from api.giftshops.logic.gift_shop import calculate_gift_shop_likelihood
 from api.restaurants.logic.restaurant import calculate_restaurant_likelihood
+from api.shared.date_values import DateValues
 from api.shared.enums import ScheduleStatus
 from api.types import DateInput, DateKey, SeasonalMultiplier
 from conftest import DbControllers

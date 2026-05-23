@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from ...types import Connection, VisitDay, VisitMonth
 from .attraction_mapper import map_attraction_record
 from .attraction_mapper import map_attraction_records
 from .attraction_mapper import map_attraction_schedule_override_records
@@ -8,6 +7,7 @@ from .attraction_mapper import map_attraction_schedule_records
 from .attraction_record import AttractionRecord
 from .attraction_schedule_override_record import AttractionScheduleOverrideRecord
 from .attraction_schedule_record import AttractionScheduleRecord
+from ...types import Connection, VisitDay, VisitMonth
 
 
 def fetch_attraction_names( conn: Connection ) -> list[ str ]:

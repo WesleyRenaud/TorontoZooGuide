@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...types import Connection
-from ..logic.drinking_fountain_closed_status import DrinkingFountainClosedStatus
-from ..logic.drinking_fountain_open_status import DrinkingFountainOpenStatus
 from .drinking_fountain_status_mapper import map_drinking_fountain_status_record
 from .drinking_fountain_status_record import DrinkingFountainStatusRecord
+from ..logic.drinking_fountain_closed_status import DrinkingFountainClosedStatus
+from ..logic.drinking_fountain_open_status import DrinkingFountainOpenStatus
+from ...types import Connection
 
 
 def fetch_drinking_fountain_status_record(

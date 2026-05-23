@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...types import ScheduleTimeKey
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
+from ...types import ScheduleTimeKey
 
 WEEKDAY_TIME_FIELDS = (
    'monday_time',

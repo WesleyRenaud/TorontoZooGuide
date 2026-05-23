@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from ...models import Restaurant
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.restaurant import fetch_restaurant_names
 from ..data_access.restaurant import fetch_restaurant_records
 from ..data_access.restaurant import fetch_restaurant_schedule_override_records
@@ -10,13 +8,15 @@ from ..data_access.restaurant_schedule import save_restaurant_opening_schedule
 from ..data_access.restaurant_schedule import save_restaurant_schedule_override
 from ..logic.restaurant import build_restaurants
 from ..logic.restaurant import resolve_restaurant_context
+from ..logic.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_replacing_overlaps
+from ..logic.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_trimming_overlaps
 from ..logic.restaurant_status import build_restaurant_closed_schedule
 from ..logic.restaurant_status import build_restaurant_closure_override
 from ..logic.restaurant_status import build_restaurant_opening_schedule
-from ..logic.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_replacing_overlaps
-from ..logic.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_trimming_overlaps
 from ..logic.restaurants_matching_query import build_restaurants_matching_query
+from ...models import Restaurant
 from ...request_connection import get_connection
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class RestaurantController():

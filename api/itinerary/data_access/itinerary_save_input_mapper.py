@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...shared.date_values import DateValues
-from ...types import DateInput
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_save_input import ItinerarySaveInput
+from ...shared.date_values import DateValues
+from ...types import DateInput
 
 
 def map_named_strings( names: Iterable[ str ] | None ) -> tuple[ str, ... ]:

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ...types import Connection
 from .restroom_mapper import map_restroom_records
 from .restroom_record import RestroomRecord
+from ...types import Connection
 
 
 def fetch_restroom_names( conn: Connection ) -> list[ str ]:

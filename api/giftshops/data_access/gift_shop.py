@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from ...types import Connection, VisitDay, VisitMonth
 from .gift_shop_mapper import map_gift_shop_records
 from .gift_shop_mapper import map_gift_shop_schedule_override_records
 from .gift_shop_mapper import map_gift_shop_schedule_records
 from .gift_shop_record import GiftShopRecord
 from .gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
 from .gift_shop_schedule_record import GiftShopScheduleRecord
+from ...types import Connection, VisitDay, VisitMonth
 
 
 def fetch_gift_shop_names( conn: Connection ) -> list[ str ]:

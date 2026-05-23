@@ -2,15 +2,8 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...models import Animal
-from ...models import AnimalDiff
-from ...models import Attraction
-from ...models import AttractionDiff
 from ...animals.controllers.animal_controller import AnimalController
 from ...attractions.controllers.attraction_controller import AttractionController
-from ...guardians.controllers.guardians_controller import GuardiansController
-from ...types import Connection, DateInput, DateKey
-from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from ..data_access.itinerary import fetch_itinerary_animal_rows
 from ..data_access.itinerary import fetch_itinerary_attraction_rows
 from ..data_access.itinerary_animal_input import ItineraryAnimalInput
@@ -18,7 +11,14 @@ from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.validated_itinerary import ValidatedItinerary
+from ...guardians.controllers.guardians_controller import GuardiansController
 from ...guardians.logic.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
+from ...models import Animal
+from ...models import AnimalDiff
+from ...models import Attraction
+from ...models import AttractionDiff
+from ...types import Connection, DateInput, DateKey
+from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from ...wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
 
 

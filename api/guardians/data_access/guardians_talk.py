@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ...types import Connection
 from .meet_the_guardians_talk_mapper import map_meet_the_guardians_talk_records
 from .meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
+from ...types import Connection
 
 
 def fetch_guardians_talk_locations( conn: Connection ) -> list[ str ]:

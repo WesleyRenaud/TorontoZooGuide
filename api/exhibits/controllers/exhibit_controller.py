@@ -1,10 +1,5 @@
 from __future__ import annotations
 
-from ...models import Region
-from ...models import RegionWithExhibits
-from ...shared.date_values import DateValues
-from ...shared.calendar_dates import CalendarDates
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.exhibit import fetch_animal_names_in_exhibit
 from ..data_access.exhibit import fetch_exhibit_names
 from ..data_access.exhibit import fetch_exhibit_names_in_region
@@ -16,7 +11,12 @@ from ..logic.exhibit import build_region_options
 from ..logic.exhibit_closure import exhibit_names_closed_on_visit_date
 from ..logic.exhibit_status import build_exhibit_closed_status
 from ..logic.regions_with_exhibits import build_regions_with_exhibits
+from ...models import Region
+from ...models import RegionWithExhibits
 from ...request_connection import get_connection
+from ...shared.calendar_dates import CalendarDates
+from ...shared.date_values import DateValues
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class ExhibitController():

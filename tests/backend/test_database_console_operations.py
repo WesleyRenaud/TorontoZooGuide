@@ -8,14 +8,14 @@ from api.attractions.controllers.attraction_controller import AttractionControll
 from api.exhibits.controllers.exhibit_controller import ExhibitController
 from api.giftshops.controllers.gift_shop_controller import GiftShopController
 from api.guardians.controllers.guardians_controller import GuardiansController
-from api.restaurants.controllers.restaurant_controller import RestaurantController
-from api.updates.controllers.update_controller import UpdateController
-from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
-from api.zoomobile.controllers.zoomobile_controller import ZoomobileController
 from api.models.animal import Animal
 from api.models.attraction import Attraction
 from api.models.gift_shop import GiftShop
 from api.models.restaurant import Restaurant
+from api.restaurants.controllers.restaurant_controller import RestaurantController
+from api.updates.controllers.update_controller import UpdateController
+from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from api.zoomobile.controllers.zoomobile_controller import ZoomobileController
 from conftest import DbControllers
 
 

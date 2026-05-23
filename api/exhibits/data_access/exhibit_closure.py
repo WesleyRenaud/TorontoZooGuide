@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ...types import Connection, DateInput
 from .exhibit_closure_mapper import map_exhibit_closure_records
 from .exhibit_closure_record import ExhibitClosureRecord
+from ...types import Connection, DateInput
 
 
 def save_exhibit_closed_status(
