@@ -6,6 +6,7 @@ import './searchRows.test.mjs';
 import './scheduledOccurrenceSelector.test.mjs';
 import './consolePanelNavigator.test.mjs';
 import './visitDateRules.test.mjs';
+import './weatherApi.test.mjs';
 import './assetNormalization.test.mjs';
 import './likelihood.test.mjs';
 import './itineraryShape.test.mjs';
