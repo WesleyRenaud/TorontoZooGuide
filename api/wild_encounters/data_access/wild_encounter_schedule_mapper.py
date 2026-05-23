@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+from ...types import Row
 from .wild_encounter_schedule_record import WildEncounterScheduleRecord
 
 
-def map_wild_encounter_schedule_record( row ):
+def map_wild_encounter_schedule_record( row: Row ) -> WildEncounterScheduleRecord:
    return WildEncounterScheduleRecord(
       name=row[ 'NAME' ],
       meeting_spot=row[ 'MEETING_SPOT' ],
@@ -23,7 +28,7 @@ def map_wild_encounter_schedule_record( row ):
 
 
 
-def map_wild_encounter_schedule_records( rows ):
+def map_wild_encounter_schedule_records( rows: Iterable[ Row ] ) -> list[ WildEncounterScheduleRecord ]:
    return [
       map_wild_encounter_schedule_record( row )
       for row in rows

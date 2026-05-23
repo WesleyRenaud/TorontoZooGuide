@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+from ...types import Row
 from .attraction_record import AttractionRecord
 from .attraction_schedule_record import AttractionScheduleRecord
 from .attraction_schedule_override_record import AttractionScheduleOverrideRecord
 
 
-def map_attraction_record( row ):
+def map_attraction_record( row: Row ) -> AttractionRecord:
    return AttractionRecord(
       name=row[ 'NAME' ],
       free_with_admission=row[ 'FREE_WITH_ADMISSION' ],
@@ -16,14 +21,14 @@ def map_attraction_record( row ):
       weekend_holiday_multiplier=row[ 'ATTRACTION_DAY_SEASONAL_WEEKEND_HOLIDAY_MULTIPLIER' ] )
 
 
-def map_attraction_records( rows ):
+def map_attraction_records( rows: Iterable[ Row ] ) -> list[ AttractionRecord ]:
    return [
       map_attraction_record( row )
       for row in rows
    ]
 
 
-def map_attraction_schedule_record( row ):
+def map_attraction_schedule_record( row: Row ) -> AttractionScheduleRecord:
    return AttractionScheduleRecord(
       attraction=row[ 'ATTRACTION' ],
       schedule_start_date=row[ 'SCHEDULE_START_DATE' ],
@@ -39,14 +44,14 @@ def map_attraction_schedule_record( row ):
       schedule_message=row[ 'SCHEDULE_MESSAGE' ] )
 
 
-def map_attraction_schedule_records( rows ):
+def map_attraction_schedule_records( rows: Iterable[ Row ] ) -> list[ AttractionScheduleRecord ]:
    return [
       map_attraction_schedule_record( row )
       for row in rows
    ]
 
 
-def map_attraction_schedule_override_record( row ):
+def map_attraction_schedule_override_record( row: Row ) -> AttractionScheduleOverrideRecord:
    return AttractionScheduleOverrideRecord(
       attraction=row[ 'ATTRACTION' ],
       override_start_date=row[ 'OVERRIDE_START_DATE' ],
@@ -55,7 +60,7 @@ def map_attraction_schedule_override_record( row ):
       override_message=row[ 'OVERRIDE_MESSAGE' ] )
 
 
-def map_attraction_schedule_override_records( rows ):
+def map_attraction_schedule_override_records( rows: Iterable[ Row ] ) -> list[ AttractionScheduleOverrideRecord ]:
    return [
       map_attraction_schedule_override_record( row )
       for row in rows

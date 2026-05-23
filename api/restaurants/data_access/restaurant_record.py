@@ -1,14 +1,18 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+
+from ...types import Coordinate, SeasonalMultiplier
 
 
 @dataclass( frozen=True )
 class RestaurantRecord:
-   name: object
-   location: object
-   sub_location: object
-   description: object
-   menu_link: object
-   x_coord: object
-   y_coord: object
-   weekday_multiplier: object
-   weekend_holiday_multiplier: object
+   name: str
+   location: str
+   sub_location: str | None
+   description: str
+   menu_link: str | None
+   x_coord: Coordinate
+   y_coord: Coordinate
+   weekday_multiplier: SeasonalMultiplier
+   weekend_holiday_multiplier: SeasonalMultiplier

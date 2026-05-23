@@ -1,5 +1,14 @@
+from __future__ import annotations
+
+
 class Pavilion:
-   def __init__( self, name, region, description=None, x_coord=None, y_coord=None ):
+   def __init__(
+         self,
+         name: str,
+         region: str,
+         description: str | None = None,
+         x_coord: float | None = None,
+         y_coord: float | None = None ) -> None:
       self.name = name
       self.region = region
       self.description = description
@@ -7,7 +16,7 @@ class Pavilion:
       self.y_coord = y_coord
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'name': self.name,
          'region': self.region,

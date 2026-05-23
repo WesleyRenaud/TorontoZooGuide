@@ -1,9 +1,20 @@
+from __future__ import annotations
+
+from datetime import date
+
 from ... import zoo
 from ...shared.enums import ScheduleStatus
+from ...types import MonthInput, SeasonalMultiplier, VisitDay, VisitYear
+from ..data_access.gift_shop_record import GiftShopRecord
+from ..data_access.gift_shop_schedule_override_record import GiftShopScheduleOverrideRecord
+from ..data_access.gift_shop_schedule_record import GiftShopScheduleRecord
 from .gift_shop_context import GiftShopContext
 
 
-def resolve_gift_shop_context( day, month, year ):
+def resolve_gift_shop_context(
+      day: VisitDay,
+      month: MonthInput,
+      year: VisitYear ) -> GiftShopContext:
    target_date = zoo.ZooUtil.visit_target_date(
       month=month,
       day=day,
@@ -21,7 +32,8 @@ def resolve_gift_shop_context( day, month, year ):
       is_weekend_or_holiday=is_weekend_or_holiday )
 
 
-def calculate_gift_shop_likelihood( day_seasonal_availability_multiplier ):
+def calculate_gift_shop_likelihood(
+      day_seasonal_availability_multiplier: SeasonalMultiplier ) -> int:
    seasonal_multiplier = (
       day_seasonal_availability_multiplier
       if day_seasonal_availability_multiplier is not None
@@ -32,8 +44,9 @@ def calculate_gift_shop_likelihood( day_seasonal_availability_multiplier ):
    return max( round( likelihood * 100 ), 0 )
 
 
-def group_gift_shop_schedule_records_by_name( schedule_records ):
-   schedule_records_by_gift_shop = {}
+def group_gift_shop_schedule_records_by_name(
+      schedule_records: list[ GiftShopScheduleRecord ] ) -> dict[ str, list[ GiftShopScheduleRecord ] ]:
+   schedule_records_by_gift_shop: dict[ str, list[ GiftShopScheduleRecord ] ] = {}
 
    for schedule_record in schedule_records:
       if schedule_record.gift_shop not in schedule_records_by_gift_shop:
@@ -44,8 +57,9 @@ def group_gift_shop_schedule_records_by_name( schedule_records ):
    return schedule_records_by_gift_shop
 
 
-def group_gift_shop_schedule_override_records_by_name( override_records ):
-   override_records_by_gift_shop = {}
+def group_gift_shop_schedule_override_records_by_name(
+      override_records: list[ GiftShopScheduleOverrideRecord ] ) -> dict[ str, list[ GiftShopScheduleOverrideRecord ] ]:
+   override_records_by_gift_shop: dict[ str, list[ GiftShopScheduleOverrideRecord ] ] = {}
 
    for override_record in override_records:
       if override_record.gift_shop not in override_records_by_gift_shop:
@@ -56,7 +70,10 @@ def group_gift_shop_schedule_override_records_by_name( override_records ):
    return override_records_by_gift_shop
 
 
-def is_gift_shop_open_on_day( schedule_record, weekday, is_holiday ):
+def is_gift_shop_open_on_day(
+      schedule_record: GiftShopScheduleRecord,
+      weekday: int,
+      is_holiday: bool ) -> bool:
    weekday_values = [
       schedule_record.monday,
       schedule_record.tuesday,
@@ -73,9 +90,9 @@ def is_gift_shop_open_on_day( schedule_record, weekday, is_holiday ):
 
 
 def get_active_gift_shop_schedule_status(
-      schedule_records,
-      target_date,
-      weekday ):
+      schedule_records: list[ GiftShopScheduleRecord ],
+      target_date: date,
+      weekday: int ) -> tuple[ ScheduleStatus, str | None ]:
 
    if len( schedule_records ) == 0:
       return ScheduleStatus.UNKNOWN, None
@@ -103,8 +120,8 @@ def get_active_gift_shop_schedule_status(
 
 
 def get_active_gift_shop_schedule_override_status(
-      override_records,
-      target_date ):
+      override_records: list[ GiftShopScheduleOverrideRecord ],
+      target_date: date ) -> tuple[ ScheduleStatus, str | None ]:
 
    for override_record in override_records:
       is_active = zoo.ZooUtil.is_date_in_range(
@@ -124,8 +141,8 @@ def get_active_gift_shop_schedule_override_status(
 
 
 def get_gift_shop_day_seasonal_availability_multiplier(
-      gift_shop_record,
-      context ):
+      gift_shop_record: GiftShopRecord,
+      context: GiftShopContext ) -> SeasonalMultiplier:
 
    if context.is_weekend_or_holiday:
       return gift_shop_record.weekend_holiday_multiplier
@@ -134,10 +151,10 @@ def get_gift_shop_day_seasonal_availability_multiplier(
 
 
 def build_gift_shop(
-      gift_shop_record,
-      schedule_records,
-      schedule_override_records,
-      context ):
+      gift_shop_record: GiftShopRecord,
+      schedule_records: list[ GiftShopScheduleRecord ],
+      schedule_override_records: list[ GiftShopScheduleOverrideRecord ],
+      context: GiftShopContext ) -> zoo.GiftShop:
 
    likelihood = 100
    closed_message = None
@@ -187,18 +204,18 @@ def build_gift_shop(
 
 
 def build_gift_shops(
-      gift_shop_records,
-      schedule_records,
-      schedule_override_records,
-      context,
-      include_closed_gift_shops,
-      gift_shops_to_include=None ):
+      gift_shop_records: list[ GiftShopRecord ],
+      schedule_records: list[ GiftShopScheduleRecord ],
+      schedule_override_records: list[ GiftShopScheduleOverrideRecord ],
+      context: GiftShopContext,
+      include_closed_gift_shops: bool,
+      gift_shops_to_include: list[ str ] | None = None ) -> list[ zoo.GiftShop ]:
 
    gift_shops_to_include = gift_shops_to_include or []
    schedule_records_by_name = group_gift_shop_schedule_records_by_name( schedule_records )
    schedule_override_records_by_name = group_gift_shop_schedule_override_records_by_name(
       schedule_override_records )
-   gift_shops = []
+   gift_shops: list[ zoo.GiftShop ] = []
 
    for gift_shop_record in gift_shop_records:
       gift_shop = build_gift_shop(

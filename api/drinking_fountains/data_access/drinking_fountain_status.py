@@ -1,7 +1,16 @@
+from __future__ import annotations
+
+from datetime import date
+
+from ...types import Connection
+from ..logic.drinking_fountain_closed_status import DrinkingFountainClosedStatus
+from ..logic.drinking_fountain_open_status import DrinkingFountainOpenStatus
 from .drinking_fountain_status_mapper import map_drinking_fountain_status_record
+from .drinking_fountain_status_record import DrinkingFountainStatusRecord
 
 
-def fetch_drinking_fountain_status_record( conn ):
+def fetch_drinking_fountain_status_record(
+      conn: Connection ) -> DrinkingFountainStatusRecord | None:
    cur = conn.cursor()
 
    try:
@@ -27,7 +36,9 @@ def fetch_drinking_fountain_status_record( conn ):
 
 
 
-def fetch_drinking_fountain_seasonal_likelihood( conn, target_date ):
+def fetch_drinking_fountain_seasonal_likelihood(
+      conn: Connection,
+      target_date: date ) -> float:
    cur = conn.cursor()
 
    try:
@@ -52,7 +63,9 @@ def fetch_drinking_fountain_seasonal_likelihood( conn, target_date ):
 
 
 
-def save_drinking_fountain_closed_status( conn, status ):
+def save_drinking_fountain_closed_status(
+      conn: Connection,
+      status: DrinkingFountainClosedStatus ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -81,7 +94,9 @@ def save_drinking_fountain_closed_status( conn, status ):
 
 
 
-def save_drinking_fountain_open_status( conn, status ):
+def save_drinking_fountain_open_status(
+      conn: Connection,
+      status: DrinkingFountainOpenStatus ) -> bool:
    cur = conn.cursor()
 
    try:

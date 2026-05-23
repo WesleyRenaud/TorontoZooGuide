@@ -1,10 +1,13 @@
+from __future__ import annotations
+
+from collections.abc import Callable
 from datetime import date, datetime
 
 import pytest
 
 from api import zoo
+from api.animals.controllers.animal_controller import AnimalController
 from api.animals.data_access.animal_viewability_record import AnimalViewabilityRecord
-from api.shared.enums import ScheduleStatus
 from api.animals.logic.animal_viewability import calculate_animal_likelihood
 from api.animals.logic.animal_viewability import get_active_exhibit_status
 from api.animals.logic.animal_viewability import get_active_limited_viewing_status
@@ -13,11 +16,13 @@ from api.animals.logic.animal_viewability import get_active_viewing_alert_status
 from api.attractions.logic.attraction import calculate_attraction_likelihood
 from api.giftshops.logic.gift_shop import calculate_gift_shop_likelihood
 from api.restaurants.logic.restaurant import calculate_restaurant_likelihood
-from api.animals.controllers.animal_controller import AnimalController
+from api.shared.enums import ScheduleStatus
+from api.types import DateInput, DateKey, SeasonalMultiplier
+from conftest import DbControllers
 
 
-def make_animal_viewability_record( **overrides ):
-   values = {
+def make_animal_viewability_record( **overrides: object ) -> AnimalViewabilityRecord:
+   values: dict[ str, object ] = {
       'species': None,
       'latin_name': None,
       'min_temperature': None,
@@ -61,11 +66,11 @@ def make_animal_viewability_record( **overrides ):
    return AnimalViewabilityRecord( **values )
 
 
-def test_database_uses_injected_path( db ):
+def test_database_uses_injected_path( db: DbControllers ) -> None:
    assert AnimalController.get_animal_species_names()
 
 
-def test_close_is_idempotent( db ):
+def test_close_is_idempotent( db: DbControllers ) -> None:
    db.close()
    db.close()
 
@@ -82,7 +87,7 @@ def test_close_is_idempotent( db ):
       ( '2026-06-15 09:30', date( 2026, 6, 15 ) )
    ]
 )
-def test_parse_date_value( value, expected ):
+def test_parse_date_value( value: DateInput, expected: date | None ) -> None:
    assert zoo.ZooUtil.parse_date_value( value ) == expected
 
 
@@ -97,15 +102,15 @@ def test_parse_date_value( value, expected ):
       ( datetime( 2026, 6, 15, 9, 30 ), '2026-06-15' ),
    ]
 )
-def test_normalize_date_key( value, expected ):
+def test_normalize_date_key( value: DateInput, expected: DateKey | None ) -> None:
    assert zoo.ZooUtil.normalize_date_key( value ) == expected
 
 
-def test_normalize_date_key_returns_none_for_unsupported_date_strings():
+def test_normalize_date_key_returns_none_for_unsupported_date_strings() -> None:
    assert zoo.ZooUtil.normalize_date_key( 'June 15, 2026' ) is None
 
 
-def test_resolve_open_ended_date_range_keeps_open_end_date():
+def test_resolve_open_ended_date_range_keeps_open_end_date() -> None:
    date_range = zoo.ZooUtil.resolve_open_ended_date_range(
       start_date='2026-06-01',
       end_date=None )
@@ -115,7 +120,7 @@ def test_resolve_open_ended_date_range_keeps_open_end_date():
 
 
 def test_resolve_open_ended_date_range_uses_today_for_missing_start(
-      freeze_database_today ):
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
    date_range = zoo.ZooUtil.resolve_open_ended_date_range(
@@ -135,11 +140,11 @@ def test_resolve_open_ended_date_range_uses_today_for_missing_start(
       ( '2026-06-15 17:45', datetime( 2026, 6, 15, 17, 45 ) )
    ]
 )
-def test_parse_datetime_value( value, expected ):
+def test_parse_datetime_value( value: str | None, expected: datetime | None ) -> None:
    assert zoo.ZooUtil.parse_datetime_value( value ) == expected
 
 
-def test_parse_values_raise_for_unsupported_formats():
+def test_parse_values_raise_for_unsupported_formats() -> None:
    with pytest.raises( ValueError ):
       zoo.ZooUtil.parse_date_value( 'June 15, 2026' )
 
@@ -156,7 +161,7 @@ def test_parse_values_raise_for_unsupported_formats():
       ( date( 2026, 6, 16 ), '2026-06-14', True ),
    ]
 )
-def test_is_date_on_or_after( left, right, expected ):
+def test_is_date_on_or_after( left: date, right: DateInput, expected: bool ) -> None:
    assert zoo.ZooUtil.is_date_on_or_after( left, right ) is expected
 
 
@@ -169,7 +174,7 @@ def test_is_date_on_or_after( left, right, expected ):
       ( date( 2026, 6, 14 ), '2026-06-14', True ),
    ]
 )
-def test_is_date_on_or_before( left, right, expected ):
+def test_is_date_on_or_before( left: date, right: DateInput, expected: bool ) -> None:
    assert zoo.ZooUtil.is_date_on_or_before( left, right ) is expected
 
 
@@ -182,8 +187,15 @@ def test_is_date_on_or_before( left, right, expected ):
       ( date( 2026, 6, 16 ), None, '2026-06-15', False )
    ]
 )
-def test_is_date_in_range( target, start, end, expected ):
+def test_is_date_in_range(
+      target: date,
+      start: DateInput,
+      end: DateInput,
+      expected: bool ) -> None:
    assert zoo.ZooUtil.is_date_in_range( target_date=target, start_date_value=start, end_date_value=end ) is expected
+
+
+LikelihoodCalculator = Callable[ [ SeasonalMultiplier ], int ]
 
 
 @pytest.mark.parametrize(
@@ -194,14 +206,15 @@ def test_is_date_in_range( target, start, end, expected ):
       calculate_attraction_likelihood
    ]
 )
-def test_simple_likelihood_calculators_clamp_and_round( calculate_likelihood ):
+def test_simple_likelihood_calculators_clamp_and_round(
+      calculate_likelihood: LikelihoodCalculator ) -> None:
    assert calculate_likelihood( None ) == 100
    assert calculate_likelihood( -0.5 ) == 0
    assert calculate_likelihood( 0.444 ) == 44
    assert calculate_likelihood( 1.5 ) == 100
 
 
-def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs():
+def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs() -> None:
    assert calculate_animal_likelihood(
       temp=-20,
       sigma=2,
@@ -239,7 +252,7 @@ def test_calculate_animal_likelihood_handles_indoor_and_outdoor_inputs():
    ) == 100
 
 
-def test_active_status_helpers():
+def test_active_status_helpers() -> None:
    active_record = make_animal_viewability_record(
       is_off_display=1,
       off_display_message='Temporarily hidden.',
@@ -265,7 +278,7 @@ def test_active_status_helpers():
    assert get_active_exhibit_status( active_record, target_date ) == ( ScheduleStatus.CLOSED, 'Closed.' )
 
 
-def test_active_status_helpers_return_inactive_defaults():
+def test_active_status_helpers_return_inactive_defaults() -> None:
    inactive_record = make_animal_viewability_record(
       is_off_display=0,
       off_display_message='Temporarily hidden.',

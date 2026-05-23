@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 from ... import zoo
+from ...types import DateInput, DateKey
 from .update_edit_input import UpdateEditInput
 from .update_type import normalize_update_type
 
 
 def build_update_edit_input(
-      title,
-      start_date,
-      description,
-      update_type,
-      end_date ):
+      title: str,
+      start_date: DateKey,
+      description: str,
+      update_type: str,
+      end_date: DateInput ) -> UpdateEditInput:
    normalized_end_date = None
 
    if end_date != None:

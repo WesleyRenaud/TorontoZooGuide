@@ -1,11 +1,17 @@
+from __future__ import annotations
+
+from datetime import date
+
 from ... import zoo
+from ...types import DateInput
+from ..data_access.exhibit_closure_record import ExhibitClosureRecord
 
 
 def is_exhibit_closure_active_on_visit_date(
-      is_closed,
-      closed_start,
-      closed_end,
-      target_date ):
+      is_closed: bool,
+      closed_start: DateInput,
+      closed_end: DateInput,
+      target_date: date | None ) -> bool:
    if not is_closed or target_date is None:
       return False
 
@@ -15,7 +21,9 @@ def is_exhibit_closure_active_on_visit_date(
       end_date_value=closed_end )
 
 
-def exhibit_names_closed_on_visit_date( closure_records, target_date ):
+def exhibit_names_closed_on_visit_date(
+      closure_records: list[ ExhibitClosureRecord ],
+      target_date: date ) -> list[ str ]:
    return [
       record.exhibit
       for record in closure_records

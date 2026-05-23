@@ -1,22 +1,26 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+
+from ...types import Coordinate, DateKey, ScheduleTimeKey
 
 
 @dataclass( frozen=True )
 class WildEncounterScheduleRecord:
-   name: object
-   meeting_spot: object
-   link: object
-   maximum_duration: object
-   x_coord: object
-   y_coord: object
-   schedule_start_date: object
-   schedule_end_date: object
-   monday: object
-   tuesday: object
-   wednesday: object
-   thursday: object
-   friday: object
-   saturday: object
-   sunday: object
-   encounter_time: object
-   is_cancelled: object
+   name: str
+   meeting_spot: str
+   link: str | None
+   maximum_duration: int | None
+   x_coord: Coordinate
+   y_coord: Coordinate
+   schedule_start_date: DateKey
+   schedule_end_date: DateKey | None
+   monday: bool
+   tuesday: bool
+   wednesday: bool
+   thursday: bool
+   friday: bool
+   saturday: bool
+   sunday: bool
+   encounter_time: ScheduleTimeKey
+   is_cancelled: bool

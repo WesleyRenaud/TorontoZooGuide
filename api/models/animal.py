@@ -1,13 +1,36 @@
+from __future__ import annotations
+
 from ..zoo_util import ZooUtil
 
 
 class Animal:
-   def __init__( self, species, latin_name=None, general_viewing_tips=None, seasonal_viewing_tips=None, identification=None,
-                 habitat_and_range=None, diet_and_feeding=None, behaviour_and_life_cycle=None, adaptations=None,
-                 reproduction_and_life_cycle=None, animals_at_the_zoo=None, exhibit=None, seasonal_viewing_summary=None,
-                 seasonal_viewing_information=None, off_display_message=None, enclosure_type=None, x_coord=None,y_coord=None,
-                 likelihood=None, has_limited_viewing_schedule=None, limited_viewing_message=None, has_viewing_alert=None,
-                 viewing_alert_message=None, is_deleted=False, old_likelihood=None ):
+   def __init__(
+         self,
+         species: str,
+         latin_name: str | None = None,
+         general_viewing_tips: str | None = None,
+         seasonal_viewing_tips: str | None = None,
+         identification: str | None = None,
+         habitat_and_range: str | None = None,
+         diet_and_feeding: str | None = None,
+         behaviour_and_life_cycle: str | None = None,
+         adaptations: str | None = None,
+         reproduction_and_life_cycle: str | None = None,
+         animals_at_the_zoo: str | None = None,
+         exhibit: str | None = None,
+         seasonal_viewing_summary: str | None = None,
+         seasonal_viewing_information: str | None = None,
+         off_display_message: str | None = None,
+         enclosure_type: str | None = None,
+         x_coord: float | None = None,
+         y_coord: float | None = None,
+         likelihood: int | None = None,
+         has_limited_viewing_schedule: bool | None = None,
+         limited_viewing_message: str | None = None,
+         has_viewing_alert: bool | None = None,
+         viewing_alert_message: str | None = None,
+         is_deleted: bool = False,
+         old_likelihood: int | None = None ) -> None:
       self.species = species
       self.latin_name = latin_name
       self.general_viewing_tips = general_viewing_tips
@@ -35,7 +58,7 @@ class Animal:
       self.old_likelihood = old_likelihood
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'species': self.species,
          'latin_name': self.latin_name,

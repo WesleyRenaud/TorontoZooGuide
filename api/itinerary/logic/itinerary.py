@@ -1,7 +1,15 @@
+from __future__ import annotations
+
 from ... import zoo
+from ...animals.controllers.animal_controller import AnimalController
+from ...attractions.controllers.attraction_controller import AttractionController
+from ...guardians.controllers.guardians_controller import GuardiansController
+from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from ...types import DateInput
+from ..data_access.saved_itinerary import SavedItinerary
 
 
-def empty_itinerary():
+def empty_itinerary() -> zoo.Itinerary:
    return zoo.Itinerary(
       date='',
       animals=[],
@@ -11,11 +19,11 @@ def empty_itinerary():
 
 
 def build_itinerary(
-      date,
-      animals,
-      attractions,
-      guardians_talks,
-      wild_encounters ):
+      date: DateInput,
+      animals: list[ zoo.Animal ],
+      attractions: list[ zoo.Attraction ],
+      guardians_talks: list[ zoo.GuardiansTalk ],
+      wild_encounters: list[ zoo.WildEncounter ] ) -> zoo.Itinerary:
 
    return zoo.Itinerary(
       date=date,
@@ -26,11 +34,11 @@ def build_itinerary(
 
 
 def build_current_itinerary(
-      saved_itinerary,
-      animal_controller,
-      attraction_controller,
-      guardians_controller,
-      wild_encounter_controller ):
+      saved_itinerary: SavedItinerary,
+      animal_controller: type[ AnimalController ],
+      attraction_controller: type[ AttractionController ],
+      guardians_controller: type[ GuardiansController ],
+      wild_encounter_controller: type[ WildEncounterController ] ) -> zoo.Itinerary:
 
    if saved_itinerary.is_empty():
       return empty_itinerary()
@@ -43,19 +51,19 @@ def build_current_itinerary(
       day=day,
       month=month,
       year=year,
-      saved_animals=saved_itinerary.animal_rows )
+      saved_animals=list( saved_itinerary.animal_rows ) )
 
    attractions = attraction_controller.get_attractions_for_saved_itinerary(
       day=day,
       month=month,
       year=year,
-      saved_attractions=saved_itinerary.attraction_rows )
+      saved_attractions=list( saved_itinerary.attraction_rows ) )
 
    guardians_talks = guardians_controller.get_guardians_talks_for_saved_itinerary(
-      saved_itinerary.guardians_talk_rows )
+      list( saved_itinerary.guardians_talk_rows ) )
 
    wild_encounters = wild_encounter_controller.get_wild_encounters_for_saved_itinerary(
-      saved_itinerary.wild_encounter_rows )
+      list( saved_itinerary.wild_encounter_rows ) )
 
    return build_itinerary(
       date=saved_itinerary.date_value,

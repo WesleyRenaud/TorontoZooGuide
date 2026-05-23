@@ -1,8 +1,13 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+from ...types import Row
 from .zoomobile_station_record import ZoomobileStationRecord
 from .zoomobile_station_status_record import ZoomobileStationStatusRecord
 
 
-def map_zoomobile_station_record( row ):
+def map_zoomobile_station_record( row: Row ) -> ZoomobileStationRecord:
    return ZoomobileStationRecord(
       name=row[ 'NAME' ],
       on_winter_route=row[ 'ON_WINTER_ROUTE' ],
@@ -11,14 +16,14 @@ def map_zoomobile_station_record( row ):
       y_coord=row[ 'Y_COORD' ] )
 
 
-def map_zoomobile_station_records( rows ):
+def map_zoomobile_station_records( rows: Iterable[ Row ] ) -> list[ ZoomobileStationRecord ]:
    return [
       map_zoomobile_station_record( row )
       for row in rows
    ]
 
 
-def map_zoomobile_station_status_record( row ):
+def map_zoomobile_station_status_record( row: Row ) -> ZoomobileStationStatusRecord:
    return ZoomobileStationStatusRecord(
       zoomobile_station=row[ 'ZOOMOBILE_STATION' ],
       closed_start=row[ 'CLOSED_START' ],
@@ -27,7 +32,7 @@ def map_zoomobile_station_status_record( row ):
       closed_message=row[ 'CLOSED_MESSAGE' ] )
 
 
-def map_zoomobile_station_status_records( rows ):
+def map_zoomobile_station_status_records( rows: Iterable[ Row ] ) -> list[ ZoomobileStationStatusRecord ]:
    return [
       map_zoomobile_station_status_record( row )
       for row in rows

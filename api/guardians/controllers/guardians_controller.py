@@ -1,4 +1,10 @@
+from __future__ import annotations
+
+from datetime import date
+
 from ... import zoo
+from ...itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from ...types import DateKey, DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.guardians_talk import fetch_guardians_talk_locations
 from ..data_access.guardians_talk import fetch_guardians_talk_names
 from ..data_access.guardians_talk import fetch_guardians_talk_names_at_location
@@ -26,24 +32,28 @@ class GuardiansController():
 
 
    @classmethod
-   def get_guardians_talk_locations( cls ):
+   def get_guardians_talk_locations( cls ) -> list[ str ]:
       return fetch_guardians_talk_locations( get_connection() )
 
 
    @classmethod
-   def get_guardians_talk_names( cls ):
+   def get_guardians_talk_names( cls ) -> list[ str ]:
       return fetch_guardians_talk_names( get_connection() )
 
 
    @classmethod
-   def get_guardians_talk_names_at_location( cls, location ):
+   def get_guardians_talk_names_at_location( cls, location: str ) -> list[ str ]:
       return fetch_guardians_talk_names_at_location(
          get_connection(),
          location=location )
 
 
    @classmethod
-   def get_guardians_talk_occurrences( cls, talk, location, days_ahead=60 ):
+   def get_guardians_talk_occurrences(
+         cls,
+         talk: str,
+         location: str,
+         days_ahead: int = 60 ) -> list[ zoo.ScheduledOccurrence ]:
       schedule_record = fetch_guardians_talk_schedule_record_for_occurrences(
          get_connection(),
          talk_name=talk,
@@ -60,7 +70,9 @@ class GuardiansController():
 
 
    @classmethod
-   def get_guardians_talk_details( cls, guardians_talks_to_include=None ):
+   def get_guardians_talk_details(
+         cls,
+         guardians_talks_to_include: list[ str ] | None = None ) -> list[ zoo.GuardiansTalk ]:
       talk_records = fetch_meet_the_guardians_talk_records( get_connection() )
 
       return build_guardians_talk_details(
@@ -71,18 +83,18 @@ class GuardiansController():
    @classmethod
    def set_guardians_talk_schedule(
          cls,
-         talk,
-         location,
-         start_date,
-         end_date,
-         monday_time,
-         tuesday_time,
-         wednesday_time,
-         thursday_time,
-         friday_time,
-         saturday_time,
-         sunday_time,
-         message ):
+         talk: str,
+         location: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday_time: str | None,
+         tuesday_time: str | None,
+         wednesday_time: str | None,
+         thursday_time: str | None,
+         friday_time: str | None,
+         saturday_time: str | None,
+         sunday_time: str | None,
+         message: str ) -> bool:
       schedule = build_guardians_talk_schedule(
          talk=talk,
          location=location,
@@ -103,7 +115,11 @@ class GuardiansController():
 
 
    @classmethod
-   def end_guardians_talk_schedule( cls, talk, location, schedule_end_date ):
+   def end_guardians_talk_schedule(
+         cls,
+         talk: str,
+         location: str,
+         schedule_end_date: DateInput ) -> bool:
       schedule_end = build_guardians_talk_schedule_end(
          talk=talk,
          location=location,
@@ -115,7 +131,12 @@ class GuardiansController():
 
 
    @classmethod
-   def cancel_guardians_talk_occurrence( cls, talk, location, date, time ):
+   def cancel_guardians_talk_occurrence(
+         cls,
+         talk: str,
+         location: str,
+         date: DateKey,
+         time: str ) -> bool:
       cancellation = build_guardians_talk_cancellation(
          talk=talk,
          location=location,
@@ -128,7 +149,9 @@ class GuardiansController():
 
 
    @classmethod
-   def get_guardians_talks_for_saved_itinerary( cls, saved_guardians_talks ):
+   def get_guardians_talks_for_saved_itinerary(
+         cls,
+         saved_guardians_talks: list[ ItineraryGuardiansTalkRecord ] ) -> list[ zoo.GuardiansTalk ]:
       if not saved_guardians_talks:
          return []
 
@@ -146,7 +169,11 @@ class GuardiansController():
 
 
    @classmethod
-   def get_guardians_talk_schedule( cls, month, day, year ):
+   def get_guardians_talk_schedule(
+         cls,
+         month: MonthInput,
+         day: VisitDay,
+         year: VisitYear ) -> list[ zoo.GuardiansTalk ]:
       target_date = zoo.ZooUtil.visit_target_date(
          month=month,
          day=day,
@@ -156,7 +183,12 @@ class GuardiansController():
 
 
    @classmethod
-   def get_guardians_talks_matching_query( cls, query, month, day, year ):
+   def get_guardians_talks_matching_query(
+         cls,
+         query: str,
+         month: MonthInput,
+         day: VisitDay,
+         year: VisitYear ) -> list[ zoo.GuardiansTalk ]:
       guardians_talks = cls.get_guardians_talk_schedule(
          month=month,
          day=day,
@@ -170,11 +202,11 @@ class GuardiansController():
    @classmethod
    def get_guardians_talk_on_day_schedule(
          cls,
-         month,
-         day,
-         talk_name,
-         year,
-         day_schedule=None ):
+         month: MonthInput,
+         day: VisitDay,
+         talk_name: str,
+         year: VisitYear,
+         day_schedule: list[ zoo.GuardiansTalk ] | None = None ) -> zoo.GuardiansTalk | None:
       rows = (
          day_schedule
          if day_schedule is not None
@@ -190,7 +222,12 @@ class GuardiansController():
 
 
    @classmethod
-   def _guardians_talk_occurrence_is_cancelled( cls, talk_name, location, cancellation_date, talk_time ):
+   def _guardians_talk_occurrence_is_cancelled(
+         cls,
+         talk_name: str,
+         location: str,
+         cancellation_date: DateKey,
+         talk_time: str | None ) -> bool:
       return fetch_guardians_talk_occurrence_is_cancelled(
          get_connection(),
          talk_name,
@@ -200,7 +237,9 @@ class GuardiansController():
 
 
    @classmethod
-   def get_guardians_talk_schedule_for_target_date( cls, target_date ):
+   def get_guardians_talk_schedule_for_target_date(
+         cls,
+         target_date: date ) -> list[ zoo.GuardiansTalk ]:
       records = fetch_guardians_talk_schedule_records( get_connection() )
 
       return build_guardians_talk_schedule_for_target_date(

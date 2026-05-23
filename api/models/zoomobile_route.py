@@ -1,16 +1,18 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any
-from typing import Tuple
+
+from .zoomobile_station import ZoomobileStation
 
 
 @dataclass( frozen=True )
 class ZoomobileRoute:
    route: str
    route_source: str
-   zoomobile_stations: Tuple[ Any, ... ]
+   zoomobile_stations: tuple[ ZoomobileStation, ... ]
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'route': self.route,
          'route_source': self.route_source,

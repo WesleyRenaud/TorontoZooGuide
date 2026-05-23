@@ -1,4 +1,8 @@
+from __future__ import annotations
+
+from ...types import Connection, VisitDay, VisitMonth
 from .animal_viewability_mapper import map_animal_viewability_rows
+from .animal_viewability_record import AnimalViewabilityRecord
 
 
 _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL = """   SELECT
@@ -68,7 +72,8 @@ _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL = """   SELECT
          """
 
 
-def normalize_exhibits_to_include( exhibits_to_include ):
+def normalize_exhibits_to_include(
+      exhibits_to_include: list[ str ] | None ) -> list[ str ]:
    return [
       exhibit.strip() for exhibit in exhibits_to_include or []
       if isinstance( exhibit, str ) and exhibit.strip() != ''
@@ -76,10 +81,10 @@ def normalize_exhibits_to_include( exhibits_to_include ):
 
 
 def fetch_animals_viewable_on_day_records(
-      conn,
-      normalized_month,
-      normalized_day,
-      exhibits_to_include=None ):
+      conn: Connection,
+      normalized_month: VisitMonth,
+      normalized_day: VisitDay,
+      exhibits_to_include: list[ str ] | None = None ) -> list[ AnimalViewabilityRecord ]:
    """Load joined animal / exhibit / viewing records for viewability on a calendar day."""
    cur = conn.cursor()
    sql = _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL

@@ -1,4 +1,8 @@
-def create_table( cursor ):
+from __future__ import annotations
+
+from ...types import Cursor
+
+def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS AttractionDaySeasonalAvailabilityMultiplier;' )
    cursor.execute( ''' CREATE TABLE AttractionDaySeasonalAvailabilityMultiplier
                      (  ATTRACTION              VARCHAR(64) NOT NULL,
@@ -3692,7 +3696,7 @@ attraction_day_seasonal_availability_multipliers = [
 ]
 
 
-def insert_rows( cursor ):
+def insert_rows( cursor: Cursor ) -> None:
    cursor.executemany( ''' INSERT INTO AttractionDaySeasonalAvailabilityMultiplier (
                               ATTRACTION,
                               MONTH,

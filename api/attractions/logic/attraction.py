@@ -1,10 +1,21 @@
+from __future__ import annotations
+
+from datetime import date
+
 from ... import zoo
-from ...shared.strings import SharedStrings
 from ...shared.enums import ScheduleStatus
+from ...shared.strings import SharedStrings
+from ...types import MonthInput, SeasonalMultiplier, VisitDay, VisitYear
+from ..data_access.attraction_record import AttractionRecord
+from ..data_access.attraction_schedule_override_record import AttractionScheduleOverrideRecord
+from ..data_access.attraction_schedule_record import AttractionScheduleRecord
 from .attraction_context import AttractionContext
 
 
-def resolve_attraction_context( day, month, year ):
+def resolve_attraction_context(
+      day: VisitDay,
+      month: MonthInput,
+      year: VisitYear ) -> AttractionContext:
    target_date = zoo.ZooUtil.visit_target_date(
       month=month,
       day=day,
@@ -22,7 +33,8 @@ def resolve_attraction_context( day, month, year ):
       is_weekend_or_holiday=is_weekend_or_holiday )
 
 
-def calculate_attraction_likelihood( day_seasonal_availability_multiplier ):
+def calculate_attraction_likelihood(
+      day_seasonal_availability_multiplier: SeasonalMultiplier ) -> int:
    seasonal_multiplier = (
       day_seasonal_availability_multiplier
       if day_seasonal_availability_multiplier is not None
@@ -33,8 +45,9 @@ def calculate_attraction_likelihood( day_seasonal_availability_multiplier ):
    return max( round( likelihood * 100 ), 0 )
 
 
-def group_attraction_schedule_records_by_name( schedule_records ):
-   schedule_records_by_attraction = {}
+def group_attraction_schedule_records_by_name(
+      schedule_records: list[ AttractionScheduleRecord ] ) -> dict[ str, list[ AttractionScheduleRecord ] ]:
+   schedule_records_by_attraction: dict[ str, list[ AttractionScheduleRecord ] ] = {}
 
    for schedule_record in schedule_records:
       if schedule_record.attraction not in schedule_records_by_attraction:
@@ -45,8 +58,9 @@ def group_attraction_schedule_records_by_name( schedule_records ):
    return schedule_records_by_attraction
 
 
-def group_attraction_schedule_override_records_by_name( override_records ):
-   override_records_by_attraction = {}
+def group_attraction_schedule_override_records_by_name(
+      override_records: list[ AttractionScheduleOverrideRecord ] ) -> dict[ str, list[ AttractionScheduleOverrideRecord ] ]:
+   override_records_by_attraction: dict[ str, list[ AttractionScheduleOverrideRecord ] ] = {}
 
    for override_record in override_records:
       if override_record.attraction not in override_records_by_attraction:
@@ -57,7 +71,10 @@ def group_attraction_schedule_override_records_by_name( override_records ):
    return override_records_by_attraction
 
 
-def is_attraction_open_on_day( schedule_record, weekday, is_holiday ):
+def is_attraction_open_on_day(
+      schedule_record: AttractionScheduleRecord,
+      weekday: int,
+      is_holiday: bool ) -> bool:
    weekday_values = [
       schedule_record.monday,
       schedule_record.tuesday,
@@ -73,7 +90,9 @@ def is_attraction_open_on_day( schedule_record, weekday, is_holiday ):
       or ( schedule_record.holidays_only and is_holiday ) )
 
 
-def build_closed_attraction_schedule_message( attraction_name, schedule_record ):
+def build_closed_attraction_schedule_message(
+      attraction_name: str,
+      schedule_record: AttractionScheduleRecord ) -> str:
    if schedule_record.schedule_message:
       return schedule_record.schedule_message
 
@@ -84,10 +103,10 @@ def build_closed_attraction_schedule_message( attraction_name, schedule_record )
 
 
 def get_active_attraction_schedule_status(
-      schedule_records,
-      attraction_name,
-      target_date,
-      weekday ):
+      schedule_records: list[ AttractionScheduleRecord ],
+      attraction_name: str,
+      target_date: date,
+      weekday: int ) -> tuple[ ScheduleStatus, str | None ]:
 
    if len( schedule_records ) == 0:
       return ScheduleStatus.UNKNOWN, None
@@ -117,8 +136,8 @@ def get_active_attraction_schedule_status(
 
 
 def get_active_attraction_schedule_override_status(
-      override_records,
-      target_date ):
+      override_records: list[ AttractionScheduleOverrideRecord ],
+      target_date: date ) -> tuple[ ScheduleStatus, str | None ]:
 
    for override_record in override_records:
       is_active = zoo.ZooUtil.is_date_in_range(
@@ -138,8 +157,8 @@ def get_active_attraction_schedule_override_status(
 
 
 def get_attraction_day_seasonal_availability_multiplier(
-      attraction_record,
-      is_weekend_or_holiday ):
+      attraction_record: AttractionRecord,
+      is_weekend_or_holiday: bool ) -> SeasonalMultiplier:
 
    if is_weekend_or_holiday:
       return attraction_record.weekend_holiday_multiplier
@@ -148,10 +167,10 @@ def get_attraction_day_seasonal_availability_multiplier(
 
 
 def get_attraction_likelihood_and_message_for_date(
-      attraction_record,
-      schedule_records,
-      schedule_override_records,
-      target_date ):
+      attraction_record: AttractionRecord,
+      schedule_records: list[ AttractionScheduleRecord ],
+      schedule_override_records: list[ AttractionScheduleOverrideRecord ],
+      target_date: date ) -> tuple[ int, str | None ]:
 
    weekday = target_date.weekday()
    is_weekend_or_holiday = (
@@ -197,10 +216,10 @@ def get_attraction_likelihood_and_message_for_date(
 
 
 def build_attraction(
-      attraction_record,
-      schedule_records,
-      schedule_override_records,
-      context ):
+      attraction_record: AttractionRecord,
+      schedule_records: list[ AttractionScheduleRecord ],
+      schedule_override_records: list[ AttractionScheduleOverrideRecord ],
+      context: AttractionContext ) -> zoo.Attraction:
 
    likelihood, closed_message = get_attraction_likelihood_and_message_for_date(
       attraction_record=attraction_record,
@@ -222,16 +241,16 @@ def build_attraction(
 
 
 def build_attractions(
-      attraction_records,
-      schedule_records,
-      schedule_override_records,
-      context,
-      include_closed_attractions=False ):
+      attraction_records: list[ AttractionRecord ],
+      schedule_records: list[ AttractionScheduleRecord ],
+      schedule_override_records: list[ AttractionScheduleOverrideRecord ],
+      context: AttractionContext,
+      include_closed_attractions: bool = False ) -> list[ zoo.Attraction ]:
 
    schedule_records_by_name = group_attraction_schedule_records_by_name( schedule_records )
    schedule_override_records_by_name = group_attraction_schedule_override_records_by_name(
       schedule_override_records )
-   attractions = []
+   attractions: list[ zoo.Attraction ] = []
 
    for attraction_record in attraction_records:
       attraction = build_attraction(

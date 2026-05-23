@@ -1,11 +1,16 @@
+from __future__ import annotations
+
+from collections.abc import Callable
 from io import BytesIO
 import json
+from typing import Any
 
 import pytest
 
 import api.server as server
 from api import zoo
 from api.models.zoomobile_route import ZoomobileRoute
+from api.types import Connection
 from conftest import FakeHandler
 
 
@@ -28,7 +33,7 @@ DRINKING_FOUNTAIN_Y_COORD = 12.561
 UPDATE_TITLE = 'New baby giraffe'
 
 
-def make_handler( path='/', body=None ):
+def make_handler( path: str = '/', body: dict[ str, Any ] | None = None ) -> server.MyHandler:
    encoded = json.dumps( body or {} ).encode( 'utf-8' )
    handler = server.MyHandler.__new__( server.MyHandler )
    handler.path = path
@@ -46,24 +51,24 @@ def make_handler( path='/', body=None ):
    return handler
 
 
-def response_json( handler ):
+def response_json( handler: server.MyHandler ) -> dict[ str, Any ]:
    handler.wfile.seek( 0 )
    return json.loads( handler.wfile.read().decode( 'utf-8' ) )
 
 
 class StubControllerNamespace:
-   def __init__( self, root ):
+   def __init__( self, root: StubZooControllers ) -> None:
       self._root = root
 
 
-   def __getattr__( self, name ):
+   def __getattr__( self, name: str ) -> Any:
       return getattr( self._root, name )
 
 
 class StubZooControllers:
-   instances = []
-   default_success = True
-   controller_attributes = (
+   instances: list[ StubZooControllers ] = []
+   default_success: bool = True
+   controller_attributes: tuple[ str, ... ] = (
       'animals',
       'exhibits',
       'pavilions',
@@ -85,9 +90,9 @@ class StubZooControllers:
       'zoo_hours',
    )
 
-   def __init__( self, conn=None ):
-      self.conn = conn
-      self.calls = []
+   def __init__( self, conn: Connection | None = None ) -> None:
+      self.conn: Connection | None = conn
+      self.calls: list[ tuple[ str, dict[ str, Any ] ] ] = []
       self.closed = False
       StubZooControllers.instances.append( self )
 
@@ -95,62 +100,62 @@ class StubZooControllers:
          setattr( self, attribute, StubControllerNamespace( self ) )
 
 
-   def close( self ):
+   def close( self ) -> None:
       self.closed = True
       self.conn = None
 
 
-   def get_animals_viewable_on_day( self, **kwargs ):
+   def get_animals_viewable_on_day( self, **kwargs: Any ) -> list[ zoo.Animal ]:
       self.calls.append( ( 'get_animals_viewable_on_day', kwargs ) )
       return [ zoo.Animal( species=ANIMAL_NAME, exhibit=ANIMAL_EXHIBIT, likelihood=100 ) ]
 
 
-   def get_exhibits_in_region( self, region ):
+   def get_exhibits_in_region( self, region: str ) -> list[ str ]:
       self.calls.append( ( 'get_exhibits_in_region', { 'region': region } ) )
       return [ ANIMAL_EXHIBIT ]
 
 
-   def get_regions( self ):
+   def get_regions( self ) -> list[ zoo.Region ]:
       self.calls.append( ( 'get_regions', {} ) )
       return [ zoo.Region( name='Africa', has_exhibits=True ) ]
 
 
-   def get_names_of_animals_in_exhibit( self, exhibit ):
+   def get_names_of_animals_in_exhibit( self, exhibit: str ) -> list[ str ]:
       self.calls.append( ( 'get_names_of_animals_in_exhibit', { 'exhibit': exhibit } ) )
       return [ ANIMAL_NAME ]
 
 
-   def get_animal_information( self, species ):
+   def get_animal_information( self, species: str ) -> zoo.Animal:
       self.calls.append( ( 'get_animal_information', { 'species': species } ) )
       return zoo.Animal( species=species, exhibit=ANIMAL_EXHIBIT )
 
 
-   def get_pavilions( self ):
+   def get_pavilions( self ) -> list[ zoo.Pavilion ]:
       self.calls.append( ( 'get_pavilions', {} ) )
       return [ zoo.Pavilion( name=PAVILION_NAME, region='Africa' ) ]
 
 
-   def get_restaurants( self, **kwargs ):
+   def get_restaurants( self, **kwargs: Any ) -> list[ zoo.Restaurant ]:
       self.calls.append( ( 'get_restaurants', kwargs ) )
       return [ zoo.Restaurant( name=RESTAURANT_NAME, location='Africa', sub_location=None ) ]
 
 
-   def get_restrooms( self, **kwargs ):
+   def get_restrooms( self, **kwargs: Any ) -> list[ zoo.Restroom ]:
       self.calls.append( ( 'get_restrooms', kwargs ) )
       return [ zoo.Restroom( title=RESTROOM_NAME ) ]
 
 
-   def get_gift_shops( self, **kwargs ):
+   def get_gift_shops( self, **kwargs: Any ) -> list[ zoo.GiftShop ]:
       self.calls.append( ( 'get_gift_shops', kwargs ) )
       return [ zoo.GiftShop( name=GIFT_SHOP_NAME, location='Learning & Engagement Centre' ) ]
 
 
-   def get_attractions( self, **kwargs ):
+   def get_attractions( self, **kwargs: Any ) -> list[ zoo.Attraction ]:
       self.calls.append( ( 'get_attractions', kwargs ) )
       return [ zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ]
 
 
-   def get_zoomobile_route( self, **kwargs ):
+   def get_zoomobile_route( self, **kwargs: Any ) -> ZoomobileRoute:
       self.calls.append( ( 'get_zoomobile_route', kwargs ) )
       return ZoomobileRoute(
          route='summer',
@@ -159,12 +164,12 @@ class StubZooControllers:
       )
 
 
-   def get_guardians_talk_schedule( self, **kwargs ):
+   def get_guardians_talk_schedule( self, **kwargs: Any ) -> list[ zoo.GuardiansTalk ]:
       self.calls.append( ( 'get_guardians_talk_schedule', kwargs ) )
       return [ zoo.GuardiansTalk( name=GUARDIANS_TALK_NAME, location=GUARDIANS_TALK_LOCATION, x_coord=51.138, y_coord=41.279 ) ]
 
 
-   def get_available_wild_encounters( self, **kwargs ):
+   def get_available_wild_encounters( self, **kwargs: Any ) -> list[ zoo.WildEncounter ]:
       self.calls.append( ( 'get_available_wild_encounters', kwargs ) )
       return [
          zoo.WildEncounter(
@@ -174,7 +179,7 @@ class StubZooControllers:
       ]
 
 
-   def get_drinking_fountains( self, **kwargs ):
+   def get_drinking_fountains( self, **kwargs: Any ) -> list[ zoo.DrinkingFountain ]:
       self.calls.append( ( 'get_drinking_fountains', kwargs ) )
       return [
          zoo.DrinkingFountain(
@@ -183,17 +188,17 @@ class StubZooControllers:
       ]
 
 
-   def get_defibrillators( self ):
+   def get_defibrillators( self ) -> list[ zoo.Defibrillator ]:
       self.calls.append( ( 'get_defibrillators', {} ) )
       return [ zoo.Defibrillator( x_coord=12.345, y_coord=67.890 ) ]
 
 
-   def get_emergency_intercoms( self ):
+   def get_emergency_intercoms( self ) -> list[ zoo.EmergencyIntercom ]:
       self.calls.append( ( 'get_emergency_intercoms', {} ) )
       return [ zoo.EmergencyIntercom( x_coord=23.456, y_coord=78.901 ) ]
 
 
-   def get_guest_services( self ):
+   def get_guest_services( self ) -> list[ zoo.GuestService ]:
       self.calls.append( ( 'get_guest_services', {} ) )
       return [
          zoo.GuestService(
@@ -203,7 +208,7 @@ class StubZooControllers:
       ]
 
 
-   def get_picnic_sites( self ):
+   def get_picnic_sites( self ) -> list[ zoo.PicnicSite ]:
       self.calls.append( ( 'get_picnic_sites', {} ) )
       return [
          zoo.PicnicSite(
@@ -212,7 +217,7 @@ class StubZooControllers:
       ]
 
 
-   def get_event_sites( self ):
+   def get_event_sites( self ) -> list[ zoo.EventSite ]:
       self.calls.append( ( 'get_event_sites', {} ) )
       return [
          zoo.EventSite(
@@ -222,7 +227,7 @@ class StubZooControllers:
       ]
 
 
-   def get_updates_for_visit_date( self, **kwargs ):
+   def get_updates_for_visit_date( self, **kwargs: Any ) -> list[ zoo.Update ]:
       self.calls.append( ( 'get_updates_for_visit_date', kwargs ) )
       return [
          zoo.Update(
@@ -234,56 +239,56 @@ class StubZooControllers:
       ]
 
 
-   def get_closed_exhibits( self, **kwargs ):
+   def get_closed_exhibits( self, **kwargs: Any ) -> list[ str ]:
       self.calls.append( ( 'get_closed_exhibits', kwargs ) )
       return [ ANIMAL_EXHIBIT ]
 
 
-   def get_closed_exhibits_for_visit_date( self, **kwargs ):
+   def get_closed_exhibits_for_visit_date( self, **kwargs: Any ) -> list[ str ]:
       return self.get_closed_exhibits( **kwargs )
 
 
-   def get_animals_matching_query( self, **kwargs ):
+   def get_animals_matching_query( self, **kwargs: Any ) -> list[ zoo.Animal ]:
       self.calls.append( ( 'get_animals_matching_query', kwargs ) )
       return [ zoo.Animal( species=ANIMAL_NAME, exhibit=ANIMAL_EXHIBIT, likelihood=100 ) ]
 
 
-   def get_pavilions_matching_query( self, query ):
+   def get_pavilions_matching_query( self, query: str ) -> list[ zoo.Pavilion ]:
       self.calls.append( ( 'get_pavilions_matching_query', { 'query': query } ) )
       return [ zoo.Pavilion( name=PAVILION_NAME, region='Africa' ) ]
 
 
-   def get_restaurants_matching_query( self, **kwargs ):
+   def get_restaurants_matching_query( self, **kwargs: Any ) -> list[ zoo.Restaurant ]:
       self.calls.append( ( 'get_restaurants_matching_query', kwargs ) )
       return [ zoo.Restaurant( name=RESTAURANT_NAME, location='Africa', sub_location=None ) ]
 
 
-   def get_restrooms_matching_query( self, **kwargs ):
+   def get_restrooms_matching_query( self, **kwargs: Any ) -> list[ zoo.Restroom ]:
       self.calls.append( ( 'get_restrooms_matching_query', kwargs ) )
       return [ zoo.Restroom( title=RESTROOM_NAME ) ]
 
 
-   def get_gift_shops_matching_query( self, **kwargs ):
+   def get_gift_shops_matching_query( self, **kwargs: Any ) -> list[ zoo.GiftShop ]:
       self.calls.append( ( 'get_gift_shops_matching_query', kwargs ) )
       return [ zoo.GiftShop( name=GIFT_SHOP_NAME, location='Learning & Engagement Centre' ) ]
 
 
-   def get_attractions_matching_query( self, **kwargs ):
+   def get_attractions_matching_query( self, **kwargs: Any ) -> list[ zoo.Attraction ]:
       self.calls.append( ( 'get_attractions_matching_query', kwargs ) )
       return [ zoo.Attraction( name=ATTRACTION_NAME, free_with_admission=0 ) ]
 
 
-   def get_zoomobile_stations_matching_query( self, **kwargs ):
+   def get_zoomobile_stations_matching_query( self, **kwargs: Any ) -> list[ zoo.ZoomobileStation ]:
       self.calls.append( ( 'get_zoomobile_stations_matching_query', kwargs ) )
       return [ zoo.ZoomobileStation( name=ZOOMOBILE_STATION_NAME ) ]
 
 
-   def get_guardians_talks_matching_query( self, **kwargs ):
+   def get_guardians_talks_matching_query( self, **kwargs: Any ) -> list[ zoo.GuardiansTalk ]:
       self.calls.append( ( 'get_guardians_talks_matching_query', kwargs ) )
       return [ zoo.GuardiansTalk( name=GUARDIANS_TALK_NAME, location=GUARDIANS_TALK_LOCATION, x_coord=51.138, y_coord=41.279 ) ]
 
 
-   def get_wild_encounters_matching_query( self, **kwargs ):
+   def get_wild_encounters_matching_query( self, **kwargs: Any ) -> list[ zoo.WildEncounter ]:
       self.calls.append( ( 'get_wild_encounters_matching_query', kwargs ) )
       return [
          zoo.WildEncounter(
@@ -293,22 +298,22 @@ class StubZooControllers:
       ]
 
 
-   def set_itinerary( self, **kwargs ):
+   def set_itinerary( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'set_itinerary', kwargs ) )
       return True
 
 
-   def get_itinerary( self ):
+   def get_itinerary( self ) -> zoo.Itinerary:
       self.calls.append( ( 'get_itinerary', {} ) )
       return zoo.Itinerary( date='2026-06-15' )
 
 
-   def accept_itinerary( self ):
+   def accept_itinerary( self ) -> bool:
       self.calls.append( ( 'accept_itinerary', {} ) )
       return True
 
 
-   def get_zoo_hours( self, day, month, year ):
+   def get_zoo_hours( self, day: int, month: str, year: int ) -> zoo.ZooHours:
       self.calls.append(
          ( 'get_zoo_hours', { 'day': day, 'month': month, 'year': year } ) )
 
@@ -320,22 +325,22 @@ class StubZooControllers:
          close_time='19:00' )
 
 
-   def clear_itinerary( self ):
+   def clear_itinerary( self ) -> bool:
       self.calls.append( ( 'clear_itinerary', {} ) )
       return True
 
 
-   def get_animal_species_names( self ):
+   def get_animal_species_names( self ) -> list[ str ]:
       self.calls.append( ( 'get_animal_species_names', {} ) )
       return [ ANIMAL_NAME, 'Amur Tiger' ]
 
 
-   def get_exhibits( self ):
+   def get_exhibits( self ) -> list[ str ]:
       self.calls.append( ( 'get_exhibits', {} ) )
       return [ ANIMAL_EXHIBIT, 'Eurasia Wilds' ]
 
 
-   def get_regions_with_exhibits( self, **kwargs ):
+   def get_regions_with_exhibits( self, **kwargs: Any ) -> list[ zoo.RegionWithExhibits ]:
       self.calls.append( ( 'get_regions_with_exhibits', kwargs ) )
       return [
          zoo.RegionWithExhibits(
@@ -344,47 +349,47 @@ class StubZooControllers:
       ]
 
 
-   def get_restaurant_names( self ):
+   def get_restaurant_names( self ) -> list[ str ]:
       self.calls.append( ( 'get_restaurant_names', {} ) )
       return [ RESTAURANT_NAME ]
 
 
-   def get_restroom_names( self ):
+   def get_restroom_names( self ) -> list[ str ]:
       self.calls.append( ( 'get_restroom_names', {} ) )
       return [ RESTROOM_NAME ]
 
 
-   def get_gift_shop_names( self ):
+   def get_gift_shop_names( self ) -> list[ str ]:
       self.calls.append( ( 'get_gift_shop_names', {} ) )
       return [ GIFT_SHOP_NAME ]
 
 
-   def get_attraction_names( self ):
+   def get_attraction_names( self ) -> list[ str ]:
       self.calls.append( ( 'get_attraction_names', {} ) )
       return [ ATTRACTION_NAME ]
 
 
-   def get_zoomobile_station_names( self ):
+   def get_zoomobile_station_names( self ) -> list[ str ]:
       self.calls.append( ( 'get_zoomobile_station_names', {} ) )
       return [ ZOOMOBILE_STATION_NAME ]
 
 
-   def get_guardians_talk_locations( self ):
+   def get_guardians_talk_locations( self ) -> list[ str ]:
       self.calls.append( ( 'get_guardians_talk_locations', {} ) )
       return [ GUARDIANS_TALK_LOCATION ]
 
 
-   def get_guardians_talk_names( self ):
+   def get_guardians_talk_names( self ) -> list[ str ]:
       self.calls.append( ( 'get_guardians_talk_names', {} ) )
       return [ GUARDIANS_TALK_NAME ]
 
 
-   def get_guardians_talk_names_at_location( self, location ):
+   def get_guardians_talk_names_at_location( self, location: str ) -> list[ str ]:
       self.calls.append( ( 'get_guardians_talk_names_at_location', { 'location': location } ) )
       return [ GUARDIANS_TALK_NAME ]
 
 
-   def get_guardians_talk_occurrences( self, **kwargs ):
+   def get_guardians_talk_occurrences( self, **kwargs: Any ) -> list[ zoo.ScheduledOccurrence ]:
       self.calls.append( ( 'get_guardians_talk_occurrences', kwargs ) )
       return [
          zoo.ScheduledOccurrence(
@@ -393,12 +398,12 @@ class StubZooControllers:
       ]
 
 
-   def get_wild_encounter_names( self ):
+   def get_wild_encounter_names( self ) -> list[ str ]:
       self.calls.append( ( 'get_wild_encounter_names', {} ) )
       return [ WILD_ENCOUNTER_NAME ]
 
 
-   def get_wild_encounter_occurrences( self, **kwargs ):
+   def get_wild_encounter_occurrences( self, **kwargs: Any ) -> list[ zoo.ScheduledOccurrence ]:
       self.calls.append( ( 'get_wild_encounter_occurrences', kwargs ) )
       return [
          zoo.ScheduledOccurrence(
@@ -407,7 +412,7 @@ class StubZooControllers:
       ]
 
 
-   def get_unexpired_updates( self ):
+   def get_unexpired_updates( self ) -> list[ zoo.Update ]:
       self.calls.append( ( 'get_unexpired_updates', {} ) )
       return [
          zoo.Update(
@@ -419,7 +424,7 @@ class StubZooControllers:
       ]
 
 
-   def __getattr__( self, name ):
+   def __getattr__( self, name: str ) -> Callable[ ..., bool ]:
       mutation_prefixes = (
          'create_',
          'set_',
@@ -434,14 +439,17 @@ class StubZooControllers:
       if not name.startswith( mutation_prefixes ):
          raise AttributeError( name )
 
-      def mutation_stub( **kwargs ):
+      def mutation_stub( **kwargs: Any ) -> bool:
          self.calls.append( ( name, kwargs ) )
          return StubZooControllers.default_success
 
       return mutation_stub
 
 
-def _patch_controller_with_stub( monkeypatch, controller_class, stub ):
+def _patch_controller_with_stub(
+      monkeypatch: pytest.MonkeyPatch,
+      controller_class: type,
+      stub: StubZooControllers ) -> None:
    for method_name in dir( controller_class ):
       if method_name.startswith( '_' ) or not hasattr( stub, method_name ):
          continue
@@ -452,24 +460,24 @@ def _patch_controller_with_stub( monkeypatch, controller_class, stub ):
          continue
 
       @classmethod
-      def patched( cls, *args, _stub_method=stub_method, **kwargs ):
+      def patched( cls: type, *args: Any, _stub_method: Callable[ ..., Any ] = stub_method, **kwargs: Any ) -> Any:
          return _stub_method( *args, **kwargs )
 
       monkeypatch.setattr( controller_class, method_name, patched )
 
 
 @pytest.fixture
-def stub_controllers( monkeypatch ):
+def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControllers ]:
    StubZooControllers.instances = []
    StubZooControllers.default_success = True
    stub = StubZooControllers( None )
 
    monkeypatch.setattr( server.connection, 'open_connection', lambda db_path='animals.db': None )
 
-   def stub_set_connection( conn ):
+   def stub_set_connection( conn: Connection | None ) -> None:
       StubZooControllers._active = stub
 
-   def stub_clear_connection():
+   def stub_clear_connection() -> None:
       if StubZooControllers.instances:
          StubZooControllers.instances[ -1 ].closed = True
 
@@ -505,11 +513,11 @@ def stub_controllers( monkeypatch ):
 
 
 @pytest.fixture
-def stub_database( stub_controllers ):
+def stub_database( stub_controllers: type[ StubZooControllers ] ) -> type[ StubZooControllers ]:
    return stub_controllers
 
 
-def test_send_file_serves_existing_static_page():
+def test_send_file_serves_existing_static_page() -> None:
    handler = FakeHandler( path='/map.html' )
 
    server.MyHandler._send_file( handler, './pages/map.html', 'text/html' )
@@ -519,7 +527,7 @@ def test_send_file_serves_existing_static_page():
    assert handler.wfile.getvalue().startswith( b'<!DOCTYPE html>' )
 
 
-def test_send_file_renders_shared_html_strings():
+def test_send_file_renders_shared_html_strings() -> None:
    handler = FakeHandler( path='/animals.html' )
 
    server.MyHandler._send_file( handler, './pages/animals.html', 'text/html' )
@@ -530,7 +538,7 @@ def test_send_file_renders_shared_html_strings():
    assert '{{ site.titles.guide }}' not in content
 
 
-def test_send_file_renders_animals_page_nav_in_standard_order():
+def test_send_file_renders_animals_page_nav_in_standard_order() -> None:
    handler = FakeHandler( path='/animals.html' )
 
    server.MyHandler._send_file( handler, './pages/animals.html', 'text/html' )
@@ -550,7 +558,7 @@ def test_send_file_renders_animals_page_nav_in_standard_order():
    assert nav_positions == sorted( nav_positions )
 
 
-def test_send_file_renders_itinerary_static_strings():
+def test_send_file_renders_itinerary_static_strings() -> None:
    handler = FakeHandler( path='/itinerary.html' )
 
    server.MyHandler._send_file( handler, './pages/itinerary.html', 'text/html' )
@@ -561,7 +569,7 @@ def test_send_file_renders_itinerary_static_strings():
    assert '{{ itinerary.aria.panel }}' not in content
 
 
-def test_send_file_renders_console_operation_strings():
+def test_send_file_renders_console_operation_strings() -> None:
    handler = FakeHandler( path='/console-operations.html' )
 
    server.MyHandler._send_file( handler, './pages/console-operations.html', 'text/html' )
@@ -573,7 +581,7 @@ def test_send_file_renders_console_operation_strings():
    assert '{{ panelTitles.offDisplay }}' not in content
 
 
-def test_send_file_returns_404_for_missing_file():
+def test_send_file_returns_404_for_missing_file() -> None:
    handler = FakeHandler( path='/missing.html' )
 
    server.MyHandler._send_file( handler, './pages/missing.html' )
@@ -593,7 +601,7 @@ def test_send_file_returns_404_for_missing_file():
       '/images/icon%20name.png'
    ]
 )
-def test_get_static_routes( path ):
+def test_get_static_routes( path: str ) -> None:
    handler = server.MyHandler.__new__( server.MyHandler )
    handler.path = path
    handler.statuses = []
@@ -605,7 +613,7 @@ def test_get_static_routes( path ):
    assert len( handler.files ) == 1
 
 
-def test_get_unknown_route_returns_404():
+def test_get_unknown_route_returns_404() -> None:
    missing = server.MyHandler.__new__( server.MyHandler )
    missing.path = '/unknown'
    missing.errors = []
@@ -614,7 +622,8 @@ def test_get_unknown_route_returns_404():
    assert missing.errors == [ ( 404, 'Not Found' ) ]
 
 
-def test_get_animals_by_exhibit_endpoint_adds_type_and_maps_payload( stub_database ):
+def test_get_animals_by_exhibit_endpoint_adds_type_and_maps_payload(
+      stub_database: type[ StubZooControllers ] ) -> None:
    handler = make_handler(
       '/get-animals-by-exhibit',
       {
@@ -646,7 +655,8 @@ def test_get_animals_by_exhibit_endpoint_adds_type_and_maps_payload( stub_databa
    )
 
 
-def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database ):
+def test_get_visible_animals_endpoint_maps_payload_and_response(
+      stub_database: type[ StubZooControllers ] ) -> None:
    handler = make_handler(
       '/get-visible-animals',
       {
@@ -702,7 +712,11 @@ def test_get_visible_animals_endpoint_maps_payload_and_response( stub_database )
       ( '/get-zoo-hours', { 'day': 20, 'month': 'June', 'year': 2026 }, 'hours' )
    ]
 )
-def test_read_endpoints_return_json_keys( stub_database, path, body, response_key ):
+def test_read_endpoints_return_json_keys(
+      stub_database: type[ StubZooControllers ],
+      path: str,
+      body: dict[ str, Any ],
+      response_key: str ) -> None:
    handler = make_handler( path, body )
 
    server.MyHandler.do_POST( handler )
@@ -711,7 +725,8 @@ def test_read_endpoints_return_json_keys( stub_database, path, body, response_ke
    assert response_key in response_json( handler )
 
 
-def test_get_restrooms_endpoint_maps_closed_toggle( stub_database ):
+def test_get_restrooms_endpoint_maps_closed_toggle(
+      stub_database: type[ StubZooControllers ] ) -> None:
    handler = make_handler(
       '/get-restrooms',
          {
@@ -737,7 +752,8 @@ def test_get_restrooms_endpoint_maps_closed_toggle( stub_database ):
    ]
 
 
-def test_get_wild_encounters_endpoint_uses_available_database_results( stub_database ):
+def test_get_wild_encounters_endpoint_uses_available_database_results(
+      stub_database: type[ StubZooControllers ] ) -> None:
    handler = make_handler(
       '/get-wild-encounters',
       { 'month': 'June', 'day': 21, 'year': 2026 } )
@@ -872,7 +888,7 @@ def test_get_wild_encounters_endpoint_uses_available_database_results( stub_data
          { 'wildEncounter': 'African Rainforest' },
          (
             'get_wild_encounter_occurrences',
-            { 'wild_encounter': 'African Rainforest' }
+            { 'wild_encounter_name': 'African Rainforest' }
          ),
          {
             'occurrences': [
@@ -903,11 +919,11 @@ def test_get_wild_encounters_endpoint_uses_available_database_results( stub_data
    ]
 )
 def test_console_options_endpoints_map_payloads_and_return_expected_keys(
-      stub_database,
-      path,
-      body,
-      expected_call,
-      response_subset ):
+      stub_database: type[ StubZooControllers ],
+      path: str,
+      body: dict[ str, Any ],
+      expected_call: tuple[ str, dict[ str, Any ] ],
+      response_subset: dict[ str, Any ] ) -> None:
    handler = make_handler( path, body )
 
    server.MyHandler.do_POST( handler )
@@ -921,7 +937,8 @@ def test_console_options_endpoints_map_payloads_and_return_expected_keys(
       assert result[ key ] == value
 
 
-def test_search_endpoint_adds_type_fields( stub_database ):
+def test_search_endpoint_adds_type_fields(
+      stub_database: type[ StubZooControllers ] ) -> None:
    handler = make_handler(
       '/search',
       {
@@ -997,7 +1014,8 @@ def test_search_endpoint_adds_type_fields( stub_database ):
    ) in StubZooControllers.instances[ 0 ].calls
 
 
-def test_get_guardians_talks_omitted_year_passes_through( stub_database ):
+def test_get_guardians_talks_omitted_year_passes_through(
+      stub_database: type[ StubZooControllers ] ) -> None:
    handler = make_handler(
       '/get-guardians-talks',
       { 'month': 'June', 'day': 15 },
@@ -1012,7 +1030,8 @@ def test_get_guardians_talks_omitted_year_passes_through( stub_database ):
    ) in StubZooControllers.instances[ 0 ].calls
 
 
-def test_search_omitted_year_passes_through_when_guardians_included( stub_database ):
+def test_search_omitted_year_passes_through_when_guardians_included(
+      stub_database: type[ StubZooControllers ] ) -> None:
    handler = make_handler(
       '/search',
       {
@@ -1037,7 +1056,8 @@ def test_search_omitted_year_passes_through_when_guardians_included( stub_databa
    ) in StubZooControllers.instances[ 0 ].calls
 
 
-def test_search_omitted_year_passes_through_when_wild_encounters_included( stub_database ):
+def test_search_omitted_year_passes_through_when_wild_encounters_included(
+      stub_database: type[ StubZooControllers ] ) -> None:
    handler = make_handler(
       '/search',
       {
@@ -1062,7 +1082,8 @@ def test_search_omitted_year_passes_through_when_wild_encounters_included( stub_
    ) in StubZooControllers.instances[ 0 ].calls
 
 
-def test_search_endpoint_skips_unselected_types( stub_database ):
+def test_search_endpoint_skips_unselected_types(
+      stub_database: type[ StubZooControllers ] ) -> None:
    handler = make_handler(
       '/search',
       {
@@ -1096,7 +1117,8 @@ def test_search_endpoint_skips_unselected_types( stub_database ):
    assert StubZooControllers.instances[ 0 ].calls == []
 
 
-def test_itinerary_endpoints_return_success_payloads( stub_database ):
+def test_itinerary_endpoints_return_success_payloads(
+      stub_database: type[ StubZooControllers ] ) -> None:
    set_handler = make_handler(
       '/set-itinerary',
       {
@@ -1749,11 +1771,11 @@ def test_itinerary_endpoints_return_success_payloads( stub_database ):
    ]
 )
 def test_console_mutation_endpoints_map_payloads_and_success_responses(
-      stub_database,
-      path,
-      body,
-      expected_call,
-      response_subset ):
+      stub_database: type[ StubZooControllers ],
+      path: str,
+      body: dict[ str, Any ],
+      expected_call: tuple[ str, dict[ str, Any ] ],
+      response_subset: dict[ str, Any ] ) -> None:
    handler = make_handler( path, body )
 
    server.MyHandler.do_POST( handler )
@@ -1892,11 +1914,11 @@ def test_console_mutation_endpoints_map_payloads_and_success_responses(
    ]
 )
 def test_weekly_schedule_endpoints_map_payloads_and_success_responses(
-      stub_database,
-      path,
-      body,
-      expected_call,
-      response_subset ):
+      stub_database: type[ StubZooControllers ],
+      path: str,
+      body: dict[ str, Any ],
+      expected_call: tuple[ str, dict[ str, Any ] ],
+      response_subset: dict[ str, Any ] ) -> None:
    handler = make_handler( path, body )
 
    server.MyHandler.do_POST( handler )
@@ -1969,12 +1991,12 @@ def test_weekly_schedule_endpoints_map_payloads_and_success_responses(
    ]
 )
 def test_schedule_overlap_resolution_endpoints_map_payloads(
-      stub_database,
-      path,
-      body_key,
-      item_name,
-      expected_method,
-      response_key ):
+      stub_database: type[ StubZooControllers ],
+      path: str,
+      body_key: str,
+      item_name: str,
+      expected_method: str,
+      response_key: str ) -> None:
    body = {
       body_key: item_name,
       'scheduleStartDate': '2026-06-01',
@@ -2042,10 +2064,10 @@ def test_schedule_overlap_resolution_endpoints_map_payloads(
    ]
 )
 def test_opening_schedule_overlap_failure_returns_error_type(
-      stub_database,
-      path,
-      body_key,
-      item_name ):
+      stub_database: type[ StubZooControllers ],
+      path: str,
+      body_key: str,
+      item_name: str ) -> None:
    StubZooControllers.default_success = False
    handler = make_handler(
       path,
@@ -2203,7 +2225,7 @@ def test_opening_schedule_overlap_failure_returns_error_type(
          (
             'set_wild_encounter_schedule',
             {
-               'wild_encounter': 'African Rainforest',
+               'wild_encounter_name': 'African Rainforest',
                'start_date': '2026-06-01',
                'end_date': '2026-06-30',
                'encounter_time': '14:00',
@@ -2233,7 +2255,7 @@ def test_opening_schedule_overlap_failure_returns_error_type(
          (
             'end_wild_encounter_schedule',
             {
-               'wild_encounter': 'African Rainforest',
+               'wild_encounter_name': 'African Rainforest',
                'schedule_end_date': '2026-06-30'
             }
          ),
@@ -2252,7 +2274,7 @@ def test_opening_schedule_overlap_failure_returns_error_type(
          (
             'cancel_wild_encounter_occurrence',
             {
-               'wild_encounter': 'African Rainforest',
+               'wild_encounter_name': 'African Rainforest',
                'date': '2026-06-15',
                'time': '14:00'
             }
@@ -2266,11 +2288,11 @@ def test_opening_schedule_overlap_failure_returns_error_type(
    ]
 )
 def test_schedule_and_occurrence_endpoints_map_payloads_and_success_responses(
-      stub_database,
-      path,
-      body,
-      expected_call,
-      response_subset ):
+      stub_database: type[ StubZooControllers ],
+      path: str,
+      body: dict[ str, Any ],
+      expected_call: tuple[ str, dict[ str, Any ] ],
+      response_subset: dict[ str, Any ] ) -> None:
    handler = make_handler( path, body )
 
    server.MyHandler.do_POST( handler )
@@ -2331,10 +2353,10 @@ def test_schedule_and_occurrence_endpoints_map_payloads_and_success_responses(
    ]
 )
 def test_console_mutation_endpoints_return_error_when_database_returns_false(
-      stub_database,
-      path,
-      body,
-      expected_error ):
+      stub_database: type[ StubZooControllers ],
+      path: str,
+      body: dict[ str, Any ],
+      expected_error: str ) -> None:
    StubZooControllers.default_success = False
    handler = make_handler( path, body )
 

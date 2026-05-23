@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+from ...types import Row
 from .meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
 
 
-def map_meet_the_guardians_talk_record( row ):
+def map_meet_the_guardians_talk_record( row: Row ) -> MeetTheGuardiansTalkRecord:
    return MeetTheGuardiansTalkRecord(
       name=row[ 'NAME' ],
       location=row[ 'LOCATION' ],
@@ -11,7 +16,8 @@ def map_meet_the_guardians_talk_record( row ):
 
 
 
-def map_meet_the_guardians_talk_records( rows ):
+def map_meet_the_guardians_talk_records(
+      rows: Iterable[ Row ] ) -> list[ MeetTheGuardiansTalkRecord ]:
    return [
       map_meet_the_guardians_talk_record( row )
       for row in rows

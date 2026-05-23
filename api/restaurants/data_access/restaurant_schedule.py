@@ -1,8 +1,15 @@
-from .restaurant_schedule_record import RestaurantScheduleRecord
+from __future__ import annotations
+
 from ...shared.constants import OPEN_ENDED_SQL_DATE
+from ...types import Connection, DateKey
+from ..logic.restaurant_opening_schedule import RestaurantOpeningSchedule
+from ..logic.restaurant_schedule_override import RestaurantScheduleOverride
+from .restaurant_schedule_record import RestaurantScheduleRecord
 
 
-def restaurant_schedule_overlaps_existing_schedule( conn, schedule ):
+def restaurant_schedule_overlaps_existing_schedule(
+      conn: Connection,
+      schedule: RestaurantOpeningSchedule ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -30,7 +37,9 @@ def restaurant_schedule_overlaps_existing_schedule( conn, schedule ):
       cur.close()
 
 
-def save_restaurant_opening_schedule( conn, schedule ):
+def save_restaurant_opening_schedule(
+      conn: Connection,
+      schedule: RestaurantOpeningSchedule ) -> bool:
    if restaurant_schedule_overlaps_existing_schedule( conn, schedule ):
       return False
 
@@ -39,7 +48,9 @@ def save_restaurant_opening_schedule( conn, schedule ):
    return True
 
 
-def fetch_restaurant_opening_schedule_conflicts( conn, schedule ):
+def fetch_restaurant_opening_schedule_conflicts(
+      conn: Connection,
+      schedule: RestaurantOpeningSchedule ) -> list[ RestaurantScheduleRecord ]:
    cur = conn.cursor()
 
    try:
@@ -93,7 +104,9 @@ def fetch_restaurant_opening_schedule_conflicts( conn, schedule ):
       cur.close()
 
 
-def delete_restaurant_opening_schedule( conn, schedule ):
+def delete_restaurant_opening_schedule(
+      conn: Connection,
+      schedule: RestaurantScheduleRecord ) -> None:
    cur = conn.cursor()
 
    try:
@@ -112,10 +125,10 @@ def delete_restaurant_opening_schedule( conn, schedule ):
 
 
 def update_restaurant_opening_schedule_dates(
-      conn,
-      schedule,
-      start_date,
-      end_date ):
+      conn: Connection,
+      schedule: RestaurantScheduleRecord,
+      start_date: DateKey,
+      end_date: DateKey | None ) -> None:
    cur = conn.cursor()
 
    try:
@@ -139,10 +152,10 @@ def update_restaurant_opening_schedule_dates(
 
 
 def insert_copied_restaurant_opening_schedule(
-      conn,
-      schedule,
-      start_date,
-      end_date ):
+      conn: Connection,
+      schedule: RestaurantScheduleRecord,
+      start_date: DateKey,
+      end_date: DateKey | None ) -> None:
    cur = conn.cursor()
 
    try:
@@ -182,7 +195,9 @@ def insert_copied_restaurant_opening_schedule(
       cur.close()
 
 
-def insert_or_update_restaurant_opening_schedule( conn, schedule ):
+def insert_or_update_restaurant_opening_schedule(
+      conn: Connection,
+      schedule: RestaurantOpeningSchedule ) -> None:
    cur = conn.cursor()
 
    try:
@@ -233,7 +248,9 @@ def insert_or_update_restaurant_opening_schedule( conn, schedule ):
       cur.close()
 
 
-def save_restaurant_schedule_override( conn, override ):
+def save_restaurant_schedule_override(
+      conn: Connection,
+      override: RestaurantScheduleOverride ) -> bool:
    cur = conn.cursor()
 
    try:

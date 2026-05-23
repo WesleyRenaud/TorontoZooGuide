@@ -1,20 +1,32 @@
+from __future__ import annotations
+
+from datetime import date
+
 from ... import zoo
+from ...animals.controllers.animal_controller import AnimalController
+from ...attractions.controllers.attraction_controller import AttractionController
+from ...guardians.controllers.guardians_controller import GuardiansController
+from ...types import Connection, DateInput, DateKey
+from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from ..data_access.itinerary import fetch_itinerary_animal_rows
 from ..data_access.itinerary import fetch_itinerary_attraction_rows
+from ..data_access.itinerary_animal_input import ItineraryAnimalInput
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ..data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ...guardians.logic.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
 from ...wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
 
 
 def validate_itinerary_animals(
-      animal_controller,
-      animals,
-      new_visit_date,
-      new_visit_date_temp=None,
-      old_visit_date=None,
-      saved_itinerary_animal_rows=None ):
-   old_likelihood_by_pair = {}
+      animal_controller: type[ AnimalController ],
+      animals: tuple[ ItineraryAnimalInput, ... ],
+      new_visit_date: date,
+      new_visit_date_temp: float | None = None,
+      old_visit_date: DateKey | None = None,
+      saved_itinerary_animal_rows: list[ ItineraryAnimalRecord ] | None = None ) -> list[ zoo.AnimalDiff ]:
+   old_likelihood_by_pair: dict[ tuple[ str, str ], int | None ] = {}
 
    if old_visit_date != None and saved_itinerary_animal_rows:
       for row in saved_itinerary_animal_rows:
@@ -22,7 +34,7 @@ def validate_itinerary_animals(
             ( row.species, row.exhibit )
          ] = row.new_likelihood
 
-   diffs = []
+   diffs: list[ zoo.AnimalDiff ] = []
 
    for animal in animals:
       species = animal.species
@@ -65,19 +77,19 @@ def validate_itinerary_animals(
 
 
 def validate_itinerary_attractions(
-      attraction_controller,
-      attractions,
-      new_visit_date,
-      old_visit_date=None,
-      saved_itinerary_attraction_rows=None ):
+      attraction_controller: type[ AttractionController ],
+      attractions: tuple[ str, ... ],
+      new_visit_date: date,
+      old_visit_date: DateKey | None = None,
+      saved_itinerary_attraction_rows: list[ ItineraryAttractionRecord ] | None = None ) -> list[ zoo.AttractionDiff ]:
 
-   old_likelihood_by_name = {}
+   old_likelihood_by_name: dict[ str, int | None ] = {}
 
    if old_visit_date != None and saved_itinerary_attraction_rows:
       for row in saved_itinerary_attraction_rows:
          old_likelihood_by_name[ row.attraction ] = row.new_likelihood
 
-   diffs = []
+   diffs: list[ zoo.AttractionDiff ] = []
 
    for attraction_name in attractions:
 
@@ -103,17 +115,17 @@ def validate_itinerary_attractions(
 
 
 def validate_itinerary_for_save(
-      conn,
-      save_input,
-      animal_controller,
-      attraction_controller,
-      guardians_controller,
-      wild_encounter_controller,
+      conn: Connection,
+      save_input: ItinerarySaveInput,
+      animal_controller: type[ AnimalController ],
+      attraction_controller: type[ AttractionController ],
+      guardians_controller: type[ GuardiansController ],
+      wild_encounter_controller: type[ WildEncounterController ],
       *,
-      new_visit_date_temp=None,
-      old_visit_date=None ):
-   saved_itinerary_animal_rows = []
-   saved_itinerary_attraction_rows = []
+      new_visit_date_temp: float | None = None,
+      old_visit_date: DateKey | None = None ) -> ValidatedItinerary:
+   saved_itinerary_animal_rows: list[ ItineraryAnimalRecord ] = []
+   saved_itinerary_attraction_rows: list[ ItineraryAttractionRecord ] = []
 
    if old_visit_date != None:
       saved_itinerary_animal_rows = fetch_itinerary_animal_rows( conn )

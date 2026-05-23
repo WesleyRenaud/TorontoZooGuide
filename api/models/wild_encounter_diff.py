@@ -1,15 +1,23 @@
+from __future__ import annotations
+
+from ..types import ScheduleTimeKey
 from ..zoo_util import ZooUtil
 
 
 class WildEncounterDiff:
-   def __init__( self, name, is_deleted, start_time=None, end_time=None ):
+   def __init__(
+         self,
+         name: str,
+         is_deleted: bool,
+         start_time: ScheduleTimeKey = None,
+         end_time: ScheduleTimeKey = None ) -> None:
       self.name = name
       self.is_deleted = is_deleted
       self.start_time = start_time
       self.end_time = end_time
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'name': self.name,
          'is_deleted': ZooUtil.as_boolean( self.is_deleted ),

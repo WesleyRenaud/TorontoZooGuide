@@ -1,4 +1,8 @@
-def create_table( cursor ):
+from __future__ import annotations
+
+from ...types import Cursor
+
+def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS Defibrillator;' )
    cursor.execute( ''' CREATE TABLE Defibrillator
                      (  X_COORD  FLOAT NOT NULL,
@@ -58,7 +62,7 @@ defibrillators = [
 ]
 
 
-def insert_rows( cursor ):
+def insert_rows( cursor: Cursor ) -> None:
    cursor.executemany( ''' INSERT INTO Defibrillator (
                               X_COORD,
                               Y_COORD

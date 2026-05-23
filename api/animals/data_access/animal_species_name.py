@@ -1,4 +1,9 @@
-def fetch_animal_species_names( conn ):
+from __future__ import annotations
+
+from ...types import Connection
+
+
+def fetch_animal_species_names( conn: Connection ) -> list[ str ]:
    cur = conn.cursor()
 
    data = cur.execute(

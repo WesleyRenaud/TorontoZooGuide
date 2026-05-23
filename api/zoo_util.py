@@ -1,14 +1,19 @@
-from datetime import date, datetime, timedelta
+from __future__ import annotations
+
+from datetime import date, datetime, timedelta, time
 import calendar
 import math
 import sys
+from collections.abc import Sequence
+from typing import Any
 
 from .models.date_range import DateRange
+from .types import DateInput, DateKey, MonthInput, VisitDay, VisitMonth, VisitYear
 
 
 class ZooUtil:
    @staticmethod
-   def parse_datetime_value( value ):
+   def parse_datetime_value( value: str | None ) -> datetime | None:
       if value == None:
          return None
 
@@ -27,7 +32,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def parse_time_value( value ):
+   def parse_time_value( value: str | None ) -> time | None:
       if value == None:
          return None
 
@@ -50,7 +55,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def format_time_value( value ):
+   def format_time_value( value: str | None ) -> str | None:
       parsed_time = ZooUtil.parse_time_value( value )
 
       if parsed_time == None:
@@ -60,7 +65,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def format_display_time_value( value ):
+   def format_display_time_value( value: str | None ) -> str | None:
       parsed_time = ZooUtil.parse_time_value( value )
 
       if parsed_time == None:
@@ -70,7 +75,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def add_minutes_to_time( value, minutes ):
+   def add_minutes_to_time( value: str | None, minutes: int | None ) -> str | None:
       parsed_time = ZooUtil.parse_time_value( value )
 
       if parsed_time == None or minutes == None:
@@ -86,7 +91,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def parse_date_value( value ):
+   def parse_date_value( value: DateInput ) -> date | None:
       if value == None:
          return None
 
@@ -114,7 +119,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def normalize_date_key( value ):
+   def normalize_date_key( value: DateInput ) -> DateKey | None:
       if value == None:
          return None
 
@@ -133,12 +138,12 @@ class ZooUtil:
 
 
    @staticmethod
-   def today_date_key():
+   def today_date_key() -> DateKey:
       return datetime.now().date().isoformat()
 
 
    @staticmethod
-   def resolve_open_ended_date_range( start_date, end_date ):
+   def resolve_open_ended_date_range( start_date: DateInput, end_date: DateInput ) -> DateRange:
       if not start_date:
          start_date = ZooUtil.today_date_key()
 
@@ -148,7 +153,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def format_display_date_value( value ):
+   def format_display_date_value( value: DateInput ) -> str | None:
       parsed_date = ZooUtil.parse_date_value( value )
 
       if parsed_date == None:
@@ -158,7 +163,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def normalize_itinerary_schedule_time( value ):
+   def normalize_itinerary_schedule_time( value: str | None ) -> str:
       if value == None:
          return ''
 
@@ -166,7 +171,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def is_date_on_or_after( date_value, boundary_value ):
+   def is_date_on_or_after( date_value: DateInput, boundary_value: DateInput ) -> bool:
       """True when ``date_value`` is on or after ``boundary_value``.
 
       A ``None`` ``boundary_value`` is treated as unbounded (always true).
@@ -178,7 +183,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def is_date_on_or_before( date_value, boundary_value ):
+   def is_date_on_or_before( date_value: DateInput, boundary_value: DateInput ) -> bool:
       """True when ``date_value`` is on or before ``boundary_value``.
 
       A ``None`` ``boundary_value`` is treated as unbounded (always true).
@@ -190,7 +195,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def is_date_in_range( target_date, start_date_value, end_date_value ):
+   def is_date_in_range( target_date: DateInput, start_date_value: DateInput, end_date_value: DateInput ) -> bool:
       return (
          ZooUtil.is_date_on_or_after( target_date, start_date_value )
          and ZooUtil.is_date_on_or_before( target_date, end_date_value )
@@ -198,7 +203,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def is_date_range_ordered( start_date_value, end_date_value ):
+   def is_date_range_ordered( start_date_value: DateInput, end_date_value: DateInput ) -> bool:
       if end_date_value is None:
          return True
 
@@ -206,7 +211,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def as_boolean( value ):
+   def as_boolean( value: Any ) -> bool:
       if isinstance( value, bool ):
          return value
 
@@ -217,7 +222,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def get_average_temperature( month, day ):
+   def get_average_temperature( month: MonthInput, day: VisitDay ) -> float:
       # Convert month/day to day-of-year
       month = ZooUtil.normalize_month( month )
       day_of_year = sum( calendar.monthrange( 2024, m )[ 1 ] for m in range( 1, month ) ) + day
@@ -260,7 +265,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def normalize_month( month ):
+   def normalize_month( month: MonthInput ) -> VisitMonth | None:
       if not month:
          return None
 
@@ -300,7 +305,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def get_month_abbreviation( month ):
+   def get_month_abbreviation( month: MonthInput ) -> str:
       month_map = {
          1: 'Jan',
          2: 'Feb',
@@ -358,7 +363,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def resolve_visit_calendar_month( month ):
+   def resolve_visit_calendar_month( month: MonthInput ) -> VisitMonth:
       """API ``month`` (name, abbr, 1–12, ``'06'``-style string, etc.) -> ``int`` 1–12.
 
       Used for :class:`datetime.date` construction and SQL integer month columns.
@@ -373,13 +378,13 @@ class ZooUtil:
 
 
    @staticmethod
-   def resolve_visit_day_of_month( day ):
+   def resolve_visit_day_of_month( day: VisitDay | str ) -> VisitDay:
       """API ``day`` value -> ``int`` day-of-month (same as ``int(day)``)."""
       return int( day )
 
 
    @staticmethod
-   def resolve_visit_calendar_year( calendar_year=None ):
+   def resolve_visit_calendar_year( calendar_year: VisitYear | None = None ) -> VisitYear:
       """Calendar year for visit ``date`` construction. ``None`` uses the current local year."""
       if calendar_year is not None:
          return int( calendar_year )
@@ -390,7 +395,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def visit_target_date( month, day, year ):
+   def visit_target_date( month: MonthInput, day: VisitDay | str, year: VisitYear | None ) -> date:
       """Build a visit :class:`~datetime.date` from API ``month`` / ``day`` / ``year``."""
       return date(
          int( ZooUtil.resolve_visit_calendar_year( year ) ),
@@ -400,7 +405,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def schedule_includes_weekday( weekday_index, monday_through_sunday ):
+   def schedule_includes_weekday( weekday_index: int, monday_through_sunday: Sequence[ Any ] ) -> bool:
       """Whether ``monday_through_sunday`` marks ``weekday_index`` as active.
 
       ``weekday_index`` follows :meth:`datetime.date.weekday` (Monday ``0`` through Sunday ``6``).
@@ -413,7 +418,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def get_day_of_year( month, day ):
+   def get_day_of_year( month: str, day: int ) -> int:
       month_index = {
          'JAN': 0,
          'FEB': 1,
@@ -436,7 +441,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def get_next_month( month ):
+   def get_next_month( month: str ) -> str | None:
       if month in ( 'JAN', 'Jan' ):
          return 'Feb'
       elif month in ( 'FEB', 'Feb' ):
@@ -462,9 +467,11 @@ class ZooUtil:
       elif month in ( 'DEC', 'Dec' ):
          return 'Jan'
 
+      return None
+
 
    @staticmethod
-   def get_number_of_days_in_month( month ):
+   def get_number_of_days_in_month( month: str ) -> int | None:
       if month in ( 'JAN', 'Jan', 'MAR', 'Mar', 'MAY', 'May', 'JUL', 'Jul', 'AUG', 'Aug', 'OCT', 'Oct', 'DEC', 'Dec' ):
          return 31
       elif month in ( 'APR', 'Apr', 'JUN', 'Jun', 'SEP', 'Sep', 'NOV', 'Nov' ):
@@ -472,10 +479,12 @@ class ZooUtil:
       elif month in ( 'FEB', 'Feb' ):
          return 28
 
+      return None
+
 
    # Returns probability (between 0 and 1) that temperature is >= min_temperature, assuming a normal distribution N(mu, sigma)
    @staticmethod
-   def get_temperature_probability( mu, sigma, min_temperature ):
+   def get_temperature_probability( mu: float, sigma: float, min_temperature: float ) -> float:
       z = ( min_temperature - mu ) / sigma
 
       # Standard normal CDF via error function
@@ -485,7 +494,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def is_peak_season_month( month ):
+   def is_peak_season_month( month: MonthInput ) -> bool:
       month = ZooUtil.normalize_month( month )
 
       if month >= 5 and month <= 10:
@@ -495,7 +504,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def is_holiday( d ):
+   def is_holiday( d: date ) -> bool:
       year = d.year
 
       holidays = {
@@ -514,7 +523,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def get_family_day( year ):
+   def get_family_day( year: VisitYear ) -> date:
       d = date( year, 2, 1 )
 
       while d.weekday() != 0:
@@ -524,13 +533,13 @@ class ZooUtil:
 
 
    @staticmethod
-   def get_good_friday( year ):
+   def get_good_friday( year: VisitYear ) -> date:
       easter = ZooUtil.get_easter_date( year )
       return easter - timedelta( days=2 )
 
 
    @staticmethod
-   def get_easter_date( year ):
+   def get_easter_date( year: VisitYear ) -> date:
       a = year % 19
       b = year // 100
       c = year % 100
@@ -550,7 +559,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def get_victoria_day( year ):
+   def get_victoria_day( year: VisitYear ) -> date:
       d = date( year, 5, 24 )
 
       while d.weekday() != 0:
@@ -560,7 +569,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def get_civic_holiday( year ):
+   def get_civic_holiday( year: VisitYear ) -> date:
       d = date( year, 8, 1 )
 
       while d.weekday() != 0:
@@ -570,7 +579,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def get_labour_day( year ):
+   def get_labour_day( year: VisitYear ) -> date:
       d = date( year, 9, 1 )
 
       while d.weekday() != 0:
@@ -580,7 +589,7 @@ class ZooUtil:
 
 
    @staticmethod
-   def get_thanksgiving( year ):
+   def get_thanksgiving( year: VisitYear ) -> date:
       d = date( year, 10, 1 )
 
       while d.weekday() != 0:

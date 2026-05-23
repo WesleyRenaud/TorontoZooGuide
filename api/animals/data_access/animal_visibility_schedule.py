@@ -1,12 +1,17 @@
+from __future__ import annotations
+
+from ...types import Connection, DateInput
+
+
 def save_animal_limited_viewing_schedule(
-      conn,
-      species,
-      exhibit,
-      start_date,
-      end_date,
-      daily_start_time,
-      daily_end_time,
-      message ):
+      conn: Connection,
+      species: str,
+      exhibit: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      daily_start_time: str,
+      daily_end_time: str,
+      message: str ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -45,7 +50,10 @@ def save_animal_limited_viewing_schedule(
       cur.close()
 
 
-def delete_animal_visibility_schedule( conn, species, exhibit ):
+def delete_animal_visibility_schedule(
+      conn: Connection,
+      species: str,
+      exhibit: str ) -> bool:
    cur = conn.cursor()
 
    try:

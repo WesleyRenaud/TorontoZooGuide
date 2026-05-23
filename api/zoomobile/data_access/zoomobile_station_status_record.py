@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+
+from ...types import DateKey
 
 
 @dataclass( frozen=True )
 class ZoomobileStationStatusRecord:
-   zoomobile_station: object
-   closed_start: object
-   closed_end: object
-   is_closed: object
-   closed_message: object
+   zoomobile_station: str
+   closed_start: DateKey
+   closed_end: DateKey | None
+   is_closed: bool
+   closed_message: str | None

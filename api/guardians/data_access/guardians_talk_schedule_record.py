@@ -1,19 +1,23 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+
+from ...types import Coordinate, DateKey, ScheduleTimeKey
 
 
 @dataclass( frozen=True )
 class GuardiansTalkScheduleRecord:
-   name: object
-   location: object
-   x_coord: object
-   y_coord: object
-   maximum_duration: object
-   schedule_start_date: object
-   schedule_end_date: object
-   monday_time: object
-   tuesday_time: object
-   wednesday_time: object
-   thursday_time: object
-   friday_time: object
-   saturday_time: object
-   sunday_time: object
+   name: str
+   location: str
+   x_coord: Coordinate
+   y_coord: Coordinate
+   maximum_duration: int | None
+   schedule_start_date: DateKey
+   schedule_end_date: DateKey | None
+   monday_time: ScheduleTimeKey
+   tuesday_time: ScheduleTimeKey
+   wednesday_time: ScheduleTimeKey
+   thursday_time: ScheduleTimeKey
+   friday_time: ScheduleTimeKey
+   saturday_time: ScheduleTimeKey
+   sunday_time: ScheduleTimeKey

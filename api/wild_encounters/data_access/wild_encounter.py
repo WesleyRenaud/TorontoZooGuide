@@ -1,7 +1,19 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from ...types import Connection, DateKey
+
+if TYPE_CHECKING:
+   from ..logic.wild_encounter_cancellation_input import WildEncounterCancellationInput
+   from ..logic.wild_encounter_schedule_end_input import WildEncounterScheduleEndInput
+   from ..logic.wild_encounter_schedule_input import WildEncounterScheduleInput
+
 from .wild_encounter_mapper import map_wild_encounter_records
+from .wild_encounter_record import WildEncounterRecord
 
 
-def fetch_wild_encounter_names( conn ):
+def fetch_wild_encounter_names( conn: Connection ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -20,7 +32,7 @@ def fetch_wild_encounter_names( conn ):
       cur.close()
 
 
-def fetch_wild_encounter_records( conn ):
+def fetch_wild_encounter_records( conn: Connection ) -> list[ WildEncounterRecord ]:
    cur = conn.cursor()
 
    try:

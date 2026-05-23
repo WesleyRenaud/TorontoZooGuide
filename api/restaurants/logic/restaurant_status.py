@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 from ... import zoo
 from ...shared.strings import SharedStrings
+from ...types import DateInput
 from .restaurant_opening_schedule import RestaurantOpeningSchedule
 from .restaurant_schedule_override import RestaurantScheduleOverride
 
 
 def build_restaurant_closed_schedule(
-      restaurant,
-      start_date,
-      end_date,
-      message ):
+      restaurant: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      message: str ) -> RestaurantOpeningSchedule:
    date_range = zoo.ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
@@ -32,18 +35,18 @@ def build_restaurant_closed_schedule(
 
 
 def build_restaurant_opening_schedule(
-      restaurant,
-      start_date,
-      end_date,
-      monday,
-      tuesday,
-      wednesday,
-      thursday,
-      friday,
-      saturday,
-      sunday,
-      holidays_only,
-      message ):
+      restaurant: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      monday: bool,
+      tuesday: bool,
+      wednesday: bool,
+      thursday: bool,
+      friday: bool,
+      saturday: bool,
+      sunday: bool,
+      holidays_only: bool,
+      message: str ) -> RestaurantOpeningSchedule:
    date_range = zoo.ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )
@@ -68,10 +71,10 @@ def build_restaurant_opening_schedule(
 
 
 def build_restaurant_closure_override(
-      restaurant,
-      start_date,
-      end_date,
-      message ):
+      restaurant: str,
+      start_date: DateInput,
+      end_date: DateInput,
+      message: str ) -> RestaurantScheduleOverride:
    date_range = zoo.ZooUtil.resolve_open_ended_date_range(
       start_date=start_date,
       end_date=end_date )

@@ -1,14 +1,17 @@
+from __future__ import annotations
+
+from ..types import Coordinate
 from ..zoo_util import ZooUtil
 
 
 class DrinkingFountain:
    def __init__(
          self,
-         x_coord,
-         y_coord,
-         is_closed=False,
-         closed_message=None,
-         likelihood=None ):
+         x_coord: Coordinate,
+         y_coord: Coordinate,
+         is_closed: bool = False,
+         closed_message: str | None = None,
+         likelihood: int | None = None ) -> None:
       self.x_coord = x_coord
       self.y_coord = y_coord
       self.is_closed = ZooUtil.as_boolean( is_closed )
@@ -16,7 +19,7 @@ class DrinkingFountain:
       self.likelihood = likelihood
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,

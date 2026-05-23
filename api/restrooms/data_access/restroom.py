@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from ...types import Connection
 from .restroom_mapper import map_restroom_records
+from .restroom_record import RestroomRecord
 
 
-def fetch_restroom_names( conn ):
+def fetch_restroom_names( conn: Connection ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
@@ -17,7 +21,7 @@ def fetch_restroom_names( conn ):
       cur.close()
 
 
-def fetch_restroom_records( conn ):
+def fetch_restroom_records( conn: Connection ) -> list[ RestroomRecord ]:
    cur = conn.cursor()
 
    try:

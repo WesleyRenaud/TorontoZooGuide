@@ -1,9 +1,21 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from ...types import Connection, DateKey
+
+if TYPE_CHECKING:
+   from ..logic.guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
+   from ..logic.guardians_talk_schedule_input import GuardiansTalkScheduleInput
+
 from .guardians_talk_cancellation_mapper import map_guardians_talk_cancellation_records
 from .guardians_talk_schedule_mapper import map_guardians_talk_schedule_record
 from .guardians_talk_schedule_mapper import map_guardians_talk_schedule_records
+from .guardians_talk_cancellation_record import GuardiansTalkCancellationRecord
+from .guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 
 
-def fetch_guardians_talk_schedule_records( conn ):
+def fetch_guardians_talk_schedule_records( conn: Connection ) -> list[ GuardiansTalkScheduleRecord ]:
    cur = conn.cursor()
 
    try:
@@ -35,7 +47,10 @@ def fetch_guardians_talk_schedule_records( conn ):
       cur.close()
 
 
-def fetch_guardians_talk_schedule_record_for_occurrences( conn, talk_name, location ):
+def fetch_guardians_talk_schedule_record_for_occurrences(
+      conn: Connection,
+      talk_name: str,
+      location: str ) -> GuardiansTalkScheduleRecord | None:
    cur = conn.cursor()
 
    try:
@@ -78,7 +93,10 @@ def fetch_guardians_talk_schedule_record_for_occurrences( conn, talk_name, locat
       cur.close()
 
 
-def fetch_guardians_talk_cancellation_records( conn, talk_name, location ):
+def fetch_guardians_talk_cancellation_records(
+      conn: Connection,
+      talk_name: str,
+      location: str ) -> list[ GuardiansTalkCancellationRecord ]:
    cur = conn.cursor()
 
    try:
@@ -103,11 +121,11 @@ def fetch_guardians_talk_cancellation_records( conn, talk_name, location ):
 
 
 def fetch_guardians_talk_occurrence_is_cancelled(
-      conn,
-      talk_name,
-      location,
-      cancellation_date,
-      talk_time ):
+      conn: Connection,
+      talk_name: str,
+      location: str,
+      cancellation_date: DateKey,
+      talk_time: str ) -> bool:
 
    cur = conn.cursor()
 
@@ -134,7 +152,9 @@ def fetch_guardians_talk_occurrence_is_cancelled(
 
 
 
-def save_guardians_talk_schedule( conn, schedule ):
+def save_guardians_talk_schedule(
+      conn: Connection,
+      schedule: GuardiansTalkScheduleInput ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -189,7 +209,9 @@ def save_guardians_talk_schedule( conn, schedule ):
 
 
 
-def save_guardians_talk_schedule_end( conn, schedule_end ):
+def save_guardians_talk_schedule_end(
+      conn: Connection,
+      schedule_end: GuardiansTalkScheduleEndInput ) -> bool:
    cur = conn.cursor()
 
    try:

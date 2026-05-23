@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import sqlite3
 
 from .loaders import seed_static_data
 from .schema import create_schema
 
 
-def main( db_path='animals.db' ):
+def main( db_path: str = 'animals.db' ) -> None:
    conn = sqlite3.connect( db_path )
    cursor = conn.cursor()
 

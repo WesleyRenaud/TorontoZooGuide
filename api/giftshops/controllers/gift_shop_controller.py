@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from ... import zoo
+from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.gift_shop import fetch_gift_shop_names
 from ..data_access.gift_shop import fetch_gift_shop_records
 from ..data_access.gift_shop import fetch_gift_shop_schedule_override_records
@@ -19,18 +23,18 @@ class GiftShopController():
 
 
    @classmethod
-   def get_gift_shop_names( cls ):
+   def get_gift_shop_names( cls ) -> list[ str ]:
       return fetch_gift_shop_names( get_connection() )
 
 
    @classmethod
    def get_gift_shops(
          cls,
-         day,
-         month,
-         year,
-         include_closed_gift_shops,
-         gift_shops_to_include=None ):
+         day: VisitDay,
+         month: MonthInput,
+         year: VisitYear,
+         include_closed_gift_shops: bool,
+         gift_shops_to_include: list[ str ] | None = None ) -> list[ zoo.GiftShop ]:
 
       context = resolve_gift_shop_context(
          day=day,
@@ -53,10 +57,10 @@ class GiftShopController():
    @classmethod
    def get_gift_shops_matching_query(
          cls,
-         query,
-         day,
-         month,
-         year ):
+         query: str,
+         day: VisitDay,
+         month: MonthInput,
+         year: VisitYear ) -> list[ zoo.GiftShop ]:
 
       gift_shops = cls.get_gift_shops(
          day=day,
@@ -72,10 +76,10 @@ class GiftShopController():
    @classmethod
    def set_gift_shop_as_closed(
          cls,
-         gift_shop,
-         start_date,
-         end_date,
-         message ):
+         gift_shop: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         message: str ) -> bool:
       schedule = build_gift_shop_closed_schedule(
          gift_shop=gift_shop,
          start_date=start_date,
@@ -90,10 +94,10 @@ class GiftShopController():
    @classmethod
    def set_gift_shop_closure_override(
          cls,
-         gift_shop,
-         start_date,
-         end_date,
-         message ):
+         gift_shop: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         message: str ) -> bool:
       override = build_gift_shop_closure_override(
          gift_shop=gift_shop,
          start_date=start_date,
@@ -108,18 +112,18 @@ class GiftShopController():
    @classmethod
    def set_gift_shop_opening_schedule(
          cls,
-         gift_shop,
-         start_date,
-         end_date,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         holidays_only,
-         message ):
+         gift_shop: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
       schedule = build_gift_shop_opening_schedule(
          gift_shop=gift_shop,
          start_date=start_date,
@@ -142,18 +146,18 @@ class GiftShopController():
    @classmethod
    def replace_gift_shop_opening_schedule_overlaps(
          cls,
-         gift_shop,
-         start_date,
-         end_date,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         holidays_only,
-         message ):
+         gift_shop: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
       schedule = build_gift_shop_opening_schedule(
          gift_shop=gift_shop,
          start_date=start_date,
@@ -176,18 +180,18 @@ class GiftShopController():
    @classmethod
    def trim_gift_shop_opening_schedule_overlaps(
          cls,
-         gift_shop,
-         start_date,
-         end_date,
-         monday,
-         tuesday,
-         wednesday,
-         thursday,
-         friday,
-         saturday,
-         sunday,
-         holidays_only,
-         message ):
+         gift_shop: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
       schedule = build_gift_shop_opening_schedule(
          gift_shop=gift_shop,
          start_date=start_date,

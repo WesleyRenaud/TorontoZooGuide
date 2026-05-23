@@ -1,24 +1,29 @@
-def clear_itinerary_date( cur ):
+from __future__ import annotations
+
+from ...types import Connection, Cursor
+
+
+def clear_itinerary_date( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryDate;' )
 
 
-def clear_itinerary_animals( cur ):
+def clear_itinerary_animals( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryAnimal;' )
 
 
-def clear_itinerary_attractions( cur ):
+def clear_itinerary_attractions( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryAttraction;' )
 
 
-def clear_itinerary_guardians_talks( cur ):
+def clear_itinerary_guardians_talks( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryGuardiansTalk;' )
 
 
-def clear_itinerary_wild_encounters( cur ):
+def clear_itinerary_wild_encounters( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryWildEncounter;' )
 
 
-def clear_itinerary( conn ):
+def clear_itinerary( conn: Connection ) -> bool:
    cur = conn.cursor()
 
    try:

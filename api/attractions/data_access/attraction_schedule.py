@@ -1,8 +1,15 @@
-from .attraction_schedule_record import AttractionScheduleRecord
+from __future__ import annotations
+
 from ...shared.constants import OPEN_ENDED_SQL_DATE
+from ...types import Connection, DateKey
+from ..logic.attraction_opening_schedule import AttractionOpeningSchedule
+from ..logic.attraction_schedule_override import AttractionScheduleOverride
+from .attraction_schedule_record import AttractionScheduleRecord
 
 
-def attraction_schedule_overlaps_existing_schedule( conn, schedule ):
+def attraction_schedule_overlaps_existing_schedule(
+      conn: Connection,
+      schedule: AttractionOpeningSchedule ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -30,7 +37,9 @@ def attraction_schedule_overlaps_existing_schedule( conn, schedule ):
       cur.close()
 
 
-def save_attraction_opening_schedule( conn, schedule ):
+def save_attraction_opening_schedule(
+      conn: Connection,
+      schedule: AttractionOpeningSchedule ) -> bool:
    if attraction_schedule_overlaps_existing_schedule( conn, schedule ):
       return False
 
@@ -39,7 +48,9 @@ def save_attraction_opening_schedule( conn, schedule ):
    return True
 
 
-def fetch_attraction_opening_schedule_conflicts( conn, schedule ):
+def fetch_attraction_opening_schedule_conflicts(
+      conn: Connection,
+      schedule: AttractionOpeningSchedule ) -> list[ AttractionScheduleRecord ]:
    cur = conn.cursor()
 
    try:
@@ -93,7 +104,9 @@ def fetch_attraction_opening_schedule_conflicts( conn, schedule ):
       cur.close()
 
 
-def delete_attraction_opening_schedule( conn, schedule ):
+def delete_attraction_opening_schedule(
+      conn: Connection,
+      schedule: AttractionScheduleRecord ) -> None:
    cur = conn.cursor()
 
    try:
@@ -112,10 +125,10 @@ def delete_attraction_opening_schedule( conn, schedule ):
 
 
 def update_attraction_opening_schedule_dates(
-      conn,
-      schedule,
-      start_date,
-      end_date ):
+      conn: Connection,
+      schedule: AttractionScheduleRecord,
+      start_date: DateKey,
+      end_date: DateKey | None ) -> None:
    cur = conn.cursor()
 
    try:
@@ -139,10 +152,10 @@ def update_attraction_opening_schedule_dates(
 
 
 def insert_copied_attraction_opening_schedule(
-      conn,
-      schedule,
-      start_date,
-      end_date ):
+      conn: Connection,
+      schedule: AttractionScheduleRecord,
+      start_date: DateKey,
+      end_date: DateKey | None ) -> None:
    cur = conn.cursor()
 
    try:
@@ -182,7 +195,9 @@ def insert_copied_attraction_opening_schedule(
       cur.close()
 
 
-def insert_or_update_attraction_opening_schedule( conn, schedule ):
+def insert_or_update_attraction_opening_schedule(
+      conn: Connection,
+      schedule: AttractionOpeningSchedule ) -> None:
    cur = conn.cursor()
 
    try:
@@ -233,7 +248,9 @@ def insert_or_update_attraction_opening_schedule( conn, schedule ):
       cur.close()
 
 
-def save_attraction_schedule_override( conn, override ):
+def save_attraction_schedule_override(
+      conn: Connection,
+      override: AttractionScheduleOverride ) -> bool:
    cur = conn.cursor()
 
    try:

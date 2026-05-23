@@ -1,9 +1,23 @@
+from __future__ import annotations
+
 from ..zoo_util import ZooUtil
 
 
 class Attraction:
-   def __init__( self, name, free_with_admission, description=None, info_link=None, hyperlink_text=None, x_coord=None, y_coord=None,
-                 is_closed=False, closed_message=None, likelihood=None, is_deleted=False, old_likelihood=None ):
+   def __init__(
+         self,
+         name: str,
+         free_with_admission: bool,
+         description: str | None = None,
+         info_link: str | None = None,
+         hyperlink_text: str | None = None,
+         x_coord: float | None = None,
+         y_coord: float | None = None,
+         is_closed: bool = False,
+         closed_message: str | None = None,
+         likelihood: int | None = None,
+         is_deleted: bool = False,
+         old_likelihood: int | None = None ) -> None:
       self.name = name
       self.free_with_admission = free_with_admission
       self.description = description
@@ -18,7 +32,7 @@ class Attraction:
       self.old_likelihood = old_likelihood
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'name': self.name,
          'free_with_admission': ZooUtil.as_boolean( self.free_with_admission ),

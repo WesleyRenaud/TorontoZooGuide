@@ -1,14 +1,21 @@
+from __future__ import annotations
+
+from datetime import date
+
 from ... import zoo
 from ...shared.enums.zoomobile_route import ZoomobileRouteId
+from ...types import MonthInput, VisitDay, VisitYear
+from ..data_access.zoomobile_station_record import ZoomobileStationRecord
+from ..data_access.zoomobile_station_status_record import ZoomobileStationStatusRecord
 from .zoomobile_station_context import ZoomobileStationContext
 
 
 def resolve_zoomobile_station_context(
-      route,
-      year,
-      month,
-      day,
-      zoomobile_stations_to_include=None ):
+      route: str,
+      year: VisitYear,
+      month: MonthInput,
+      day: VisitDay,
+      zoomobile_stations_to_include: list[ str ] | None = None ) -> ZoomobileStationContext:
 
    target_date = zoo.ZooUtil.visit_target_date(
       month=month,
@@ -16,13 +23,14 @@ def resolve_zoomobile_station_context(
       year=year )
 
    return ZoomobileStationContext(
-      route=route,
+      route=ZoomobileRouteId( route ),
       target_date=target_date,
       zoomobile_stations_to_include=zoomobile_stations_to_include or [] )
 
 
-def group_zoomobile_station_status_records_by_station( status_records ):
-   status_records_by_station = {}
+def group_zoomobile_station_status_records_by_station(
+      status_records: list[ ZoomobileStationStatusRecord ] ) -> dict[ str, list[ ZoomobileStationStatusRecord ] ]:
+   status_records_by_station: dict[ str, list[ ZoomobileStationStatusRecord ] ] = {}
 
    for status_record in status_records:
       if status_record.zoomobile_station not in status_records_by_station:
@@ -33,7 +41,9 @@ def group_zoomobile_station_status_records_by_station( status_records ):
    return status_records_by_station
 
 
-def is_zoomobile_station_on_route( station_record, context ):
+def is_zoomobile_station_on_route(
+      station_record: ZoomobileStationRecord,
+      context: ZoomobileStationContext ) -> bool:
    return (
       context.route == ZoomobileRouteId.SUMMER
       or station_record.on_winter_route
@@ -41,7 +51,9 @@ def is_zoomobile_station_on_route( station_record, context ):
    )
 
 
-def is_zoomobile_station_closed( status_records, target_date ):
+def is_zoomobile_station_closed(
+      status_records: list[ ZoomobileStationStatusRecord ],
+      target_date: date ) -> bool:
    for status_record in status_records:
       is_active = zoo.ZooUtil.is_date_in_range(
          target_date=target_date,
@@ -54,7 +66,8 @@ def is_zoomobile_station_closed( status_records, target_date ):
    return False
 
 
-def build_zoomobile_station( station_record ):
+def build_zoomobile_station(
+      station_record: ZoomobileStationRecord ) -> zoo.ZoomobileStation:
    return zoo.ZoomobileStation(
       name=station_record.name,
       description=station_record.description,
@@ -63,9 +76,9 @@ def build_zoomobile_station( station_record ):
 
 
 def build_zoomobile_stations(
-      station_records,
-      status_records,
-      context ):
+      station_records: list[ ZoomobileStationRecord ],
+      status_records: list[ ZoomobileStationStatusRecord ],
+      context: ZoomobileStationContext ) -> list[ zoo.ZoomobileStation ]:
 
    status_records_by_station = group_zoomobile_station_status_records_by_station(
       status_records )

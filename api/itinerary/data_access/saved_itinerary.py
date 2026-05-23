@@ -1,59 +1,67 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+from datetime import date
 
 from ... import zoo
+from ...types import DateInput
+from .itinerary_animal_record import ItineraryAnimalRecord
+from .itinerary_attraction_record import ItineraryAttractionRecord
+from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
+from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 
 
 @dataclass( frozen=True )
 class SavedItinerary:
-   date_value: object
-   animal_rows: tuple
-   attraction_rows: tuple
-   guardians_talk_rows: tuple
-   wild_encounter_rows: tuple
+   date_value: DateInput | None
+   animal_rows: tuple[ ItineraryAnimalRecord, ... ]
+   attraction_rows: tuple[ ItineraryAttractionRecord, ... ]
+   guardians_talk_rows: tuple[ ItineraryGuardiansTalkRecord, ... ]
+   wild_encounter_rows: tuple[ ItineraryWildEncounterRecord, ... ]
 
 
-   def is_empty( self ):
+   def is_empty( self ) -> bool:
       return self.date_value == None
 
 
-   def itinerary_date( self ):
+   def itinerary_date( self ) -> date:
       return zoo.ZooUtil.parse_date_value( self.date_value )
 
 
-   def month( self ):
+   def month( self ) -> int:
       return self.itinerary_date().month
 
 
-   def day( self ):
+   def day( self ) -> int:
       return self.itinerary_date().day
 
 
-   def year( self ):
+   def year( self ) -> int:
       return self.itinerary_date().year
 
 
-   def species_exhibit_pairs( self ):
+   def species_exhibit_pairs( self ) -> list[ tuple[ str, str ] ]:
       return [
          animal.species_exhibit_key()
          for animal in self.animal_rows
       ]
 
 
-   def attraction_names( self ):
+   def attraction_names( self ) -> list[ str ]:
       return [
          attraction.attraction
          for attraction in self.attraction_rows
       ]
 
 
-   def guardians_talk_names( self ):
+   def guardians_talk_names( self ) -> list[ str ]:
       return [
          talk.talk_name
          for talk in self.guardians_talk_rows
       ]
 
 
-   def wild_encounter_names( self ):
+   def wild_encounter_names( self ) -> list[ str ]:
       return [
          encounter.wild_encounter
          for encounter in self.wild_encounter_rows

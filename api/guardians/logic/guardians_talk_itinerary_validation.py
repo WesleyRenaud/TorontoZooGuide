@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 from ... import zoo
 from .guardians_talk_schedule import find_guardians_talk_on_day_schedule
 
 
-def build_guardians_talk_diff_for_visit_day( name, talk ):
+def build_guardians_talk_diff_for_visit_day(
+      name: str,
+      talk: zoo.GuardiansTalk | None ) -> zoo.GuardiansTalkDiff:
    if talk is None:
       return zoo.GuardiansTalkDiff(
          name=name,
@@ -24,10 +28,10 @@ def build_guardians_talk_diff_for_visit_day( name, talk ):
 
 
 def validate_guardians_talks_for_itinerary(
-      guardians_talks_to_include,
-      day_schedule ):
+      guardians_talks_to_include: list[ str ] | None,
+      day_schedule: list[ zoo.GuardiansTalk ] ) -> list[ zoo.GuardiansTalkDiff ]:
 
-   diffs = []
+   diffs: list[ zoo.GuardiansTalkDiff ] = []
 
    for talk_name in guardians_talks_to_include or []:
       talk = find_guardians_talk_on_day_schedule(

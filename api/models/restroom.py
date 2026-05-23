@@ -1,16 +1,18 @@
+from __future__ import annotations
+
 from ..zoo_util import ZooUtil
 
 
 class Restroom:
    def __init__(
          self,
-         title,
-         x_coord=None,
-         y_coord=None,
-         is_closed=None,
-         closed_message=None,
-         has_alert=None,
-         alert_message=None ):
+         title: str,
+         x_coord: float | None = None,
+         y_coord: float | None = None,
+         is_closed: bool | None = None,
+         closed_message: str | None = None,
+         has_alert: bool | None = None,
+         alert_message: str | None = None ) -> None:
       self.title = title
       self.x_coord = x_coord
       self.y_coord = y_coord
@@ -20,7 +22,7 @@ class Restroom:
       self.alert_message = alert_message
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'title': self.title,
          'x_coord': self.x_coord,

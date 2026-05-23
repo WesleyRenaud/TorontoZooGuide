@@ -1,11 +1,16 @@
+from __future__ import annotations
+
+from ...types import DateKey
+
+
 class AttractionScheduleOverride:
    def __init__(
          self,
-         attraction,
-         start_date,
-         end_date,
-         is_closed,
-         message ):
+         attraction: str,
+         start_date: DateKey,
+         end_date: DateKey | None,
+         is_closed: bool,
+         message: str | None ) -> None:
       self.attraction = attraction
       self.start_date = start_date
       self.end_date = end_date

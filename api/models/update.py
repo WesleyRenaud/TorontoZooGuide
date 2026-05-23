@@ -1,5 +1,16 @@
+from __future__ import annotations
+
+from ..types import DateKey
+
+
 class Update:
-   def __init__( self, title, description, update_type, start_date, end_date ):
+   def __init__(
+         self,
+         title: str,
+         description: str,
+         update_type: str,
+         start_date: DateKey,
+         end_date: DateKey ) -> None:
       self.title = title
       self.description = description
       self.update_type = update_type
@@ -7,7 +18,7 @@ class Update:
       self.end_date = end_date
 
 
-   def to_dict( self ):
+   def to_dict( self ) -> dict[ str, object ]:
       return {
          'title': self.title,
          'description': self.description,

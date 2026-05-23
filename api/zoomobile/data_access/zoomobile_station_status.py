@@ -1,4 +1,12 @@
-def save_zoomobile_station_closed_status( conn, status ):
+from __future__ import annotations
+
+from ...types import Connection
+from ..logic.zoomobile_station_closed_status import ZoomobileStationClosedStatus
+
+
+def save_zoomobile_station_closed_status(
+      conn: Connection,
+      status: ZoomobileStationClosedStatus ) -> bool:
    cur = conn.cursor()
 
    try:
@@ -32,7 +40,9 @@ def save_zoomobile_station_closed_status( conn, status ):
 
 
 
-def save_zoomobile_station_open_status( conn, zoomobile_station ):
+def save_zoomobile_station_open_status(
+      conn: Connection,
+      zoomobile_station: str ) -> bool:
    cur = conn.cursor()
 
    try:

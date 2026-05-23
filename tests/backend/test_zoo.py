@@ -1,11 +1,15 @@
-from datetime import date
+from __future__ import annotations
+
+from datetime import date, datetime
+from typing import Any
 
 import pytest
 
 from api import zoo
+from api.types import MonthInput, VisitMonth
 
 
-def test_domain_objects_serialize_to_frontend_shapes():
+def test_domain_objects_serialize_to_frontend_shapes() -> None:
    assert zoo.Pavilion( name='Pavilion', region='Region', x_coord=1, y_coord=2 ).to_dict() == {
       'name': 'Pavilion',
       'region': 'Region',
@@ -87,7 +91,7 @@ def test_domain_objects_serialize_to_frontend_shapes():
    }
 
 
-def test_animal_to_dict_converts_boolean_flags():
+def test_animal_to_dict_converts_boolean_flags() -> None:
    animal = zoo.Animal(
       species='Amur Tiger',
       has_limited_viewing_schedule=1,
@@ -102,7 +106,7 @@ def test_animal_to_dict_converts_boolean_flags():
    assert result[ 'is_deleted' ] is False
 
 
-def test_itinerary_serializes_objects_and_dicts_with_types():
+def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
    itinerary = zoo.Itinerary(
       date='2026-06-15',
       animals=[
@@ -248,7 +252,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types():
       ( 'true', False )
    ]
 )
-def test_as_boolean( value, expected ):
+def test_as_boolean( value: Any, expected: bool ) -> None:
    assert zoo.ZooUtil.as_boolean( value ) is expected
 
 
@@ -266,7 +270,9 @@ def test_as_boolean( value, expected ):
       ( None, None )
    ]
 )
-def test_normalize_month_documents_current_inputs( value, expected ):
+def test_normalize_month_documents_current_inputs(
+      value: MonthInput,
+      expected: VisitMonth | None ) -> None:
    assert zoo.ZooUtil.normalize_month( value ) == expected
 
 
@@ -280,11 +286,11 @@ def test_normalize_month_documents_current_inputs( value, expected ):
       ( 'DECEMBER', 'Dec' )
    ]
 )
-def test_get_month_abbreviation( value, expected ):
+def test_get_month_abbreviation( value: MonthInput, expected: str ) -> None:
    assert zoo.ZooUtil.get_month_abbreviation( value ) == expected
 
 
-def test_get_month_abbreviation_rejects_invalid_values():
+def test_get_month_abbreviation_rejects_invalid_values() -> None:
    with pytest.raises( ValueError ):
       zoo.ZooUtil.get_month_abbreviation( 13 )
 
@@ -301,39 +307,41 @@ def test_get_month_abbreviation_rejects_invalid_values():
       ( 'december', 12 ),
    ]
 )
-def test_resolve_visit_calendar_month_returns_int_one_through_twelve( value, expected ):
+def test_resolve_visit_calendar_month_returns_int_one_through_twelve(
+      value: MonthInput,
+      expected: VisitMonth ) -> None:
    got = zoo.ZooUtil.resolve_visit_calendar_month( value )
    assert got == expected
    assert isinstance( got, int )
 
 
-def test_resolve_visit_calendar_month_rejects_invalid_values():
+def test_resolve_visit_calendar_month_rejects_invalid_values() -> None:
    with pytest.raises( ValueError ):
       zoo.ZooUtil.resolve_visit_calendar_month( 13 )
 
 
-def test_resolve_visit_day_of_month():
+def test_resolve_visit_day_of_month() -> None:
    assert zoo.ZooUtil.resolve_visit_day_of_month( '15' ) == 15
    assert zoo.ZooUtil.resolve_visit_day_of_month( 7 ) == 7
 
 
-def test_resolve_visit_calendar_year_explicit():
+def test_resolve_visit_calendar_year_explicit() -> None:
    assert zoo.ZooUtil.resolve_visit_calendar_year( 2029 ) == 2029
 
 
-def test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch ):
+def test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch: pytest.MonkeyPatch ) -> None:
    from datetime import datetime as std_datetime
 
    class Fixed( std_datetime ):
       @classmethod
-      def now( cls ):
+      def now( cls, tz: datetime.tzinfo | None = None ) -> datetime:
          return std_datetime( 2032, 3, 1, 0, 0, 0 )
 
    monkeypatch.setattr( zoo, 'datetime', Fixed )
    assert zoo.ZooUtil.resolve_visit_calendar_year( None ) == 2032
 
 
-def test_visit_target_date():
+def test_visit_target_date() -> None:
    from datetime import date as date_cls
 
    assert zoo.ZooUtil.visit_target_date( 'June', 15, 2026 ) == date_cls( 2026, 6, 15 )
@@ -341,28 +349,28 @@ def test_visit_target_date():
    assert zoo.ZooUtil.visit_target_date( 'January', 10, '2028' ) == date_cls( 2028, 1, 10 )
 
 
-def test_schedule_includes_weekday_monday_first():
+def test_schedule_includes_weekday_monday_first() -> None:
    flags = ( True, False, False, False, False, False, False )
 
    assert zoo.ZooUtil.schedule_includes_weekday( 0, flags ) is True
    assert zoo.ZooUtil.schedule_includes_weekday( 1, flags ) is False
 
 
-def test_schedule_includes_weekday_rejects_bad_index():
+def test_schedule_includes_weekday_rejects_bad_index() -> None:
    flags = ( True, ) * 7
 
    assert zoo.ZooUtil.schedule_includes_weekday( -1, flags ) is False
    assert zoo.ZooUtil.schedule_includes_weekday( 7, flags ) is False
 
 
-def test_temperature_helpers_are_stable():
+def test_temperature_helpers_are_stable() -> None:
    assert zoo.ZooUtil.get_average_temperature( 'Jan', 1 ) == -5.0
    assert zoo.ZooUtil.get_average_temperature( 'Jul', 1 ) == 26.0
    assert zoo.ZooUtil.get_temperature_probability( mu=20, sigma=2, min_temperature=20 ) == 0.5
    assert zoo.ZooUtil.get_temperature_probability( mu=25, sigma=2, min_temperature=20 ) > 0.99
 
 
-def test_calendar_helpers_for_fixed_years():
+def test_calendar_helpers_for_fixed_years() -> None:
    assert zoo.ZooUtil.get_family_day( 2026 ) == date( 2026, 2, 16 )
    assert zoo.ZooUtil.get_good_friday( 2026 ) == date( 2026, 4, 3 )
    assert zoo.ZooUtil.get_victoria_day( 2026 ) == date( 2026, 5, 18 )
