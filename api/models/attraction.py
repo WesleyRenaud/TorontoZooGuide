@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..zoo_util import ZooUtil
+from ..shared.value_conversion import ValueConversion
 
 
 class Attraction:
@@ -35,15 +35,15 @@ class Attraction:
    def to_dict( self ) -> dict[ str, object ]:
       return {
          'name': self.name,
-         'free_with_admission': ZooUtil.as_boolean( self.free_with_admission ),
+         'free_with_admission': ValueConversion.as_boolean( self.free_with_admission ),
          'description': self.description,
          'info_link': self.info_link,
          'hyperlink_text': self.hyperlink_text,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
-         'is_closed': ZooUtil.as_boolean( self.is_closed ),
+         'is_closed': ValueConversion.as_boolean( self.is_closed ),
          'closed_message': self.closed_message,
          'likelihood': self.likelihood,
-         'is_deleted': ZooUtil.as_boolean( self.is_deleted ),
+         'is_deleted': ValueConversion.as_boolean( self.is_deleted ),
          'old_likelihood': self.old_likelihood
       }

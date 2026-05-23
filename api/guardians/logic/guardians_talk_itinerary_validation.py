@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ...models import GuardiansTalk
 from ...models import GuardiansTalkDiff
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from .guardians_talk_schedule import find_guardians_talk_on_day_schedule
 
 
@@ -17,7 +17,7 @@ def build_guardians_talk_diff_for_visit_day(
          end_time=None,
       )
 
-   end_time = ZooUtil.add_minutes_to_time(
+   end_time = DateValues.add_minutes_to_time(
       talk.start_time,
       talk.maximum_duration )
 

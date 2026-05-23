@@ -24,8 +24,10 @@ from api.models import WildEncounter
 from api.models import ZoomobileRoute
 from api.models import ZoomobileRouteMarker
 from api.models import ZoomobileStation
-import api.zoo_util as zoo_util
-from api.zoo_util import ZooUtil
+import api.shared.date_values as date_values
+from api.shared.calendar_dates import CalendarDates
+from api.shared.weather import Weather
+from api.shared.value_conversion import ValueConversion
 from api.types import MonthInput, VisitMonth
 
 
@@ -273,7 +275,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
    ]
 )
 def test_as_boolean( value: Any, expected: bool ) -> None:
-   assert ZooUtil.as_boolean( value ) is expected
+   assert ValueConversion.as_boolean( value ) is expected
 
 
 @pytest.mark.parametrize(
@@ -293,7 +295,7 @@ def test_as_boolean( value: Any, expected: bool ) -> None:
 def test_normalize_month_documents_current_inputs(
       value: MonthInput,
       expected: VisitMonth | None ) -> None:
-   assert ZooUtil.normalize_month( value ) == expected
+   assert CalendarDates.normalize_month( value ) == expected
 
 
 @pytest.mark.parametrize(
@@ -307,12 +309,12 @@ def test_normalize_month_documents_current_inputs(
    ]
 )
 def test_get_month_abbreviation( value: MonthInput, expected: str ) -> None:
-   assert ZooUtil.get_month_abbreviation( value ) == expected
+   assert CalendarDates.get_month_abbreviation( value ) == expected
 
 
 def test_get_month_abbreviation_rejects_invalid_values() -> None:
    with pytest.raises( ValueError ):
-      ZooUtil.get_month_abbreviation( 13 )
+      CalendarDates.get_month_abbreviation( 13 )
 
 
 @pytest.mark.parametrize(
@@ -330,23 +332,23 @@ def test_get_month_abbreviation_rejects_invalid_values() -> None:
 def test_resolve_visit_calendar_month_returns_int_one_through_twelve(
       value: MonthInput,
       expected: VisitMonth ) -> None:
-   got = ZooUtil.resolve_visit_calendar_month( value )
+   got = CalendarDates.resolve_visit_calendar_month( value )
    assert got == expected
    assert isinstance( got, int )
 
 
 def test_resolve_visit_calendar_month_rejects_invalid_values() -> None:
    with pytest.raises( ValueError ):
-      ZooUtil.resolve_visit_calendar_month( 13 )
+      CalendarDates.resolve_visit_calendar_month( 13 )
 
 
 def test_resolve_visit_day_of_month() -> None:
-   assert ZooUtil.resolve_visit_day_of_month( '15' ) == 15
-   assert ZooUtil.resolve_visit_day_of_month( 7 ) == 7
+   assert CalendarDates.resolve_visit_day_of_month( '15' ) == 15
+   assert CalendarDates.resolve_visit_day_of_month( 7 ) == 7
 
 
 def test_resolve_visit_calendar_year_explicit() -> None:
-   assert ZooUtil.resolve_visit_calendar_year( 2029 ) == 2029
+   assert CalendarDates.resolve_visit_calendar_year( 2029 ) == 2029
 
 
 def test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch: pytest.MonkeyPatch ) -> None:
@@ -357,45 +359,45 @@ def test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch: pyt
       def now( cls, tz: datetime.tzinfo | None = None ) -> datetime:
          return std_datetime( 2032, 3, 1, 0, 0, 0 )
 
-   monkeypatch.setattr( zoo_util, 'datetime', Fixed )
-   assert ZooUtil.resolve_visit_calendar_year( None ) == 2032
+   monkeypatch.setattr( date_values, 'datetime', Fixed )
+   assert CalendarDates.resolve_visit_calendar_year( None ) == 2032
 
 
 def test_visit_target_date() -> None:
    from datetime import date as date_cls
 
-   assert ZooUtil.visit_target_date( 'June', 15, 2026 ) == date_cls( 2026, 6, 15 )
-   assert ZooUtil.visit_target_date( 6, 15, 2026 ) == date_cls( 2026, 6, 15 )
-   assert ZooUtil.visit_target_date( 'January', 10, '2028' ) == date_cls( 2028, 1, 10 )
+   assert CalendarDates.visit_target_date( 'June', 15, 2026 ) == date_cls( 2026, 6, 15 )
+   assert CalendarDates.visit_target_date( 6, 15, 2026 ) == date_cls( 2026, 6, 15 )
+   assert CalendarDates.visit_target_date( 'January', 10, '2028' ) == date_cls( 2028, 1, 10 )
 
 
 def test_schedule_includes_weekday_monday_first() -> None:
    flags = ( True, False, False, False, False, False, False )
 
-   assert ZooUtil.schedule_includes_weekday( 0, flags ) is True
-   assert ZooUtil.schedule_includes_weekday( 1, flags ) is False
+   assert CalendarDates.schedule_includes_weekday( 0, flags ) is True
+   assert CalendarDates.schedule_includes_weekday( 1, flags ) is False
 
 
 def test_schedule_includes_weekday_rejects_bad_index() -> None:
    flags = ( True, ) * 7
 
-   assert ZooUtil.schedule_includes_weekday( -1, flags ) is False
-   assert ZooUtil.schedule_includes_weekday( 7, flags ) is False
+   assert CalendarDates.schedule_includes_weekday( -1, flags ) is False
+   assert CalendarDates.schedule_includes_weekday( 7, flags ) is False
 
 
 def test_temperature_helpers_are_stable() -> None:
-   assert ZooUtil.get_average_temperature( 'Jan', 1 ) == -5.0
-   assert ZooUtil.get_average_temperature( 'Jul', 1 ) == 26.0
-   assert ZooUtil.get_temperature_probability( mu=20, sigma=2, min_temperature=20 ) == 0.5
-   assert ZooUtil.get_temperature_probability( mu=25, sigma=2, min_temperature=20 ) > 0.99
+   assert Weather.get_average_temperature( 'Jan', 1 ) == -5.0
+   assert Weather.get_average_temperature( 'Jul', 1 ) == 26.0
+   assert Weather.get_temperature_probability( mu=20, sigma=2, min_temperature=20 ) == 0.5
+   assert Weather.get_temperature_probability( mu=25, sigma=2, min_temperature=20 ) > 0.99
 
 
 def test_calendar_helpers_for_fixed_years() -> None:
-   assert ZooUtil.get_family_day( 2026 ) == date( 2026, 2, 16 )
-   assert ZooUtil.get_good_friday( 2026 ) == date( 2026, 4, 3 )
-   assert ZooUtil.get_victoria_day( 2026 ) == date( 2026, 5, 18 )
-   assert ZooUtil.get_civic_holiday( 2026 ) == date( 2026, 8, 3 )
-   assert ZooUtil.get_labour_day( 2026 ) == date( 2026, 9, 7 )
-   assert ZooUtil.get_thanksgiving( 2026 ) == date( 2026, 10, 12 )
-   assert ZooUtil.is_holiday( date( 2026, 12, 25 ) ) is True
-   assert ZooUtil.is_holiday( date( 2026, 12, 24 ) ) is False
+   assert CalendarDates.get_family_day( 2026 ) == date( 2026, 2, 16 )
+   assert CalendarDates.get_good_friday( 2026 ) == date( 2026, 4, 3 )
+   assert CalendarDates.get_victoria_day( 2026 ) == date( 2026, 5, 18 )
+   assert CalendarDates.get_civic_holiday( 2026 ) == date( 2026, 8, 3 )
+   assert CalendarDates.get_labour_day( 2026 ) == date( 2026, 9, 7 )
+   assert CalendarDates.get_thanksgiving( 2026 ) == date( 2026, 10, 12 )
+   assert CalendarDates.is_holiday( date( 2026, 12, 25 ) ) is True
+   assert CalendarDates.is_holiday( date( 2026, 12, 24 ) ) is False

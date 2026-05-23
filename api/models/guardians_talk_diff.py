@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..types import ScheduleTimeKey
-from ..zoo_util import ZooUtil
+from ..shared.value_conversion import ValueConversion
 
 
 class GuardiansTalkDiff:
@@ -20,7 +20,7 @@ class GuardiansTalkDiff:
    def to_dict( self ) -> dict[ str, object ]:
       return {
          'name': self.name,
-         'is_deleted': ZooUtil.as_boolean( self.is_deleted ),
+         'is_deleted': ValueConversion.as_boolean( self.is_deleted ),
          'start_time': self.start_time,
          'end_time': self.end_time,
       }

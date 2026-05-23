@@ -4,7 +4,7 @@ from datetime import date
 
 from ...models import GuardiansTalk
 from ...models import ScheduledOccurrence
-from ...zoo_util import ZooUtil
+from ...shared.calendar_dates import CalendarDates
 from ...itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from ...types import DateKey, DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.guardians_talk import fetch_guardians_talk_locations
@@ -176,7 +176,7 @@ class GuardiansController():
          month: MonthInput,
          day: VisitDay,
          year: VisitYear ) -> list[ GuardiansTalk ]:
-      target_date = ZooUtil.visit_target_date(
+      target_date = CalendarDates.visit_target_date(
          month=month,
          day=day,
          year=year )

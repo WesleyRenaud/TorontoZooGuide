@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from ...types import Connection, DateKey
 from .itinerary_animal_mapper import map_itinerary_animal_records
 from .itinerary_attraction_mapper import map_itinerary_attraction_records
@@ -28,7 +28,7 @@ def fetch_itinerary_date( conn: Connection ) -> DateKey | None:
    if date_row == None or date_row[ 'ITINERARY_DATE' ] == None:
       return None
 
-   return ZooUtil.normalize_date_key( date_row[ 'ITINERARY_DATE' ] )
+   return DateValues.normalize_date_key( date_row[ 'ITINERARY_DATE' ] )
 
 
 def fetch_itinerary_animal_rows( conn: Connection ) -> list[ ItineraryAnimalRecord ]:

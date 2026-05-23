@@ -3,7 +3,9 @@ from __future__ import annotations
 from datetime import date
 
 from ...models import Animal
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
+from ...shared.calendar_dates import CalendarDates
+from ...shared.weather import Weather
 from ...shared.enums import ScheduleStatus
 from ...types import MonthInput, VisitDay, VisitYear
 from ..data_access.animal_viewability_record import AnimalViewabilityRecord
@@ -18,7 +20,7 @@ def resolve_temperature_likelihood_context(
       # Historical average temperatures are less precise than a user-supplied forecast/current temperature,
       # so the likelihood model uses a wider distribution when falling back to seasonal averages.
       return (
-         ZooUtil.get_average_temperature( month=month, day=day ),
+         Weather.get_average_temperature( month=month, day=day ),
          3 )
 
    return ( temp, 2 )
@@ -29,7 +31,7 @@ def resolve_animal_viewability_context(
       month: MonthInput,
       year: VisitYear,
       temp: float | None = None ) -> AnimalViewabilityContext:
-   target_date = ZooUtil.visit_target_date( month, day, year )
+   target_date = CalendarDates.visit_target_date( month, day, year )
    calendar_month = target_date.month
    day_of_month = target_date.day
    temp, sigma = resolve_temperature_likelihood_context(
@@ -57,7 +59,7 @@ def get_active_off_display_status(
    off_display_start = animal.off_display_start
    off_display_end = animal.off_display_end
 
-   is_off_display = ZooUtil.is_date_in_range(
+   is_off_display = DateValues.is_date_in_range(
       target_date=target_date,
       start_date_value=off_display_start,
       end_date_value=off_display_end )
@@ -80,7 +82,7 @@ def get_active_limited_viewing_status(
    if daily_start_time == None or daily_end_time == None:
       return False, None
 
-   is_active = ZooUtil.is_date_in_range( target_date=target_date, start_date_value=schedule_start_date, end_date_value=schedule_end_date )
+   is_active = DateValues.is_date_in_range( target_date=target_date, start_date_value=schedule_start_date, end_date_value=schedule_end_date )
 
    if is_active:
       return True, viewing_message
@@ -98,7 +100,7 @@ def get_active_viewing_alert_status(
    if alert_message == None:
       return False, None
 
-   is_active = ZooUtil.is_date_in_range( target_date=target_date, start_date_value=alert_start_date, end_date_value=alert_end_date )
+   is_active = DateValues.is_date_in_range( target_date=target_date, start_date_value=alert_start_date, end_date_value=alert_end_date )
 
    if is_active:
       return True, alert_message
@@ -115,7 +117,7 @@ def get_active_exhibit_status(
    start_date = animal.closed_start
    end_date = animal.closed_end
 
-   is_active = ZooUtil.is_date_in_range(
+   is_active = DateValues.is_date_in_range(
       target_date=target_date,
       start_date_value=start_date,
       end_date_value=end_date )
@@ -145,7 +147,7 @@ def calculate_animal_likelihood(
       if min_temperature is None:
          temperature_likelihood = 1.0
       else:
-         temperature_likelihood = ZooUtil.get_temperature_probability(
+         temperature_likelihood = Weather.get_temperature_probability(
             mu=temp,
             sigma=sigma,
             min_temperature=min_temperature )

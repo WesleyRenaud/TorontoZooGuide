@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import date
 
 from ...models import Restroom
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
+from ...shared.calendar_dates import CalendarDates
 from ...types import MonthInput, VisitDay, VisitYear
 from ..data_access.restroom_record import RestroomRecord
 from .restroom_context import RestroomContext
@@ -14,7 +15,7 @@ def resolve_restroom_context(
       month: MonthInput,
       year: VisitYear ) -> RestroomContext:
    return RestroomContext(
-      target_date=ZooUtil.visit_target_date(
+      target_date=CalendarDates.visit_target_date(
          month=month,
          day=day,
          year=year ) )
@@ -26,7 +27,7 @@ def is_restroom_status_active(
    if restroom_record.is_closed == None:
       return False
 
-   return ZooUtil.is_date_in_range(
+   return DateValues.is_date_in_range(
       target_date=target_date,
       start_date_value=restroom_record.closed_start,
       end_date_value=restroom_record.closed_end )
@@ -38,7 +39,7 @@ def is_restroom_alert_active(
    if restroom_record.alert_message == None:
       return False
 
-   return ZooUtil.is_date_in_range(
+   return DateValues.is_date_in_range(
       target_date=target_date,
       start_date_value=restroom_record.alert_start_date,
       end_date_value=restroom_record.alert_end_date )

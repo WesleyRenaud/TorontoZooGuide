@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from ...models import Region
 from ...models import RegionWithExhibits
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
+from ...shared.calendar_dates import CalendarDates
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 from ..data_access.exhibit import fetch_animal_names_in_exhibit
 from ..data_access.exhibit import fetch_exhibit_names
@@ -58,7 +59,7 @@ class ExhibitController():
          month: MonthInput,
          day: VisitDay,
          year: VisitYear ) -> list[ str ]:
-      target_date = ZooUtil.visit_target_date(
+      target_date = CalendarDates.visit_target_date(
          month=month,
          day=day,
          year=year )
@@ -95,7 +96,7 @@ class ExhibitController():
          exhibit: str,
          start_date: DateInput,
          end_date: DateInput ) -> bool:
-      date_range = ZooUtil.resolve_open_ended_date_range(
+      date_range = DateValues.resolve_open_ended_date_range(
          start_date=start_date,
          end_date=end_date )
 

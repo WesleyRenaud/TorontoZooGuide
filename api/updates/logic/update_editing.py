@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...zoo_util import ZooUtil
+from ...shared.date_values import DateValues
 from ...types import DateInput, DateKey
 from .update_edit_input import UpdateEditInput
 from .update_type import normalize_update_type
@@ -15,7 +15,7 @@ def build_update_edit_input(
    normalized_end_date = None
 
    if end_date != None:
-      normalized_end_date = ZooUtil.normalize_date_key( end_date )
+      normalized_end_date = DateValues.normalize_date_key( end_date )
 
    return UpdateEditInput(
       title=title,
