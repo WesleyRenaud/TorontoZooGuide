@@ -4,7 +4,9 @@ exclude = [
    ".git",
    ".vscode",
    "__pycache__",
-   "images"
+   "images",
+   "node_modules",
+   ".venv"
 ]
 
 [tool.ruff.lint]
