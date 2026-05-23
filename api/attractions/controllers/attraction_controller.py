@@ -8,6 +8,8 @@ from ..data_access.attraction_schedule import save_attraction_schedule_override
 from ..logic.attraction import build_attractions
 from ..logic.attraction import get_attraction_likelihood_and_message_for_date
 from ..logic.attraction import resolve_attraction_context
+from ..logic.attraction_schedule_conflict_resolution import save_attraction_opening_schedule_replacing_overlaps
+from ..logic.attraction_schedule_conflict_resolution import save_attraction_opening_schedule_trimming_overlaps
 from ..logic.attraction_status import build_attraction_closed_schedule
 from ..logic.attraction_status import build_attraction_closure_override
 from ..logic.attraction_status import build_attraction_opening_schedule
@@ -130,6 +132,74 @@ class AttractionController():
          message=message )
 
       return save_attraction_opening_schedule(
+         get_connection(),
+         schedule=schedule )
+
+
+   @classmethod
+   def replace_attraction_opening_schedule_overlaps(
+         cls,
+         attraction,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message ):
+      schedule = build_attraction_opening_schedule(
+         attraction=attraction,
+         start_date=start_date,
+         end_date=end_date,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         holidays_only=holidays_only,
+         message=message )
+
+      return save_attraction_opening_schedule_replacing_overlaps(
+         get_connection(),
+         schedule=schedule )
+
+
+   @classmethod
+   def trim_attraction_opening_schedule_overlaps(
+         cls,
+         attraction,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message ):
+      schedule = build_attraction_opening_schedule(
+         attraction=attraction,
+         start_date=start_date,
+         end_date=end_date,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         holidays_only=holidays_only,
+         message=message )
+
+      return save_attraction_opening_schedule_trimming_overlaps(
          get_connection(),
          schedule=schedule )
 

@@ -34,3 +34,16 @@ test('APP_STRINGS does not contain duplicate string values', () => {
 
    assert.deepEqual(duplicates, []);
 });
+
+test('APP_STRINGS exposes console confirmation messages', () => {
+   assert.equal(
+      typeof APP_STRINGS.confirm.openingScheduleOverlapTitle,
+      'string'
+   );
+   assert.equal(
+      typeof APP_STRINGS.confirm.openingScheduleOverlapMessage,
+      'string'
+   );
+   assert.equal(APP_STRINGS.confirm.deleteOldSchedules, 'Delete Old Schedules');
+   assert.equal(APP_STRINGS.confirm.trimOldSchedules, 'Trim Old Schedules');
+});

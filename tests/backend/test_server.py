@@ -426,7 +426,9 @@ class StubZooControllers:
          'remove_',
          'end_',
          'edit_',
-         'cancel_'
+         'cancel_',
+         'replace_',
+         'trim_'
       )
 
       if not name.startswith( mutation_prefixes ):
@@ -1917,6 +1919,157 @@ def test_weekly_schedule_endpoints_map_payloads_and_success_responses(
    assert result[ 'sunday' ] is True
    assert result[ 'holidaysOnly' ] is False
    assert result[ 'message' ] == 'Schedule.'
+
+
+@pytest.mark.parametrize(
+   'path, body_key, item_name, expected_method, response_key',
+   [
+      (
+         '/replace-restaurant-opening-schedule-overlaps',
+         'restaurant',
+         'Africa Restaurant',
+         'replace_restaurant_opening_schedule_overlaps',
+         'restaurant'
+      ),
+      (
+         '/trim-restaurant-opening-schedule-overlaps',
+         'restaurant',
+         'Africa Restaurant',
+         'trim_restaurant_opening_schedule_overlaps',
+         'restaurant'
+      ),
+      (
+         '/replace-gift-shop-opening-schedule-overlaps',
+         'giftShop',
+         'Zootique',
+         'replace_gift_shop_opening_schedule_overlaps',
+         'gift_shop'
+      ),
+      (
+         '/trim-gift-shop-opening-schedule-overlaps',
+         'giftShop',
+         'Zootique',
+         'trim_gift_shop_opening_schedule_overlaps',
+         'gift_shop'
+      ),
+      (
+         '/replace-attraction-opening-schedule-overlaps',
+         'attraction',
+         'Conservation Carousel',
+         'replace_attraction_opening_schedule_overlaps',
+         'attraction'
+      ),
+      (
+         '/trim-attraction-opening-schedule-overlaps',
+         'attraction',
+         'Conservation Carousel',
+         'trim_attraction_opening_schedule_overlaps',
+         'attraction'
+      )
+   ]
+)
+def test_schedule_overlap_resolution_endpoints_map_payloads(
+      stub_database,
+      path,
+      body_key,
+      item_name,
+      expected_method,
+      response_key ):
+   body = {
+      body_key: item_name,
+      'scheduleStartDate': '2026-06-01',
+      'scheduleEndDate': '2026-06-30',
+      'monday': True,
+      'tuesday': False,
+      'wednesday': True,
+      'thursday': False,
+      'friday': True,
+      'saturday': False,
+      'sunday': True,
+      'holidaysOnly': False,
+      'message': 'Schedule.'
+   }
+   handler = make_handler( path, body )
+
+   server.MyHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert StubZooControllers.instances[ 0 ].calls == [
+      (
+         expected_method,
+         {
+            response_key: item_name,
+            'start_date': '2026-06-01',
+            'end_date': '2026-06-30',
+            'monday': True,
+            'tuesday': False,
+            'wednesday': True,
+            'thursday': False,
+            'friday': True,
+            'saturday': False,
+            'sunday': True,
+            'holidays_only': False,
+            'message': 'Schedule.'
+         }
+      )
+   ]
+   assert result[ 'success' ] is True
+   assert result[ response_key ] == item_name
+   assert result[ 'scheduleStartDate' ] == '2026-06-01'
+   assert result[ 'scheduleEndDate' ] == '2026-06-30'
+
+
+@pytest.mark.parametrize(
+   'path, body_key, item_name',
+   [
+      (
+         '/set-restaurant-opening-schedule',
+         'restaurant',
+         'Africa Restaurant'
+      ),
+      (
+         '/set-gift-shop-opening-schedule',
+         'giftShop',
+         'Zootique'
+      ),
+      (
+         '/set-attraction-opening-schedule',
+         'attraction',
+         'Conservation Carousel'
+      )
+   ]
+)
+def test_opening_schedule_overlap_failure_returns_error_type(
+      stub_database,
+      path,
+      body_key,
+      item_name ):
+   StubZooControllers.default_success = False
+   handler = make_handler(
+      path,
+      {
+         body_key: item_name,
+         'scheduleStartDate': '2026-06-01',
+         'scheduleEndDate': '2026-06-30',
+         'monday': True,
+         'tuesday': False,
+         'wednesday': True,
+         'thursday': False,
+         'friday': True,
+         'saturday': False,
+         'sunday': True,
+         'holidaysOnly': False,
+         'message': 'Schedule.'
+      } )
+
+   server.MyHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is False
+   assert result[ 'errorType' ] == 'overlappingSchedule'
 
 
 @pytest.mark.parametrize(

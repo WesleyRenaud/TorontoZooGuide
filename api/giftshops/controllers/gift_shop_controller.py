@@ -9,6 +9,8 @@ from ..logic.gift_shop import resolve_gift_shop_context
 from ..logic.gift_shop_status import build_gift_shop_closed_schedule
 from ..logic.gift_shop_status import build_gift_shop_closure_override
 from ..logic.gift_shop_status import build_gift_shop_opening_schedule
+from ..logic.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_replacing_overlaps
+from ..logic.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_trimming_overlaps
 from ..logic.gift_shops_matching_query import build_gift_shops_matching_query
 from ...request_connection import get_connection
 
@@ -133,5 +135,73 @@ class GiftShopController():
          message=message )
 
       return save_gift_shop_opening_schedule(
+         get_connection(),
+         schedule=schedule )
+
+
+   @classmethod
+   def replace_gift_shop_opening_schedule_overlaps(
+         cls,
+         gift_shop,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message ):
+      schedule = build_gift_shop_opening_schedule(
+         gift_shop=gift_shop,
+         start_date=start_date,
+         end_date=end_date,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         holidays_only=holidays_only,
+         message=message )
+
+      return save_gift_shop_opening_schedule_replacing_overlaps(
+         get_connection(),
+         schedule=schedule )
+
+
+   @classmethod
+   def trim_gift_shop_opening_schedule_overlaps(
+         cls,
+         gift_shop,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message ):
+      schedule = build_gift_shop_opening_schedule(
+         gift_shop=gift_shop,
+         start_date=start_date,
+         end_date=end_date,
+         monday=monday,
+         tuesday=tuesday,
+         wednesday=wednesday,
+         thursday=thursday,
+         friday=friday,
+         saturday=saturday,
+         sunday=sunday,
+         holidays_only=holidays_only,
+         message=message )
+
+      return save_gift_shop_opening_schedule_trimming_overlaps(
          get_connection(),
          schedule=schedule )
