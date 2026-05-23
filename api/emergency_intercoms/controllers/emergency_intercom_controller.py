@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...models import EmergencyIntercom
 from ..data_access.emergency_intercom import fetch_emergency_intercoms
+from ...models import EmergencyIntercom
 from ...request_connection import get_connection
 
 

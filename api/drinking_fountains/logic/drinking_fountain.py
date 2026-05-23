@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...models import DrinkingFountain
 from ..data_access.drinking_fountain_record import DrinkingFountainRecord
+from ...models import DrinkingFountain
 
 
 def drinking_fountain_record_to_model(

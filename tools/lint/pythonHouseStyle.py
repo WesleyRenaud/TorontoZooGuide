@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import ast
-from io import BytesIO
 from fnmatch import fnmatch
+from io import BytesIO
+from pathlib import Path
 import sys
 import tokenize
 import tomllib
-from pathlib import Path
 from typing import Any
 
 

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from .emergency_intercom_mapper import map_emergency_intercom_records
 from ...models import EmergencyIntercom
 from ...types import Connection
-from .emergency_intercom_mapper import map_emergency_intercom_records
 
 
 def fetch_emergency_intercoms( conn: Connection ) -> list[ EmergencyIntercom ]:

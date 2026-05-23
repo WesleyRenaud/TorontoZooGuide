@@ -3,8 +3,6 @@ from __future__ import annotations
 from datetime import date
 from datetime import timedelta
 
-from ...types import Connection, DateInput, DateKey
-from ...shared.date_values import DateValues
 from ..data_access.gift_shop_schedule import delete_gift_shop_opening_schedule
 from ..data_access.gift_shop_schedule import fetch_gift_shop_opening_schedule_conflicts
 from ..data_access.gift_shop_schedule import insert_copied_gift_shop_opening_schedule
@@ -12,6 +10,8 @@ from ..data_access.gift_shop_schedule import insert_or_update_gift_shop_opening_
 from ..data_access.gift_shop_schedule import update_gift_shop_opening_schedule_dates
 from ..data_access.gift_shop_schedule_record import GiftShopScheduleRecord
 from .gift_shop_opening_schedule import GiftShopOpeningSchedule
+from ...shared.date_values import DateValues
+from ...types import Connection, DateInput, DateKey
 
 
 def save_gift_shop_opening_schedule_replacing_overlaps(

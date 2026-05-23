@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...models import Region
 from ..data_access.region_exhibit_record import RegionExhibitRecord
+from ...models import Region
 
 
 def build_region_options( region_exhibit_rows: list[ RegionExhibitRecord ] ) -> list[ Region ]:

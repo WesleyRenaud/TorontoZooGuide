@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...models import Restroom
-from ...shared.date_values import DateValues
-from ...shared.calendar_dates import CalendarDates
-from ...types import MonthInput, VisitDay, VisitYear
 from ..data_access.restroom_record import RestroomRecord
+from ...models import Restroom
 from .restroom_context import RestroomContext
+from ...shared.calendar_dates import CalendarDates
+from ...shared.date_values import DateValues
+from ...types import MonthInput, VisitDay, VisitYear
 
 
 def resolve_restroom_context(

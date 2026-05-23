@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from datetime import date
 
+from ..data_access.validated_itinerary import ValidatedItinerary
 from ...models.animal_diff import AnimalDiff
 from ...models.attraction_diff import AttractionDiff
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ...types import Connection, Cursor
-from ..data_access.validated_itinerary import ValidatedItinerary
 
 
 def save_itinerary_date( cur: Cursor, visit_date: date ) -> None:

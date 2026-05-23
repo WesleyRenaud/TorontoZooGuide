@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ...models import GuardiansTalk
 from ...itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from ...itinerary.data_access.itinerary_name_key import itinerary_name_key
+from ...models import GuardiansTalk
 
 
 def build_itinerary_guardians_talks(

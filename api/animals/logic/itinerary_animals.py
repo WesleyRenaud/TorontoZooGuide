@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ...models import Animal
-from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from .animals_matching_query import filter_animals_by_species_exhibit_keys
 from .animals_matching_query import sort_animals_by_species_and_exhibit
 from .animals_matching_query import species_exhibit_key
+from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ...models import Animal
 
 
 def species_key( animal: Animal ) -> str:

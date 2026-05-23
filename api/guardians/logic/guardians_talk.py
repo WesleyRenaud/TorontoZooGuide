@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ...models import GuardiansTalk
 from ..data_access.meet_the_guardians_talk_record import MeetTheGuardiansTalkRecord
 from .guardians_talk_include_filter import GuardiansTalkIncludeFilter
+from ...models import GuardiansTalk
 
 
 def meet_the_guardians_talk_record_to_model(

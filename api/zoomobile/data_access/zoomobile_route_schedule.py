@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...types import Connection
 from ..logic.zoomobile_current_route_schedule import ZoomobileCurrentRouteSchedule
+from ...types import Connection
 
 
 def save_current_zoomobile_route_schedule(

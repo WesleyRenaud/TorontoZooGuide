@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...types import Row
 from .restroom_record import RestroomRecord
+from ...types import Row
 
 
 def map_restroom_record( row: Row ) -> RestroomRecord:

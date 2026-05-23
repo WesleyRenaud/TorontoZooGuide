@@ -3,26 +3,22 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api.models import GuardiansTalk
-from api.models import WildEncounter
 from api.animals.controllers.animal_controller import AnimalController
 from api.animals.logic.itinerary_animals import build_itinerary_animals
 from api.attractions.controllers.attraction_controller import AttractionController
 from api.guardians.controllers.guardians_controller import GuardiansController
-from api.guardians.logic.guardians_talk_itinerary_validation import (
-   validate_guardians_talks_for_itinerary,
-)
+from api.guardians.logic.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
 from api.itinerary.controllers.itinerary_controller import ItineraryController
-from api.zoo_hours.controllers.zoo_hours_controller import ZooHoursController
-from api.wild_encounters.logic.wild_encounter_itinerary_validation import (
-   validate_wild_encounters_for_itinerary,
-)
+from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInput
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
-from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInput
 from api.itinerary.logic.itinerary_validation import validate_itinerary_animals
 from api.itinerary.logic.itinerary_validation import validate_itinerary_attractions
+from api.models import GuardiansTalk
+from api.models import WildEncounter
 from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from api.wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
+from api.zoo_hours.controllers.zoo_hours_controller import ZooHoursController
 from conftest import DbControllers
 
 

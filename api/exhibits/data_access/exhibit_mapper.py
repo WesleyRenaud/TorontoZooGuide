@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ...types import Row
 from .region_exhibit_record import RegionExhibitRecord
+from ...types import Row
 
 
 def map_region_exhibit_row( row: Row ) -> RegionExhibitRecord:

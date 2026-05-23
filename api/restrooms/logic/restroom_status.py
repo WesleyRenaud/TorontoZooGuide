@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from .restroom_closed_status import RestroomClosedStatus
 from ...shared.date_values import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
-from .restroom_closed_status import RestroomClosedStatus
 
 
 def build_restroom_closed_status(

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...models import RegionWithExhibits
 from ..data_access.region_exhibit_record import RegionExhibitRecord
+from ...models import RegionWithExhibits
 
 
 def build_regions_with_exhibits(

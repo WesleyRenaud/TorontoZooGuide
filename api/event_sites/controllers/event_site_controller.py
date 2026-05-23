@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ...models import EventSite
 from ..data_access.event_site import fetch_event_sites
+from ...models import EventSite
 from ...request_connection import get_connection
 
 
