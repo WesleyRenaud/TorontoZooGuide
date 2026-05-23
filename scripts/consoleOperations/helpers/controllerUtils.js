@@ -1,3 +1,4 @@
+import { clearConsolePanelUrlParam } from '../shell/panelNavigator.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export function resetFieldValue(fieldEl) {
@@ -29,6 +30,7 @@ export function hideConsolePanel({
    setStatus,
 } = {}) {
    panelEl?.classList.remove('active');
+   clearConsolePanelUrlParam();
    setStatus?.(statusEl, '');
 }
 

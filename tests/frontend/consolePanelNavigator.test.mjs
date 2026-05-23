@@ -1,0 +1,145 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+
+import {
+   ACTIVE_CONSOLE_PANEL_QUERY_PARAM,
+   clearConsolePanelUrlParam,
+   createConsolePanelNavigator,
+} from '../../scripts/consoleOperations/shell/panelNavigator.js';
+
+function createClassList() {
+   const classes = new Set();
+
+   return {
+      add: className => classes.add(className),
+      remove: className => classes.delete(className),
+      contains: className => classes.has(className),
+      toggle: (className, enabled) => {
+         if (enabled) {
+            classes.add(className);
+            return true;
+         }
+
+         classes.delete(className);
+         return false;
+      },
+   };
+}
+
+function createPanel(id) {
+   return {
+      id,
+      classList: createClassList(),
+   };
+}
+
+function createButton(panelId) {
+   return {
+      dataset: {
+         panelTarget: panelId,
+      },
+      classList: createClassList(),
+      clickCount: 0,
+      click() {
+         this.clickCount += 1;
+      },
+   };
+}
+
+function createDocumentMock({ panels, buttons }) {
+   return {
+      querySelectorAll(selector) {
+         if (selector === '.console-operations-panel') {
+            return panels;
+         }
+
+         if (selector === '.console-operations-menu-btn') {
+            return buttons;
+         }
+
+         return [];
+      },
+   };
+}
+
+function createUrlState(href = 'https://example.test/console-operations.html') {
+   const location = { href };
+   const history = {
+      replaceState(_state, _title, url) {
+         location.href = String(url);
+      },
+   };
+
+   return {
+      history,
+      location,
+   };
+}
+
+test('console panel navigator writes activated panel to the url and restores by clicking its menu button', () => {
+   const urlState = createUrlState();
+   const restaurantPanel = createPanel('restaurantOpeningSchedulePanel');
+   const giftShopPanel = createPanel('giftShopOpeningSchedulePanel');
+   const restaurantButton = createButton('restaurantOpeningSchedulePanel');
+   const giftShopButton = createButton('giftShopOpeningSchedulePanel');
+   const doc = createDocumentMock({
+      panels: [restaurantPanel, giftShopPanel],
+      buttons: [restaurantButton, giftShopButton],
+   });
+
+   const navigator = createConsolePanelNavigator(doc, urlState);
+
+   navigator.activatePanel(giftShopPanel);
+
+   const url = new URL(urlState.location.href);
+
+   assert.equal(
+      url.searchParams.get(ACTIVE_CONSOLE_PANEL_QUERY_PARAM),
+      'giftShopOpeningSchedulePanel'
+   );
+   assert.equal(giftShopPanel.classList.contains('active'), true);
+   assert.equal(giftShopButton.classList.contains('active'), true);
+
+   navigator.restorePanelFromUrl();
+
+   assert.equal(giftShopButton.clickCount, 1);
+   assert.equal(restaurantButton.clickCount, 0);
+});
+
+test('console panel navigator removes panel url param when panels are hidden', () => {
+   const urlState = createUrlState();
+   const panel = createPanel('giftShopOpeningSchedulePanel');
+   const button = createButton('giftShopOpeningSchedulePanel');
+   const doc = createDocumentMock({
+      panels: [panel],
+      buttons: [button],
+   });
+   const navigator = createConsolePanelNavigator(doc, urlState);
+
+   navigator.activatePanel(panel);
+   navigator.hidePanels();
+
+   assert.equal(
+      new URL(urlState.location.href).searchParams.has(
+         ACTIVE_CONSOLE_PANEL_QUERY_PARAM
+      ),
+      false
+   );
+   assert.equal(panel.classList.contains('active'), false);
+   assert.equal(button.classList.contains('active'), false);
+});
+
+test('clearConsolePanelUrlParam removes active console panel url parameter', () => {
+   const urlState = createUrlState(
+      'https://example.test/console-operations.html?panel=giftShopOpeningSchedulePanel'
+   );
+
+   clearConsolePanelUrlParam(urlState);
+
+   assert.equal(
+      new URL(urlState.location.href).searchParams.has(
+         ACTIVE_CONSOLE_PANEL_QUERY_PARAM
+      ),
+      false
+   );
+});

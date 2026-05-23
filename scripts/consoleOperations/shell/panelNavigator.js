@@ -1,10 +1,62 @@
-export function createConsolePanelNavigator(doc = document) {
+export const ACTIVE_CONSOLE_PANEL_QUERY_PARAM = 'panel';
+
+function getDefaultLocation() {
+   return globalThis.location ?? null;
+}
+
+function getDefaultHistory() {
+   return globalThis.history ?? null;
+}
+
+function updateConsolePanelUrl(panelId, {
+   location = getDefaultLocation(),
+   history = getDefaultHistory(),
+} = {}) {
+   if (!location || !history?.replaceState) {
+      return;
+   }
+
+   const url = new URL(location.href);
+
+   if (panelId) {
+      url.searchParams.set(ACTIVE_CONSOLE_PANEL_QUERY_PARAM, panelId);
+   }
+   else {
+      url.searchParams.delete(ACTIVE_CONSOLE_PANEL_QUERY_PARAM);
+   }
+
+   history.replaceState(null, '', url);
+}
+
+function getPanelIdFromUrl(location = getDefaultLocation()) {
+   if (!location) {
+      return '';
+   }
+
+   return new URL(location.href).searchParams.get(
+      ACTIVE_CONSOLE_PANEL_QUERY_PARAM
+   ) ?? '';
+}
+
+export function clearConsolePanelUrlParam(options = {}) {
+   updateConsolePanelUrl('', options);
+}
+
+function findMenuButtonForPanel(doc, panelId) {
+   return Array.from(doc.querySelectorAll('.console-operations-menu-btn'))
+      .find(button => button.dataset.panelTarget === panelId);
+}
+
+export function createConsolePanelNavigator(
+      doc = document,
+      urlOptions = {}) {
    function activatePanel(panelEl) {
       doc
          .querySelectorAll('.console-operations-panel')
          .forEach(panel => panel.classList.remove('active'));
 
       panelEl?.classList.add('active');
+      updateConsolePanelUrl(panelEl?.id, urlOptions);
 
       doc
          .querySelectorAll('.console-operations-menu-btn')
@@ -24,10 +76,22 @@ export function createConsolePanelNavigator(doc = document) {
       doc
          .querySelectorAll('.console-operations-menu-btn')
          .forEach(button => button.classList.remove('active'));
+
+      clearConsolePanelUrlParam(urlOptions);
+   }
+
+   function restorePanelFromUrl() {
+      const panelId = getPanelIdFromUrl(urlOptions.location);
+      const button = findMenuButtonForPanel(doc, panelId);
+
+      if (button) {
+         button.click();
+      }
    }
 
    return {
       activatePanel,
       hidePanels,
+      restorePanelFromUrl,
    };
 }
