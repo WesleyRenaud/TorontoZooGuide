@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 from ...animals.controllers.animal_controller import AnimalController
 from ...attractions.controllers.attraction_controller import AttractionController
 from ..data_access.clear_itinerary import clear_itinerary
@@ -7,8 +9,10 @@ from ..data_access.itinerary import fetch_itinerary_date
 from ..data_access.itinerary_save_input_mapper import map_itinerary_save_input
 from ..data_access.save_itinerary import save_validated_itinerary
 from ...guardians.controllers.guardians_controller import GuardiansController
+from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_validation import validate_itinerary_for_save
 from ...types import Connection, DateInput
+from .wild_encounter_time_conflicts import remove_wild_encounters_with_time_conflicts
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
 
@@ -22,7 +26,7 @@ def set_itinerary(
       animal_controller: type[ AnimalController ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ] ) -> bool:
+      wild_encounter_controller: type[ WildEncounterController ] ) -> ItinerarySaveResult:
    save_input = map_itinerary_save_input(
       date,
       animals,
@@ -41,7 +45,15 @@ def set_itinerary(
       new_visit_date_temp=None,
       old_visit_date=old_visit_date )
 
+   wild_encounters, issues = remove_wild_encounters_with_time_conflicts(
+      validated_itinerary.wild_encounters )
+   validated_itinerary = replace(
+      validated_itinerary,
+      wild_encounters=wild_encounters )
+
    clear_itinerary( conn )
    save_validated_itinerary( conn, save_input.date, validated_itinerary )
 
-   return True
+   return ItinerarySaveResult(
+      success=True,
+      issues=issues )

@@ -130,6 +130,102 @@ def test_set_get_and_clear_itinerary(
    assert cleared.wild_encounters == []
 
 
+def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
+      db: DbControllers ) -> None:
+   WildEncounterController.set_wild_encounter_schedule(
+      wild_encounter_name='African Rainforest',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='14:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+   WildEncounterController.set_wild_encounter_schedule(
+      wild_encounter_name='Kangaroo',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='14:30',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+   WildEncounterController.set_wild_encounter_schedule(
+      wild_encounter_name='Capybara',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='16:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-15',
+      animals=[],
+      attractions=[ 'Conservation Carousel' ],
+      guardians_talks=[],
+      wild_encounters=[
+         'African Rainforest',
+         'Kangaroo',
+         'Capybara',
+      ],
+   )
+
+   assert result.success is True
+   assert [ issue.to_dict() for issue in result.issues ] == [
+      {
+         'type': 'wildEncounterTimeConflict',
+         'message': 'African Rainforest overlaps with Kangaroo.',
+         'items': [
+            {
+               'name': 'African Rainforest',
+               'start_time': '14:00',
+               'end_time': '14:45',
+               'meeting_spot': 'Wild Encounter - Africa Meeting Spot',
+               'link': 'https://www.torontozoo.com/tickets/weafricarainforest',
+            },
+            {
+               'name': 'Kangaroo',
+               'start_time': '14:30',
+               'end_time': '15:15',
+               'meeting_spot': 'Wild Encounter - Eurasia Meeting Spot',
+               'link': 'https://www.torontozoo.com/tickets/wekangaroo',
+            },
+         ],
+      }
+   ]
+
+   saved_wild_encounters = db.conn.execute(
+      """   SELECT WILD_ENCOUNTER
+            FROM ItineraryWildEncounter
+            ORDER BY WILD_ENCOUNTER;
+      """ ).fetchall()
+
+   assert [
+      row[ 'WILD_ENCOUNTER' ] for row in saved_wild_encounters
+   ] == [ 'Capybara' ]
+   assert db.conn.execute(
+      """   SELECT ATTRACTION
+            FROM ItineraryAttraction;
+      """ ).fetchone()[ 'ATTRACTION' ] == 'Conservation Carousel'
+
+
 def test_get_zoo_hours_returns_seeded_operating_bounds( db: DbControllers ) -> None:
    assert ZooHoursController.get_zoo_hours( day=20, month='June', year=2026 ).to_dict() == {
       'date': '2026-06-20',

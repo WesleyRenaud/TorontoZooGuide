@@ -94,6 +94,7 @@ export async function saveItinerary(itinerary = {}) {
    const result = await setItineraryRequest(payload);
 
    const normalizedItinerary = normalizeItinerary(result?.itinerary);
+   normalizedItinerary.saveIssues = result.issues;
    dispatchItineraryUpdated(normalizedItinerary);
 
    return normalizedItinerary;

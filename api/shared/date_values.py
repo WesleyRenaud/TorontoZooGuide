@@ -70,6 +70,16 @@ class DateValues:
 
 
    @staticmethod
+   def time_value_in_minutes( value: str | None ) -> int | None:
+      parsed_time = DateValues.parse_time_value( value )
+
+      if parsed_time == None:
+         return None
+
+      return ( parsed_time.hour * 60 ) + parsed_time.minute
+
+
+   @staticmethod
    def add_minutes_to_time( value: str | None, minutes: int | None ) -> str | None:
       parsed_time = DateValues.parse_time_value( value )
 

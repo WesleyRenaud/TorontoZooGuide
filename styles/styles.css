@@ -2795,9 +2795,43 @@ nav ul li a:hover {
    font-weight: 800;
    color: rgba(20,35,10,0.75);
    line-height: 1.25;
+   white-space: pre-line;
 
    width: 100%;
    max-width: none;
+}
+
+.itin-save-issues {
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   gap: 28px;
+}
+
+.itin-save-issue-section {
+   display: flex;
+   flex-direction: column;
+   gap: 18px;
+}
+
+.itin-save-issue-section-title {
+   margin: 0;
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.8em;
+   font-weight: 900;
+   color: rgba(20,35,10,0.92);
+}
+
+.itin-save-issue-conflict {
+   display: flex;
+   flex-direction: column;
+   gap: 14px;
+}
+
+.itin-panel-time-conflict {
+   color: #b21d1d;
+   font-weight: 900;
 }
 
 /* ============================================================

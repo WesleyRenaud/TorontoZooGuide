@@ -17,6 +17,7 @@ export function createItineraryPopupLayout({
    popupClassName = '',
    title = 'Heads up',
    message = '',
+   bodyContent = null,
    actionsClassName = '',
    actionButtons = [],
 } = {}) {
@@ -34,9 +35,15 @@ export function createItineraryPopupLayout({
    );
 
    const body = el('div', 'itin-card-body tzg-popup-body');
-   body.appendChild(
-      el('div', 'tzg-popup-message', message)
-   );
+
+   if (bodyContent) {
+      body.appendChild(bodyContent);
+   }
+   else {
+      body.appendChild(
+         el('div', 'tzg-popup-message', message)
+      );
+   }
 
    const actions = el('div', 'itin-card-actions');
    const actionsRight = el(
