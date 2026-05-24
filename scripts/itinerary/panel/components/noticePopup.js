@@ -43,6 +43,8 @@ export function showItineraryNoticePopup({
       root,
       overlay,
       initialFocusEl: buttonEls.ok,
+      dismissOnOverlayClick: false,
+      dismissOnEscape: false,
    });
 
    buttonEls.ok?.addEventListener('click', async () => {

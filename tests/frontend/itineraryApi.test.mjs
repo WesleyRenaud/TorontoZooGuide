@@ -90,7 +90,6 @@ test('normalizes accept itinerary response', async () => {
          issues: [
             {
                type: 'wildEncounterTimeConflict',
-               message: 'African Rainforest overlaps with Kangaroo.',
                items: [
                   {
                      name: 'African Rainforest',
@@ -125,7 +124,6 @@ test('normalizes accept itinerary response', async () => {
       issues: [
          {
             type: 'wildEncounterTimeConflict',
-            message: 'African Rainforest overlaps with Kangaroo.',
             items: [
                {
                   name: 'African Rainforest',
