@@ -8,6 +8,7 @@ from ..data_access.itinerary import fetch_saved_itinerary
 from ...guardians.controllers.guardians_controller import GuardiansController
 from ..logic import set_itinerary as set_itinerary_logic
 from ..logic.itinerary import build_current_itinerary
+from ..logic.itinerary_save_result import ItinerarySaveResult
 from ...models import Itinerary
 from ...request_connection import get_connection
 from ...types import DateInput
@@ -34,7 +35,7 @@ class ItineraryController():
          animals: list[ dict[ str, str ] ],
          attractions: list[ str ],
          guardians_talks: list[ str ],
-         wild_encounters: list[ str ] ) -> bool:
+         wild_encounters: list[ str ] ) -> ItinerarySaveResult:
       return set_itinerary_logic.set_itinerary(
          get_connection(),
          date=date,

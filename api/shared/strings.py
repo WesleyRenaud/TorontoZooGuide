@@ -78,6 +78,11 @@ class SharedStrings:
          return f'The { wild_encounter } is not scheduled today.'
 
 
+      @staticmethod
+      def time_conflict( first_wild_encounter: str, second_wild_encounter: str ) -> str:
+         return f'{ first_wild_encounter } overlaps with { second_wild_encounter }.'
+
+
    class GuardiansTalks:
       @staticmethod
       def not_scheduled_today( talk_name: str, location: str ) -> str:

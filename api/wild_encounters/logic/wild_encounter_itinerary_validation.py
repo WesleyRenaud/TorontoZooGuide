@@ -26,6 +26,8 @@ def build_wild_encounter_diff_for_visit_day(
       is_deleted=not encounter.is_available,
       start_time=encounter.start_time,
       end_time=end_time,
+      meeting_spot=encounter.meeting_spot,
+      link=encounter.link,
    )
 
 

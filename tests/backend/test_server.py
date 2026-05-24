@@ -7,6 +7,7 @@ from typing import Any
 
 import pytest
 
+from api.itinerary.logic.itinerary_save_result import ItinerarySaveResult
 from api.models import Animal
 from api.models import Attraction
 from api.models import Defibrillator
@@ -318,9 +319,9 @@ class StubZooControllers:
       ]
 
 
-   def set_itinerary( self, **kwargs: Any ) -> bool:
+   def set_itinerary( self, **kwargs: Any ) -> ItinerarySaveResult:
       self.calls.append( ( 'set_itinerary', kwargs ) )
-      return True
+      return ItinerarySaveResult( success=True )
 
 
    def get_itinerary( self ) -> Itinerary:
@@ -1158,7 +1159,9 @@ def test_itinerary_endpoints_return_success_payloads(
    server.MyHandler.do_POST( clear_handler )
    server.MyHandler.do_POST( accept_handler )
 
-   assert response_json( set_handler )[ 'success' ] is True
+   set_response = response_json( set_handler )
+   assert set_response[ 'success' ] is True
+   assert set_response[ 'issues' ] == []
    assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
    assert response_json( clear_handler )[ 'success' ] is True
    assert response_json( accept_handler )[ 'success' ] is True

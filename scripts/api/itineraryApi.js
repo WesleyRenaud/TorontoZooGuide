@@ -41,6 +41,7 @@ function normalizeItineraryResponse(response) {
    return {
       success: source.success !== false,
       error: asNullableString(source.error),
+      issues: asArray(source.issues),
       itinerary: normalizeItineraryModel(source.itinerary),
    };
 }
