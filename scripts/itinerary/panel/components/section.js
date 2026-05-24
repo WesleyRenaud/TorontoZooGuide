@@ -92,13 +92,38 @@ export function makeSection({ title, count, children = [], stepKey }) {
    section.appendChild(header);
    section.appendChild(body);
 
+   let resizeObserver = null;
+   let applyHeightFrame = null;
+
    const applyHeight = () => updateSectionBodyHeight(body, bodyInner);
 
-   requestAnimationFrame(applyHeight);
+   function scheduleHeightUpdate() {
+      cancelAnimationFrame(applyHeightFrame);
+      applyHeightFrame = requestAnimationFrame(applyHeight);
+   }
+
+   requestAnimationFrame(() => {
+      applyHeight();
+      requestAnimationFrame(applyHeight);
+   });
+
+   bodyInner.querySelectorAll('img').forEach((image) => {
+      image.addEventListener('load', scheduleHeightUpdate, { once: true });
+      image.addEventListener('error', scheduleHeightUpdate, { once: true });
+   });
+
+   if (typeof ResizeObserver === 'function') {
+      resizeObserver = new ResizeObserver(scheduleHeightUpdate);
+      Array.from(bodyInner.children).forEach((item) => {
+         resizeObserver.observe(item);
+      });
+   }
 
    const resizeHandler = () => applyHeight();
    window.addEventListener('resize', resizeHandler, { passive: true });
    section.__tzgCleanup = () => {
+      cancelAnimationFrame(applyHeightFrame);
+      resizeObserver?.disconnect();
       window.removeEventListener('resize', resizeHandler);
       delete section.__tzgCleanup;
    };
