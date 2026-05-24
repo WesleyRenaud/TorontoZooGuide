@@ -210,7 +210,7 @@ export function createItinerarySelectorController({
    });
 
    function handlePrev() {
-      onPrev?.();
+      onPrev?.(getSelectionSnapshot());
    }
 
    function handleNext() {

@@ -268,7 +268,12 @@ export async function openItineraryWizard({
          mountEl,
          onClose: handleClose,
          onPrev: config.prevStepKey
-            ? () => showStep(config.prevStepKey)
+            ? (value) => {
+               updateSelection(config.selectionKey, value, {
+                  preserveOnInvalid: config.preserveOnInvalid,
+               });
+               showStep(config.prevStepKey);
+            }
             : undefined,
          ...buildSelectionStepHandlers({
             selectionKey: config.selectionKey,
