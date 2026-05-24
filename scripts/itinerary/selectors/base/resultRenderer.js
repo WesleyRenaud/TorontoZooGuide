@@ -52,6 +52,7 @@ export function createSelectorTextColumn({
    subtitle = '',
    infoLink = null,
    titleNode = null,
+   subtitleNode = null,
 } = {}) {
    const left = document.createElement('div');
    left.className = 'animal-result-left';
@@ -66,7 +67,10 @@ export function createSelectorTextColumn({
       left.appendChild(titleEl);
    }
 
-   if (subtitle) {
+   if (subtitleNode) {
+      left.appendChild(subtitleNode);
+   }
+   else if (subtitle) {
       const subtitleEl = document.createElement('div');
       subtitleEl.className = 'animal-result-exhibit';
       subtitleEl.textContent = subtitle;

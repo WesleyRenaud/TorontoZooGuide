@@ -31,7 +31,18 @@ export const itinerary = {
          'You have unsaved itinerary changes. Would you like to save them before closing?'
       ),
       saveChangesTitle: 'Save Changes?',
+      saveIssuesButton: 'Proceed',
       saveIssuesTitle: 'Your Itinerary Has the Following Issues:',
+      proceedWithoutConflictSelectionMessage: (
+         'None of these Wild Encounters will be added to your itinerary.'
+      ),
+      proceedWithoutConflictSelectionTitle: (
+         'Proceed Without Selecting a Wild Encounter?'
+      ),
+      closeSaveIssuesTitle: 'Close Without Adding a Wild Encounter?',
+      wildEncounterConflictsMessage: (
+         'Only one of these conflicting Wild Encounters can be added to your itinerary.'
+      ),
       wildEncounterConflictsTitle: 'Wild Encounter Conflicts',
       animalMayBeOffDisplay: 'Animal May Be Off Display',
    },

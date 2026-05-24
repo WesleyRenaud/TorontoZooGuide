@@ -9,6 +9,9 @@ export function showItineraryNoticePopup({
    message = '',
    bodyContent = null,
    buttonText = APP_STRINGS.itinerary.noItemsSelected.button,
+   onConfirm = null,
+   showCloseButton = false,
+   onClose = null,
 } = {}) {
    const existingPopup = document.querySelector('.tzg-popup.tzg-notice');
    existingPopup?.__tzgPopupCleanup?.();
@@ -18,11 +21,13 @@ export function showItineraryNoticePopup({
       root,
       overlay,
       buttonEls,
+      closeButton,
    } = createItineraryPopupLayout({
       popupClassName: 'tzg-notice',
       title,
       message,
       bodyContent,
+      showCloseButton,
       actionsClassName: 'tzg-popup-actions',
       actionButtons: [
          {
@@ -40,5 +45,25 @@ export function showItineraryNoticePopup({
       initialFocusEl: buttonEls.ok,
    });
 
-   buttonEls.ok?.addEventListener('click', close);
+   buttonEls.ok?.addEventListener('click', async () => {
+      buttonEls.ok.disabled = true;
+
+      try {
+         const shouldClose = await onConfirm?.({ close });
+
+         if (shouldClose !== false) {
+            close();
+         }
+      }
+      catch (error) {
+         buttonEls.ok.disabled = false;
+         throw error;
+      }
+
+      buttonEls.ok.disabled = false;
+   });
+
+   closeButton?.addEventListener('click', () => {
+      onClose?.({ close });
+   });
 }

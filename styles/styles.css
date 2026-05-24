@@ -2801,6 +2801,11 @@ nav ul li a:hover {
    max-width: none;
 }
 
+.tzg-confirm .itin-overlay {
+   align-items: center;
+   padding-top: 5vh;
+}
+
 .itin-save-issues {
    width: 100%;
    display: flex;
@@ -2823,6 +2828,15 @@ nav ul li a:hover {
    color: rgba(20,35,10,0.92);
 }
 
+.itin-save-issue-section-message {
+   margin: -8px 0 4px 0;
+
+   font-size: 2.1em;
+   font-weight: 750;
+   line-height: 1.25;
+   color: rgba(20,35,10,0.68);
+}
+
 .itin-save-issue-conflict {
    display: flex;
    flex-direction: column;
@@ -2832,6 +2846,30 @@ nav ul li a:hover {
 .itin-panel-time-conflict {
    color: #b21d1d;
    font-weight: 900;
+}
+
+.itin-save-issue-select-btn:disabled {
+   cursor: default;
+   opacity: 0.52;
+   transform: none;
+   box-shadow: none;
+}
+
+.itin-save-issue-select-btn:disabled:hover {
+   background-color: #77B800;
+   transform: none;
+   box-shadow: none;
+}
+
+.itin-save-issue-select-btn.is-added {
+   background: rgba(255,255,255,0.15);
+   color: #ffffff;
+   border: 4px solid rgba(255,255,255,0.6);
+   box-shadow: none;
+}
+
+.itin-save-issue-select-btn.is-added:disabled {
+   opacity: 1;
 }
 
 /* ============================================================

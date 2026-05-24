@@ -1,4 +1,5 @@
 import { el } from '../dom.js';
+import { APP_STRINGS } from '../../../strings.js';
 
 function joinClassNames(...classNames) {
    return classNames.filter(Boolean).join(' ');
@@ -20,6 +21,8 @@ export function createItineraryPopupLayout({
    bodyContent = null,
    actionsClassName = '',
    actionButtons = [],
+   showCloseButton = false,
+   closeAriaLabel = APP_STRINGS.itinerary.aria.closeBuilder,
 } = {}) {
    const root = el('div', joinClassNames('tzg-popup', popupClassName));
    const overlay = el('div', 'itin-overlay');
@@ -29,10 +32,25 @@ export function createItineraryPopupLayout({
    card.setAttribute('aria-modal', 'true');
    card.setAttribute('aria-label', title);
 
-   const topbar = el('div', 'itin-card-topbar');
+   const topbar = el(
+      'div',
+      showCloseButton
+         ? 'itin-card-topbar itin-card-topbar-with-close'
+         : 'itin-card-topbar'
+   );
    topbar.appendChild(
       el('div', 'itin-top-title', title)
    );
+
+   const closeButton = showCloseButton
+      ? el('button', 'itin-close', APP_STRINGS.common.closeSymbol)
+      : null;
+
+   if (closeButton) {
+      closeButton.type = 'button';
+      closeButton.setAttribute('aria-label', closeAriaLabel);
+      topbar.appendChild(closeButton);
+   }
 
    const body = el('div', 'itin-card-body tzg-popup-body');
 
@@ -72,6 +90,7 @@ export function createItineraryPopupLayout({
       root,
       overlay,
       buttonEls,
+      closeButton,
    };
 }
 
