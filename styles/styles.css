@@ -2841,6 +2841,22 @@ nav ul li a:hover {
    display: flex;
    flex-direction: column;
    gap: 14px;
+   padding: 18px 0;
+   border-top: 2px solid rgba(20,35,10,0.12);
+}
+
+.itin-save-issue-conflict:first-of-type {
+   padding-top: 0;
+   border-top: none;
+}
+
+.itin-save-issue-conflict-message {
+   margin: 0;
+
+   font-size: 2.1em;
+   font-weight: 750;
+   line-height: 1.25;
+   color: rgba(20,35,10,0.68);
 }
 
 .itin-panel-time-conflict {
