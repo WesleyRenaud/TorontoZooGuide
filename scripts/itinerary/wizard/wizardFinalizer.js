@@ -17,7 +17,9 @@ import { APP_STRINGS } from '../../strings.js';
 import {
    buildItineraryWithSelectedWildEncounters,
    getSelectedWildEncounters,
+   hasUnresolvedWildEncounterConflictGroups,
    hasWildEncounterConflictSelection,
+   sortWildEncounterConflictIssuesByStartTime,
 } from './wildEncounterConflictResolution.js';
 import { showItineraryWizardPopup } from './wizardPopup.js';
 
@@ -218,7 +220,9 @@ function createSaveIssuesContent(issues) {
 
    if (wildEncounterConflictIssues.length) {
       const sectionResult = createWildEncounterConflictSection(
-         wildEncounterConflictIssues
+         sortWildEncounterConflictIssuesByStartTime(
+            wildEncounterConflictIssues
+         )
       );
 
       content.appendChild(sectionResult.section);
@@ -231,16 +235,40 @@ function createSaveIssuesContent(issues) {
    };
 }
 
-function showProceedWithoutConflictSelectionConfirmation({
+function showConflictProceedConfirmation({
    title,
+   message,
    onConfirm,
 } = {}) {
    showItineraryConfirmPopup({
       title,
-      message: APP_STRINGS.itinerary.confirmation
-         .proceedWithoutConflictSelectionMessage,
+      message,
       confirmText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
       cancelText: APP_STRINGS.itinerary.actions.cancel,
+      onConfirm,
+   });
+}
+
+function showProceedWithoutConflictSelectionConfirmation({
+   title,
+   onConfirm,
+} = {}) {
+   showConflictProceedConfirmation({
+      title,
+      message: APP_STRINGS.itinerary.confirmation
+         .proceedWithoutConflictSelectionMessage,
+      onConfirm,
+   });
+}
+
+function showProceedWithUnresolvedConflictsConfirmation({
+   onConfirm,
+} = {}) {
+   showConflictProceedConfirmation({
+      title: APP_STRINGS.itinerary.confirmation
+         .proceedWithUnresolvedConflictsTitle,
+      message: APP_STRINGS.itinerary.confirmation
+         .proceedWithUnresolvedConflictsMessage,
       onConfirm,
    });
 }
@@ -269,6 +297,8 @@ function showSaveIssuesPopup(savedItinerary) {
          });
       },
       onConfirm: async ({ close } = {}) => {
+         const selectedWildEncounters = getSelectedWildEncounters(conflictGroups);
+
          if (!hasWildEncounterConflictSelection(conflictGroups)) {
             showProceedWithoutConflictSelectionConfirmation({
                title: APP_STRINGS.itinerary.confirmation
@@ -279,10 +309,26 @@ function showSaveIssuesPopup(savedItinerary) {
             return false;
          }
 
+         if (hasUnresolvedWildEncounterConflictGroups(conflictGroups)) {
+            showProceedWithUnresolvedConflictsConfirmation({
+               onConfirm: async () => {
+                  await saveFinalItinerary(
+                     buildItineraryWithSelectedWildEncounters(
+                        savedItinerary,
+                        selectedWildEncounters
+                     )
+                  );
+                  close();
+               },
+            });
+
+            return false;
+         }
+
          await saveFinalItinerary(
             buildItineraryWithSelectedWildEncounters(
                savedItinerary,
-               getSelectedWildEncounters(conflictGroups)
+               selectedWildEncounters
             )
          );
       },

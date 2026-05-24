@@ -39,6 +39,12 @@ export const itinerary = {
       proceedWithoutConflictSelectionTitle: (
          'Proceed Without Selecting a Wild Encounter?'
       ),
+      proceedWithUnresolvedConflictsMessage: (
+         'You have not selected a Wild Encounter for every conflict. Only the encounters you selected will be added to your itinerary.'
+      ),
+      proceedWithUnresolvedConflictsTitle: (
+         'Proceed Without Resolving All Conflicts?'
+      ),
       closeSaveIssuesTitle: 'Close Without Adding a Wild Encounter?',
       wildEncounterConflictsMessage: (
          'Only one of these conflicting Wild Encounters can be added to your itinerary.'

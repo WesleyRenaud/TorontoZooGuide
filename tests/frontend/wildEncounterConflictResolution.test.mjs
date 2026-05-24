@@ -4,7 +4,10 @@ import test from 'node:test';
 import {
    buildItineraryWithSelectedWildEncounters,
    getSelectedWildEncounters,
+   getWildEncounterConflictIssueStartTime,
+   hasUnresolvedWildEncounterConflictGroups,
    hasWildEncounterConflictSelection,
+   sortWildEncounterConflictIssuesByStartTime,
 } from '../../scripts/itinerary/wizard/wildEncounterConflictResolution.js';
 
 const firstEncounter = {
@@ -34,6 +37,32 @@ const fourthEncounter = {
    end_time: '15:00',
    meeting_spot: 'Wild Encounter - Penguin Meeting Spot',
 };
+
+test('getWildEncounterConflictIssueStartTime uses the earliest encounter time', () => {
+   assert.equal(
+      getWildEncounterConflictIssueStartTime({
+         items: [thirdEncounter, fourthEncounter],
+      }),
+      '14:00'
+   );
+});
+
+test('sortWildEncounterConflictIssuesByStartTime orders groups by earliest time', () => {
+   const afternoonIssue = {
+      items: [thirdEncounter, fourthEncounter],
+   };
+   const middayIssue = {
+      items: [firstEncounter, secondEncounter],
+   };
+
+   assert.deepEqual(
+      sortWildEncounterConflictIssuesByStartTime([
+         afternoonIssue,
+         middayIssue,
+      ]),
+      [middayIssue, afternoonIssue]
+   );
+});
 
 test('getSelectedWildEncounters returns one choice per conflict group', () => {
    const conflictGroups = [
@@ -67,6 +96,33 @@ test('hasWildEncounterConflictSelection is false until a group has a selection',
 
    assert.equal(hasWildEncounterConflictSelection([]), false);
    assert.equal(hasWildEncounterConflictSelection(conflictGroups), true);
+});
+
+test('hasUnresolvedWildEncounterConflictGroups detects partial resolution', () => {
+   const conflictGroups = [
+      { selection: { item: firstEncounter } },
+      { selection: { item: null } },
+   ];
+
+   assert.equal(hasUnresolvedWildEncounterConflictGroups([]), false);
+   assert.equal(
+      hasUnresolvedWildEncounterConflictGroups(conflictGroups),
+      true
+   );
+   assert.equal(
+      hasUnresolvedWildEncounterConflictGroups([
+         { selection: { item: firstEncounter } },
+         { selection: { item: thirdEncounter } },
+      ]),
+      false
+   );
+   assert.equal(
+      hasUnresolvedWildEncounterConflictGroups([
+         { selection: { item: null } },
+         { selection: { item: null } },
+      ]),
+      false
+   );
 });
 
 test('buildItineraryWithSelectedWildEncounters appends all selected encounters', () => {
