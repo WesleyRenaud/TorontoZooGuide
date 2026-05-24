@@ -41,14 +41,17 @@ export function createItineraryGuardiansTalkSelectorController({
       emptyStoredFields: {
          location: '',
          start_time: '',
+         end_time: '',
       },
       readStoredFields: (item) => ({
          location: normalizeStoredString(item.location),
          start_time: normalizeStoredString(item.start_time),
+         end_time: normalizeStoredString(item.end_time),
       }),
       buildSelectionFields: (row) => ({
          location: getTalkLocation(row),
          start_time: getTalkScheduleStart(row),
+         end_time: normalizeStoredString(row?.end_time),
       }),
    });
 }

@@ -8,6 +8,7 @@ import {
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
+import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import { APP_STRINGS } from '../../strings.js';
 
 function getOccurrenceName(row) {
@@ -27,14 +28,14 @@ function buildOccurrenceImageSrc(imageDirectory, name) {
 function buildOccurrenceSubtitle({
    primaryLabel,
    primaryValue = '',
-   timeOfDay = '',
+   timeRange = '',
 } = {}) {
    const primaryLine = primaryValue
       ? `${primaryLabel}: ${primaryValue}`
       : `${primaryLabel}: -`;
 
-   return timeOfDay
-      ? `${primaryLine}  •  Time: ${timeOfDay}`
+   return timeRange
+      ? `${primaryLine}  •  Time: ${timeRange}`
       : primaryLine;
 }
 
@@ -83,6 +84,12 @@ function createStoredOccurrenceFromObject(item, {
 
    if (startTime) {
       storedOccurrence.start_time = startTime;
+   }
+
+   const endTime = normalizeStoredString(item.end_time);
+
+   if (endTime) {
+      storedOccurrence.end_time = endTime;
    }
 
    const maximumDuration = Number(item.maximum_duration);
@@ -144,6 +151,12 @@ function createOccurrenceSelection(row, {
 
    if (startTime) {
       selection.start_time = startTime;
+   }
+
+   const endTime = normalizeStoredString(row?.end_time);
+
+   if (endTime) {
+      selection.end_time = endTime;
    }
 
    return selection;
@@ -221,7 +234,7 @@ export function createScheduledOccurrenceSelectorController({
       getSubtitle: (row) => buildOccurrenceSubtitle({
          primaryLabel,
          primaryValue: getPrimaryValue(row),
-         timeOfDay: getTimeOfDay(row),
+         timeRange: buildScheduledOccurrenceTimeRange(row),
       }),
       getImageSrc: (row) => buildImageSrc(getName(row)),
       getInfoLink: getLink || undefined,

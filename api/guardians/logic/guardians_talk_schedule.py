@@ -78,6 +78,10 @@ def build_guardians_talk_schedule_for_target_date(
             unavailable_message = SharedStrings.VisitDaySchedule.cancelled_for_this_date( name )
 
       if is_available:
+         talk_end_time = DateValues.add_minutes_to_time(
+            talk_time,
+            record.maximum_duration )
+
          guardians_talks.append(
             GuardiansTalk(
                name=name,
@@ -86,6 +90,7 @@ def build_guardians_talk_schedule_for_target_date(
                y_coord=record.y_coord,
                start_time=talk_time,
                maximum_duration=record.maximum_duration,
+               end_time=talk_end_time,
                is_available=is_available,
                unavailable_message=unavailable_message ) )
 
