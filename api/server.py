@@ -744,25 +744,28 @@ class MyHandler( BaseHTTPRequestHandler ):
          guardians_talks = data.get( 'guardiansTalks' )
          wild_encounters = data.get( 'wildEncounters' )
 
-         success = ItineraryController.set_itinerary(
+         save_result = ItineraryController.set_itinerary(
             date=date,
             animals=animals,
             attractions=attractions,
             guardians_talks=guardians_talks,
             wild_encounters=wild_encounters )
 
-         itinerary = ItineraryController.get_itinerary() if success else None
+         itinerary = ItineraryController.get_itinerary()
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
          response = {
-            'success': success,
-            'itinerary': itinerary.to_dict() if itinerary != None else None
+            'success': save_result.success,
+            'itinerary': itinerary.to_dict(),
+            'issues': [
+               issue.to_dict() for issue in save_result.issues
+            ]
          }
 
-         if not success:
+         if not save_result.success:
             response[ 'error' ] = 'Could not save itinerary.'
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )

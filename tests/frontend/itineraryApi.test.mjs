@@ -43,6 +43,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
    assert.deepEqual(await getItineraryRequest(), {
       success: true,
       error: null,
+      issues: [],
       itinerary: {
          date: '2026-06-15',
          animals: [{ species: 'African Lion' }],
@@ -67,6 +68,7 @@ test('normalizes set itinerary failures without dropping returned itinerary data
    assert.deepEqual(await setItineraryRequest({ date: '2026-06-15' }), {
       success: false,
       error: 'Could not save itinerary.',
+      issues: [],
       itinerary: {
          date: '2026-06-15',
          animals: [],
@@ -85,6 +87,28 @@ test('normalizes accept itinerary response', async () => {
 
       return mockJsonResponse({
          success: true,
+         issues: [
+            {
+               type: 'wildEncounterTimeConflict',
+               message: 'African Rainforest overlaps with Kangaroo.',
+               items: [
+                  {
+                     name: 'African Rainforest',
+                     start_time: '14:00',
+                     end_time: '14:45',
+                     meeting_spot: 'Wild Encounter - Africa Meeting Spot',
+                     link: 'https://www.torontozoo.com/tickets/weafricarainforest',
+                  },
+                  {
+                     name: 'Kangaroo',
+                     start_time: '14:30',
+                     end_time: '15:15',
+                     meeting_spot: 'Wild Encounter - Eurasia Meeting Spot',
+                     link: 'https://www.torontozoo.com/tickets/wekangaroo',
+                  },
+               ],
+            },
+         ],
          itinerary: {
             date: '2026-06-15',
             animals: [],
@@ -98,6 +122,28 @@ test('normalizes accept itinerary response', async () => {
    assert.deepEqual(await acceptItineraryRequest(), {
       success: true,
       error: null,
+      issues: [
+         {
+            type: 'wildEncounterTimeConflict',
+            message: 'African Rainforest overlaps with Kangaroo.',
+            items: [
+               {
+                  name: 'African Rainforest',
+                  start_time: '14:00',
+                  end_time: '14:45',
+                  meeting_spot: 'Wild Encounter - Africa Meeting Spot',
+                  link: 'https://www.torontozoo.com/tickets/weafricarainforest',
+               },
+               {
+                  name: 'Kangaroo',
+                  start_time: '14:30',
+                  end_time: '15:15',
+                  meeting_spot: 'Wild Encounter - Eurasia Meeting Spot',
+                  link: 'https://www.torontozoo.com/tickets/wekangaroo',
+               },
+            ],
+         },
+      ],
       itinerary: {
          date: '2026-06-15',
          animals: [],

@@ -31,6 +31,8 @@ export const itinerary = {
          'You have unsaved itinerary changes. Would you like to save them before closing?'
       ),
       saveChangesTitle: 'Save Changes?',
+      saveIssuesTitle: 'Your Itinerary Has the Following Issues:',
+      wildEncounterConflictsTitle: 'Wild Encounter Conflicts',
       animalMayBeOffDisplay: 'Animal May Be Off Display',
    },
    emptyText: {

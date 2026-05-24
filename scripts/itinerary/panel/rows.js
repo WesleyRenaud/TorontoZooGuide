@@ -28,7 +28,19 @@ function buildImageSrc(...pathParts) {
 }
 
 function buildFieldLine(label, value) {
-   return value ? `${label}: ${value}` : '';
+   if (!value) {
+      return '';
+   }
+
+   return `${label}: ${value}`;
+}
+
+function buildTimeFieldLine(value) {
+   if (!value) {
+      return '';
+   }
+
+   return `Time: ${value}`;
 }
 
 function buildMetaLines(lines = []) {
@@ -165,8 +177,13 @@ export function buildGuardiansRows(guardiansTalks = []) {
    });
 }
 
-export function buildWildRows(wildEncounters = []) {
-   return buildNamedRows(wildEncounters, {
+function markWildEncounterConflictTime(row) {
+   const metaLines = row.querySelectorAll('.itin-panel-meta');
+   metaLines[1]?.classList.add('itin-panel-time-conflict');
+}
+
+export function buildWildRows(wildEncounters = [], hasConflicts = false) {
+   const rows = buildNamedRows(wildEncounters, {
       normalizeItem: normalizeWild,
       prepareItems: sortScheduledOccurrencesByStartTime,
       defaultName: 'Wild Encounter',
@@ -174,9 +191,15 @@ export function buildWildRows(wildEncounters = []) {
       getName: (wild) => wild.name,
       getMetaLines: (wild) => [
          buildFieldLine('Meeting Spot', wild.meeting_spot),
-         buildFieldLine('Time', wild.start_time),
+         buildTimeFieldLine(wild.start_time),
       ],
       getAlertLine: buildWildRemovalReasonLine,
       getLink: (wild) => wild.link,
    });
+
+   if (hasConflicts) {
+      rows.forEach(markWildEncounterConflictTime);
+   }
+
+   return rows;
 }
