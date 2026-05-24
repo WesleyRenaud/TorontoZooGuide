@@ -14,6 +14,11 @@ import {
    createSelectorTextColumn,
 } from '../selectors/base/resultRenderer.js';
 import { APP_STRINGS } from '../../strings.js';
+import {
+   buildItineraryWithSelectedWildEncounters,
+   getSelectedWildEncounters,
+   hasWildEncounterConflictSelection,
+} from './wildEncounterConflictResolution.js';
 import { showItineraryWizardPopup } from './wizardPopup.js';
 
 const WILD_ENCOUNTER_TIME_CONFLICT = 'wildEncounterTimeConflict';
@@ -41,16 +46,6 @@ function showEmptySelectionPopup(mountEl) {
       mountEl,
       ...EMPTY_SELECTION_POPUP_CONFIG,
    });
-}
-
-function buildItineraryWithSelectedWildEncounter(itinerary, wildEncounter) {
-   return {
-      ...itinerary,
-      wildEncounters: [
-         ...itinerary.wildEncounters,
-         wildEncounter,
-      ],
-   };
 }
 
 function updateConflictSelectionButtons(buttons, selectedButton) {
@@ -152,10 +147,19 @@ function createWildEncounterConflictRow({
    };
 }
 
-function createWildEncounterConflictBlock(issue, selection) {
+function createWildEncounterConflictBlock(issue) {
+   const selection = { item: null };
    const block = el('div', 'itin-save-issue-conflict');
    const buttons = [];
    const items = sortScheduledOccurrencesByStartTime(issue.items);
+
+   block.appendChild(
+      el(
+         'p',
+         'itin-save-issue-conflict-message',
+         APP_STRINGS.itinerary.confirmation.wildEncounterConflictsMessage
+      )
+   );
 
    items.forEach((item) => {
       const {
@@ -171,11 +175,16 @@ function createWildEncounterConflictBlock(issue, selection) {
       block.appendChild(row);
    });
 
-   return block;
+   return {
+      block,
+      selection,
+   };
 }
 
-function createWildEncounterConflictSection(issues, selection) {
+function createWildEncounterConflictSection(issues) {
    const section = el('section', 'itin-save-issue-section');
+   const conflictGroups = [];
+
    section.appendChild(
       el(
          'h3',
@@ -183,39 +192,43 @@ function createWildEncounterConflictSection(issues, selection) {
          APP_STRINGS.itinerary.confirmation.wildEncounterConflictsTitle
       )
    );
-   section.appendChild(
-      el(
-         'p',
-         'itin-save-issue-section-message',
-         APP_STRINGS.itinerary.confirmation.wildEncounterConflictsMessage
-      )
-   );
 
    issues.forEach((issue) => {
-      section.appendChild(
-         createWildEncounterConflictBlock(issue, selection)
-      );
+      const {
+         block,
+         selection,
+      } = createWildEncounterConflictBlock(issue);
+
+      section.appendChild(block);
+      conflictGroups.push({ selection });
    });
 
-   return section;
+   return {
+      section,
+      conflictGroups,
+   };
 }
 
-function createSaveIssuesContent(issues, selection) {
+function createSaveIssuesContent(issues) {
    const content = el('div', 'itin-save-issues');
    const wildEncounterConflictIssues = issues.filter(
       issue => issue?.type === WILD_ENCOUNTER_TIME_CONFLICT
    );
+   let conflictGroups = [];
 
    if (wildEncounterConflictIssues.length) {
-      content.appendChild(
-         createWildEncounterConflictSection(
-            wildEncounterConflictIssues,
-            selection
-         )
+      const sectionResult = createWildEncounterConflictSection(
+         wildEncounterConflictIssues
       );
+
+      content.appendChild(sectionResult.section);
+      conflictGroups = sectionResult.conflictGroups;
    }
 
-   return content;
+   return {
+      content,
+      conflictGroups,
+   };
 }
 
 function showProceedWithoutConflictSelectionConfirmation({
@@ -234,15 +247,19 @@ function showProceedWithoutConflictSelectionConfirmation({
 
 function showSaveIssuesPopup(savedItinerary) {
    const issues = savedItinerary.saveIssues;
-   const selection = { item: null };
 
    if (!issues.length) {
       return;
    }
 
+   const {
+      content,
+      conflictGroups,
+   } = createSaveIssuesContent(issues);
+
    showItineraryNoticePopup({
       title: APP_STRINGS.itinerary.confirmation.saveIssuesTitle,
-      bodyContent: createSaveIssuesContent(issues, selection),
+      bodyContent: content,
       buttonText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
       showCloseButton: true,
       onClose: ({ close } = {}) => {
@@ -252,7 +269,7 @@ function showSaveIssuesPopup(savedItinerary) {
          });
       },
       onConfirm: async ({ close } = {}) => {
-         if (!selection.item) {
+         if (!hasWildEncounterConflictSelection(conflictGroups)) {
             showProceedWithoutConflictSelectionConfirmation({
                title: APP_STRINGS.itinerary.confirmation
                   .proceedWithoutConflictSelectionTitle,
@@ -263,9 +280,9 @@ function showSaveIssuesPopup(savedItinerary) {
          }
 
          await saveFinalItinerary(
-            buildItineraryWithSelectedWildEncounter(
+            buildItineraryWithSelectedWildEncounters(
                savedItinerary,
-               selection.item
+               getSelectedWildEncounters(conflictGroups)
             )
          );
       },
