@@ -7,8 +7,8 @@ import {
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
 import { el } from '../panel/dom.js';
-import { formatClockTime } from '../panel/format.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
+import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import {
    createSelectorRowContent,
    createSelectorTextColumn,
@@ -119,7 +119,7 @@ function createScheduleConflictSubtitle(item) {
    const time = el(
       'span',
       'itin-panel-time-conflict',
-      `Time: ${formatClockTime(item.start_time)}`
+      `Time: ${buildScheduledOccurrenceTimeRange(item)}`
    );
    const locationLabel = isGuardiansTalkConflictItem(item)
       ? APP_STRINGS.labels.location

@@ -346,6 +346,7 @@ test('buildGuardiansRows and buildWildRows render schedule metadata', () => {
          name: 'Amur Tiger',
          location: 'Eurasia Wilds',
          start_time: '13:30',
+         end_time: '14:00',
       },
    ]);
    const [wildRow] = buildWildRows([
@@ -353,6 +354,7 @@ test('buildGuardiansRows and buildWildRows render schedule metadata', () => {
          name: 'African Rainforest',
          meeting_spot: 'Wild Encounter - Africa Meeting Spot',
          start_time: '14:00',
+         end_time: '14:45',
       },
    ]);
 
@@ -362,6 +364,10 @@ test('buildGuardiansRows and buildWildRows render schedule metadata', () => {
       'images/details/guardians-talks/amur-tiger.png'
    );
    assert.equal(textFor(talkRow, '.itin-panel-meta'), 'Location: Eurasia Wilds');
+   assert.equal(
+      talkRow.querySelectorAll('.itin-panel-meta')[1].textContent,
+      'Time: 1:30 PM - 2:00 PM'
+   );
    assert.equal(textFor(wildRow, '.itin-panel-name'), 'African Rainforest');
    assert.equal(
       imageSrcFor(wildRow),
@@ -370,6 +376,10 @@ test('buildGuardiansRows and buildWildRows render schedule metadata', () => {
    assert.equal(
       textFor(wildRow, '.itin-panel-meta'),
       'Meeting Spot: Wild Encounter - Africa Meeting Spot'
+   );
+   assert.equal(
+      wildRow.querySelectorAll('.itin-panel-meta')[1].textContent,
+      'Time: 2:00 PM - 2:45 PM'
    );
 });
 
