@@ -26,6 +26,7 @@ def build_guardians_talk_diff_for_visit_day(
       is_deleted=False,
       start_time=talk.start_time,
       end_time=end_time,
+      location=talk.location,
    )
 
 

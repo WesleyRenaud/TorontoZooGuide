@@ -10,11 +10,13 @@ class GuardiansTalkDiff:
          name: str,
          is_deleted: bool,
          start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None ) -> None:
+         end_time: ScheduleTimeKey = None,
+         location: str | None = None ) -> None:
       self.name = name
       self.is_deleted = is_deleted
       self.start_time = start_time
       self.end_time = end_time
+      self.location = location
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -23,4 +25,5 @@ class GuardiansTalkDiff:
          'is_deleted': ValueConversion.as_boolean( self.is_deleted ),
          'start_time': self.start_time,
          'end_time': self.end_time,
+         'location': self.location,
       }

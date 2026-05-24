@@ -191,20 +191,23 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
    assert [ issue.to_dict() for issue in result.issues ] == [
       {
          'type': 'wildEncounterTimeConflict',
-         'message': 'African Rainforest overlaps with Kangaroo.',
          'items': [
             {
                'name': 'African Rainforest',
                'start_time': '14:00',
                'end_time': '14:45',
+               'item_type': 'wildEncounter',
                'meeting_spot': 'Wild Encounter - Africa Meeting Spot',
+               'location': '',
                'link': 'https://www.torontozoo.com/tickets/weafricarainforest',
             },
             {
                'name': 'Kangaroo',
                'start_time': '14:30',
                'end_time': '15:15',
+               'item_type': 'wildEncounter',
                'meeting_spot': 'Wild Encounter - Eurasia Meeting Spot',
+               'location': '',
                'link': 'https://www.torontozoo.com/tickets/wekangaroo',
             },
          ],
@@ -224,6 +227,153 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       """   SELECT ATTRACTION
             FROM ItineraryAttraction;
       """ ).fetchone()[ 'ATTRACTION' ] == 'Conservation Carousel'
+
+
+def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
+      db: DbControllers ) -> None:
+   GuardiansController.set_guardians_talk_schedule(
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday_time='14:00',
+      tuesday_time=None,
+      wednesday_time=None,
+      thursday_time=None,
+      friday_time=None,
+      saturday_time=None,
+      sunday_time=None,
+      message=None
+   )
+   WildEncounterController.set_wild_encounter_schedule(
+      wild_encounter_name='African Rainforest',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='14:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-15',
+      animals=[],
+      attractions=[ 'Conservation Carousel' ],
+      guardians_talks=[ 'African Lion' ],
+      wild_encounters=[ 'African Rainforest' ],
+   )
+
+   assert result.success is True
+   assert [ issue.to_dict() for issue in result.issues ] == [
+      {
+         'type': 'wildEncounterTimeConflict',
+         'items': [
+            {
+               'name': 'African Lion',
+               'start_time': '14:00',
+               'end_time': '14:30',
+               'item_type': 'guardiansTalk',
+               'meeting_spot': '',
+               'location': 'Africa Savanna',
+               'link': '',
+            },
+            {
+               'name': 'African Rainforest',
+               'start_time': '14:00',
+               'end_time': '14:45',
+               'item_type': 'wildEncounter',
+               'meeting_spot': 'Wild Encounter - Africa Meeting Spot',
+               'location': '',
+               'link': 'https://www.torontozoo.com/tickets/weafricarainforest',
+            },
+         ],
+      }
+   ]
+
+   assert db.conn.execute(
+      'SELECT COUNT(*) FROM ItineraryGuardiansTalk;'
+   ).fetchone()[ 0 ] == 0
+   assert db.conn.execute(
+      'SELECT COUNT(*) FROM ItineraryWildEncounter;'
+   ).fetchone()[ 0 ] == 0
+
+
+def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
+      db: DbControllers ) -> None:
+   GuardiansController.set_guardians_talk_schedule(
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday_time='13:00',
+      tuesday_time=None,
+      wednesday_time=None,
+      thursday_time=None,
+      friday_time=None,
+      saturday_time=None,
+      sunday_time=None,
+      message=None
+   )
+   WildEncounterController.set_wild_encounter_schedule(
+      wild_encounter_name='African Rainforest',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='13:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+   WildEncounterController.set_wild_encounter_schedule(
+      wild_encounter_name='Kangaroo',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='13:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-15',
+      animals=[],
+      attractions=[],
+      guardians_talks=[ 'African Lion' ],
+      wild_encounters=[ 'African Rainforest', 'Kangaroo' ],
+   )
+
+   assert result.success is True
+   assert len( result.issues ) == 1
+
+   issue = result.issues[ 0 ].to_dict()
+
+   assert issue[ 'type' ] == 'wildEncounterTimeConflict'
+   assert { item[ 'name' ] for item in issue[ 'items' ] } == {
+      'African Lion',
+      'African Rainforest',
+      'Kangaroo',
+   }
+
+   assert db.conn.execute(
+      'SELECT COUNT(*) FROM ItineraryGuardiansTalk;'
+   ).fetchone()[ 0 ] == 0
+   assert db.conn.execute(
+      'SELECT COUNT(*) FROM ItineraryWildEncounter;'
+   ).fetchone()[ 0 ] == 0
 
 
 def test_get_zoo_hours_returns_seeded_operating_bounds( db: DbControllers ) -> None:
