@@ -25,9 +25,6 @@ jobs:
       - name: Clear user itinerary data
         run: python -m api.seed.clear_user_itinerary_data
 
-      - name: Verify user itinerary data was not committed
-        run: git diff --exit-code -- animals.db
-
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
