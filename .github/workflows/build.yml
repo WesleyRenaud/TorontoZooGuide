@@ -22,6 +22,9 @@ jobs:
       - name: Install Python dependencies
         run: python -m pip install -r requirements-dev.txt
 
+      - name: Clear user itinerary data
+        run: python -m api.seed.clear_user_itinerary_data
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
