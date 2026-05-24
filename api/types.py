@@ -16,3 +16,5 @@ VisitYear: TypeAlias = int
 Coordinate: TypeAlias = float
 ScheduleTimeKey: TypeAlias = str | None
 SeasonalMultiplier: TypeAlias = float | None
+
+from .scheduled_item import ScheduledItem

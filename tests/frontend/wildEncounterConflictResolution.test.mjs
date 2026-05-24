@@ -1,12 +1,16 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import {
+   buildItineraryWithSelectedConflictResolutions,
    buildItineraryWithSelectedWildEncounters,
+   getSelectedGuardiansTalks,
    getSelectedWildEncounters,
    getWildEncounterConflictIssueStartTime,
    hasUnresolvedWildEncounterConflictGroups,
    hasWildEncounterConflictSelection,
+   isGuardiansTalkConflictItem,
    sortWildEncounterConflictIssuesByStartTime,
 } from '../../scripts/itinerary/wizard/wildEncounterConflictResolution.js';
 
@@ -36,6 +40,14 @@ const fourthEncounter = {
    start_time: '14:30',
    end_time: '15:00',
    meeting_spot: 'Wild Encounter - Penguin Meeting Spot',
+};
+
+const guardiansTalk = {
+   name: 'African Lion',
+   start_time: '14:00',
+   end_time: '14:30',
+   item_type: ItinerarySaveIssueItemType.guardiansTalk,
+   location: 'Africa Savanna',
 };
 
 test('getWildEncounterConflictIssueStartTime uses the earliest encounter time', () => {
@@ -122,6 +134,45 @@ test('hasUnresolvedWildEncounterConflictGroups detects partial resolution', () =
          { selection: { item: null } },
       ]),
       false
+   );
+});
+
+test('isGuardiansTalkConflictItem identifies guardians talk issue items', () => {
+   assert.equal(isGuardiansTalkConflictItem(guardiansTalk), true);
+   assert.equal(isGuardiansTalkConflictItem(firstEncounter), false);
+});
+
+test('getSelectedGuardiansTalks returns only guardians talk selections', () => {
+   const conflictGroups = [
+      { selection: { item: guardiansTalk } },
+      { selection: { item: firstEncounter } },
+   ];
+
+   assert.deepEqual(
+      getSelectedGuardiansTalks(conflictGroups),
+      [guardiansTalk]
+   );
+});
+
+test('buildItineraryWithSelectedConflictResolutions appends talks and encounters', () => {
+   const itinerary = {
+      date: '2026-06-15',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   };
+
+   assert.deepEqual(
+      buildItineraryWithSelectedConflictResolutions(
+         itinerary,
+         [guardiansTalk, firstEncounter]
+      ),
+      {
+         ...itinerary,
+         guardiansTalks: [guardiansTalk],
+         wildEncounters: [firstEncounter],
+      }
    );
 });
 

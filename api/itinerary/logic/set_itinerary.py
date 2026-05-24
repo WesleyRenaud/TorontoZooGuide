@@ -12,7 +12,7 @@ from ...guardians.controllers.guardians_controller import GuardiansController
 from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_validation import validate_itinerary_for_save
 from ...types import Connection, DateInput
-from .wild_encounter_time_conflicts import remove_wild_encounters_with_time_conflicts
+from .wild_encounter_time_conflicts import remove_scheduled_items_with_time_conflicts
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
 
@@ -45,10 +45,12 @@ def set_itinerary(
       new_visit_date_temp=None,
       old_visit_date=old_visit_date )
 
-   wild_encounters, issues = remove_wild_encounters_with_time_conflicts(
+   guardians_talks, wild_encounters, issues = remove_scheduled_items_with_time_conflicts(
+      validated_itinerary.guardians_talks,
       validated_itinerary.wild_encounters )
    validated_itinerary = replace(
       validated_itinerary,
+      guardians_talks=guardians_talks,
       wild_encounters=wild_encounters )
 
    clear_itinerary( conn )

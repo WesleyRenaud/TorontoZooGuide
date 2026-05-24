@@ -100,6 +100,8 @@ export function mountDismissablePopup({
    overlay,
    initialFocusEl = null,
    onDismiss = null,
+   dismissOnOverlayClick = true,
+   dismissOnEscape = true,
 } = {}) {
    if (!mountEl || !root || !overlay) {
       return {
@@ -139,7 +141,7 @@ export function mountDismissablePopup({
    }
 
    function onKeyDown(event) {
-      if (event.key !== 'Escape') {
+      if (!dismissOnEscape || event.key !== 'Escape') {
          return;
       }
 
@@ -147,11 +149,13 @@ export function mountDismissablePopup({
       dismiss();
    }
 
-   overlay.addEventListener('click', (event) => {
-      if (event.target === overlay) {
-         dismiss();
-      }
-   });
+   if (dismissOnOverlayClick) {
+      overlay.addEventListener('click', (event) => {
+         if (event.target === overlay) {
+            dismiss();
+         }
+      });
+   }
 
    root.__tzgPopupCleanup = close;
 

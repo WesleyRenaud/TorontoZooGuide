@@ -1,4 +1,9 @@
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
+import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
+
+export function isGuardiansTalkConflictItem(item) {
+   return item?.item_type === ItinerarySaveIssueItemType.guardiansTalk;
+}
 
 export function getWildEncounterConflictIssueStartTime(issue) {
    const [earliestItem] = sortScheduledOccurrencesByStartTime(issue?.items ?? []);
@@ -13,24 +18,36 @@ export function sortWildEncounterConflictIssuesByStartTime(issues = []) {
    );
 }
 
-export function getSelectedWildEncounters(conflictGroups = []) {
-   const selectedEncounters = conflictGroups
+export function getSelectedConflictItems(conflictGroups = []) {
+   const selectedItems = conflictGroups
       .map((group) => group?.selection?.item)
       .filter(Boolean);
    const seenNames = new Set();
 
-   return selectedEncounters.filter((encounter) => {
-      if (seenNames.has(encounter.name)) {
+   return selectedItems.filter((item) => {
+      if (seenNames.has(item.name)) {
          return false;
       }
 
-      seenNames.add(encounter.name);
+      seenNames.add(item.name);
       return true;
    });
 }
 
+export function getSelectedWildEncounters(conflictGroups = []) {
+   return getSelectedConflictItems(conflictGroups).filter(
+      (item) => !isGuardiansTalkConflictItem(item)
+   );
+}
+
+export function getSelectedGuardiansTalks(conflictGroups = []) {
+   return getSelectedConflictItems(conflictGroups).filter(
+      isGuardiansTalkConflictItem
+   );
+}
+
 export function hasWildEncounterConflictSelection(conflictGroups = []) {
-   return getSelectedWildEncounters(conflictGroups).length > 0;
+   return getSelectedConflictItems(conflictGroups).length > 0;
 }
 
 export function hasUnresolvedWildEncounterConflictGroups(conflictGroups = []) {
@@ -46,6 +63,28 @@ export function hasUnresolvedWildEncounterConflictGroups(conflictGroups = []) {
       selectedGroupCount > 0
       && selectedGroupCount < conflictGroups.length
    );
+}
+
+export function buildItineraryWithSelectedConflictResolutions(
+   itinerary,
+   selectedItems = [],
+) {
+   const guardiansTalks = selectedItems.filter(isGuardiansTalkConflictItem);
+   const wildEncounters = selectedItems.filter(
+      (item) => !isGuardiansTalkConflictItem(item)
+   );
+
+   return {
+      ...itinerary,
+      guardiansTalks: [
+         ...itinerary.guardiansTalks,
+         ...guardiansTalks,
+      ],
+      wildEncounters: [
+         ...itinerary.wildEncounters,
+         ...wildEncounters,
+      ],
+   };
 }
 
 export function buildItineraryWithSelectedWildEncounters(

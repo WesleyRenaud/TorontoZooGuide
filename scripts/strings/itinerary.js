@@ -34,22 +34,22 @@ export const itinerary = {
       saveIssuesButton: 'Proceed',
       saveIssuesTitle: 'Your Itinerary Has the Following Issues:',
       proceedWithoutConflictSelectionMessage: (
-         'None of these Wild Encounters will be added to your itinerary.'
+         'None of these conflicting activities will be added to your itinerary.'
       ),
       proceedWithoutConflictSelectionTitle: (
-         'Proceed Without Selecting a Wild Encounter?'
+         'Proceed Without Selecting an Activity?'
       ),
       proceedWithUnresolvedConflictsMessage: (
-         'You have not selected a Wild Encounter for every conflict. Only the encounters you selected will be added to your itinerary.'
+         'You have not made a selection for every conflict. Only the activities you selected will be added to your itinerary.'
       ),
       proceedWithUnresolvedConflictsTitle: (
          'Proceed Without Resolving All Conflicts?'
       ),
-      closeSaveIssuesTitle: 'Close Without Adding a Wild Encounter?',
-      wildEncounterConflictsMessage: (
-         'Only one of these conflicting Wild Encounters can be added to your itinerary.'
+      closeSaveIssuesTitle: 'Close Without Adding an Activity?',
+      scheduleConflictsMessage: (
+         'Only one of these conflicting activities can be added to your itinerary.'
       ),
-      wildEncounterConflictsTitle: 'Wild Encounter Conflicts',
+      scheduleConflictsTitle: 'Schedule Conflicts',
       animalMayBeOffDisplay: 'Animal May Be Off Display',
    },
    emptyText: {
