@@ -1,11 +1,18 @@
+import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { normalizeItineraryDraft } from '../draftStorage.js';
 import {
    isItineraryEmpty,
    saveItinerary,
 } from '../itineraryService.js';
+import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
 import { el } from '../panel/dom.js';
-import { buildWildRows } from '../panel/rows.js';
+import { formatClockTime } from '../panel/format.js';
+import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
+import {
+   createSelectorRowContent,
+   createSelectorTextColumn,
+} from '../selectors/base/resultRenderer.js';
 import { APP_STRINGS } from '../../strings.js';
 import { showItineraryWizardPopup } from './wizardPopup.js';
 
@@ -36,15 +43,138 @@ function showEmptySelectionPopup(mountEl) {
    });
 }
 
-function createWildEncounterConflictBlock(issue) {
-   const block = el('div', 'itin-save-issue-conflict');
+function buildItineraryWithSelectedWildEncounter(itinerary, wildEncounter) {
+   return {
+      ...itinerary,
+      wildEncounters: [
+         ...itinerary.wildEncounters,
+         wildEncounter,
+      ],
+   };
+}
 
-   block.append(...buildWildRows(issue.items, true));
+function updateConflictSelectionButtons(buttons, selectedButton) {
+   buttons.forEach((button) => {
+      const selected = button === selectedButton;
+
+      if (button === selectedButton) {
+         button.disabled = false;
+      }
+      else {
+         button.disabled = Boolean(selectedButton);
+      }
+
+      button.classList.toggle('is-added', selected);
+      button.textContent = selected
+         ? APP_STRINGS.itinerary.actions.remove
+         : APP_STRINGS.itinerary.actions.addSymbol;
+   });
+}
+
+function buildWildEncounterImageSrc(name) {
+   const file = normalizeAssetKey(name || '');
+
+   return file ? `images/details/wild-encounters/${file}.png` : null;
+}
+
+function createWildEncounterSelectButton({
+   item,
+   selection,
+   getButtons,
+} = {}) {
+   const button = el(
+      'button',
+      'itin-add-btn itin-save-issue-select-btn',
+      APP_STRINGS.itinerary.actions.addSymbol
+   );
+
+   button.type = 'button';
+   button.setAttribute(
+      'aria-label',
+      APP_STRINGS.itinerary.aria.addToItinerary
+   );
+
+   button.addEventListener('click', () => {
+      if (selection.item === item) {
+         selection.item = null;
+         updateConflictSelectionButtons(getButtons(), null);
+         return;
+      }
+
+      selection.item = item;
+      updateConflictSelectionButtons(getButtons(), button);
+   });
+
+   return button;
+}
+
+function createWildEncounterConflictSubtitle(item) {
+   const subtitle = el('div', 'animal-result-exhibit');
+   const time = el(
+      'span',
+      'itin-panel-time-conflict',
+      `Time: ${formatClockTime(item.start_time)}`
+   );
+
+   subtitle.append(
+      `Meeting Spot: ${item.meeting_spot} • `,
+      time
+   );
+
+   return subtitle;
+}
+
+function createWildEncounterConflictRow({
+   item,
+   selection,
+   getButtons,
+} = {}) {
+   const row = el('div', 'animal-result itin-save-issue-conflict-row');
+   const content = createSelectorRowContent({
+      imageSrc: buildWildEncounterImageSrc(item.name),
+      imageAlt: APP_STRINGS.itinerary.itemImage(item.name),
+      textColumnEl: createSelectorTextColumn({
+         title: item.name,
+         subtitleNode: createWildEncounterConflictSubtitle(item),
+         infoLink: item.link,
+      }),
+   });
+   const button = createWildEncounterSelectButton({
+      item,
+      selection,
+      getButtons,
+   });
+
+   row.append(content, button);
+   return {
+      row,
+      button,
+   };
+}
+
+function createWildEncounterConflictBlock(issue, selection) {
+   const block = el('div', 'itin-save-issue-conflict');
+   const buttons = [];
+   const items = sortScheduledOccurrencesByStartTime(issue.items);
+
+   items.forEach((item) => {
+      const {
+         row,
+         button,
+      } = createWildEncounterConflictRow({
+         item,
+         selection,
+         getButtons: () => buttons,
+      });
+
+      buttons.push(button);
+      block.appendChild(row);
+   });
 
    return block;
 }
 
-function createWildEncounterConflictSection(issues) {
+function createWildEncounterConflictSection(issues, selection) {
    const section = el('section', 'itin-save-issue-section');
    section.appendChild(
       el(
@@ -53,15 +183,24 @@ function createWildEncounterConflictSection(issues) {
          APP_STRINGS.itinerary.confirmation.wildEncounterConflictsTitle
       )
    );
+   section.appendChild(
+      el(
+         'p',
+         'itin-save-issue-section-message',
+         APP_STRINGS.itinerary.confirmation.wildEncounterConflictsMessage
+      )
+   );
 
    issues.forEach((issue) => {
-      section.appendChild(createWildEncounterConflictBlock(issue));
+      section.appendChild(
+         createWildEncounterConflictBlock(issue, selection)
+      );
    });
 
    return section;
 }
 
-function createSaveIssuesContent(issues) {
+function createSaveIssuesContent(issues, selection) {
    const content = el('div', 'itin-save-issues');
    const wildEncounterConflictIssues = issues.filter(
       issue => issue?.type === WILD_ENCOUNTER_TIME_CONFLICT
@@ -69,22 +208,67 @@ function createSaveIssuesContent(issues) {
 
    if (wildEncounterConflictIssues.length) {
       content.appendChild(
-         createWildEncounterConflictSection(wildEncounterConflictIssues)
+         createWildEncounterConflictSection(
+            wildEncounterConflictIssues,
+            selection
+         )
       );
    }
 
    return content;
 }
 
-function showSaveIssuesPopup(issues = []) {
+function showProceedWithoutConflictSelectionConfirmation({
+   title,
+   onConfirm,
+} = {}) {
+   showItineraryConfirmPopup({
+      title,
+      message: APP_STRINGS.itinerary.confirmation
+         .proceedWithoutConflictSelectionMessage,
+      confirmText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
+      cancelText: APP_STRINGS.itinerary.actions.cancel,
+      onConfirm,
+   });
+}
+
+function showSaveIssuesPopup(savedItinerary) {
+   const issues = savedItinerary.saveIssues;
+   const selection = { item: null };
+
    if (!issues.length) {
       return;
    }
 
    showItineraryNoticePopup({
       title: APP_STRINGS.itinerary.confirmation.saveIssuesTitle,
-      bodyContent: createSaveIssuesContent(issues),
-      buttonText: APP_STRINGS.itinerary.noItemsSelected.button,
+      bodyContent: createSaveIssuesContent(issues, selection),
+      buttonText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
+      showCloseButton: true,
+      onClose: ({ close } = {}) => {
+         showProceedWithoutConflictSelectionConfirmation({
+            title: APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle,
+            onConfirm: close,
+         });
+      },
+      onConfirm: async ({ close } = {}) => {
+         if (!selection.item) {
+            showProceedWithoutConflictSelectionConfirmation({
+               title: APP_STRINGS.itinerary.confirmation
+                  .proceedWithoutConflictSelectionTitle,
+               onConfirm: close,
+            });
+
+            return false;
+         }
+
+         await saveFinalItinerary(
+            buildItineraryWithSelectedWildEncounter(
+               savedItinerary,
+               selection.item
+            )
+         );
+      },
    });
 }
 
@@ -109,7 +293,7 @@ export async function finalizeItineraryWizard(
    const savedItinerary = await saveFinalItinerary(finalItinerary);
 
    if (savedItinerary.saveIssues?.length) {
-      showSaveIssuesPopup(savedItinerary.saveIssues);
+      showSaveIssuesPopup(savedItinerary);
    }
 
    clearWizardMount(mountEl);

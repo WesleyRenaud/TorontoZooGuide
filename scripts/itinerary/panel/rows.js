@@ -177,13 +177,8 @@ export function buildGuardiansRows(guardiansTalks = []) {
    });
 }
 
-function markWildEncounterConflictTime(row) {
-   const metaLines = row.querySelectorAll('.itin-panel-meta');
-   metaLines[1]?.classList.add('itin-panel-time-conflict');
-}
-
-export function buildWildRows(wildEncounters = [], hasConflicts = false) {
-   const rows = buildNamedRows(wildEncounters, {
+export function buildWildRows(wildEncounters = []) {
+   return buildNamedRows(wildEncounters, {
       normalizeItem: normalizeWild,
       prepareItems: sortScheduledOccurrencesByStartTime,
       defaultName: 'Wild Encounter',
@@ -196,10 +191,4 @@ export function buildWildRows(wildEncounters = [], hasConflicts = false) {
       getAlertLine: buildWildRemovalReasonLine,
       getLink: (wild) => wild.link,
    });
-
-   if (hasConflicts) {
-      rows.forEach(markWildEncounterConflictTime);
-   }
-
-   return rows;
 }
