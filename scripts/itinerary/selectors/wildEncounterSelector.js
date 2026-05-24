@@ -48,14 +48,17 @@ export function createItineraryWildEncounterSelectorController({
       emptyStoredFields: {
          meeting_spot: '',
          start_time: '',
+         end_time: '',
       },
       readStoredFields: (item) => ({
          meeting_spot: normalizeStoredString(item.meeting_spot),
          start_time: normalizeStoredString(item.start_time),
+         end_time: normalizeStoredString(item.end_time),
       }),
       buildSelectionFields: (row) => ({
          meeting_spot: getWildEncounterMeetingSpot(row),
          start_time: getWildEncounterScheduleStart(row),
+         end_time: normalizeStoredString(row?.end_time),
       }),
    });
 }

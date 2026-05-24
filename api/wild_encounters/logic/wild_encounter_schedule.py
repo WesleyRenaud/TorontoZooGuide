@@ -76,6 +76,10 @@ def build_wild_encounter_schedule_for_target_date(
          elif record.is_cancelled:
             unavailable_message = SharedStrings.VisitDaySchedule.cancelled_for_this_date( name )
 
+      encounter_end_time = DateValues.add_minutes_to_time(
+         encounter_time,
+         record.maximum_duration )
+
       wild_encounters.append(
          WildEncounter(
             name=name,
@@ -83,6 +87,7 @@ def build_wild_encounter_schedule_for_target_date(
             link=record.link,
             start_time=encounter_time,
             maximum_duration=record.maximum_duration,
+            end_time=encounter_end_time,
             x_coord=record.x_coord,
             y_coord=record.y_coord,
             is_available=is_available,

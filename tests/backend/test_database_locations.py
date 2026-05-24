@@ -1196,10 +1196,12 @@ def test_guardians_talk_schedule_and_cancellation(
 
    talks = GuardiansController.get_guardians_talk_schedule( month='June', day=15, year=2026 )
    assert any( talk.name == 'African Lion' and talk.start_time == '10:00' for talk in talks )
-   assert next(
+   talk = next(
       talk for talk in talks
       if talk.name == 'African Lion' and talk.start_time == '10:00'
-   ).maximum_duration == 30
+   )
+   assert talk.maximum_duration == 30
+   assert talk.end_time == '10:30'
 
    assert GuardiansController.cancel_guardians_talk_occurrence(
       talk='African Lion',
@@ -1318,6 +1320,7 @@ def test_wild_encounter_schedule_and_cancellation(
    encounter = next( item for item in encounters if item.name == 'African Rainforest' and item.start_time == '14:00' )
    assert encounter.is_available is True
    assert encounter.maximum_duration == 45
+   assert encounter.end_time == '14:45'
 
    assert WildEncounterController.cancel_wild_encounter_occurrence(
       wild_encounter_name='African Rainforest',

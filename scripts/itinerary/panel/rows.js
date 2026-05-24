@@ -13,6 +13,7 @@ import {
    buildWildRemovalReasonLine,
 } from './rowAlerts.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
+import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import { APP_STRINGS } from '../../strings.js';
 
 function buildImageSrc(...pathParts) {
@@ -41,6 +42,10 @@ function buildTimeFieldLine(value) {
    }
 
    return `Time: ${value}`;
+}
+
+function buildScheduledTimeFieldLine(item) {
+   return buildTimeFieldLine(buildScheduledOccurrenceTimeRange(item));
 }
 
 function buildMetaLines(lines = []) {
@@ -170,7 +175,7 @@ export function buildGuardiansRows(guardiansTalks = []) {
       getName: (talk) => talk.name,
       getMetaLines: (talk) => [
          buildFieldLine('Location', talk.location),
-         buildFieldLine('Time', talk.start_time),
+         buildScheduledTimeFieldLine(talk),
       ],
       getAlertLine: buildGuardiansRemovalReasonLine,
       getLink: (talk) => talk.link,
@@ -186,7 +191,7 @@ export function buildWildRows(wildEncounters = []) {
       getName: (wild) => wild.name,
       getMetaLines: (wild) => [
          buildFieldLine('Meeting Spot', wild.meeting_spot),
-         buildTimeFieldLine(wild.start_time),
+         buildScheduledTimeFieldLine(wild),
       ],
       getAlertLine: buildWildRemovalReasonLine,
       getLink: (wild) => wild.link,

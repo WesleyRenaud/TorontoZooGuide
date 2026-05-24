@@ -119,6 +119,7 @@ export function normalizeTalk(value) {
       location: normalizeText(source.location),
       start_time: normalizeText(source.start_time),
       maximum_duration: normalizeMaximumDuration(source.maximum_duration),
+      end_time: normalizeText(source.end_time),
       link: normalizeOptionalText(source.link),
       removalReason: normalizeOptionalText(source.removalReason),
    };
@@ -133,6 +134,7 @@ export function normalizeWild(value) {
       meeting_spot: normalizeText(source.meeting_spot),
       start_time: normalizeText(source.start_time),
       maximum_duration: normalizeMaximumDuration(source.maximum_duration),
+      end_time: normalizeText(source.end_time),
       link: normalizeOptionalText(source.link),
       removalReason: normalizeOptionalText(source.removalReason),
    };
