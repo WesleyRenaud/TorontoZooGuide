@@ -4,6 +4,7 @@ import sqlite3
 
 from api.seed import data
 from api.seed.schema import create_schema
+from api.seed.user_itinerary_data import clear_user_itinerary_data
 from api.types import Cursor, Row
 
 
@@ -20,6 +21,10 @@ def column_info( cursor: Cursor, table: str, column: str ) -> Row:
       for row in cursor.execute( f'PRAGMA table_info( { table } );' ).fetchall()
       if row[ 1 ] == column
    )
+
+
+def table_count( cursor: Cursor, table: str ) -> int:
+   return cursor.execute( f'SELECT COUNT(*) FROM { table };' ).fetchone()[ 0 ]
 
 
 def test_seed_data_exports_all_static_table_rows() -> None:
@@ -51,6 +56,66 @@ def test_seed_data_exports_all_static_table_rows() -> None:
    assert data.picnic_sites
    assert data.event_sites
    assert data.zoo_hours
+
+
+def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:
+   conn = sqlite3.connect( ':memory:' )
+   cursor = conn.cursor()
+
+   create_schema( cursor )
+
+   cursor.execute(
+      "INSERT INTO ItineraryDate ( ITINERARY_DATE ) VALUES ( '2026-06-15' );"
+   )
+   cursor.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD
+            )
+            VALUES ( 'Tiger', 'Tiger Exhibit', 50, 75 );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO ItineraryAttraction (
+               ATTRACTION,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD
+            )
+            VALUES ( 'Splash Island', 50, 75 );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO ItineraryGuardiansTalk (
+               TALK_NAME,
+               START_TIME,
+               END_TIME,
+               IS_DELETED
+            )
+            VALUES ( 'Guardians of White Rhinos', '14:00', '14:30', 0 );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO ItineraryWildEncounter (
+               WILD_ENCOUNTER,
+               START_TIME,
+               END_TIME,
+               IS_DELETED
+            )
+            VALUES ( 'Capybara', '13:30', '14:00', 0 );
+      """
+   )
+
+   clear_user_itinerary_data( cursor )
+
+   assert table_count( cursor, 'ItineraryDate' ) == 0
+   assert table_count( cursor, 'ItineraryAnimal' ) == 0
+   assert table_count( cursor, 'ItineraryAttraction' ) == 0
+   assert table_count( cursor, 'ItineraryGuardiansTalk' ) == 0
+   assert table_count( cursor, 'ItineraryWildEncounter' ) == 0
+
+   conn.close()
 
 
 def test_create_schema_migrates_partial_dynamic_tables() -> None:
