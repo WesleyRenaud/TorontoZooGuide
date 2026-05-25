@@ -12,6 +12,14 @@ def remove_declined_itinerary_animals( cur: Cursor ) -> None:
       """ )
 
 
+def clear_added_itinerary_animals( cur: Cursor ) -> None:
+   cur.execute(
+      """   UPDATE ItineraryAnimal
+            SET IS_ADDED = 0
+            WHERE IS_ADDED = 1;
+      """ )
+
+
 def remove_declined_itinerary_attractions( cur: Cursor ) -> None:
    cur.execute(
       """   DELETE FROM ItineraryAttraction
@@ -42,6 +50,7 @@ def accept_itinerary( conn: Connection ) -> bool:
       # TO-DO: Evatually we will support overriding behaviour here for animals and attractions
       remove_declined_itinerary_animals( cur )
       remove_declined_itinerary_attractions( cur )
+      clear_added_itinerary_animals( cur )
       remove_deleted_itinerary_guardians_talks( cur )
       remove_deleted_itinerary_wild_encounters( cur )
 

@@ -122,6 +122,25 @@ test('buildItineraryValidationState ignores active unchanged items', () => {
    assert.equal(validation.hasChanges, false);
 });
 
+test('buildItineraryValidationState reports animals added from selected exhibits', () => {
+   const validation = buildItineraryValidationState({
+      animals: [
+         {
+            species: 'White Rhino',
+            exhibit: 'Africa Savanna',
+            likelihood: 80,
+            is_added: true,
+         },
+      ],
+   });
+
+   assert.deepEqual(
+      validation.added.animals.map((animal) => animal.species),
+      ['White Rhino']
+   );
+   assert.equal(validation.hasChanges, true);
+});
+
 test('buildItineraryValidationState ignores items without old likelihood values', () => {
    const validation = buildItineraryValidationState({
       animals: [

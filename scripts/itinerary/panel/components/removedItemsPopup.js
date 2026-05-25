@@ -6,6 +6,7 @@ import { createRemovedItemsPopupLayout } from './removedItemsPopupLayout.js';
 
 export function showRemovedItemsPopup({
    mountEl,
+   added = {},
    removed = {},
    reducedVisibility = {},
    improvedVisibility = {},
@@ -16,7 +17,7 @@ export function showRemovedItemsPopup({
 } = {}) {
    if (!mountEl) return;
 
-   if (!hasRemovedItemsPopupContent({ removed, reducedVisibility, improvedVisibility })) {
+   if (!hasRemovedItemsPopupContent({ added, removed, reducedVisibility, improvedVisibility })) {
       return;
    }
 
@@ -47,6 +48,7 @@ export function showRemovedItemsPopup({
    }
 
    buildRemovedItemsPopupSections({
+      added,
       removed,
       reducedVisibility,
       improvedVisibility,

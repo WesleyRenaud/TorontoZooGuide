@@ -33,6 +33,7 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
 
    const validationSignature = JSON.stringify({
       date: itinerary.date,
+      added: itinerary.validation.added,
       removed: itinerary.validation.removed,
       reducedVisibility: itinerary.validation.reducedVisibility,
       improvedVisibility: itinerary.validation.improvedVisibility,
@@ -47,6 +48,7 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
    showWizardValidationPopupIfNeeded({
       mountEl,
       pendingValidation: {
+         added: itinerary.validation.added,
          removed: itinerary.validation.removed,
          reducedVisibility: itinerary.validation.reducedVisibility,
          improvedVisibility: itinerary.validation.improvedVisibility,
@@ -59,11 +61,11 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
 async function refreshItineraryPageContent(
    mountEl,
    openWizard,
-   { openBuilderWhenEmpty = false } = {}
+   { openBuilderWhenEmpty = false, itinerary: providedItinerary = null } = {}
 ) {
    await renderItineraryPanel();
 
-   const itinerary = await getItinerary();
+   const itinerary = providedItinerary ?? await getItinerary();
 
    if (!itinerary || isItineraryEmpty(itinerary)) {
       if (openBuilderWhenEmpty) {
@@ -93,8 +95,10 @@ function bindWizardEvents(openWizard) {
 }
 
 function bindPanelRefreshEvents(refreshPanel) {
-   window.addEventListener('tzg:itineraryUpdated', () => {
-      void refreshPanel();
+   window.addEventListener('tzg:itineraryUpdated', (event) => {
+      void refreshPanel({
+         itinerary: event?.detail?.itinerary ?? null,
+      });
    });
 }
 

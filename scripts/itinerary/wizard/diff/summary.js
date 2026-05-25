@@ -15,6 +15,14 @@ export function hasRemovedItems(removed) {
    );
 }
 
+export function hasAddedItems(added) {
+   if (!added || typeof added !== 'object') {
+      return false;
+   }
+
+   return hasItems(added.animals);
+}
+
 export function hasReducedVisibility(reducedVisibility) {
    if (!reducedVisibility || typeof reducedVisibility !== 'object') {
       return false;

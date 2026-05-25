@@ -30,12 +30,13 @@ def validate_itinerary_animals(
       old_visit_date: DateKey | None = None,
       saved_itinerary_animal_rows: list[ ItineraryAnimalRecord ] | None = None ) -> list[ AnimalDiff ]:
    old_likelihood_by_pair: dict[ tuple[ str, str ], int | None ] = {}
+   saved_is_added_by_pair: dict[ tuple[ str, str ], bool ] = {}
 
    if old_visit_date != None and saved_itinerary_animal_rows:
       for row in saved_itinerary_animal_rows:
-         old_likelihood_by_pair[
-            ( row.species, row.exhibit )
-         ] = row.new_likelihood
+         pair = ( row.species, row.exhibit )
+         old_likelihood_by_pair[ pair ] = row.new_likelihood
+         saved_is_added_by_pair[ pair ] = row.is_added
 
    diffs: list[ AnimalDiff ] = []
 
@@ -72,6 +73,14 @@ def validate_itinerary_animals(
             exhibit=exhibit,
             old_likelihood=old_likelihood,
             new_likelihood=new_likelihood,
+            is_added=(
+               False
+               if old_visit_date == None
+               else (
+                  animal.is_added
+                  or saved_is_added_by_pair.get( ( species, exhibit ), False )
+               )
+            ),
          )
       )
 

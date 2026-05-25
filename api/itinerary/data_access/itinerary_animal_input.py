@@ -5,3 +5,4 @@ from dataclasses import dataclass
 class ItineraryAnimalInput:
    species: str
    exhibit: str
+   is_added: bool = False

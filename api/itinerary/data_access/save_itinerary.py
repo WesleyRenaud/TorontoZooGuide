@@ -28,15 +28,17 @@ def save_itinerary_animals( cur: Cursor, animals: list[ AnimalDiff ] ) -> None:
                   SPECIES,
                   EXHIBIT,
                   OLD_LIKELIHOOD,
-                  NEW_LIKELIHOOD
+                  NEW_LIKELIHOOD,
+                  IS_ADDED
                )
-               VALUES ( ?, ?, ?, ? );
+               VALUES ( ?, ?, ?, ?, ? );
          """,
          (
             animal.species,
             animal.exhibit,
             animal.old_likelihood,
             animal.new_likelihood,
+            animal.is_added,
          ) )
 
 
@@ -78,7 +80,7 @@ def save_itinerary_guardians_talks( cur: Cursor, guardians_talks: list[ Guardian
             talk.name,
             talk.start_time,
             talk.end_time,
-            1 if talk.is_deleted else 0,
+            talk.is_deleted,
          ) )
 
 
@@ -100,7 +102,7 @@ def save_itinerary_wild_encounters( cur: Cursor, wild_encounters: list[ WildEnco
             encounter.name,
             encounter.start_time,
             encounter.end_time,
-            1 if encounter.is_deleted else 0,
+            encounter.is_deleted,
          ) )
 
 
