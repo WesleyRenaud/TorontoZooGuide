@@ -1568,17 +1568,7 @@ enclosure_viewings =\
       'Aldabra Tortoise',
       'African Rainforest Pavilion',
       'Outdoor',
-      '''The Aldabra tortoises can most likely be seen inside on this day due to cooler weather, or because the African spurred
-         tortoise is using the outdoor habitat.'''.replace( '\n', ' ' ),
-      47.091,                 # X coordinate on map
-      66.261                  # Y coordinate on map
-   ),
-   (
-      'African Spurred Tortoise',
-      'African Rainforest Pavilion',
-      'Outdoor',
-      '''The African spurred tortoise likely inside and off-display on this day due to cooler weather, or because the aldabra
-         tortoises are in the habitat.'''.replace( '\n', ' ' ),
+      '''The Aldabra tortoises can most likely be seen inside on this day due to cooler weather.'''.replace( '\n', ' ' ),
       47.091,                 # X coordinate on map
       66.261                  # Y coordinate on map
    ),
@@ -2058,10 +2048,10 @@ enclosure_viewings =\
    # TO-DO: Add individual coordinates for each Kid's Zoo animal
    # Kids Zoo
    (
-      'Abyssinian Ground Hornbill',
+      'African Spurred Tortoise',
       'Kids Zoo',
       'Outdoor',
-      '''The Abyssinian ground hornbills are most likely inside and off-display on this day due to cooler weather.''',
+      '''The African spurred tortoise is most likely inside and off-display on this day due to cooler weather.''',
       66.827,                 # X coordinate on map
       80.627                  # Y coordinate on map
    ),

@@ -5507,43 +5507,6 @@ animals = [
       None                                                           # Animals at the zoo
    ),
    (
-      'African Spurred Tortoise',
-      'Centrochelys Sulcata',
-      14,                                                             # Minimum temperature (only for animals with outdoor viewing)
-      '''The African spurred tortoise can be found in the African Savanna pavilion, where it inhabits a warm, dry terrestrial exhibit
-         designed to reflect its native grassland and desert-edge environment.'''.replace( '\n', ' ' ),
-      '''African spurred tortoises are best viewed on warmer days, when they are most active and may be seen walking, grazing, or
-         basking under heat sources. During cooler conditions, they may remain more stationary under lamps or sheltered areas.'''
-         .replace( '\n', ' ' ),
-      '''African spurred tortoises are the largest mainland tortoise species in Africa and the third largest tortoise species in the
-         world. Adults commonly reach 45–75 cm in shell length and may weigh 30–80 kg, with some exceptionally large males exceeding
-         100 kg. Their shell is tan to sandy brown with prominent growth rings, and their thick, scaly forelimbs are covered in large
-         protective scales. The species is named for the large spurs located on the backs of their hind legs.'''
-         .replace( '\n', ' ' ),
-      '''This species is native to the southern edge of the Sahara Desert across North-Central Africa, including countries such as
-         Senegal, Mali, Chad, Sudan, and Ethiopia. They inhabit arid grasslands, savannas, thorn scrub, and semi-desert regions where
-         temperatures are high and vegetation is sparse. They often dig extensive burrows to escape heat and conserve moisture.'''
-         .replace( '\n', ' ' ),
-      '''African spurred tortoises are herbivores, feeding primarily on grasses, leaves, flowers, and succulents. Their diet is high
-         in fibre and low in protein, which supports healthy shell growth. In managed care they are often offered grasses, hay, leafy
-         greens, and calcium-rich vegetables. They spend much of the day grazing slowly across their habitat.'''
-         .replace( '\n', ' ' ),
-      '''These tortoises are generally solitary and spend most of their time moving slowly through their habitat in search of food or
-         suitable basking areas. They may interact peacefully in shared spaces but are not highly social. Males can become territorial,
-         especially during breeding season, using ramming and shell-butting behaviours to compete for mates.'''
-         .replace( '\n', ' ' ),
-      '''African spurred tortoises are highly adapted to hot, dry climates. Their thick scaly skin reduces water loss, while their
-         powerful forelimbs and flattened claws allow them to dig deep burrows that remain cool and humid. Their domed shell provides
-         protection from predators and environmental extremes, and their efficient herbivorous digestion helps them survive on tough,
-         fibrous vegetation.'''
-         .replace( '\n', ' ' ),
-      '''Breeding usually occurs during the warmer months, with females laying clutches of 15–30 eggs in shallow nests dug into sandy
-         soil. Incubation typically lasts 90–120 days depending on temperature. Hatchlings emerge fully independent and grow steadily
-         over many years. Sexual maturity may take 10–15 years, and this species can live for over 70 years in captivity.'''
-         .replace( '\n', ' ' ),
-      None                                                            # Animals at the zoo
-   ),
-   (
       'Western Lowland Gorilla',
       'Gorilla Gorilla Gorilla',
       12,                                                            # Minimum temperature (only for animals with outdoor viewing)
@@ -7052,33 +7015,39 @@ animals = [
 
    # Kids Zoo
    (
-      'Abyssinian Ground Hornbill',
-      'Bucorvus Abyssinicus',
-      15,                                                            # Minimum temperature (only for animals with outdoor viewing)
-      '''The Abyssinian ground hornbill can be found in the Kidz Zoo.''',
-      '''Abyssinian ground hornbills are warm-weather birds which are usually only viewable during the warmest months of the year.'''
+      'African Spurred Tortoise',
+      'Centrochelys Sulcata',
+      14,                                                            # Minimum temperature (only for animals with outdoor viewing)
+      '''The African spurred tortoise can be found in the Kids Zoo.'''.replace( '\n', ' ' ),
+      '''African spurred tortoises are best viewed on warmer days, when they are most active and may be seen walking, grazing, or
+         basking under heat sources. During cooler conditions, they may remain more stationary under lamps or sheltered areas.'''
          .replace( '\n', ' ' ),
-      '''The Abyssinian ground hornbill is a large, black bird standing 90–120 cm tall, with a wingspan of 1.2–1.8 m. Its face and
-         throat are bare, red skin, contrasting with glossy black plumage. Both sexes look similar, though males have larger throat
-         wattles. It has a large, downward-curved bill, used for foraging and displaying. The legs are long and powerful, adapted
-         for walking and running across the savanna or forest edge.'''.replace( '\n', ' ' ),
-      '''This hornbill is native to sub-Saharan Africa, inhabiting savannas, open woodlands, and grasslands. It prefers areas with
-         scattered trees for nesting but spends most of its time on the ground searching for food. Its terrestrial habits make it
-         unique among hornbills, which are often arboreal.'''.replace( '\n', ' ' ),
-      '''Abyssinian ground hornbills are omnivorous, feeding on insects, reptiles, amphibians, small mammals, seeds, and fruits.
-         They use their large bill to dig, flip over debris, and probe for prey. Their opportunistic feeding helps control insect
-         and small vertebrate populations.'''.replace( '\n', ' ' ),
-      '''These hornbills are social birds, usually seen in pairs or small family groups. They are mostly diurnal, walking long
-         distances while foraging. They perform elaborate displays and vocalizations, including booming calls that carry across long
-         distances. Breeding involves cooperative behaviours, with older offspring helping parents feed chicks.'''
+      '''African spurred tortoises are the largest mainland tortoise species in Africa and the third largest tortoise species in the
+         world. Adults commonly reach 45–75 cm in shell length and may weigh 30–80 kg, with some exceptionally large males exceeding
+         100 kg. Their shell is tan to sandy brown with prominent growth rings, and their thick, scaly forelimbs are covered in large
+         protective scales. The species is named for the large spurs located on the backs of their hind legs.'''
          .replace( '\n', ' ' ),
-      '''The Abyssinian ground hornbill is adapted for a terrestrial, open-habitat lifestyle. Its strong legs and large feet allow
-         fast running and digging, while the large bill handles diverse prey and vegetation. Bare facial skin reduces overheating,
-         and deep calls allow communication across distances. Its social structure improves survival, as group members share
-         vigilance and chick-rearing duties.'''.replace( '\n', ' ' ),
-      '''Breeding occurs seasonally, with females laying 1–3 eggs in tree cavities. Only one chick usually survives, with parents
-         and helper birds feeding it for several months. Sexual maturity is reached around 4–5 years, and individuals can live 50
-         years or more in the wild and in managed care.'''.replace( '\n', ' ' ),
+      '''This species is native to the southern edge of the Sahara Desert across North-Central Africa, including countries such as
+         Senegal, Mali, Chad, Sudan, and Ethiopia. They inhabit arid grasslands, savannas, thorn scrub, and semi-desert regions where
+         temperatures are high and vegetation is sparse. They often dig extensive burrows to escape heat and conserve moisture.'''
+         .replace( '\n', ' ' ),
+      '''African spurred tortoises are herbivores, feeding primarily on grasses, leaves, flowers, and succulents. Their diet is high
+         in fibre and low in protein, which supports healthy shell growth. In managed care they are often offered grasses, hay, leafy
+         greens, and calcium-rich vegetables. They spend much of the day grazing slowly across their habitat.'''
+         .replace( '\n', ' ' ),
+      '''These tortoises are generally solitary and spend most of their time moving slowly through their habitat in search of food or
+         suitable basking areas. They may interact peacefully in shared spaces but are not highly social. Males can become territorial,
+         especially during breeding season, using ramming and shell-butting behaviours to compete for mates.'''
+         .replace( '\n', ' ' ),
+      '''African spurred tortoises are highly adapted to hot, dry climates. Their thick scaly skin reduces water loss, while their
+         powerful forelimbs and flattened claws allow them to dig deep burrows that remain cool and humid. Their domed shell provides
+         protection from predators and environmental extremes, and their efficient herbivorous digestion helps them survive on tough,
+         fibrous vegetation.'''
+         .replace( '\n', ' ' ),
+      '''Breeding usually occurs during the warmer months, with females laying clutches of 15–30 eggs in shallow nests dug into sandy
+         soil. Incubation typically lasts 90–120 days depending on temperature. Hatchlings emerge fully independent and grow steadily
+         over many years. Sexual maturity may take 10–15 years, and this species can live for over 70 years in captivity.'''
+         .replace( '\n', ' ' ),
       None                                                           # Animals at the zoo
    ),
    (
