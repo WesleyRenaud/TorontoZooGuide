@@ -18,6 +18,7 @@ const firstEncounter = {
    name: 'From Howls to Honks',
    start_time: '13:00',
    end_time: '13:45',
+   item_type: ItinerarySaveIssueItemType.wildEncounter,
    meeting_spot: 'Wild Encounter - Mayan Temple Meeting Spot',
 };
 
@@ -25,6 +26,7 @@ const secondEncounter = {
    name: 'Great Barrier Reef',
    start_time: '13:00',
    end_time: '13:45',
+   item_type: ItinerarySaveIssueItemType.wildEncounter,
    meeting_spot: 'Wild Encounter - Eurasia Meeting Spot',
 };
 
@@ -32,6 +34,7 @@ const thirdEncounter = {
    name: 'Savanna Safari',
    start_time: '14:00',
    end_time: '14:30',
+   item_type: ItinerarySaveIssueItemType.wildEncounter,
    meeting_spot: 'Wild Encounter - Penguin Meeting Spot',
 };
 
@@ -39,6 +42,7 @@ const fourthEncounter = {
    name: 'Guardians of Gorillas',
    start_time: '14:30',
    end_time: '15:00',
+   item_type: ItinerarySaveIssueItemType.wildEncounter,
    meeting_spot: 'Wild Encounter - Penguin Meeting Spot',
 };
 
@@ -76,10 +80,25 @@ test('sortWildEncounterConflictIssuesByStartTime orders groups by earliest time'
    );
 });
 
-test('getSelectedWildEncounters returns one choice per conflict group', () => {
+test('getSelectedWildEncounters returns selections from each conflict group', () => {
    const conflictGroups = [
-      { selection: { item: firstEncounter } },
-      { selection: { item: thirdEncounter } },
+      { selection: { items: [firstEncounter] } },
+      { selection: { items: [thirdEncounter] } },
+   ];
+
+   assert.deepEqual(
+      getSelectedWildEncounters(conflictGroups),
+      [firstEncounter, thirdEncounter]
+   );
+});
+
+test('getSelectedWildEncounters returns multiple non-overlapping picks in one group', () => {
+   const conflictGroups = [
+      {
+         selection: {
+            items: [firstEncounter, thirdEncounter],
+         },
+      },
    ];
 
    assert.deepEqual(
@@ -90,8 +109,8 @@ test('getSelectedWildEncounters returns one choice per conflict group', () => {
 
 test('getSelectedWildEncounters deduplicates the same encounter selected twice', () => {
    const conflictGroups = [
-      { selection: { item: firstEncounter } },
-      { selection: { item: firstEncounter } },
+      { selection: { items: [firstEncounter] } },
+      { selection: { items: [firstEncounter] } },
    ];
 
    assert.deepEqual(
@@ -102,8 +121,8 @@ test('getSelectedWildEncounters deduplicates the same encounter selected twice',
 
 test('hasWildEncounterConflictSelection is false until a group has a selection', () => {
    const conflictGroups = [
-      { selection: { item: null } },
-      { selection: { item: thirdEncounter } },
+      { selection: { items: [] } },
+      { selection: { items: [thirdEncounter] } },
    ];
 
    assert.equal(hasWildEncounterConflictSelection([]), false);
@@ -112,8 +131,8 @@ test('hasWildEncounterConflictSelection is false until a group has a selection',
 
 test('hasUnresolvedWildEncounterConflictGroups detects partial resolution', () => {
    const conflictGroups = [
-      { selection: { item: firstEncounter } },
-      { selection: { item: null } },
+      { selection: { items: [firstEncounter] } },
+      { selection: { items: [] } },
    ];
 
    assert.equal(hasUnresolvedWildEncounterConflictGroups([]), false);
@@ -123,15 +142,15 @@ test('hasUnresolvedWildEncounterConflictGroups detects partial resolution', () =
    );
    assert.equal(
       hasUnresolvedWildEncounterConflictGroups([
-         { selection: { item: firstEncounter } },
-         { selection: { item: thirdEncounter } },
+         { selection: { items: [firstEncounter] } },
+         { selection: { items: [thirdEncounter] } },
       ]),
       false
    );
    assert.equal(
       hasUnresolvedWildEncounterConflictGroups([
-         { selection: { item: null } },
-         { selection: { item: null } },
+         { selection: { items: [] } },
+         { selection: { items: [] } },
       ]),
       false
    );
@@ -144,8 +163,8 @@ test('isGuardiansTalkConflictItem identifies guardians talk issue items', () => 
 
 test('getSelectedGuardiansTalks returns only guardians talk selections', () => {
    const conflictGroups = [
-      { selection: { item: guardiansTalk } },
-      { selection: { item: firstEncounter } },
+      { selection: { items: [guardiansTalk] } },
+      { selection: { items: [firstEncounter] } },
    ];
 
    assert.deepEqual(

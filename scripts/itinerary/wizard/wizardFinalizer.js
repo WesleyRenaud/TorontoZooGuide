@@ -4,9 +4,16 @@ import {
    isItineraryEmpty,
    saveItinerary,
 } from '../itineraryService.js';
-import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
 import { el } from '../panel/dom.js';
+import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
+import {
+   canSelectConflictItem,
+   createConflictSelection,
+   hasAnyAdditionalSelectableConflictItems,
+   isConflictItemSelected,
+   toggleConflictItemSelection,
+} from './scheduleConflictCompatibility.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
 import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import {
@@ -51,17 +58,12 @@ function showEmptySelectionPopup(mountEl) {
    });
 }
 
-function updateConflictSelectionButtons(buttons, selectedButton) {
-   buttons.forEach((button) => {
-      const selected = button === selectedButton;
+function refreshConflictSelectionButtons(buttonEntries, selection) {
+   buttonEntries.forEach(({ button, item }) => {
+      const selected = isConflictItemSelected(selection, item);
+      const selectable = canSelectConflictItem(selection, item);
 
-      if (button === selectedButton) {
-         button.disabled = false;
-      }
-      else {
-         button.disabled = Boolean(selectedButton);
-      }
-
+      button.disabled = !selected && !selectable;
       button.classList.toggle('is-added', selected);
       button.textContent = selected
          ? APP_STRINGS.itinerary.actions.remove
@@ -86,7 +88,7 @@ function buildConflictItemImageSrc(item) {
 function createWildEncounterSelectButton({
    item,
    selection,
-   getButtons,
+   buttonEntries,
 } = {}) {
    const button = el(
       'button',
@@ -101,14 +103,8 @@ function createWildEncounterSelectButton({
    );
 
    button.addEventListener('click', () => {
-      if (selection.item === item) {
-         selection.item = null;
-         updateConflictSelectionButtons(getButtons(), null);
-         return;
-      }
-
-      selection.item = item;
-      updateConflictSelectionButtons(getButtons(), button);
+      toggleConflictItemSelection(selection, item);
+      refreshConflictSelectionButtons(buttonEntries, selection);
    });
 
    return button;
@@ -139,7 +135,7 @@ function createScheduleConflictSubtitle(item) {
 function createWildEncounterConflictRow({
    item,
    selection,
-   getButtons,
+   buttonEntries,
 } = {}) {
    const row = el('div', 'animal-result itin-save-issue-conflict-row');
    const content = createSelectorRowContent({
@@ -154,20 +150,21 @@ function createWildEncounterConflictRow({
    const button = createWildEncounterSelectButton({
       item,
       selection,
-      getButtons,
+      buttonEntries,
    });
 
    row.append(content, button);
    return {
       row,
       button,
+      item,
    };
 }
 
 function createWildEncounterConflictBlock(issue) {
-   const selection = { item: null };
+   const selection = createConflictSelection();
    const block = el('div', 'itin-save-issue-conflict');
-   const buttons = [];
+   const buttonEntries = [];
    const items = sortScheduledOccurrencesByStartTime(issue.items);
 
    block.appendChild(
@@ -179,18 +176,17 @@ function createWildEncounterConflictBlock(issue) {
    );
 
    items.forEach((item) => {
-      const {
-         row,
-         button,
-      } = createWildEncounterConflictRow({
+      const { row, button, item: rowItem } = createWildEncounterConflictRow({
          item,
          selection,
-         getButtons: () => buttons,
+         buttonEntries,
       });
 
-      buttons.push(button);
+      buttonEntries.push({ button, item: rowItem });
       block.appendChild(row);
    });
+
+   refreshConflictSelectionButtons(buttonEntries, selection);
 
    return {
       block,
@@ -217,7 +213,10 @@ function createWildEncounterConflictSection(issues) {
       } = createWildEncounterConflictBlock(issue);
 
       section.appendChild(block);
-      conflictGroups.push({ selection });
+      conflictGroups.push({
+         selection,
+         items: issue.items,
+      });
    });
 
    return {
@@ -250,44 +249,6 @@ function createSaveIssuesContent(issues) {
    };
 }
 
-function showConflictProceedConfirmation({
-   title,
-   message,
-   onConfirm,
-} = {}) {
-   showItineraryConfirmPopup({
-      title,
-      message,
-      confirmText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
-      cancelText: APP_STRINGS.itinerary.actions.cancel,
-      onConfirm,
-   });
-}
-
-function showProceedWithoutConflictSelectionConfirmation({
-   title,
-   onConfirm,
-} = {}) {
-   showConflictProceedConfirmation({
-      title,
-      message: APP_STRINGS.itinerary.confirmation
-         .proceedWithoutConflictSelectionMessage,
-      onConfirm,
-   });
-}
-
-function showProceedWithUnresolvedConflictsConfirmation({
-   onConfirm,
-} = {}) {
-   showConflictProceedConfirmation({
-      title: APP_STRINGS.itinerary.confirmation
-         .proceedWithUnresolvedConflictsTitle,
-      message: APP_STRINGS.itinerary.confirmation
-         .proceedWithUnresolvedConflictsMessage,
-      onConfirm,
-   });
-}
-
 function showSaveIssuesPopup(savedItinerary) {
    const issues = savedItinerary.saveIssues;
 
@@ -306,8 +267,10 @@ function showSaveIssuesPopup(savedItinerary) {
       buttonText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
       showCloseButton: true,
       onClose: ({ close } = {}) => {
-         showProceedWithoutConflictSelectionConfirmation({
+         showSaveIssuesProceedConfirmation({
             title: APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle,
+            message: APP_STRINGS.itinerary.confirmation
+               .proceedWithoutConflictSelectionMessage,
             onConfirm: close,
          });
       },
@@ -315,9 +278,11 @@ function showSaveIssuesPopup(savedItinerary) {
          const selectedConflictItems = getSelectedConflictItems(conflictGroups);
 
          if (!hasWildEncounterConflictSelection(conflictGroups)) {
-            showProceedWithoutConflictSelectionConfirmation({
+            showSaveIssuesProceedConfirmation({
                title: APP_STRINGS.itinerary.confirmation
                   .proceedWithoutConflictSelectionTitle,
+               message: APP_STRINGS.itinerary.confirmation
+                  .proceedWithoutConflictSelectionMessage,
                onConfirm: close,
             });
 
@@ -325,7 +290,31 @@ function showSaveIssuesPopup(savedItinerary) {
          }
 
          if (hasUnresolvedWildEncounterConflictGroups(conflictGroups)) {
-            showProceedWithUnresolvedConflictsConfirmation({
+            showSaveIssuesProceedConfirmation({
+               title: APP_STRINGS.itinerary.confirmation
+                  .proceedWithUnresolvedConflictsTitle,
+               message: APP_STRINGS.itinerary.confirmation
+                  .proceedWithUnresolvedConflictsMessage,
+               onConfirm: async () => {
+                  await saveFinalItinerary(
+                     buildItineraryWithSelectedConflictResolutions(
+                        savedItinerary,
+                        selectedConflictItems
+                     )
+                  );
+                  close();
+               },
+            });
+
+            return false;
+         }
+
+         if (hasAnyAdditionalSelectableConflictItems(conflictGroups)) {
+            showSaveIssuesProceedConfirmation({
+               title: APP_STRINGS.itinerary.confirmation
+                  .proceedWithAdditionalSelectableActivitiesTitle,
+               message: APP_STRINGS.itinerary.confirmation
+                  .proceedWithAdditionalSelectableActivitiesMessage,
                onConfirm: async () => {
                   await saveFinalItinerary(
                      buildItineraryWithSelectedConflictResolutions(
