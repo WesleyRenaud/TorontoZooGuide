@@ -2,7 +2,7 @@ import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.
 import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 
 export function isGuardiansTalkConflictItem(item) {
-   return item?.item_type === ItinerarySaveIssueItemType.guardiansTalk;
+   return item.item_type === ItinerarySaveIssueItemType.guardiansTalk;
 }
 
 export function getWildEncounterConflictIssueStartTime(issue) {
@@ -19,9 +19,9 @@ export function sortWildEncounterConflictIssuesByStartTime(issues = []) {
 }
 
 export function getSelectedConflictItems(conflictGroups = []) {
-   const selectedItems = conflictGroups
-      .map((group) => group?.selection?.item)
-      .filter(Boolean);
+   const selectedItems = conflictGroups.flatMap(
+      (group) => group?.selection?.items ?? []
+   );
    const seenNames = new Set();
 
    return selectedItems.filter((item) => {
@@ -56,7 +56,7 @@ export function hasUnresolvedWildEncounterConflictGroups(conflictGroups = []) {
    }
 
    const selectedGroupCount = conflictGroups.filter(
-      (group) => group?.selection?.item
+      (group) => (group?.selection?.items ?? []).length > 0
    ).length;
 
    return (
