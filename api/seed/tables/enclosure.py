@@ -1114,12 +1114,6 @@ enclosures =\
       None                                         # Seasonal viewing information (for seasonal exhibits)
    ),
    (
-      'African Spurred Tortoise',
-      'African Rainforest Pavilion',
-      'Outdoor: Apr-May, Oct',                     # Seasonal viewing summary
-      None                                         # Seasonal viewing information (for seasonal exhibits)
-   ),
-   (
       'Western Lowland Gorilla',
       'African Rainforest Pavilion',
       'Outdoor: Apr-Oct, Indoor: Year-round',      # Seasonal viewing summary
@@ -1412,10 +1406,10 @@ enclosures =\
 
    # Kids Zoo
    (
-      'Abyssinian Ground Hornbill',
+      'African Spurred Tortoise',
       'Kids Zoo',
-      'Year-round',                                # Seasonal viewing summary
-      '''The Abyssinian ground hornbill is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through
+      'Outdoor: May-Oct',                          # Seasonal viewing summary
+      '''The African spurred tortoise is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through
          October. To check whether the Kids Zoo is open, consult the Toronto Zoo's official website.'''.replace( '\n', ' ' )
    ),
    (
