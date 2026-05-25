@@ -130,6 +130,106 @@ def test_set_get_and_clear_itinerary(
    assert cleared.wild_encounters == []
 
 
+def test_set_itinerary_expands_selected_exhibits_into_viewable_animals(
+      db: DbControllers ) -> None:
+   result = ItineraryController.set_itinerary(
+      date='2026-06-15',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      selected_exhibits=[ 'Africa Savanna' ],
+   )
+
+   assert result.success is True
+
+   saved_animals = db.conn.execute(
+      """   SELECT SPECIES, EXHIBIT
+            FROM ItineraryAnimal
+            WHERE EXHIBIT = 'Africa Savanna'
+            ORDER BY SPECIES;
+      """ ).fetchall()
+
+   assert saved_animals
+   assert {
+      row[ 'EXHIBIT' ]
+      for row in saved_animals
+   } == { 'Africa Savanna' }
+
+
+def test_set_itinerary_marks_exhibit_expanded_animals_as_added_on_update(
+      db: DbControllers ) -> None:
+   ItineraryController.set_itinerary(
+      date='2026-06-15',
+      animals=[
+         { 'species': 'African Lion', 'exhibit': 'Africa Savanna' },
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      selected_exhibits=[],
+   )
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-15',
+      animals=[
+         { 'species': 'African Lion', 'exhibit': 'Africa Savanna' },
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      selected_exhibits=[ 'Africa Savanna' ],
+   )
+
+   assert result.success is True
+
+   added_rows = db.conn.execute(
+      """   SELECT SPECIES, EXHIBIT, IS_ADDED
+            FROM ItineraryAnimal
+            WHERE IS_ADDED = 1
+            ORDER BY SPECIES;
+      """ ).fetchall()
+
+   assert added_rows
+   assert all( row[ 'IS_ADDED' ] == 1 for row in added_rows )
+   assert {
+      ( row[ 'SPECIES' ], row[ 'EXHIBIT' ] )
+      for row in added_rows
+   } != { ( 'African Lion', 'Africa Savanna' ) }
+
+   added_in_response = [
+      animal
+      for animal in result.itinerary.animals
+      if animal.is_added
+   ]
+   assert added_in_response
+   assert all(
+      animal.species != 'African Lion' or animal.exhibit != 'Africa Savanna'
+      for animal in added_in_response )
+
+
+def test_accept_itinerary_clears_added_animal_flags( db: DbControllers ) -> None:
+   db.conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD,
+               IS_ADDED
+            )
+            VALUES
+               ( 'African Lion', 'Africa Savanna', 90, 90, 1 ),
+               ( 'African Penguin', 'Africa Savanna', 80, 80, 0 );
+      """ )
+   db.conn.commit()
+
+   assert ItineraryController.accept_itinerary()
+
+   assert db.conn.execute(
+      'SELECT COUNT(*) FROM ItineraryAnimal WHERE IS_ADDED = 1;'
+   ).fetchone()[ 0 ] == 0
+
+
 def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       db: DbControllers ) -> None:
    WildEncounterController.set_wild_encounter_schedule(

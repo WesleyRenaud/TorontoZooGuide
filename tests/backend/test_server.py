@@ -321,7 +321,9 @@ class StubZooControllers:
 
    def set_itinerary( self, **kwargs: Any ) -> ItinerarySaveResult:
       self.calls.append( ( 'set_itinerary', kwargs ) )
-      return ItinerarySaveResult( success=True )
+      return ItinerarySaveResult(
+         success=True,
+         itinerary=Itinerary( date='2026-06-15' ) )
 
 
    def get_itinerary( self ) -> Itinerary:
@@ -1147,7 +1149,8 @@ def test_itinerary_endpoints_return_success_payloads(
          'animals': [],
          'attractions': [],
          'guardiansTalks': [],
-         'wildEncounters': []
+         'wildEncounters': [],
+         'selectedExhibits': [ ANIMAL_EXHIBIT ]
       }
    )
    get_handler = make_handler( '/get-itinerary' )
@@ -1162,6 +1165,17 @@ def test_itinerary_endpoints_return_success_payloads(
    set_response = response_json( set_handler )
    assert set_response[ 'success' ] is True
    assert set_response[ 'issues' ] == []
+   assert StubZooControllers.instances[ 0 ].calls[ 0 ] == (
+      'set_itinerary',
+      {
+         'date': '2026-06-15',
+         'animals': [],
+         'attractions': [],
+         'guardians_talks': [],
+         'wild_encounters': [],
+         'selected_exhibits': [ ANIMAL_EXHIBIT ],
+      }
+   )
    assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
    assert response_json( clear_handler )[ 'success' ] is True
    assert response_json( accept_handler )[ 'success' ] is True

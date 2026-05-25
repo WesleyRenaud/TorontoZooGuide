@@ -892,6 +892,7 @@ def create_schema( cursor: Cursor ) -> None:
                         EXHIBIT              VARCHAR(64) NOT NULL,
                         OLD_LIKELIHOOD       INTEGER,
                         NEW_LIKELIHOOD       INTEGER,
+                        IS_ADDED             BOOL        NOT NULL DEFAULT 0,
                         PRIMARY KEY ( SPECIES, EXHIBIT ),
                         FOREIGN KEY ( SPECIES, EXHIBIT )
                            REFERENCES Enclosure( SPECIES, EXHIBIT ) ); ''' )
@@ -913,6 +914,11 @@ def create_schema( cursor: Cursor ) -> None:
    if 'NEW_LIKELIHOOD' not in itinerary_animal_columns:
       cursor.execute(
          'ALTER TABLE ItineraryAnimal ADD COLUMN NEW_LIKELIHOOD INTEGER;'
+      )
+
+   if 'IS_ADDED' not in itinerary_animal_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryAnimal ADD COLUMN IS_ADDED BOOL NOT NULL DEFAULT 0;'
       )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryAttraction

@@ -743,15 +743,15 @@ class MyHandler( BaseHTTPRequestHandler ):
          attractions = data.get( 'attractions' )
          guardians_talks = data.get( 'guardiansTalks' )
          wild_encounters = data.get( 'wildEncounters' )
+         selected_exhibits = data.get( 'selectedExhibits' )
 
          save_result = ItineraryController.set_itinerary(
             date=date,
             animals=animals,
             attractions=attractions,
             guardians_talks=guardians_talks,
-            wild_encounters=wild_encounters )
-
-         itinerary = ItineraryController.get_itinerary()
+            wild_encounters=wild_encounters,
+            selected_exhibits=selected_exhibits )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -759,7 +759,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          response = {
             'success': save_result.success,
-            'itinerary': itinerary.to_dict(),
+            'itinerary': save_result.itinerary.to_dict(),
             'issues': [
                issue.to_dict() for issue in save_result.issues
             ]

@@ -32,11 +32,13 @@ def map_itinerary_save_input(
       animals: Iterable[ dict[ str, str ] ] | None,
       attractions: Iterable[ str ] | None,
       guardians_talks: Iterable[ str ] | None,
-      wild_encounters: Iterable[ str ] | None ) -> ItinerarySaveInput:
+      wild_encounters: Iterable[ str ] | None,
+      selected_exhibits: Iterable[ str ] | None = None ) -> ItinerarySaveInput:
 
    return ItinerarySaveInput(
       date=DateValues.parse_date_value( date ),
       animals=map_animal_inputs( animals ),
       attractions=map_named_strings( attractions ),
       guardians_talks=map_named_strings( guardians_talks ),
-      wild_encounters=map_named_strings( wild_encounters ) )
+      wild_encounters=map_named_strings( wild_encounters ),
+      selected_exhibits=map_named_strings( selected_exhibits ) )

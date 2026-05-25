@@ -1,6 +1,7 @@
 import { buildAnimalVisibilityChanges } from './diff/animalVisibility.js';
 import { mergeRemovedItems } from './diff/removedItems.js';
 import {
+   hasAddedItems,
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,
@@ -61,6 +62,7 @@ export function buildItineraryDiff(previous, validated, backendRemoved = {}) {
 }
 
 export {
+   hasAddedItems,
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,

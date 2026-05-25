@@ -57,22 +57,48 @@ function makeSection(title, subtitle, rowNodes = []) {
    return section;
 }
 
-function buildSectionRows(items, rowBuilder, stepKey, onViewAlternatives, removePopupOnly) {
-   return rowBuilder(items).map((row) =>
-      addAlternativesButton(row, stepKey, onViewAlternatives, removePopupOnly)
-   );
+function buildSectionRows(
+   items,
+   rowBuilder,
+   stepKey,
+   onViewAlternatives,
+   removePopupOnly,
+   showViewAlternatives = true
+) {
+   return rowBuilder(items).map((row) => {
+      if (!showViewAlternatives) {
+         return row;
+      }
+
+      return addAlternativesButton(
+         row,
+         stepKey,
+         onViewAlternatives,
+         removePopupOnly
+      );
+   });
 }
 
 function getSectionSpecs({
+   added,
    removed,
    reducedVisibility,
    improvedVisibility,
 } = {}) {
+   const safeAdded = added ?? {};
    const safeRemoved = removed ?? {};
    const safeReduced = reducedVisibility ?? {};
    const safeImproved = improvedVisibility ?? {};
 
    return [
+      {
+         items: safeAdded.animals ?? [],
+         title: APP_STRINGS.itinerary.removedItems.animalsAddedTitle,
+         subtitle: APP_STRINGS.itinerary.removedItems.animalsAddedSubtitle,
+         rowBuilder: buildAnimalRows,
+         stepKey: 'animals',
+         showViewAlternatives: false,
+      },
       {
          items: safeRemoved.animals ?? [],
          title: APP_STRINGS.itinerary.removedItems.animalsRemovedTitle,
@@ -93,6 +119,7 @@ function getSectionSpecs({
          subtitle: APP_STRINGS.itinerary.removedItems.improvedAnimalVisibilitySubtitle,
          rowBuilder: buildAnimalRows,
          stepKey: 'animals',
+         showViewAlternatives: false,
       },
       {
          items: safeRemoved.attractions ?? [],
@@ -119,22 +146,24 @@ function getSectionSpecs({
 }
 
 export function hasRemovedItemsPopupContent({
+   added,
    removed,
    reducedVisibility,
    improvedVisibility,
 } = {}) {
-   return getSectionSpecs({ removed, reducedVisibility, improvedVisibility })
+   return getSectionSpecs({ added, removed, reducedVisibility, improvedVisibility })
       .some((section) => Array.isArray(section.items) && section.items.length > 0);
 }
 
 export function buildRemovedItemsPopupSections({
+   added,
    removed,
    reducedVisibility,
    improvedVisibility,
    onViewAlternatives,
    removePopupOnly,
 } = {}) {
-   return getSectionSpecs({ removed, reducedVisibility, improvedVisibility })
+   return getSectionSpecs({ added, removed, reducedVisibility, improvedVisibility })
       .map((section) => makeSection(
          section.title,
          section.subtitle,
@@ -143,7 +172,8 @@ export function buildRemovedItemsPopupSections({
             section.rowBuilder,
             section.stepKey,
             onViewAlternatives,
-            removePopupOnly
+            removePopupOnly,
+            section.showViewAlternatives ?? true
          )
       ))
       .filter(Boolean);
