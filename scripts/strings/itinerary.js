@@ -32,6 +32,7 @@ export const itinerary = {
       ),
       saveChangesTitle: 'Save Changes?',
       saveIssuesButton: 'Proceed',
+      proceedAnyway: 'Proceed Anyway',
       saveIssuesTitle: 'Your Itinerary Has the Following Issues:',
       proceedWithoutConflictSelectionMessage: (
          'None of these conflicting activities will be added to your itinerary.'
@@ -45,9 +46,15 @@ export const itinerary = {
       proceedWithUnresolvedConflictsTitle: (
          'Proceed Without Resolving All Conflicts?'
       ),
+      proceedWithAdditionalSelectableActivitiesMessage: (
+         'You can still add more conflicting activities that do not overlap with your current selections.'
+      ),
+      proceedWithAdditionalSelectableActivitiesTitle: (
+         'Add More Activities?'
+      ),
       closeSaveIssuesTitle: 'Close Without Adding an Activity?',
       scheduleConflictsMessage: (
-         'Only one of these conflicting activities can be added to your itinerary.'
+         'Select the activities you want. You can add more than one as long as their times do not overlap.'
       ),
       scheduleConflictsTitle: 'Schedule Conflicts',
       animalMayBeOffDisplay: 'Animal May Be Off Display',

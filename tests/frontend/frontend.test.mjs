@@ -12,6 +12,7 @@ import './likelihood.test.mjs';
 import './itineraryShape.test.mjs';
 import './wizardState.test.mjs';
 import './wildEncounterConflictResolution.test.mjs';
+import './scheduleConflictCompatibility.test.mjs';
 import './draftStorage.test.mjs';
 import './regionSelectorState.test.mjs';
 import './itineraryApi.test.mjs';
