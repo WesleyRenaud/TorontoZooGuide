@@ -173,6 +173,48 @@ test('getSelectedGuardiansTalks returns only guardians talk selections', () => {
    );
 });
 
+test('buildItineraryWithSelectedConflictResolutions omits schedule times for backend trimming', () => {
+   const itinerary = {
+      date: '2026-06-15',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   };
+   const encounter = {
+      name: 'Grizzly Bear',
+      start_time: '13:00',
+      end_time: '13:45',
+      item_type: ItinerarySaveIssueItemType.wildEncounter,
+      meeting_spot: 'Spot',
+   };
+   const talk = {
+      name: 'African Lion',
+      start_time: '13:30',
+      end_time: '14:00',
+      item_type: ItinerarySaveIssueItemType.guardiansTalk,
+      location: 'Africa Savanna',
+   };
+
+   assert.deepEqual(
+      buildItineraryWithSelectedConflictResolutions(
+         itinerary,
+         [encounter, talk]
+      ),
+      {
+         ...itinerary,
+         guardiansTalks: [{
+            name: 'African Lion',
+            location: 'Africa Savanna',
+         }],
+         wildEncounters: [{
+            name: 'Grizzly Bear',
+            meeting_spot: 'Spot',
+         }],
+      }
+   );
+});
+
 test('buildItineraryWithSelectedConflictResolutions appends talks and encounters', () => {
    const itinerary = {
       date: '2026-06-15',
@@ -189,8 +231,14 @@ test('buildItineraryWithSelectedConflictResolutions appends talks and encounters
       ),
       {
          ...itinerary,
-         guardiansTalks: [guardiansTalk],
-         wildEncounters: [firstEncounter],
+         guardiansTalks: [{
+            name: guardiansTalk.name,
+            location: guardiansTalk.location,
+         }],
+         wildEncounters: [{
+            name: firstEncounter.name,
+            meeting_spot: firstEncounter.meeting_spot,
+         }],
       }
    );
 });

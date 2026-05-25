@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from .itinerary_animal_input import ItineraryAnimalInput
+from .itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from .itinerary_save_input import ItinerarySaveInput
 from ...shared.date_values import DateValues
 from ...types import DateInput
@@ -16,6 +17,24 @@ def map_named_strings( names: Iterable[ str ] | None ) -> tuple[ str, ... ]:
    )
 
 
+def map_guardians_talk_inputs(
+      guardians_talks: Iterable[ dict[ str, str | None ] ] | None,
+) -> tuple[ ItineraryGuardiansTalkInput, ... ]:
+   mapped: list[ ItineraryGuardiansTalkInput ] = []
+
+   for item in guardians_talks or []:
+      mapped.append(
+         ItineraryGuardiansTalkInput(
+            name=item[ 'name' ],
+            start_time=DateValues.normalize_itinerary_schedule_time(
+               item[ 'start_time' ] ),
+            end_time=DateValues.normalize_itinerary_schedule_time(
+               item[ 'end_time' ] ),
+         )
+      )
+
+   return tuple( mapped )
+
 
 def map_animal_inputs( animals: Iterable[ dict[ str, str ] ] | None ) -> tuple[ ItineraryAnimalInput, ... ]:
    return tuple(
@@ -26,12 +45,11 @@ def map_animal_inputs( animals: Iterable[ dict[ str, str ] ] | None ) -> tuple[ 
    )
 
 
-
 def map_itinerary_save_input(
       date: DateInput,
       animals: Iterable[ dict[ str, str ] ] | None,
       attractions: Iterable[ str ] | None,
-      guardians_talks: Iterable[ str ] | None,
+      guardians_talks: Iterable[ dict[ str, str | None ] ] | None,
       wild_encounters: Iterable[ str ] | None,
       selected_exhibits: Iterable[ str ] | None = None ) -> ItinerarySaveInput:
 
@@ -39,6 +57,6 @@ def map_itinerary_save_input(
       date=DateValues.parse_date_value( date ),
       animals=map_animal_inputs( animals ),
       attractions=map_named_strings( attractions ),
-      guardians_talks=map_named_strings( guardians_talks ),
+      guardians_talks=map_guardians_talk_inputs( guardians_talks ),
       wild_encounters=map_named_strings( wild_encounters ),
       selected_exhibits=map_named_strings( selected_exhibits ) )

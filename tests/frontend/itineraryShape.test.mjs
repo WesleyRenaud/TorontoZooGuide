@@ -132,7 +132,35 @@ test('toSetItineraryPayload sends canonical shapes for the save API', () => {
          { species: 'African Lion', exhibit: 'Africa Savanna' },
       ],
       attractions: ['Conservation Carousel', 'Greenhouse'],
-      guardiansTalks: ['African Lion'],
+      guardiansTalks: [{
+         name: 'African Lion',
+         start_time: null,
+         end_time: null,
+      }],
       wildEncounters: ['African Rainforest'],
+   });
+});
+
+test('toSetItineraryPayload keeps schedule times when provided', () => {
+   assert.deepEqual(toSetItineraryPayload({
+      date: '2026-06-15',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [{
+         name: 'African Lion',
+         start_time: '13:45',
+         end_time: '14:00',
+      }],
+      wildEncounters: ['Grizzly Bear'],
+   }), {
+      date: '2026-06-15',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [{
+         name: 'African Lion',
+         start_time: '13:45',
+         end_time: '14:00',
+      }],
+      wildEncounters: ['Grizzly Bear'],
    });
 });

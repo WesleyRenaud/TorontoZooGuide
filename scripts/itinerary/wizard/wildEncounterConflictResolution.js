@@ -1,9 +1,7 @@
+import { isGuardiansTalkConflictItem } from './scheduleConflictCompatibility.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
-import { ItinerarySaveIssueItemType } from '../../shared/enums/itinerarySaveIssueItemType.js';
 
-export function isGuardiansTalkConflictItem(item) {
-   return item.item_type === ItinerarySaveIssueItemType.guardiansTalk;
-}
+export { isGuardiansTalkConflictItem };
 
 export function getWildEncounterConflictIssueStartTime(issue) {
    const [earliestItem] = sortScheduledOccurrencesByStartTime(issue?.items ?? []);
@@ -65,14 +63,30 @@ export function hasUnresolvedWildEncounterConflictGroups(conflictGroups = []) {
    );
 }
 
+function toConflictResolutionDraftItem(item) {
+   if (isGuardiansTalkConflictItem(item)) {
+      return {
+         name: item.name,
+         location: item.location,
+      };
+   }
+
+   return {
+      name: item.name,
+      meeting_spot: item.meeting_spot,
+   };
+}
+
 export function buildItineraryWithSelectedConflictResolutions(
    itinerary,
    selectedItems = [],
 ) {
-   const guardiansTalks = selectedItems.filter(isGuardiansTalkConflictItem);
-   const wildEncounters = selectedItems.filter(
-      (item) => !isGuardiansTalkConflictItem(item)
-   );
+   const guardiansTalks = selectedItems
+      .filter(isGuardiansTalkConflictItem)
+      .map(toConflictResolutionDraftItem);
+   const wildEncounters = selectedItems
+      .filter((item) => !isGuardiansTalkConflictItem(item))
+      .map(toConflictResolutionDraftItem);
 
    return {
       ...itinerary,

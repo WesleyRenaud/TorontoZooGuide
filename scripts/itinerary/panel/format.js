@@ -125,6 +125,34 @@ export function normalizeTalk(value) {
    };
 }
 
+export function normalizeGuardiansTalkForSave(value) {
+   const source = asObject(value);
+
+   return {
+      name: normalizeText(source.name),
+      start_time: normalizeOptionalText(source.start_time),
+      end_time: normalizeOptionalText(source.end_time),
+   };
+}
+
+function normalizeItineraryNameForSave(value) {
+   if (typeof value === 'string') {
+      return normalizeText(value);
+   }
+
+   return normalizeText(asObject(value).name);
+}
+
+export function normalizeItineraryNamesForSave(items) {
+   if (!Array.isArray(items)) {
+      return [];
+   }
+
+   return items
+      .map(normalizeItineraryNameForSave)
+      .filter(Boolean);
+}
+
 export function normalizeWild(value) {
    const source = asObject(value);
 

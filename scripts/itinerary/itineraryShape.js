@@ -1,3 +1,8 @@
+import {
+   normalizeGuardiansTalkForSave,
+   normalizeItineraryNamesForSave,
+} from './panel/format.js';
+
 export const ITINERARY_ITEM_KEYS = Object.freeze([
    'animals',
    'attractions',
@@ -105,21 +110,10 @@ export function cloneItineraryDraft(draft = {}) {
    };
 }
 
-function normalizeNamedStringList(items) {
-   const out = [];
-
-   for (const item of normalizeItineraryItems(items)) {
-
-      const name = typeof item === 'string'
-         ? item.trim()
-         : String(item?.name ?? '').trim();
-
-      if (name) {
-         out.push(name);
-      }
-   }
-
-   return out;
+function normalizeGuardiansTalkListForSave(items) {
+   return normalizeItineraryItems(items)
+      .map(normalizeGuardiansTalkForSave)
+      .filter((talk) => talk.name);
 }
 
 function normalizeAnimalForSave(item) {
@@ -143,14 +137,20 @@ export function toSetItineraryPayload(draft = {}) {
    return {
       date: base.date,
       animals: base.animals.map(normalizeAnimalForSave).filter(Boolean),
-      attractions: normalizeNamedStringList(base.attractions),
-      guardiansTalks: normalizeNamedStringList(base.guardiansTalks),
-      wildEncounters: normalizeNamedStringList(base.wildEncounters),
+      attractions: normalizeItineraryNamesForSave(base.attractions),
+      guardiansTalks: normalizeGuardiansTalkListForSave(base.guardiansTalks),
+      wildEncounters: normalizeItineraryNamesForSave(base.wildEncounters),
    };
 }
 
 function sortStringsForComparison(values = []) {
    return [...values].map((item) => String(item)).sort((a, b) => a.localeCompare(b));
+}
+
+function sortScheduledItemsForSaveComparison(items = []) {
+   return [...items].sort((left, right) => (
+      left.name.localeCompare(right.name)
+   ));
 }
 
 function sortAnimalsForSaveComparison(animals = []) {
@@ -184,8 +184,8 @@ export function areItineraryDraftsSemanticallyEqual(left, right) {
       sortStringsForComparison(rightSave.attractions),
    )
    && areDraftValuesEqual(
-      sortStringsForComparison(leftSave.guardiansTalks),
-      sortStringsForComparison(rightSave.guardiansTalks),
+      sortScheduledItemsForSaveComparison(leftSave.guardiansTalks),
+      sortScheduledItemsForSaveComparison(rightSave.guardiansTalks),
    )
    && areDraftValuesEqual(
       sortStringsForComparison(leftSave.wildEncounters),

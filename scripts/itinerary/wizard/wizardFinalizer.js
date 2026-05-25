@@ -9,6 +9,7 @@ import { el } from '../panel/dom.js';
 import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
 import {
    canSelectConflictItem,
+   conflictItemRequiresTrimOverride,
    createConflictSelection,
    hasAnyAdditionalSelectableConflictItems,
    isConflictItemSelected,
@@ -16,6 +17,7 @@ import {
 } from './scheduleConflictCompatibility.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
 import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
+import { showScheduleOverrideSelectionConfirmation } from './scheduleOverrideSelectionConfirmation.js';
 import {
    createSelectorRowContent,
    createSelectorTextColumn,
@@ -62,13 +64,55 @@ function refreshConflictSelectionButtons(buttonEntries, selection) {
    buttonEntries.forEach(({ button, item }) => {
       const selected = isConflictItemSelected(selection, item);
       const selectable = canSelectConflictItem(selection, item);
+      const requiresTrimOverride = conflictItemRequiresTrimOverride(selection, item);
 
       button.disabled = !selected && !selectable;
       button.classList.toggle('is-added', selected);
+      button.classList.toggle(
+         'requires-trim-override',
+         requiresTrimOverride
+      );
       button.textContent = selected
          ? APP_STRINGS.itinerary.actions.remove
          : APP_STRINGS.itinerary.actions.addSymbol;
+      button.setAttribute(
+         'aria-label',
+         selected
+            ? (
+               requiresTrimOverride
+                  ? APP_STRINGS.itinerary.aria
+                     .removeFromItineraryWithScheduleOverride
+                  : APP_STRINGS.itinerary.aria.removeFromItinerary
+            )
+            : (
+               requiresTrimOverride
+                  ? APP_STRINGS.itinerary.aria
+                     .addToItineraryWithScheduleOverride
+                  : APP_STRINGS.itinerary.aria.addToItinerary
+            )
+      );
    });
+}
+
+function handleConflictItemButtonClick(selection, item, buttonEntries) {
+   if (isConflictItemSelected(selection, item)) {
+      toggleConflictItemSelection(selection, item);
+      refreshConflictSelectionButtons(buttonEntries, selection);
+      return;
+   }
+
+   if (conflictItemRequiresTrimOverride(selection, item)) {
+      showScheduleOverrideSelectionConfirmation({
+         onConfirm: () => {
+            toggleConflictItemSelection(selection, item);
+            refreshConflictSelectionButtons(buttonEntries, selection);
+         },
+      });
+      return;
+   }
+
+   toggleConflictItemSelection(selection, item);
+   refreshConflictSelectionButtons(buttonEntries, selection);
 }
 
 function buildConflictItemImageSrc(item) {
@@ -103,8 +147,7 @@ function createWildEncounterSelectButton({
    );
 
    button.addEventListener('click', () => {
-      toggleConflictItemSelection(selection, item);
-      refreshConflictSelectionButtons(buttonEntries, selection);
+      handleConflictItemButtonClick(selection, item, buttonEntries);
    });
 
    return button;
@@ -300,7 +343,8 @@ function showSaveIssuesPopup(savedItinerary) {
                      buildItineraryWithSelectedConflictResolutions(
                         savedItinerary,
                         selectedConflictItems
-                     )
+                     ),
+                     { overridingConflictingGuardiansTalks: true },
                   );
                   close();
                },
@@ -320,7 +364,8 @@ function showSaveIssuesPopup(savedItinerary) {
                      buildItineraryWithSelectedConflictResolutions(
                         savedItinerary,
                         selectedConflictItems
-                     )
+                     ),
+                     { overridingConflictingGuardiansTalks: true },
                   );
                   close();
                },
@@ -333,15 +378,19 @@ function showSaveIssuesPopup(savedItinerary) {
             buildItineraryWithSelectedConflictResolutions(
                savedItinerary,
                selectedConflictItems
-            )
+            ),
+            { overridingConflictingGuardiansTalks: true },
          );
       },
    });
 }
 
-function saveFinalItinerary(finalItinerary) {
-   return saveItinerary({
-      ...finalItinerary,
+function saveFinalItinerary(
+   finalItinerary,
+   { overridingConflictingGuardiansTalks = false } = {},
+) {
+   return saveItinerary(finalItinerary, {
+      overridingConflictingGuardiansTalks,
    });
 }
 
