@@ -32,7 +32,8 @@ def build_wild_encounter_schedule(
       wild_encounter=wild_encounter,
       start_date=date_range.start_date,
       end_date=date_range.end_date,
-      encounter_time=encounter_time,
+      encounter_time=DateValues.normalize_itinerary_schedule_time(
+         encounter_time ),
       monday=monday,
       tuesday=tuesday,
       wednesday=wednesday,

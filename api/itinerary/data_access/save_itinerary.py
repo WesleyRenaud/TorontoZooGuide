@@ -7,6 +7,7 @@ from ...models.animal_diff import AnimalDiff
 from ...models.attraction_diff import AttractionDiff
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
+from ...shared.date_values import DateValues
 from ...types import Connection, Cursor
 
 
@@ -78,8 +79,8 @@ def save_itinerary_guardians_talks( cur: Cursor, guardians_talks: list[ Guardian
          """,
          (
             talk.name,
-            talk.start_time,
-            talk.end_time,
+            DateValues.normalize_itinerary_schedule_time( talk.start_time ),
+            DateValues.normalize_itinerary_schedule_time( talk.end_time ),
             talk.is_deleted,
          ) )
 
@@ -100,8 +101,8 @@ def save_itinerary_wild_encounters( cur: Cursor, wild_encounters: list[ WildEnco
          """,
          (
             encounter.name,
-            encounter.start_time,
-            encounter.end_time,
+            DateValues.normalize_itinerary_schedule_time( encounter.start_time ),
+            DateValues.normalize_itinerary_schedule_time( encounter.end_time ),
             encounter.is_deleted,
          ) )
 

@@ -34,13 +34,13 @@ def build_guardians_talk_schedule(
       location=location,
       start_date=date_range.start_date,
       end_date=date_range.end_date,
-      monday_time=monday_time,
-      tuesday_time=tuesday_time,
-      wednesday_time=wednesday_time,
-      thursday_time=thursday_time,
-      friday_time=friday_time,
-      saturday_time=saturday_time,
-      sunday_time=sunday_time,
+      monday_time=DateValues.normalize_itinerary_schedule_time( monday_time ),
+      tuesday_time=DateValues.normalize_itinerary_schedule_time( tuesday_time ),
+      wednesday_time=DateValues.normalize_itinerary_schedule_time( wednesday_time ),
+      thursday_time=DateValues.normalize_itinerary_schedule_time( thursday_time ),
+      friday_time=DateValues.normalize_itinerary_schedule_time( friday_time ),
+      saturday_time=DateValues.normalize_itinerary_schedule_time( saturday_time ),
+      sunday_time=DateValues.normalize_itinerary_schedule_time( sunday_time ),
       message=message )
 
 

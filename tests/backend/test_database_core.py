@@ -153,6 +153,23 @@ def test_parse_values_raise_for_unsupported_formats() -> None:
 
 
 @pytest.mark.parametrize(
+   'value, expected',
+   [
+      ( None, None ),
+      ( '', None ),
+      ( '   ', None ),
+      ( '1:00 PM', '13:00' ),
+      ( '13:45', '13:45' ),
+      ( '10:00', '10:00' ),
+   ]
+)
+def test_normalize_itinerary_schedule_time(
+      value: str | None,
+      expected: str | None ) -> None:
+   assert DateValues.normalize_itinerary_schedule_time( value ) == expected
+
+
+@pytest.mark.parametrize(
    'left, right, expected',
    [
       ( date( 2026, 6, 15 ), None, True ),
