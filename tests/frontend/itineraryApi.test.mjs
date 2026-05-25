@@ -3,6 +3,7 @@ import { afterEach, test } from 'node:test';
 
 import {
    acceptItineraryRequest,
+   getItineraryDateRequest,
    getItineraryRequest,
    getZooHoursRequest,
    setItineraryRequest,
@@ -19,6 +20,30 @@ function mockJsonResponse(payload, { ok = true, status = 200, statusText = 'OK' 
 
 afterEach(() => {
    delete globalThis.fetch;
+});
+
+test('normalizes empty itinerary date as null', async () => {
+   globalThis.fetch = async () => mockJsonResponse({ date: null });
+
+   assert.deepEqual(await getItineraryDateRequest(), {
+      date: null,
+   });
+});
+
+test('normalizes stored itinerary date response', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/get-itinerary-date');
+      assert.equal(options.method, 'POST');
+      assert.deepEqual(JSON.parse(options.body), {});
+
+      return mockJsonResponse({
+         date: '  2026-06-15  ',
+      });
+   };
+
+   assert.deepEqual(await getItineraryDateRequest(), {
+      date: '2026-06-15',
+   });
 });
 
 test('normalizes stored itinerary response from snake case backend keys', async () => {

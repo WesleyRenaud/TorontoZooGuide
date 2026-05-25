@@ -326,8 +326,13 @@ class StubZooControllers:
          itinerary=Itinerary( date='2026-06-15' ) )
 
 
-   def get_itinerary( self ) -> Itinerary:
-      self.calls.append( ( 'get_itinerary', {} ) )
+   def get_itinerary_date( self ) -> str:
+      self.calls.append( ( 'get_itinerary_date', {} ) )
+      return '2026-06-15'
+
+
+   def get_itinerary( self, **kwargs: Any ) -> Itinerary:
+      self.calls.append( ( 'get_itinerary', kwargs ) )
       return Itinerary( date='2026-06-15' )
 
 
@@ -1174,6 +1179,7 @@ def test_itinerary_endpoints_return_success_payloads(
          'guardians_talks': [],
          'wild_encounters': [],
          'selected_exhibits': [ ANIMAL_EXHIBIT ],
+         'visit_date_temp': None,
       }
    )
    assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
