@@ -66,8 +66,21 @@ function normalizeZooHoursResponse(response) {
    };
 }
 
-export async function getItineraryRequest() {
-   const response = await postJson('/get-itinerary', {});
+function normalizeItineraryDateResponse(response) {
+   const source = asObject(response);
+
+   return {
+      date: asNullableString(source.date),
+   };
+}
+
+export async function getItineraryDateRequest() {
+   const response = await postJson('/get-itinerary-date', {});
+   return normalizeItineraryDateResponse(response);
+}
+
+export async function getItineraryRequest(temp) {
+   const response = await postJson('/get-itinerary', { temp });
    return normalizeItineraryResponse(response);
 }
 
@@ -81,8 +94,8 @@ export async function setItineraryRequest(payload) {
    return normalizeItineraryResponse(response);
 }
 
-export async function acceptItineraryRequest() {
-   const response = await postJson('/accept-itinerary', {});
+export async function acceptItineraryRequest(temp) {
+   const response = await postJson('/accept-itinerary', { temp });
    return normalizeItineraryResponse(response);
 }
 

@@ -42,7 +42,8 @@ def build_current_itinerary(
       animal_controller: type[ AnimalController ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ] ) -> Itinerary:
+      wild_encounter_controller: type[ WildEncounterController ],
+      visit_date_temp: float | None = None ) -> Itinerary:
 
    if saved_itinerary.is_empty():
       return empty_itinerary()
@@ -55,7 +56,8 @@ def build_current_itinerary(
       day=day,
       month=month,
       year=year,
-      saved_animals=list( saved_itinerary.animal_rows ) )
+      saved_animals=list( saved_itinerary.animal_rows ),
+      temp=visit_date_temp )
 
    attractions = attraction_controller.get_attractions_for_saved_itinerary(
       day=day,

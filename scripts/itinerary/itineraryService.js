@@ -1,10 +1,13 @@
 import {
    acceptItineraryRequest,
    clearItineraryRequest,
+   getItineraryDateRequest,
    getItineraryRequest,
    getZooHoursRequest,
    setItineraryRequest,
 } from '../api/itineraryApi.js';
+import { setStoredItineraryDate } from './draftStorage.js';
+import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 import {
    createEmptyItineraryDraft,
    isItineraryEmptyDraft,
@@ -85,8 +88,20 @@ export function normalizeItinerary(itinerary) {
    };
 }
 
+async function fetchSavedItineraryVisitDate() {
+   const { date } = await getItineraryDateRequest();
+
+   if (date) {
+      setStoredItineraryDate(date);
+   }
+
+   return date;
+}
+
 export async function getItinerary() {
-   const result = await getItineraryRequest();
+   const date = await fetchSavedItineraryVisitDate();
+   const { temp } = await getItineraryDateSearchContext({ date });
+   const result = await getItineraryRequest(temp);
    return normalizeItinerary(result?.itinerary);
 }
 
@@ -108,10 +123,13 @@ export async function getZooHours(date) {
 }
 
 export async function saveItinerary(itinerary = {}) {
+   const savePayload = toSetItineraryPayload(itinerary);
    const payload = {
-      ...toSetItineraryPayload(itinerary),
+      ...savePayload,
       selectedExhibits: loadSelectedExhibits(),
+      temp: (await getItineraryDateSearchContext({ date: savePayload.date })).temp,
    };
+
    const result = await setItineraryRequest(payload);
 
    const normalizedItinerary = normalizeItinerary(result?.itinerary);
@@ -132,7 +150,9 @@ export async function clearItinerary() {
 }
 
 export async function acceptItinerary() {
-   const result = await acceptItineraryRequest();
+   const date = await fetchSavedItineraryVisitDate();
+   const { temp } = await getItineraryDateSearchContext({ date });
+   const result = await acceptItineraryRequest(temp);
    const acceptedItinerary = normalizeItinerary(result?.itinerary);
 
    dispatchItineraryUpdated(acceptedItinerary);

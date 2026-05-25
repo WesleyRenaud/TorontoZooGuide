@@ -22,6 +22,27 @@ from api.zoo_hours.controllers.zoo_hours_controller import ZooHoursController
 from conftest import DbControllers
 
 
+def test_get_itinerary_date_returns_empty_when_no_itinerary_saved(
+      db: DbControllers ) -> None:
+   assert ItineraryController.get_itinerary_date() is None
+
+
+def test_get_itinerary_date_returns_saved_visit_date(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-15',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   )
+
+   assert ItineraryController.get_itinerary_date() == '2026-06-15'
+
+
 def test_set_get_and_clear_itinerary(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:

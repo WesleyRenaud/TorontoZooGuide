@@ -744,6 +744,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          guardians_talks = data.get( 'guardiansTalks' )
          wild_encounters = data.get( 'wildEncounters' )
          selected_exhibits = data.get( 'selectedExhibits' )
+         temp = data.get( 'temp' )
 
          save_result = ItineraryController.set_itinerary(
             date=date,
@@ -751,7 +752,8 @@ class MyHandler( BaseHTTPRequestHandler ):
             attractions=attractions,
             guardians_talks=guardians_talks,
             wild_encounters=wild_encounters,
-            selected_exhibits=selected_exhibits )
+            selected_exhibits=selected_exhibits,
+            visit_date_temp=temp )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -771,8 +773,24 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/get-itinerary-date':
+         date = ItineraryController.get_itinerary_date()
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = { 'date': date }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/get-itinerary':
-         itinerary = ItineraryController.get_itinerary()
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+         temp = data.get( 'temp' )
+
+         itinerary = ItineraryController.get_itinerary( visit_date_temp=temp )
 
          response = { 'itinerary': itinerary.to_dict() }
 
@@ -823,8 +841,17 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
       elif self.path == '/accept-itinerary':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+         temp = data.get( 'temp' )
+
          success = ItineraryController.accept_itinerary()
-         itinerary = ItineraryController.get_itinerary() if success else None
+         itinerary = (
+            ItineraryController.get_itinerary( visit_date_temp=temp )
+            if success
+            else None
+         )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
