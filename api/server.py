@@ -745,6 +745,8 @@ class MyHandler( BaseHTTPRequestHandler ):
          wild_encounters = data.get( 'wildEncounters' )
          selected_exhibits = data.get( 'selectedExhibits' )
          temp = data.get( 'temp' )
+         overriding_conflicting_guardians_talks = bool(
+            data.get( 'overridingConflictingGuardiansTalks' ) )
 
          save_result = ItineraryController.set_itinerary(
             date=date,
@@ -753,7 +755,9 @@ class MyHandler( BaseHTTPRequestHandler ):
             guardians_talks=guardians_talks,
             wild_encounters=wild_encounters,
             selected_exhibits=selected_exhibits,
-            visit_date_temp=temp )
+            visit_date_temp=temp,
+            overriding_conflicting_guardians_talks=(
+               overriding_conflicting_guardians_talks ) )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )

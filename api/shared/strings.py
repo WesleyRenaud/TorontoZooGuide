@@ -84,6 +84,25 @@ class SharedStrings:
          return f'The { talk_name } at { location } is not scheduled today.'
 
 
+   class Itinerary:
+      @staticmethod
+      def guardians_talk_fully_covered_by_blocker() -> str:
+         return (
+            'Guardians talk interval is fully covered by a scheduled blocker.' )
+
+
+      @staticmethod
+      def guardians_talk_unexpected_blocker_overlap() -> str:
+         return (
+            'Guardians talk interval overlaps a blocker in an unexpected way.' )
+
+
+      @staticmethod
+      def guardians_talk_no_remaining_time_after_trimming() -> str:
+         return (
+            'Guardians talk has no remaining time after trimming.' )
+
+
    class VisitDaySchedule:
       """Guest-facing copy when a visit-day schedule row does not apply."""
 

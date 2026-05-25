@@ -43,13 +43,15 @@ export function parseClockTimeMinutes(timeValue) {
    return (hours * 60) + displayMinutes;
 }
 
-export function formatMinutesAsClockTime(totalMinutes) {
+export function formatMinutesAsScheduleTimeKey(totalMinutes) {
    const hours = Math.floor(totalMinutes / 60);
    const minutes = totalMinutes % 60;
 
-   return formatClockTime(
-      `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
-   );
+   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
+export function formatMinutesAsClockTime(totalMinutes) {
+   return formatClockTime(formatMinutesAsScheduleTimeKey(totalMinutes));
 }
 
 export function buildHalfHourSlotStarts(openMinutes, closeMinutes) {

@@ -57,6 +57,8 @@ test('saveItinerary includes selected exhibits in the backend payload', async ()
          guardiansTalks: [],
          wildEncounters: [],
          selectedExhibits: ['Africa Savanna', 'Eurasia'],
+         temp: null,
+         overridingConflictingGuardiansTalks: false,
       });
 
       return {

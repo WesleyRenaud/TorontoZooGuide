@@ -122,12 +122,16 @@ export async function getZooHours(date) {
    return result?.hours || null;
 }
 
-export async function saveItinerary(itinerary = {}) {
+export async function saveItinerary(
+   itinerary = {},
+   { overridingConflictingGuardiansTalks = false } = {},
+) {
    const savePayload = toSetItineraryPayload(itinerary);
    const payload = {
       ...savePayload,
       selectedExhibits: loadSelectedExhibits(),
       temp: (await getItineraryDateSearchContext({ date: savePayload.date })).temp,
+      overridingConflictingGuardiansTalks,
    };
 
    const result = await setItineraryRequest(payload);

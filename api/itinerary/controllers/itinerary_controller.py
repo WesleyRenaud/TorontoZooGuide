@@ -41,10 +41,11 @@ class ItineraryController():
          date: DateInput,
          animals: list[ dict[ str, str ] ],
          attractions: list[ str ],
-         guardians_talks: list[ str ],
+         guardians_talks: list[ dict[ str, str | None ] ],
          wild_encounters: list[ str ],
          selected_exhibits: list[ str ] | None = None,
-         visit_date_temp: float | None = None ) -> ItinerarySaveResult:
+         visit_date_temp: float | None = None,
+         overriding_conflicting_guardians_talks: bool = False ) -> ItinerarySaveResult:
       return set_itinerary_logic.set_itinerary(
          get_connection(),
          date=date,
@@ -54,6 +55,8 @@ class ItineraryController():
          wild_encounters=wild_encounters,
          selected_exhibits=selected_exhibits,
          visit_date_temp=visit_date_temp,
+         overriding_conflicting_guardians_talks=(
+            overriding_conflicting_guardians_talks ),
          animal_controller=AnimalController,
          attraction_controller=AttractionController,
          guardians_controller=GuardiansController,

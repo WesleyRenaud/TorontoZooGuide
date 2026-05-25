@@ -1180,6 +1180,7 @@ def test_itinerary_endpoints_return_success_payloads(
          'wild_encounters': [],
          'selected_exhibits': [ ANIMAL_EXHIBIT ],
          'visit_date_temp': None,
+         'overriding_conflicting_guardians_talks': False,
       }
    )
    assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'

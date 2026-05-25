@@ -12,6 +12,7 @@ from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInput
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
+from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from api.itinerary.logic.itinerary_validation import validate_itinerary_animals
 from api.itinerary.logic.itinerary_validation import validate_itinerary_attractions
 from api.models import GuardiansTalk
@@ -20,6 +21,26 @@ from api.wild_encounters.controllers.wild_encounter_controller import WildEncoun
 from api.wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
 from api.zoo_hours.controllers.zoo_hours_controller import ZooHoursController
 from conftest import DbControllers
+
+
+def guardians_talk_save_entry(
+      name: str,
+      *,
+      start_time: str | None = None,
+      end_time: str | None = None,
+) -> dict[ str, str | None ]:
+   return {
+      'name': name,
+      'start_time': start_time,
+      'end_time': end_time,
+   }
+
+
+def guardians_talk_save_entries( *names: str ) -> list[ dict[ str, str | None ] ]:
+   return [
+      guardians_talk_save_entry( name )
+      for name in names
+   ]
 
 
 def test_get_itinerary_date_returns_empty_when_no_itinerary_saved(
@@ -80,7 +101,7 @@ def test_set_get_and_clear_itinerary(
       date='2026-06-15',
       animals=[ { 'species': 'African Lion', 'exhibit': 'Africa Savanna' } ],
       attractions=[ 'Conservation Carousel' ],
-      guardians_talks=[ 'African Lion' ],
+      guardians_talks=guardians_talk_save_entries( 'African Lion' ),
       wild_encounters=[ 'African Rainforest' ],
    )
 
@@ -425,7 +446,7 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
       date='2026-06-15',
       animals=[],
       attractions=[ 'Conservation Carousel' ],
-      guardians_talks=[ 'African Lion' ],
+      guardians_talks=guardians_talk_save_entries( 'African Lion' ),
       wild_encounters=[ 'African Rainforest' ],
    )
 
@@ -462,6 +483,129 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
    assert db.conn.execute(
       'SELECT COUNT(*) FROM ItineraryWildEncounter;'
    ).fetchone()[ 0 ] == 0
+   assert db.conn.execute(
+      """   SELECT ATTRACTION
+            FROM ItineraryAttraction;
+      """ ).fetchone()[ 'ATTRACTION' ] == 'Conservation Carousel'
+
+
+def test_set_itinerary_reports_partial_guardians_talk_encounter_overlap_without_trimming(
+      db: DbControllers ) -> None:
+   GuardiansController.set_guardians_talk_schedule(
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday_time='13:30',
+      tuesday_time=None,
+      wednesday_time=None,
+      thursday_time=None,
+      friday_time=None,
+      saturday_time=None,
+      sunday_time=None,
+      message=None
+   )
+   WildEncounterController.set_wild_encounter_schedule(
+      wild_encounter_name='Grizzly Bear',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='13:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-15',
+      animals=[],
+      attractions=[],
+      guardians_talks=guardians_talk_save_entries( 'African Lion' ),
+      wild_encounters=[ 'Grizzly Bear' ],
+   )
+
+   assert result.success is True
+   assert len( result.issues ) == 1
+   assert result.issues[ 0 ].to_dict()[ 'type' ] == 'wildEncounterTimeConflict'
+   assert { item[ 'name' ] for item in result.issues[ 0 ].to_dict()[ 'items' ] } == {
+      'African Lion',
+      'Grizzly Bear',
+   }
+
+   assert db.conn.execute(
+      'SELECT COUNT(*) FROM ItineraryGuardiansTalk;'
+   ).fetchone()[ 0 ] == 0
+   assert db.conn.execute(
+      'SELECT COUNT(*) FROM ItineraryWildEncounter;'
+   ).fetchone()[ 0 ] == 0
+
+
+def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overlap(
+      db: DbControllers ) -> None:
+   GuardiansController.set_guardians_talk_schedule(
+      talk='African Lion',
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday_time='13:30',
+      tuesday_time=None,
+      wednesday_time=None,
+      thursday_time=None,
+      friday_time=None,
+      saturday_time=None,
+      sunday_time=None,
+      message=None
+   )
+   WildEncounterController.set_wild_encounter_schedule(
+      wild_encounter_name='Grizzly Bear',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='13:00',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-15',
+      animals=[],
+      attractions=[],
+      guardians_talks=guardians_talk_save_entries( 'African Lion' ),
+      wild_encounters=[ 'Grizzly Bear' ],
+      overriding_conflicting_guardians_talks=True,
+   )
+
+   assert result.success is True
+   assert result.issues == ()
+
+   talk_schedule = db.conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryGuardiansTalk
+            WHERE TALK_NAME = 'African Lion';
+      """ ).fetchone()
+   encounter_schedule = db.conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryWildEncounter
+            WHERE WILD_ENCOUNTER = 'Grizzly Bear';
+      """ ).fetchone()
+
+   assert dict( talk_schedule ) == {
+      'START_TIME': '13:45',
+      'END_TIME': '14:00',
+   }
+   assert dict( encounter_schedule ) == {
+      'START_TIME': '13:00',
+      'END_TIME': '13:45',
+   }
 
 
 def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
@@ -513,7 +657,7 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
       date='2026-06-15',
       animals=[],
       attractions=[],
-      guardians_talks=[ 'African Lion' ],
+      guardians_talks=guardians_talk_save_entries( 'African Lion' ),
       wild_encounters=[ 'African Rainforest', 'Kangaroo' ],
    )
 
@@ -750,7 +894,10 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries() -> 
    ]
 
    result = validate_guardians_talks_for_itinerary(
-      guardians_talks_to_include=[ 'African Lion', 'Amur Tiger' ],
+      guardians_talks_to_include=[
+         ItineraryGuardiansTalkInput( name='African Lion' ),
+         ItineraryGuardiansTalkInput( name='Amur Tiger' ),
+      ],
       day_schedule=day_schedule )
 
    assert [
@@ -921,7 +1068,10 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
    )
 
    talk_result = validate_guardians_talks_for_itinerary(
-      [ ' african lion ', 'AMUR TIGER' ],
+      [
+         ItineraryGuardiansTalkInput( name=' african lion ' ),
+         ItineraryGuardiansTalkInput( name='AMUR TIGER' ),
+      ],
       GuardiansController.get_guardians_talk_schedule(
          month='June',
          day=15,
