@@ -30,7 +30,8 @@ class Animal:
          has_viewing_alert: bool | None = None,
          viewing_alert_message: str | None = None,
          is_deleted: bool = False,
-         old_likelihood: int | None = None ) -> None:
+         old_likelihood: int | None = None,
+         is_added: bool = False ) -> None:
       self.species = species
       self.latin_name = latin_name
       self.general_viewing_tips = general_viewing_tips
@@ -56,6 +57,7 @@ class Animal:
       self.viewing_alert_message = viewing_alert_message
       self.is_deleted = is_deleted
       self.old_likelihood = old_likelihood
+      self.is_added = is_added
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -84,5 +86,6 @@ class Animal:
          'has_viewing_alert': ValueConversion.as_boolean( self.has_viewing_alert ),
          'viewing_alert_message': self.viewing_alert_message,
          'is_deleted': ValueConversion.as_boolean( self.is_deleted ),
-         'old_likelihood': self.old_likelihood
+         'old_likelihood': self.old_likelihood,
+         'is_added': ValueConversion.as_boolean( self.is_added )
       }

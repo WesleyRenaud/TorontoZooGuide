@@ -13,6 +13,7 @@ class ItinerarySaveInput:
    attractions: tuple[ str, ... ]
    guardians_talks: tuple[ str, ... ]
    wild_encounters: tuple[ str, ... ]
+   selected_exhibits: tuple[ str, ... ] = ()
 
 
    def month( self ) -> int:

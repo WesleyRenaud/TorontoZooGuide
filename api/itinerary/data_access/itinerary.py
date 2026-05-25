@@ -39,7 +39,8 @@ def fetch_itinerary_animal_rows( conn: Connection ) -> list[ ItineraryAnimalReco
                SPECIES,
                EXHIBIT,
                OLD_LIKELIHOOD,
-               NEW_LIKELIHOOD
+               NEW_LIKELIHOOD,
+               IS_ADDED
             FROM ItineraryAnimal;
       """ ).fetchall()
 

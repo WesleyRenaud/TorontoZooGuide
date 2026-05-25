@@ -87,6 +87,10 @@ export const itinerary = {
       title: 'No Items Selected',
    },
    removedItems: {
+      animalsAddedSubtitle: (
+         'The following animals from your selected exhibits are available on your new date and were added to your itinerary.'
+      ),
+      animalsAddedTitle: 'Animals Added',
       animalsRemovedSubtitle: (
          'The following animals are unavailable on your new date for the reasons listed below.'
       ),

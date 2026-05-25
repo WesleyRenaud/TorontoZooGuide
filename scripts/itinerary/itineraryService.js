@@ -12,11 +12,29 @@ import {
    toSetItineraryPayload,
 } from './itineraryShape.js';
 import { buildItineraryValidationState } from './itineraryValidation.js';
+import { SELECTED_EXHIBITS_KEY } from './storageKeys.js';
 import {
    getDay,
    getMonth,
    getYear,
 } from '../visitDates/visitDateRules.js';
+
+function loadSelectedExhibits() {
+   try {
+      const selectedExhibits = JSON.parse(
+         localStorage.getItem(SELECTED_EXHIBITS_KEY) || '[]'
+      );
+
+      return Array.isArray(selectedExhibits)
+         ? selectedExhibits
+            .map((exhibit) => String(exhibit ?? '').trim())
+            .filter(Boolean)
+         : [];
+   }
+   catch {
+      return [];
+   }
+}
 
 function createEmptyItinerary() {
    return {
@@ -90,7 +108,10 @@ export async function getZooHours(date) {
 }
 
 export async function saveItinerary(itinerary = {}) {
-   const payload = toSetItineraryPayload(itinerary);
+   const payload = {
+      ...toSetItineraryPayload(itinerary),
+      selectedExhibits: loadSelectedExhibits(),
+   };
    const result = await setItineraryRequest(payload);
 
    const normalizedItinerary = normalizeItinerary(result?.itinerary);

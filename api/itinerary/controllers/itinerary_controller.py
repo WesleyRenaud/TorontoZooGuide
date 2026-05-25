@@ -35,7 +35,8 @@ class ItineraryController():
          animals: list[ dict[ str, str ] ],
          attractions: list[ str ],
          guardians_talks: list[ str ],
-         wild_encounters: list[ str ] ) -> ItinerarySaveResult:
+         wild_encounters: list[ str ],
+         selected_exhibits: list[ str ] | None = None ) -> ItinerarySaveResult:
       return set_itinerary_logic.set_itinerary(
          get_connection(),
          date=date,
@@ -43,6 +44,7 @@ class ItineraryController():
          attractions=attractions,
          guardians_talks=guardians_talks,
          wild_encounters=wild_encounters,
+         selected_exhibits=selected_exhibits,
          animal_controller=AnimalController,
          attraction_controller=AttractionController,
          guardians_controller=GuardiansController,

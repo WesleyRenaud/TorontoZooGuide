@@ -11,6 +11,7 @@ class ItineraryAnimalRecord:
    exhibit: str
    old_likelihood: int | None
    new_likelihood: int | None
+   is_added: bool = False
 
 
    def species_exhibit_key( self ) -> tuple[ str, str ]:

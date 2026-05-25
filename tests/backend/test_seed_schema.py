@@ -332,7 +332,8 @@ def test_create_schema_migrates_partial_dynamic_tables() -> None:
          'SPECIES',
          'EXHIBIT',
          'OLD_LIKELIHOOD',
-         'NEW_LIKELIHOOD'
+         'NEW_LIKELIHOOD',
+         'IS_ADDED'
       },
       'ItineraryAttraction': {
          'ATTRACTION',

@@ -1,4 +1,5 @@
 import {
+   hasAddedItems,
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,
@@ -65,6 +66,10 @@ function buildImprovedVisibilityAnimals(animals = []) {
       .map(withVisibilityFields);
 }
 
+function buildAddedAnimals(animals = []) {
+   return animals.filter((animal) => animal.is_added === true);
+}
+
 function buildRemovedAttractions(attractions = []) {
    return attractions
       .filter((attraction) => normalizeLikelihood(attraction.likelihood) === 0)
@@ -82,6 +87,9 @@ export function buildItineraryValidationState(itinerary = {}) {
       guardiansTalks: buildRemovedScheduledItems(itinerary.guardiansTalks),
       wildEncounters: buildRemovedScheduledItems(itinerary.wildEncounters),
    };
+   const added = {
+      animals: buildAddedAnimals(itinerary.animals),
+   };
    const reducedVisibility = {
       animals: buildReducedVisibilityAnimals(itinerary.animals),
    };
@@ -91,10 +99,12 @@ export function buildItineraryValidationState(itinerary = {}) {
 
    return {
       removed,
+      added,
       reducedVisibility,
       improvedVisibility,
       hasChanges: (
-         hasRemovedItems(removed)
+         hasAddedItems(added)
+         || hasRemovedItems(removed)
          || hasReducedVisibility(reducedVisibility)
          || hasImprovedVisibility(improvedVisibility)
       ),
