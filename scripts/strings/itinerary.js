@@ -16,9 +16,15 @@ export const itinerary = {
    },
    aria: {
       addToItinerary: 'Add to itinerary',
+      addToItineraryWithScheduleOverride: (
+         'Add to itinerary with adjusted talk time'
+      ),
       closeBuilder: 'Close itinerary builder',
       panel: 'Itinerary panel',
       removeFromItinerary: 'Remove from itinerary',
+      removeFromItineraryWithScheduleOverride: (
+         'Remove from itinerary with adjusted talk time'
+      ),
       selectRegionsAndExhibits: 'Select regions and exhibits',
    },
    confirmation: {
@@ -57,6 +63,10 @@ export const itinerary = {
          'Select the activities you want. You can add more than one as long as their times do not overlap.'
       ),
       scheduleConflictsTitle: 'Schedule Conflicts',
+      scheduleOverrideSelectionMessage: (
+         'These selections overlap in time. We’ll fit them into your day by shortening some activities, with Wild Encounters taking priority.'
+      ),
+      scheduleOverrideSelectionTitle: 'Adjust Activity Times?',
       animalMayBeOffDisplay: 'Animal May Be Off Display',
    },
    emptyText: {
@@ -103,6 +113,8 @@ export const itinerary = {
       ),
       animalsRemovedTitle: 'Animals Removed',
       attractionsSubtitle: 'The following attractions are unavailable on your new date.',
+      // TO-DO: This string should be updated. It is not that the animals are easier to see, but rather that are more
+      // likely to be on display.
       improvedAnimalVisibilitySubtitle: (
          'The following animals remain on your itinerary and are expected to be easier to see on your new date.'
       ),

@@ -13,6 +13,7 @@ from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.itinerary_save_input_mapper import map_itinerary_save_input
 from ..data_access.save_itinerary import save_validated_itinerary
 from ...guardians.controllers.guardians_controller import GuardiansController
+from .guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from .itinerary import build_current_itinerary
 from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_validation import validate_itinerary_for_save
@@ -103,7 +104,7 @@ def set_itinerary(
       date: DateInput,
       animals: list[ dict[ str, str ] ],
       attractions: list[ str ],
-      guardians_talks: list[ str ],
+      guardians_talks: list[ dict[ str, str | None ] ],
       wild_encounters: list[ str ],
       selected_exhibits: list[ str ] | None = None,
       visit_date_temp: float | None = None,
@@ -111,7 +112,8 @@ def set_itinerary(
       animal_controller: type[ AnimalController ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ] ) -> ItinerarySaveResult:
+      wild_encounter_controller: type[ WildEncounterController ],
+      overriding_conflicting_guardians_talks: bool = False ) -> ItinerarySaveResult:
    save_input = map_itinerary_save_input(
       date,
       animals,
@@ -134,6 +136,14 @@ def set_itinerary(
       wild_encounter_controller,
       new_visit_date_temp=visit_date_temp,
       old_visit_date=old_visit_date )
+
+   if overriding_conflicting_guardians_talks:
+      trimmed_guardians_talks = apply_guardians_talk_trimming(
+         validated_itinerary.guardians_talks,
+         validated_itinerary.wild_encounters )
+      validated_itinerary = replace(
+         validated_itinerary,
+         guardians_talks=trimmed_guardians_talks )
 
    guardians_talks, wild_encounters, issues = remove_scheduled_items_with_time_conflicts(
       validated_itinerary.guardians_talks,

@@ -80,6 +80,14 @@ class DateValues:
 
 
    @staticmethod
+   def schedule_time_key_from_minutes( minutes: int ) -> str:
+      hours = minutes // 60
+      minute_value = minutes % 60
+
+      return time( hour=hours, minute=minute_value ).strftime( '%H:%M' )
+
+
+   @staticmethod
    def add_minutes_to_time( value: str | None, minutes: int | None ) -> str | None:
       parsed_time = DateValues.parse_time_value( value )
 
