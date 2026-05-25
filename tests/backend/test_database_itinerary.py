@@ -151,6 +151,46 @@ def test_set_get_and_clear_itinerary(
    assert cleared.wild_encounters == []
 
 
+def test_set_itinerary_normalizes_display_format_schedule_times(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   WildEncounterController.set_wild_encounter_schedule(
+      wild_encounter_name='Grizzly Bear',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      encounter_time='1:00 PM',
+      monday=True,
+      tuesday=False,
+      wednesday=False,
+      thursday=False,
+      friday=False,
+      saturday=False,
+      sunday=False,
+      message=None
+   )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-15',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[ 'Grizzly Bear' ],
+   )
+
+   encounter_schedule = db.conn.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryWildEncounter
+            WHERE WILD_ENCOUNTER = 'Grizzly Bear';
+      """ ).fetchone()
+
+   assert dict( encounter_schedule ) == {
+      'START_TIME': '13:00',
+      'END_TIME': '13:45',
+   }
+
+
 def test_set_itinerary_expands_selected_exhibits_into_viewable_animals(
       db: DbControllers ) -> None:
    result = ItineraryController.set_itinerary(

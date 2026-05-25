@@ -170,11 +170,16 @@ class DateValues:
 
 
    @staticmethod
-   def normalize_itinerary_schedule_time( value: str | None ) -> str:
+   def normalize_itinerary_schedule_time( value: str | None ) -> str | None:
       if value == None:
-         return ''
+         return None
 
-      return str( value ).strip()
+      trimmed_value = str( value ).strip()
+
+      if not trimmed_value:
+         return None
+
+      return DateValues.format_time_value( trimmed_value )
 
 
    @staticmethod
