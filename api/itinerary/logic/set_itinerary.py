@@ -45,7 +45,8 @@ def merge_itinerary_animal_inputs(
 
 def build_itinerary_animal_inputs_from_selected_exhibits(
       save_input: ItinerarySaveInput,
-      animal_controller: type[ AnimalController ] ) -> tuple[ ItineraryAnimalInput, ... ]:
+      animal_controller: type[ AnimalController ],
+      visit_date_temp: float | None = None ) -> tuple[ ItineraryAnimalInput, ... ]:
    if not save_input.selected_exhibits:
       return ()
 
@@ -53,7 +54,7 @@ def build_itinerary_animal_inputs_from_selected_exhibits(
       day=save_input.day(),
       month=save_input.month(),
       year=save_input.year(),
-      temp=None,
+      temp=visit_date_temp,
       include_off_display_animals=False,
       threshold=0,
       exhibits_to_include=list( save_input.selected_exhibits ) )
@@ -69,10 +70,12 @@ def build_itinerary_animal_inputs_from_selected_exhibits(
 
 def expand_selected_exhibit_animals(
       save_input: ItinerarySaveInput,
-      animal_controller: type[ AnimalController ] ) -> ItinerarySaveInput:
+      animal_controller: type[ AnimalController ],
+      visit_date_temp: float | None = None ) -> ItinerarySaveInput:
    animals_from_selected_exhibits = build_itinerary_animal_inputs_from_selected_exhibits(
       save_input,
-      animal_controller )
+      animal_controller,
+      visit_date_temp=visit_date_temp )
 
    if not animals_from_selected_exhibits:
       return save_input
@@ -102,7 +105,9 @@ def set_itinerary(
       attractions: list[ str ],
       guardians_talks: list[ str ],
       wild_encounters: list[ str ],
-      selected_exhibits: list[ str ] | None,
+      selected_exhibits: list[ str ] | None = None,
+      visit_date_temp: float | None = None,
+      *,
       animal_controller: type[ AnimalController ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
@@ -117,7 +122,8 @@ def set_itinerary(
    old_visit_date = fetch_itinerary_date( conn )
    save_input = expand_selected_exhibit_animals(
       save_input,
-      animal_controller )
+      animal_controller,
+      visit_date_temp=visit_date_temp )
 
    validated_itinerary = validate_itinerary_for_save(
       conn,
@@ -126,7 +132,7 @@ def set_itinerary(
       attraction_controller,
       guardians_controller,
       wild_encounter_controller,
-      new_visit_date_temp=None,
+      new_visit_date_temp=visit_date_temp,
       old_visit_date=old_visit_date )
 
    guardians_talks, wild_encounters, issues = remove_scheduled_items_with_time_conflicts(
@@ -145,7 +151,8 @@ def set_itinerary(
       animal_controller,
       attraction_controller,
       guardians_controller,
-      wild_encounter_controller )
+      wild_encounter_controller,
+      visit_date_temp=visit_date_temp )
 
    return ItinerarySaveResult(
       success=True,

@@ -30,12 +30,10 @@ import {
 } from '../../../visitDates/visitDateRules.js';
 
 async function resolveAnimalsByExhibitQueryContext() {
-   let context = await getItineraryDateSearchContext({ includeTemp: false });
+   let context = await getItineraryDateSearchContext();
 
    if (!context.month || context.day == null) {
-      context = await buildDateSearchContext(toISODate(getToday()), {
-         includeTemp: false,
-      });
+      context = await buildDateSearchContext(toISODate(getToday()));
    }
 
    return context;
