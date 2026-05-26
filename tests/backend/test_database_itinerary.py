@@ -814,6 +814,65 @@ def test_validate_animals_removes_unavailable_entries(
    ] == [ ( 'African Penguin', True ) ]
 
 
+def test_get_itinerary_animals_include_all_viewing_enclosures(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 5, 30 ) )
+
+   animals = AnimalController.get_animals_for_saved_itinerary(
+      day=30,
+      month='May',
+      year=2026,
+      saved_animals=[
+         ItineraryAnimalRecord(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            old_likelihood=100,
+            new_likelihood=100,
+         ),
+      ],
+   )
+
+   giraffes = [
+      animal
+      for animal in animals
+      if animal.species == 'Masai Giraffe'
+   ]
+
+   assert len( giraffes ) == 2
+   assert max( animal.likelihood for animal in giraffes ) == 100
+   assert { animal.old_likelihood for animal in giraffes } == { 100 }
+
+
+def test_validate_animals_uses_highest_likelihood_across_enclosures(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 5, 26 ) )
+
+   result = validate_itinerary_animals(
+      AnimalController,
+      animals=[
+         ItineraryAnimalInput(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna' ),
+      ],
+      new_visit_date=date( 2026, 5, 30 ),
+      old_visit_date='2026-05-26',
+      saved_itinerary_animal_rows=[
+         ItineraryAnimalRecord(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+         ),
+      ],
+   )
+
+   assert [ ( d.species, d.new_likelihood ) for d in result ] == [
+      ( 'Masai Giraffe', 100 )
+   ]
+
+
 def test_validate_attractions_removes_closed_entries(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:

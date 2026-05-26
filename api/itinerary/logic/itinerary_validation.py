@@ -65,7 +65,7 @@ def validate_itinerary_animals(
       new_likelihood = (
          None
          if not saved_animals
-         else saved_animals[ 0 ].likelihood )
+         else max( ( a.likelihood or 0 ) for a in saved_animals ) )
 
       diffs.append(
          AnimalDiff(
