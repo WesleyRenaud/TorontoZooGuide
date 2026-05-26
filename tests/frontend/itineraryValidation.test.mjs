@@ -141,6 +141,31 @@ test('buildItineraryValidationState reports animals added from selected exhibits
    assert.equal(validation.hasChanges, true);
 });
 
+test('buildItineraryValidationState ignores visibility changes when indoor viewing stays high', () => {
+   const validation = buildItineraryValidationState({
+      animals: [
+         {
+            species: 'Masai Giraffe',
+            exhibit: 'Africa Savanna',
+            enclosure_type: 'Indoor',
+            old_likelihood: 100,
+            likelihood: 100,
+         },
+         {
+            species: 'Masai Giraffe',
+            exhibit: 'Africa Savanna',
+            enclosure_type: 'Outdoor',
+            old_likelihood: 100,
+            likelihood: 78,
+         },
+      ],
+   });
+
+   assert.equal(validation.hasChanges, false);
+   assert.deepEqual(validation.reducedVisibility.animals, []);
+   assert.deepEqual(validation.improvedVisibility.animals, []);
+});
+
 test('buildItineraryValidationState ignores items without old likelihood values', () => {
    const validation = buildItineraryValidationState({
       animals: [

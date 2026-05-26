@@ -82,17 +82,51 @@ function buildRows(
    return preparedItems.map((item) => makeItemRow(buildRowProps(item)));
 }
 
+function maxStoredLikelihood(...values) {
+   const likelihoods = values
+      .map((value) => Number(value))
+      .filter((value) => Number.isFinite(value));
+
+   if (!likelihoods.length) {
+      return null;
+   }
+
+   return Math.max(...likelihoods);
+}
+
 function buildUniqueAnimals(animals = []) {
    const uniqueAnimalsBySpecies = new Map();
 
    animals.forEach((animal) => {
       const speciesKey = String(animal.species || '').trim().toLowerCase();
 
-      if (!speciesKey || uniqueAnimalsBySpecies.has(speciesKey)) {
+      if (!speciesKey) {
          return;
       }
 
-      uniqueAnimalsBySpecies.set(speciesKey, animal);
+      const existing = uniqueAnimalsBySpecies.get(speciesKey);
+
+      if (!existing) {
+         uniqueAnimalsBySpecies.set(speciesKey, animal);
+         return;
+      }
+
+      uniqueAnimalsBySpecies.set(speciesKey, {
+         ...existing,
+         likelihood: maxStoredLikelihood(existing.likelihood, animal.likelihood),
+         old_likelihood: maxStoredLikelihood(
+            existing.old_likelihood,
+            animal.old_likelihood
+         ),
+         likelihoodBefore: maxStoredLikelihood(
+            existing.likelihoodBefore,
+            animal.likelihoodBefore
+         ),
+         likelihoodAfter: maxStoredLikelihood(
+            existing.likelihoodAfter,
+            animal.likelihoodAfter
+         ),
+      });
    });
 
    return Array.from(uniqueAnimalsBySpecies.values());
