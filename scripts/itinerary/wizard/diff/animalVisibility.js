@@ -1,16 +1,8 @@
 import { buildItemKey } from './itemKey.js';
-
-function normalizeLikelihood(value) {
-   if (!Number.isFinite(value)) {
-      return null;
-   }
-
-   return value > 1 ? value / 100 : value;
-}
+import { likelihoodToFraction } from '../../../likelihood/likelihoodValues.js';
 
 function getAnimalLikelihood(animal) {
-   const value = Number(animal?.likelihood);
-   return normalizeLikelihood(value);
+   return likelihoodToFraction(animal?.likelihood);
 }
 
 function buildAnimalsBySpecies(animals = []) {
