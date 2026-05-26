@@ -7,6 +7,7 @@ from ..data_access.animal_status import save_animal_on_display_status
 from ..data_access.animal_viewable_on_day import fetch_animals_viewable_on_day_records
 from ..data_access.animal_viewing_alert import delete_animal_viewing_alert
 from ..data_access.animal_viewing_alert import save_animal_viewing_alert
+from ..data_access.animal_viewing_scope import fetch_animal_viewing_scopes
 from ..data_access.animal_visibility_schedule import delete_animal_visibility_schedule
 from ..data_access.animal_visibility_schedule import save_animal_limited_viewing_schedule
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
@@ -19,6 +20,7 @@ from ..logic.animals_matching_query import build_animals_matching_query
 from ..logic.itinerary_animals import build_itinerary_animals
 from ...models import Animal
 from ...request_connection import get_connection
+from ...shared.enums import AnimalViewingScope
 from ...types import DateInput, MonthInput, VisitDay, VisitMonth, VisitYear
 
 
@@ -71,17 +73,29 @@ class AnimalController():
 
 
    @classmethod
+   def get_animal_viewing_scopes(
+         cls,
+         species: str,
+         exhibit: str ) -> list[ AnimalViewingScope ]:
+      return fetch_animal_viewing_scopes(
+         get_connection(),
+         species=species,
+         exhibit=exhibit )
+
+
+   @classmethod
    def set_animal_as_off_display(
          cls,
          species: str,
          exhibit: str,
          start_date: DateInput,
          end_date: DateInput,
-         message: str ) -> bool:
-
+         message: str,
+         viewing_scope: AnimalViewingScope = AnimalViewingScope.ALL ) -> bool:
       status = build_animal_off_display_status(
          species=species,
          exhibit=exhibit,
+         viewing_scope=viewing_scope,
          start_date=start_date,
          end_date=end_date,
          message=message )
@@ -90,17 +104,23 @@ class AnimalController():
          get_connection(),
          species=status.species,
          exhibit=status.exhibit,
+         viewing_scope=status.viewing_scope,
          start_date=status.start_date,
          end_date=status.end_date,
          message=status.message )
 
 
    @classmethod
-   def set_animal_as_on_display( cls, species: str, exhibit: str ) -> bool:
+   def set_animal_as_on_display(
+         cls,
+         species: str,
+         exhibit: str,
+         viewing_scope: AnimalViewingScope = AnimalViewingScope.ALL ) -> bool:
       return save_animal_on_display_status(
          get_connection(),
          species=species,
-         exhibit=exhibit )
+         exhibit=exhibit,
+         viewing_scope=viewing_scope )
 
 
    @classmethod

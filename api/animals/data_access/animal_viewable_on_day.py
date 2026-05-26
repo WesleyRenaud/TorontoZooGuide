@@ -26,6 +26,7 @@ _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL = """   SELECT
                   v.X_COORD,
                   v.Y_COORD,
                   s.IS_OFF_DISPLAY,
+                  s.VIEWING_SCOPE,
                   s.OFF_DISPLAY_MESSAGE,
                   s.OFF_DISPLAY_START,
                   s.OFF_DISPLAY_END,
@@ -52,6 +53,10 @@ _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL = """   SELECT
                LEFT JOIN AnimalStatus s
                   ON e.SPECIES = s.SPECIES
                   AND e.EXHIBIT = s.EXHIBIT
+                  AND (
+                     s.VIEWING_SCOPE = 'all'
+                     OR LOWER( s.VIEWING_SCOPE ) = LOWER( v.ENCLOSURE_TYPE )
+                  )
                LEFT JOIN AnimalVisibilitySchedule vs
                   ON e.SPECIES = vs.SPECIES
                   AND e.EXHIBIT = vs.EXHIBIT

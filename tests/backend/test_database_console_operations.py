@@ -13,6 +13,8 @@ from api.models.attraction import Attraction
 from api.models.gift_shop import GiftShop
 from api.models.restaurant import Restaurant
 from api.restaurants.controllers.restaurant_controller import RestaurantController
+from api.shared.enums import AnimalViewingScope
+from api.types import Cursor
 from api.updates.controllers.update_controller import UpdateController
 from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from api.zoomobile.controllers.zoomobile_controller import ZoomobileController
@@ -32,6 +34,44 @@ def get_animal( db: DbControllers, species: str, exhibit: str ) -> Animal:
       animal for animal in animals
       if animal.species == species and animal.exhibit == exhibit
    )
+
+
+def get_animals_for_exhibit(
+      species: str,
+      exhibit: str,
+      include_off_display_animals: bool = True ) -> list[ Animal ]:
+   animals = AnimalController.get_animals_viewable_on_day(
+      day=15,
+      month='June',
+      year=2026,
+      temp=22,
+      include_off_display_animals=include_off_display_animals,
+      exhibits_to_include=[ exhibit ] )
+
+   return [
+      animal for animal in animals
+      if animal.species == species and animal.exhibit == exhibit
+   ]
+
+
+def get_animal_status_scopes(
+      cursor: Cursor,
+      species: str,
+      exhibit: str ) -> list[ str ]:
+   return [
+      row[ 'VIEWING_SCOPE' ]
+      for row in cursor.execute(
+         """   SELECT VIEWING_SCOPE
+               FROM AnimalStatus
+               WHERE SPECIES = ?
+                  AND EXHIBIT = ?
+               ORDER BY VIEWING_SCOPE;
+         """,
+         (
+            species,
+            exhibit,
+         ) ).fetchall()
+   ]
 
 
 def get_restaurant( db: DbControllers, name: str ) -> Restaurant:
@@ -94,6 +134,130 @@ def test_set_animal_as_on_display_restores_visible_animal_result(
 
    assert lion.likelihood > 0
    assert lion.off_display_message is None
+
+
+def test_set_animal_as_off_display_can_scope_to_indoor_viewing(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert AnimalController.set_animal_as_off_display(
+      'African Penguin',
+      'Africa Savanna',
+      '2026-06-01',
+      '2026-06-30',
+      'Indoor unavailable.',
+      viewing_scope=AnimalViewingScope.INDOOR )
+
+   penguins = get_animals_for_exhibit( 'African Penguin', 'Africa Savanna' )
+
+   indoor_penguin = next(
+      penguin for penguin in penguins
+      if penguin.enclosure_type == 'Indoor' )
+   outdoor_penguin = next(
+      penguin for penguin in penguins
+      if penguin.enclosure_type == 'Outdoor' )
+
+   assert indoor_penguin.likelihood == 0
+   assert indoor_penguin.off_display_message == 'Indoor unavailable.'
+   assert outdoor_penguin.likelihood > 0
+   assert outdoor_penguin.off_display_message is None
+
+
+def test_set_animal_as_off_display_replaces_matching_scopes(
+      db: DbControllers,
+      cursor: Cursor,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert AnimalController.set_animal_as_off_display(
+      'African Penguin',
+      'Africa Savanna',
+      '2026-06-01',
+      '2026-06-30',
+      'All unavailable.' )
+   assert AnimalController.set_animal_as_off_display(
+      'African Penguin',
+      'Africa Savanna',
+      '2026-06-01',
+      '2026-06-30',
+      'Indoor unavailable.',
+      viewing_scope=AnimalViewingScope.INDOOR )
+
+   assert get_animal_status_scopes(
+      cursor,
+      'African Penguin',
+      'Africa Savanna' ) == [ 'indoor' ]
+
+
+def test_set_animal_as_on_display_can_scope_to_indoor_viewing(
+      db: DbControllers,
+      cursor: Cursor,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert AnimalController.set_animal_as_off_display(
+      'African Penguin',
+      'Africa Savanna',
+      '2026-06-01',
+      '2026-06-30',
+      'All unavailable.' )
+
+   assert AnimalController.set_animal_as_on_display(
+      'African Penguin',
+      'Africa Savanna',
+      viewing_scope=AnimalViewingScope.INDOOR )
+
+   assert get_animal_status_scopes(
+      cursor,
+      'African Penguin',
+      'Africa Savanna' ) == [ 'outdoor' ]
+
+
+def test_set_animal_as_on_display_removes_matching_scoped_status(
+      db: DbControllers,
+      cursor: Cursor,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert AnimalController.set_animal_as_off_display(
+      'African Penguin',
+      'Africa Savanna',
+      '2026-06-01',
+      '2026-06-30',
+      'Indoor unavailable.',
+      viewing_scope=AnimalViewingScope.INDOOR )
+   assert AnimalController.set_animal_as_off_display(
+      'African Penguin',
+      'Africa Savanna',
+      '2026-06-01',
+      '2026-06-30',
+      'Outdoor unavailable.',
+      viewing_scope=AnimalViewingScope.OUTDOOR )
+
+   assert AnimalController.set_animal_as_on_display(
+      'African Penguin',
+      'Africa Savanna',
+      viewing_scope=AnimalViewingScope.INDOOR )
+
+   assert get_animal_status_scopes(
+      cursor,
+      'African Penguin',
+      'Africa Savanna' ) == [ 'outdoor' ]
+
+
+def test_set_animal_as_off_display_rejects_missing_viewing_scope(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert not AnimalController.set_animal_as_off_display(
+      'African Lion',
+      'Africa Savanna',
+      '2026-06-01',
+      '2026-06-30',
+      'Indoor unavailable.',
+      viewing_scope=AnimalViewingScope.INDOOR )
 
 
 def test_set_and_remove_animal_visibility_schedule_changes_visible_animal_result(

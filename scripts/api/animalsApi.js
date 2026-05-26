@@ -6,6 +6,7 @@ import {
    asObject,
    asTrimmedString,
 } from './normalizeValues.js';
+import { AnimalViewingScope } from '../shared/enums/animalViewingScope.js';
 
 function normalizeNamedList(items) {
    return asArray(items)
@@ -57,6 +58,13 @@ function normalizeAnimalsResponse(response) {
    return normalizeNamedList(asObject(response).animals);
 }
 
+function normalizeAnimalViewingScopesResponse(response) {
+   const validScopes = new Set(Object.values(AnimalViewingScope));
+
+   return normalizeNamedList(asObject(response).viewingScopes)
+      .filter(scope => validScopes.has(scope));
+}
+
 function normalizeExhibitsResponse(response) {
    return normalizeNamedList(asObject(response).exhibits);
 }
@@ -84,6 +92,11 @@ export async function getAnimalsInExhibit(exhibit) {
    return normalizeAnimalsResponse(response);
 }
 
+export async function getAnimalViewingScopes({ species, exhibit } = {}) {
+   const response = await postJson('/get-animal-viewing-scopes', { species, exhibit });
+   return normalizeAnimalViewingScopesResponse(response);
+}
+
 export async function getAnimalInformation(species) {
    const response = await postJson('/get-animal-information', { species });
    return normalizeAnimalInformationResponse(response);
@@ -94,6 +107,7 @@ export function createAnimalsApi() {
       getRegions,
       getExhibitsInRegion,
       getAnimalsInExhibit,
+      getAnimalViewingScopes,
       getAnimalInformation,
    };
 }

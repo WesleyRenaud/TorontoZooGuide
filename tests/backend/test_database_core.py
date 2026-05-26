@@ -43,6 +43,7 @@ def make_animal_viewability_record( **overrides: object ) -> AnimalViewabilityRe
       'x_coord': None,
       'y_coord': None,
       'is_off_display': None,
+      'viewing_scope': None,
       'off_display_message': None,
       'off_display_start': None,
       'off_display_end': None,

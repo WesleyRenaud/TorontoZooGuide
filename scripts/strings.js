@@ -16,6 +16,7 @@ import {
    textareas,
    updateTypes,
    validation,
+   viewingScopes,
 } from './strings/console.js';
 import { itinerary } from './strings/itinerary.js';
 import {
@@ -50,4 +51,5 @@ export const APP_STRINGS = {
    updateTypes,
    entityLabels,
    validation,
+   viewingScopes,
 };

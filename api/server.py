@@ -31,6 +31,7 @@ from .request_connection import clear_connection
 from .request_connection import set_connection
 from .restaurants.controllers.restaurant_controller import RestaurantController
 from .restrooms.controllers.restroom_controller import RestroomController
+from .shared.enums import AnimalViewingScope
 from .updates.controllers.update_controller import UpdateController
 from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from .zoo_hours.controllers.zoo_hours_controller import ZooHoursController
@@ -225,6 +226,29 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
          response = { "animals": animals }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/get-animal-viewing-scopes':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         species = data.get( 'species' )
+         exhibit = data.get( 'exhibit' )
+
+         viewing_scopes = AnimalController.get_animal_viewing_scopes(
+            species=species,
+            exhibit=exhibit )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+         response = {
+            'viewingScopes': [
+               viewing_scope.value for viewing_scope in viewing_scopes
+            ]
+         }
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
@@ -1063,13 +1087,15 @@ class MyHandler( BaseHTTPRequestHandler ):
          start_date = data.get( 'startDate' )
          end_date = data.get( 'endDate' )
          message = data.get( 'message' )
+         viewing_scope = AnimalViewingScope.normalize( data.get( 'viewingScope' ) )
 
          success = AnimalController.set_animal_as_off_display(
             species=species,
             exhibit=exhibit,
             start_date=start_date,
             end_date=end_date,
-            message=message )
+            message=message,
+            viewing_scope=viewing_scope )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -1082,6 +1108,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             'startDate': start_date,
             'endDate': end_date,
             'message': message,
+            'viewingScope': viewing_scope.value,
          }
 
          if not success:
@@ -1097,10 +1124,12 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          species = data.get( 'species' )
          exhibit = data.get( 'exhibit' )
+         viewing_scope = AnimalViewingScope.normalize( data.get( 'viewingScope' ) )
 
          success = AnimalController.set_animal_as_on_display(
             species=species,
-            exhibit=exhibit )
+            exhibit=exhibit,
+            viewing_scope=viewing_scope )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -1110,6 +1139,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             'success': success,
             'species': species,
             'exhibit': exhibit,
+            'viewingScope': viewing_scope.value,
          }
 
          if not success:

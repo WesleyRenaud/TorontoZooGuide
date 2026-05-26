@@ -66,6 +66,7 @@ export const labels = {
    title: 'Title',
    type: 'Type',
    update: 'Update',
+   viewingScope: 'Viewing scope',
 };
 
 export const likelihood = {
