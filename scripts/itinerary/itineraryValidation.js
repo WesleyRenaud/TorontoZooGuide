@@ -6,6 +6,59 @@ import {
    hasRemovedItems,
 } from './wizard/itineraryDiff.js';
 
+function buildSpeciesExhibitKey(animal) {
+   const species = String(animal?.species ?? '').trim().toLowerCase();
+   const exhibit = String(animal?.exhibit ?? '').trim().toLowerCase();
+
+   if (!species) {
+      return '';
+   }
+
+   return `${species}|${exhibit}`;
+}
+
+function maxStoredLikelihood(...values) {
+   const likelihoods = values
+      .map((value) => Number(value))
+      .filter((value) => Number.isFinite(value));
+
+   if (!likelihoods.length) {
+      return null;
+   }
+
+   return Math.max(...likelihoods);
+}
+
+function aggregateAnimalsForVisibilityComparison(animals = []) {
+   const aggregatedBySpeciesExhibit = new Map();
+
+   animals.forEach((animal) => {
+      const key = buildSpeciesExhibitKey(animal);
+
+      if (!key) {
+         return;
+      }
+
+      const existing = aggregatedBySpeciesExhibit.get(key);
+
+      if (!existing) {
+         aggregatedBySpeciesExhibit.set(key, { ...animal });
+         return;
+      }
+
+      aggregatedBySpeciesExhibit.set(key, {
+         ...existing,
+         likelihood: maxStoredLikelihood(existing.likelihood, animal.likelihood),
+         old_likelihood: maxStoredLikelihood(
+            existing.old_likelihood,
+            animal.old_likelihood
+         ),
+      });
+   });
+
+   return Array.from(aggregatedBySpeciesExhibit.values());
+}
+
 function hasMeaningfulVisibilityChange(item) {
    const before = likelihoodToFraction(item.old_likelihood);
    const after = likelihoodToFraction(item.likelihood);
@@ -68,8 +121,11 @@ function buildRemovedScheduledItems(items = []) {
 }
 
 export function buildItineraryValidationState(itinerary = {}) {
+   const visibilityAnimals = aggregateAnimalsForVisibilityComparison(
+      itinerary.animals
+   );
    const removed = {
-      animals: buildRemovedAnimals(itinerary.animals),
+      animals: buildRemovedAnimals(visibilityAnimals),
       attractions: buildRemovedAttractions(itinerary.attractions),
       guardiansTalks: buildRemovedScheduledItems(itinerary.guardiansTalks),
       wildEncounters: buildRemovedScheduledItems(itinerary.wildEncounters),
@@ -78,10 +134,10 @@ export function buildItineraryValidationState(itinerary = {}) {
       animals: buildAddedAnimals(itinerary.animals),
    };
    const reducedVisibility = {
-      animals: buildReducedVisibilityAnimals(itinerary.animals),
+      animals: buildReducedVisibilityAnimals(visibilityAnimals),
    };
    const improvedVisibility = {
-      animals: buildImprovedVisibilityAnimals(itinerary.animals),
+      animals: buildImprovedVisibilityAnimals(visibilityAnimals),
    };
 
    return {
