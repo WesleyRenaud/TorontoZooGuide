@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from ...shared.enums import AnimalViewingScope
 from ...types import Coordinate, DateKey, ScheduleTimeKey, SeasonalMultiplier
 
 
@@ -27,6 +28,7 @@ class AnimalViewabilityRecord:
    x_coord: Coordinate
    y_coord: Coordinate
    is_off_display: bool | None
+   viewing_scope: AnimalViewingScope | None
    off_display_message: str | None
    off_display_start: DateKey | None
    off_display_end: DateKey | None

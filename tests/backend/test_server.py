@@ -31,6 +31,7 @@ from api.models import ZooHours
 from api.models import ZoomobileStation
 from api.models.zoomobile_route import ZoomobileRoute
 import api.server as server
+from api.shared.enums import AnimalViewingScope
 from api.types import Connection
 from conftest import FakeHandler
 
@@ -144,6 +145,22 @@ class StubZooControllers:
    def get_names_of_animals_in_exhibit( self, exhibit: str ) -> list[ str ]:
       self.calls.append( ( 'get_names_of_animals_in_exhibit', { 'exhibit': exhibit } ) )
       return [ ANIMAL_NAME ]
+
+
+   def get_animal_viewing_scopes(
+         self,
+         species: str,
+         exhibit: str ) -> list[ AnimalViewingScope ]:
+      self.calls.append(
+         (
+            'get_animal_viewing_scopes',
+            {
+               'species': species,
+               'exhibit': exhibit
+            }
+         )
+      )
+      return [ AnimalViewingScope.INDOOR, AnimalViewingScope.OUTDOOR ]
 
 
    def get_animal_information( self, species: str ) -> Animal:
@@ -720,6 +737,11 @@ def test_get_visible_animals_endpoint_maps_payload_and_response(
       ( '/get-exhibits-in-region', { 'region': 'Africa' }, 'exhibits' ),
       ( '/get-regions', {}, 'regions' ),
       ( '/get-animal-names-by-exhibit', { 'exhibit': 'Africa Savanna' }, 'animals' ),
+      (
+         '/get-animal-viewing-scopes',
+         { 'species': 'African Lion', 'exhibit': 'Africa Savanna' },
+         'viewingScopes'
+      ),
       ( '/get-animal-information', { 'species': 'African Lion' }, 'information' ),
       ( '/get-pavilions', {}, 'pavilions' ),
       ( '/get-restaurants', { 'month': 'June', 'day': 15, 'year': 2026 }, 'restaurants' ),
@@ -1197,6 +1219,7 @@ def test_itinerary_endpoints_return_success_payloads(
          {
             'species': 'African Lion',
             'exhibit': 'Africa Savanna',
+            'viewingScope': 'indoor',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
             'message': 'Unavailable.'
@@ -1206,6 +1229,7 @@ def test_itinerary_endpoints_return_success_payloads(
             {
                'species': 'African Lion',
                'exhibit': 'Africa Savanna',
+               'viewing_scope': AnimalViewingScope.INDOOR,
                'start_date': '2026-06-01',
                'end_date': '2026-06-30',
                'message': 'Unavailable.'
@@ -1215,6 +1239,7 @@ def test_itinerary_endpoints_return_success_payloads(
             'success': True,
             'species': 'African Lion',
             'exhibit': 'Africa Savanna',
+            'viewingScope': 'indoor',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
             'message': 'Unavailable.'
@@ -1224,19 +1249,22 @@ def test_itinerary_endpoints_return_success_payloads(
          '/set-animal-on-display',
          {
             'species': 'African Lion',
-            'exhibit': 'Africa Savanna'
+            'exhibit': 'Africa Savanna',
+            'viewingScope': 'outdoor'
          },
          (
             'set_animal_as_on_display',
             {
                'species': 'African Lion',
-               'exhibit': 'Africa Savanna'
+               'exhibit': 'Africa Savanna',
+               'viewing_scope': AnimalViewingScope.OUTDOOR
             }
          ),
          {
             'success': True,
             'species': 'African Lion',
-            'exhibit': 'Africa Savanna'
+            'exhibit': 'Africa Savanna',
+            'viewingScope': 'outdoor'
          }
       ),
       (
@@ -1277,7 +1305,8 @@ def test_itinerary_endpoints_return_success_payloads(
          '/remove-animal-visibility-schedule',
          {
             'species': 'African Lion',
-            'exhibit': 'Africa Savanna'
+            'exhibit': 'Africa Savanna',
+            'viewingScope': 'all'
          },
          (
             'remove_animal_visibility_schedule',
@@ -2356,14 +2385,15 @@ def test_schedule_and_occurrence_endpoints_map_payloads_and_success_responses(
 @pytest.mark.parametrize(
    'path, body, expected_error',
    [
-      (
-         '/set-animal-off-display',
-         {
-            'species': 'African Lion',
-            'exhibit': 'Africa Savanna'
-         },
-         'No animal found with species "African Lion".'
-      ),
+         (
+            '/set-animal-off-display',
+            {
+               'species': 'African Lion',
+               'exhibit': 'Africa Savanna',
+               'viewingScope': 'all'
+            },
+            'No animal found with species "African Lion".'
+         ),
       (
          '/set-exhibit-closed',
          {

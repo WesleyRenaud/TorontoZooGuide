@@ -1,3 +1,5 @@
+import { AnimalViewingScope } from '../shared/enums/animalViewingScope.js';
+
 export const help = {
    continueUntilReopened: entityName => (
       `Leave blank to continue until the ${entityName} is reopened.`
@@ -58,6 +60,7 @@ export const placeholders = {
    time: 'Select a time',
    type: 'Select a type',
    update: 'Select an update',
+   viewingScope: 'Select viewing scope',
    wildEncounter: 'Select a Wild Encounter',
    zoomobileStation: 'Select a zoomobile station',
 };
@@ -155,6 +158,12 @@ export const updateTypes = [
    { value: 'Closure' },
    { value: 'New Arrival' },
    { value: 'Departure' },
+];
+
+export const viewingScopes = [
+   { value: AnimalViewingScope.ALL, label: 'Indoor and outdoor' },
+   { value: AnimalViewingScope.INDOOR, label: 'Indoor only' },
+   { value: AnimalViewingScope.OUTDOOR, label: 'Outdoor only' },
 ];
 
 export const validation = {

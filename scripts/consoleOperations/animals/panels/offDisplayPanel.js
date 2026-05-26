@@ -25,6 +25,12 @@ export function createOffDisplayPanel() {
             resultsId: 'offDisplaySpeciesResults',
             placeholder: APP_STRINGS.placeholders.speciesSearch,
          }),
+         createSelectField({
+            label: APP_STRINGS.labels.viewingScope,
+            inputId: 'offDisplayViewingScope',
+            emptyOptionLabel: APP_STRINGS.placeholders.viewingScope,
+            options: APP_STRINGS.viewingScopes,
+         }),
          createDateRangeFields({
             startDateId: 'offDisplayStartDate',
             startHelpText: APP_STRINGS.help.startImmediately,

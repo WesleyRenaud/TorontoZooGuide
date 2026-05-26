@@ -158,6 +158,7 @@ def test_create_schema_migrates_partial_dynamic_tables() -> None:
          'SPECIES',
          'EXHIBIT',
          'IS_OFF_DISPLAY',
+         'VIEWING_SCOPE',
          'OFF_DISPLAY_MESSAGE',
          'OFF_DISPLAY_START',
          'OFF_DISPLAY_END'

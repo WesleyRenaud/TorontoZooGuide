@@ -15,12 +15,16 @@ const CONSOLE_OPERATION_REF_CONFIG = {
          includeAnimalSpecies: true,
          includeDateRange: true,
          fieldSuffixes: {
+            viewingScopeEl: 'ViewingScope',
             messageEl: 'Message',
          },
       },
       onDisplay: {
          operationName: 'onDisplay',
          includeAnimalSpecies: true,
+         fieldSuffixes: {
+            viewingScopeEl: 'ViewingScope',
+         },
       },
       visibilitySchedule: {
          operationName: 'visibilitySchedule',

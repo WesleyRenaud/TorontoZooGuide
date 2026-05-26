@@ -23,10 +23,11 @@ def create_schema( cursor: Cursor ) -> None:
                      (  SPECIES              VARCHAR(64) NOT NULL,
                         EXHIBIT              VARCHAR(64) NOT NULL,
                         IS_OFF_DISPLAY       BOOL        NOT NULL DEFAULT 0,
+                        VIEWING_SCOPE        TEXT        NOT NULL,
                         OFF_DISPLAY_MESSAGE  TEXT,
                         OFF_DISPLAY_START    DATE,
                         OFF_DISPLAY_END      DATE,
-                        PRIMARY KEY (SPECIES, EXHIBIT),
+                        PRIMARY KEY (SPECIES, EXHIBIT, VIEWING_SCOPE),
                         FOREIGN KEY (SPECIES) REFERENCES Animal(SPECIES),
                         FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(NAME) ); ''' )
 
@@ -42,6 +43,11 @@ def create_schema( cursor: Cursor ) -> None:
    if 'OFF_DISPLAY_MESSAGE' not in animal_status_columns:
       cursor.execute(
          'ALTER TABLE AnimalStatus ADD COLUMN OFF_DISPLAY_MESSAGE TEXT;'
+      )
+
+   if 'VIEWING_SCOPE' not in animal_status_columns:
+      cursor.execute(
+         'ALTER TABLE AnimalStatus ADD COLUMN VIEWING_SCOPE TEXT;'
       )
 
    if 'OFF_DISPLAY_START' not in animal_status_columns:

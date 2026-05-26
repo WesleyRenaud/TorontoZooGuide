@@ -30,6 +30,7 @@ export function createAnimalSpeciesResultsView({ inputEl, resultsEl } = {}) {
    function selectSpecies(species) {
       inputEl.value = species;
       clear();
+      inputEl.dispatchEvent(new Event('change', { bubbles: true }));
    }
 
    function render(matches) {

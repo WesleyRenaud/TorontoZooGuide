@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from .animal_viewability_record import AnimalViewabilityRecord
+from ...shared.enums import AnimalViewingScope
 from ...types import Row
 
 
@@ -28,6 +29,7 @@ def map_animal_viewability_row( row: Row ) -> AnimalViewabilityRecord:
       x_coord=row[ 'X_COORD' ],
       y_coord=row[ 'Y_COORD' ],
       is_off_display=row[ 'IS_OFF_DISPLAY' ],
+      viewing_scope=AnimalViewingScope.normalize( row[ 'VIEWING_SCOPE' ] ),
       off_display_message=row[ 'OFF_DISPLAY_MESSAGE' ],
       off_display_start=row[ 'OFF_DISPLAY_START' ],
       off_display_end=row[ 'OFF_DISPLAY_END' ],

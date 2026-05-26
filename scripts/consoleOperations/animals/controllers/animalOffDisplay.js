@@ -1,3 +1,4 @@
+import { createAnimalViewingScopeControl } from './animalViewingScopeControl.js';
 import { setAnimalOffDisplay } from '../../../api/consoleOperationsApi.js';
 import {
    bindResetValueOnChange,
@@ -8,6 +9,7 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { loadExhibits } from '../../options/loaders.js';
+import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -19,12 +21,13 @@ export function createAnimalOffDisplayController({
    statusEl,
    speciesEl,
    exhibitEl,
+   viewingScopeEl,
    startDateEl,
    endDateEl,
    messageEl,
    activatePanel,
 } = {}) {
-   const formFieldEls = [speciesEl, exhibitEl, startDateEl, endDateEl, messageEl];
+   const formFieldEls = [speciesEl, exhibitEl, viewingScopeEl, startDateEl, endDateEl, messageEl];
 
    function getFieldValue(fieldEl) {
       return fieldEl?.value.trim() ?? '';
@@ -34,6 +37,7 @@ export function createAnimalOffDisplayController({
       return {
          species: getFieldValue(speciesEl),
          exhibit: getFieldValue(exhibitEl),
+         viewingScope: getFieldValue(viewingScopeEl) || AnimalViewingScope.ALL,
          startDate: getFieldValue(startDateEl),
          endDate: getFieldValue(endDateEl),
          message: getFieldValue(messageEl),
@@ -59,6 +63,7 @@ export function createAnimalOffDisplayController({
 
    function resetForm() {
       resetFormFields(formFieldEls);
+      viewingScopeControl.reset();
    }
 
    function hide() {
@@ -75,10 +80,12 @@ export function createAnimalOffDisplayController({
       startDate,
       endDate,
       message,
+      viewingScope,
    }) {
       return setAnimalOffDisplay({
          species,
          exhibit,
+         viewingScope,
          startDate: startDate || null,
          endDate: endDate || null,
          message,
@@ -136,6 +143,12 @@ export function createAnimalOffDisplayController({
          setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
+
+   const viewingScopeControl = createAnimalViewingScopeControl({
+      speciesEl,
+      exhibitEl,
+      viewingScopeEl,
+   });
 
    bindResetValueOnChange(exhibitEl, speciesEl);
 
