@@ -1,3 +1,4 @@
+import { likelihoodToFraction } from '../likelihood/likelihoodValues.js';
 import {
    hasAddedItems,
    hasImprovedVisibility,
@@ -5,23 +6,9 @@ import {
    hasRemovedItems,
 } from './wizard/itineraryDiff.js';
 
-function normalizeLikelihood(value) {
-   if (value == null || value === '') {
-      return null;
-   }
-
-   const likelihood = Number(value);
-
-   if (!Number.isFinite(likelihood)) {
-      return null;
-   }
-
-   return likelihood > 1 ? likelihood / 100 : likelihood;
-}
-
 function hasMeaningfulVisibilityChange(item) {
-   const before = normalizeLikelihood(item.old_likelihood);
-   const after = normalizeLikelihood(item.likelihood);
+   const before = likelihoodToFraction(item.old_likelihood);
+   const after = likelihoodToFraction(item.likelihood);
 
    if (before == null || after == null) {
       return false;
@@ -40,15 +27,15 @@ function withVisibilityFields(item) {
 
 function buildRemovedAnimals(animals = []) {
    return animals
-      .filter((animal) => normalizeLikelihood(animal.likelihood) === 0)
+      .filter((animal) => likelihoodToFraction(animal.likelihood) === 0)
       .map(withVisibilityFields);
 }
 
 function buildReducedVisibilityAnimals(animals = []) {
    return animals
       .filter((animal) => {
-         const before = normalizeLikelihood(animal.old_likelihood);
-         const after = normalizeLikelihood(animal.likelihood);
+         const before = likelihoodToFraction(animal.old_likelihood);
+         const after = likelihoodToFraction(animal.likelihood);
 
          return hasMeaningfulVisibilityChange(animal) && after < before;
       })
@@ -58,8 +45,8 @@ function buildReducedVisibilityAnimals(animals = []) {
 function buildImprovedVisibilityAnimals(animals = []) {
    return animals
       .filter((animal) => {
-         const before = normalizeLikelihood(animal.old_likelihood);
-         const after = normalizeLikelihood(animal.likelihood);
+         const before = likelihoodToFraction(animal.old_likelihood);
+         const after = likelihoodToFraction(animal.likelihood);
 
          return hasMeaningfulVisibilityChange(animal) && after > before;
       })
@@ -72,7 +59,7 @@ function buildAddedAnimals(animals = []) {
 
 function buildRemovedAttractions(attractions = []) {
    return attractions
-      .filter((attraction) => normalizeLikelihood(attraction.likelihood) === 0)
+      .filter((attraction) => likelihoodToFraction(attraction.likelihood) === 0)
       .map(withVisibilityFields);
 }
 

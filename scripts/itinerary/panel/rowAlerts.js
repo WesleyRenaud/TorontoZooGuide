@@ -1,14 +1,11 @@
-function toPercent(value) {
-   if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-   return Math.round(value > 1 ? value : value * 100);
-}
+import { likelihoodToPercent } from '../../likelihood/likelihoodValues.js';
 
 function getLikelihoodPair(animal) {
    const beforeRaw = animal?.likelihoodBefore;
    const afterRaw = animal?.likelihoodAfter;
 
-   const before = toPercent(Number(beforeRaw));
-   const after = toPercent(Number(afterRaw));
+   const before = likelihoodToPercent(beforeRaw);
+   const after = likelihoodToPercent(afterRaw);
 
    return { before, after };
 }
