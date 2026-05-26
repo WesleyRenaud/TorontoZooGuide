@@ -1,3 +1,4 @@
+import { createAnimalViewingScopeControl } from './animalViewingScopeControl.js';
 import { setAnimalOnDisplay } from '../../../api/consoleOperationsApi.js';
 import {
    bindResetValueOnChange,
@@ -7,6 +8,7 @@ import {
 } from '../../helpers/controllerUtils.js';
 import { populateExhibitDropdown } from '../../options/dropdowns.js';
 import { loadExhibits } from '../../options/loaders.js';
+import { AnimalViewingScope } from '../../../shared/enums/animalViewingScope.js';
 import { setStatus } from '../../shell/status.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -18,9 +20,10 @@ export function createAnimalOnDisplayController({
    statusEl,
    speciesEl,
    exhibitEl,
+   viewingScopeEl,
    activatePanel,
 } = {}) {
-   const formFieldEls = [speciesEl, exhibitEl];
+   const formFieldEls = [speciesEl, exhibitEl, viewingScopeEl];
 
    function getFieldValue(fieldEl) {
       return fieldEl?.value.trim() ?? '';
@@ -30,6 +33,7 @@ export function createAnimalOnDisplayController({
       return {
          species: getFieldValue(speciesEl),
          exhibit: getFieldValue(exhibitEl),
+         viewingScope: getFieldValue(viewingScopeEl) || AnimalViewingScope.ALL,
       };
    }
 
@@ -47,6 +51,7 @@ export function createAnimalOnDisplayController({
 
    function resetForm() {
       resetFormFields(formFieldEls);
+      viewingScopeControl.reset();
    }
 
    function hide() {
@@ -57,10 +62,11 @@ export function createAnimalOnDisplayController({
       });
    }
 
-   async function submitOnDisplayStatus({ species, exhibit }) {
+   async function submitOnDisplayStatus({ species, exhibit, viewingScope }) {
       return setAnimalOnDisplay({
          species,
          exhibit,
+         viewingScope,
       });
    }
 
@@ -119,6 +125,12 @@ export function createAnimalOnDisplayController({
          setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
+
+   const viewingScopeControl = createAnimalViewingScopeControl({
+      speciesEl,
+      exhibitEl,
+      viewingScopeEl,
+   });
 
    bindResetValueOnChange(exhibitEl, speciesEl);
 

@@ -23,6 +23,12 @@ export function createOnDisplayPanel() {
             resultsId: 'onDisplaySpeciesResults',
             placeholder: APP_STRINGS.placeholders.speciesSearch,
          }),
+         createSelectField({
+            label: APP_STRINGS.labels.viewingScope,
+            inputId: 'onDisplayViewingScope',
+            emptyOptionLabel: APP_STRINGS.placeholders.viewingScope,
+            options: APP_STRINGS.viewingScopes,
+         }),
          createActions({
             submitId: 'submitOnDisplay',
          }),
