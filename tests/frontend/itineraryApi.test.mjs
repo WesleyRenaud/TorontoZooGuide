@@ -76,6 +76,9 @@ test('normalizes stored itinerary response from snake case backend keys', async 
          guardiansTalks: [{ name: 'Amur Tiger' }],
          wildEncounters: [{ name: 'African Rainforest' }],
       },
+      itineraryConfig: {
+         animalVisibilityChangeThreshold: undefined,
+      },
    });
 });
 
@@ -100,6 +103,9 @@ test('normalizes set itinerary failures without dropping returned itinerary data
          attractions: [{ name: 'Conservation Carousel' }],
          guardiansTalks: [],
          wildEncounters: [],
+      },
+      itineraryConfig: {
+         animalVisibilityChangeThreshold: undefined,
       },
    });
 });
@@ -173,6 +179,40 @@ test('normalizes accept itinerary response', async () => {
          attractions: [],
          guardiansTalks: [],
          wildEncounters: [],
+      },
+      itineraryConfig: {
+         animalVisibilityChangeThreshold: undefined,
+      },
+   });
+});
+
+test('normalizes itinerary config from itinerary responses', async () => {
+   globalThis.fetch = async () => mockJsonResponse({
+      itinerary: {
+         date: '2026-06-15',
+         animals: [],
+         attractions: [],
+         guardians_talks: [],
+         wild_encounters: [],
+      },
+      itinerary_config: {
+         animal_visibility_change_threshold: 25,
+      },
+   });
+
+   assert.deepEqual(await getItineraryRequest(), {
+      success: true,
+      error: null,
+      issues: [],
+      itinerary: {
+         date: '2026-06-15',
+         animals: [],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+      },
+      itineraryConfig: {
+         animalVisibilityChangeThreshold: 25,
       },
    });
 });

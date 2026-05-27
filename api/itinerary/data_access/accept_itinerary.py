@@ -8,7 +8,7 @@ def remove_declined_itinerary_animals( cur: Cursor ) -> None:
       """   DELETE FROM ItineraryAnimal
             WHERE OLD_LIKELIHOOD IS NOT NULL
                AND NEW_LIKELIHOOD IS NOT NULL
-               AND NEW_LIKELIHOOD < OLD_LIKELIHOOD;
+               AND NEW_LIKELIHOOD = 0;
       """ )
 
 

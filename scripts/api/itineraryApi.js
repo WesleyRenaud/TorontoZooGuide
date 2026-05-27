@@ -35,6 +35,14 @@ function normalizeItineraryModel(itinerary) {
    };
 }
 
+function normalizeItineraryConfig(config) {
+   const source = asObject(config);
+
+   return {
+      animalVisibilityChangeThreshold: source.animal_visibility_change_threshold,
+   };
+}
+
 function normalizeItineraryResponse(response) {
    const source = asObject(response);
 
@@ -43,6 +51,7 @@ function normalizeItineraryResponse(response) {
       error: asNullableString(source.error),
       issues: asArray(source.issues),
       itinerary: normalizeItineraryModel(source.itinerary),
+      itineraryConfig: normalizeItineraryConfig(source.itinerary_config),
    };
 }
 
