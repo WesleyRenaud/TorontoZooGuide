@@ -39,6 +39,7 @@ test('buildItineraryValidationState reports removed saved items', () => {
       validation.removed.animals.map((animal) => animal.species),
       ['African Lion']
    );
+   assert.deepEqual(validation.reducedVisibility.animals, []);
    assert.deepEqual(
       validation.removed.attractions.map((attraction) => attraction.name),
       ['Conservation Carousel']
@@ -164,6 +165,31 @@ test('buildItineraryValidationState ignores visibility changes when indoor viewi
    assert.equal(validation.hasChanges, false);
    assert.deepEqual(validation.reducedVisibility.animals, []);
    assert.deepEqual(validation.improvedVisibility.animals, []);
+});
+
+test('buildItineraryValidationState does not list zero-likelihood animals in reduced visibility', () => {
+   const validation = buildItineraryValidationState({
+      animals: [
+         {
+            species: 'Common Warthog',
+            exhibit: 'Africa Savanna',
+            old_likelihood: 80,
+            likelihood: 0,
+         },
+         {
+            species: 'Marabou Stork',
+            exhibit: 'Africa Savanna',
+            old_likelihood: 60,
+            likelihood: 0,
+         },
+      ],
+   }, { animalVisibilityChangeThreshold: 20 });
+
+   assert.deepEqual(
+      validation.removed.animals.map((animal) => animal.species),
+      ['Common Warthog', 'Marabou Stork']
+   );
+   assert.deepEqual(validation.reducedVisibility.animals, []);
 });
 
 test('buildItineraryValidationState ignores items without old likelihood values', () => {
