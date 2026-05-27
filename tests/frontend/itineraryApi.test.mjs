@@ -114,7 +114,10 @@ test('normalizes accept itinerary response', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/accept-itinerary');
       assert.equal(options.method, 'POST');
-      assert.deepEqual(JSON.parse(options.body), {});
+      assert.deepEqual(JSON.parse(options.body), {
+         animalsToKeep: [],
+         attractionsToKeep: [],
+      });
 
       return mockJsonResponse({
          success: true,

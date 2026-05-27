@@ -5,13 +5,12 @@ import {
    buildGuardiansRows,
    buildWildRows,
 } from '../rows.js';
+import { buildSpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import { APP_STRINGS } from '../../../strings.js';
+import { buildItemKey } from '../../wizard/diff/itemKey.js';
 
 function addAlternativesButton(rowNode, stepKey, onViewAlternatives, removePopupOnly) {
    if (!rowNode) return null;
-
-   rowNode.classList.add('itin-removed-row');
-
    const btn = el(
       'button',
       'itin-removed-alt-btn',
@@ -27,8 +26,46 @@ function addAlternativesButton(rowNode, stepKey, onViewAlternatives, removePopup
       onViewAlternatives?.(stepKey);
    });
 
-   rowNode.appendChild(btn);
-   return rowNode;
+   return btn;
+}
+
+function addKeepOverrideButton(
+      item,
+      buildKey,
+      onToggleKeep,
+      isKeepSelected) {
+   if (!item) return null;
+
+   const key = buildKey(item);
+
+   if (!key) {
+      return null;
+   }
+
+   const btn = el('button', 'itin-removed-alt-btn itin-removed-keep-btn');
+   btn.type = 'button';
+
+   function sync() {
+      const selected = Boolean(isKeepSelected?.(key));
+      const strings = APP_STRINGS.itinerary.removedItems;
+
+      btn.classList.toggle('is-selected', selected);
+      btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      btn.textContent = selected
+         ? strings.removeFromItinerary
+         : strings.keepInItinerary;
+      btn.title = selected ? strings.removeFromItineraryHint : '';
+   }
+
+   btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onToggleKeep?.(item);
+      sync();
+   });
+
+   sync();
+   return btn;
 }
 
 function makeSection(title, subtitle, rowNodes = []) {
@@ -63,19 +100,51 @@ function buildSectionRows(
    stepKey,
    onViewAlternatives,
    removePopupOnly,
-   showViewAlternatives = true
+   showViewAlternatives = true,
+   keepOverride = null
 ) {
-   return rowBuilder(items).map((row) => {
-      if (!showViewAlternatives) {
+   return rowBuilder(items).map((row, index) => {
+      const item = items?.[index];
+
+      if (!showViewAlternatives && !keepOverride) {
          return row;
       }
 
-      return addAlternativesButton(
-         row,
-         stepKey,
-         onViewAlternatives,
-         removePopupOnly
-      );
+      row.classList.add('itin-removed-row');
+
+      const actions = el('div', 'itin-removed-row-actions');
+
+      if (showViewAlternatives) {
+         const alternativesButton = addAlternativesButton(
+            row,
+            stepKey,
+            onViewAlternatives,
+            removePopupOnly
+         );
+
+         if (alternativesButton) {
+            actions.appendChild(alternativesButton);
+         }
+      }
+
+      if (keepOverride) {
+         const keepButton = addKeepOverrideButton(
+            item,
+            keepOverride.buildKey,
+            keepOverride.onToggle,
+            keepOverride.isSelected
+         );
+
+         if (keepButton) {
+            actions.appendChild(keepButton);
+         }
+      }
+
+      if (actions.childElementCount > 0) {
+         row.appendChild(actions);
+      }
+
+      return row;
    });
 }
 
@@ -105,6 +174,7 @@ function getSectionSpecs({
          subtitle: APP_STRINGS.itinerary.removedItems.animalsRemovedSubtitle,
          rowBuilder: buildAnimalRows,
          stepKey: 'animals',
+         keepOverrideKey: 'animal',
       },
       {
          items: safeReduced.animals ?? [],
@@ -127,6 +197,7 @@ function getSectionSpecs({
          subtitle: APP_STRINGS.itinerary.removedItems.attractionsSubtitle,
          rowBuilder: buildAttractionRows,
          stepKey: 'attractions',
+         keepOverrideKey: 'attraction',
       },
       {
          items: safeRemoved.guardiansTalks ?? [],
@@ -155,6 +226,31 @@ export function hasRemovedItemsPopupContent({
       .some((section) => Array.isArray(section.items) && section.items.length > 0);
 }
 
+function resolveKeepOverride(section, {
+   onToggleKeepAnimal,
+   isKeepAnimalSelected,
+   onToggleKeepAttraction,
+   isKeepAttractionSelected,
+}) {
+   if (section.keepOverrideKey === 'animal') {
+      return {
+         buildKey: buildSpeciesExhibitKey,
+         onToggle: onToggleKeepAnimal,
+         isSelected: isKeepAnimalSelected,
+      };
+   }
+
+   if (section.keepOverrideKey === 'attraction') {
+      return {
+         buildKey: (item) => buildItemKey(item, 'name'),
+         onToggle: onToggleKeepAttraction,
+         isSelected: isKeepAttractionSelected,
+      };
+   }
+
+   return null;
+}
+
 export function buildRemovedItemsPopupSections({
    added,
    removed,
@@ -162,7 +258,18 @@ export function buildRemovedItemsPopupSections({
    improvedVisibility,
    onViewAlternatives,
    removePopupOnly,
+   onToggleKeepAnimal,
+   isKeepAnimalSelected,
+   onToggleKeepAttraction,
+   isKeepAttractionSelected,
 } = {}) {
+   const keepOverrideHandlers = {
+      onToggleKeepAnimal,
+      isKeepAnimalSelected,
+      onToggleKeepAttraction,
+      isKeepAttractionSelected,
+   };
+
    return getSectionSpecs({ added, removed, reducedVisibility, improvedVisibility })
       .map((section) => makeSection(
          section.title,
@@ -173,7 +280,8 @@ export function buildRemovedItemsPopupSections({
             section.stepKey,
             onViewAlternatives,
             removePopupOnly,
-            section.showViewAlternatives ?? true
+            section.showViewAlternatives ?? true,
+            resolveKeepOverride(section, keepOverrideHandlers)
          )
       ))
       .filter(Boolean);

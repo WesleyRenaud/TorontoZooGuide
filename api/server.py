@@ -878,8 +878,12 @@ class MyHandler( BaseHTTPRequestHandler ):
          post_data = self.rfile.read( content_length )
          data = json.loads( post_data.decode( 'utf-8' ) )
          temp = data.get( 'temp' )
+         animals_to_keep = data.get( 'animalsToKeep' )
+         attractions_to_keep = data.get( 'attractionsToKeep' )
 
-         success = ItineraryController.accept_itinerary()
+         success = ItineraryController.accept_itinerary(
+            animals_to_keep=animals_to_keep,
+            attractions_to_keep=attractions_to_keep )
          itinerary = (
             ItineraryController.get_itinerary( visit_date_temp=temp )
             if success

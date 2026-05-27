@@ -773,6 +773,112 @@ def test_accept_itinerary_removes_zero_likelihood_and_deleted_items( db: DbContr
    ] == [ 'Kangaroo' ]
 
 
+def test_accept_itinerary_removes_zero_likelihood_animals_without_override(
+      db: DbControllers ) -> None:
+   db.conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD
+            )
+            VALUES
+               ( 'African Lion', 'Africa Savanna', 80, 0 ),
+               ( 'African Penguin', 'Africa Savanna', 70, 0 );
+      """ )
+   db.conn.commit()
+
+   assert ItineraryController.accept_itinerary()
+
+   assert db.conn.execute( 'SELECT COUNT(*) FROM ItineraryAnimal;' ).fetchone()[ 0 ] == 0
+
+
+def test_accept_itinerary_keeps_zero_likelihood_animals_when_overridden(
+      db: DbControllers ) -> None:
+   db.conn.execute(
+      """   INSERT INTO ItineraryAnimal (
+               SPECIES,
+               EXHIBIT,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD
+            )
+            VALUES
+               ( 'African Lion', 'Africa Savanna', 80, 0 ),
+               ( 'African Penguin', 'Africa Savanna', 70, 0 );
+      """ )
+   db.conn.commit()
+
+   assert ItineraryController.accept_itinerary(
+      animals_to_keep=[
+         {
+            'species': 'African Lion',
+            'exhibit': 'Africa Savanna',
+         },
+      ] )
+
+   rows = db.conn.execute(
+      """   SELECT SPECIES, EXHIBIT, OLD_LIKELIHOOD
+            FROM ItineraryAnimal
+            ORDER BY SPECIES;
+      """
+   ).fetchall()
+
+   assert len( rows ) == 1
+   assert rows[ 0 ][ 'SPECIES' ] == 'African Lion'
+   assert rows[ 0 ][ 'EXHIBIT' ] == 'Africa Savanna'
+   assert rows[ 0 ][ 'OLD_LIKELIHOOD' ] is None
+
+
+def test_accept_itinerary_removes_zero_likelihood_attractions_without_override(
+      db: DbControllers ) -> None:
+   db.conn.execute(
+      """   INSERT INTO ItineraryAttraction (
+               ATTRACTION,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD
+            )
+            VALUES
+               ( 'Conservation Carousel', 100, 0 ),
+               ( 'Greenhouse', 80, 0 );
+      """ )
+   db.conn.commit()
+
+   assert ItineraryController.accept_itinerary()
+
+   assert db.conn.execute(
+      'SELECT COUNT(*) FROM ItineraryAttraction;'
+   ).fetchone()[ 0 ] == 0
+
+
+def test_accept_itinerary_keeps_zero_likelihood_attractions_when_overridden(
+      db: DbControllers ) -> None:
+   db.conn.execute(
+      """   INSERT INTO ItineraryAttraction (
+               ATTRACTION,
+               OLD_LIKELIHOOD,
+               NEW_LIKELIHOOD
+            )
+            VALUES
+               ( 'Conservation Carousel', 100, 0 ),
+               ( 'Greenhouse', 80, 0 );
+      """ )
+   db.conn.commit()
+
+   assert ItineraryController.accept_itinerary(
+      attractions_to_keep=[ 'Conservation Carousel' ] )
+
+   rows = db.conn.execute(
+      """   SELECT ATTRACTION, OLD_LIKELIHOOD
+            FROM ItineraryAttraction
+            ORDER BY ATTRACTION;
+      """
+   ).fetchall()
+
+   assert len( rows ) == 1
+   assert rows[ 0 ][ 'ATTRACTION' ] == 'Conservation Carousel'
+   assert rows[ 0 ][ 'OLD_LIKELIHOOD' ] is None
+
+
 def test_validate_animals_removes_unavailable_entries(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:

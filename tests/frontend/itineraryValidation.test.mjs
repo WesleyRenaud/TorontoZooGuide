@@ -175,12 +175,23 @@ test('buildItineraryValidationState ignores items without old likelihood values'
             old_likelihood: null,
             likelihood: 90,
          },
+         {
+            species: 'Marabou Stork',
+            exhibit: 'Africa Savanna',
+            old_likelihood: null,
+            likelihood: 0,
+         },
       ],
       attractions: [
          {
             name: 'Greenhouse',
             old_likelihood: null,
             likelihood: 100,
+         },
+         {
+            name: 'Conservation Carousel',
+            old_likelihood: null,
+            likelihood: 0,
          },
       ],
    }, { animalVisibilityChangeThreshold: 20 });

@@ -103,8 +103,15 @@ export async function setItineraryRequest(payload) {
    return normalizeItineraryResponse(response);
 }
 
-export async function acceptItineraryRequest(temp) {
-   const response = await postJson('/accept-itinerary', { temp });
+export async function acceptItineraryRequest(
+   temp,
+   { animalsToKeep = [], attractionsToKeep = [] } = {}
+) {
+   const response = await postJson('/accept-itinerary', {
+      temp,
+      animalsToKeep,
+      attractionsToKeep,
+   });
    return normalizeItineraryResponse(response);
 }
 
