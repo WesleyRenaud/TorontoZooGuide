@@ -76,17 +76,22 @@ function hasStoredOldLikelihood(item) {
    return item.old_likelihood != null;
 }
 
+function isRemovedForValidation(item) {
+   return (
+      hasStoredOldLikelihood(item)
+      && likelihoodToFraction(item.likelihood) === 0
+   );
+}
+
 function buildRemovedAnimals(animals = []) {
    return animals
-      .filter((animal) => (
-         hasStoredOldLikelihood(animal)
-         && likelihoodToFraction(animal.likelihood) === 0
-      ))
+      .filter(isRemovedForValidation)
       .map(withVisibilityFields);
 }
 
 function buildReducedVisibilityAnimals(animals = [], visibilityChangeThreshold) {
    return animals
+      .filter((animal) => !isRemovedForValidation(animal))
       .filter((animal) => {
          const before = likelihoodToFraction(animal.old_likelihood);
          const after = likelihoodToFraction(animal.likelihood);
@@ -119,10 +124,7 @@ function buildAddedAnimals(animals = []) {
 
 function buildRemovedAttractions(attractions = []) {
    return attractions
-      .filter((attraction) => (
-         hasStoredOldLikelihood(attraction)
-         && likelihoodToFraction(attraction.likelihood) === 0
-      ))
+      .filter(isRemovedForValidation)
       .map(withVisibilityFields);
 }
 
