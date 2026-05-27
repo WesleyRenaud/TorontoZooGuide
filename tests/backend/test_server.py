@@ -353,8 +353,8 @@ class StubZooControllers:
       return Itinerary( date='2026-06-15' )
 
 
-   def accept_itinerary( self ) -> bool:
-      self.calls.append( ( 'accept_itinerary', {} ) )
+   def accept_itinerary( self, **kwargs: Any ) -> bool:
+      self.calls.append( ( 'accept_itinerary', kwargs ) )
       return True
 
 
@@ -1209,6 +1209,75 @@ def test_itinerary_endpoints_return_success_payloads(
    assert response_json( clear_handler )[ 'success' ] is True
    assert response_json( accept_handler )[ 'success' ] is True
    assert response_json( accept_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
+   assert StubZooControllers.instances[ 0 ].calls[ -2 ] == (
+      'accept_itinerary',
+      {
+         'animals_to_keep': None,
+         'attractions_to_keep': None,
+      },
+   )
+
+
+def test_accept_itinerary_endpoint_passes_animals_to_keep(
+      stub_database: type[ StubZooControllers ] ) -> None:
+   handler = make_handler(
+      '/accept-itinerary',
+      {
+         'temp': 22.5,
+         'animalsToKeep': [
+            {
+               'species': 'African Lion',
+               'exhibit': 'Africa Savanna',
+            },
+         ],
+      },
+   )
+
+   server.MyHandler.do_POST( handler )
+
+   response = response_json( handler )
+
+   assert response[ 'success' ] is True
+   assert response[ 'itinerary' ][ 'date' ] == '2026-06-15'
+   assert StubZooControllers.instances[ 0 ].calls[ 0 ] == (
+      'accept_itinerary',
+      {
+         'animals_to_keep': [
+            {
+               'species': 'African Lion',
+               'exhibit': 'Africa Savanna',
+            },
+         ],
+         'attractions_to_keep': None,
+      },
+   )
+   assert StubZooControllers.instances[ 0 ].calls[ 1 ] == (
+      'get_itinerary',
+      { 'visit_date_temp': 22.5 },
+   )
+
+
+def test_accept_itinerary_endpoint_passes_attractions_to_keep(
+      stub_database: type[ StubZooControllers ] ) -> None:
+   handler = make_handler(
+      '/accept-itinerary',
+      {
+         'attractionsToKeep': [ 'Conservation Carousel' ],
+      },
+   )
+
+   server.MyHandler.do_POST( handler )
+
+   response = response_json( handler )
+
+   assert response[ 'success' ] is True
+   assert StubZooControllers.instances[ 0 ].calls[ 0 ] == (
+      'accept_itinerary',
+      {
+         'animals_to_keep': None,
+         'attractions_to_keep': [ 'Conservation Carousel' ],
+      },
+   )
 
 
 @pytest.mark.parametrize(

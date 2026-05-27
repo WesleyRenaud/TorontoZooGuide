@@ -3059,13 +3059,25 @@ nav ul li a:hover {
    gap: 24px;
 }
 
+.itin-removed-row .itin-panel-item {
+   flex: 1 1 auto;
+   min-width: 0;
+}
+
 .itin-removed-row .itin-panel-item-left {
+   flex: 1 1 auto;
+   min-width: 0;
+   align-items: flex-start;
+}
+
+.itin-removed-row .itin-panel-text {
    flex: 1 1 auto;
    min-width: 0;
 }
 
 .itin-removed-alt-btn {
    flex: 0 0 auto;
+   min-width: 180px;
 
    padding: 18px 26px;
    border-radius: 16px;
@@ -3092,6 +3104,26 @@ nav ul li a:hover {
 
 .itin-removed-alt-btn:active {
    transform: translateY(0);
+}
+
+.itin-removed-row-actions {
+   flex: 0 0 auto;
+   display: flex;
+   flex-direction: column;
+   align-items: stretch;
+   justify-content: center;
+   gap: 12px;
+}
+
+.itin-removed-keep-btn {
+   min-width: 0;
+}
+
+.itin-removed-keep-btn.is-selected {
+   background: rgba(255,255,255,0.34);
+   box-shadow:
+      0 0 0 3px rgba(255,255,255,0.55),
+      0 8px 18px rgba(0,0,0,0.18);
 }
 
 .itin-removed-section-subtitle {
@@ -3126,30 +3158,6 @@ nav ul li a:hover {
    white-space: normal;
    overflow-wrap: anywhere;
    word-break: break-word;
-}
-
-.itin-removed-row {
-   align-items: stretch;
-}
-
-.itin-removed-row .itin-panel-item {
-   flex: 1 1 auto;
-   min-width: 0;
-}
-
-.itin-removed-row .itin-panel-item-left {
-   align-items: flex-start;
-}
-
-.itin-removed-row .itin-panel-text {
-   flex: 1 1 auto;
-   min-width: 0;
-}
-
-.itin-removed-alt-btn {
-   flex: 0 0 auto;
-   align-self: center;
-   min-width: 180px;
 }
 
 .itin-panel-alert-positive {

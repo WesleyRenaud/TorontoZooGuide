@@ -1,22 +1,12 @@
 import { likelihoodToFraction } from '../likelihood/likelihoodValues.js';
 import { normalizeNonNegativeNumber } from './panel/format.js';
+import { buildSpeciesExhibitKey } from './speciesExhibitKey.js';
 import {
    hasAddedItems,
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,
 } from './wizard/itineraryDiff.js';
-
-function buildSpeciesExhibitKey(animal) {
-   const species = String(animal?.species ?? '').trim().toLowerCase();
-   const exhibit = String(animal?.exhibit ?? '').trim().toLowerCase();
-
-   if (!species) {
-      return '';
-   }
-
-   return `${species}|${exhibit}`;
-}
 
 function maxStoredLikelihood(...values) {
    const likelihoods = values
@@ -82,9 +72,16 @@ function withVisibilityFields(item) {
    };
 }
 
+function hasStoredOldLikelihood(item) {
+   return item.old_likelihood != null;
+}
+
 function buildRemovedAnimals(animals = []) {
    return animals
-      .filter((animal) => likelihoodToFraction(animal.likelihood) === 0)
+      .filter((animal) => (
+         hasStoredOldLikelihood(animal)
+         && likelihoodToFraction(animal.likelihood) === 0
+      ))
       .map(withVisibilityFields);
 }
 
@@ -122,7 +119,10 @@ function buildAddedAnimals(animals = []) {
 
 function buildRemovedAttractions(attractions = []) {
    return attractions
-      .filter((attraction) => likelihoodToFraction(attraction.likelihood) === 0)
+      .filter((attraction) => (
+         hasStoredOldLikelihood(attraction)
+         && likelihoodToFraction(attraction.likelihood) === 0
+      ))
       .map(withVisibilityFields);
 }
 
