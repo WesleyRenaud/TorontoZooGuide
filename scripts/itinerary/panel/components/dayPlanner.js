@@ -127,6 +127,25 @@ function buildScheduledItemRowsContext(
    };
 }
 
+function buildScheduledItinerary(
+   itinerary = {},
+   {
+      scheduledGuardiansTalkIndexes = new Set(),
+      scheduledWildEncounterIndexes = new Set(),
+   } = {}
+) {
+   return {
+      animals: [],
+      attractions: [],
+      guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
+         scheduledGuardiansTalkIndexes.has(index)
+      )),
+      wildEncounters: (itinerary.wildEncounters ?? []).filter((_, index) => (
+         scheduledWildEncounterIndexes.has(index)
+      )),
+   };
+}
+
 function buildUnscheduledItinerary(
    itinerary = {},
    {
@@ -153,19 +172,15 @@ function appendScheduledItems(gridLine, scheduledItems = []) {
    });
 }
 
-function makeUnscheduledSections(itinerary = {}, scheduledRowsContext = {}) {
-   const sectionConfigs = buildSectionConfigs(
-      buildUnscheduledItinerary(itinerary, scheduledRowsContext)
-   );
+function makeItemsListSection(itinerary = {}, sectionTitle = '') {
+   const sectionConfigs = buildSectionConfigs(itinerary);
 
    if (sectionConfigs.length === 0) {
       return null;
    }
 
-   const wrapper = el('section', 'itinerary-day-unscheduled-sections');
-   const title = el('h4', 'itinerary-day-unscheduled-title', (
-      APP_STRINGS.itinerary.dayPlanner.unscheduledTitle
-   ));
+   const wrapper = el('section', 'itinerary-day-items-sections');
+   const title = el('h4', 'itinerary-day-items-title', sectionTitle);
 
    wrapper.appendChild(title);
    sectionConfigs.forEach((sectionConfig) => {
@@ -292,7 +307,18 @@ export function makeDayPlannerPreview(zooHours = null, itinerary = {}) {
    section.appendChild(timeline);
    root.appendChild(section);
 
-   const unscheduledSection = makeUnscheduledSections(itinerary, scheduledRowsContext);
+   const scheduledSection = makeItemsListSection(
+      buildScheduledItinerary(itinerary, scheduledRowsContext),
+      strings.scheduledTitle
+   );
+   const unscheduledSection = makeItemsListSection(
+      buildUnscheduledItinerary(itinerary, scheduledRowsContext),
+      strings.unscheduledTitle
+   );
+
+   if (scheduledSection) {
+      root.appendChild(scheduledSection);
+   }
 
    if (unscheduledSection) {
       root.appendChild(unscheduledSection);

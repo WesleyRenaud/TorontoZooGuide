@@ -253,6 +253,9 @@ test('day planner renders scheduled guardians talks and wild encounters', () => 
    assert.match(text, /Location: Eurasia Wilds/);
    assert.match(text, /African Rainforest/);
    assert.match(text, /Meeting Spot: Wild Encounter - Africa Meeting Spot/);
+   assert.match(text, /Scheduled Items/);
+   assert.match(text, /Meet The Guardians \(1\)/);
+   assert.match(text, /Wild Encounters \(1\)/);
    assert.match(text, /Unscheduled Items/);
    assert.match(text, /Animals \(1\)/);
    assert.match(text, /African Lion/);
@@ -260,6 +263,7 @@ test('day planner renders scheduled guardians talks and wild encounters', () => 
    assert.match(text, /Conservation Carousel/);
    assert.match(text, /Meet The Guardians \(0\)/);
    assert.match(text, /Wild Encounters \(0\)/);
+   assert.ok(text.indexOf('Scheduled Items') < text.indexOf('Unscheduled Items'));
 });
 
 test('day planner renders zero-count unscheduled sections', () => {
@@ -283,6 +287,8 @@ test('day planner renders zero-count unscheduled sections', () => {
    );
    const text = allTextFor(planner);
 
+   assert.match(text, /Scheduled Items/);
+   assert.match(text, /Meet The Guardians \(1\)/);
    assert.match(text, /Unscheduled Items/);
    assert.match(text, /Animals \(0\)/);
    assert.match(text, /Attractions \(0\)/);
