@@ -31,6 +31,7 @@ from .request_connection import clear_connection
 from .request_connection import set_connection
 from .restaurants.controllers.restaurant_controller import RestaurantController
 from .restrooms.controllers.restroom_controller import RestroomController
+from .shared.constants import itinerary_config_to_dict
 from .shared.enums import AnimalViewingScope
 from .updates.controllers.update_controller import UpdateController
 from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
@@ -790,6 +791,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          response = {
             'success': save_result.success,
             'itinerary': save_result.itinerary.to_dict(),
+            'itinerary_config': itinerary_config_to_dict(),
             'issues': [
                issue.to_dict() for issue in save_result.issues
             ]
@@ -820,7 +822,10 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          itinerary = ItineraryController.get_itinerary( visit_date_temp=temp )
 
-         response = { 'itinerary': itinerary.to_dict() }
+         response = {
+            'itinerary': itinerary.to_dict(),
+            'itinerary_config': itinerary_config_to_dict(),
+         }
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -887,7 +892,8 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          response = {
             'success': success,
-            'itinerary': itinerary.to_dict() if itinerary != None else None
+            'itinerary': itinerary.to_dict() if itinerary != None else None,
+            'itinerary_config': itinerary_config_to_dict(),
          }
 
          if not success:
