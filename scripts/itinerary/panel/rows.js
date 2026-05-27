@@ -84,7 +84,9 @@ function buildRows(
 
 function maxStoredLikelihood(...values) {
    const likelihoods = values
-      .map((value) => Number(value))
+      .map((value) => (
+         value == null || value === '' ? NaN : Number(value)
+      ))
       .filter((value) => Number.isFinite(value));
 
    if (!likelihoods.length) {
