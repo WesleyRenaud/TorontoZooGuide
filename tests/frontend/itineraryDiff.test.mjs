@@ -23,7 +23,7 @@ test('reports seeded itinerary items removed during validation', () => {
       wildEncounters: [],
    };
 
-   const diff = buildItineraryDiff(previous, validated);
+   const diff = buildItineraryDiff(previous, validated, {}, { animalVisibilityChangeThreshold: 20 });
 
    assert.deepEqual(diff.removed.animals, []);
    assert.deepEqual(diff.removed.attractions, [{ name: 'Conservation Carousel' }]);
@@ -44,7 +44,8 @@ test('uses backend removed items when validation already provides them', () => {
       },
       {
          attractions: [{ name: 'Conservation Carousel' }],
-      }
+      },
+      { animalVisibilityChangeThreshold: 20 }
    );
 
    assert.deepEqual(diff.removed.attractions, [{ name: 'Conservation Carousel' }]);
@@ -69,7 +70,7 @@ test('infers guardians talks removed when backend sends empty removed but previo
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
-   });
+   }, { animalVisibilityChangeThreshold: 20 });
 
    assert.deepEqual(diff.removed.guardiansTalks, [{ name: 'Only On Mondays' }]);
    assert.equal(hasRemovedItems(diff.removed), true);
@@ -102,7 +103,8 @@ test('merges backend removed guardians talks with items missing from validated',
             },
          ],
          wildEncounters: [],
-      }
+      },
+      { animalVisibilityChangeThreshold: 20 }
    );
 
    assert.equal(diff.removed.guardiansTalks.length, 2);
@@ -130,7 +132,7 @@ test('reports meaningful animal visibility changes after date validation', () =>
       ],
    };
 
-   const diff = buildItineraryDiff(previous, validated);
+   const diff = buildItineraryDiff(previous, validated, {}, { animalVisibilityChangeThreshold: 20 });
 
    assert.deepEqual(
       diff.reducedVisibility.animals.map((animal) => animal.species),

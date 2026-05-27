@@ -83,7 +83,10 @@ export function normalizeItinerary(itinerary) {
 
    return {
       ...normalizedDraft,
-      validation: buildItineraryValidationState(normalizedDraft),
+      validation: buildItineraryValidationState(
+         normalizedDraft,
+         itinerary?.itineraryConfig ?? {}
+      ),
       isActive: !isItineraryEmptyDraft(normalizedDraft),
    };
 }
@@ -102,7 +105,10 @@ export async function getItinerary() {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
    const result = await getItineraryRequest(temp);
-   return normalizeItinerary(result?.itinerary);
+   return normalizeItinerary({
+      ...result?.itinerary,
+      itineraryConfig: result?.itineraryConfig,
+   });
 }
 
 export async function getZooHours(date) {
@@ -136,7 +142,10 @@ export async function saveItinerary(
 
    const result = await setItineraryRequest(payload);
 
-   const normalizedItinerary = normalizeItinerary(result?.itinerary);
+   const normalizedItinerary = normalizeItinerary({
+      ...result?.itinerary,
+      itineraryConfig: result?.itineraryConfig,
+   });
    normalizedItinerary.saveIssues = result.issues;
    dispatchItineraryUpdated(normalizedItinerary);
 
@@ -157,7 +166,10 @@ export async function acceptItinerary() {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
    const result = await acceptItineraryRequest(temp);
-   const acceptedItinerary = normalizeItinerary(result?.itinerary);
+   const acceptedItinerary = normalizeItinerary({
+      ...result?.itinerary,
+      itineraryConfig: result?.itineraryConfig,
+   });
 
    dispatchItineraryUpdated(acceptedItinerary);
 

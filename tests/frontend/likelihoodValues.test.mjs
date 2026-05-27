@@ -47,7 +47,7 @@ test('buildItineraryValidationState does not treat 1% as reduced when rising to 
             likelihood: 25,
          },
       ],
-   });
+   }, { animalVisibilityChangeThreshold: 20 });
 
    assert.deepEqual(
       validation.improvedVisibility.animals.map((animal) => animal.species),

@@ -707,7 +707,7 @@ def test_get_zoo_hours_returns_seeded_operating_bounds( db: DbControllers ) -> N
    }
 
 
-def test_accept_itinerary_removes_declined_and_deleted_items( db: DbControllers ) -> None:
+def test_accept_itinerary_removes_zero_likelihood_and_deleted_items( db: DbControllers ) -> None:
    db.conn.execute(
       """   INSERT INTO ItineraryAnimal (
                SPECIES,
@@ -758,7 +758,7 @@ def test_accept_itinerary_removes_declined_and_deleted_items( db: DbControllers 
    assert [
       row[ 'SPECIES' ]
       for row in db.conn.execute( 'SELECT SPECIES FROM ItineraryAnimal;' )
-   ] == [ 'African Penguin' ]
+   ] == [ 'African Lion', 'African Penguin' ]
    assert [
       row[ 'ATTRACTION' ]
       for row in db.conn.execute( 'SELECT ATTRACTION FROM ItineraryAttraction;' )

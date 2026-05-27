@@ -32,7 +32,7 @@ test('buildItineraryValidationState reports removed saved items', () => {
             is_deleted: true,
          },
       ],
-   });
+   }, { animalVisibilityChangeThreshold: 20 });
 
    assert.equal(validation.hasChanges, true);
    assert.deepEqual(
@@ -75,7 +75,7 @@ test('buildItineraryValidationState reports animal visibility changes', () => {
             likelihood: 75,
          },
       ],
-   });
+   }, { animalVisibilityChangeThreshold: 20 });
 
    assert.deepEqual(
       validation.reducedVisibility.animals.map((animal) => animal.species),
@@ -117,7 +117,7 @@ test('buildItineraryValidationState ignores active unchanged items', () => {
             is_deleted: false,
          },
       ],
-   });
+   }, { animalVisibilityChangeThreshold: 20 });
 
    assert.equal(validation.hasChanges, false);
 });
@@ -132,7 +132,7 @@ test('buildItineraryValidationState reports animals added from selected exhibits
             is_added: true,
          },
       ],
-   });
+   }, { animalVisibilityChangeThreshold: 20 });
 
    assert.deepEqual(
       validation.added.animals.map((animal) => animal.species),
@@ -159,7 +159,7 @@ test('buildItineraryValidationState ignores visibility changes when indoor viewi
             likelihood: 78,
          },
       ],
-   });
+   }, { animalVisibilityChangeThreshold: 20 });
 
    assert.equal(validation.hasChanges, false);
    assert.deepEqual(validation.reducedVisibility.animals, []);
@@ -183,7 +183,7 @@ test('buildItineraryValidationState ignores items without old likelihood values'
             likelihood: 100,
          },
       ],
-   });
+   }, { animalVisibilityChangeThreshold: 20 });
 
    assert.equal(validation.hasChanges, false);
    assert.deepEqual(validation.removed.animals, []);
