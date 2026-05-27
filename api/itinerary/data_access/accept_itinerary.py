@@ -19,6 +19,13 @@ def clear_added_itinerary_animals( cur: Cursor ) -> None:
             WHERE IS_ADDED = 1;
       """ )
 
+def clear_itinerary_animal_old_likelihoods( cur: Cursor ) -> None:
+   cur.execute(
+      """   UPDATE ItineraryAnimal
+            SET OLD_LIKELIHOOD = NULL
+            WHERE OLD_LIKELIHOOD IS NOT NULL;
+      """ )
+
 
 def remove_declined_itinerary_attractions( cur: Cursor ) -> None:
    cur.execute(
@@ -26,6 +33,13 @@ def remove_declined_itinerary_attractions( cur: Cursor ) -> None:
             WHERE OLD_LIKELIHOOD IS NOT NULL
                AND NEW_LIKELIHOOD IS NOT NULL
                AND NEW_LIKELIHOOD < OLD_LIKELIHOOD;
+      """ )
+
+def clear_itinerary_attraction_old_likelihoods( cur: Cursor ) -> None:
+   cur.execute(
+      """   UPDATE ItineraryAttraction
+            SET OLD_LIKELIHOOD = NULL
+            WHERE OLD_LIKELIHOOD IS NOT NULL;
       """ )
 
 
@@ -51,6 +65,8 @@ def accept_itinerary( conn: Connection ) -> bool:
       remove_declined_itinerary_animals( cur )
       remove_declined_itinerary_attractions( cur )
       clear_added_itinerary_animals( cur )
+      clear_itinerary_animal_old_likelihoods( cur )
+      clear_itinerary_attraction_old_likelihoods( cur )
       remove_deleted_itinerary_guardians_talks( cur )
       remove_deleted_itinerary_wild_encounters( cur )
 

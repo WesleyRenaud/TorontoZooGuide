@@ -311,6 +311,10 @@ def test_accept_itinerary_clears_added_animal_flags( db: DbControllers ) -> None
       'SELECT COUNT(*) FROM ItineraryAnimal WHERE IS_ADDED = 1;'
    ).fetchone()[ 0 ] == 0
 
+   assert db.conn.execute(
+      'SELECT COUNT(*) FROM ItineraryAnimal WHERE OLD_LIKELIHOOD IS NOT NULL;'
+   ).fetchone()[ 0 ] == 0
+
 
 def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       db: DbControllers ) -> None:
