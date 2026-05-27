@@ -162,10 +162,16 @@ export async function clearItinerary() {
    return result;
 }
 
-export async function acceptItinerary() {
+export async function acceptItinerary({
+   animalsToKeep = [],
+   attractionsToKeep = [],
+} = {}) {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
-   const result = await acceptItineraryRequest(temp);
+   const result = await acceptItineraryRequest(
+      temp,
+      { animalsToKeep, attractionsToKeep }
+   );
    const acceptedItinerary = normalizeItinerary({
       ...result?.itinerary,
       itineraryConfig: result?.itineraryConfig,

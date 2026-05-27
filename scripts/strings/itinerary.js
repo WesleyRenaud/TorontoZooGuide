@@ -133,6 +133,9 @@ export const itinerary = {
       viewAlternatives: 'View Alternatives',
       wildEncountersSubtitle: 'The following encounters are not available on your new date.',
       emptyItineraryTitle: 'Your itinerary is now empty',
+      keepInItinerary: 'Keep',
+      removeFromItinerary: 'Remove',
+      removeFromItineraryHint: 'This item will stay on your itinerary when you accept.',
    },
    searchPlaceholder: 'Search...',
    selectors: {

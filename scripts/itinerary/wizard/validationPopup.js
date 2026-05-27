@@ -34,8 +34,8 @@ export function showWizardValidationPopupIfNeeded({
       reducedVisibility,
       improvedVisibility,
       isEmptyItinerary,
-      onAccept: () => {
-         void acceptItinerary();
+      onAccept: ({ animalsToKeep = [], attractionsToKeep = [] } = {}) => {
+         void acceptItinerary({ animalsToKeep, attractionsToKeep });
       },
       onDismiss: () => {},
       onViewAlternatives,
