@@ -1927,13 +1927,17 @@ nav ul li a:hover {
    box-shadow: 0 6px 14px rgba(20, 35, 10, 0.14);
 }
 
-.itinerary-day-unscheduled-sections {
+.itinerary-day-items-sections {
    display: flex;
    flex-direction: column;
    gap: 22px;
 }
 
-.itinerary-day-unscheduled-title {
+.itinerary-day-items-sections + .itinerary-day-items-sections {
+   margin-top: 40px;
+}
+
+.itinerary-day-items-title {
    margin: 0 0 4px 0;
    color: rgba(20, 35, 10, 0.92);
    font-size: 3.8em;
