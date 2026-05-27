@@ -78,7 +78,7 @@ export function buildAnimalVisibilityChanges(
 
       const delta = likelihoodAfter - likelihoodBefore;
 
-      if (Math.abs(delta) < minDelta) {
+      if (minDelta == null || Math.abs(delta) < minDelta) {
          return;
       }
 

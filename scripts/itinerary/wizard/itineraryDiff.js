@@ -7,6 +7,7 @@ import {
    hasRemovedItems,
    isValidatedItineraryEmpty,
 } from './diff/summary.js';
+import { normalizeNonNegativeNumber } from '../panel/format.js';
 
 function buildRemovedItems(previous, validated, backendRemoved = {}) {
    return {
@@ -37,18 +38,26 @@ function buildRemovedItems(previous, validated, backendRemoved = {}) {
    };
 }
 
-function buildAnimalVisibilityDiff(previous, validated, removed) {
+function buildAnimalVisibilityDiff(previous, validated, removed, minDelta = null) {
    return buildAnimalVisibilityChanges(
       previous.animals,
       validated.animals,
       removed.animals,
-      0.2
+      minDelta
    );
 }
 
-export function buildItineraryDiff(previous, validated, backendRemoved = {}) {
+export function buildItineraryDiff(
+   previous,
+   validated,
+   backendRemoved = {},
+   { animalVisibilityChangeThreshold } = {}
+) {
    const removed = buildRemovedItems(previous, validated, backendRemoved);
-   const visibilityChanges = buildAnimalVisibilityDiff(previous, validated, removed);
+   const minDelta = normalizeNonNegativeNumber(animalVisibilityChangeThreshold);
+   const visibilityChanges = buildAnimalVisibilityDiff(previous, validated, removed, (
+      minDelta == null ? undefined : minDelta / 100
+   ));
 
    return {
       removed,

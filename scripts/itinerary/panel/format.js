@@ -15,9 +15,19 @@ function normalizeOptionalText(value) {
    return text || null;
 }
 
-function normalizeNumber(value) {
+export function normalizeNumber(value) {
    const number = Number(value);
    return Number.isFinite(number) ? number : null;
+}
+
+export function normalizeNonNegativeNumber(value) {
+   const number = normalizeNumber(value);
+
+   if (number == null || number < 0) {
+      return null;
+   }
+
+   return number;
 }
 
 function normalizeMaximumDuration(value) {
