@@ -6,6 +6,8 @@ from ..data_access.accept_itinerary import accept_itinerary
 from ..data_access.clear_itinerary import clear_itinerary
 from ..data_access.itinerary import fetch_itinerary_date
 from ..data_access.itinerary import fetch_saved_itinerary
+from ..data_access.itinerary_save_input_mapper import map_animal_inputs
+from ..data_access.itinerary_save_input_mapper import map_named_strings
 from ...guardians.controllers.guardians_controller import GuardiansController
 from ..logic import set_itinerary as set_itinerary_logic
 from ..logic.itinerary import build_current_itinerary
@@ -69,5 +71,11 @@ class ItineraryController():
 
 
    @classmethod
-   def accept_itinerary( cls ) -> bool:
-      return accept_itinerary( get_connection() )
+   def accept_itinerary(
+         cls,
+         animals_to_keep: list[ dict[ str, str ] ] | None = None,
+         attractions_to_keep: list[ str ] | None = None ) -> bool:
+      return accept_itinerary(
+         get_connection(),
+         animals_to_keep=list( map_animal_inputs( animals_to_keep ) ),
+         attractions_to_keep=list( map_named_strings( attractions_to_keep ) ) )
