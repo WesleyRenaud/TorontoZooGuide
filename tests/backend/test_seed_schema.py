@@ -106,6 +106,15 @@ def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:
             VALUES ( 'Capybara', '13:30', '14:00', 0 );
       """
    )
+   cursor.execute(
+      """   INSERT INTO ItineraryEvent (
+               EVENT_TYPE,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( 'lunch', '12:00', '12:30' );
+      """
+   )
 
    clear_user_itinerary_data( cursor )
 
@@ -114,6 +123,7 @@ def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:
    assert table_count( cursor, 'ItineraryAttraction' ) == 0
    assert table_count( cursor, 'ItineraryGuardiansTalk' ) == 0
    assert table_count( cursor, 'ItineraryWildEncounter' ) == 0
+   assert table_count( cursor, 'ItineraryEvent' ) == 0
 
    conn.close()
 
@@ -145,7 +155,8 @@ def test_create_schema_migrates_partial_dynamic_tables() -> None:
       'WildEncounterCancellation': 'WILD_ENCOUNTER TEXT',
       'ItineraryAnimal': 'SPECIES TEXT',
       'ItineraryGuardiansTalk': 'TALK_NAME TEXT',
-      'ItineraryWildEncounter': 'WILD_ENCOUNTER TEXT'
+      'ItineraryWildEncounter': 'WILD_ENCOUNTER TEXT',
+      'ItineraryEvent': 'EVENT_TYPE TEXT'
    }
 
    for table, columns in partial_tables.items():
@@ -334,12 +345,16 @@ def test_create_schema_migrates_partial_dynamic_tables() -> None:
          'EXHIBIT',
          'OLD_LIKELIHOOD',
          'NEW_LIKELIHOOD',
-         'IS_ADDED'
+         'IS_ADDED',
+         'START_TIME',
+         'END_TIME'
       },
       'ItineraryAttraction': {
          'ATTRACTION',
          'OLD_LIKELIHOOD',
-         'NEW_LIKELIHOOD'
+         'NEW_LIKELIHOOD',
+         'START_TIME',
+         'END_TIME'
       },
       'ItineraryGuardiansTalk': {
          'TALK_NAME',
@@ -352,6 +367,11 @@ def test_create_schema_migrates_partial_dynamic_tables() -> None:
          'START_TIME',
          'END_TIME',
          'IS_DELETED'
+      },
+      'ItineraryEvent': {
+         'EVENT_TYPE',
+         'START_TIME',
+         'END_TIME'
       }
    }
 

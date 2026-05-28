@@ -10,7 +10,9 @@ def map_itinerary_attraction_record( row: Row ) -> ItineraryAttractionRecord:
    return ItineraryAttractionRecord(
       attraction=row[ 'ATTRACTION' ],
       old_likelihood=row[ 'OLD_LIKELIHOOD' ],
-      new_likelihood=row[ 'NEW_LIKELIHOOD' ] )
+      new_likelihood=row[ 'NEW_LIKELIHOOD' ],
+      start_time=row[ 'START_TIME' ],
+      end_time=row[ 'END_TIME' ] )
 
 
 def map_itinerary_attraction_records( rows: Iterable[ Row ] ) -> list[ ItineraryAttractionRecord ]:

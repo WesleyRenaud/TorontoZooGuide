@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..shared.value_conversion import ValueConversion
+from ..types import ScheduleTimeKey
 
 
 class Animal:
@@ -31,7 +32,9 @@ class Animal:
          viewing_alert_message: str | None = None,
          is_deleted: bool = False,
          old_likelihood: int | None = None,
-         is_added: bool = False ) -> None:
+         is_added: bool = False,
+         start_time: ScheduleTimeKey = None,
+         end_time: ScheduleTimeKey = None ) -> None:
       self.species = species
       self.latin_name = latin_name
       self.general_viewing_tips = general_viewing_tips
@@ -58,6 +61,8 @@ class Animal:
       self.is_deleted = is_deleted
       self.old_likelihood = old_likelihood
       self.is_added = is_added
+      self.start_time = start_time
+      self.end_time = end_time
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -87,5 +92,7 @@ class Animal:
          'viewing_alert_message': self.viewing_alert_message,
          'is_deleted': ValueConversion.as_boolean( self.is_deleted ),
          'old_likelihood': self.old_likelihood,
-         'is_added': ValueConversion.as_boolean( self.is_added )
+         'is_added': ValueConversion.as_boolean( self.is_added ),
+         'start_time': self.start_time,
+         'end_time': self.end_time,
       }

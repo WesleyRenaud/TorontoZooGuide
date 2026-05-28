@@ -4,6 +4,8 @@ from .itinerary_animal_mapper import map_itinerary_animal_records
 from .itinerary_animal_record import ItineraryAnimalRecord
 from .itinerary_attraction_mapper import map_itinerary_attraction_records
 from .itinerary_attraction_record import ItineraryAttractionRecord
+from .itinerary_event_mapper import map_itinerary_event_records
+from .itinerary_event_record import ItineraryEventRecord
 from .itinerary_guardians_talk_mapper import map_itinerary_guardians_talk_records
 from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from .itinerary_wild_encounter_mapper import map_itinerary_wild_encounter_records
@@ -40,7 +42,9 @@ def fetch_itinerary_animal_rows( conn: Connection ) -> list[ ItineraryAnimalReco
                EXHIBIT,
                OLD_LIKELIHOOD,
                NEW_LIKELIHOOD,
-               IS_ADDED
+               IS_ADDED,
+               START_TIME,
+               END_TIME
             FROM ItineraryAnimal;
       """ ).fetchall()
 
@@ -56,7 +60,9 @@ def fetch_itinerary_attraction_rows( conn: Connection ) -> list[ ItineraryAttrac
       """   SELECT
                ATTRACTION,
                OLD_LIKELIHOOD,
-               NEW_LIKELIHOOD
+               NEW_LIKELIHOOD,
+               START_TIME,
+               END_TIME
             FROM ItineraryAttraction;
       """ ).fetchall()
 
@@ -99,6 +105,22 @@ def fetch_itinerary_wild_encounter_rows( conn: Connection ) -> list[ ItineraryWi
    return map_itinerary_wild_encounter_records( rows )
 
 
+def fetch_itinerary_event_rows( conn: Connection ) -> list[ ItineraryEventRecord ]:
+   cur = conn.cursor()
+
+   rows = cur.execute(
+      """   SELECT
+               EVENT_TYPE,
+               START_TIME,
+               END_TIME
+            FROM ItineraryEvent;
+      """ ).fetchall()
+
+   cur.close()
+
+   return map_itinerary_event_records( rows )
+
+
 def fetch_saved_itinerary( conn: Connection ) -> SavedItinerary:
    date_value = fetch_itinerary_date( conn )
 
@@ -108,11 +130,13 @@ def fetch_saved_itinerary( conn: Connection ) -> SavedItinerary:
          animal_rows=(),
          attraction_rows=(),
          guardians_talk_rows=(),
-         wild_encounter_rows=() )
+         wild_encounter_rows=(),
+         event_rows=() )
 
    return SavedItinerary(
       date_value=date_value,
       animal_rows=tuple( fetch_itinerary_animal_rows( conn ) ),
       attraction_rows=tuple( fetch_itinerary_attraction_rows( conn ) ),
       guardians_talk_rows=tuple( fetch_itinerary_guardians_talk_rows( conn ) ),
-      wild_encounter_rows=tuple( fetch_itinerary_wild_encounter_rows( conn ) ) )
+      wild_encounter_rows=tuple( fetch_itinerary_wild_encounter_rows( conn ) ),
+      event_rows=tuple( fetch_itinerary_event_rows( conn ) ) )

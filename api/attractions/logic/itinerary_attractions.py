@@ -33,6 +33,8 @@ def build_itinerary_attractions(
          continue
 
       attraction.old_likelihood = saved_attraction.old_likelihood
+      attraction.start_time = saved_attraction.start_time
+      attraction.end_time = saved_attraction.end_time
 
    attractions.sort( key=lambda attraction: ( attraction.name or '' ).lower() )
 

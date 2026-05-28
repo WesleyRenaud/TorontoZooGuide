@@ -175,4 +175,5 @@ def validate_itinerary_for_save(
             month=save_input.month(),
             day=save_input.day(),
             year=save_input.year() ) ),
+      events=[],
    )
