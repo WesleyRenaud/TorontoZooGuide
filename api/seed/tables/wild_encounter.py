@@ -65,7 +65,7 @@ wild_encounters = [
       '''Animal Ambassadors: Keeper's Choice''',                       # Name
       '''Wild Encounter - Discovery Zone Meeting Spot''',              # Meeting spot
       '''https://www.torontozoo.com/tickets/weoutreach''',             # Link
-                                                                       # TO-DO: Update/verify maximum duration when this encounter returns
+      # TO-DO: Update/verify maximum duration when this encounter returns
       30                                                               # Maximum duration in minutes
    ),
    (
