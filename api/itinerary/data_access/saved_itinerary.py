@@ -5,6 +5,7 @@ from datetime import date
 
 from .itinerary_animal_record import ItineraryAnimalRecord
 from .itinerary_attraction_record import ItineraryAttractionRecord
+from .itinerary_event_record import ItineraryEventRecord
 from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...shared.date_values import DateValues
@@ -18,6 +19,7 @@ class SavedItinerary:
    attraction_rows: tuple[ ItineraryAttractionRecord, ... ]
    guardians_talk_rows: tuple[ ItineraryGuardiansTalkRecord, ... ]
    wild_encounter_rows: tuple[ ItineraryWildEncounterRecord, ... ]
+   event_rows: tuple[ ItineraryEventRecord, ... ] = ()
 
 
    def is_empty( self ) -> bool:

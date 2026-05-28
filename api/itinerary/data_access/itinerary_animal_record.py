@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ...animals.logic.animals_matching_query import species_exhibit_key_from_values
+from ...types import ScheduleTimeKey
 
 
 @dataclass( frozen=True )
@@ -12,6 +13,8 @@ class ItineraryAnimalRecord:
    old_likelihood: int | None
    new_likelihood: int | None
    is_added: bool = False
+   start_time: ScheduleTimeKey = None
+   end_time: ScheduleTimeKey = None
 
 
    def species_exhibit_key( self ) -> tuple[ str, str ]:

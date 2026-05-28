@@ -6,6 +6,7 @@ from ..data_access.validated_itinerary import ValidatedItinerary
 from ...models.animal_diff import AnimalDiff
 from ...models.attraction_diff import AttractionDiff
 from ...models.guardians_talk_diff import GuardiansTalkDiff
+from ...models.itinerary_event import ItineraryEvent
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ...shared.date_values import DateValues
 from ...types import Connection, Cursor
@@ -30,9 +31,11 @@ def save_itinerary_animals( cur: Cursor, animals: list[ AnimalDiff ] ) -> None:
                   EXHIBIT,
                   OLD_LIKELIHOOD,
                   NEW_LIKELIHOOD,
-                  IS_ADDED
+                  IS_ADDED,
+                  START_TIME,
+                  END_TIME
                )
-               VALUES ( ?, ?, ?, ?, ? );
+               VALUES ( ?, ?, ?, ?, ?, ?, ? );
          """,
          (
             animal.species,
@@ -40,6 +43,8 @@ def save_itinerary_animals( cur: Cursor, animals: list[ AnimalDiff ] ) -> None:
             animal.old_likelihood,
             animal.new_likelihood,
             animal.is_added,
+            DateValues.normalize_itinerary_schedule_time( animal.start_time ),
+            DateValues.normalize_itinerary_schedule_time( animal.end_time ),
          ) )
 
 
@@ -52,14 +57,18 @@ def save_itinerary_attractions( cur: Cursor, attractions: list[ AttractionDiff ]
          """   INSERT OR IGNORE INTO ItineraryAttraction (
                   ATTRACTION,
                   OLD_LIKELIHOOD,
-                  NEW_LIKELIHOOD
+                  NEW_LIKELIHOOD,
+                  START_TIME,
+                  END_TIME
                )
-               VALUES ( ?, ?, ? );
+               VALUES ( ?, ?, ?, ?, ? );
          """,
          (
             attraction.name,
             attraction.old_likelihood,
             attraction.new_likelihood,
+            DateValues.normalize_itinerary_schedule_time( attraction.start_time ),
+            DateValues.normalize_itinerary_schedule_time( attraction.end_time ),
          ) )
 
 
@@ -107,6 +116,26 @@ def save_itinerary_wild_encounters( cur: Cursor, wild_encounters: list[ WildEnco
          ) )
 
 
+def save_itinerary_events( cur: Cursor, events: list[ ItineraryEvent ] ) -> None:
+   if not events:
+      return
+
+   for event in events:
+      cur.execute(
+         """   INSERT OR IGNORE INTO ItineraryEvent (
+                  EVENT_TYPE,
+                  START_TIME,
+                  END_TIME
+               )
+               VALUES ( ?, ?, ? );
+         """,
+         (
+            event.event_type.value,
+            DateValues.normalize_itinerary_schedule_time( event.start_time ),
+            DateValues.normalize_itinerary_schedule_time( event.end_time ),
+         ) )
+
+
 def save_validated_itinerary(
       conn: Connection,
       visit_date: date,
@@ -119,6 +148,7 @@ def save_validated_itinerary(
       save_itinerary_attractions( cur, validated_itinerary.attractions )
       save_itinerary_guardians_talks( cur, validated_itinerary.guardians_talks )
       save_itinerary_wild_encounters( cur, validated_itinerary.wild_encounters )
+      save_itinerary_events( cur, validated_itinerary.events )
 
       conn.commit()
 

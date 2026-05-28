@@ -899,6 +899,8 @@ def create_schema( cursor: Cursor ) -> None:
                         OLD_LIKELIHOOD       INTEGER,
                         NEW_LIKELIHOOD       INTEGER,
                         IS_ADDED             BOOL        NOT NULL DEFAULT 0,
+                        START_TIME           TEXT,
+                        END_TIME             TEXT,
                         PRIMARY KEY ( SPECIES, EXHIBIT ),
                         FOREIGN KEY ( SPECIES, EXHIBIT )
                            REFERENCES Enclosure( SPECIES, EXHIBIT ) ); ''' )
@@ -927,10 +929,22 @@ def create_schema( cursor: Cursor ) -> None:
          'ALTER TABLE ItineraryAnimal ADD COLUMN IS_ADDED BOOL NOT NULL DEFAULT 0;'
       )
 
+   if 'START_TIME' not in itinerary_animal_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryAnimal ADD COLUMN START_TIME TEXT;'
+      )
+
+   if 'END_TIME' not in itinerary_animal_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryAnimal ADD COLUMN END_TIME TEXT;'
+      )
+
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryAttraction
                      (  ATTRACTION           VARCHAR(64) NOT NULL,
                         OLD_LIKELIHOOD       INTEGER,
                         NEW_LIKELIHOOD       INTEGER,
+                        START_TIME           TEXT,
+                        END_TIME             TEXT,
                         PRIMARY KEY ( ATTRACTION ),
                         FOREIGN KEY ( ATTRACTION ) REFERENCES Attraction(NAME) ); ''' )
 
@@ -946,6 +960,16 @@ def create_schema( cursor: Cursor ) -> None:
    if 'NEW_LIKELIHOOD' not in itinerary_attraction_columns:
       cursor.execute(
          'ALTER TABLE ItineraryAttraction ADD COLUMN NEW_LIKELIHOOD INTEGER;'
+      )
+
+   if 'START_TIME' not in itinerary_attraction_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryAttraction ADD COLUMN START_TIME TEXT;'
+      )
+
+   if 'END_TIME' not in itinerary_attraction_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryAttraction ADD COLUMN END_TIME TEXT;'
       )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryGuardiansTalk
@@ -1000,4 +1024,24 @@ def create_schema( cursor: Cursor ) -> None:
    if 'IS_DELETED' not in itinerary_wild_encounter_columns:
       cursor.execute(
          'ALTER TABLE ItineraryWildEncounter ADD COLUMN IS_DELETED BOOL NOT NULL DEFAULT 0;'
+      )
+
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryEvent
+                     (  EVENT_TYPE           TEXT        NOT NULL,
+                        START_TIME           TEXT        NOT NULL,
+                        END_TIME             TEXT,
+                        PRIMARY KEY ( EVENT_TYPE, START_TIME ) ); ''' )
+
+   itinerary_event_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( ItineraryEvent );' ).fetchall()
+   }
+
+   if 'START_TIME' not in itinerary_event_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryEvent ADD COLUMN START_TIME TEXT;'
+      )
+
+   if 'END_TIME' not in itinerary_event_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryEvent ADD COLUMN END_TIME TEXT;'
       )
