@@ -5,13 +5,14 @@ from ...types import Cursor
 def create_table( cursor: Cursor ) -> None:
    cursor.execute( 'DROP TABLE IF EXISTS Attraction;' )
    cursor.execute( ''' CREATE TABLE Attraction
-                     (  NAME                 VARCHAR(64) NOT NULL,
-                        FREE_WITH_ADMISSION  BOOL        NOT NULL,
-                        DESCRIPTION          TEXT        NOT NULL,
-                        INFO_LINK            TEXT        NOT NULL,
-                        HYPERLINK_TEXT       TEXT        NOT NULL,
-                        X_COORD              FLOAT       NOT NULL,
-                        Y_COORD              FLOAT       NOT NULL,
+                     (  NAME                                  VARCHAR(64) NOT NULL,
+                        FREE_WITH_ADMISSION                   BOOL        NOT NULL,
+                        DESCRIPTION                           TEXT        NOT NULL,
+                        INFO_LINK                             TEXT        NOT NULL,
+                        HYPERLINK_TEXT                        TEXT        NOT NULL,
+                        X_COORD                               FLOAT       NOT NULL,
+                        Y_COORD                               FLOAT       NOT NULL,
+                        DEFAULT_ITINERARY_DURATION_MINUTES    INTEGER     NOT NULL,
                         PRIMARY KEY (NAME) ); ''' )
 
 attractions = [
@@ -22,7 +23,8 @@ attractions = [
       '''https://www.torontozoo.com/tickets/zoomobile''',                     # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
       56.068,                                                                 # X coordinate on map
-      83.343                                                                  # Y coordinate on map
+      83.343,                                                                 # Y coordinate on map
+      30,                                                                     # Default itinerary duration (minutes)
    ),
    (
       'Conservation Carousel',
@@ -31,7 +33,8 @@ attractions = [
       '''https://www.torontozoo.com/tickets/carousel''',                      # Info link
       '''TICKETS & DETAILS''',                                                # Hyperlink text
       58.475,                                                                 # X coordinate on map
-      75.904                                                                  # Y coordinate on map
+      75.904,                                                                 # Y coordinate on map
+      15,                                                                     # Default itinerary duration (minutes)
    ),
    (
       'Greenhouse',
@@ -40,7 +43,8 @@ attractions = [
       '''https://www.torontozoo.com/tz/greenhouse''',                         # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
       82.835,                                                                 # X coordinate on map
-      54.277                                                                  # Y coordinate on map
+      54.277,                                                                 # Y coordinate on map
+      15,                                                                     # Default itinerary duration (minutes)
    ),
    (
       'Wildlife Health & Science Centre',
@@ -49,7 +53,8 @@ attractions = [
       '''https://www.torontozoo.com/whsc''',                                  # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
       84.459,                                                                 # X coordinate on map
-      50.743                                                                  # Y coordinate on map
+      50.743,                                                                 # Y coordinate on map
+      10,                                                                     # Default itinerary duration (minutes)
    ),
    (
       'Kangaroo Walk-Thru',
@@ -58,7 +63,8 @@ attractions = [
       '''https://www.torontozoo.com/tz/kangaroo''',                           # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
       74.985,                                                                 # X coordinate on map
-      70.331                                                                  # Y coordinate on map
+      70.331,                                                                 # Y coordinate on map
+      10,                                                                     # Default itinerary duration (minutes)
    ),
    (
       'Virtual Reality (VR) Theatre!',
@@ -68,7 +74,8 @@ attractions = [
       '''https://www.torontozoo.com/tickets/wildexplorer''',                  # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
       71.786,                                                                 # X coordinate on map
-      59.947                                                                  # Y coordinate on map
+      59.947,                                                                 # Y coordinate on map
+      20,                                                                     # Default itinerary duration (minutes)
    ),
    (
       'TundraAir Ride',
@@ -77,7 +84,8 @@ attractions = [
       '''https://www.torontozoo.com/tz/tundraair''',                          # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
       75.152,                                                                 # X coordinate on map
-      60.212                                                                  # Y coordinate on map
+      60.212,                                                                 # Y coordinate on map
+      15,                                                                     # Default itinerary duration (minutes)
    ),
    (
       'Gorilla Climb Ropes Course',
@@ -86,7 +94,8 @@ attractions = [
       '''https://www.torontozoo.com/tz/gorillaclimb''',                       # Info link
       '''PRICING & DETAILS''',                                                # Hyperlink text
       50.023,                                                                 # X coordinate on map
-      58.884                                                                  # Y coordinate on map
+      58.884,                                                                 # Y coordinate on map
+      40,                                                                     # Default itinerary duration (minutes)
    ),
    (
       'Splash Island',
@@ -95,7 +104,8 @@ attractions = [
       '''https://www.torontozoo.com/tz/splash''',                             # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
       67.797,                                                                 # X coordinate on map
-      72.648                                                                  # Y coordinate on map
+      72.648,                                                                 # Y coordinate on map
+      60,                                                                     # Default itinerary duration (minutes)
    ),
    (
       'Face Painting, Caricatures and Henna!',
@@ -104,7 +114,8 @@ attractions = [
       '''https://www.torontozoo.com/tz/facepainting''',                       # Info link
       '''LEARN MORE''',                                                       # Hyperlink text
       73.669,                                                                 # X coordinate on map
-      59.054                                                                  # Y coordinate on map
+      59.054,                                                                 # Y coordinate on map
+      20,                                                                     # Default itinerary duration (minutes)
    )
 ]
 
@@ -116,6 +127,7 @@ def insert_rows( cursor: Cursor ) -> None:
                               INFO_LINK,
                               HYPERLINK_TEXT,
                               X_COORD,
-                              Y_COORD
+                              Y_COORD,
+                              DEFAULT_ITINERARY_DURATION_MINUTES
                            ) 
-                           VALUES (?, ?, ?, ?, ?, ?, ?) ''', attractions )
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?) ''', attractions )
