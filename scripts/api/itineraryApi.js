@@ -40,6 +40,9 @@ function normalizeItineraryConfig(config) {
 
    return {
       animalVisibilityChangeThreshold: source.animal_visibility_change_threshold,
+      eventTypes: asArray(source.itinerary_event_types)
+         .map(asTrimmedString)
+         .filter(Boolean),
    };
 }
 

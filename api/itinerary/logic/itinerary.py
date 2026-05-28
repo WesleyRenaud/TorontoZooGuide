@@ -8,6 +8,7 @@ from ...models import Animal
 from ...models import Attraction
 from ...models import GuardiansTalk
 from ...models import Itinerary
+from ...models import ItineraryEvent
 from ...models import WildEncounter
 from ...types import DateInput
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
@@ -19,7 +20,8 @@ def empty_itinerary() -> Itinerary:
       animals=[],
       attractions=[],
       guardians_talks=[],
-      wild_encounters=[] )
+      wild_encounters=[],
+      events=[] )
 
 
 def build_itinerary(
@@ -27,14 +29,16 @@ def build_itinerary(
       animals: list[ Animal ],
       attractions: list[ Attraction ],
       guardians_talks: list[ GuardiansTalk ],
-      wild_encounters: list[ WildEncounter ] ) -> Itinerary:
+      wild_encounters: list[ WildEncounter ],
+      events: list[ ItineraryEvent ] ) -> Itinerary:
 
    return Itinerary(
       date=date,
       animals=animals,
       attractions=attractions,
       guardians_talks=guardians_talks,
-      wild_encounters=wild_encounters )
+      wild_encounters=wild_encounters,
+      events=events )
 
 
 def build_current_itinerary(
@@ -71,9 +75,18 @@ def build_current_itinerary(
    wild_encounters = wild_encounter_controller.get_wild_encounters_for_saved_itinerary(
       list( saved_itinerary.wild_encounter_rows ) )
 
+   events = [
+      ItineraryEvent(
+         event_type=event.event_type,
+         start_time=event.start_time,
+         end_time=event.end_time )
+      for event in saved_itinerary.event_rows
+   ]
+
    return build_itinerary(
       date=saved_itinerary.date_value,
       animals=animals,
       attractions=attractions,
       guardians_talks=guardians_talks,
-      wild_encounters=wild_encounters )
+      wild_encounters=wild_encounters,
+      events=events )

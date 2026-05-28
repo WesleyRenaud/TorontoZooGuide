@@ -12,6 +12,7 @@ from .guardians_talk import GuardiansTalk
 from .guardians_talk_diff import GuardiansTalkDiff
 from .guest_service import GuestService
 from .itinerary import Itinerary
+from .itinerary_event import ItineraryEvent
 from .pavilion import Pavilion
 from .picnic_site import PicnicSite
 from .region import Region
@@ -42,6 +43,7 @@ __all__ = [
    'GuardiansTalkDiff',
    'GuestService',
    'Itinerary',
+   'ItineraryEvent',
    'Pavilion',
    'PicnicSite',
    'Region',

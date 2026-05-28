@@ -23,6 +23,10 @@ def clear_itinerary_wild_encounters( cur: Cursor ) -> None:
    cur.execute( 'DELETE FROM ItineraryWildEncounter;' )
 
 
+def clear_itinerary_events( cur: Cursor ) -> None:
+   cur.execute( 'DELETE FROM ItineraryEvent;' )
+
+
 def clear_itinerary( conn: Connection ) -> bool:
    cur = conn.cursor()
 
@@ -32,6 +36,7 @@ def clear_itinerary( conn: Connection ) -> bool:
       clear_itinerary_attractions( cur )
       clear_itinerary_guardians_talks( cur )
       clear_itinerary_wild_encounters( cur )
+      clear_itinerary_events( cur )
 
       conn.commit()
 

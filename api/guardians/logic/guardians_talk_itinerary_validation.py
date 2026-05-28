@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from .guardians_talk_schedule import find_guardians_talk_on_day_schedule
 from ...itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
+from ...itinerary.scheduling import schedule_guardians_talk_for_itinerary
 from ...models import GuardiansTalk
 from ...models import GuardiansTalkDiff
-from ...shared.date_values import DateValues
 from ...types import ScheduleTimeKey
 
 
@@ -14,25 +14,11 @@ def build_guardians_talk_diff_for_visit_day(
       *,
       start_time_override: ScheduleTimeKey = None,
       end_time_override: ScheduleTimeKey = None ) -> GuardiansTalkDiff:
-   if talk is None:
-      return GuardiansTalkDiff(
-         name=name,
-         is_deleted=True,
-         start_time=None,
-         end_time=None,
-      )
-
-   scheduled_end_time = DateValues.add_minutes_to_time(
-      talk.start_time,
-      talk.maximum_duration )
-
-   return GuardiansTalkDiff(
-      name=name,
-      is_deleted=False,
-      start_time=start_time_override or talk.start_time,
-      end_time=end_time_override or scheduled_end_time,
-      location=talk.location,
-   )
+   return schedule_guardians_talk_for_itinerary(
+      name,
+      talk,
+      start_time_override=start_time_override,
+      end_time_override=end_time_override )
 
 
 def validate_guardians_talks_for_itinerary(

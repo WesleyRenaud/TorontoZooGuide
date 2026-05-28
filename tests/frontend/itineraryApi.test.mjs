@@ -78,6 +78,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
       },
       itineraryConfig: {
          animalVisibilityChangeThreshold: undefined,
+         eventTypes: [],
       },
    });
 });
@@ -106,6 +107,7 @@ test('normalizes set itinerary failures without dropping returned itinerary data
       },
       itineraryConfig: {
          animalVisibilityChangeThreshold: undefined,
+         eventTypes: [],
       },
    });
 });
@@ -185,6 +187,7 @@ test('normalizes accept itinerary response', async () => {
       },
       itineraryConfig: {
          animalVisibilityChangeThreshold: undefined,
+         eventTypes: [],
       },
    });
 });
@@ -200,6 +203,16 @@ test('normalizes itinerary config from itinerary responses', async () => {
       },
       itinerary_config: {
          animal_visibility_change_threshold: 25,
+         itinerary_event_types: [
+            'arrival',
+            'breakfast',
+            'break',
+            'departure',
+            'dinner',
+            'lunch',
+            'shopping',
+            'snack',
+         ],
       },
    });
 
@@ -216,6 +229,16 @@ test('normalizes itinerary config from itinerary responses', async () => {
       },
       itineraryConfig: {
          animalVisibilityChangeThreshold: 25,
+         eventTypes: [
+            'arrival',
+            'breakfast',
+            'break',
+            'departure',
+            'dinner',
+            'lunch',
+            'shopping',
+            'snack',
+         ],
       },
    });
 });

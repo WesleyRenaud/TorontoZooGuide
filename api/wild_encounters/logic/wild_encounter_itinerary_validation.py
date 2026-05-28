@@ -1,34 +1,15 @@
 from __future__ import annotations
 
+from ...itinerary.scheduling import schedule_wild_encounter_for_itinerary
 from ...models import WildEncounter
 from ...models import WildEncounterDiff
-from ...shared.date_values import DateValues
 from .wild_encounter_schedule import find_wild_encounter_on_day_schedule
 
 
 def build_wild_encounter_diff_for_visit_day(
       name: str,
       encounter: WildEncounter | None ) -> WildEncounterDiff:
-   if encounter is None:
-      return WildEncounterDiff(
-         name=name,
-         is_deleted=True,
-         start_time=None,
-         end_time=None,
-      )
-
-   end_time = DateValues.add_minutes_to_time(
-      encounter.start_time,
-      encounter.maximum_duration )
-
-   return WildEncounterDiff(
-      name=name,
-      is_deleted=not encounter.is_available,
-      start_time=encounter.start_time,
-      end_time=end_time,
-      meeting_spot=encounter.meeting_spot,
-      link=encounter.link,
-   )
+   return schedule_wild_encounter_for_itinerary( name, encounter )
 
 
 def validate_wild_encounters_for_itinerary(

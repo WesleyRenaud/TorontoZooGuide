@@ -3,6 +3,7 @@ from __future__ import annotations
 from .animal import Animal
 from .attraction import Attraction
 from .guardians_talk import GuardiansTalk
+from .itinerary_event import ItineraryEvent
 from .wild_encounter import WildEncounter
 
 
@@ -13,12 +14,14 @@ class Itinerary:
          animals: list[ Animal ] | None = None,
          attractions: list[ Attraction ] | None = None,
          guardians_talks: list[ GuardiansTalk ] | None = None,
-         wild_encounters: list[ WildEncounter ] | None = None ) -> None:
+         wild_encounters: list[ WildEncounter ] | None = None,
+         events: list[ ItineraryEvent ] | None = None ) -> None:
       self.date = date
       self.animals = animals or []
       self.attractions = attractions or []
       self.guardians_talks = guardians_talks or []
       self.wild_encounters = wild_encounters or []
+      self.events = events or []
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -35,13 +38,16 @@ class Itinerary:
          ],
          'wild_encounters': [
             self._to_dict_with_type( w, 'wildEncounter' ) for w in self.wild_encounters
+         ],
+         'events': [
+            self._to_dict_with_type( event, 'itineraryEvent' ) for event in self.events
          ]
       }
 
 
    def _to_dict_with_type(
          self,
-         obj: Animal | Attraction | GuardiansTalk | WildEncounter | dict[ str, object ],
+         obj: Animal | Attraction | GuardiansTalk | WildEncounter | ItineraryEvent | dict[ str, object ],
          fallback_type: str ) -> dict[ str, object ]:
       if hasattr( obj, 'to_dict' ):
          d = obj.to_dict()

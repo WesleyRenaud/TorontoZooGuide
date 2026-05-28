@@ -13,7 +13,9 @@ def map_itinerary_animal_record( row: Row ) -> ItineraryAnimalRecord:
       exhibit=row[ 'EXHIBIT' ],
       old_likelihood=row[ 'OLD_LIKELIHOOD' ],
       new_likelihood=row[ 'NEW_LIKELIHOOD' ],
-      is_added=ValueConversion.as_boolean( row[ 'IS_ADDED' ] ) )
+      is_added=ValueConversion.as_boolean( row[ 'IS_ADDED' ] ),
+      start_time=row[ 'START_TIME' ],
+      end_time=row[ 'END_TIME' ] )
 
 
 def map_itinerary_animal_records( rows: Iterable[ Row ] ) -> list[ ItineraryAnimalRecord ]:
