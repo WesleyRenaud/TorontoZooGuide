@@ -80,8 +80,23 @@ export const itinerary = {
    emptyPanel: 'Build an itinerary to see it here.',
    dayPlanner: {
       aria: 'Itinerary day planner preview',
+      arrivalInputLabel: 'Arrival time',
+      arrivalTimeInvalid: (
+         'Arrival time must be between opening and last admission.'
+      ),
+      arrivalTimeBeforeDepartureInvalid: (
+         'Arrival time must be before departure.'
+      ),
+      arrivalLabel: 'Arrival',
       dayPlannerLabel: 'Day Planner View',
       date: 'Saturday, June 20',
+      departureInputLabel: 'Departure time',
+      departureTimeInvalid: (
+         'Departure time must be between opening and closing.'
+      ),
+      departureTimeAfterArrivalInvalid: (
+         'Departure time must be after arrival.'
+      ),
       earlyAdmissionLabel: 'Early Admission',
       firstSlot: '9:30 AM',
       listViewLabel: 'List View',

@@ -153,6 +153,7 @@ def test_create_schema_migrates_partial_dynamic_tables() -> None:
       'GuardiansTalkCancellation': 'TALK_NAME TEXT, LOCATION TEXT',
       'WildEncounterSchedule': 'WILD_ENCOUNTER TEXT',
       'WildEncounterCancellation': 'WILD_ENCOUNTER TEXT',
+      'ItineraryDate': 'ITINERARY_DATE DATE',
       'ItineraryAnimal': 'SPECIES TEXT',
       'ItineraryGuardiansTalk': 'TALK_NAME TEXT',
       'ItineraryWildEncounter': 'WILD_ENCOUNTER TEXT',
@@ -338,7 +339,9 @@ def test_create_schema_migrates_partial_dynamic_tables() -> None:
          'ENCOUNTER_TIME'
       },
       'ItineraryDate': {
-         'ITINERARY_DATE'
+         'ITINERARY_DATE',
+         'ARRIVAL_TIME',
+         'DEPARTURE_TIME'
       },
       'ItineraryAnimal': {
          'SPECIES',

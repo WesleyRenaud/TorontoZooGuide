@@ -891,7 +891,23 @@ def create_schema( cursor: Cursor ) -> None:
    # Itinerary tables
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryDate
-                     (  ITINERARY_DATE     DATE ); ''' )
+                     (  ITINERARY_DATE     DATE,
+                        ARRIVAL_TIME       TEXT,
+                        DEPARTURE_TIME     TEXT ); ''' )
+
+   itinerary_date_columns = {
+      row[ 1 ] for row in cursor.execute( 'PRAGMA table_info( ItineraryDate );' ).fetchall()
+   }
+
+   if 'ARRIVAL_TIME' not in itinerary_date_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryDate ADD COLUMN ARRIVAL_TIME TEXT;'
+      )
+
+   if 'DEPARTURE_TIME' not in itinerary_date_columns:
+      cursor.execute(
+         'ALTER TABLE ItineraryDate ADD COLUMN DEPARTURE_TIME TEXT;'
+      )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryAnimal
                      (  SPECIES              VARCHAR(64) NOT NULL,

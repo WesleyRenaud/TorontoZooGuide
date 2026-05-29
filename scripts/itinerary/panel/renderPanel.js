@@ -13,6 +13,8 @@ import {
    getItinerary,
    getZooHours,
    isItineraryEmpty,
+   setItineraryArrivalTime,
+   setItineraryDepartureTime,
 } from '../itineraryService.js';
 import { buildSectionConfigs } from './sectionConfigs.js';
 import { resolveEffectiveItineraryHoursDateIso } from '../visitDateEarliest.js';
@@ -50,11 +52,18 @@ function makePanelViewShell() {
    });
 }
 
-function appendDayPlannerViewWithHours(dayPlannerView, zooHours, itinerary = {}) {
-   dayPlannerView.appendChild(makeDayPlannerPreview(zooHours, itinerary));
+function appendDayPlannerViewWithHours(
+   dayPlannerView,
+   zooHours,
+   itinerary = {},
+   timeHandlers = {}
+) {
+   dayPlannerView.appendChild(
+      makeDayPlannerPreview(zooHours, itinerary, timeHandlers)
+   );
 }
 
-function buildItineraryPanelContent(itinerary, zooHours) {
+function buildItineraryPanelContent(bodyEl, itinerary, zooHours) {
    const fragment = document.createDocumentFragment();
    const {
       root,
@@ -81,7 +90,21 @@ function buildItineraryPanelContent(itinerary, zooHours) {
       );
    });
 
-   appendDayPlannerViewWithHours(dayPlannerView, zooHours, itinerary);
+   appendDayPlannerViewWithHours(
+      dayPlannerView,
+      zooHours,
+      itinerary,
+      {
+         onArrivalTimeChange: async (arrivalTime) => {
+            await setItineraryArrivalTime(arrivalTime);
+            await renderItineraryPanelInto(bodyEl);
+         },
+         onDepartureTimeChange: async (departureTime) => {
+            await setItineraryDepartureTime(departureTime);
+            await renderItineraryPanelInto(bodyEl);
+         },
+      }
+   );
    fragment.appendChild(root);
 
    return fragment;
@@ -122,6 +145,6 @@ export async function renderItineraryPanelInto(bodyEl) {
    }
 
    bodyEl.appendChild(
-      buildItineraryPanelContent(itinerary, zooHours)
+      buildItineraryPanelContent(bodyEl, itinerary, zooHours)
    );
 }

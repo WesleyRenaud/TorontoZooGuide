@@ -54,6 +54,136 @@ export function formatMinutesAsClockTime(totalMinutes) {
    return formatClockTime(formatMinutesAsScheduleTimeKey(totalMinutes));
 }
 
+export function buildArrivalTimeBounds(zooHours = {}) {
+   const earlyAdmissionMinutes = parseClockTimeMinutes(zooHours.earlyAdmissionTime);
+   const openMinutes = parseClockTimeMinutes(zooHours.openTime);
+   const lastAdmissionMinutes = parseClockTimeMinutes(zooHours.lastAdmissionTime);
+   const minMinutes = Number.isFinite(earlyAdmissionMinutes)
+      ? earlyAdmissionMinutes
+      : openMinutes;
+
+   if (
+      !Number.isFinite(minMinutes)
+      || !Number.isFinite(lastAdmissionMinutes)
+      || lastAdmissionMinutes < minMinutes
+   ) {
+      return null;
+   }
+
+   return {
+      minMinutes,
+      maxMinutes: lastAdmissionMinutes,
+      minScheduleTime: formatMinutesAsScheduleTimeKey(minMinutes),
+      maxScheduleTime: formatMinutesAsScheduleTimeKey(lastAdmissionMinutes),
+      minClockTime: formatMinutesAsClockTime(minMinutes),
+      maxClockTime: formatMinutesAsClockTime(lastAdmissionMinutes),
+   };
+}
+
+function isTimeWithinBounds(timeValue, bounds) {
+   if (!bounds) {
+      return true;
+   }
+
+   const normalizedTimeValue = typeof timeValue === 'string'
+      ? timeValue.trim()
+      : '';
+
+   if (!normalizedTimeValue) {
+      return true;
+   }
+
+   const timeMinutes = parseClockTimeMinutes(normalizedTimeValue);
+
+   if (!Number.isFinite(timeMinutes)) {
+      return false;
+   }
+
+   return (
+      timeMinutes >= bounds.minMinutes
+      && timeMinutes <= bounds.maxMinutes
+   );
+}
+
+export function isArrivalTimeWithinBounds(timeValue, bounds) {
+   return isTimeWithinBounds(timeValue, bounds);
+}
+
+export function buildDepartureTimeBounds(zooHours = {}) {
+   const openMinutes = parseClockTimeMinutes(zooHours.openTime);
+   const closeMinutes = parseClockTimeMinutes(zooHours.closeTime);
+
+   if (
+      !Number.isFinite(openMinutes)
+      || !Number.isFinite(closeMinutes)
+      || closeMinutes < openMinutes
+   ) {
+      return null;
+   }
+
+   return {
+      minMinutes: openMinutes,
+      maxMinutes: closeMinutes,
+      minScheduleTime: formatMinutesAsScheduleTimeKey(openMinutes),
+      maxScheduleTime: formatMinutesAsScheduleTimeKey(closeMinutes),
+      minClockTime: formatMinutesAsClockTime(openMinutes),
+      maxClockTime: formatMinutesAsClockTime(closeMinutes),
+   };
+}
+
+export function isDepartureTimeWithinBounds(timeValue, bounds) {
+   return isTimeWithinBounds(timeValue, bounds);
+}
+
+export function areItineraryScheduleTimesOrdered(arrivalTime, departureTime) {
+   const arrivalMinutes = parseClockTimeMinutes(
+      typeof arrivalTime === 'string' ? arrivalTime.trim() : ''
+   );
+   const departureMinutes = parseClockTimeMinutes(
+      typeof departureTime === 'string' ? departureTime.trim() : ''
+   );
+
+   if (!Number.isFinite(arrivalMinutes) || !Number.isFinite(departureMinutes)) {
+      return true;
+   }
+
+   return departureMinutes > arrivalMinutes;
+}
+
+export function resolveArrivalTimeValidationError(
+   timeValue,
+   bounds,
+   departureTime,
+   strings = {}
+) {
+   if (!isArrivalTimeWithinBounds(timeValue, bounds)) {
+      return strings.arrivalTimeInvalid;
+   }
+
+   if (!areItineraryScheduleTimesOrdered(timeValue, departureTime)) {
+      return strings.arrivalTimeBeforeDepartureInvalid;
+   }
+
+   return null;
+}
+
+export function resolveDepartureTimeValidationError(
+   timeValue,
+   bounds,
+   arrivalTime,
+   strings = {}
+) {
+   if (!isDepartureTimeWithinBounds(timeValue, bounds)) {
+      return strings.departureTimeInvalid;
+   }
+
+   if (!areItineraryScheduleTimesOrdered(arrivalTime, timeValue)) {
+      return strings.departureTimeAfterArrivalInvalid;
+   }
+
+   return null;
+}
+
 export function buildHalfHourSlotStarts(openMinutes, closeMinutes) {
    if (
       !Number.isFinite(openMinutes)

@@ -52,6 +52,8 @@ test('saveItinerary includes selected exhibits in the backend payload', async ()
       assert.equal(url, '/set-itinerary');
       assert.deepEqual(JSON.parse(options.body), {
          date: '2026-06-15',
+         arrivalTime: '',
+         departureTime: '',
          animals: [],
          attractions: [],
          guardiansTalks: [],

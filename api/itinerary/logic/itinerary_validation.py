@@ -144,6 +144,8 @@ def validate_itinerary_for_save(
       saved_itinerary_attraction_rows = fetch_itinerary_attraction_rows( conn )
 
    return ValidatedItinerary(
+      arrival_time=save_input.arrival_time,
+      departure_time=save_input.departure_time,
       animals=(
          validate_itinerary_animals(
             animal_controller,

@@ -3,9 +3,16 @@ import { afterEach, beforeEach, test } from 'node:test';
 
 import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
 import {
+   areItineraryScheduleTimesOrdered,
+   buildArrivalTimeBounds,
+   buildDepartureTimeBounds,
    buildHalfHourSlotStarts,
    formatMinutesAsClockTime,
+   isArrivalTimeWithinBounds,
+   isDepartureTimeWithinBounds,
    parseClockTimeMinutes,
+   resolveArrivalTimeValidationError,
+   resolveDepartureTimeValidationError,
 } from '../../scripts/itinerary/panel/dayPlannerSchedule.js';
 import {
    formatClockTime,
@@ -164,6 +171,110 @@ test('formats and normalizes itinerary panel item data', () => {
    assert.equal(parseClockTimeMinutes('1:30 PM'), 810);
    assert.equal(parseClockTimeMinutes('bad-time'), null);
    assert.equal(formatMinutesAsClockTime(1140), '7:00 PM');
+   assert.deepEqual(buildArrivalTimeBounds({
+      earlyAdmissionTime: '09:00',
+      openTime: '09:30',
+      lastAdmissionTime: '18:00',
+   }), {
+      minMinutes: 540,
+      maxMinutes: 1080,
+      minScheduleTime: '09:00',
+      maxScheduleTime: '18:00',
+      minClockTime: '9:00 AM',
+      maxClockTime: '6:00 PM',
+   });
+   assert.deepEqual(buildArrivalTimeBounds({
+      openTime: '09:30',
+      lastAdmissionTime: '17:00',
+   }), {
+      minMinutes: 570,
+      maxMinutes: 1020,
+      minScheduleTime: '09:30',
+      maxScheduleTime: '17:00',
+      minClockTime: '9:30 AM',
+      maxClockTime: '5:00 PM',
+   });
+   assert.equal(isArrivalTimeWithinBounds('9:00 AM', buildArrivalTimeBounds({
+      earlyAdmissionTime: '09:00',
+      openTime: '09:30',
+      lastAdmissionTime: '18:00',
+   })), true);
+   assert.equal(isArrivalTimeWithinBounds('8:45 AM', buildArrivalTimeBounds({
+      earlyAdmissionTime: '09:00',
+      openTime: '09:30',
+      lastAdmissionTime: '18:00',
+   })), false);
+   assert.equal(isArrivalTimeWithinBounds('6:00 PM', buildArrivalTimeBounds({
+      earlyAdmissionTime: '09:00',
+      openTime: '09:30',
+      lastAdmissionTime: '18:00',
+   })), true);
+   assert.equal(isArrivalTimeWithinBounds('6:15 PM', buildArrivalTimeBounds({
+      earlyAdmissionTime: '09:00',
+      openTime: '09:30',
+      lastAdmissionTime: '18:00',
+   })), false);
+   assert.equal(isArrivalTimeWithinBounds('', buildArrivalTimeBounds({
+      openTime: '09:30',
+      lastAdmissionTime: '17:00',
+   })), true);
+   assert.deepEqual(buildDepartureTimeBounds({
+      openTime: '09:30',
+      closeTime: '18:00',
+   }), {
+      minMinutes: 570,
+      maxMinutes: 1080,
+      minScheduleTime: '09:30',
+      maxScheduleTime: '18:00',
+      minClockTime: '9:30 AM',
+      maxClockTime: '6:00 PM',
+   });
+   assert.equal(isDepartureTimeWithinBounds('9:30 AM', buildDepartureTimeBounds({
+      openTime: '09:30',
+      closeTime: '18:00',
+   })), true);
+   assert.equal(isDepartureTimeWithinBounds('9:00 AM', buildDepartureTimeBounds({
+      earlyAdmissionTime: '09:00',
+      openTime: '09:30',
+      closeTime: '19:00',
+   })), false);
+   assert.equal(isDepartureTimeWithinBounds('6:00 PM', buildDepartureTimeBounds({
+      openTime: '09:30',
+      closeTime: '18:00',
+   })), true);
+   assert.equal(isDepartureTimeWithinBounds('6:15 PM', buildDepartureTimeBounds({
+      openTime: '09:30',
+      closeTime: '18:00',
+   })), false);
+   assert.equal(isDepartureTimeWithinBounds('', buildDepartureTimeBounds({
+      openTime: '09:30',
+      closeTime: '18:00',
+   })), true);
+   assert.equal(areItineraryScheduleTimesOrdered('9:30 AM', '5:00 PM'), true);
+   assert.equal(areItineraryScheduleTimesOrdered('5:00 PM', '5:00 PM'), false);
+   assert.equal(areItineraryScheduleTimesOrdered('5:15 PM', '5:00 PM'), false);
+   assert.equal(areItineraryScheduleTimesOrdered('', '5:00 PM'), true);
+   assert.equal(resolveDepartureTimeValidationError(
+      '9:30 AM',
+      buildDepartureTimeBounds({ openTime: '09:30', closeTime: '18:00' }),
+      '9:30 AM',
+      {
+         departureTimeInvalid: 'hours',
+         departureTimeAfterArrivalInvalid: 'order',
+      }
+   ), 'order');
+   assert.equal(resolveArrivalTimeValidationError(
+      '5:00 PM',
+      buildArrivalTimeBounds({
+         openTime: '09:30',
+         lastAdmissionTime: '17:00',
+      }),
+      '5:00 PM',
+      {
+         arrivalTimeInvalid: 'hours',
+         arrivalTimeBeforeDepartureInvalid: 'order',
+      }
+   ), 'order');
    assert.deepEqual(buildHalfHourSlotStarts(570, 720), [
       570,
       600,
@@ -206,6 +317,75 @@ test('day planner starts at early admission when available', () => {
    assert.match(text, /Early Admission/);
    assert.match(text, /9:30 AM/);
    assert.match(text, /Zoo Opens/);
+});
+
+test('day planner stacks zoo hours and arrival pills at the same time', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         arrivalTime: '09:30',
+      }
+   );
+   const pillStrip = planner.querySelector('.itinerary-day-pill-strip');
+   const pills = pillStrip.querySelectorAll('.itinerary-day-open-pill');
+
+   assert.ok(pillStrip);
+   assert.equal(pills.length, 2);
+   assert.match(allTextFor(pillStrip), /Zoo Opens/);
+   assert.match(allTextFor(pillStrip), /Arrival/);
+});
+
+test('day planner stacks departure and close pills at the same time', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-15',
+         openTime: '09:30',
+         lastAdmissionTime: '17:00',
+         closeTime: '18:00',
+      },
+      {
+         departureTime: '18:00',
+      }
+   );
+   const timeCells = planner.querySelectorAll('.itinerary-day-time');
+   const closeTimeCells = timeCells.filter((cell) => cell.textContent === '6:00 PM');
+
+   assert.equal(closeTimeCells.length, 1);
+
+   const pillStrips = planner.querySelectorAll('.itinerary-day-pill-strip');
+   const closePillStrip = pillStrips.find((strip) => (
+      allTextFor(strip).includes('Departure')
+      && allTextFor(strip).includes('Zoo Closes')
+   ));
+
+   assert.ok(closePillStrip);
+   assert.equal(closePillStrip.querySelectorAll('.itinerary-day-open-pill').length, 2);
+});
+
+test('day planner renders itinerary arrival and departure times', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         arrivalTime: '09:45',
+         departureTime: '17:15',
+      }
+   );
+   const text = allTextFor(planner);
+
+   assert.match(text, /9:45 AM/);
+   assert.match(text, /Arrival/);
+   assert.match(text, /5:15 PM/);
+   assert.match(text, /Departure/);
 });
 
 test('day planner renders scheduled guardians talks and wild encounters', () => {
