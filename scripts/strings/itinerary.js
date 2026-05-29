@@ -97,7 +97,6 @@ export const itinerary = {
       departureTimeAfterArrivalInvalid: (
          'Departure time must be after arrival.'
       ),
-      departureLabel: 'Departure',
       earlyAdmissionLabel: 'Early Admission',
       firstSlot: '9:30 AM',
       listViewLabel: 'List View',

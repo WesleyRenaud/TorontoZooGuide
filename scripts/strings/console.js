@@ -157,7 +157,6 @@ export const updateTypes = [
    { value: 'Animal Passing' },
    { value: 'Closure' },
    { value: 'New Arrival' },
-   { value: 'Departure' },
 ];
 
 export const viewingScopes = [

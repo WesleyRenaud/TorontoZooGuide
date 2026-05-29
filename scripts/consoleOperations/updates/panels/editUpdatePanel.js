@@ -1,4 +1,5 @@
 import { APP_STRINGS } from '../../../strings.js';
+import { labels } from '../../../strings/common.js';
 import {
    createActions,
    createDateField,
@@ -27,7 +28,10 @@ export function createEditUpdatePanel() {
             label: APP_STRINGS.labels.type,
             inputId: 'editUpdateType',
             emptyOptionLabel: APP_STRINGS.placeholders.option,
-            options: APP_STRINGS.updateTypes,
+            options: [
+               ...APP_STRINGS.updateTypes,
+               { value: labels.departure },
+            ],
          }),
          createDateField({
             label: APP_STRINGS.labels.endDate,

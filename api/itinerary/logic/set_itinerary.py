@@ -17,8 +17,8 @@ from .guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from .itinerary import build_current_itinerary
 from .itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from .itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
-from .itinerary_schedule_time_order_validation import departure_follows_arrival
 from .itinerary_save_result import ItinerarySaveResult
+from .itinerary_schedule_time_order_validation import departure_follows_arrival
 from .itinerary_validation import validate_itinerary_for_save
 from ...types import Connection, DateInput, TimeInput
 from .wild_encounter_time_conflicts import remove_scheduled_items_with_time_conflicts

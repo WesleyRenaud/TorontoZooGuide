@@ -1,4 +1,5 @@
 import { APP_STRINGS } from '../../../strings.js';
+import { labels } from '../../../strings/common.js';
 import {
    createActions,
    createDateRangeFields,
@@ -28,7 +29,10 @@ export function createCreateUpdatePanel() {
             label: APP_STRINGS.labels.type,
             inputId: 'createUpdateType',
             emptyOptionLabel: APP_STRINGS.placeholders.type,
-            options: APP_STRINGS.updateTypes,
+            options: [
+               ...APP_STRINGS.updateTypes,
+               { value: labels.departure },
+            ],
          }),
          createDateRangeFields({
             startDateId: 'createUpdateStartDate',

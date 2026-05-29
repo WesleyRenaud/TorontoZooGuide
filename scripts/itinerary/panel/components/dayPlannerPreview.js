@@ -10,23 +10,22 @@ import {
    buildUnscheduledItinerary,
 } from '../dayPlannerScheduledItems.js';
 import {
-   buildItineraryTimeMarkers,
-   buildMarkersByStart,
-   resolveTimelinePillLabel,
-} from '../dayPlannerTimelineMarkers.js';
-import {
    appendScheduledItems,
    makeTimelineRow,
    makeUnavailableMessage,
 } from './dayPlannerTimeline.js';
+import {
+   buildItineraryTimeMarkers,
+   buildMarkersByStart,
+   resolveTimelinePillLabel,
+} from '../dayPlannerTimelineMarkers.js';
 import { appendItineraryTimeMarkers } from './dayPlannerTimelinePills.js';
 import { el } from '../dom.js';
-import {
-   formatISODateFull,
-} from '../format.js';
+import { formatISODateFull } from '../format.js';
 import { makeSection } from './section.js';
 import { buildSectionConfigs } from '../sectionConfigs.js';
 import { APP_STRINGS } from '../../../strings.js';
+import { labels } from '../../../strings/common.js';
 
 function makeItemsListSection(itinerary = {}, sectionTitle = '') {
    const sectionConfigs = buildSectionConfigs(itinerary);
@@ -61,7 +60,10 @@ export function makeDayPlannerPreview(
    itinerary = {},
    timeHandlers = {}
 ) {
-   const strings = APP_STRINGS.itinerary.dayPlanner;
+   const strings = {
+      ...APP_STRINGS.itinerary.dayPlanner,
+      departureLabel: labels.departure,
+   };
    const hours = zooHours && typeof zooHours === 'object'
       ? zooHours
       : {};
