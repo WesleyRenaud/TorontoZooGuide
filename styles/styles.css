@@ -2093,6 +2093,12 @@ nav ul li a:hover {
    max-width: calc(100% - 44px);
 }
 
+.itinerary-day-pill-strip[data-offset-fraction] {
+   top: calc(
+      var(--itinerary-pill-offset-fraction) * var(--itinerary-half-hour-slot-height) - 36px
+   );
+}
+
 .itinerary-day-open-pill {
    position: static;
    padding: 17px 30px;

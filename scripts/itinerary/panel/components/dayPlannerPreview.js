@@ -16,7 +16,7 @@ import {
 } from './dayPlannerTimeline.js';
 import {
    buildItineraryTimeMarkers,
-   buildMarkersByStart,
+   buildMarkersByAnchorSlot,
    resolveTimelinePillLabel,
 } from '../dayPlannerTimelineMarkers.js';
 import { appendItineraryTimeMarkers } from './dayPlannerTimelinePills.js';
@@ -45,14 +45,15 @@ function makeItemsListSection(itinerary = {}, sectionTitle = '') {
    return wrapper;
 }
 
-function buildTimelineSlotStarts(halfHourSlotStarts, itineraryTimeMarkers, closeMinutes) {
-   return [
-      ...new Set([
-         ...halfHourSlotStarts,
-         ...itineraryTimeMarkers.map((marker) => marker.startMinutes),
-         closeMinutes,
-      ].filter(Number.isFinite)),
-   ].sort((left, right) => left - right);
+function buildTimelineSlotStarts(halfHourSlotStarts, closeMinutes) {
+   const slotStarts = [...halfHourSlotStarts];
+
+   if (Number.isFinite(closeMinutes) && !slotStarts.includes(closeMinutes)) {
+      slotStarts.push(closeMinutes);
+      slotStarts.sort((left, right) => left - right);
+   }
+
+   return slotStarts;
 }
 
 export function makeDayPlannerPreview(
@@ -95,10 +96,13 @@ export function makeDayPlannerPreview(
    const itineraryTimeMarkers = buildItineraryTimeMarkers(itinerary, strings);
    const timelineSlotStarts = buildTimelineSlotStarts(
       halfHourSlotStarts,
-      itineraryTimeMarkers,
       closeMinutes
    );
-   const markersByStart = buildMarkersByStart(itineraryTimeMarkers);
+   const markersByAnchorSlot = buildMarkersByAnchorSlot(
+      itineraryTimeMarkers,
+      timelineSlotStarts,
+      closeMinutes
+   );
    const scheduledRowsContext = buildScheduledItemRowsContext(
       itinerary,
       timelineSlotStarts
@@ -125,7 +129,7 @@ export function makeDayPlannerPreview(
          pillLabel
       );
 
-      appendItineraryTimeMarkers(gridLine, markersByStart, slotStart);
+      appendItineraryTimeMarkers(gridLine, markersByAnchorSlot, slotStart);
       appendScheduledItems(gridLine, scheduledRowsContext.itemsByStart.get(slotStart));
       timeline.appendChild(timeCell);
       timeline.appendChild(gridLine);

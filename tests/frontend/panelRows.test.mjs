@@ -15,6 +15,11 @@ import {
    resolveDepartureTimeValidationError,
 } from '../../scripts/itinerary/panel/dayPlannerSchedule.js';
 import {
+   buildMarkersByAnchorSlot,
+   computeMarkerOffsetFraction,
+   findTimelineAnchorSlot,
+} from '../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
+import {
    formatClockTime,
    formatISODateFull,
    formatISODateLong,
@@ -303,6 +308,24 @@ test('formats and normalizes itinerary panel item data', () => {
    assert.equal(normalizeWild({ name: '  African Rainforest  ' }).name, 'African Rainforest');
 });
 
+test('timeline markers anchor to the preceding half-hour slot', () => {
+   const slotStarts = buildHalfHourSlotStarts(570, 1140);
+   const markersByAnchor = buildMarkersByAnchorSlot(
+      [
+         { startMinutes: parseClockTimeMinutes('11:35'), label: 'Arrival' },
+      ],
+      slotStarts,
+      1140
+   );
+
+   assert.equal(findTimelineAnchorSlot(parseClockTimeMinutes('11:35'), slotStarts), 690);
+   assert.equal(computeMarkerOffsetFraction(695, 690, 720), 1 / 6);
+   assert.deepEqual(markersByAnchor.get(690), [{
+      label: 'Arrival',
+      offsetFraction: 1 / 6,
+   }]);
+});
+
 test('day planner starts at early admission when available', () => {
    const planner = makeDayPlannerPreview({
       date: '2026-06-20',
@@ -367,7 +390,7 @@ test('day planner stacks departure and close pills at the same time', () => {
    assert.equal(closePillStrip.querySelectorAll('.itinerary-day-open-pill').length, 2);
 });
 
-test('day planner renders itinerary arrival and departure times', () => {
+test('day planner positions off-slot arrival and departure between half-hour lines', () => {
    const planner = makeDayPlannerPreview(
       {
          date: '2026-06-20',
@@ -380,12 +403,23 @@ test('day planner renders itinerary arrival and departure times', () => {
          departureTime: '17:15',
       }
    );
-   const text = allTextFor(planner);
+   const timeLabels = [...planner.querySelectorAll('.itinerary-day-time')].map(
+      (cell) => cell.textContent
+   );
+   const pillStrips = planner.querySelectorAll('.itinerary-day-pill-strip');
+   const arrivalStrip = pillStrips.find((strip) => (
+      allTextFor(strip).includes('Arrival')
+   ));
+   const departureStrip = pillStrips.find((strip) => (
+      allTextFor(strip).includes('Departure')
+   ));
 
-   assert.match(text, /9:45 AM/);
-   assert.match(text, /Arrival/);
-   assert.match(text, /5:15 PM/);
-   assert.match(text, /Departure/);
+   assert.ok(!timeLabels.includes('9:45 AM'));
+   assert.ok(!timeLabels.includes('5:15 PM'));
+   assert.match(allTextFor(planner), /Arrival/);
+   assert.match(allTextFor(planner), /Departure/);
+   assert.equal(arrivalStrip?.attributes?.['data-offset-fraction'], '0.5');
+   assert.equal(departureStrip?.attributes?.['data-offset-fraction'], '0.5');
 });
 
 test('day planner renders scheduled guardians talks and wild encounters', () => {
