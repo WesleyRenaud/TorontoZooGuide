@@ -43,6 +43,7 @@ export const labels = {
    dailyViewingEndTime: 'Daily viewing end time',
    dailyViewingStartTime: 'Daily viewing start time',
    date: 'Date',
+   departure: 'Departure',
    description: 'Description',
    encounterTime: 'Encounter time',
    endDate: 'End date',

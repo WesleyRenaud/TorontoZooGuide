@@ -22,6 +22,12 @@ function normalizeItineraryDate(value) {
       : '';
 }
 
+function normalizeItineraryTime(value) {
+   return typeof value === 'string'
+      ? value
+      : '';
+}
+
 function normalizeItineraryItems(items) {
    return Array.isArray(items)
       ? items
@@ -79,6 +85,8 @@ function areDraftValuesEqual(left, right) {
 export function createEmptyItineraryDraft() {
    return {
       date: '',
+      arrivalTime: '',
+      departureTime: '',
       animals: [],
       attractions: [],
       guardiansTalks: [],
@@ -91,6 +99,8 @@ export function normalizeItineraryDraft(draft = {}) {
 
    return {
       date: normalizeItineraryDate(source.date),
+      arrivalTime: normalizeItineraryTime(source.arrivalTime),
+      departureTime: normalizeItineraryTime(source.departureTime),
       animals: normalizeItineraryItems(source.animals),
       attractions: normalizeItineraryItems(source.attractions),
       guardiansTalks: normalizeItineraryItems(source.guardiansTalks),
@@ -103,6 +113,8 @@ export function cloneItineraryDraft(draft = {}) {
 
    return {
       date: normalizedDraft.date,
+      arrivalTime: normalizedDraft.arrivalTime,
+      departureTime: normalizedDraft.departureTime,
       animals: cloneItineraryItems(normalizedDraft.animals),
       attractions: cloneItineraryItems(normalizedDraft.attractions),
       guardiansTalks: cloneItineraryItems(normalizedDraft.guardiansTalks),
@@ -136,6 +148,8 @@ export function toSetItineraryPayload(draft = {}) {
 
    return {
       date: base.date,
+      arrivalTime: base.arrivalTime,
+      departureTime: base.departureTime,
       animals: base.animals.map(normalizeAnimalForSave).filter(Boolean),
       attractions: normalizeItineraryNamesForSave(base.attractions),
       guardiansTalks: normalizeGuardiansTalkListForSave(base.guardiansTalks),
@@ -167,6 +181,14 @@ export function areItineraryDraftsSemanticallyEqual(left, right) {
    const rightSave = toSetItineraryPayload(right);
 
    if (leftSave.date !== rightSave.date) {
+      return false;
+   }
+
+   if (leftSave.arrivalTime !== rightSave.arrivalTime) {
+      return false;
+   }
+
+   if (leftSave.departureTime !== rightSave.departureTime) {
       return false;
    }
 
@@ -203,7 +225,9 @@ export function areItineraryDraftsEqual(left, right) {
 export function isItineraryEmptyDraft(draft = {}) {
    const normalizedDraft = normalizeItineraryDraft(draft);
 
-   return ITINERARY_ITEM_KEYS.every((key) => (
+   return !normalizedDraft.arrivalTime
+   && !normalizedDraft.departureTime
+   && ITINERARY_ITEM_KEYS.every((key) => (
       normalizedDraft[key].length === 0
    ));
 }

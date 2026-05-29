@@ -31,6 +31,8 @@ function normalizeItineraryModel(itinerary) {
 
    return {
       date: asTrimmedString(source.date),
+      arrivalTime: asTrimmedString(source.arrival_time),
+      departureTime: asTrimmedString(source.departure_time),
       ...normalizeItineraryCollections(source),
    };
 }
@@ -104,6 +106,18 @@ export async function getZooHoursRequest({ day, month, year }) {
 export async function setItineraryRequest(payload) {
    const response = await postJson('/set-itinerary', payload);
    return normalizeItineraryResponse(response);
+}
+
+export async function setItineraryArrivalTimeRequest(arrivalTime) {
+   return postJson('/set-itinerary-arrival-time', {
+      arrivalTime: asTrimmedString(arrivalTime),
+   });
+}
+
+export async function setItineraryDepartureTimeRequest(departureTime) {
+   return postJson('/set-itinerary-departure-time', {
+      departureTime: asTrimmedString(departureTime),
+   });
 }
 
 export async function acceptItineraryRequest(

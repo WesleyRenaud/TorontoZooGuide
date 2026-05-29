@@ -64,6 +64,8 @@ test('writes and loads the stored itinerary draft', () => {
    assert.deepEqual(JSON.parse(localStorage.getItem(ANIMALS_KEY)), [{ species: 'African Lion' }]);
    assert.deepEqual(loadStoredItineraryDraft(), {
       date: '2026-06-15',
+      arrivalTime: '',
+      departureTime: '',
       animals: [{ species: 'African Lion' }],
       attractions: [{ name: 'Conservation Carousel' }],
       guardiansTalks: [{ name: 'Amur Tiger' }],

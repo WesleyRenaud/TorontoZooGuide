@@ -764,6 +764,8 @@ class MyHandler( BaseHTTPRequestHandler ):
          data = json.loads( post_data.decode( 'utf-8' ) )
 
          date = data.get( 'date' )
+         arrival_time = data.get( 'arrivalTime' )
+         departure_time = data.get( 'departureTime' )
          animals = data.get( 'animals' )
          attractions = data.get( 'attractions' )
          guardians_talks = data.get( 'guardiansTalks' )
@@ -775,6 +777,8 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          save_result = ItineraryController.set_itinerary(
             date=date,
+            arrival_time=arrival_time,
+            departure_time=departure_time,
             animals=animals,
             attractions=attractions,
             guardians_talks=guardians_talks,
@@ -811,6 +815,50 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.end_headers()
 
          response = { 'date': date }
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-itinerary-arrival-time':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         arrival_time = data.get( 'arrivalTime' )
+
+         success = ItineraryController.set_arrival_time(
+            arrival_time=arrival_time )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'arrivalTime': arrival_time,
+         }
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/set-itinerary-departure-time':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         departure_time = data.get( 'departureTime' )
+
+         success = ItineraryController.set_departure_time(
+            departure_time=departure_time )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'success': success,
+            'departureTime': departure_time,
+         }
+
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 

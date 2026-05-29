@@ -4,6 +4,8 @@ import {
    getItineraryDateRequest,
    getItineraryRequest,
    getZooHoursRequest,
+   setItineraryArrivalTimeRequest,
+   setItineraryDepartureTimeRequest,
    setItineraryRequest,
 } from '../api/itineraryApi.js';
 import { setStoredItineraryDate } from './draftStorage.js';
@@ -56,7 +58,9 @@ function normalizeItinerarySource(itinerary) {
       : {};
 
    return {
-      date: typeof source.date === 'string' ? source.date : '',
+      date: source.date,
+      arrivalTime: source.arrivalTime,
+      departureTime: source.departureTime,
       animals: normalizeItineraryItems(source.animals),
       attractions: normalizeItineraryItems(source.attractions),
       guardiansTalks: normalizeItineraryItems(source.guardiansTalks),
@@ -150,6 +154,14 @@ export async function saveItinerary(
    dispatchItineraryUpdated(normalizedItinerary);
 
    return normalizedItinerary;
+}
+
+export async function setItineraryArrivalTime(arrivalTime) {
+   return setItineraryArrivalTimeRequest(arrivalTime);
+}
+
+export async function setItineraryDepartureTime(departureTime) {
+   return setItineraryDepartureTimeRequest(departureTime);
 }
 
 export async function clearItinerary() {
