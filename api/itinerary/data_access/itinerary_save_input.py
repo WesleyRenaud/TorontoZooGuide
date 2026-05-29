@@ -5,11 +5,14 @@ from datetime import date
 
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
+from ...types import ScheduleTimeKey
 
 
 @dataclass( frozen=True )
 class ItinerarySaveInput:
    date: date
+   arrival_time: ScheduleTimeKey
+   departure_time: ScheduleTimeKey
    animals: tuple[ ItineraryAnimalInput, ... ]
    attractions: tuple[ str, ... ]
    guardians_talks: tuple[ ItineraryGuardiansTalkInput, ... ]

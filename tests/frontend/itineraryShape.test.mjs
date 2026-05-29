@@ -14,6 +14,8 @@ import {
 test('creates and normalizes itinerary draft shape', () => {
    assert.deepEqual(createEmptyItineraryDraft(), {
       date: '',
+      arrivalTime: '',
+      departureTime: '',
       animals: [],
       attractions: [],
       guardiansTalks: [],
@@ -22,12 +24,16 @@ test('creates and normalizes itinerary draft shape', () => {
 
    assert.deepEqual(normalizeItineraryDraft({
       date: '2026-06-15',
+      arrivalTime: '09:30',
+      departureTime: '17:00',
       animals: [{ species: 'African Lion' }],
       attractions: 'Conservation Carousel',
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: null,
    }), {
       date: '2026-06-15',
+      arrivalTime: '09:30',
+      departureTime: '17:00',
       animals: [{ species: 'African Lion' }],
       attractions: [],
       guardiansTalks: [{ name: 'Amur Tiger' }],
@@ -112,6 +118,10 @@ test('treats a draft with only a date as empty', () => {
    assert.equal(isItineraryEmptyDraft({ date: '2026-06-15' }), true);
    assert.equal(isItineraryEmptyDraft({
       date: '2026-06-15',
+      arrivalTime: '09:30',
+   }), false);
+   assert.equal(isItineraryEmptyDraft({
+      date: '2026-06-15',
       wildEncounters: [{ name: 'African Rainforest' }],
    }), false);
 });
@@ -128,6 +138,8 @@ test('toSetItineraryPayload sends canonical shapes for the save API', () => {
       wildEncounters: [{ name: 'African Rainforest' }],
    }), {
       date: '2026-06-15',
+      arrivalTime: '',
+      departureTime: '',
       animals: [
          { species: 'African Lion', exhibit: 'Africa Savanna' },
       ],
@@ -144,6 +156,8 @@ test('toSetItineraryPayload sends canonical shapes for the save API', () => {
 test('toSetItineraryPayload keeps schedule times when provided', () => {
    assert.deepEqual(toSetItineraryPayload({
       date: '2026-06-15',
+      arrivalTime: '09:30',
+      departureTime: '17:00',
       animals: [],
       attractions: [],
       guardiansTalks: [{
@@ -154,6 +168,8 @@ test('toSetItineraryPayload keeps schedule times when provided', () => {
       wildEncounters: ['Grizzly Bear'],
    }), {
       date: '2026-06-15',
+      arrivalTime: '09:30',
+      departureTime: '17:00',
       animals: [],
       attractions: [],
       guardiansTalks: [{

@@ -1805,15 +1805,184 @@ nav ul li a:hover {
 .itinerary-day-module-date {
    flex: 0 0 auto;
    max-width: 400px;
-   padding: 26px 32px;
+   padding: 0;
    border-radius: 8px;
-   background: #5e9600;
+   background: transparent;
    color: #ffffff;
-   font-size: 2.35rem;
+   font-size: 3rem;
    line-height: 1.1;
    font-weight: 900;
    text-align: center;
+   box-shadow: none;
+}
+
+.itinerary-day-module-controls {
+   flex: 0 0 auto;
+   display: grid;
+   grid-template-columns: max-content minmax(280px, 1fr);
+   column-gap: 22px;
+   row-gap: 22px;
+   width: min(720px, 100%);
+   padding: 38px 44px 44px 44px;
+   border-radius: 8px;
+   background: #5e9600;
+   color: #ffffff;
    box-shadow: inset 0 -2px 0 rgba(20, 35, 10, 0.18);
+}
+
+.itinerary-day-module-controls .itinerary-day-module-date {
+   grid-column: 1 / -1;
+   max-width: none;
+}
+
+.itinerary-day-time-control {
+   display: contents;
+   min-width: 0;
+}
+
+.itinerary-day-time-control-label {
+   align-self: center;
+   color: #ffffff;
+   font-size: 2.25rem;
+   line-height: 1;
+   font-weight: 900;
+   white-space: nowrap;
+}
+
+.itinerary-day-time-control-label::after {
+   content: ':';
+}
+
+.itinerary-day-time-form {
+   display: contents;
+   min-width: 0;
+}
+
+.itinerary-day-time-input-wrap {
+   position: relative;
+   min-width: 0;
+   width: 100%;
+}
+
+.tzg-validation-bubble {
+   position: fixed;
+   z-index: 10050;
+   display: inline-flex;
+   align-items: center;
+   gap: 16px;
+   box-sizing: border-box;
+   width: max-content;
+   max-width: none;
+   padding: 18px 24px;
+   border: 1px solid rgba(20, 35, 10, 0.2);
+   border-radius: 10px;
+   background: #ffffff;
+   box-shadow: 0 10px 24px rgba(20, 35, 10, 0.18);
+   font-family: 'Poppins', sans-serif;
+   font-size: 2rem;
+   line-height: 1.2;
+   font-weight: 600;
+   color: rgba(20, 35, 10, 0.94);
+   white-space: nowrap;
+   pointer-events: none;
+}
+
+.tzg-validation-bubble::before {
+   content: '';
+   position: absolute;
+   top: -7px;
+   left: var(--tzg-validation-bubble-arrow-left, 28px);
+   width: 14px;
+   height: 14px;
+   background: #ffffff;
+   border-top: 1px solid rgba(20, 35, 10, 0.2);
+   border-left: 1px solid rgba(20, 35, 10, 0.2);
+   transform: rotate(45deg);
+}
+
+.tzg-validation-bubble-icon {
+   flex: 0 0 auto;
+   width: 2.5rem;
+   height: 2.5rem;
+   border-radius: 4px;
+   background: #e67c00;
+   color: #ffffff;
+   font-size: 1.85rem;
+   font-weight: 800;
+   line-height: 2.5rem;
+   text-align: center;
+}
+
+.tzg-validation-bubble-text {
+   flex: 0 1 auto;
+   white-space: nowrap;
+}
+
+.itinerary-day-time-input {
+   width: 100%;
+   box-sizing: border-box;
+   min-height: 104px;
+   padding: 18px 22px;
+   border: 4px solid rgba(255, 255, 255, 0.82);
+   border-radius: 8px;
+   background: rgba(255, 255, 255, 0.96);
+   color: rgba(20, 35, 10, 0.94);
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.45rem;
+   font-weight: 900;
+   box-shadow: 0 6px 12px rgba(20, 35, 10, 0.16);
+   text-align: center;
+}
+
+.itinerary-day-time-input:disabled {
+   opacity: 0.68;
+}
+
+.flatpickr-calendar.itinerary-day-time-picker {
+   transform: scale(2.75) !important;
+   transform-origin: top left;
+   width: auto !important;
+   min-width: 0 !important;
+   box-shadow: 0 10px 24px rgba(20, 35, 10, 0.18);
+}
+
+.flatpickr-calendar.itinerary-day-time-picker.open {
+   margin-top: 0.5em;
+}
+
+.flatpickr-calendar.itinerary-day-time-picker .flatpickr-time {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   gap: 6px;
+   width: auto;
+   padding: 10px 12px;
+}
+
+.flatpickr-calendar.itinerary-day-time-picker .flatpickr-time .numInputWrapper {
+   flex: 0 0 auto;
+   width: 3.5rem;
+}
+
+.flatpickr-calendar.itinerary-day-time-picker .flatpickr-time input.flatpickr-hour,
+.flatpickr-calendar.itinerary-day-time-picker .flatpickr-time input.flatpickr-minute {
+   font-family: 'Poppins', sans-serif;
+   font-weight: 700;
+   text-align: center;
+}
+
+.flatpickr-calendar.itinerary-day-time-picker .flatpickr-am-pm {
+   margin: 0 0 0 6px;
+   padding: 8px 12px;
+   border-radius: 6px;
+   font-family: 'Poppins', sans-serif;
+   font-weight: 700;
+   background: rgba(94, 150, 0, 0.1);
+   cursor: pointer;
+}
+
+.flatpickr-calendar.itinerary-day-time-picker .flatpickr-am-pm:hover {
+   background: rgba(94, 150, 0, 0.18);
 }
 
 .itinerary-day-timeline {
@@ -1912,10 +2081,20 @@ nav ul li a:hover {
    line-height: 1.12;
 }
 
-.itinerary-day-open-pill {
+.itinerary-day-pill-strip {
    position: absolute;
    top: -36px;
    left: 22px;
+   z-index: 2;
+   display: flex;
+   flex-wrap: wrap;
+   align-items: flex-start;
+   gap: 12px;
+   max-width: calc(100% - 44px);
+}
+
+.itinerary-day-open-pill {
+   position: static;
    padding: 17px 30px;
    border-radius: 999px;
    background: #ffffff;

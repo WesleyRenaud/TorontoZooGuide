@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime, time, timedelta
 
 from ..models.date_range import DateRange
-from ..types import DateInput, DateKey
+from ..types import DateInput, DateKey, TimeInput
 
 
 class DateValues:
@@ -27,9 +27,15 @@ class DateValues:
 
 
    @staticmethod
-   def parse_time_value( value: str | None ) -> time | None:
+   def parse_time_value( value: TimeInput ) -> time | None:
       if value == None:
          return None
+
+      if isinstance( value, datetime ):
+         return value.time().replace( second=0, microsecond=0 )
+
+      if isinstance( value, time ):
+         return value.replace( second=0, microsecond=0 )
 
       value = str( value ).strip()
 
@@ -50,7 +56,7 @@ class DateValues:
 
 
    @staticmethod
-   def format_time_value( value: str | None ) -> str | None:
+   def format_time_value( value: TimeInput ) -> str | None:
       parsed_time = DateValues.parse_time_value( value )
 
       if parsed_time == None:
@@ -60,7 +66,7 @@ class DateValues:
 
 
    @staticmethod
-   def format_display_time_value( value: str | None ) -> str | None:
+   def format_display_time_value( value: TimeInput ) -> str | None:
       parsed_time = DateValues.parse_time_value( value )
 
       if parsed_time == None:
@@ -70,7 +76,7 @@ class DateValues:
 
 
    @staticmethod
-   def time_value_in_minutes( value: str | None ) -> int | None:
+   def time_value_in_minutes( value: TimeInput ) -> int | None:
       parsed_time = DateValues.parse_time_value( value )
 
       if parsed_time == None:
@@ -88,7 +94,7 @@ class DateValues:
 
 
    @staticmethod
-   def add_minutes_to_time( value: str | None, minutes: int | None ) -> str | None:
+   def add_minutes_to_time( value: TimeInput, minutes: int | None ) -> str | None:
       parsed_time = DateValues.parse_time_value( value )
 
       if parsed_time == None or minutes == None:
@@ -178,7 +184,7 @@ class DateValues:
 
 
    @staticmethod
-   def normalize_itinerary_schedule_time( value: str | None ) -> str | None:
+   def normalize_itinerary_schedule_time( value: TimeInput ) -> str | None:
       if value == None:
          return None
 

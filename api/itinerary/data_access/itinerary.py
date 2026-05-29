@@ -4,6 +4,8 @@ from .itinerary_animal_mapper import map_itinerary_animal_records
 from .itinerary_animal_record import ItineraryAnimalRecord
 from .itinerary_attraction_mapper import map_itinerary_attraction_records
 from .itinerary_attraction_record import ItineraryAttractionRecord
+from .itinerary_date_mapper import map_itinerary_date_record
+from .itinerary_date_record import ItineraryDateRecord
 from .itinerary_event_mapper import map_itinerary_event_records
 from .itinerary_event_record import ItineraryEventRecord
 from .itinerary_guardians_talk_mapper import map_itinerary_guardians_talk_records
@@ -11,15 +13,17 @@ from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from .itinerary_wild_encounter_mapper import map_itinerary_wild_encounter_records
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from .saved_itinerary import SavedItinerary
-from ...shared.date_values import DateValues
 from ...types import Connection, DateKey
 
 
-def fetch_itinerary_date( conn: Connection ) -> DateKey | None:
+def fetch_itinerary_date_record( conn: Connection ) -> ItineraryDateRecord | None:
    cur = conn.cursor()
 
    date_row = cur.execute(
-      """   SELECT ITINERARY_DATE
+      """   SELECT
+               ITINERARY_DATE,
+               ARRIVAL_TIME,
+               DEPARTURE_TIME
             FROM ItineraryDate
             LIMIT 1;
       """
@@ -27,10 +31,16 @@ def fetch_itinerary_date( conn: Connection ) -> DateKey | None:
 
    cur.close()
 
-   if date_row == None or date_row[ 'ITINERARY_DATE' ] == None:
+   return map_itinerary_date_record( date_row )
+
+
+def fetch_itinerary_date( conn: Connection ) -> DateKey | None:
+   date_record = fetch_itinerary_date_record( conn )
+
+   if date_record == None or date_record.itinerary_date == None:
       return None
 
-   return DateValues.normalize_date_key( date_row[ 'ITINERARY_DATE' ] )
+   return date_record.itinerary_date
 
 
 def fetch_itinerary_animal_rows( conn: Connection ) -> list[ ItineraryAnimalRecord ]:
@@ -122,11 +132,13 @@ def fetch_itinerary_event_rows( conn: Connection ) -> list[ ItineraryEventRecord
 
 
 def fetch_saved_itinerary( conn: Connection ) -> SavedItinerary:
-   date_value = fetch_itinerary_date( conn )
+   date_record = fetch_itinerary_date_record( conn )
 
-   if date_value == None:
+   if date_record == None or date_record.itinerary_date == None:
       return SavedItinerary(
          date_value=None,
+         arrival_time=None,
+         departure_time=None,
          animal_rows=(),
          attraction_rows=(),
          guardians_talk_rows=(),
@@ -134,7 +146,9 @@ def fetch_saved_itinerary( conn: Connection ) -> SavedItinerary:
          event_rows=() )
 
    return SavedItinerary(
-      date_value=date_value,
+      date_value=date_record.itinerary_date,
+      arrival_time=date_record.arrival_time,
+      departure_time=date_record.departure_time,
       animal_rows=tuple( fetch_itinerary_animal_rows( conn ) ),
       attraction_rows=tuple( fetch_itinerary_attraction_rows( conn ) ),
       guardians_talk_rows=tuple( fetch_itinerary_guardians_talk_rows( conn ) ),

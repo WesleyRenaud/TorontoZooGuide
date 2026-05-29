@@ -6,7 +6,7 @@ from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from .itinerary_save_input import ItinerarySaveInput
 from ...shared.date_values import DateValues
-from ...types import DateInput
+from ...types import DateInput, TimeInput
 
 
 def map_named_strings( names: Iterable[ str ] | None ) -> tuple[ str, ... ]:
@@ -47,6 +47,8 @@ def map_animal_inputs( animals: Iterable[ dict[ str, str ] ] | None ) -> tuple[ 
 
 def map_itinerary_save_input(
       date: DateInput,
+      arrival_time: TimeInput,
+      departure_time: TimeInput,
       animals: Iterable[ dict[ str, str ] ] | None,
       attractions: Iterable[ str ] | None,
       guardians_talks: Iterable[ dict[ str, str | None ] ] | None,
@@ -55,6 +57,8 @@ def map_itinerary_save_input(
 
    return ItinerarySaveInput(
       date=DateValues.parse_date_value( date ),
+      arrival_time=DateValues.normalize_itinerary_schedule_time( arrival_time ),
+      departure_time=DateValues.normalize_itinerary_schedule_time( departure_time ),
       animals=map_animal_inputs( animals ),
       attractions=map_named_strings( attractions ),
       guardians_talks=map_guardians_talk_inputs( guardians_talks ),

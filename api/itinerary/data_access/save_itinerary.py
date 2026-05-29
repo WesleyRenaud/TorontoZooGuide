@@ -9,15 +9,27 @@ from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.itinerary_event import ItineraryEvent
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ...shared.date_values import DateValues
-from ...types import Connection, Cursor
+from ...types import Connection, Cursor, ScheduleTimeKey
 
 
-def save_itinerary_date( cur: Cursor, visit_date: date ) -> None:
+def save_itinerary_date(
+      cur: Cursor,
+      visit_date: date,
+      arrival_time: ScheduleTimeKey,
+      departure_time: ScheduleTimeKey ) -> None:
    cur.execute(
-      """   INSERT INTO ItineraryDate ( ITINERARY_DATE )
-            VALUES ( ? );
+      """   INSERT INTO ItineraryDate (
+               ITINERARY_DATE,
+               ARRIVAL_TIME,
+               DEPARTURE_TIME
+            )
+            VALUES ( ?, ?, ? );
       """,
-      ( visit_date, ) )
+      (
+         visit_date,
+         arrival_time,
+         departure_time,
+      ) )
 
 
 def save_itinerary_animals( cur: Cursor, animals: list[ AnimalDiff ] ) -> None:
@@ -143,7 +155,11 @@ def save_validated_itinerary(
    cur = conn.cursor()
 
    try:
-      save_itinerary_date( cur, visit_date )
+      save_itinerary_date(
+         cur,
+         visit_date,
+         validated_itinerary.arrival_time,
+         validated_itinerary.departure_time )
       save_itinerary_animals( cur, validated_itinerary.animals )
       save_itinerary_attractions( cur, validated_itinerary.attractions )
       save_itinerary_guardians_talks( cur, validated_itinerary.guardians_talks )

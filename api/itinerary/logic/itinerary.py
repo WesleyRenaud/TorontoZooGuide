@@ -10,7 +10,7 @@ from ...models import GuardiansTalk
 from ...models import Itinerary
 from ...models import ItineraryEvent
 from ...models import WildEncounter
-from ...types import DateInput
+from ...types import DateInput, ScheduleTimeKey
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
 
@@ -21,7 +21,9 @@ def empty_itinerary() -> Itinerary:
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-      events=[] )
+      events=[],
+      arrival_time=None,
+      departure_time=None )
 
 
 def build_itinerary(
@@ -30,7 +32,9 @@ def build_itinerary(
       attractions: list[ Attraction ],
       guardians_talks: list[ GuardiansTalk ],
       wild_encounters: list[ WildEncounter ],
-      events: list[ ItineraryEvent ] ) -> Itinerary:
+      events: list[ ItineraryEvent ],
+      arrival_time: ScheduleTimeKey,
+      departure_time: ScheduleTimeKey ) -> Itinerary:
 
    return Itinerary(
       date=date,
@@ -38,7 +42,9 @@ def build_itinerary(
       attractions=attractions,
       guardians_talks=guardians_talks,
       wild_encounters=wild_encounters,
-      events=events )
+      events=events,
+      arrival_time=arrival_time,
+      departure_time=departure_time )
 
 
 def build_current_itinerary(
@@ -89,4 +95,6 @@ def build_current_itinerary(
       attractions=attractions,
       guardians_talks=guardians_talks,
       wild_encounters=wild_encounters,
-      events=events )
+      events=events,
+      arrival_time=saved_itinerary.arrival_time,
+      departure_time=saved_itinerary.departure_time )

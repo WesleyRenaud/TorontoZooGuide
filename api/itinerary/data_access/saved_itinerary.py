@@ -9,12 +9,14 @@ from .itinerary_event_record import ItineraryEventRecord
 from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...shared.date_values import DateValues
-from ...types import DateInput
+from ...types import DateInput, ScheduleTimeKey
 
 
 @dataclass( frozen=True )
 class SavedItinerary:
    date_value: DateInput | None
+   arrival_time: ScheduleTimeKey
+   departure_time: ScheduleTimeKey
    animal_rows: tuple[ ItineraryAnimalRecord, ... ]
    attraction_rows: tuple[ ItineraryAttractionRecord, ... ]
    guardians_talk_rows: tuple[ ItineraryGuardiansTalkRecord, ... ]

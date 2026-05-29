@@ -353,6 +353,16 @@ class StubZooControllers:
       return Itinerary( date='2026-06-15' )
 
 
+   def set_arrival_time( self, **kwargs: Any ) -> bool:
+      self.calls.append( ( 'set_arrival_time', kwargs ) )
+      return True
+
+
+   def set_departure_time( self, **kwargs: Any ) -> bool:
+      self.calls.append( ( 'set_departure_time', kwargs ) )
+      return True
+
+
    def accept_itinerary( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'accept_itinerary', kwargs ) )
       return True
@@ -1173,6 +1183,8 @@ def test_itinerary_endpoints_return_success_payloads(
       '/set-itinerary',
       {
          'date': '2026-06-15',
+         'arrivalTime': '09:30',
+         'departureTime': '17:00',
          'animals': [],
          'attractions': [],
          'guardiansTalks': [],
@@ -1196,6 +1208,8 @@ def test_itinerary_endpoints_return_success_payloads(
       'set_itinerary',
       {
          'date': '2026-06-15',
+         'arrival_time': '09:30',
+         'departure_time': '17:00',
          'animals': [],
          'attractions': [],
          'guardians_talks': [],
@@ -1216,6 +1230,32 @@ def test_itinerary_endpoints_return_success_payloads(
          'attractions_to_keep': None,
       },
    )
+
+
+def test_itinerary_time_endpoints_update_only_the_requested_time(
+      stub_database: type[ StubZooControllers ] ) -> None:
+   arrival_handler = make_handler(
+      '/set-itinerary-arrival-time',
+      { 'arrivalTime': '09:45' } )
+   departure_handler = make_handler(
+      '/set-itinerary-departure-time',
+      { 'departureTime': None } )
+
+   server.MyHandler.do_POST( arrival_handler )
+   server.MyHandler.do_POST( departure_handler )
+
+   assert response_json( arrival_handler ) == {
+      'success': True,
+      'arrivalTime': '09:45',
+   }
+   assert response_json( departure_handler ) == {
+      'success': True,
+      'departureTime': None,
+   }
+   assert StubZooControllers.instances[ 0 ].calls == [
+      ( 'set_arrival_time', { 'arrival_time': '09:45' } ),
+      ( 'set_departure_time', { 'departure_time': None } ),
+   ]
 
 
 def test_accept_itinerary_endpoint_passes_animals_to_keep(

@@ -6,6 +6,8 @@ import {
    getItineraryDateRequest,
    getItineraryRequest,
    getZooHoursRequest,
+   setItineraryArrivalTimeRequest,
+   setItineraryDepartureTimeRequest,
    setItineraryRequest,
 } from '../../scripts/api/itineraryApi.js';
 
@@ -57,6 +59,8 @@ test('normalizes stored itinerary response from snake case backend keys', async 
          error: '',
          itinerary: {
             date: '  2026-06-15  ',
+            arrival_time: ' 09:30 ',
+            departure_time: ' 17:00 ',
             animals: [{ species: 'African Lion' }],
             attractions: [{ name: 'Conservation Carousel' }],
             guardians_talks: [{ name: 'Amur Tiger' }],
@@ -71,6 +75,8 @@ test('normalizes stored itinerary response from snake case backend keys', async 
       issues: [],
       itinerary: {
          date: '2026-06-15',
+         arrivalTime: '09:30',
+         departureTime: '17:00',
          animals: [{ species: 'African Lion' }],
          attractions: [{ name: 'Conservation Carousel' }],
          guardiansTalks: [{ name: 'Amur Tiger' }],
@@ -100,6 +106,8 @@ test('normalizes set itinerary failures without dropping returned itinerary data
       issues: [],
       itinerary: {
          date: '2026-06-15',
+         arrivalTime: '',
+         departureTime: '',
          animals: [],
          attractions: [{ name: 'Conservation Carousel' }],
          guardiansTalks: [],
@@ -110,6 +118,32 @@ test('normalizes set itinerary failures without dropping returned itinerary data
          eventTypes: [],
       },
    });
+});
+
+test('sets itinerary arrival and departure times through focused endpoints', async () => {
+   const calls = [];
+
+   globalThis.fetch = async (url, options) => {
+      calls.push([url, JSON.parse(options.body)]);
+      return mockJsonResponse({ success: true });
+   };
+
+   assert.deepEqual(await setItineraryArrivalTimeRequest(' 09:45 '), {
+      success: true,
+   });
+   assert.deepEqual(await setItineraryDepartureTimeRequest(''), {
+      success: true,
+   });
+   assert.deepEqual(calls, [
+      [
+         '/set-itinerary-arrival-time',
+         { arrivalTime: '09:45' },
+      ],
+      [
+         '/set-itinerary-departure-time',
+         { departureTime: '' },
+      ],
+   ]);
 });
 
 test('normalizes accept itinerary response', async () => {
@@ -180,6 +214,8 @@ test('normalizes accept itinerary response', async () => {
       ],
       itinerary: {
          date: '2026-06-15',
+         arrivalTime: '',
+         departureTime: '',
          animals: [],
          attractions: [],
          guardiansTalks: [],
@@ -196,6 +232,8 @@ test('normalizes itinerary config from itinerary responses', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       itinerary: {
          date: '2026-06-15',
+         arrivalTime: '',
+         departureTime: '',
          animals: [],
          attractions: [],
          guardians_talks: [],
@@ -222,6 +260,8 @@ test('normalizes itinerary config from itinerary responses', async () => {
       issues: [],
       itinerary: {
          date: '2026-06-15',
+         arrivalTime: '',
+         departureTime: '',
          animals: [],
          attractions: [],
          guardiansTalks: [],
