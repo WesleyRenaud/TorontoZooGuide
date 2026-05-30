@@ -6,6 +6,7 @@ import {
    extractScheduleItemSearchRows,
    getScheduleItemRowId,
    getScheduleItemRowKind,
+   resolveEffectiveScheduleItemSelection,
 } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
 import {
    buildSchedulableEventTypes,
@@ -160,4 +161,24 @@ test('getScheduleItemRowKind and getScheduleItemRowId resolve mixed rows', () =>
    assert.equal(getScheduleItemRowKind(attractionRow), 'attractions');
    assert.equal(getScheduleItemRowId(animalRow), 'Tiger||Savanna');
    assert.equal(getScheduleItemRowId(attractionRow), 'Carousel');
+});
+
+test('resolveEffectiveScheduleItemSelection infers animals from a selected row', () => {
+   const animalRow = {
+      species: 'Pygmy Hippopotamus',
+      exhibit: 'African Rainforest Pavilion',
+      scheduleItemKind: 'animals',
+   };
+
+   assert.equal(
+      resolveEffectiveScheduleItemSelection('', animalRow),
+      SCHEDULE_ITEM_MODULE_TYPES.animals
+   );
+   assert.equal(
+      resolveEffectiveScheduleItemSelection(
+         SCHEDULE_ITEM_MODULE_TYPES.attractions,
+         animalRow
+      ),
+      SCHEDULE_ITEM_MODULE_TYPES.attractions
+   );
 });

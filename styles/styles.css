@@ -1953,6 +1953,12 @@ nav ul li a:hover {
    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
 }
 
+.schedule-item-module .itin-finish:disabled {
+   opacity: 0.45;
+   cursor: not-allowed;
+   box-shadow: none;
+}
+
 .schedule-item-module .itin-actions-right {
    gap: 28px;
 }
@@ -3256,6 +3262,7 @@ nav ul li a:hover {
 }
 
 .tzg-confirm .itin-card,
+.tzg-notice .itin-card,
 .schedule-item-module .itin-card {
    width: min(1458px, 74.5vw);
 }
@@ -3275,9 +3282,11 @@ nav ul li a:hover {
    color: rgba(20, 35, 10, 0.82);
 }
 
-.tzg-confirm .itin-overlay {
+.tzg-confirm .itin-overlay,
+.tzg-notice .itin-overlay {
    align-items: center;
    padding-top: 5vh;
+   padding-bottom: 5vh;
 }
 
 .itin-save-issues {

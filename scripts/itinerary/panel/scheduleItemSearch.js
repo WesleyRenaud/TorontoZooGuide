@@ -27,6 +27,18 @@ export function getScheduleItemRowKind(row) {
    return SCHEDULE_ITEM_MODULE_TYPES.animals;
 }
 
+export function resolveEffectiveScheduleItemSelection(selection, selectedRow) {
+   if (!isScheduleItemTypeUnset(selection)) {
+      return selection;
+   }
+
+   if (selectedRow) {
+      return getScheduleItemRowKind(selectedRow);
+   }
+
+   return selection;
+}
+
 export function getScheduleItemRowId(row) {
    if (getScheduleItemRowKind(row) === SCHEDULE_ITEM_MODULE_TYPES.attractions) {
       return getAttractionId(row);

@@ -87,6 +87,7 @@ export const itinerary = {
    errors: {
       generic: 'Could not update itinerary.',
       arrivalDepartureTooClose: 'Could not update itinerary time.',
+      noAvailableSlot: 'No open time slot is available for this item.',
    },
    dayPlanner: {
       aria: 'Itinerary day planner preview',
@@ -123,6 +124,7 @@ export const itinerary = {
    },
    scheduleItem: {
       title: 'Schedule item',
+      errorTitle: 'Unable to Schedule',
       scheduleButton: 'Schedule',
       typeLabel: 'Item type',
       typePlaceholder: 'Choose what to schedule',
