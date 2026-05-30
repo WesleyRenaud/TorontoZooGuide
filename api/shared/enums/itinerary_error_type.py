@@ -8,3 +8,4 @@ class ItineraryErrorType( str, Enum ):
    TIME_ORDER_INVALID = 'timeOrderInvalid'
    SAVE_FAILED = 'saveFailed'
    ARRIVAL_DEPARTURE_TOO_CLOSE = 'arrivalDepartureTooClose'
+   NO_AVAILABLE_SLOT = 'noAvailableSlot'
