@@ -705,6 +705,46 @@ html.home-page {
    transform: translateY(-3px);
 }
 
+.animal-search-results .animal-result .itin-animal-content {
+   flex: 1 1 auto;
+   min-width: 0;
+   gap: 28px;
+}
+
+.animal-search-results .itin-animal-thumb {
+   width: 180px;
+   height: 140px;
+   border-radius: 18px;
+   overflow: hidden;
+   flex: 0 0 auto;
+   background: rgba(0, 0, 0, 0.18);
+   box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.18);
+}
+
+.animal-search-results .itin-animal-thumb-img {
+   width: 100%;
+   height: 100%;
+   display: block;
+   object-fit: cover;
+   object-position: center;
+}
+
+.animal-search-results .itin-animal-thumb.is-placeholder {
+   display: grid;
+   place-items: center;
+}
+
+.animal-search-results .itin-animal-thumb.is-placeholder::before {
+   content: "🐾";
+   font-size: 4.4rem;
+   opacity: 0.85;
+}
+
+.animal-search-results .itin-animal-content .animal-result-left {
+   flex: 1 1 auto;
+   min-width: 0;
+}
+
 .animal-result-empty {
    font-size: 1.8em;
    font-weight: 700;
