@@ -19,8 +19,9 @@ from .itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hou
 from .itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_validation import validate_itinerary_for_save
-from .itinerary_visit_duration_validation import itinerary_visit_is_shorter_than_minimum
 from ...shared.enums import ItineraryErrorType
+from .short_visit_warning import apply_short_visit_warning_preferences
+from .short_visit_warning import short_visit_warning_is_required
 from ...types import Connection, DateInput, TimeInput
 from .wild_encounter_time_conflicts import remove_scheduled_items_with_time_conflicts
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
@@ -121,7 +122,8 @@ def set_itinerary(
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       overriding_conflicting_guardians_talks: bool = False,
-      confirming_short_visit: bool = False ) -> ItinerarySaveResult:
+      confirming_short_visit: bool = False,
+      suppress_short_visit_warning: bool = False ) -> ItinerarySaveResult:
    save_input = map_itinerary_save_input(
       date,
       arrival_time,
@@ -178,10 +180,11 @@ def set_itinerary(
    if (
          save_input.arrival_time is not None
          and save_input.departure_time is not None
-         and not confirming_short_visit
-         and itinerary_visit_is_shorter_than_minimum(
+         and short_visit_warning_is_required(
+            conn,
             save_input.arrival_time,
-            save_input.departure_time )
+            save_input.departure_time,
+            confirming_short_visit=confirming_short_visit )
    ):
       return ItinerarySaveResult(
          error_type=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
@@ -192,6 +195,10 @@ def set_itinerary(
             guardians_controller,
             wild_encounter_controller,
             visit_date_temp=visit_date_temp ) )
+
+   apply_short_visit_warning_preferences(
+      conn,
+      suppress_short_visit_warning=suppress_short_visit_warning )
 
    validated_itinerary = validate_itinerary_for_save(
       conn,

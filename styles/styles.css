@@ -2995,6 +2995,21 @@ nav ul li a:hover {
    width: min(1458px, 74.5vw);
 }
 
+.tzg-popup-confirm-body {
+   display: flex;
+   flex-direction: column;
+   gap: 36px;
+   width: 100%;
+}
+
+.tzg-popup-do-not-show-again {
+   align-self: center;
+   gap: 18px;
+   font-size: 2.4em;
+   font-weight: 700;
+   color: rgba(20, 35, 10, 0.82);
+}
+
 .tzg-confirm .itin-overlay {
    align-items: center;
    padding-top: 5vh;

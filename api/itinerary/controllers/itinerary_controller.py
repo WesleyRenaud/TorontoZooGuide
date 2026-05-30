@@ -17,7 +17,8 @@ from ..logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_
 from ..logic.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from ..logic.itinerary_save_result import ItinerarySaveResult
 from ..logic.itinerary_time_set_result import ItineraryTimeSetResult
-from ..logic.itinerary_visit_duration_validation import itinerary_visit_is_shorter_than_minimum
+from ..logic.short_visit_warning import apply_short_visit_warning_preferences
+from ..logic.short_visit_warning import short_visit_warning_is_required
 from ...models import Itinerary
 from ...request_connection import get_connection
 from ...shared.date_values import DateValues
@@ -59,7 +60,8 @@ class ItineraryController():
          selected_exhibits: list[ str ] | None = None,
          visit_date_temp: float | None = None,
          overriding_conflicting_guardians_talks: bool = False,
-         confirming_short_visit: bool = False ) -> ItinerarySaveResult:
+         confirming_short_visit: bool = False,
+         suppress_short_visit_warning: bool = False ) -> ItinerarySaveResult:
       return set_itinerary_logic.set_itinerary(
          get_connection(),
          date=date,
@@ -74,6 +76,7 @@ class ItineraryController():
          overriding_conflicting_guardians_talks=(
             overriding_conflicting_guardians_talks ),
          confirming_short_visit=confirming_short_visit,
+         suppress_short_visit_warning=suppress_short_visit_warning,
          animal_controller=AnimalController,
          attraction_controller=AttractionController,
          guardians_controller=GuardiansController,
@@ -90,7 +93,8 @@ class ItineraryController():
          cls,
          arrival_time: TimeInput,
          *,
-         confirming_short_visit: bool = False ) -> ItineraryTimeSetResult:
+         confirming_short_visit: bool = False,
+         suppress_short_visit_warning: bool = False ) -> ItineraryTimeSetResult:
       conn = get_connection()
       normalized_arrival_time = DateValues.normalize_itinerary_schedule_time(
          arrival_time )
@@ -107,14 +111,17 @@ class ItineraryController():
       if validation_error != ItineraryErrorType.SUCCESS:
          return ItineraryTimeSetResult( error_type=validation_error )
 
-      if (
-         not confirming_short_visit
-         and itinerary_visit_is_shorter_than_minimum(
+      if short_visit_warning_is_required(
+            conn,
             normalized_arrival_time,
-            saved_itinerary.departure_time )
-      ):
+            saved_itinerary.departure_time,
+            confirming_short_visit=confirming_short_visit ):
          return ItineraryTimeSetResult(
             error_type=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+
+      apply_short_visit_warning_preferences(
+         conn,
+         suppress_short_visit_warning=suppress_short_visit_warning )
 
       set_itinerary_arrival_time( conn, normalized_arrival_time )
 
@@ -126,7 +133,8 @@ class ItineraryController():
          cls,
          departure_time: TimeInput,
          *,
-         confirming_short_visit: bool = False ) -> ItineraryTimeSetResult:
+         confirming_short_visit: bool = False,
+         suppress_short_visit_warning: bool = False ) -> ItineraryTimeSetResult:
       conn = get_connection()
       normalized_departure_time = DateValues.normalize_itinerary_schedule_time(
          departure_time )
@@ -148,14 +156,17 @@ class ItineraryController():
       if validation_error != ItineraryErrorType.SUCCESS:
          return ItineraryTimeSetResult( error_type=validation_error )
 
-      if (
-         not confirming_short_visit
-         and itinerary_visit_is_shorter_than_minimum(
+      if short_visit_warning_is_required(
+            conn,
             saved_itinerary.arrival_time,
-            normalized_departure_time )
-      ):
+            normalized_departure_time,
+            confirming_short_visit=confirming_short_visit ):
          return ItineraryTimeSetResult(
             error_type=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+
+      apply_short_visit_warning_preferences(
+         conn,
+         suppress_short_visit_warning=suppress_short_visit_warning )
 
       set_itinerary_departure_time( conn, normalized_departure_time )
 

@@ -185,10 +185,11 @@ async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
 
    return new Promise((resolve, reject) => {
       showShortVisitConfirmation({
-         onConfirm: async () => {
+         onConfirm: async ({ doNotShowAgain = false } = {}) => {
             try {
                const confirmedResult = await requestFn(timeValue, {
                   confirmingShortVisit: true,
+                  suppressShortVisitWarning: doNotShowAgain,
                });
 
                if (!isItinerarySuccess(confirmedResult.errorType)) {

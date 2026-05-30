@@ -8,6 +8,7 @@ export function showShortVisitConfirmation({ onConfirm, onCancel } = {}) {
    showItineraryConfirmPopup({
       title: strings.shortVisitTitle,
       message: strings.shortVisitMessage,
+      doNotShowAgainLabel: strings.doNotShowShortVisitAgain,
       cancelText: APP_STRINGS.itinerary.actions.cancel,
       mountEl: getItineraryPanelMountEl()
          ?? document.body,
