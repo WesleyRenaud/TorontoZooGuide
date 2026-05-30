@@ -5,7 +5,12 @@ import {
    test,
 } from 'node:test';
 
-import { saveItinerary } from '../../scripts/itinerary/itineraryService.js';
+import {
+   isItineraryEmpty,
+   normalizeItinerary,
+   saveItinerary,
+} from '../../scripts/itinerary/itineraryService.js';
+import { installTestWindow } from './helpers/domMock.mjs';
 import { SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
 
 function createLocalStorageMock() {
@@ -24,9 +29,7 @@ function createLocalStorageMock() {
 
 beforeEach(() => {
    globalThis.localStorage = createLocalStorageMock();
-   globalThis.window = {
-      dispatchEvent: () => {},
-   };
+   installTestWindow();
    globalThis.CustomEvent = class CustomEvent {
       constructor(type, options = {}) {
          this.type = type;
@@ -39,7 +42,36 @@ afterEach(() => {
    delete globalThis.CustomEvent;
    delete globalThis.fetch;
    delete globalThis.localStorage;
-   delete globalThis.window;
+});
+
+test('normalizeItinerary exposes itineraryConfig and active state', () => {
+   const config = {
+      eventTypes: ['lunch'],
+      errorTypes: { SUCCESS: 'success' },
+      suppressedErrorTypes: [],
+   };
+
+   const normalized = normalizeItinerary({
+      date: '2026-06-15',
+      animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
+      itineraryConfig: config,
+   });
+
+   assert.equal(normalized.itineraryConfig, config);
+   assert.equal(normalized.isActive, true);
+   assert.equal(isItineraryEmpty(normalized), false);
+});
+
+test('normalizeItinerary treats missing collections as empty', () => {
+   const normalized = normalizeItinerary({
+      animals: 'not-an-array',
+      attractions: null,
+   });
+
+   assert.deepEqual(normalized.animals, []);
+   assert.deepEqual(normalized.attractions, []);
+   assert.equal(normalized.itineraryConfig, null);
+   assert.equal(normalized.isActive, false);
 });
 
 test('saveItinerary includes selected exhibits in the backend payload', async () => {
