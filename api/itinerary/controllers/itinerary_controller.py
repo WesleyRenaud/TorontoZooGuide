@@ -11,6 +11,7 @@ from ..data_access.itinerary_save_input_mapper import map_named_strings
 from ..data_access.itinerary_time import set_itinerary_arrival_time
 from ..data_access.itinerary_time import set_itinerary_departure_time
 from ...guardians.controllers.guardians_controller import GuardiansController
+from ..logic import schedule_itinerary_item as schedule_itinerary_item_logic
 from ..logic import set_itinerary as set_itinerary_logic
 from ..logic.itinerary import build_current_itinerary
 from ..logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
@@ -77,6 +78,21 @@ class ItineraryController():
             overriding_conflicting_guardians_talks ),
          confirming_short_visit=confirming_short_visit,
          suppress_short_visit_warning=suppress_short_visit_warning,
+         animal_controller=AnimalController,
+         attraction_controller=AttractionController,
+         guardians_controller=GuardiansController,
+         wild_encounter_controller=WildEncounterController )
+
+
+   @classmethod
+   def schedule_itinerary_item(
+         cls,
+         item_type: str,
+         key: str ) -> ItinerarySaveResult:
+      return schedule_itinerary_item_logic.schedule_itinerary_item(
+         get_connection(),
+         item_type,
+         key,
          animal_controller=AnimalController,
          attraction_controller=AttractionController,
          guardians_controller=GuardiansController,

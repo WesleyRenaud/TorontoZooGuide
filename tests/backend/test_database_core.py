@@ -16,6 +16,7 @@ from api.attractions.logic.attraction import calculate_attraction_likelihood
 from api.giftshops.logic.gift_shop import calculate_gift_shop_likelihood
 from api.restaurants.logic.restaurant import calculate_restaurant_likelihood
 from api.shared.date_values import DateValues
+from api.shared.duration_values import normalize_duration_minutes
 from api.shared.enums import ScheduleStatus
 from api.types import DateInput, DateKey, SeasonalMultiplier
 from conftest import DbControllers
@@ -168,6 +169,19 @@ def test_normalize_itinerary_schedule_time(
       value: str | None,
       expected: str | None ) -> None:
    assert DateValues.normalize_itinerary_schedule_time( value ) == expected
+
+
+@pytest.mark.parametrize(
+   'value, expected',
+   [
+      ( None, None ),
+      ( 0, None ),
+      ( 7.2, 8 ),
+      ( 8, 8 ),
+   ]
+)
+def test_normalize_duration_minutes( value: float | int | None, expected: int | None ) -> None:
+   assert normalize_duration_minutes( value ) == expected
 
 
 @pytest.mark.parametrize(
