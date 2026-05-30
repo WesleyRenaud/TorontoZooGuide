@@ -34,6 +34,7 @@ import {
    buildGuardiansRows,
    buildWildRows,
 } from '../../scripts/itinerary/panel/rows.js';
+import { installTestWindow } from './helpers/domMock.mjs';
 
 function createNode(tagName, className = '', textContent = '') {
    const children = [];
@@ -143,24 +144,13 @@ beforeEach(() => {
       createElement: (tagName) => createNode(tagName),
       createTextNode: (textContent) => createNode('#text', '', textContent),
    };
-   globalThis.window = {
-      addEventListener: () => {},
-      getComputedStyle: () => ({
-         gap: '0',
-         paddingBottom: '0',
-         paddingTop: '0',
-         rowGap: '0',
-      }),
-      open: () => {},
-      removeEventListener: () => {},
-   };
+   installTestWindow();
    globalThis.requestAnimationFrame = (callback) => callback();
 });
 
 afterEach(() => {
    delete globalThis.document;
    delete globalThis.requestAnimationFrame;
-   delete globalThis.window;
 });
 
 test('formats and normalizes itinerary panel item data', () => {

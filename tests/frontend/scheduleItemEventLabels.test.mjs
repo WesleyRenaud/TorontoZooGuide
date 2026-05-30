@@ -6,4 +6,6 @@ import { formatItineraryEventTypeLabel } from '../../scripts/itinerary/panel/sch
 test('formatItineraryEventTypeLabel title-cases event type values', () => {
    assert.equal(formatItineraryEventTypeLabel('lunch'), 'Lunch');
    assert.equal(formatItineraryEventTypeLabel('break'), 'Break');
+   assert.equal(formatItineraryEventTypeLabel(''), '');
+   assert.equal(formatItineraryEventTypeLabel('guardians_talk'), 'Guardians Talk');
 });
