@@ -2,12 +2,15 @@ import { makeActionsBar } from './components/actionsBar.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
 import {
-   ITINERARY_PANEL_VIEWS,
    makeDayPlannerPreview,
    makeItineraryPanelViews,
 } from './components/dayPlanner.js';
 import { makeSection } from './components/section.js';
 import { clearItineraryDraftStorage } from '../draftStorage.js';
+import {
+   getItineraryPanelViewFromUrl,
+   setItineraryPanelViewInUrl,
+} from './itineraryPanelViewUrl.js';
 import {
    clearItinerary,
    getItinerary,
@@ -20,7 +23,7 @@ import { buildSectionConfigs } from './sectionConfigs.js';
 import { resolveEffectiveItineraryHoursDateIso } from '../visitDateEarliest.js';
 
 let latestRenderToken = 0;
-let activePanelView = ITINERARY_PANEL_VIEWS.list;
+let activePanelView = getItineraryPanelViewFromUrl();
 
 function destroyRenderedPanelChildren(bodyEl) {
    Array.from(bodyEl?.children ?? []).forEach((child) => {
@@ -48,6 +51,7 @@ function makePanelViewShell() {
       activeView: activePanelView,
       onViewChange: (view) => {
          activePanelView = view;
+         setItineraryPanelViewInUrl(view);
       },
    });
 }
