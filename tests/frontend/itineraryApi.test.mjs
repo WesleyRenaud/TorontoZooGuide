@@ -6,6 +6,7 @@ import {
    getItineraryDateRequest,
    getItineraryRequest,
    getZooHoursRequest,
+   scheduleItineraryItemRequest,
    setItineraryArrivalTimeRequest,
    setItineraryDepartureTimeRequest,
    setItineraryRequest,
@@ -18,6 +19,7 @@ const MOCK_ITINERARY_ERROR_TYPES = Object.freeze({
    TIME_ORDER_INVALID: 'timeOrderInvalid',
    SAVE_FAILED: 'saveFailed',
    ARRIVAL_DEPARTURE_TOO_CLOSE: 'arrivalDepartureTooClose',
+   NO_AVAILABLE_SLOT: 'noAvailableSlot',
 });
 
 const EMPTY_ITINERARY_CONFIG = {
@@ -369,4 +371,23 @@ test('normalizes zoo hours response', async () => {
          closeTime: '19:00',
       },
    });
+});
+
+test('normalizes schedule itinerary item response', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/schedule-itinerary-item');
+      assert.deepEqual(JSON.parse(options.body), {
+         itemType: 'lunch',
+         key: '',
+      });
+
+      return mockJsonResponse({
+         errorType: 'noAvailableSlot',
+      });
+   };
+
+   assert.deepEqual(
+      await scheduleItineraryItemRequest({ itemType: 'lunch', key: '' }),
+      { errorType: 'noAvailableSlot' }
+   );
 });

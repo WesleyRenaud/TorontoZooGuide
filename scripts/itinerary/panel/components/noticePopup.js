@@ -1,5 +1,6 @@
 import {
    createItineraryPopupLayout,
+   getItineraryOverlayMountEl,
    mountDismissablePopup,
 } from './popup.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -9,11 +10,13 @@ export function showItineraryNoticePopup({
    message = '',
    bodyContent = null,
    buttonText = APP_STRINGS.itinerary.noItemsSelected.button,
+   mountEl = getItineraryOverlayMountEl() ?? document.body,
    onConfirm = null,
    showCloseButton = false,
    onClose = null,
 } = {}) {
-   const existingPopup = document.querySelector('.tzg-popup.tzg-notice');
+   const existingPopup = mountEl.querySelector?.('.tzg-popup.tzg-notice')
+      ?? document.querySelector('.tzg-popup.tzg-notice');
    existingPopup?.__tzgPopupCleanup?.();
    existingPopup?.remove();
 
@@ -39,7 +42,7 @@ export function showItineraryNoticePopup({
    });
 
    const { close } = mountDismissablePopup({
-      mountEl: document.body,
+      mountEl,
       root,
       overlay,
       initialFocusEl: buttonEls.ok,

@@ -1,21 +1,24 @@
 import { searchItineraryItems } from '../../../api/searchApi.js';
 import { el } from '../dom.js';
+import {
+   isItinerarySuccess,
+   resolveItineraryErrorMessage,
+} from '../../itineraryErrorTypes.js';
 import { getItineraryDateSearchContext } from '../../itinerarySearchContext.js';
 import {
    createItineraryPopupLayout,
    getItineraryPanelMountEl,
    mountDismissablePopup,
 } from './popup.js';
-import {
-   addAnimalToItinerary,
-   addAttractionToItinerary,
-} from '../scheduleItemActions.js';
+import { scheduleSelectedItineraryItem } from '../scheduleItemActions.js';
+import { showScheduleItemNotice } from '../showScheduleItemNotice.js';
 import { renderScheduleItemSearchResults } from '../scheduleItemResults.js';
 import {
    buildScheduleItemSearchPayload,
    extractScheduleItemSearchRows,
    getScheduleItemRowId,
    getScheduleItemRowKind,
+   resolveEffectiveScheduleItemSelection,
 } from '../scheduleItemSearch.js';
 import {
    buildScheduleItemTypeOptions,
@@ -137,7 +140,6 @@ export function showScheduleItemModule({
    itinerary = {},
    eventTypes = [],
    onScheduled = null,
-   onScheduleGeneric = null,
 } = {}) {
    const strings = APP_STRINGS.itinerary.scheduleItem;
    const { body: moduleBodyEl } = buildScheduleItemModuleBody(strings, eventTypes);
@@ -185,13 +187,17 @@ export function showScheduleItemModule({
       return typeSelect?.value ?? '';
    }
 
+   function getEffectiveSelection() {
+      return resolveEffectiveScheduleItemSelection(getSelection(), selectedRow);
+   }
+
    function clearSelectedRow() {
       selectedRowId = '';
       selectedRow = null;
    }
 
    function canScheduleSelection() {
-      const selection = getSelection();
+      const selection = getEffectiveSelection();
 
       if (isScheduleItemTypeUnset(selection)) {
          return false;
@@ -256,6 +262,10 @@ export function showScheduleItemModule({
             if (!isSameRow) {
                selectedRowId = id;
                selectedRow = row;
+
+               if (typeSelect && isScheduleItemTypeUnset(getSelection())) {
+                  typeSelect.value = getScheduleItemRowKind(row);
+               }
             }
 
             renderSearchResults(rows);
@@ -320,29 +330,33 @@ export function showScheduleItemModule({
          return;
       }
 
-      const selection = getSelection();
+      const selection = getEffectiveSelection();
 
       isSubmitting = true;
       updateFieldVisibility();
 
       try {
-         if (isScheduleItemSearchEnabled(selection, eventTypes) && selectedRow) {
-            if (getScheduleItemRowKind(selectedRow) === SCHEDULE_ITEM_MODULE_TYPES.attractions) {
-               await addAttractionToItinerary(itinerary, selectedRow);
-            }
-            else {
-               await addAnimalToItinerary(itinerary, selectedRow);
-            }
-         }
-         else if (isScheduleItemEventType(selection, eventTypes)) {
-            await onScheduleGeneric?.({ eventType: selection });
+         const result = await scheduleSelectedItineraryItem(
+            itinerary,
+            selection,
+            selectedRow,
+            eventTypes
+         );
+
+         if (!isItinerarySuccess(result.errorType)) {
+            showScheduleItemNotice(resolveItineraryErrorMessage(result.errorType));
+            return;
          }
 
          popup.dismiss();
          await onScheduled?.();
       }
+      catch {
+         showScheduleItemNotice(APP_STRINGS.itinerary.errors.generic);
+      }
       finally {
          isSubmitting = false;
+         updateFieldVisibility();
       }
    }
 

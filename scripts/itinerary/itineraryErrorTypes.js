@@ -41,6 +41,10 @@ export function resolveItineraryErrorMessage(
       return strings.arrivalDepartureTooClose;
    }
 
+   if (errorType === itineraryErrorTypes?.NO_AVAILABLE_SLOT) {
+      return strings.noAvailableSlot;
+   }
+
    return strings.generic;
 }
 
