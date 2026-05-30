@@ -11,7 +11,6 @@ import {
    mountDismissablePopup,
 } from './popup.js';
 import { scheduleSelectedItineraryItem } from '../scheduleItemActions.js';
-import { showScheduleItemNotice } from '../showScheduleItemNotice.js';
 import { renderScheduleItemSearchResults } from '../scheduleItemResults.js';
 import {
    buildScheduleItemSearchPayload,
@@ -39,6 +38,7 @@ import {
    getAttractionTitle,
 } from '../../selectors/attractionSelector/model.js';
 import { createDefaultSelectorRowLeftRenderer } from '../../selectors/base/resultRenderer.js';
+import { showScheduleItemNotice } from '../showScheduleItemNotice.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 const SEARCH_DEBOUNCE_MS = 250;
