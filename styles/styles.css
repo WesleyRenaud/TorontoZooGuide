@@ -1638,7 +1638,7 @@ nav ul li a:hover {
 ============================================================ */
 
 .itinerary-flow {
-   position: fixed;
+   position: absolute;
    inset: 0;
    z-index: 9999;
    pointer-events: none;
@@ -1670,6 +1670,7 @@ nav ul li a:hover {
 }
 
 .itinerary-panel {
+   position: relative;
    display: flex;
    flex-direction: column;
    min-height: 0;
@@ -2988,6 +2989,10 @@ nav ul li a:hover {
 
    width: 100%;
    max-width: none;
+}
+
+.tzg-confirm .itin-card {
+   width: min(1458px, 74.5vw);
 }
 
 .tzg-confirm .itin-overlay {

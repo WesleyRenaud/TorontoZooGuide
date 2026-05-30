@@ -18,8 +18,9 @@ from .itinerary import build_current_itinerary
 from .itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from .itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from .itinerary_save_result import ItinerarySaveResult
-from .itinerary_schedule_time_order_validation import departure_follows_arrival
 from .itinerary_validation import validate_itinerary_for_save
+from .itinerary_visit_duration_validation import itinerary_visit_is_shorter_than_minimum
+from ...shared.enums import ItineraryErrorType
 from ...types import Connection, DateInput, TimeInput
 from .wild_encounter_time_conflicts import remove_scheduled_items_with_time_conflicts
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
@@ -119,7 +120,8 @@ def set_itinerary(
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
-      overriding_conflicting_guardians_talks: bool = False ) -> ItinerarySaveResult:
+      overriding_conflicting_guardians_talks: bool = False,
+      confirming_short_visit: bool = False ) -> ItinerarySaveResult:
    save_input = map_itinerary_save_input(
       date,
       arrival_time,
@@ -137,37 +139,52 @@ def set_itinerary(
 
    zoo_hours_record = fetch_zoo_hours_record( conn, save_input.date.isoformat() )
 
-   if not arrival_time_is_valid_for_zoo_hours(
+   if (
+         save_input.arrival_time is not None
+         and save_input.departure_time is not None
+   ):
+      arrival_time_error = arrival_time_is_valid_for_zoo_hours(
          save_input.arrival_time,
-         zoo_hours_record ):
-      return ItinerarySaveResult(
-         success=False,
-         itinerary=build_current_itinerary(
-            fetch_saved_itinerary( conn ),
-            animal_controller,
-            attraction_controller,
-            guardians_controller,
-            wild_encounter_controller,
-            visit_date_temp=visit_date_temp ) )
+         zoo_hours_record,
+         departure_time=save_input.departure_time )
 
-   if not departure_time_is_valid_for_zoo_hours(
+      if arrival_time_error != ItineraryErrorType.SUCCESS:
+         return ItinerarySaveResult(
+            error_type=arrival_time_error,
+            itinerary=build_current_itinerary(
+               fetch_saved_itinerary( conn ),
+               animal_controller,
+               attraction_controller,
+               guardians_controller,
+               wild_encounter_controller,
+               visit_date_temp=visit_date_temp ) )
+
+      departure_time_error = departure_time_is_valid_for_zoo_hours(
          save_input.departure_time,
-         zoo_hours_record ):
-      return ItinerarySaveResult(
-         success=False,
-         itinerary=build_current_itinerary(
-            fetch_saved_itinerary( conn ),
-            animal_controller,
-            attraction_controller,
-            guardians_controller,
-            wild_encounter_controller,
-            visit_date_temp=visit_date_temp ) )
+         zoo_hours_record,
+         arrival_time=save_input.arrival_time )
 
-   if not departure_follows_arrival(
-         save_input.arrival_time,
-         save_input.departure_time ):
+      if departure_time_error != ItineraryErrorType.SUCCESS:
+         return ItinerarySaveResult(
+            error_type=departure_time_error,
+            itinerary=build_current_itinerary(
+               fetch_saved_itinerary( conn ),
+               animal_controller,
+               attraction_controller,
+               guardians_controller,
+               wild_encounter_controller,
+               visit_date_temp=visit_date_temp ) )
+
+   if (
+         save_input.arrival_time is not None
+         and save_input.departure_time is not None
+         and not confirming_short_visit
+         and itinerary_visit_is_shorter_than_minimum(
+            save_input.arrival_time,
+            save_input.departure_time )
+   ):
       return ItinerarySaveResult(
-         success=False,
+         error_type=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
          itinerary=build_current_itinerary(
             fetch_saved_itinerary( conn ),
             animal_controller,
@@ -214,6 +231,5 @@ def set_itinerary(
       visit_date_temp=visit_date_temp )
 
    return ItinerarySaveResult(
-      success=True,
       itinerary=itinerary,
       issues=issues )

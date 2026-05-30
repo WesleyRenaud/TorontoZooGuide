@@ -2,15 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .itinerary_save_issue import ItinerarySaveIssue
-from ...models import Itinerary
 from ...shared.enums import ItineraryErrorType
 
 
 @dataclass( frozen=True )
-class ItinerarySaveResult:
-   itinerary: Itinerary
-   issues: tuple[ ItinerarySaveIssue, ... ] = ()
+class ItineraryTimeSetResult:
    error_type: ItineraryErrorType = ItineraryErrorType.SUCCESS
 
 

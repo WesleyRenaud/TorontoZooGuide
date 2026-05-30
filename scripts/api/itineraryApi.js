@@ -1,5 +1,9 @@
 import { postJson } from './apiClient.js';
 import {
+   normalizeItineraryErrorTypeFromResponse,
+   updateItineraryErrorTypesFromConfig,
+} from '../itinerary/itineraryErrorTypes.js';
+import {
    asArray,
    asNullableString,
    asObject,
@@ -37,23 +41,38 @@ function normalizeItineraryModel(itinerary) {
    };
 }
 
+function normalizeItineraryErrorTypes(errorTypes) {
+   const source = asObject(errorTypes);
+
+   return Object.freeze(
+      Object.fromEntries(
+         Object.entries(source)
+            .map(([key, value]) => [key, asTrimmedString(value)])
+            .filter(([, value]) => value)
+      )
+   );
+}
+
 function normalizeItineraryConfig(config) {
    const source = asObject(config);
-
-   return {
+   const normalizedConfig = {
       animalVisibilityChangeThreshold: source.animal_visibility_change_threshold,
       eventTypes: asArray(source.itinerary_event_types)
          .map(asTrimmedString)
          .filter(Boolean),
+      errorTypes: normalizeItineraryErrorTypes(source.itinerary_error_types),
    };
+
+   updateItineraryErrorTypesFromConfig(normalizedConfig);
+
+   return normalizedConfig;
 }
 
 function normalizeItineraryResponse(response) {
    const source = asObject(response);
 
    return {
-      success: source.success !== false,
-      error: asNullableString(source.error),
+      errorType: normalizeItineraryErrorTypeFromResponse(source),
       issues: asArray(source.issues),
       itinerary: normalizeItineraryModel(source.itinerary),
       itineraryConfig: normalizeItineraryConfig(source.itinerary_config),
@@ -108,16 +127,38 @@ export async function setItineraryRequest(payload) {
    return normalizeItineraryResponse(response);
 }
 
-export async function setItineraryArrivalTimeRequest(arrivalTime) {
-   return postJson('/set-itinerary-arrival-time', {
-      arrivalTime: asTrimmedString(arrivalTime),
-   });
+function normalizeItineraryTimeSetResponse(response) {
+   const source = asObject(response);
+   const itineraryConfig = normalizeItineraryConfig(source.itinerary_config);
+
+   return {
+      errorType: normalizeItineraryErrorTypeFromResponse(source),
+      itineraryConfig,
+   };
 }
 
-export async function setItineraryDepartureTimeRequest(departureTime) {
-   return postJson('/set-itinerary-departure-time', {
-      departureTime: asTrimmedString(departureTime),
+export async function setItineraryArrivalTimeRequest(
+   arrivalTime,
+   { confirmingShortVisit = false } = {}
+) {
+   const response = await postJson('/set-itinerary-arrival-time', {
+      arrivalTime: asTrimmedString(arrivalTime),
+      confirmingShortVisit,
    });
+
+   return normalizeItineraryTimeSetResponse(response);
+}
+
+export async function setItineraryDepartureTimeRequest(
+   departureTime,
+   { confirmingShortVisit = false } = {}
+) {
+   const response = await postJson('/set-itinerary-departure-time', {
+      departureTime: asTrimmedString(departureTime),
+      confirmingShortVisit,
+   });
+
+   return normalizeItineraryTimeSetResponse(response);
 }
 
 export async function acceptItineraryRequest(

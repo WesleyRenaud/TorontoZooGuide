@@ -9,6 +9,11 @@ import {
    setItineraryRequest,
 } from '../api/itineraryApi.js';
 import { setStoredItineraryDate } from './draftStorage.js';
+import {
+   isItinerarySuccess,
+   requiresShortVisitConfirmation,
+   resolveItineraryErrorMessage,
+} from './itineraryErrorTypes.js';
 import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 import {
    createEmptyItineraryDraft,
@@ -17,6 +22,7 @@ import {
    toSetItineraryPayload,
 } from './itineraryShape.js';
 import { buildItineraryValidationState } from './itineraryValidation.js';
+import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
 import { SELECTED_EXHIBITS_KEY } from './storageKeys.js';
 import {
    getDay,
@@ -156,12 +162,67 @@ export async function saveItinerary(
    return normalizedItinerary;
 }
 
+class ItineraryTimeChangeCancelledError extends Error {
+   constructor() {
+      super('Itinerary time change cancelled.');
+      this.name = 'ItineraryTimeChangeCancelledError';
+   }
+}
+
+async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
+   const initialResult = await requestFn(timeValue);
+
+   if (
+      isItinerarySuccess(initialResult.errorType)
+      || !requiresShortVisitConfirmation(initialResult.errorType)
+   ) {
+      if (!isItinerarySuccess(initialResult.errorType)) {
+         throw new Error(resolveItineraryErrorMessage(initialResult.errorType));
+      }
+
+      return initialResult;
+   }
+
+   return new Promise((resolve, reject) => {
+      showShortVisitConfirmation({
+         onConfirm: async () => {
+            try {
+               const confirmedResult = await requestFn(timeValue, {
+                  confirmingShortVisit: true,
+               });
+
+               if (!isItinerarySuccess(confirmedResult.errorType)) {
+                  reject(new Error(
+                     resolveItineraryErrorMessage(confirmedResult.errorType)
+                  ));
+                  return;
+               }
+
+               resolve(confirmedResult);
+            }
+            catch (error) {
+               reject(error);
+            }
+         },
+         onCancel: () => {
+            reject(new ItineraryTimeChangeCancelledError());
+         },
+      });
+   });
+}
+
 export async function setItineraryArrivalTime(arrivalTime) {
-   return setItineraryArrivalTimeRequest(arrivalTime);
+   return setItineraryTimeWithConfirmation(
+      setItineraryArrivalTimeRequest,
+      arrivalTime
+   );
 }
 
 export async function setItineraryDepartureTime(departureTime) {
-   return setItineraryDepartureTimeRequest(departureTime);
+   return setItineraryTimeWithConfirmation(
+      setItineraryDepartureTimeRequest,
+      departureTime
+   );
 }
 
 export async function clearItinerary() {
