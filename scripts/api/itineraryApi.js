@@ -130,6 +130,23 @@ export async function setItineraryRequest(payload) {
    return normalizeItineraryResponse(response);
 }
 
+function normalizeScheduleItineraryItemResponse(response) {
+   const source = asObject(response);
+
+   return {
+      errorType: normalizeItineraryErrorTypeFromResponse(source),
+   };
+}
+
+export async function scheduleItineraryItemRequest({ itemType, key }) {
+   const response = await postJson('/schedule-itinerary-item', {
+      itemType: asTrimmedString(itemType),
+      key: asTrimmedString(key),
+   });
+
+   return normalizeScheduleItineraryItemResponse(response);
+}
+
 function normalizeItineraryTimeSetResponse(response) {
    const source = asObject(response);
    const itineraryConfig = normalizeItineraryConfig(source.itinerary_config);

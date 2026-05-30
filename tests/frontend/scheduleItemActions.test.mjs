@@ -2,13 +2,23 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import {
-   addAnimalToItinerary,
-   addAttractionToItinerary,
    buildAnimalDraftEntry,
    buildAttractionDraftEntry,
+   buildScheduleItemRequest,
+   scheduleSelectedItineraryItem,
 } from '../../scripts/itinerary/panel/scheduleItemActions.js';
+import {
+   resolveItineraryErrorMessage,
+   updateItineraryErrorTypesFromConfig,
+} from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { installTestWindow } from './helpers/domMock.mjs';
 import { SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
+
+const MOCK_ERROR_TYPES = Object.freeze({
+   SUCCESS: 'success',
+   SAVE_FAILED: 'saveFailed',
+   NO_AVAILABLE_SLOT: 'noAvailableSlot',
+});
 
 function createLocalStorageMock() {
    const values = new Map();
@@ -24,44 +34,45 @@ function createLocalStorageMock() {
    };
 }
 
-function mockSaveResponse(itineraryOverrides = {}) {
+function mockJsonResponse(payload) {
    return {
       ok: true,
       status: 200,
       statusText: 'OK',
-      text: async () => JSON.stringify({
-         error_type: 'success',
-         itinerary: {
-            date: '2026-06-15',
-            animals: [],
-            attractions: [],
-            guardians_talks: [],
-            wild_encounters: [],
-            ...itineraryOverrides,
-         },
-         itinerary_config: {
-            itinerary_event_types: [],
-            itinerary_error_types: { SUCCESS: 'success' },
-            suppressed_error_types: [],
-         },
-         issues: [],
-      }),
+      text: async () => JSON.stringify(payload),
    };
+}
+
+function mockSetItineraryResponse() {
+   return mockJsonResponse({
+      error_type: 'success',
+      itinerary: {
+         date: '2026-06-15',
+         animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
+         attractions: [],
+         guardians_talks: [],
+         wild_encounters: [],
+      },
+      itinerary_config: {
+         itinerary_event_types: [],
+         itinerary_error_types: MOCK_ERROR_TYPES,
+         suppressed_error_types: [],
+      },
+      issues: [],
+   });
 }
 
 beforeEach(() => {
    globalThis.localStorage = createLocalStorageMock();
    installTestWindow();
-   globalThis.CustomEvent = class CustomEvent {
-      constructor(type, options = {}) {
-         this.type = type;
-         this.detail = options.detail;
-      }
-   };
+   updateItineraryErrorTypesFromConfig({
+      errorTypes: MOCK_ERROR_TYPES,
+      suppressedErrorTypes: [],
+   });
+   localStorage.setItem(SELECTED_EXHIBITS_KEY, JSON.stringify([]));
 });
 
 afterEach(() => {
-   delete globalThis.CustomEvent;
    delete globalThis.fetch;
    delete globalThis.localStorage;
 });
@@ -76,38 +87,124 @@ test('buildAnimalDraftEntry and buildAttractionDraftEntry normalize rows', () =>
    assert.equal(buildAttractionDraftEntry({ name: '' }), null);
 });
 
-test('addAnimalToItinerary and addAttractionToItinerary persist through saveItinerary', async () => {
-   const saveCalls = [];
+test('buildScheduleItemRequest maps event and animal rows', () => {
+   assert.deepEqual(
+      buildScheduleItemRequest('lunch', null, ['lunch']),
+      { itemType: 'lunch', key: '' }
+   );
+   assert.deepEqual(
+      buildScheduleItemRequest('animals', {
+         species: 'Tiger',
+         exhibit: 'Savanna',
+         scheduleItemKind: 'animals',
+      }, []),
+      { itemType: 'animals', key: 'Tiger||Savanna' }
+   );
+});
 
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/set-itinerary');
-      saveCalls.push(JSON.parse(options.body));
-      return mockSaveResponse({
-         animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
-         attractions: ['Carousel'],
-      });
+test('scheduleSelectedItineraryItem schedules an event', async () => {
+   const urls = [];
+
+   globalThis.fetch = async (url) => {
+      urls.push(url);
+
+      return mockJsonResponse({ errorType: 'success' });
    };
 
-   localStorage.setItem(SELECTED_EXHIBITS_KEY, JSON.stringify([]));
-
-   const animalResult = await addAnimalToItinerary(
+   const result = await scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
-      { species: 'Tiger', exhibit: 'Savanna' }
+      'lunch',
+      null,
+      ['lunch']
    );
 
-   assert.deepEqual(saveCalls[0].animals, [{ species: 'Tiger', exhibit: 'Savanna' }]);
-   assert.deepEqual(animalResult.animals, [{ species: 'Tiger', exhibit: 'Savanna' }]);
+   assert.equal(result.errorType, 'success');
+   assert.deepEqual(urls, ['/schedule-itinerary-item']);
+});
 
-   await addAttractionToItinerary(
-      { date: '2026-06-15', animals: [], attractions: [] },
-      { name: 'Carousel' }
+test('scheduleSelectedItineraryItem schedules when type is unset but a row is selected', async () => {
+   const urls = [];
+
+   globalThis.fetch = async (url) => {
+      urls.push(url);
+
+      return mockJsonResponse({ errorType: 'success' });
+   };
+
+   const result = await scheduleSelectedItineraryItem(
+      {
+         date: '2026-06-15',
+         animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
+         attractions: [],
+      },
+      '',
+      {
+         species: 'Tiger',
+         exhibit: 'Savanna',
+         scheduleItemKind: 'animals',
+      },
+      []
    );
 
-   assert.deepEqual(saveCalls[1].attractions, ['Carousel']);
+   assert.equal(result.errorType, 'success');
+   assert.deepEqual(urls, ['/schedule-itinerary-item']);
+});
 
-   const itinerary = { date: '2026-06-15', animals: [], attractions: ['Carousel'] };
-   const unchanged = await addAnimalToItinerary(itinerary, { species: '' });
+test('scheduleSelectedItineraryItem adds animal then schedules', async () => {
+   const urls = [];
 
-   assert.equal(unchanged, itinerary);
-   assert.equal(saveCalls.length, 2);
+   globalThis.fetch = async (url) => {
+      urls.push(url);
+
+      if (url === '/set-itinerary') {
+         return mockSetItineraryResponse();
+      }
+
+      return mockJsonResponse({ errorType: 'success' });
+   };
+
+   const result = await scheduleSelectedItineraryItem(
+      { date: '2026-06-15', animals: [], attractions: [] },
+      'animals',
+      { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
+      []
+   );
+
+   assert.equal(result.errorType, 'success');
+   assert.deepEqual(urls, ['/set-itinerary', '/schedule-itinerary-item']);
+});
+
+test('scheduleSelectedItineraryItem returns noAvailableSlot without refreshing', async () => {
+   globalThis.fetch = async (url) => {
+      if (url === '/schedule-itinerary-item') {
+         return mockJsonResponse({ errorType: 'noAvailableSlot' });
+      }
+
+      throw new Error(`unexpected ${url}`);
+   };
+
+   const result = await scheduleSelectedItineraryItem(
+      {
+         date: '2026-06-15',
+         animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
+         attractions: [],
+      },
+      'animals',
+      { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
+      []
+   );
+
+   assert.equal(result.errorType, 'noAvailableSlot');
+});
+
+test('resolveItineraryErrorMessage maps noAvailableSlot', () => {
+   updateItineraryErrorTypesFromConfig({
+      errorTypes: MOCK_ERROR_TYPES,
+      suppressedErrorTypes: [],
+   });
+
+   assert.match(
+      resolveItineraryErrorMessage('noAvailableSlot'),
+      /No open time slot/
+   );
 });
