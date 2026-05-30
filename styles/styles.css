@@ -1836,6 +1836,230 @@ nav ul li a:hover {
    max-width: none;
 }
 
+.itinerary-day-schedule-item-row {
+   display: flex;
+   justify-content: flex-start;
+   padding: 0 4px 42px 4px;
+   border-bottom: 3px solid rgba(94, 150, 0, 0.18);
+}
+
+.itinerary-day-schedule-item-btn {
+   min-height: 104px;
+   padding: 28px 48px;
+   border: 4px solid rgba(94, 150, 0, 0.72);
+   border-radius: 14px;
+   background: rgba(94, 150, 0, 0.12);
+   color: rgba(20, 35, 10, 0.94);
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.8rem;
+   font-weight: 900;
+   cursor: pointer;
+}
+
+.itinerary-day-schedule-item-btn:hover,
+.itinerary-day-schedule-item-btn:focus-visible {
+   background: rgba(94, 150, 0, 0.22);
+}
+
+.schedule-item-module .itin-overlay {
+   align-items: center;
+   padding-top: 5vh;
+   padding-bottom: 5vh;
+}
+
+.schedule-item-module .itin-card {
+   border-radius: 28px;
+   display: flex;
+   flex-direction: column;
+   max-height: 92vh;
+}
+
+.schedule-item-module .itin-card-topbar {
+   padding: 44px 140px 44px 60px;
+}
+
+.schedule-item-module .itin-top-title {
+   font-size: 4.4rem;
+   line-height: 1.15;
+}
+
+.schedule-item-module .itin-close {
+   right: 32px;
+   width: 96px;
+   height: 96px;
+   border-radius: 22px;
+   font-size: 3.75rem;
+}
+
+.schedule-item-module .itin-card-body {
+   padding: 50px 60px 40px 60px;
+   flex: 1 1 auto;
+   min-height: 0;
+   display: flex;
+   flex-direction: column;
+   overflow: hidden;
+}
+
+.schedule-item-module .itin-card-actions {
+   padding: 0 60px 50px 60px;
+}
+
+.schedule-item-module .itin-prev,
+.schedule-item-module .itin-finish {
+   font-size: 2.8rem;
+   font-weight: 900;
+   padding: 28px 54px;
+   border-radius: 18px;
+   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+}
+
+.schedule-item-module .itin-actions-right {
+   gap: 28px;
+}
+
+.schedule-item-module-body {
+   display: flex;
+   flex-direction: column;
+   gap: 44px;
+   width: 100%;
+   flex: 1 1 auto;
+   min-height: 0;
+}
+
+.schedule-item-module-body > .schedule-item-field {
+   flex: 0 0 auto;
+}
+
+.schedule-item-field {
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+}
+
+.schedule-item-field-label {
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.8rem;
+   font-weight: 850;
+   line-height: 1.2;
+   color: rgba(20, 35, 10, 0.88);
+}
+
+.schedule-item-field-label.is-disabled {
+   opacity: 0.55;
+}
+
+.schedule-item-select,
+.schedule-item-search-input {
+   width: 100%;
+   box-sizing: border-box;
+   min-height: 120px;
+   padding: 26px 34px;
+   border: 5px solid rgba(94, 150, 0, 0.35);
+   border-radius: 22px;
+   background: rgba(255, 255, 255, 0.96);
+   color: rgba(20, 35, 10, 0.94);
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.65rem;
+   font-weight: 750;
+   line-height: 1.25;
+   outline: none;
+   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+}
+
+.schedule-item-select:focus,
+.schedule-item-search-input:focus {
+   border-color: rgba(94, 150, 0, 0.95);
+   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.16);
+}
+
+.schedule-item-search-input::placeholder {
+   color: rgba(20, 35, 10, 0.45);
+   font-weight: 750;
+}
+
+.schedule-item-search-input:disabled {
+   opacity: 0.55;
+   cursor: not-allowed;
+}
+
+.schedule-item-module .itin-results {
+   --schedule-item-results-height: min(50vh, 650px);
+
+   margin-top: 0;
+   flex: 0 0 var(--schedule-item-results-height);
+   height: var(--schedule-item-results-height);
+   min-height: var(--schedule-item-results-height);
+   max-height: var(--schedule-item-results-height);
+   overflow-y: auto;
+   overflow-x: hidden;
+   gap: 24px;
+   padding-right: 16px;
+}
+
+.schedule-item-module .itin-results::-webkit-scrollbar {
+   width: 22px;
+}
+
+.schedule-item-module .itin-empty {
+   font-size: 2.5rem;
+   font-weight: 800;
+   padding: 24px 4px;
+}
+
+.schedule-item-module .schedule-item-result {
+   width: 100%;
+   box-sizing: border-box;
+   cursor: pointer;
+   border-radius: 22px;
+   padding: 24px 28px;
+   background-color: rgba(94, 150, 0, 0.95);
+   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 28px;
+}
+
+.schedule-item-module .schedule-item-result.is-selected {
+   box-shadow:
+      0 0 0 4px rgba(255, 255, 255, 0.85),
+      0 10px 25px rgba(0, 0, 0, 0.18);
+}
+
+.schedule-item-module .schedule-item-select-btn {
+   flex: 0 0 auto;
+}
+
+.schedule-item-module .schedule-item-result .itin-animal-content {
+   gap: 28px;
+}
+
+.schedule-item-module .schedule-item-result .itin-animal-thumb {
+   width: 180px;
+   height: 140px;
+   border-radius: 18px;
+}
+
+.schedule-item-module .schedule-item-result .itin-animal-thumb.is-placeholder::before {
+   font-size: 4.4rem;
+}
+
+.schedule-item-module .schedule-item-result .animal-result-species {
+   font-size: 2.65rem;
+   font-weight: 900;
+   line-height: 1.2;
+   color: #ffffff;
+}
+
+.schedule-item-module .schedule-item-result .animal-result-exhibit,
+.schedule-item-module .schedule-item-result .tooltip-link {
+   font-size: 2.35rem;
+   font-weight: 700;
+   line-height: 1.25;
+   color: rgba(255, 255, 255, 0.9);
+}
+
 .itinerary-day-time-control {
    display: contents;
    min-width: 0;
@@ -2991,7 +3215,8 @@ nav ul li a:hover {
    max-width: none;
 }
 
-.tzg-confirm .itin-card {
+.tzg-confirm .itin-card,
+.schedule-item-module .itin-card {
    width: min(1458px, 74.5vw);
 }
 

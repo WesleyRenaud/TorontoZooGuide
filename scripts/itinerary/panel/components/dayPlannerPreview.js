@@ -22,6 +22,7 @@ import {
 import { appendItineraryTimeMarkers } from './dayPlannerTimelinePills.js';
 import { el } from '../dom.js';
 import { formatISODateFull } from '../format.js';
+import { makeScheduleItemButton } from './scheduleItemButton.js';
 import { makeSection } from './section.js';
 import { buildSectionConfigs } from '../sectionConfigs.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -59,7 +60,8 @@ function buildTimelineSlotStarts(halfHourSlotStarts, closeMinutes) {
 export function makeDayPlannerPreview(
    zooHours = null,
    itinerary = {},
-   timeHandlers = {}
+   timeHandlers = {},
+   { onScheduleItemClick = null } = {}
 ) {
    const strings = {
       ...APP_STRINGS.itinerary.dayPlanner,
@@ -110,6 +112,16 @@ export function makeDayPlannerPreview(
 
    if (timelineSlotStarts.length === 0) {
       section.appendChild(header);
+
+      if (typeof onScheduleItemClick === 'function') {
+         section.appendChild(
+            makeScheduleItemButton({
+               label: strings.scheduleItemButton,
+               onClick: onScheduleItemClick,
+            })
+         );
+      }
+
       section.appendChild(makeUnavailableMessage(strings.hoursUnavailable));
       root.appendChild(section);
       return root;
@@ -136,6 +148,16 @@ export function makeDayPlannerPreview(
    });
 
    section.appendChild(header);
+
+   if (typeof onScheduleItemClick === 'function') {
+      section.appendChild(
+         makeScheduleItemButton({
+            label: strings.scheduleItemButton,
+            onClick: onScheduleItemClick,
+         })
+      );
+   }
+
    section.appendChild(timeline);
    root.appendChild(section);
 

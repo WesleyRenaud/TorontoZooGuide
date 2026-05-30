@@ -18,6 +18,8 @@ import './draftStorage.test.mjs';
 import './regionSelectorState.test.mjs';
 import './itineraryApi.test.mjs';
 import './itineraryPanelViewUrl.test.mjs';
+import './scheduleItemSearch.test.mjs';
+import './scheduleItemEventLabels.test.mjs';
 import './itineraryDiff.test.mjs';
 import './itineraryValidation.test.mjs';
 import './layerRequest.test.mjs';
