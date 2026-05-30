@@ -1,6 +1,15 @@
 import { el } from '../dom.js';
 import { APP_STRINGS } from '../../../strings.js';
 
+export function getItineraryOverlayMountEl() {
+   return document.getElementById('itineraryFlow')
+      ?? document.querySelector('.map-container');
+}
+
+export function getItineraryPanelMountEl() {
+   return document.querySelector('.itinerary-panel');
+}
+
 function joinClassNames(...classNames) {
    return classNames.filter(Boolean).join(' ');
 }

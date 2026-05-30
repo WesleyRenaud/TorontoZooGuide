@@ -28,6 +28,7 @@ from api.models import ZoomobileStation
 from api.shared.calendar_dates import CalendarDates
 from api.shared.constants import itinerary_config_to_dict
 import api.shared.date_values as date_values
+from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 from api.shared.value_conversion import ValueConversion
 from api.shared.weather import Weather
@@ -315,6 +316,13 @@ def test_itinerary_config_exposes_event_types() -> None:
    assert itinerary_config_to_dict()[ 'itinerary_event_types' ] == [
       event_type.value for event_type in ItineraryEventType
    ]
+
+
+def test_itinerary_config_exposes_error_types() -> None:
+   assert itinerary_config_to_dict()[ 'itinerary_error_types' ] == {
+      error_type.name: error_type.value
+      for error_type in ItineraryErrorType
+   }
 
 
 @pytest.mark.parametrize(

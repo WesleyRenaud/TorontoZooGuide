@@ -67,6 +67,11 @@ export const itinerary = {
          'These selections overlap in time. We’ll fit them into your day by shortening some activities, with Wild Encounters taking priority.'
       ),
       scheduleOverrideSelectionTitle: 'Adjust Activity Times?',
+      shortVisitTitle: 'Short Visit?',
+      shortVisitMessage: (
+         'Your arrival and departure times are very close together. '
+         + 'Are you sure you want to save these times?'
+      ),
       animalMayBeOffDisplay: 'Animal May Be Off Display',
    },
    emptyText: {
@@ -78,6 +83,10 @@ export const itinerary = {
       wildEncounters: 'No wild encounters found for this day',
    },
    emptyPanel: 'Build an itinerary to see it here.',
+   errors: {
+      generic: 'Could not update itinerary.',
+      arrivalDepartureTooClose: 'Could not update itinerary time.',
+   },
    dayPlanner: {
       aria: 'Itinerary day planner preview',
       arrivalInputLabel: 'Arrival time',

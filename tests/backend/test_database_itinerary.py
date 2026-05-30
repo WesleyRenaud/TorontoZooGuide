@@ -17,6 +17,7 @@ from api.itinerary.logic.itinerary_validation import validate_itinerary_animals
 from api.itinerary.logic.itinerary_validation import validate_itinerary_attractions
 from api.models import GuardiansTalk
 from api.models import WildEncounter
+from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from api.wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
 from api.zoo_hours.controllers.zoo_hours_controller import ZooHoursController
@@ -59,7 +60,7 @@ def test_get_itinerary_date_returns_saved_visit_date(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-   )
+   ).success
 
    assert ItineraryController.get_itinerary_date() == '2026-06-15'
 
@@ -105,7 +106,7 @@ def test_set_get_and_clear_itinerary(
       attractions=[ 'Conservation Carousel' ],
       guardians_talks=guardians_talk_save_entries( 'African Lion' ),
       wild_encounters=[ 'African Rainforest' ],
-   )
+   ).success
 
    talk_schedule = db.conn.execute(
       """   SELECT START_TIME, END_TIME, IS_DELETED
@@ -186,15 +187,15 @@ def test_set_itinerary_arrival_and_departure_time_updates_only_requested_field(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-   )
+   ).success
 
-   assert ItineraryController.set_arrival_time( '10:15 AM' )
+   assert ItineraryController.set_arrival_time( '10:15 AM' ).success
    itinerary = ItineraryController.get_itinerary()
 
    assert itinerary.arrival_time == '10:15'
    assert itinerary.departure_time == '17:00'
 
-   assert ItineraryController.set_departure_time( None )
+   assert ItineraryController.set_departure_time( None ).success
    itinerary = ItineraryController.get_itinerary()
 
    assert itinerary.arrival_time == '10:15'
@@ -211,22 +212,22 @@ def test_set_itinerary_arrival_time_must_be_within_zoo_admission_hours(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-   )
+   ).success
 
-   assert not ItineraryController.set_arrival_time( '09:00' )
+   assert not ItineraryController.set_arrival_time( '09:00' ).success
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.arrival_time == '09:30'
 
-   assert ItineraryController.set_departure_time( '18:00' )
-
-   assert ItineraryController.set_arrival_time( '17:00' )
-
+   assert ItineraryController.set_departure_time( '18:00' ).success
+   assert ItineraryController.set_arrival_time(
+      '17:00',
+      confirming_short_visit=True ).success
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.arrival_time == '17:00'
    assert itinerary.departure_time == '18:00'
 
-   assert not ItineraryController.set_arrival_time( '17:15' )
+   assert not ItineraryController.set_arrival_time( '17:15' ).success
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.arrival_time == '17:00'
@@ -242,12 +243,12 @@ def test_set_itinerary_arrival_time_allows_early_admission_when_offered(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-   )
+   ).success
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.arrival_time == '09:00'
 
-   assert not ItineraryController.set_arrival_time( '08:45' )
+   assert not ItineraryController.set_arrival_time( '08:45' ).success
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.arrival_time == '09:00'
@@ -263,7 +264,7 @@ def test_set_itinerary_rejects_arrival_time_outside_zoo_admission_hours(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-   )
+   ).success
 
    result = ItineraryController.set_itinerary(
       date='2026-06-15',
@@ -292,19 +293,18 @@ def test_set_itinerary_departure_time_must_be_within_zoo_operating_hours(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-   )
+   ).success
 
-   assert not ItineraryController.set_departure_time( '09:00' )
+   assert not ItineraryController.set_departure_time( '09:00' ).success
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.departure_time == '17:00'
 
-   assert ItineraryController.set_departure_time( '18:00' )
-
+   assert ItineraryController.set_departure_time( '18:00' ).success
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.departure_time == '18:00'
 
-   assert not ItineraryController.set_departure_time( '18:15' )
+   assert not ItineraryController.set_departure_time( '18:15' ).success
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.departure_time == '18:00'
@@ -320,15 +320,16 @@ def test_set_itinerary_departure_time_requires_opening_not_early_admission(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-   )
+   ).success
 
-   assert not ItineraryController.set_departure_time( '09:00' )
+   assert not ItineraryController.set_departure_time( '09:00' ).success
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.departure_time == '19:00'
 
-   assert ItineraryController.set_departure_time( '09:30' )
-
+   assert ItineraryController.set_departure_time(
+      '09:30',
+      confirming_short_visit=True ).success
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.departure_time == '09:30'
 
@@ -343,7 +344,7 @@ def test_set_itinerary_rejects_departure_time_outside_zoo_operating_hours(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-   )
+   ).success
 
    result = ItineraryController.set_itinerary(
       date='2026-06-15',
@@ -372,17 +373,98 @@ def test_set_itinerary_departure_time_must_be_after_arrival_time(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-   )
+   ).success
 
-   assert not ItineraryController.set_departure_time( '09:30' )
+   assert not ItineraryController.set_departure_time( '09:30' ).success
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.departure_time == '17:00'
 
-   assert not ItineraryController.set_arrival_time( '17:00' )
+   assert not ItineraryController.set_arrival_time( '17:00' ).success
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.arrival_time == '09:30'
+
+
+def test_set_itinerary_arrival_time_rejects_visit_shorter_than_two_hours_without_confirmation(
+      db: DbControllers ) -> None:
+   assert ItineraryController.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryController.set_arrival_time( '16:30' )
+
+   assert result.error_type == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+
+   itinerary = ItineraryController.get_itinerary()
+   assert itinerary.arrival_time == '09:30'
+   assert itinerary.departure_time == '17:00'
+
+
+def test_set_itinerary_arrival_time_allows_short_visit_with_confirmation(
+      db: DbControllers ) -> None:
+   assert ItineraryController.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryController.set_arrival_time(
+      '16:30',
+      confirming_short_visit=True )
+
+   assert result.success
+
+   itinerary = ItineraryController.get_itinerary()
+   assert itinerary.arrival_time == '16:30'
+   assert itinerary.departure_time == '17:00'
+
+
+def test_set_itinerary_departure_time_rejects_visit_shorter_than_two_hours_without_confirmation(
+      db: DbControllers ) -> None:
+   assert ItineraryController.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryController.set_departure_time( '10:00' )
+
+   assert result.error_type == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+
+   itinerary = ItineraryController.get_itinerary()
+   assert itinerary.departure_time == '17:00'
+
+
+def test_set_itinerary_departure_time_allows_two_hour_visit_without_confirmation(
+      db: DbControllers ) -> None:
+   assert ItineraryController.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert ItineraryController.set_departure_time( '11:30' ).success
+   itinerary = ItineraryController.get_itinerary()
+   assert itinerary.departure_time == '11:30'
 
 
 def test_set_itinerary_rejects_departure_time_that_does_not_follow_arrival(
@@ -395,7 +477,7 @@ def test_set_itinerary_rejects_departure_time_that_does_not_follow_arrival(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-   )
+   ).success
 
    result = ItineraryController.set_itinerary(
       date='2026-06-15',
@@ -440,7 +522,7 @@ def test_set_itinerary_normalizes_display_format_schedule_times(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[ 'Grizzly Bear' ],
-   )
+   ).success
 
    encounter_schedule = db.conn.execute(
       """   SELECT START_TIME, END_TIME

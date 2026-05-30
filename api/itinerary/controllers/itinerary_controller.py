@@ -13,14 +13,18 @@ from ..data_access.itinerary_time import set_itinerary_departure_time
 from ...guardians.controllers.guardians_controller import GuardiansController
 from ..logic import set_itinerary as set_itinerary_logic
 from ..logic.itinerary import build_current_itinerary
-from ..logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_saved_itinerary
-from ..logic.itinerary_departure_time_validation import departure_time_is_valid_for_saved_itinerary
+from ..logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
+from ..logic.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from ..logic.itinerary_save_result import ItinerarySaveResult
+from ..logic.itinerary_time_set_result import ItineraryTimeSetResult
+from ..logic.itinerary_visit_duration_validation import itinerary_visit_is_shorter_than_minimum
 from ...models import Itinerary
 from ...request_connection import get_connection
 from ...shared.date_values import DateValues
+from ...shared.enums import ItineraryErrorType
 from ...types import DateInput, TimeInput
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
 
 class ItineraryController():
@@ -54,7 +58,8 @@ class ItineraryController():
          departure_time: TimeInput = None,
          selected_exhibits: list[ str ] | None = None,
          visit_date_temp: float | None = None,
-         overriding_conflicting_guardians_talks: bool = False ) -> ItinerarySaveResult:
+         overriding_conflicting_guardians_talks: bool = False,
+         confirming_short_visit: bool = False ) -> ItinerarySaveResult:
       return set_itinerary_logic.set_itinerary(
          get_connection(),
          date=date,
@@ -68,6 +73,7 @@ class ItineraryController():
          visit_date_temp=visit_date_temp,
          overriding_conflicting_guardians_talks=(
             overriding_conflicting_guardians_talks ),
+         confirming_short_visit=confirming_short_visit,
          animal_controller=AnimalController,
          attraction_controller=AttractionController,
          guardians_controller=GuardiansController,
@@ -80,35 +86,80 @@ class ItineraryController():
 
 
    @classmethod
-   def set_arrival_time( cls, arrival_time: TimeInput ) -> bool:
+   def set_arrival_time(
+         cls,
+         arrival_time: TimeInput,
+         *,
+         confirming_short_visit: bool = False ) -> ItineraryTimeSetResult:
       conn = get_connection()
       normalized_arrival_time = DateValues.normalize_itinerary_schedule_time(
          arrival_time )
-
-      if not arrival_time_is_valid_for_saved_itinerary(
-            conn,
-            normalized_arrival_time ):
-         return False
-
-      return set_itinerary_arrival_time(
+      saved_itinerary = fetch_saved_itinerary( conn )
+      zoo_hours_record = fetch_zoo_hours_record(
          conn,
-         normalized_arrival_time )
+         fetch_itinerary_date( conn ) )
+
+      validation_error = arrival_time_is_valid_for_zoo_hours(
+         normalized_arrival_time,
+         zoo_hours_record,
+         departure_time=saved_itinerary.departure_time )
+
+      if validation_error != ItineraryErrorType.SUCCESS:
+         return ItineraryTimeSetResult( error_type=validation_error )
+
+      if (
+         not confirming_short_visit
+         and itinerary_visit_is_shorter_than_minimum(
+            normalized_arrival_time,
+            saved_itinerary.departure_time )
+      ):
+         return ItineraryTimeSetResult(
+            error_type=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+
+      set_itinerary_arrival_time( conn, normalized_arrival_time )
+
+      return ItineraryTimeSetResult()
 
 
    @classmethod
-   def set_departure_time( cls, departure_time: TimeInput ) -> bool:
+   def set_departure_time(
+         cls,
+         departure_time: TimeInput,
+         *,
+         confirming_short_visit: bool = False ) -> ItineraryTimeSetResult:
       conn = get_connection()
       normalized_departure_time = DateValues.normalize_itinerary_schedule_time(
          departure_time )
 
-      if not departure_time_is_valid_for_saved_itinerary(
-            conn,
-            normalized_departure_time ):
-         return False
+      if normalized_departure_time is None:
+         set_itinerary_departure_time( conn, None )
+         return ItineraryTimeSetResult()
 
-      return set_itinerary_departure_time(
+      saved_itinerary = fetch_saved_itinerary( conn )
+      zoo_hours_record = fetch_zoo_hours_record(
          conn,
-         normalized_departure_time )
+         fetch_itinerary_date( conn ) )
+
+      validation_error = departure_time_is_valid_for_zoo_hours(
+         normalized_departure_time,
+         zoo_hours_record,
+         arrival_time=saved_itinerary.arrival_time )
+
+      if validation_error != ItineraryErrorType.SUCCESS:
+         return ItineraryTimeSetResult( error_type=validation_error )
+
+      if (
+         not confirming_short_visit
+         and itinerary_visit_is_shorter_than_minimum(
+            saved_itinerary.arrival_time,
+            normalized_departure_time )
+      ):
+         return ItineraryTimeSetResult(
+            error_type=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+
+      set_itinerary_departure_time( conn, normalized_departure_time )
+
+      return ItineraryTimeSetResult()
 
 
    @classmethod
