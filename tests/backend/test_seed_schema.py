@@ -55,6 +55,7 @@ def test_seed_data_exports_all_static_table_rows() -> None:
    assert data.guest_services
    assert data.picnic_sites
    assert data.event_sites
+   assert data.itinerary_event_defaults
    assert data.zoo_hours
 
 
@@ -375,7 +376,7 @@ def test_create_schema_migrates_partial_dynamic_tables() -> None:
          'EVENT_TYPE',
          'START_TIME',
          'END_TIME'
-      }
+      },
    }
 
    for table, expected in expected_columns.items():

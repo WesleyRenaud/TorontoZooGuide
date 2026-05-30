@@ -14,7 +14,10 @@ def itinerary_config_to_dict(
          str,
          int | list[ str ] | dict[ str, str ],
       ]:
-   config: dict[ str, int | list[ str ] | dict[ str, str ] ] = {
+   config: dict[
+         str,
+         int | list[ str ] | dict[ str, str ],
+      ] = {
       'animal_visibility_change_threshold': ANIMAL_VISIBILITY_CHANGE_THRESHOLD,
       'itinerary_event_types': [
          event_type.value for event_type in ItineraryEventType
