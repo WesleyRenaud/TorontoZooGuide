@@ -15,8 +15,8 @@ def species_exhibit_key( animal: Animal ) -> tuple[ str, str ]:
 
 
 def animal_matches_query( animal: Animal, query_lower: str ) -> bool:
-   species, exhibit = species_exhibit_key( animal )
-   return query_lower in species or query_lower in exhibit
+   species, _exhibit = species_exhibit_key( animal )
+   return query_lower in species
 
 
 def filter_animals_matching_query(

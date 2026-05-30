@@ -162,6 +162,34 @@ def test_exhibit_closure_sets_animal_likelihood_to_zero(
    assert all( animal.off_display_message == 'Savanna is closed.' for animal in animals )
 
 
+def test_animal_query_matches_species_not_exhibit( db: DbControllers ) -> None:
+   species_matches = AnimalController.get_animals_matching_query(
+      query='cheetah',
+      day=15,
+      month='June',
+      year=2026,
+      temp=22,
+      include_off_display_animals=True
+   )
+
+   assert species_matches
+   assert all(
+      'cheetah' in ( animal.species or '' ).lower()
+      for animal in species_matches
+   )
+
+   exhibit_matches = AnimalController.get_animals_matching_query(
+      query='africa savanna',
+      day=15,
+      month='June',
+      year=2026,
+      temp=22,
+      include_off_display_animals=True
+   )
+
+   assert exhibit_matches == []
+
+
 def test_animal_query_helpers_dedupe_and_sort( db: DbControllers ) -> None:
    animals = AnimalController.get_animals_matching_query(
       query='african',
@@ -180,7 +208,6 @@ def test_animal_query_helpers_dedupe_and_sort( db: DbControllers ) -> None:
    assert len( species_exhibits ) == len( set( species_exhibits ) )
    assert all(
       'african' in ( animal.species or '' ).lower()
-      or 'african' in ( animal.exhibit or '' ).lower()
       for animal in animals
    )
 
