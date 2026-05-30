@@ -1,5 +1,6 @@
 import {
    createItineraryPopupLayout,
+   getItineraryOverlayMountEl,
    mountDismissablePopup,
 } from './popup.js';
 
@@ -8,6 +9,7 @@ export function showItineraryConfirmPopup({
    message = '',
    confirmText = 'Confirm',
    cancelText = 'Cancel',
+   mountEl = getItineraryOverlayMountEl() ?? document.body,
    onConfirm,
    onCancel,
 } = {}) {
@@ -39,7 +41,7 @@ export function showItineraryConfirmPopup({
    });
 
    const { close, dismiss } = mountDismissablePopup({
-      mountEl: document.body,
+      mountEl,
       root,
       overlay,
       initialFocusEl: buttonEls.confirm,

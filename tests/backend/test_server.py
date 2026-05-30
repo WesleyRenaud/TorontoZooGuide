@@ -8,6 +8,7 @@ from typing import Any
 import pytest
 
 from api.itinerary.logic.itinerary_save_result import ItinerarySaveResult
+from api.itinerary.logic.itinerary_time_set_result import ItineraryTimeSetResult
 from api.models import Animal
 from api.models import Attraction
 from api.models import Defibrillator
@@ -31,6 +32,7 @@ from api.models import ZooHours
 from api.models import ZoomobileStation
 from api.models.zoomobile_route import ZoomobileRoute
 import api.server as server
+from api.shared.constants import itinerary_config_to_dict
 from api.shared.enums import AnimalViewingScope
 from api.types import Connection
 from conftest import FakeHandler
@@ -338,9 +340,7 @@ class StubZooControllers:
 
    def set_itinerary( self, **kwargs: Any ) -> ItinerarySaveResult:
       self.calls.append( ( 'set_itinerary', kwargs ) )
-      return ItinerarySaveResult(
-         success=True,
-         itinerary=Itinerary( date='2026-06-15' ) )
+      return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
 
    def get_itinerary_date( self ) -> str:
@@ -353,14 +353,14 @@ class StubZooControllers:
       return Itinerary( date='2026-06-15' )
 
 
-   def set_arrival_time( self, **kwargs: Any ) -> bool:
+   def set_arrival_time( self, **kwargs: Any ) -> ItineraryTimeSetResult:
       self.calls.append( ( 'set_arrival_time', kwargs ) )
-      return True
+      return ItineraryTimeSetResult()
 
 
-   def set_departure_time( self, **kwargs: Any ) -> bool:
+   def set_departure_time( self, **kwargs: Any ) -> ItineraryTimeSetResult:
       self.calls.append( ( 'set_departure_time', kwargs ) )
-      return True
+      return ItineraryTimeSetResult()
 
 
    def accept_itinerary( self, **kwargs: Any ) -> bool:
@@ -1202,7 +1202,7 @@ def test_itinerary_endpoints_return_success_payloads(
    server.MyHandler.do_POST( accept_handler )
 
    set_response = response_json( set_handler )
-   assert set_response[ 'success' ] is True
+   assert set_response[ 'errorType' ] == 'success'
    assert set_response[ 'issues' ] == []
    assert StubZooControllers.instances[ 0 ].calls[ 0 ] == (
       'set_itinerary',
@@ -1217,6 +1217,7 @@ def test_itinerary_endpoints_return_success_payloads(
          'selected_exhibits': [ ANIMAL_EXHIBIT ],
          'visit_date_temp': None,
          'overriding_conflicting_guardians_talks': False,
+         'confirming_short_visit': False,
       }
    )
    assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
@@ -1245,16 +1246,30 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
    server.MyHandler.do_POST( departure_handler )
 
    assert response_json( arrival_handler ) == {
-      'success': True,
+      'errorType': 'success',
       'arrivalTime': '09:45',
+      'itinerary_config': itinerary_config_to_dict(),
    }
    assert response_json( departure_handler ) == {
-      'success': True,
+      'errorType': 'success',
       'departureTime': None,
+      'itinerary_config': itinerary_config_to_dict(),
    }
    assert StubZooControllers.instances[ 0 ].calls == [
-      ( 'set_arrival_time', { 'arrival_time': '09:45' } ),
-      ( 'set_departure_time', { 'departure_time': None } ),
+      (
+         'set_arrival_time',
+         {
+            'arrival_time': '09:45',
+            'confirming_short_visit': False,
+         },
+      ),
+      (
+         'set_departure_time',
+         {
+            'departure_time': None,
+            'confirming_short_visit': False,
+         },
+      ),
    ]
 
 

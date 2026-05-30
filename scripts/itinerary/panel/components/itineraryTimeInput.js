@@ -78,7 +78,10 @@ export function makeItineraryTimeInput({
          latestPickerValue = nextValue;
       }
       catch (error) {
-         console.error('Failed to update itinerary time:', error);
+         if (error?.name !== 'ItineraryTimeChangeCancelledError') {
+            console.error('Failed to update itinerary time:', error);
+         }
+
          rejectInvalidTime(nextValue);
       }
       finally {
