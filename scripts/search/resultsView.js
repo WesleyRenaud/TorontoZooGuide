@@ -1,3 +1,15 @@
+import {
+   buildAnimalImageSrc,
+   getAnimalSpecies,
+   getAnimalSubtitle,
+} from '../itinerary/selectors/animalSelector/model.js';
+import {
+   buildAttractionImageSrc,
+   getAttractionInfoLink,
+   getAttractionSubtitle,
+   getAttractionTitle,
+} from '../itinerary/selectors/attractionSelector/model.js';
+import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { APP_STRINGS } from '../strings.js';
 
 function buildDetailSummary(parts, fallback) {
@@ -78,6 +90,21 @@ const RESULT_PRESENTATIONS = {
    ),
 };
 
+const ROW_LEFT_RENDERERS = {
+   animal: createDefaultSelectorRowLeftRenderer({
+      getTitle: getAnimalSpecies,
+      getSubtitle: getAnimalSubtitle,
+      getImageSrc: buildAnimalImageSrc,
+      getInfoLink: () => null,
+   }),
+   attraction: createDefaultSelectorRowLeftRenderer({
+      getTitle: getAttractionTitle,
+      getSubtitle: getAttractionSubtitle,
+      getImageSrc: buildAttractionImageSrc,
+      getInfoLink: getAttractionInfoLink,
+   }),
+};
+
 function getRowPresentation(row) {
    return RESULT_PRESENTATIONS[row.type] ?? DEFAULT_RESULT_PRESENTATION;
 }
@@ -117,6 +144,16 @@ function createResultText(row) {
    return left;
 }
 
+function createResultContent(row) {
+   const renderWithImage = ROW_LEFT_RENDERERS[row.type];
+
+   if (renderWithImage) {
+      return renderWithImage(row);
+   }
+
+   return createResultText(row);
+}
+
 function createFocusButton(row, onFocusRow) {
    const button = document.createElement('button');
    button.type = 'button';
@@ -136,7 +173,7 @@ function createSearchResultItem(row, onFocusRow) {
    item.className = 'animal-result';
 
    item.append(
-      createResultText(row),
+      createResultContent(row),
       createFocusButton(row, onFocusRow)
    );
 

@@ -3,6 +3,7 @@ import './apiNormalizeValues.test.mjs';
 import './animalViewingScopeControl.test.mjs';
 import './exploreFilter.test.mjs';
 import './searchResponse.test.mjs';
+import './searchResultsView.test.mjs';
 import './searchRows.test.mjs';
 import './scheduledOccurrenceSelector.test.mjs';
 import './consolePanelNavigator.test.mjs';
