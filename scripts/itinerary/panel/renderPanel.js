@@ -5,6 +5,7 @@ import {
    makeDayPlannerPreview,
    makeItineraryPanelViews,
 } from './components/dayPlanner.js';
+import { showScheduleItemModule } from './components/scheduleItemModule.js';
 import { makeSection } from './components/section.js';
 import { clearItineraryDraftStorage } from '../draftStorage.js';
 import {
@@ -19,6 +20,7 @@ import {
    setItineraryArrivalTime,
    setItineraryDepartureTime,
 } from '../itineraryService.js';
+import { buildSchedulableEventTypes } from './scheduleItemTypes.js';
 import { buildSectionConfigs } from './sectionConfigs.js';
 import { resolveEffectiveItineraryHoursDateIso } from '../visitDateEarliest.js';
 
@@ -60,10 +62,19 @@ function appendDayPlannerViewWithHours(
    dayPlannerView,
    zooHours,
    itinerary = {},
-   timeHandlers = {}
+   timeHandlers = {},
+   { onPanelRefresh = null } = {}
 ) {
    dayPlannerView.appendChild(
-      makeDayPlannerPreview(zooHours, itinerary, timeHandlers)
+      makeDayPlannerPreview(zooHours, itinerary, timeHandlers, {
+         onScheduleItemClick: () => {
+            showScheduleItemModule({
+               itinerary,
+               eventTypes: buildSchedulableEventTypes(itinerary.itineraryConfig),
+               onScheduled: onPanelRefresh,
+            });
+         },
+      })
    );
 }
 
@@ -107,6 +118,9 @@ function buildItineraryPanelContent(bodyEl, itinerary, zooHours) {
             await setItineraryDepartureTime(departureTime);
             await renderItineraryPanelInto(bodyEl);
          },
+      },
+      {
+         onPanelRefresh: () => renderItineraryPanelInto(bodyEl),
       }
    );
    fragment.appendChild(root);
@@ -123,7 +137,9 @@ function buildEmptyItineraryPanelContent(bodyEl, zooHours) {
 
    renderBuildOnly(listView);
    renderBuildOnly(dayPlannerView);
-   appendDayPlannerViewWithHours(dayPlannerView, zooHours);
+   appendDayPlannerViewWithHours(dayPlannerView, zooHours, {}, {}, {
+      onPanelRefresh: () => renderItineraryPanelInto(bodyEl),
+   });
    bodyEl.appendChild(root);
 }
 

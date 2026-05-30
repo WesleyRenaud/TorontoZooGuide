@@ -93,6 +93,7 @@ export function normalizeItinerary(itinerary) {
 
    return {
       ...normalizedDraft,
+      itineraryConfig: itinerary?.itineraryConfig ?? null,
       validation: buildItineraryValidationState(
          normalizedDraft,
          itinerary?.itineraryConfig ?? {}
