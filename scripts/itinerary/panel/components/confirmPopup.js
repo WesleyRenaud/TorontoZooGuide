@@ -1,14 +1,40 @@
+import { el } from '../dom.js';
 import {
    createItineraryPopupLayout,
    getItineraryOverlayMountEl,
    mountDismissablePopup,
 } from './popup.js';
 
+function createConfirmPopupBody(message, doNotShowAgainLabel) {
+   const body = el('div', 'tzg-popup-confirm-body');
+
+   body.appendChild(
+      el('div', 'tzg-popup-message', message)
+   );
+
+   if (!doNotShowAgainLabel) {
+      return body;
+   }
+
+   const label = el('label', 'toggle-row tzg-popup-do-not-show-again');
+   const checkbox = el('input');
+   checkbox.type = 'checkbox';
+
+   label.append(checkbox, ` ${doNotShowAgainLabel}`);
+   body.appendChild(label);
+
+   return {
+      body,
+      checkbox,
+   };
+}
+
 export function showItineraryConfirmPopup({
    title = 'Heads up',
    message = '',
    confirmText = 'Confirm',
    cancelText = 'Cancel',
+   doNotShowAgainLabel = null,
    mountEl = getItineraryOverlayMountEl() ?? document.body,
    onConfirm,
    onCancel,
@@ -17,6 +43,8 @@ export function showItineraryConfirmPopup({
    existingPopup?.__tzgPopupCleanup?.();
    existingPopup?.remove();
 
+   const confirmBody = createConfirmPopupBody(message, doNotShowAgainLabel);
+
    const {
       root,
       overlay,
@@ -24,7 +52,7 @@ export function showItineraryConfirmPopup({
    } = createItineraryPopupLayout({
       popupClassName: 'tzg-confirm',
       title,
-      message,
+      bodyContent: confirmBody.body ?? confirmBody,
       actionsClassName: 'tzg-popup-actions',
       actionButtons: [
          {
@@ -50,7 +78,9 @@ export function showItineraryConfirmPopup({
 
    buttonEls.cancel?.addEventListener('click', dismiss);
    buttonEls.confirm?.addEventListener('click', () => {
-      onConfirm?.();
+      onConfirm?.({
+         doNotShowAgain: Boolean(confirmBody.checkbox?.checked),
+      });
       close();
    });
 }

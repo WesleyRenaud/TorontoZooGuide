@@ -72,6 +72,7 @@ export const itinerary = {
          'Your arrival and departure times are very close together. '
          + 'Are you sure you want to save these times?'
       ),
+      doNotShowShortVisitAgain: 'Don\u2019t show this again',
       animalMayBeOffDisplay: 'Animal May Be Off Display',
    },
    emptyText: {

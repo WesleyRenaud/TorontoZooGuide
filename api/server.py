@@ -28,6 +28,7 @@ from .itinerary.controllers.itinerary_controller import ItineraryController
 from .pavilions.controllers.pavilion_controller import PavilionController
 from .picnic_sites.controllers.picnic_site_controller import PicnicSiteController
 from .request_connection import clear_connection
+from .request_connection import get_connection
 from .request_connection import set_connection
 from .restaurants.controllers.restaurant_controller import RestaurantController
 from .restrooms.controllers.restroom_controller import RestroomController
@@ -775,6 +776,8 @@ class MyHandler( BaseHTTPRequestHandler ):
          overriding_conflicting_guardians_talks = bool(
             data.get( 'overridingConflictingGuardiansTalks' ) )
          confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
+         suppress_short_visit_warning = bool(
+            data.get( 'suppressShortVisitWarning' ) )
 
          save_result = ItineraryController.set_itinerary(
             date=date,
@@ -788,7 +791,8 @@ class MyHandler( BaseHTTPRequestHandler ):
             visit_date_temp=temp,
             overriding_conflicting_guardians_talks=(
                overriding_conflicting_guardians_talks ),
-            confirming_short_visit=confirming_short_visit )
+            confirming_short_visit=confirming_short_visit,
+            suppress_short_visit_warning=suppress_short_visit_warning )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -797,7 +801,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          response = {
             'errorType': save_result.error_type.value,
             'itinerary': save_result.itinerary.to_dict(),
-            'itinerary_config': itinerary_config_to_dict(),
+            'itinerary_config': itinerary_config_to_dict( get_connection() ),
             'issues': [
                issue.to_dict() for issue in save_result.issues
             ],
@@ -824,10 +828,13 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          arrival_time = data.get( 'arrivalTime' )
          confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
+         suppress_short_visit_warning = bool(
+            data.get( 'suppressShortVisitWarning' ) )
 
          save_result = ItineraryController.set_arrival_time(
             arrival_time=arrival_time,
-            confirming_short_visit=confirming_short_visit )
+            confirming_short_visit=confirming_short_visit,
+            suppress_short_visit_warning=suppress_short_visit_warning )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -836,7 +843,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          response = {
             'errorType': save_result.error_type.value,
             'arrivalTime': arrival_time,
-            'itinerary_config': itinerary_config_to_dict(),
+            'itinerary_config': itinerary_config_to_dict( get_connection() ),
          }
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
@@ -849,10 +856,13 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          departure_time = data.get( 'departureTime' )
          confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
+         suppress_short_visit_warning = bool(
+            data.get( 'suppressShortVisitWarning' ) )
 
          save_result = ItineraryController.set_departure_time(
             departure_time=departure_time,
-            confirming_short_visit=confirming_short_visit )
+            confirming_short_visit=confirming_short_visit,
+            suppress_short_visit_warning=suppress_short_visit_warning )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -861,7 +871,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          response = {
             'errorType': save_result.error_type.value,
             'departureTime': departure_time,
-            'itinerary_config': itinerary_config_to_dict(),
+            'itinerary_config': itinerary_config_to_dict( get_connection() ),
          }
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
@@ -877,7 +887,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          response = {
             'itinerary': itinerary.to_dict(),
-            'itinerary_config': itinerary_config_to_dict(),
+            'itinerary_config': itinerary_config_to_dict( get_connection() ),
          }
 
          self.send_response( 200 )
@@ -950,7 +960,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          response = {
             'success': success,
             'itinerary': itinerary.to_dict() if itinerary != None else None,
-            'itinerary_config': itinerary_config_to_dict(),
+            'itinerary_config': itinerary_config_to_dict( get_connection() ),
          }
 
          if not success:

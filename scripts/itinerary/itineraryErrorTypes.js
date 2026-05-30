@@ -1,15 +1,20 @@
 import { APP_STRINGS } from '../strings.js';
 
 let itineraryErrorTypes = null;
+let suppressedItineraryErrorTypes = [];
 
 export function updateItineraryErrorTypesFromConfig(itineraryConfig = {}) {
    const errorTypes = itineraryConfig?.errorTypes;
 
-   if (!errorTypes || typeof errorTypes !== 'object') {
-      return;
+   if (errorTypes && typeof errorTypes === 'object') {
+      itineraryErrorTypes = Object.freeze({ ...errorTypes });
    }
 
-   itineraryErrorTypes = Object.freeze({ ...errorTypes });
+   suppressedItineraryErrorTypes = [...itineraryConfig.suppressedErrorTypes];
+}
+
+export function isItineraryErrorSuppressed(errorType) {
+   return suppressedItineraryErrorTypes.includes(errorType);
 }
 
 export function getItineraryErrorTypes() {
@@ -21,6 +26,10 @@ export function isItinerarySuccess(errorType) {
 }
 
 export function requiresShortVisitConfirmation(errorType) {
+   if (isItineraryErrorSuppressed(itineraryErrorTypes?.ARRIVAL_DEPARTURE_TOO_CLOSE)) {
+      return false;
+   }
+
    return errorType === itineraryErrorTypes?.ARRIVAL_DEPARTURE_TOO_CLOSE;
 }
 

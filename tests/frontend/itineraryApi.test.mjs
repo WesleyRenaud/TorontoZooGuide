@@ -24,6 +24,7 @@ const EMPTY_ITINERARY_CONFIG = {
    animalVisibilityChangeThreshold: undefined,
    eventTypes: [],
    errorTypes: Object.freeze({}),
+   suppressedErrorTypes: [],
 };
 
 function mockItineraryConfigResponse(overrides = {}) {
@@ -33,6 +34,7 @@ function mockItineraryConfigResponse(overrides = {}) {
             overrides.animalVisibilityChangeThreshold,
          itinerary_event_types: overrides.eventTypes ?? [],
          itinerary_error_types: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
+         suppressed_error_types: overrides.suppressedErrorTypes ?? [],
       },
    };
 }
@@ -169,6 +171,7 @@ test('sets itinerary arrival and departure times through focused endpoints', asy
          {
             arrivalTime: '09:45',
             confirmingShortVisit: false,
+            suppressShortVisitWarning: false,
          },
       ],
       [
@@ -176,6 +179,7 @@ test('sets itinerary arrival and departure times through focused endpoints', asy
          {
             departureTime: '',
             confirmingShortVisit: false,
+            suppressShortVisitWarning: false,
          },
       ],
    ]);
@@ -328,6 +332,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
             'snack',
          ],
          errorTypes: MOCK_ITINERARY_ERROR_TYPES,
+         suppressedErrorTypes: [],
       },
    });
 });
