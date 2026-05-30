@@ -61,6 +61,9 @@ function normalizeItineraryConfig(config) {
          .map(asTrimmedString)
          .filter(Boolean),
       errorTypes: normalizeItineraryErrorTypes(source.itinerary_error_types),
+      suppressedErrorTypes: asArray(source.suppressed_error_types)
+         .map(asTrimmedString)
+         .filter(Boolean),
    };
 
    updateItineraryErrorTypesFromConfig(normalizedConfig);
@@ -139,11 +142,12 @@ function normalizeItineraryTimeSetResponse(response) {
 
 export async function setItineraryArrivalTimeRequest(
    arrivalTime,
-   { confirmingShortVisit = false } = {}
+   { confirmingShortVisit = false, suppressShortVisitWarning = false } = {}
 ) {
    const response = await postJson('/set-itinerary-arrival-time', {
       arrivalTime: asTrimmedString(arrivalTime),
       confirmingShortVisit,
+      suppressShortVisitWarning,
    });
 
    return normalizeItineraryTimeSetResponse(response);
@@ -151,11 +155,12 @@ export async function setItineraryArrivalTimeRequest(
 
 export async function setItineraryDepartureTimeRequest(
    departureTime,
-   { confirmingShortVisit = false } = {}
+   { confirmingShortVisit = false, suppressShortVisitWarning = false } = {}
 ) {
    const response = await postJson('/set-itinerary-departure-time', {
       departureTime: asTrimmedString(departureTime),
       confirmingShortVisit,
+      suppressShortVisitWarning,
    });
 
    return normalizeItineraryTimeSetResponse(response);

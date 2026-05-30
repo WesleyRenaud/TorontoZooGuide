@@ -25,6 +25,9 @@ jobs:
       - name: Clear user itinerary data
         run: python -m api.seed.clear_user_itinerary_data
 
+      - name: Clear user itinerary config
+        run: python -m api.seed.clear_user_itinerary_config
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
