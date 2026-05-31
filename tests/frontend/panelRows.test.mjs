@@ -677,6 +677,11 @@ test.describe('itinerary panel rows', () => {
 
       assert.ok(lunchPill);
       assert.ok(lunchPill.classList.contains('itinerary-day-scheduled-pill--with-menu'));
+      assert.ok(lunchPill.classList.contains('itinerary-day-scheduled-pill--extended'));
+      assert.match(
+         lunchPill.querySelector('.itinerary-day-scheduled-pill-time-range')?.textContent ?? '',
+         /12:00 PM – 12:40 PM/
+      );
       lunchPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
       assert.deepEqual(unscheduleCalls, [{
          itemType: 'lunch',
