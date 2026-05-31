@@ -10,6 +10,9 @@ import {
    buildGuardiansRows,
    buildWildRows,
 } from './rows.js';
+import { getAnimalId } from '../selectors/animalSelector/model.js';
+import { getAttractionId } from '../selectors/attractionSelector/model.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 
 function getScheduledMaximumDuration(item) {
    const maximumDuration = Number(item?.maximum_duration);
@@ -130,12 +133,20 @@ export function buildScheduledItemRowsContext(
       animals,
       buildAnimalRows,
       getDurationMinutesFromScheduleTimes
-   );
+   ).map((scheduledItem) => ({
+      ...scheduledItem,
+      scheduleItemKind: ScheduleItemKind.ANIMAL.itemType,
+      scheduleItemKey: getAnimalId(scheduledItem.item),
+   }));
    const attractionRows = buildScheduledItemRows(
       attractions,
       buildAttractionRows,
       getDurationMinutesFromScheduleTimes
-   );
+   ).map((scheduledItem) => ({
+      ...scheduledItem,
+      scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
+      scheduleItemKey: getAttractionId(scheduledItem.item),
+   }));
    const scheduledItems = [
       ...guardiansTalkRows,
       ...wildEncounterRows,

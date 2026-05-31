@@ -1,23 +1,14 @@
 import { getPointPillStripPlacementBand } from '../dayPlannerTimelineMetrics.js';
-import { makeOpenPill } from './dayPlannerTimePill.js';
+import {
+   makeOpenPill,
+   makeScheduledPill,
+} from './dayPlannerTimePill.js';
 import { el } from '../dom.js';
 import { normalizeVisitBoundaryEventTypes } from '../../itineraryEventTypes.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
+import { isScheduleItemModuleItemType } from '../../../shared/enums/scheduleItemKind.js';
 
 const timelinePlacementsByGridLine = new WeakMap();
-
-function makeScheduledPill(label, durationMinutes) {
-   const durationFraction = durationMinutes / TIMELINE_SLOT_MINUTES;
-   const pill = el('span', 'itinerary-day-scheduled-pill', label);
-
-   pill.style.setProperty(
-      '--itinerary-scheduled-pill-duration-fraction',
-      String(durationFraction)
-   );
-   pill.setAttribute('data-duration-fraction', String(durationFraction));
-
-   return pill;
-}
 
 function getTimelinePlacements(gridLine) {
    let placements = timelinePlacementsByGridLine.get(gridLine);
@@ -163,7 +154,7 @@ function expandPlacementForScheduledPill(
 
 function findFirstScheduledPillInStrip(strip) {
    for (const child of strip.children) {
-      if (child.className === 'itinerary-day-scheduled-pill') {
+      if (child.classList?.contains('itinerary-day-scheduled-pill')) {
          return child;
       }
    }
@@ -204,22 +195,56 @@ export function appendTimelinePill(
    );
 }
 
+export function resolveScheduledPillOptions(
+   scheduledItem = {},
+   scheduleHandlers = {},
+   strings = {}
+) {
+   const { scheduleItemKind, scheduleItemKey } = scheduledItem;
+
+   if (
+      !isScheduleItemModuleItemType(scheduleItemKind)
+      || !scheduleItemKey
+      || typeof scheduleHandlers.onUnscheduleItineraryItem !== 'function'
+   ) {
+      return {};
+   }
+
+   return {
+      menuAriaLabel: strings.scheduledItemMenuAria,
+      unscheduleLabel: strings.unschedule,
+      onUnschedule: () => scheduleHandlers.onUnscheduleItineraryItem({
+         itemType: scheduleItemKind,
+         key: scheduleItemKey,
+      }),
+   };
+}
+
 export function appendScheduledDurationPill(
    gridLine,
    {
       label,
       offsetFraction = 0,
       durationMinutes,
+      onUnschedule = null,
+      menuAriaLabel = '',
+      unscheduleLabel = '',
    }
 ) {
-   if (!label || !Number.isFinite(durationMinutes) || durationMinutes <= 0) {
+   const pill = makeScheduledPill(label, durationMinutes, {
+      onUnschedule,
+      menuAriaLabel,
+      unscheduleLabel,
+   });
+
+   if (!pill) {
       return;
    }
 
    const strip = getOrCreatePillStrip(gridLine, offsetFraction);
 
    expandPlacementForScheduledPill(gridLine, offsetFraction, durationMinutes);
-   strip.appendChild(makeScheduledPill(label, durationMinutes));
+   strip.appendChild(pill);
 }
 
 function resolveTimePillOptions(

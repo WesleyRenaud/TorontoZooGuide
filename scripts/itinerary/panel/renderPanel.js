@@ -1,3 +1,4 @@
+import { unscheduleItineraryItemRequest } from '../../api/itineraryApi.js';
 import { makeActionsBar } from './components/actionsBar.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
@@ -73,6 +74,15 @@ function appendDayPlannerViewWithHours(
                eventTypes: buildSchedulableEventTypes(itinerary.itineraryConfig),
                onScheduled: onPanelRefresh,
             });
+         },
+         scheduleHandlers: {
+            onUnscheduleItineraryItem: async ({ itemType, key }) => {
+               await unscheduleItineraryItemRequest({ itemType, key });
+
+               if (typeof onPanelRefresh === 'function') {
+                  await onPanelRefresh();
+               }
+            },
          },
       })
    );

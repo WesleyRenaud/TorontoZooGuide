@@ -108,6 +108,8 @@ export const itinerary = {
       arrivalLabel: 'Arrival',
       arrivalTimeMenuAria: 'Arrival time options',
       remove: 'Remove',
+      unschedule: 'Unschedule',
+      scheduledItemMenuAria: 'Scheduled item options',
       dayPlannerLabel: 'Day Planner View',
       date: 'Saturday, June 20',
       departureInputLabel: 'Departure time',
