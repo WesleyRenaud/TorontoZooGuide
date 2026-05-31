@@ -29,17 +29,33 @@ import { makeScheduleItemButton } from './scheduleItemButton.js';
 import { makeSection } from './section.js';
 import {
    buildSectionConfigs,
+   SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS,
    SCHEDULED_DAY_PLANNER_SECTION_KEYS,
    UNSCHEDULED_DAY_PLANNER_SECTION_KEYS,
 } from '../sectionConfigs.js';
 import { APP_STRINGS } from '../../../strings.js';
 import { labels } from '../../../strings/common.js';
 
+function resolveSectionShowEditButton(
+   sectionKey,
+   {
+      showEditButton = true,
+      editButtonSectionKeys = null,
+   } = {}
+) {
+   if (editButtonSectionKeys) {
+      return editButtonSectionKeys.includes(sectionKey);
+   }
+
+   return showEditButton;
+}
+
 function makeItemsListSection(
    itinerary = {},
    sectionTitle = '',
    {
       showEditButton = true,
+      editButtonSectionKeys = null,
       onUnscheduleItem = null,
       onScheduleItem = null,
       sectionKeys = SCHEDULED_DAY_PLANNER_SECTION_KEYS,
@@ -62,7 +78,10 @@ function makeItemsListSection(
    sectionConfigs.forEach((sectionConfig) => {
       wrapper.appendChild(makeSection({
          ...sectionConfig,
-         showEditButton,
+         showEditButton: resolveSectionShowEditButton(sectionConfig.key, {
+            showEditButton,
+            editButtonSectionKeys,
+         }),
       }));
    });
 
@@ -205,7 +224,7 @@ export function makeDayPlannerPreview(
       buildScheduledItinerary(itinerary, scheduledRowsContext),
       strings.scheduledTitle,
       {
-         showEditButton: false,
+         editButtonSectionKeys: SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS,
          onUnscheduleItem: scheduleHandlers.onUnscheduleItineraryItem,
       }
    );
