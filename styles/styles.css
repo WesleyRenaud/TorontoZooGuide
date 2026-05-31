@@ -2520,8 +2520,8 @@ nav ul li a:hover {
    min-width: 240px;
    padding: 10px;
    border-radius: 20px;
-   background: #ffffff;
-   border: 2px solid rgba(94, 150, 0, 0.35);
+   background: #77b800;
+   border: 2px solid rgba(94, 150, 0, 0.45);
    box-shadow: 0 10px 24px rgba(20, 35, 10, 0.18);
 }
 
@@ -2537,7 +2537,7 @@ nav ul li a:hover {
    border: 0;
    border-radius: 14px;
    background: transparent;
-   color: #5e9600;
+   color: #ffffff;
    font-size: 2.05rem;
    line-height: 1.1;
    font-weight: 900;
@@ -2547,7 +2547,7 @@ nav ul li a:hover {
 
 .itinerary-day-open-pill-menu-item:hover,
 .itinerary-day-open-pill-menu-item:focus-visible {
-   background: rgba(94, 150, 0, 0.12);
+   background: rgba(255, 255, 255, 0.16);
    outline: none;
 }
 
