@@ -2604,6 +2604,76 @@ nav ul li a:hover {
    white-space: normal;
 }
 
+.itinerary-day-event {
+   position: absolute;
+   top: calc(
+      16px
+      + var(--itinerary-event-offset-fraction, 0)
+         * var(--itinerary-half-hour-slot-height)
+   );
+   left: 34px;
+   right: 20px;
+   z-index: 1;
+   height: calc(
+      (var(--itinerary-event-slot-span, 1) * var(--itinerary-half-hour-slot-height))
+      - 24px
+   );
+}
+
+.itin-panel-item.itinerary-day-event-card {
+   height: 100%;
+   min-height: 0;
+   box-sizing: border-box;
+   padding: 18px 22px;
+   align-items: flex-start;
+}
+
+.itinerary-day-event-card .itin-panel-item-left {
+   align-items: flex-start;
+   min-height: 0;
+}
+
+.itinerary-day-event-card .itin-panel-thumb {
+   width: 150px;
+   height: min(
+      calc(
+         (var(--itinerary-event-slot-span, 1) * var(--itinerary-half-hour-slot-height))
+         - 88px
+      ),
+      156px
+   );
+   border-radius: 14px;
+}
+
+.itinerary-day-event-card .itin-panel-text {
+   gap: 10px;
+   padding-bottom: 16px;
+}
+
+.itinerary-day-event-card .itin-panel-name,
+.itinerary-day-event-card .itin-panel-meta {
+   display: -webkit-box;
+   -webkit-box-orient: vertical;
+   overflow: hidden;
+}
+
+.itinerary-day-event-card .itin-panel-name {
+   -webkit-line-clamp: 1;
+   font-size: 2.7em;
+   line-height: 1.05;
+}
+
+.itinerary-day-event-card .itin-panel-meta {
+   -webkit-line-clamp: 2;
+   font-size: 1.75em;
+   line-height: 1.12;
+}
+
+.itinerary-day-event-card .itin-panel-link {
+   font-size: 1.75em;
+   line-height: 1.12;
+}
+
 .itinerary-day-open-pill {
    position: static;
    order: 0;

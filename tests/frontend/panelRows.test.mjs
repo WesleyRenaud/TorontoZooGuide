@@ -276,6 +276,7 @@ function timelineScheduledPillTexts(planner) {
 
    return [
       ...(timeline?.querySelectorAll('.itinerary-day-scheduled-pill') ?? []),
+      ...(timeline?.querySelectorAll('.itinerary-day-event') ?? []),
    ].map(allTextFor);
 }
 
@@ -715,12 +716,15 @@ test.describe('itinerary panel rows', () => {
             },
          }
       );
-      const tigerPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
-         allTextFor(pill).includes('Amur Tiger')
+      const tigerEvent = [...planner.querySelectorAll('.itinerary-day-event')].find((event) => (
+         allTextFor(event).includes('Amur Tiger')
       ));
 
-      assert.ok(tigerPill);
-      assert.equal(tigerPill.classList.contains('itinerary-day-scheduled-pill--with-menu'), false);
+      assert.ok(tigerEvent);
+      assert.equal(
+         tigerEvent.querySelector('.itinerary-day-scheduled-pill--with-menu'),
+         null
+      );
    });
 
    test('scheduled list rows show unschedule buttons for animals and attractions only', () => {
