@@ -3285,6 +3285,28 @@ nav ul li a:hover {
    min-width: 0;
 }
 
+.itin-panel-item-action-btn {
+   border: none;
+   cursor: pointer;
+   flex: 0 0 auto;
+
+   padding: 14px 18px;
+   border-radius: 14px;
+
+   background: rgba(255, 255, 255, 0.14);
+   color: #fff;
+
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.6em;
+   font-weight: 900;
+
+   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.itin-panel-item-action-btn:hover {
+   background: rgba(255, 255, 255, 0.22);
+}
+
 .itin-panel-thumb {
    width: 180px;
    height: 140px;
