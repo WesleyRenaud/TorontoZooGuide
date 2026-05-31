@@ -9,6 +9,8 @@ class ScheduleItemKind( str, Enum ):
    ANIMAL = 'animal'
    ATTRACTION = 'attraction'
    EVENT = 'event'
+   GUARDIANS_TALK = 'guardians_talk'
+   WILD_ENCOUNTER = 'wild_encounter'
 
 
    @property
@@ -47,4 +49,6 @@ class ScheduleItemKind( str, Enum ):
 _ITEM_TYPE_BY_KIND.update( {
    ScheduleItemKind.ANIMAL: 'animals',
    ScheduleItemKind.ATTRACTION: 'attractions',
+   ScheduleItemKind.GUARDIANS_TALK: 'guardians_talks',
+   ScheduleItemKind.WILD_ENCOUNTER: 'wild_encounters',
 } )

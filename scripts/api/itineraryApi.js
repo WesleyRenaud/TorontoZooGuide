@@ -160,6 +160,15 @@ export async function scheduleItineraryItemRequest(
    return normalizeScheduleItineraryItemResponse(response);
 }
 
+export async function unscheduleItineraryItemRequest({ itemType, key }) {
+   const response = await postJson('/unschedule-itinerary-item', {
+      itemType: asTrimmedString(itemType),
+      key: asTrimmedString(key),
+   });
+
+   return normalizeScheduleItineraryItemResponse(response);
+}
+
 function normalizeItineraryTimeSetResponse(response) {
    const source = asObject(response);
    const itineraryConfig = normalizeItineraryConfig(source.itinerary_config);

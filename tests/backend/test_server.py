@@ -363,6 +363,11 @@ class StubZooControllers:
       return ItineraryTimeSetResult()
 
 
+   def unschedule_itinerary_item( self, **kwargs: Any ) -> ItinerarySaveResult:
+      self.calls.append( ( 'unschedule_itinerary_item', kwargs ) )
+      return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
+
+
    def accept_itinerary( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'accept_itinerary', kwargs ) )
       return True
@@ -1232,6 +1237,29 @@ def test_itinerary_endpoints_return_success_payloads(
          'attractions_to_keep': None,
       },
    )
+
+
+def test_unschedule_itinerary_item_endpoint(
+      stub_database: type[ StubZooControllers ] ) -> None:
+   handler = make_handler(
+      '/unschedule-itinerary-item',
+      {
+         'itemType': 'animals',
+         'key': 'African Lion||Africa Savanna',
+      } )
+
+   server.MyHandler.do_POST( handler )
+
+   assert response_json( handler ) == { 'errorType': 'success' }
+   assert StubZooControllers.instances[ 0 ].calls == [
+      (
+         'unschedule_itinerary_item',
+         {
+            'item_type': 'animals',
+            'key': 'African Lion||Africa Savanna',
+         },
+      ),
+   ]
 
 
 def test_itinerary_time_endpoints_update_only_the_requested_time(

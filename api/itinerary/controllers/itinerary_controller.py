@@ -13,6 +13,7 @@ from ..data_access.itinerary_time import set_itinerary_departure_time
 from ...guardians.controllers.guardians_controller import GuardiansController
 from ..logic import schedule_itinerary_item as schedule_itinerary_item_logic
 from ..logic import set_itinerary as set_itinerary_logic
+from ..logic import unschedule_itinerary_item as unschedule_itinerary_item_logic
 from ..logic.itinerary import build_current_itinerary
 from ..logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from ..logic.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
@@ -114,6 +115,17 @@ class ItineraryController():
 
 
    @classmethod
+   def unschedule_itinerary_item(
+         cls,
+         item_type: str,
+         key: str ) -> ItinerarySaveResult:
+      return unschedule_itinerary_item_logic.unschedule_itinerary_item(
+         get_connection(),
+         item_type,
+         key )
+
+
+   @classmethod
    def set_arrival_time(
          cls,
          arrival_time: TimeInput,
@@ -123,6 +135,11 @@ class ItineraryController():
       conn = get_connection()
       normalized_arrival_time = DateValues.normalize_itinerary_schedule_time(
          arrival_time )
+
+      if normalized_arrival_time is None:
+         set_itinerary_arrival_time( conn, None )
+         return ItineraryTimeSetResult()
+
       saved_itinerary = fetch_saved_itinerary( conn )
       zoo_hours_record = fetch_zoo_hours_record(
          conn,
