@@ -1964,22 +1964,26 @@ nav ul li a:hover {
 }
 
 .schedule-item-module-body {
+   --schedule-item-block-gap: 44px;
+   --schedule-item-field-gap: 20px;
+
    display: flex;
    flex-direction: column;
-   gap: 44px;
+   gap: var(--schedule-item-block-gap);
    width: 100%;
    flex: 1 1 auto;
    min-height: 0;
 }
 
-.schedule-item-module-body > .schedule-item-field {
+.schedule-item-module-body > .schedule-item-field,
+.schedule-item-module-body > .schedule-item-only-itinerary-wrap {
    flex: 0 0 auto;
 }
 
 .schedule-item-field {
    display: flex;
    flex-direction: column;
-   gap: 20px;
+   gap: var(--schedule-item-field-gap);
 }
 
 .schedule-item-field-label {
@@ -2053,6 +2057,42 @@ nav ul li a:hover {
 .schedule-item-search-input::placeholder {
    color: rgba(20, 35, 10, 0.45);
    font-weight: 750;
+}
+
+.schedule-item-only-itinerary-row {
+   display: flex;
+   align-items: center;
+   gap: 24px;
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.65rem;
+   font-weight: 750;
+   line-height: 1.25;
+   color: rgba(20, 35, 10, 0.94);
+   user-select: none;
+   cursor: pointer;
+}
+
+.schedule-item-only-itinerary-checkbox {
+   width: 52px;
+   height: 52px;
+   margin: 0;
+   accent-color: #5e9600;
+   cursor: pointer;
+   flex: 0 0 auto;
+}
+
+.schedule-item-only-itinerary-label {
+   flex: 1 1 auto;
+}
+
+.schedule-item-only-itinerary-checkbox:disabled {
+   opacity: 0.55;
+   cursor: not-allowed;
+}
+
+.schedule-item-only-itinerary-row:has(.schedule-item-only-itinerary-checkbox:disabled) {
+   opacity: 0.55;
+   cursor: not-allowed;
 }
 
 .schedule-item-search-input:disabled,
