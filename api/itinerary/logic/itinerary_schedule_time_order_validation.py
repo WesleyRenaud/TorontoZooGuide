@@ -7,5 +7,10 @@ from ...types import ScheduleTimeKey
 def departure_follows_arrival(
       arrival_time: ScheduleTimeKey,
       departure_time: ScheduleTimeKey ) -> bool:
-   return DateValues.time_value_in_minutes( departure_time ) > DateValues.time_value_in_minutes(
-      arrival_time )
+   arrival_minutes = DateValues.time_value_in_minutes( arrival_time )
+   departure_minutes = DateValues.time_value_in_minutes( departure_time )
+
+   if arrival_minutes is None or departure_minutes is None:
+      return True
+
+   return departure_minutes > arrival_minutes
