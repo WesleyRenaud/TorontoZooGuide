@@ -3,18 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ...shared.enums import ItineraryEventType
+from ...shared.enums import ScheduleItemKind
 
 SCHEDULE_ITEM_ANIMAL_KEY_SEPARATOR = '||'
-
-_ITEM_TYPE_ALIASES = {
-   'animals': 'animal',
-   'attractions': 'attraction',
-}
 
 
 @dataclass( frozen=True )
 class ParsedScheduleItemRequest:
-   kind: str
+   kind: ScheduleItemKind
    species: str | None = None
    exhibit: str | None = None
    attraction_name: str | None = None
@@ -49,22 +45,25 @@ def parse_schedule_item_request(
 
    if event_type_from_type is not None:
       return ParsedScheduleItemRequest(
-         kind='event',
+         kind=ScheduleItemKind.EVENT,
          event_type=event_type_from_type )
 
-   normalized_type = _ITEM_TYPE_ALIASES.get( normalized_type, normalized_type )
+   item_kind = ScheduleItemKind.from_item_type( normalized_type )
 
-   if normalized_type == 'event':
+   if item_kind is None:
+      return None
+
+   if item_kind == ScheduleItemKind.EVENT:
       event_type = ItineraryEventType.normalize( normalized_key )
 
       if event_type is None:
          return None
 
       return ParsedScheduleItemRequest(
-         kind='event',
+         kind=ScheduleItemKind.EVENT,
          event_type=event_type )
 
-   if normalized_type == 'animal':
+   if item_kind == ScheduleItemKind.ANIMAL:
       animal_key = _parse_animal_key( normalized_key )
 
       if animal_key is None:
@@ -73,16 +72,16 @@ def parse_schedule_item_request(
       species, exhibit = animal_key
 
       return ParsedScheduleItemRequest(
-         kind='animal',
+         kind=ScheduleItemKind.ANIMAL,
          species=species,
          exhibit=exhibit )
 
-   if normalized_type == 'attraction':
+   if item_kind == ScheduleItemKind.ATTRACTION:
       if not normalized_key:
          return None
 
       return ParsedScheduleItemRequest(
-         kind='attraction',
+         kind=ScheduleItemKind.ATTRACTION,
          attraction_name=normalized_key )
 
    return None

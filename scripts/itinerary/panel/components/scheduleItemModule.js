@@ -2,6 +2,7 @@ import { searchItineraryItems } from '../../../api/searchApi.js';
 import { el } from '../dom.js';
 import {
    isItinerarySuccess,
+   requiresScheduleItemNotOnItineraryConfirmation,
    resolveItineraryErrorMessage,
 } from '../../itineraryErrorTypes.js';
 import { getItineraryDateSearchContext } from '../../itinerarySearchContext.js';
@@ -24,7 +25,6 @@ import {
    isScheduleItemEventType,
    isScheduleItemSearchEnabled,
    isScheduleItemTypeUnset,
-   SCHEDULE_ITEM_MODULE_TYPES,
 } from '../scheduleItemTypes.js';
 import {
    buildAnimalImageSrc,
@@ -38,6 +38,7 @@ import {
    getAttractionTitle,
 } from '../../selectors/attractionSelector/model.js';
 import { createDefaultSelectorRowLeftRenderer } from '../../selectors/base/resultRenderer.js';
+import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { showScheduleItemNotice } from '../showScheduleItemNotice.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -86,7 +87,7 @@ function createSelectField({
 }
 
 function buildSearchRowRenderer(moduleType) {
-   if (moduleType === SCHEDULE_ITEM_MODULE_TYPES.animals) {
+   if (moduleType === ScheduleItemKind.ANIMAL.itemType) {
       return createDefaultSelectorRowLeftRenderer({
          getTitle: getAnimalSpecies,
          getSubtitle: getAnimalSubtitle,
@@ -178,9 +179,9 @@ export function showScheduleItemModule({
    let latestSearchRequestId = 0;
    let isSubmitting = false;
 
-   const renderAnimalRowLeft = buildSearchRowRenderer(SCHEDULE_ITEM_MODULE_TYPES.animals);
+   const renderAnimalRowLeft = buildSearchRowRenderer(ScheduleItemKind.ANIMAL.itemType);
    const renderAttractionRowLeft = buildSearchRowRenderer(
-      SCHEDULE_ITEM_MODULE_TYPES.attractions
+      ScheduleItemKind.ATTRACTION.itemType
    );
 
    function getSelection() {
@@ -230,8 +231,8 @@ export function showScheduleItemModule({
       const selection = getSelection();
 
       if (
-         selection === SCHEDULE_ITEM_MODULE_TYPES.attractions
-         || getScheduleItemRowKind(row) === SCHEDULE_ITEM_MODULE_TYPES.attractions
+         selection === ScheduleItemKind.ATTRACTION.itemType
+         || getScheduleItemRowKind(row) === ScheduleItemKind.ATTRACTION.itemType
       ) {
          return renderAttractionRowLeft(row);
       }
@@ -343,8 +344,15 @@ export function showScheduleItemModule({
             eventTypes
          );
 
-         if (!isItinerarySuccess(result.errorType)) {
+         if (
+            !isItinerarySuccess(result.errorType)
+            && !requiresScheduleItemNotOnItineraryConfirmation(result.errorType)
+         ) {
             showScheduleItemNotice(resolveItineraryErrorMessage(result.errorType));
+            return;
+         }
+
+         if (!isItinerarySuccess(result.errorType)) {
             return;
          }
 

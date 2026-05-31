@@ -828,10 +828,20 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          item_type = data.get( 'itemType' )
          key = data.get( 'key' )
+         confirming_schedule_item_not_on_itinerary = bool(
+            data.get( 'confirmingScheduleItemNotOnItinerary' ) )
+         suppress_schedule_item_not_on_itinerary_warning = bool(
+            data.get( 'suppressScheduleItemNotOnItineraryWarning' ) )
 
          save_result = ItineraryController.schedule_itinerary_item(
             item_type=item_type,
-            key=key )
+            key=key,
+            confirming_schedule_item_not_on_itinerary=(
+               confirming_schedule_item_not_on_itinerary
+            ),
+            suppress_schedule_item_not_on_itinerary_warning=(
+               suppress_schedule_item_not_on_itinerary_warning
+            ) )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )

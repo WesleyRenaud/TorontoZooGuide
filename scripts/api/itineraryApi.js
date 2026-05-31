@@ -73,12 +73,13 @@ function normalizeItineraryConfig(config) {
 
 function normalizeItineraryResponse(response) {
    const source = asObject(response);
+   const itineraryConfig = normalizeItineraryConfig(source.itinerary_config);
 
    return {
       errorType: normalizeItineraryErrorTypeFromResponse(source),
       issues: asArray(source.issues),
       itinerary: normalizeItineraryModel(source.itinerary),
-      itineraryConfig: normalizeItineraryConfig(source.itinerary_config),
+      itineraryConfig,
    };
 }
 
@@ -138,10 +139,22 @@ function normalizeScheduleItineraryItemResponse(response) {
    };
 }
 
-export async function scheduleItineraryItemRequest({ itemType, key }) {
+export async function scheduleItineraryItemRequest(
+   { itemType, key },
+   {
+      confirmingScheduleItemNotOnItinerary = false,
+      suppressScheduleItemNotOnItineraryWarning = false,
+   } = {}
+) {
    const response = await postJson('/schedule-itinerary-item', {
       itemType: asTrimmedString(itemType),
       key: asTrimmedString(key),
+      confirmingScheduleItemNotOnItinerary: Boolean(
+         confirmingScheduleItemNotOnItinerary
+      ),
+      suppressScheduleItemNotOnItineraryWarning: Boolean(
+         suppressScheduleItemNotOnItineraryWarning
+      ),
    });
 
    return normalizeScheduleItineraryItemResponse(response);

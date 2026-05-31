@@ -11,28 +11,14 @@ import {
    resolveItineraryErrorMessage,
    updateItineraryErrorTypesFromConfig,
 } from '../../scripts/itinerary/itineraryErrorTypes.js';
-import { installTestWindow } from './helpers/domMock.mjs';
-import { SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
+import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
 
 const MOCK_ERROR_TYPES = Object.freeze({
    SUCCESS: 'success',
    SAVE_FAILED: 'saveFailed',
    NO_AVAILABLE_SLOT: 'noAvailableSlot',
+   ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',
 });
-
-function createLocalStorageMock() {
-   const values = new Map();
-
-   return {
-      getItem: (key) => values.get(key) ?? null,
-      setItem: (key, value) => {
-         values.set(key, String(value));
-      },
-      removeItem: (key) => {
-         values.delete(key);
-      },
-   };
-}
 
 function mockJsonResponse(payload) {
    return {
@@ -43,38 +29,19 @@ function mockJsonResponse(payload) {
    };
 }
 
-function mockSetItineraryResponse() {
-   return mockJsonResponse({
-      error_type: 'success',
-      itinerary: {
-         date: '2026-06-15',
-         animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
-         attractions: [],
-         guardians_talks: [],
-         wild_encounters: [],
-      },
-      itinerary_config: {
-         itinerary_event_types: [],
-         itinerary_error_types: MOCK_ERROR_TYPES,
-         suppressed_error_types: [],
-      },
-      issues: [],
-   });
-}
-
 beforeEach(() => {
-   globalThis.localStorage = createLocalStorageMock();
    installTestWindow();
+   installDocument();
    updateItineraryErrorTypesFromConfig({
       errorTypes: MOCK_ERROR_TYPES,
       suppressedErrorTypes: [],
    });
-   localStorage.setItem(SELECTED_EXHIBITS_KEY, JSON.stringify([]));
 });
 
 afterEach(() => {
+   teardownDocument();
    delete globalThis.fetch;
-   delete globalThis.localStorage;
+   delete globalThis.window;
 });
 
 test('buildAnimalDraftEntry and buildAttractionDraftEntry normalize rows', () => {
@@ -150,28 +117,50 @@ test('scheduleSelectedItineraryItem schedules when type is unset but a row is se
    assert.deepEqual(urls, ['/schedule-itinerary-item']);
 });
 
-test('scheduleSelectedItineraryItem adds animal then schedules', async () => {
-   const urls = [];
+test('scheduleSelectedItineraryItem confirms before scheduling a new animal', async () => {
+   const requests = [];
 
-   globalThis.fetch = async (url) => {
-      urls.push(url);
+   globalThis.fetch = async (url, options = {}) => {
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
 
-      if (url === '/set-itinerary') {
-         return mockSetItineraryResponse();
-      }
+      const isConfirmed = Boolean(
+         requests.at(-1)?.body?.confirmingScheduleItemNotOnItinerary
+      );
 
-      return mockJsonResponse({ errorType: 'success' });
+      return mockJsonResponse({
+         errorType: isConfirmed ? 'success' : 'itemNotOnItinerary',
+      });
    };
 
-   const result = await scheduleSelectedItineraryItem(
+   const schedulePromise = scheduleSelectedItineraryItem(
       { date: '2026-06-15', animals: [], attractions: [] },
       'animals',
       { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
       []
    );
 
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const confirmButton = document.querySelector('.tzg-popup-confirm');
+
+   assert.ok(confirmButton);
+   confirmButton.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const result = await schedulePromise;
+
    assert.equal(result.errorType, 'success');
-   assert.deepEqual(urls, ['/set-itinerary', '/schedule-itinerary-item']);
+   assert.equal(requests.length, 2);
+   assert.equal(requests[0].body.confirmingScheduleItemNotOnItinerary, false);
+   assert.equal(requests[1].body.confirmingScheduleItemNotOnItinerary, true);
 });
 
 test('scheduleSelectedItineraryItem returns noAvailableSlot without refreshing', async () => {
@@ -198,11 +187,6 @@ test('scheduleSelectedItineraryItem returns noAvailableSlot without refreshing',
 });
 
 test('resolveItineraryErrorMessage maps noAvailableSlot', () => {
-   updateItineraryErrorTypesFromConfig({
-      errorTypes: MOCK_ERROR_TYPES,
-      suppressedErrorTypes: [],
-   });
-
    assert.match(
       resolveItineraryErrorMessage('noAvailableSlot'),
       /No open time slot/

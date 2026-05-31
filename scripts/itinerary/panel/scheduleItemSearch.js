@@ -1,30 +1,28 @@
-import {
-   isScheduleItemTypeUnset,
-   SCHEDULE_ITEM_MODULE_TYPES,
-} from './scheduleItemTypes.js';
+import { isScheduleItemTypeUnset } from './scheduleItemTypes.js';
 import { getAnimalId } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 
 function tagAnimalRows(rows = []) {
    return rows.map((row) => ({
       ...row,
-      scheduleItemKind: SCHEDULE_ITEM_MODULE_TYPES.animals,
+      scheduleItemKind: ScheduleItemKind.ANIMAL.itemType,
    }));
 }
 
 function tagAttractionRows(rows = []) {
    return rows.map((row) => ({
       ...row,
-      scheduleItemKind: SCHEDULE_ITEM_MODULE_TYPES.attractions,
+      scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
    }));
 }
 
 export function getScheduleItemRowKind(row) {
-   if (row?.scheduleItemKind === SCHEDULE_ITEM_MODULE_TYPES.attractions) {
-      return SCHEDULE_ITEM_MODULE_TYPES.attractions;
+   if (row?.scheduleItemKind === ScheduleItemKind.ATTRACTION.itemType) {
+      return ScheduleItemKind.ATTRACTION.itemType;
    }
 
-   return SCHEDULE_ITEM_MODULE_TYPES.animals;
+   return ScheduleItemKind.ANIMAL.itemType;
 }
 
 export function resolveEffectiveScheduleItemSelection(selection, selectedRow) {
@@ -40,7 +38,7 @@ export function resolveEffectiveScheduleItemSelection(selection, selectedRow) {
 }
 
 export function getScheduleItemRowId(row) {
-   if (getScheduleItemRowKind(row) === SCHEDULE_ITEM_MODULE_TYPES.attractions) {
+   if (getScheduleItemRowKind(row) === ScheduleItemKind.ATTRACTION.itemType) {
       return getAttractionId(row);
    }
 
@@ -50,14 +48,14 @@ export function getScheduleItemRowId(row) {
 export function buildScheduleItemSearchPayload(moduleType, query = '') {
    const normalizedQuery = String(query ?? '').trim();
 
-   if (moduleType === SCHEDULE_ITEM_MODULE_TYPES.animals) {
+   if (moduleType === ScheduleItemKind.ANIMAL.itemType) {
       return {
          query: normalizedQuery,
          includeAnimals: true,
       };
    }
 
-   if (moduleType === SCHEDULE_ITEM_MODULE_TYPES.attractions) {
+   if (moduleType === ScheduleItemKind.ATTRACTION.itemType) {
       return {
          query: normalizedQuery,
          includeAttractions: true,
@@ -76,13 +74,13 @@ export function buildScheduleItemSearchPayload(moduleType, query = '') {
 }
 
 export function extractScheduleItemSearchRows(moduleType, response = {}) {
-   if (moduleType === SCHEDULE_ITEM_MODULE_TYPES.animals) {
+   if (moduleType === ScheduleItemKind.ANIMAL.itemType) {
       return tagAnimalRows(
          Array.isArray(response.animals) ? response.animals : []
       );
    }
 
-   if (moduleType === SCHEDULE_ITEM_MODULE_TYPES.attractions) {
+   if (moduleType === ScheduleItemKind.ATTRACTION.itemType) {
       return tagAttractionRows(
          Array.isArray(response.attractions) ? response.attractions : []
       );
