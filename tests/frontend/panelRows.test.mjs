@@ -962,6 +962,41 @@ test('day planner renders scheduled duration as a larger pill', () => {
    );
 });
 
+test('day planner keeps short scheduled visits readable', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         ...EMPTY_ITINERARY,
+         animals: [
+            {
+               species: 'Ring-Tailed Lemur',
+               exhibit: 'Australasia',
+               start_time: '12:00',
+               end_time: '12:08',
+            },
+         ],
+      },
+      {},
+      {
+         scheduleHandlers: {
+            onUnscheduleItineraryItem: () => {},
+         },
+      }
+   );
+   const lemurPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+      allTextFor(pill).includes('Ring-Tailed Lemur')
+   ));
+
+   assert.ok(lemurPill?.classList.contains('itinerary-day-scheduled-pill--with-menu'));
+   assert.equal(lemurPill.attributes?.['data-duration-fraction'], String(8 / 30));
+   assert.match(allTextFor(lemurPill), /Ring-Tailed Lemur/);
+});
+
 test('day planner offsets overlapping scheduled pills horizontally', () => {
    const planner = makeDayPlannerPreview(
       {

@@ -25,7 +25,7 @@ from ...models import Itinerary
 from ...request_connection import get_connection
 from ...shared.date_values import DateValues
 from ...shared.enums import ItineraryErrorType
-from ...types import DateInput, TimeInput
+from ...types import DateInput, DurationInput, TimeInput
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
@@ -91,12 +91,16 @@ class ItineraryController():
          item_type: str,
          key: str,
          *,
+         start_time: TimeInput = None,
+         duration_minutes: DurationInput = None,
          confirming_schedule_item_not_on_itinerary: bool = False,
          suppress_schedule_item_not_on_itinerary_warning: bool = False ) -> ItinerarySaveResult:
       return schedule_itinerary_item_logic.schedule_itinerary_item(
          get_connection(),
          item_type,
          key,
+         start_time=start_time,
+         duration_minutes=duration_minutes,
          animal_controller=AnimalController,
          attraction_controller=AttractionController,
          guardians_controller=GuardiansController,

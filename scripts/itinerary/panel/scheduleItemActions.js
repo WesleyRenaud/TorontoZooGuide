@@ -37,11 +37,28 @@ export function buildAttractionDraftEntry(row) {
    return name || null;
 }
 
-export function buildScheduleItemRequest(selection, selectedRow, eventTypes = []) {
+export function buildScheduleItemRequest(
+   selection,
+   selectedRow,
+   eventTypes = [],
+   scheduleOptions = {}
+) {
+   const { startTime = '', durationMinutes = null } = scheduleOptions;
+
+   if (durationMinutes != null && !startTime) {
+      return null;
+   }
+
+   const timePayload = {
+      ...(startTime ? { startTime } : {}),
+      ...(durationMinutes != null ? { durationMinutes } : {}),
+   };
+
    if (isScheduleItemEventType(selection, eventTypes)) {
       return {
          itemType: selection,
          key: '',
+         ...timePayload,
       };
    }
 
@@ -52,6 +69,7 @@ export function buildScheduleItemRequest(selection, selectedRow, eventTypes = []
    return {
       itemType: getScheduleItemRowKind(selectedRow),
       key: getScheduleItemRowId(selectedRow),
+      ...timePayload,
    };
 }
 
@@ -86,7 +104,8 @@ export async function scheduleSelectedItineraryItem(
    itinerary,
    selection,
    selectedRow,
-   eventTypes = []
+   eventTypes = [],
+   scheduleOptions = {}
 ) {
    const effectiveSelection = resolveEffectiveScheduleItemSelection(
       selection,
@@ -95,7 +114,8 @@ export async function scheduleSelectedItineraryItem(
    const request = buildScheduleItemRequest(
       effectiveSelection,
       selectedRow,
-      eventTypes
+      eventTypes,
+      scheduleOptions
    );
 
    if (!request) {
