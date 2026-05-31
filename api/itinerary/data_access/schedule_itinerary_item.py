@@ -5,6 +5,67 @@ from ...shared.date_values import DateValues
 from ...types import Cursor, ScheduleTimeKey
 
 
+def insert_itinerary_animal_schedule(
+      cur: Cursor,
+      *,
+      species: str,
+      exhibit: str,
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey ) -> bool:
+   cur.execute(
+      """   INSERT OR IGNORE INTO ItineraryAnimal (
+                  SPECIES,
+                  EXHIBIT,
+                  OLD_LIKELIHOOD,
+                  NEW_LIKELIHOOD,
+                  IS_ADDED,
+                  START_TIME,
+                  END_TIME
+               )
+               VALUES ( ?, ?, ?, ?, ?, ?, ? );
+         """,
+         (
+            species,
+            exhibit,
+            None,
+            None,
+            True,
+            DateValues.normalize_itinerary_schedule_time( start_time ),
+            DateValues.normalize_itinerary_schedule_time( end_time ),
+         ),
+   )
+
+   return cur.rowcount > 0
+
+
+def insert_itinerary_attraction_schedule(
+      cur: Cursor,
+      *,
+      name: str,
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey ) -> bool:
+   cur.execute(
+      """   INSERT OR IGNORE INTO ItineraryAttraction (
+                  ATTRACTION,
+                  OLD_LIKELIHOOD,
+                  NEW_LIKELIHOOD,
+                  START_TIME,
+                  END_TIME
+               )
+               VALUES ( ?, ?, ?, ?, ? );
+         """,
+         (
+            name,
+            None,
+            None,
+            DateValues.normalize_itinerary_schedule_time( start_time ),
+            DateValues.normalize_itinerary_schedule_time( end_time ),
+         ),
+   )
+
+   return cur.rowcount > 0
+
+
 def update_itinerary_animal_schedule(
       cur: Cursor,
       *,

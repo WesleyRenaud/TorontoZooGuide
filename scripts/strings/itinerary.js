@@ -72,7 +72,13 @@ export const itinerary = {
          'Your arrival and departure times are very close together. '
          + 'Are you sure you want to save these times?'
       ),
-      doNotShowShortVisitAgain: 'Don\u2019t show this again',
+      doNotShowAgain: 'Don’t show this again',
+      scheduleItemNotOnItineraryTitle: 'Add to Itinerary?',
+      scheduleItemNotOnItineraryMessage: (
+         'This item is not on your itinerary yet. '
+         + 'Do you want to add it and schedule a time?'
+      ),
+      scheduleItemNotOnItineraryConfirm: 'Add to Schedule',
       animalMayBeOffDisplay: 'Animal May Be Off Display',
    },
    emptyText: {
@@ -88,6 +94,7 @@ export const itinerary = {
       generic: 'Could not update itinerary.',
       arrivalDepartureTooClose: 'Could not update itinerary time.',
       noAvailableSlot: 'No open time slot is available for this item.',
+      itemNotOnItinerary: 'This item must be on your itinerary before it can be scheduled.',
    },
    dayPlanner: {
       aria: 'Itinerary day planner preview',
