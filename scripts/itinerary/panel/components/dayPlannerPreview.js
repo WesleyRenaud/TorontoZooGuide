@@ -31,7 +31,11 @@ import { buildSectionConfigs } from '../sectionConfigs.js';
 import { APP_STRINGS } from '../../../strings.js';
 import { labels } from '../../../strings/common.js';
 
-function makeItemsListSection(itinerary = {}, sectionTitle = '') {
+function makeItemsListSection(
+   itinerary = {},
+   sectionTitle = '',
+   { showEditButton = true } = {}
+) {
    const sectionConfigs = buildSectionConfigs(itinerary);
 
    if (sectionConfigs.length === 0) {
@@ -43,7 +47,10 @@ function makeItemsListSection(itinerary = {}, sectionTitle = '') {
 
    wrapper.appendChild(title);
    sectionConfigs.forEach((sectionConfig) => {
-      wrapper.appendChild(makeSection(sectionConfig));
+      wrapper.appendChild(makeSection({
+         ...sectionConfig,
+         showEditButton,
+      }));
    });
 
    return wrapper;
@@ -183,7 +190,8 @@ export function makeDayPlannerPreview(
 
    const scheduledSection = makeItemsListSection(
       buildScheduledItinerary(itinerary, scheduledRowsContext),
-      strings.scheduledTitle
+      strings.scheduledTitle,
+      { showEditButton: false }
    );
    const unscheduledSection = makeItemsListSection(
       buildUnscheduledItinerary(itinerary, scheduledRowsContext),

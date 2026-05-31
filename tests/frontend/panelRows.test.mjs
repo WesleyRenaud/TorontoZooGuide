@@ -871,6 +871,22 @@ test('day planner renders scheduled guardians talks and wild encounters', () => 
    assert.ok(timelineEventTexts.some((eventText) => eventText.includes('Amur Tiger')));
    assert.ok(timelineEventTexts.some((eventText) => eventText.includes('African Rainforest')));
    assert.ok(timelineEventTexts.some((eventText) => eventText.includes('Zoomobile')));
+
+   const dayItemsSections = [...planner.querySelectorAll('.itinerary-day-items-sections')];
+   const scheduledList = dayItemsSections.find((section) => (
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+   ));
+   const unscheduledList = dayItemsSections.find((section) => (
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Unscheduled Items')
+   ));
+
+   assert.equal(
+      scheduledList?.querySelectorAll('.itin-panel-section-edit-btn').length,
+      0
+   );
+   assert.ok(
+      (unscheduledList?.querySelectorAll('.itin-panel-section-edit-btn').length ?? 0) > 0
+   );
 });
 
 test('day planner positions off-slot scheduled items between half-hour lines', () => {

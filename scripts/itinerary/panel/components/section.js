@@ -41,7 +41,13 @@ function updateSectionBodyHeight(body, bodyInner) {
    body.style.overflowX = 'hidden';
 }
 
-export function makeSection({ title, count, children = [], stepKey }) {
+export function makeSection({
+   title,
+   count,
+   children = [],
+   stepKey,
+   showEditButton = true,
+}) {
    const section = el('section', 'itin-panel-section');
 
    const header = el('div', 'itin-panel-section-header');
@@ -70,7 +76,10 @@ export function makeSection({ title, count, children = [], stepKey }) {
    toggleBtn.setAttribute('aria-label', `Toggle ${title}`);
    toggleBtn.appendChild(el('span', 'itin-panel-toggle-icon'));
 
-   actions.appendChild(editBtn);
+   if (showEditButton) {
+      actions.appendChild(editBtn);
+   }
+
    actions.appendChild(toggleBtn);
 
    header.appendChild(titleEl);
