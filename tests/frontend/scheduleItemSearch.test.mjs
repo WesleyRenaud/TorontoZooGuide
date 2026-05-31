@@ -14,12 +14,12 @@ import {
    isScheduleItemEventType,
    isScheduleItemSearchEnabled,
    isScheduleItemTypeUnset,
-   SCHEDULE_ITEM_MODULE_TYPES,
 } from '../../scripts/itinerary/panel/scheduleItemTypes.js';
+import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 
 test('buildScheduleItemSearchPayload limits search to animals', () => {
    assert.deepEqual(
-      buildScheduleItemSearchPayload(SCHEDULE_ITEM_MODULE_TYPES.animals, 'panda'),
+      buildScheduleItemSearchPayload(ScheduleItemKind.ANIMAL.itemType, 'panda'),
       {
          query: 'panda',
          includeAnimals: true,
@@ -29,7 +29,7 @@ test('buildScheduleItemSearchPayload limits search to animals', () => {
 
 test('buildScheduleItemSearchPayload limits search to attractions', () => {
    assert.deepEqual(
-      buildScheduleItemSearchPayload(SCHEDULE_ITEM_MODULE_TYPES.attractions, 'ride'),
+      buildScheduleItemSearchPayload(ScheduleItemKind.ATTRACTION.itemType, 'ride'),
       {
          query: 'ride',
          includeAttractions: true,
@@ -92,11 +92,11 @@ test('placeholder enables global search; event types disable search', () => {
    assert.equal(isScheduleItemSearchEnabled('lunch', eventTypes), false);
    assert.equal(isScheduleItemEventType('lunch', eventTypes), true);
    assert.equal(
-      isScheduleItemSearchEnabled(SCHEDULE_ITEM_MODULE_TYPES.animals, eventTypes),
+      isScheduleItemSearchEnabled(ScheduleItemKind.ANIMAL.itemType, eventTypes),
       true
    );
    assert.equal(
-      isScheduleItemSearchEnabled(SCHEDULE_ITEM_MODULE_TYPES.attractions, eventTypes),
+      isScheduleItemSearchEnabled(ScheduleItemKind.ATTRACTION.itemType, eventTypes),
       true
    );
 });
@@ -130,7 +130,7 @@ test('extractScheduleItemSearchRows returns only the selected collection', () =>
    };
 
    assert.deepEqual(
-      extractScheduleItemSearchRows(SCHEDULE_ITEM_MODULE_TYPES.animals, response),
+      extractScheduleItemSearchRows(ScheduleItemKind.ANIMAL.itemType, response),
       [{
          species: 'Giant Panda',
          exhibit: 'Bamboo',
@@ -138,7 +138,7 @@ test('extractScheduleItemSearchRows returns only the selected collection', () =>
       }]
    );
    assert.deepEqual(
-      extractScheduleItemSearchRows(SCHEDULE_ITEM_MODULE_TYPES.attractions, response),
+      extractScheduleItemSearchRows(ScheduleItemKind.ATTRACTION.itemType, response),
       [{
          name: 'Carousel',
          scheduleItemKind: 'attractions',
@@ -172,13 +172,13 @@ test('resolveEffectiveScheduleItemSelection infers animals from a selected row',
 
    assert.equal(
       resolveEffectiveScheduleItemSelection('', animalRow),
-      SCHEDULE_ITEM_MODULE_TYPES.animals
+      ScheduleItemKind.ANIMAL.itemType
    );
    assert.equal(
       resolveEffectiveScheduleItemSelection(
-         SCHEDULE_ITEM_MODULE_TYPES.attractions,
+         ScheduleItemKind.ATTRACTION.itemType,
          animalRow
       ),
-      SCHEDULE_ITEM_MODULE_TYPES.attractions
+      ScheduleItemKind.ATTRACTION.itemType
    );
 });

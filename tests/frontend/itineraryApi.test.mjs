@@ -20,14 +20,17 @@ const MOCK_ITINERARY_ERROR_TYPES = Object.freeze({
    SAVE_FAILED: 'saveFailed',
    ARRIVAL_DEPARTURE_TOO_CLOSE: 'arrivalDepartureTooClose',
    NO_AVAILABLE_SLOT: 'noAvailableSlot',
+   ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',
 });
 
-const EMPTY_ITINERARY_CONFIG = {
-   animalVisibilityChangeThreshold: undefined,
-   eventTypes: [],
-   errorTypes: Object.freeze({}),
-   suppressedErrorTypes: [],
-};
+function normalizedItineraryConfig(overrides = {}) {
+   return {
+      animalVisibilityChangeThreshold: overrides.animalVisibilityChangeThreshold,
+      eventTypes: overrides.eventTypes ?? [],
+      errorTypes: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
+      suppressedErrorTypes: overrides.suppressedErrorTypes ?? [],
+   };
+}
 
 function mockItineraryConfigResponse(overrides = {}) {
    return {
@@ -96,6 +99,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
             guardians_talks: [{ name: 'Amur Tiger' }],
             wild_encounters: [{ name: 'African Rainforest' }],
          },
+         ...mockItineraryConfigResponse(),
       });
    };
 
@@ -111,7 +115,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
          guardiansTalks: [{ name: 'Amur Tiger' }],
          wildEncounters: [{ name: 'African Rainforest' }],
       },
-      itineraryConfig: EMPTY_ITINERARY_CONFIG,
+      itineraryConfig: normalizedItineraryConfig(),
    });
 });
 
@@ -124,6 +128,7 @@ test('normalizes set itinerary failures without dropping returned itinerary data
          animals: 'African Lion',
          attractions: [{ name: 'Conservation Carousel' }],
       },
+      ...mockItineraryConfigResponse(),
    });
 
    assert.deepEqual(await setItineraryRequest({ date: '2026-06-15' }), {
@@ -138,7 +143,7 @@ test('normalizes set itinerary failures without dropping returned itinerary data
          guardiansTalks: [],
          wildEncounters: [],
       },
-      itineraryConfig: EMPTY_ITINERARY_CONFIG,
+      itineraryConfig: normalizedItineraryConfig(),
    });
 });
 
@@ -155,17 +160,11 @@ test('sets itinerary arrival and departure times through focused endpoints', asy
 
    assert.deepEqual(await setItineraryArrivalTimeRequest(' 09:45 '), {
       errorType: 'success',
-      itineraryConfig: {
-         ...EMPTY_ITINERARY_CONFIG,
-         errorTypes: MOCK_ITINERARY_ERROR_TYPES,
-      },
+      itineraryConfig: normalizedItineraryConfig(),
    });
    assert.deepEqual(await setItineraryDepartureTimeRequest(''), {
       errorType: 'success',
-      itineraryConfig: {
-         ...EMPTY_ITINERARY_CONFIG,
-         errorTypes: MOCK_ITINERARY_ERROR_TYPES,
-      },
+      itineraryConfig: normalizedItineraryConfig(),
    });
    assert.deepEqual(calls, [
       [
@@ -198,10 +197,7 @@ test('normalizes short visit warning from itinerary time endpoints', async () =>
       confirmingShortVisit: true,
    }), {
       errorType: 'arrivalDepartureTooClose',
-      itineraryConfig: {
-         ...EMPTY_ITINERARY_CONFIG,
-         errorTypes: MOCK_ITINERARY_ERROR_TYPES,
-      },
+      itineraryConfig: normalizedItineraryConfig(),
    });
 });
 
@@ -244,6 +240,7 @@ test('normalizes accept itinerary response', async () => {
             guardians_talks: [],
             wild_encounters: [],
          },
+         ...mockItineraryConfigResponse(),
       });
    };
 
@@ -279,7 +276,7 @@ test('normalizes accept itinerary response', async () => {
          guardiansTalks: [],
          wildEncounters: [],
       },
-      itineraryConfig: EMPTY_ITINERARY_CONFIG,
+      itineraryConfig: normalizedItineraryConfig(),
    });
 });
 
@@ -379,6 +376,8 @@ test('normalizes schedule itinerary item response', async () => {
       assert.deepEqual(JSON.parse(options.body), {
          itemType: 'lunch',
          key: '',
+         confirmingScheduleItemNotOnItinerary: false,
+         suppressScheduleItemNotOnItineraryWarning: false,
       });
 
       return mockJsonResponse({

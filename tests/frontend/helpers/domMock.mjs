@@ -28,6 +28,9 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
       type: '',
       tabIndex: 0,
       classList: {
+         contains(value) {
+            return classes.has(value);
+         },
          add(value) {
             classes.add(value);
          },
@@ -62,6 +65,10 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
       addEventListener(eventName, handler) {
          listeners[eventName] = handler;
       },
+      click() {
+         listeners.click?.();
+      },
+      remove() {},
       setAttribute(name, value) {
          attributes[name] = value;
          node[name] = value;
@@ -130,8 +137,49 @@ function queryNodes(root, selector) {
    return matches;
 }
 
+function nodeMatchesSelector(node, selector) {
+   if (!node || selector[0] !== '.') {
+      return false;
+   }
+
+   const className = selector.slice(1);
+   return node.classList?.contains(className) ?? false;
+}
+
+function querySelectorInNode(node, selector) {
+   if (!node) {
+      return null;
+   }
+
+   if (nodeMatchesSelector(node, selector)) {
+      return node;
+   }
+
+   for (const child of node.children ?? []) {
+      const match = querySelectorInNode(child, selector);
+
+      if (match) {
+         return match;
+      }
+   }
+
+   return null;
+}
+
 export function installDocument() {
+   const itineraryPanel = createDomNode('div', 'itinerary-panel');
+   const body = createDomNode('body');
+
+   body.appendChild = (child) => {
+      body.children.push(child);
+      return child;
+   };
+   body.appendChild(itineraryPanel);
+
    globalThis.document = {
+      body,
+      addEventListener: () => {},
+      removeEventListener: () => {},
       createElement: (tagName) => {
          if (tagName === 'button') {
             return createDomNode('button');
@@ -148,14 +196,24 @@ export function installDocument() {
          return fragment;
       },
       createTextNode: (textContent) => createDomNode('#text', '', textContent),
+      querySelector: (selector) => (
+         querySelectorInNode(body, selector)
+         ?? querySelectorInNode(itineraryPanel, selector)
+      ),
    };
 }
 
 export function teardownDocument() {
    delete globalThis.document;
+   delete globalThis.requestAnimationFrame;
 }
 
 export function installTestWindow() {
+   globalThis.requestAnimationFrame = (callback) => {
+      callback();
+      return 0;
+   };
+
    globalThis.window = {
       addEventListener: () => {},
       removeEventListener: () => {},

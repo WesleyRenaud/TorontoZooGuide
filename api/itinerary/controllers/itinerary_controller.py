@@ -88,7 +88,10 @@ class ItineraryController():
    def schedule_itinerary_item(
          cls,
          item_type: str,
-         key: str ) -> ItinerarySaveResult:
+         key: str,
+         *,
+         confirming_schedule_item_not_on_itinerary: bool = False,
+         suppress_schedule_item_not_on_itinerary_warning: bool = False ) -> ItinerarySaveResult:
       return schedule_itinerary_item_logic.schedule_itinerary_item(
          get_connection(),
          item_type,
@@ -96,7 +99,13 @@ class ItineraryController():
          animal_controller=AnimalController,
          attraction_controller=AttractionController,
          guardians_controller=GuardiansController,
-         wild_encounter_controller=WildEncounterController )
+         wild_encounter_controller=WildEncounterController,
+         confirming_schedule_item_not_on_itinerary=(
+            confirming_schedule_item_not_on_itinerary
+         ),
+         suppress_schedule_item_not_on_itinerary_warning=(
+            suppress_schedule_item_not_on_itinerary_warning
+         ) )
 
 
    @classmethod

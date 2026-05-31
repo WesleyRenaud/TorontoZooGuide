@@ -1,17 +1,10 @@
-import {
-   scheduleItineraryItemRequest,
-   setItineraryRequest,
-} from '../../api/itineraryApi.js';
+import { scheduleItineraryItemRequest } from '../../api/itineraryApi.js';
 import {
    getItineraryErrorTypes,
    isItinerarySuccess,
+   requiresScheduleItemNotOnItineraryConfirmation,
 } from '../itineraryErrorTypes.js';
-import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
-import {
-   cloneItineraryDraft,
-   normalizeItineraryDraft,
-   toSetItineraryPayload,
-} from '../itineraryShape.js';
+import { showScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
 import {
    getScheduleItemRowId,
    getScheduleItemRowKind,
@@ -20,30 +13,12 @@ import {
 import {
    isScheduleItemEventType,
    isScheduleItemSearchEnabled,
-   SCHEDULE_ITEM_MODULE_TYPES,
 } from './scheduleItemTypes.js';
 import {
    getAnimalExhibit,
    getAnimalSpecies,
 } from '../selectors/animalSelector/model.js';
 import { getAttractionName } from '../selectors/attractionSelector/model.js';
-import { SELECTED_EXHIBITS_KEY } from '../storageKeys.js';
-
-function animalKey(species, exhibit) {
-   return `${species}||${exhibit}`;
-}
-
-function itineraryHasAnimal(itinerary, species, exhibit) {
-   return (itinerary?.animals ?? []).some((animal) => (
-      animalKey(animal.species, animal.exhibit) === animalKey(species, exhibit)
-   ));
-}
-
-function itineraryHasAttraction(itinerary, name) {
-   return (itinerary?.attractions ?? []).some((attraction) => (
-      String(attraction) === name
-   ));
-}
 
 export function buildAnimalDraftEntry(row) {
    const species = getAnimalSpecies(row);
@@ -80,73 +55,31 @@ export function buildScheduleItemRequest(selection, selectedRow, eventTypes = []
    };
 }
 
-function loadSelectedExhibits() {
-   try {
-      const selectedExhibits = JSON.parse(
-         localStorage.getItem(SELECTED_EXHIBITS_KEY) || '[]'
-      );
+async function scheduleItineraryItemWithConfirmation(request) {
+   const initialResult = await scheduleItineraryItemRequest(request);
 
-      return Array.isArray(selectedExhibits)
-         ? selectedExhibits
-            .map((exhibit) => String(exhibit ?? '').trim())
-            .filter(Boolean)
-         : [];
+   if (
+      isItinerarySuccess(initialResult.errorType)
+      || !requiresScheduleItemNotOnItineraryConfirmation(initialResult.errorType)
+   ) {
+      return initialResult;
    }
-   catch {
-      return [];
-   }
-}
 
-async function saveItineraryDraft(draft) {
-   const savePayload = toSetItineraryPayload(draft);
-   const { temp } = await getItineraryDateSearchContext({ date: savePayload.date });
+   return new Promise((resolve) => {
+      showScheduleItemNotOnItineraryConfirmation({
+         onConfirm: async ({ doNotShowAgain = false } = {}) => {
+            const confirmedResult = await scheduleItineraryItemRequest(request, {
+               confirmingScheduleItemNotOnItinerary: true,
+               suppressScheduleItemNotOnItineraryWarning: doNotShowAgain,
+            });
 
-   return setItineraryRequest({
-      ...savePayload,
-      selectedExhibits: loadSelectedExhibits(),
-      temp,
+            resolve(confirmedResult);
+         },
+         onCancel: () => {
+            resolve(initialResult);
+         },
+      });
    });
-}
-
-async function ensureScheduleItemOnItinerary(
-   itinerary,
-   selection,
-   selectedRow,
-   eventTypes = []
-) {
-   const successType = getItineraryErrorTypes()?.SUCCESS ?? 'success';
-
-   if (!isScheduleItemSearchEnabled(selection, eventTypes) || !selectedRow) {
-      return { errorType: successType };
-   }
-
-   if (getScheduleItemRowKind(selectedRow) === SCHEDULE_ITEM_MODULE_TYPES.attractions) {
-      const name = buildAttractionDraftEntry(selectedRow);
-
-      if (!name || itineraryHasAttraction(itinerary, name)) {
-         return { errorType: successType };
-      }
-
-      const draft = cloneItineraryDraft(normalizeItineraryDraft(itinerary));
-      draft.attractions.push(name);
-
-      const saveResult = await saveItineraryDraft(draft);
-
-      return { errorType: saveResult.errorType };
-   }
-
-   const entry = buildAnimalDraftEntry(selectedRow);
-
-   if (!entry || itineraryHasAnimal(itinerary, entry.species, entry.exhibit)) {
-      return { errorType: successType };
-   }
-
-   const draft = cloneItineraryDraft(normalizeItineraryDraft(itinerary));
-   draft.animals.push(entry);
-
-   const saveResult = await saveItineraryDraft(draft);
-
-   return { errorType: saveResult.errorType };
 }
 
 export async function scheduleSelectedItineraryItem(
@@ -159,18 +92,6 @@ export async function scheduleSelectedItineraryItem(
       selection,
       selectedRow
    );
-
-   const ensureResult = await ensureScheduleItemOnItinerary(
-      itinerary,
-      effectiveSelection,
-      selectedRow,
-      eventTypes
-   );
-
-   if (!isItinerarySuccess(ensureResult.errorType)) {
-      return ensureResult;
-   }
-
    const request = buildScheduleItemRequest(
       effectiveSelection,
       selectedRow,
@@ -179,9 +100,9 @@ export async function scheduleSelectedItineraryItem(
 
    if (!request) {
       return {
-         errorType: getItineraryErrorTypes()?.SAVE_FAILED ?? 'saveFailed',
+         errorType: getItineraryErrorTypes()?.SAVE_FAILED,
       };
    }
 
-   return scheduleItineraryItemRequest(request);
+   return scheduleItineraryItemWithConfirmation(request);
 }

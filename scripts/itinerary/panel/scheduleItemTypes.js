@@ -1,12 +1,8 @@
 import { formatItineraryEventTypeLabel } from './scheduleItemEventLabels.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export const SCHEDULE_ITEM_TYPE_PLACEHOLDER = '';
-
-export const SCHEDULE_ITEM_MODULE_TYPES = Object.freeze({
-   animals: 'animals',
-   attractions: 'attractions',
-});
 
 export function isScheduleItemTypeUnset(selection) {
    return selection === SCHEDULE_ITEM_TYPE_PLACEHOLDER;
@@ -43,11 +39,11 @@ export function buildScheduleItemTypeOptions(eventTypes = [], strings = {}) {
       },
       ...eventOptions,
       {
-         value: SCHEDULE_ITEM_MODULE_TYPES.animals,
+         value: ScheduleItemKind.ANIMAL.itemType,
          label: APP_STRINGS.entityLabels.animal,
       },
       {
-         value: SCHEDULE_ITEM_MODULE_TYPES.attractions,
+         value: ScheduleItemKind.ATTRACTION.itemType,
          label: APP_STRINGS.entityLabels.attraction,
       },
    ];
