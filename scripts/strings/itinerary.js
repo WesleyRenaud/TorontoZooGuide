@@ -147,6 +147,7 @@ export const itinerary = {
       typePlaceholder: 'Choose what to schedule',
       searchLabel: 'Search',
       searchPlaceholder: 'Search your itinerary items',
+      onlyItineraryItemsLabel: 'Only show items on my itinerary',
       timeLabel: 'Schedule time',
       timePlaceholder: '--:-- --',
       durationLabel: 'Duration',

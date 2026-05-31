@@ -16,6 +16,7 @@ import { renderScheduleItemSearchResults } from '../scheduleItemResults.js';
 import {
    buildScheduleItemSearchPayload,
    extractScheduleItemSearchRows,
+   filterScheduleItemRowsToItinerary,
    getScheduleItemRowId,
    getScheduleItemRowKind,
    resolveEffectiveScheduleItemSelection,
@@ -56,6 +57,22 @@ function debounce(fn, delay = SEARCH_DEBOUNCE_MS) {
 
 function createFieldLabel(text) {
    return el('label', 'schedule-item-field-label', text);
+}
+
+function createOnlyItineraryItemsCheckbox(labelText) {
+   const wrap = el('div', 'schedule-item-only-itinerary-wrap');
+   const label = el('label', 'schedule-item-only-itinerary-row');
+   const checkbox = document.createElement('input');
+
+   checkbox.type = 'checkbox';
+   checkbox.className = 'schedule-item-only-itinerary-checkbox';
+   checkbox.checked = false;
+
+   const text = el('span', 'schedule-item-only-itinerary-label', labelText);
+   label.append(checkbox, text);
+   wrap.appendChild(label);
+
+   return { wrap, checkbox };
 }
 
 function createSelectField({
@@ -123,6 +140,10 @@ function buildScheduleItemModuleBody(strings, eventTypes = []) {
    searchInput.placeholder = strings.searchPlaceholder;
    searchInput.autocomplete = 'off';
 
+   const onlyItineraryItemsField = createOnlyItineraryItemsCheckbox(
+      strings.onlyItineraryItemsLabel
+   );
+
    searchField.append(searchLabelEl, searchInput);
 
    const resultsEl = el('div', 'itin-results schedule-item-results');
@@ -132,6 +153,7 @@ function buildScheduleItemModuleBody(strings, eventTypes = []) {
    body.append(
       typeField.field,
       searchField,
+      onlyItineraryItemsField.wrap,
       ...scheduleTimeFields.fields,
       resultsEl
    );
@@ -140,6 +162,7 @@ function buildScheduleItemModuleBody(strings, eventTypes = []) {
       body,
       typeSelect: typeField.select,
       searchInput,
+      onlyItineraryItemsCheckbox: onlyItineraryItemsField.checkbox,
       resultsEl,
       scheduleTimeFields,
    };
@@ -185,9 +208,14 @@ export function showScheduleItemModule({
    const searchInput = body?.querySelector('.schedule-item-search-input');
    const resultsEl = body?.querySelector('.schedule-item-results');
    const searchLabelEl = body?.querySelector('.schedule-item-search-field .schedule-item-field-label');
+   const onlyItineraryItemsCheckbox = body?.querySelector(
+      '.schedule-item-only-itinerary-checkbox'
+   );
+   const onlyItineraryItemsWrap = body?.querySelector('.schedule-item-only-itinerary-wrap');
 
    let selectedRowId = '';
    let selectedRow = null;
+   let latestSearchRows = [];
    let latestSearchRequestId = 0;
    let isSubmitting = false;
 
@@ -223,6 +251,18 @@ export function showScheduleItemModule({
       return isScheduleItemEventType(selection, eventTypes);
    }
 
+   function isOnlyItineraryItemsEnabled() {
+      return Boolean(onlyItineraryItemsCheckbox?.checked);
+   }
+
+   function applyItineraryItemFilter(rows = []) {
+      if (!isOnlyItineraryItemsEnabled()) {
+         return rows;
+      }
+
+      return filterScheduleItemRowsToItinerary(rows, itinerary);
+   }
+
    function updateFieldVisibility() {
       const selection = getSelection();
       const searchEnabled = isScheduleItemSearchEnabled(selection, eventTypes);
@@ -236,7 +276,29 @@ export function showScheduleItemModule({
          searchLabelEl.classList.toggle('is-disabled', !searchEnabled);
       }
 
+      if (onlyItineraryItemsWrap) {
+         onlyItineraryItemsWrap.hidden = !searchEnabled;
+      }
+
+      if (onlyItineraryItemsCheckbox) {
+         onlyItineraryItemsCheckbox.disabled = !searchEnabled;
+      }
+
       buttonEls.schedule.disabled = isSubmitting || !canScheduleSelection();
+   }
+
+   function displaySearchResults(rows = []) {
+      latestSearchRows = rows;
+      const visibleRows = applyItineraryItemFilter(rows);
+
+      if (
+         selectedRowId
+         && !visibleRows.some((row) => getScheduleItemRowId(row) === selectedRowId)
+      ) {
+         clearSelectedRow();
+      }
+
+      renderSearchResults(visibleRows);
    }
 
    function renderSearchResultRowLeft(row) {
@@ -312,7 +374,7 @@ export function showScheduleItemModule({
          searchInput.value = searchLabel || '';
       }
 
-      renderSearchResults([preselectedRow]);
+      displaySearchResults([preselectedRow]);
       updateFieldVisibility();
    }
 
@@ -348,14 +410,14 @@ export function showScheduleItemModule({
             return;
          }
 
-         renderSearchResults(rows);
+         displaySearchResults(rows);
       }
       catch {
          if (requestId !== latestSearchRequestId) {
             return;
          }
 
-         renderSearchResults([]);
+         displaySearchResults([]);
       }
    }
 
@@ -433,6 +495,17 @@ export function showScheduleItemModule({
    searchInput?.addEventListener('input', () => {
       clearSelectedRow();
       scheduleSearch();
+      updateFieldVisibility();
+   });
+
+   onlyItineraryItemsCheckbox?.addEventListener('change', () => {
+      if (latestSearchRows.length > 0) {
+         displaySearchResults(latestSearchRows);
+      }
+      else {
+         void runSearch();
+      }
+
       updateFieldVisibility();
    });
 

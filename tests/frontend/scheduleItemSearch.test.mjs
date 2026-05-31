@@ -2,8 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+   buildItineraryScheduleItemRowIds,
    buildScheduleItemSearchPayload,
    extractScheduleItemSearchRows,
+   filterScheduleItemRowsToItinerary,
    getScheduleItemRowId,
    getScheduleItemRowKind,
    resolveEffectiveScheduleItemSelection,
@@ -185,6 +187,57 @@ test('resolveEffectiveScheduleItemSelection infers animals from a selected row',
          animalRow
       ),
       ScheduleItemKind.ATTRACTION.itemType
+   );
+});
+
+test('buildItineraryScheduleItemRowIds collects animal and attraction keys', () => {
+   const ids = buildItineraryScheduleItemRowIds({
+      animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
+      attractions: [{ name: 'Carousel' }],
+   });
+
+   assert.equal(ids.animalIds.has('Tiger||Savanna'), true);
+   assert.equal(ids.attractionIds.has('Carousel'), true);
+});
+
+test('filterScheduleItemRowsToItinerary keeps only rows on the itinerary', () => {
+   const rows = [
+      {
+         species: 'Tiger',
+         exhibit: 'Savanna',
+         scheduleItemKind: 'animals',
+      },
+      {
+         species: 'Giant Panda',
+         exhibit: 'Bamboo',
+         scheduleItemKind: 'animals',
+      },
+      {
+         name: 'Carousel',
+         scheduleItemKind: 'attractions',
+      },
+      {
+         name: 'Train',
+         scheduleItemKind: 'attractions',
+      },
+   ];
+
+   assert.deepEqual(
+      filterScheduleItemRowsToItinerary(rows, {
+         animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
+         attractions: [{ name: 'Carousel' }],
+      }),
+      [
+         {
+            species: 'Tiger',
+            exhibit: 'Savanna',
+            scheduleItemKind: 'animals',
+         },
+         {
+            name: 'Carousel',
+            scheduleItemKind: 'attractions',
+         },
+      ]
    );
 });
 

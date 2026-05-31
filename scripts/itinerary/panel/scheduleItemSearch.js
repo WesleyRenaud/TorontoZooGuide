@@ -88,6 +88,29 @@ export function buildScheduleItemSearchPayload(moduleType, query = '') {
    return { query: normalizedQuery };
 }
 
+export function buildItineraryScheduleItemRowIds(itinerary = {}) {
+   const animalIds = new Set(
+      itinerary.animals.map((animal) => getAnimalId(animal))
+   );
+   const attractionIds = new Set(
+      itinerary.attractions.map((attraction) => getAttractionId(attraction))
+   );
+
+   return { animalIds, attractionIds };
+}
+
+export function filterScheduleItemRowsToItinerary(rows = [], itinerary = {}) {
+   const { animalIds, attractionIds } = buildItineraryScheduleItemRowIds(itinerary);
+
+   return rows.filter((row) => {
+      if (getScheduleItemRowKind(row) === ScheduleItemKind.ATTRACTION.itemType) {
+         return attractionIds.has(getScheduleItemRowId(row));
+      }
+
+      return animalIds.has(getScheduleItemRowId(row));
+   });
+}
+
 export function extractScheduleItemSearchRows(moduleType, response = {}) {
    if (moduleType === ScheduleItemKind.ANIMAL.itemType) {
       return tagAnimalRows(
