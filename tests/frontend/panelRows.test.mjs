@@ -643,6 +643,47 @@ test.describe('itinerary panel rows', () => {
       assert.equal(tigerPill, undefined);
    });
 
+   test('scheduled generic event pill renders on the timeline with unschedule menu', () => {
+      const unscheduleCalls = [];
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            events: [
+               {
+                  event_type: 'lunch',
+                  start_time: '12:00 PM',
+                  end_time: '12:40 PM',
+               },
+            ],
+         },
+         {},
+         {
+            scheduleHandlers: {
+               onUnscheduleItineraryItem: (request) => {
+                  unscheduleCalls.push(request);
+               },
+            },
+         }
+      );
+      const lunchPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+         allTextFor(pill).includes('Lunch')
+      ));
+
+      assert.ok(lunchPill);
+      assert.ok(lunchPill.classList.contains('itinerary-day-scheduled-pill--with-menu'));
+      lunchPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
+      assert.deepEqual(unscheduleCalls, [{
+         itemType: 'lunch',
+         key: '',
+      }]);
+   });
+
    test('scheduled guardians talk pill has no unschedule menu', () => {
       const planner = makeDayPlannerPreview(
          {

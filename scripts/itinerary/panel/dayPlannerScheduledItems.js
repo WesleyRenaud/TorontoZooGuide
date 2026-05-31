@@ -10,6 +10,7 @@ import {
    buildGuardiansRows,
    buildWildRows,
 } from './rows.js';
+import { formatItineraryEventTypeLabel } from './scheduleItemEventLabels.js';
 import { getAnimalId } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
@@ -31,6 +32,36 @@ function hasItineraryScheduleTimes(item) {
 
 function getScheduledItemLabel(item) {
    return String(item?.species || item?.name || '').trim();
+}
+
+function getItineraryEventType(item) {
+   return String(item?.event_type ?? '').trim();
+}
+
+function buildGenericEventScheduledRows(events = []) {
+   return events.map((event, index) => {
+      const eventType = getItineraryEventType(event);
+      const startMinutes = parseClockTimeMinutes(event.start_time);
+      const maximumDuration = getDurationMinutesFromScheduleTimes(event);
+      const label = formatItineraryEventTypeLabel(eventType);
+
+      return {
+         index,
+         item: event,
+         row: null,
+         label,
+         startMinutes,
+         maximumDuration,
+         scheduleItemKind: ScheduleItemKind.EVENT.kind,
+         scheduleItemEventType: eventType,
+         scheduleItemKey: '',
+      };
+   }).filter((scheduledItem) => (
+      scheduledItem.label
+      && scheduledItem.scheduleItemEventType
+      && Number.isFinite(scheduledItem.startMinutes)
+      && Number.isFinite(scheduledItem.maximumDuration)
+   ));
 }
 
 function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
@@ -115,6 +146,7 @@ export function buildScheduledItemRowsContext(
       attractions = [],
       guardiansTalks = [],
       wildEncounters = [],
+      events = [],
    } = {},
    slotStarts = [],
    closeMinutes = null
@@ -147,11 +179,13 @@ export function buildScheduledItemRowsContext(
       scheduleItemKind: ScheduleItemKind.ATTRACTION.itemType,
       scheduleItemKey: getAttractionId(scheduledItem.item),
    }));
+   const genericEventRows = buildGenericEventScheduledRows(events);
    const scheduledItems = [
       ...guardiansTalkRows,
       ...wildEncounterRows,
       ...animalRows,
       ...attractionRows,
+      ...genericEventRows,
    ];
 
    return {

@@ -91,6 +91,7 @@ export function createEmptyItineraryDraft() {
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
+      events: [],
    };
 }
 
@@ -105,6 +106,7 @@ export function normalizeItineraryDraft(draft = {}) {
       attractions: normalizeItineraryItems(source.attractions),
       guardiansTalks: normalizeItineraryItems(source.guardiansTalks),
       wildEncounters: normalizeItineraryItems(source.wildEncounters),
+      events: normalizeItineraryItems(source.events),
    };
 }
 
@@ -119,6 +121,7 @@ export function cloneItineraryDraft(draft = {}) {
       attractions: cloneItineraryItems(normalizedDraft.attractions),
       guardiansTalks: cloneItineraryItems(normalizedDraft.guardiansTalks),
       wildEncounters: cloneItineraryItems(normalizedDraft.wildEncounters),
+      events: cloneItineraryItems(normalizedDraft.events),
    };
 }
 
@@ -227,6 +230,7 @@ export function isItineraryEmptyDraft(draft = {}) {
 
    return !normalizedDraft.arrivalTime
    && !normalizedDraft.departureTime
+   && normalizedDraft.events.length === 0
    && ITINERARY_ITEM_KEYS.every((key) => (
       normalizedDraft[key].length === 0
    ));
