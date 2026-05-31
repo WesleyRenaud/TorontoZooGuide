@@ -19,7 +19,10 @@ import {
    buildMarkersByAnchorSlot,
    resolveTimelinePillLabel,
 } from '../dayPlannerTimelineMarkers.js';
-import { appendItineraryTimeMarkers } from './dayPlannerTimelinePills.js';
+import {
+   appendItineraryTimeMarkers,
+   appendTimelinePill,
+} from './dayPlannerTimelinePills.js';
 import { el } from '../dom.js';
 import { formatISODateFull } from '../format.js';
 import { makeScheduleItemButton } from './scheduleItemButton.js';
@@ -107,7 +110,8 @@ export function makeDayPlannerPreview(
    );
    const scheduledRowsContext = buildScheduledItemRowsContext(
       itinerary,
-      timelineSlotStarts
+      timelineSlotStarts,
+      closeMinutes
    );
 
    if (timelineSlotStarts.length === 0) {
@@ -137,14 +141,18 @@ export function makeDayPlannerPreview(
    timelineSlotStarts.forEach((slotStart) => {
       const pillLabel = resolveTimelinePillLabel(slotStart, pillContext, strings);
       const [timeCell, gridLine] = makeTimelineRow(
-         formatMinutesAsClockTime(slotStart),
-         pillLabel
+         formatMinutesAsClockTime(slotStart)
       );
 
-      appendItineraryTimeMarkers(gridLine, markersByAnchorSlot, slotStart);
-      appendScheduledItems(gridLine, scheduledRowsContext.itemsByStart.get(slotStart));
       timeline.appendChild(timeCell);
       timeline.appendChild(gridLine);
+
+      if (pillLabel) {
+         appendTimelinePill(gridLine, pillLabel);
+      }
+
+      appendScheduledItems(gridLine, scheduledRowsContext.itemsByStart.get(slotStart));
+      appendItineraryTimeMarkers(gridLine, markersByAnchorSlot, slotStart);
    });
 
    section.appendChild(header);

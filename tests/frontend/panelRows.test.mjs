@@ -20,6 +20,10 @@ import {
    findTimelineAnchorSlot,
 } from '../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
 import {
+   computeStripHorizontalOffsetIndex,
+   computeTimelineHorizontalOffsetIndex,
+} from '../../scripts/itinerary/panel/components/dayPlannerTimelinePills.js';
+import {
    formatClockTime,
    formatISODateFull,
    formatISODateLong,
@@ -47,11 +51,22 @@ function createNode(tagName, className = '', textContent = '') {
    const children = [];
    const listeners = {};
    const attributes = {};
-   const classes = new Set(className ? className.split(/\s+/) : []);
+   const classes = new Set(className ? className.split(/\s+/).filter(Boolean) : []);
 
-   return {
+   const node = {
       tagName,
-      className,
+      get className() {
+         return [...classes].join(' ');
+      },
+      set className(value) {
+         classes.clear();
+
+         for (const token of String(value).split(/\s+/)) {
+            if (token) {
+               classes.add(token);
+            }
+         }
+      },
       textContent,
       children,
       listeners,
@@ -62,6 +77,9 @@ function createNode(tagName, className = '', textContent = '') {
          },
       },
       classList: {
+         contains(value) {
+            return classes.has(value);
+         },
          add(value) {
             classes.add(value);
          },
@@ -74,8 +92,65 @@ function createNode(tagName, className = '', textContent = '') {
          },
       },
       appendChild(child) {
+         child.parentElement = node;
+         child.parent = node;
          children.push(child);
          return child;
+      },
+      insertBefore(newChild, referenceChild) {
+         newChild.parentElement = node;
+         newChild.parent = node;
+
+         if (!referenceChild) {
+            children.push(newChild);
+            return newChild;
+         }
+
+         const referenceIndex = children.indexOf(referenceChild);
+
+         if (referenceIndex < 0) {
+            children.push(newChild);
+            return newChild;
+         }
+
+         children.splice(referenceIndex, 0, newChild);
+         return newChild;
+      },
+      removeChild(child) {
+         const childIndex = children.indexOf(child);
+
+         if (childIndex >= 0) {
+            children.splice(childIndex, 1);
+         }
+
+         child.parentElement = null;
+         child.parent = null;
+
+         return child;
+      },
+      closest(selector) {
+         let current = node;
+
+         while (current) {
+            if (nodeMatchesSelector(current, selector)) {
+               return current;
+            }
+
+            current = current.parentElement ?? current.parent;
+         }
+
+         return null;
+      },
+      get offsetHeight() {
+         if (classes.has('itinerary-day-open-pill')) {
+            return 69;
+         }
+
+         if (classes.has('itinerary-day-grid-line')) {
+            return 330;
+         }
+
+         return 0;
       },
       append(...items) {
          children.push(...items);
@@ -85,7 +160,7 @@ function createNode(tagName, className = '', textContent = '') {
       },
       getBoundingClientRect() {
          return {
-            height: 100,
+            height: classes.has('itinerary-day-open-pill') ? 69 : 100,
          };
       },
       setAttribute(name, value) {
@@ -100,7 +175,7 @@ function createNode(tagName, className = '', textContent = '') {
          while (stack.length > 0) {
             const child = stack.shift();
 
-            if (child.className === classNameToFind) {
+            if (child.className?.split(/\s+/).includes(classNameToFind)) {
                return child;
             }
 
@@ -119,7 +194,7 @@ function createNode(tagName, className = '', textContent = '') {
          while (stack.length > 0) {
             const child = stack.shift();
 
-            if (child.className === classNameToFind) {
+            if (child.className?.split(/\s+/).includes(classNameToFind)) {
                matches.push(child);
             }
 
@@ -129,6 +204,21 @@ function createNode(tagName, className = '', textContent = '') {
          return matches;
       },
    };
+
+   if (className) {
+      node.className = className;
+   }
+
+   return node;
+}
+
+function nodeMatchesSelector(node, selector) {
+   if (!node || selector[0] !== '.') {
+      return false;
+   }
+
+   const className = selector.slice(1);
+   return node.classList?.contains(className) ?? false;
 }
 
 function allTextFor(node) {
@@ -136,6 +226,20 @@ function allTextFor(node) {
       node.textContent,
       ...(node.children ?? []).map(allTextFor),
    ].flat(Infinity).filter(Boolean).join(' ');
+}
+
+function timelinePillTexts(planner) {
+   const timeline = planner.querySelector('.itinerary-day-timeline');
+
+   return [...(timeline?.querySelectorAll('.itinerary-day-open-pill') ?? [])].map(allTextFor);
+}
+
+function timelineScheduledPillTexts(planner) {
+   const timeline = planner.querySelector('.itinerary-day-timeline');
+
+   return [
+      ...(timeline?.querySelectorAll('.itinerary-day-scheduled-pill') ?? []),
+   ].map(allTextFor);
 }
 
 function textFor(row, selector) {
@@ -494,6 +598,144 @@ test('day planner renders scheduled guardians talks and wild encounters', () => 
    assert.match(text, /Meet The Guardians \(0\)/);
    assert.match(text, /Wild Encounters \(0\)/);
    assert.ok(text.indexOf('Scheduled Items') < text.indexOf('Unscheduled Items'));
+
+   const timelineEventTexts = timelineScheduledPillTexts(planner);
+
+   assert.equal(timelineEventTexts.length, 4);
+   assert.ok(timelineEventTexts.some((eventText) => eventText.includes('African Lion')));
+   assert.ok(timelineEventTexts.some((eventText) => eventText.includes('Amur Tiger')));
+   assert.ok(timelineEventTexts.some((eventText) => eventText.includes('African Rainforest')));
+   assert.ok(timelineEventTexts.some((eventText) => eventText.includes('Zoomobile')));
+});
+
+test('day planner positions off-slot scheduled items between half-hour lines', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         ...EMPTY_ITINERARY,
+         animals: [
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+               start_time: '1:15 PM',
+               end_time: '1:45 PM',
+            },
+         ],
+      }
+   );
+   const lionPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+      allTextFor(pill).includes('African Lion')
+   ));
+   const lionStrip = lionPill?.parentElement;
+
+   assert.ok(lionPill);
+   assert.equal(lionStrip?.className, 'itinerary-day-pill-strip');
+   assert.equal(lionStrip?.attributes?.['data-offset-fraction'], '0.5');
+   assert.equal(lionPill.attributes?.['data-duration-fraction'], '1');
+});
+
+test('day planner renders scheduled duration as a larger pill', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         arrivalTime: '11:35',
+         departureTime: '17:15',
+         ...EMPTY_ITINERARY,
+         animals: [
+            {
+               species: 'Polar Bear',
+               exhibit: 'Tundra Trek',
+               start_time: '11:35 AM',
+               end_time: '11:45 AM',
+            },
+         ],
+      }
+   );
+   const polarPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+      allTextFor(pill).includes('Polar Bear')
+   ));
+   const polarStrip = polarPill?.parentElement;
+
+   assert.ok(polarPill);
+   assert.equal(polarStrip?.className, 'itinerary-day-pill-strip');
+   assert.equal(polarPill.attributes?.['data-duration-fraction'], String(10 / 30));
+   assert.equal(polarStrip?.children?.[0]?.textContent, 'Arrival');
+   assert.match(allTextFor(polarStrip), /Arrival/);
+   assert.match(allTextFor(planner), /Departure/);
+   assert.equal(
+      [...planner.querySelectorAll('.itinerary-day-open-pill')].some((pill) => (
+         allTextFor(pill).includes('Polar Bear')
+      )),
+      false
+   );
+});
+
+test('day planner offsets overlapping scheduled pills horizontally', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         ...EMPTY_ITINERARY,
+         animals: [
+            {
+               species: 'Polar Bear',
+               exhibit: 'Tundra Trek',
+               start_time: '9:45 AM',
+               end_time: '10:00 AM',
+            },
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+               start_time: '9:50 AM',
+               end_time: '10:05 AM',
+            },
+         ],
+      }
+   );
+   const lionPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+      allTextFor(pill).includes('African Lion')
+   ));
+   const lionStrip = lionPill?.parentElement;
+
+   assert.ok(lionPill);
+   assert.equal(lionStrip?.attributes?.['data-horizontal-offset-index'], '1');
+});
+
+test('computeStripHorizontalOffsetIndex shifts later overlapping strips', () => {
+   const pointPillVerticalSpanFraction = 69 / 330;
+
+   assert.equal(
+      computeStripHorizontalOffsetIndex([], 0.5, pointPillVerticalSpanFraction),
+      0
+   );
+   assert.equal(computeStripHorizontalOffsetIndex([
+      { offsetFraction: 0.5, horizontalOffsetIndex: 0 },
+   ], 0.67, pointPillVerticalSpanFraction), 1);
+   assert.equal(computeStripHorizontalOffsetIndex([
+      { offsetFraction: 0.5, horizontalOffsetIndex: 0 },
+      { offsetFraction: 0.67, horizontalOffsetIndex: 1 },
+   ], 0.6, pointPillVerticalSpanFraction), 2);
+});
+
+test('computeTimelineHorizontalOffsetIndex shifts later overlapping placements', () => {
+   assert.equal(computeTimelineHorizontalOffsetIndex([], 0.5, 0.5), 0);
+   assert.equal(computeTimelineHorizontalOffsetIndex([
+      { offsetFraction: 0.5, durationFraction: 0.5, horizontalOffsetIndex: 0 },
+   ], 0.67, 0.5), 1);
 });
 
 test('day planner renders zero-count unscheduled sections', () => {

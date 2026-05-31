@@ -1,4 +1,5 @@
 import { formatClockTime } from './format.js';
+import { TIMELINE_SLOT_MINUTES } from '../../shared/constants.js';
 
 export function parseClockTimeMinutes(timeValue) {
    if (typeof timeValue !== 'string') {
@@ -194,11 +195,15 @@ export function buildHalfHourSlotStarts(openMinutes, closeMinutes) {
    }
 
    const slotStarts = [];
-   const firstHalfHour = Math.ceil(openMinutes / 30) * 30;
+   const firstHalfHour = Math.ceil(openMinutes / TIMELINE_SLOT_MINUTES) * TIMELINE_SLOT_MINUTES;
 
    slotStarts.push(openMinutes);
 
-   for (let slotStart = firstHalfHour; slotStart < closeMinutes; slotStart += 30) {
+   for (
+      let slotStart = firstHalfHour;
+      slotStart < closeMinutes;
+      slotStart += TIMELINE_SLOT_MINUTES
+   ) {
       if (slotStart === openMinutes) {
          continue;
       }
