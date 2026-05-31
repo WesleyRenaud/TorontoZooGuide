@@ -14,7 +14,34 @@ import {
 } from './rowAlerts.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
 import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
+import { getAnimalId } from '../selectors/animalSelector/model.js';
+import { getAttractionId } from '../selectors/attractionSelector/model.js';
+import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
+
+function buildUnscheduleRowProps(itemType, item, onUnscheduleItem) {
+   if (typeof onUnscheduleItem !== 'function') {
+      return {};
+   }
+
+   const key = itemType === ScheduleItemKind.ANIMAL.itemType
+      ? getAnimalId(item)
+      : getAttractionId(item);
+
+   if (!key) {
+      return {};
+   }
+
+   const actionLabel = APP_STRINGS.itinerary.dayPlanner.unschedule;
+
+   return {
+      actionLabel,
+      onAction: () => onUnscheduleItem({
+         itemType,
+         key,
+      }),
+   };
+}
 
 function buildImageSrc(...pathParts) {
    const normalizedParts = pathParts
@@ -145,6 +172,7 @@ function buildNamedRows(
       getMetaLines = () => [],
       getAlertLine = () => '',
       getLink = () => null,
+      extendRowProps = null,
    } = {}
 ) {
    return buildRows(items, {
@@ -159,12 +187,16 @@ function buildNamedRows(
             metaLines: buildMetaLines(getMetaLines(item)),
             alertLine: getAlertLine(item),
             ...buildLinkRowProps(getLink(item)),
+            ...(typeof extendRowProps === 'function' ? extendRowProps(item) : {}),
          };
       },
    });
 }
 
-export function buildAnimalRows(animals = []) {
+export function buildAnimalRows(
+   animals = [],
+   { onUnscheduleItem = null } = {}
+) {
    return buildRows(animals, {
       normalizeItem: normalizeAnimal,
       prepareItems: buildUniqueAnimals,
@@ -177,16 +209,25 @@ export function buildAnimalRows(animals = []) {
             imageSrc: buildImageSrc('animals', animal.exhibit, name),
             metaLines: buildMetaLines([
                buildFieldLine('Exhibit', animal.exhibit),
+               buildScheduledTimeFieldLine(animal),
             ]),
             alertLine: alert.line,
             alertTone: alert.tone,
             ...buildLinkRowProps(animal.link),
+            ...buildUnscheduleRowProps(
+               ScheduleItemKind.ANIMAL.itemType,
+               animal,
+               onUnscheduleItem
+            ),
          };
       },
    });
 }
 
-export function buildAttractionRows(attractions = []) {
+export function buildAttractionRows(
+   attractions = [],
+   { onUnscheduleItem = null } = {}
+) {
    return buildNamedRows(attractions, {
       normalizeItem: normalizeAttraction,
       defaultName: 'Attraction',
@@ -196,9 +237,15 @@ export function buildAttractionRows(attractions = []) {
          attraction.subtitle,
          buildFieldLine('Location', attraction.location),
          buildFieldLine('Price', attraction.price),
+         buildScheduledTimeFieldLine(attraction),
       ],
       getAlertLine: buildAttractionRemovalReasonLine,
       getLink: (attraction) => attraction.infoLink,
+      extendRowProps: (attraction) => buildUnscheduleRowProps(
+         ScheduleItemKind.ATTRACTION.itemType,
+         attraction,
+         onUnscheduleItem
+      ),
    });
 }
 
