@@ -2353,7 +2353,7 @@ nav ul li a:hover {
    display: flex;
    flex-direction: column;
    align-items: stretch;
-   padding: 12px 14px 17px 30px;
+   padding: 17px 14px 17px 30px;
    overflow: visible;
    white-space: normal;
 }
@@ -2363,12 +2363,17 @@ nav ul li a:hover {
    align-items: center;
    gap: 10px;
    flex: 0 0 auto;
+   min-height: 52px;
    min-width: 0;
 }
 
 .itinerary-day-scheduled-pill-label {
+   display: flex;
+   align-items: center;
    flex: 1 1 auto;
+   min-height: 52px;
    min-width: 0;
+   line-height: 1;
    overflow: hidden;
    text-overflow: ellipsis;
    white-space: nowrap;
@@ -2392,11 +2397,15 @@ nav ul li a:hover {
    display: inline-flex;
    align-items: center;
    gap: 10px;
-   padding-right: 14px;
+   padding: 17px 14px 17px 30px;
 }
 
 .itinerary-day-open-pill-label {
+   display: flex;
+   align-items: center;
+   min-height: 52px;
    min-width: 0;
+   line-height: 1;
 }
 
 .itinerary-day-open-pill-menu {
@@ -2417,7 +2426,7 @@ nav ul li a:hover {
    background: rgba(94, 150, 0, 0.06);
    color: #5e9600;
    font-size: 2.65rem;
-   line-height: 0.9;
+   line-height: 1;
    font-weight: 900;
    letter-spacing: -0.04em;
    cursor: pointer;
