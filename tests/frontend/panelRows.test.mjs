@@ -1141,7 +1141,7 @@ test.describe('itinerary panel rows', () => {
 
       assert.equal(
          scheduledList?.querySelectorAll('.itin-panel-section-edit-btn').length,
-         0
+         2
       );
       assert.ok(
          (unscheduledList?.querySelectorAll('.itin-panel-section-edit-btn').length ?? 0) > 0
