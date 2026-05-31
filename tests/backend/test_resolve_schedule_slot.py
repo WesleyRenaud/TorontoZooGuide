@@ -45,3 +45,8 @@ def test_resolve_schedule_slot_returns_none_when_requested_slot_overlaps() -> No
 
 def test_parse_schedule_time_options_rejects_duration_without_time() -> None:
    assert parse_schedule_time_options( None, 30 ) == ItineraryErrorType.SAVE_FAILED
+
+
+def test_parse_schedule_time_options_rejects_invalid_provided_start_time() -> None:
+   assert parse_schedule_time_options( 'not-a-time', None ) == ItineraryErrorType.SAVE_FAILED
+   assert parse_schedule_time_options( '   ', 30 ) == ItineraryErrorType.SAVE_FAILED

@@ -19,6 +19,7 @@ export function makeScheduleItemTimeFields(strings = {}) {
    const timeInput = document.createElement('input');
    const durationInput = document.createElement('input');
    let selectedStartTime = '';
+   let flatpickrInstance = null;
 
    timeInput.className = 'schedule-item-time-input';
    timeInput.type = 'text';
@@ -45,9 +46,15 @@ export function makeScheduleItemTimeFields(strings = {}) {
    }
 
    function commitPickerTime(_selectedDates, dateStr, instance) {
-      selectedStartTime = readPickerTimeValue(instance, dateStr, timeInput);
+      const pickerInstance = instance ?? flatpickrInstance;
+
+      selectedStartTime = readPickerTimeValue(pickerInstance, dateStr, timeInput);
       timeInput.value = selectedStartTime;
       syncDurationFieldState();
+   }
+
+   function resolveSelectedStartTime() {
+      return selectedStartTime || readPickerTimeValue(flatpickrInstance, '', timeInput);
    }
 
    timeField.append(
@@ -61,8 +68,10 @@ export function makeScheduleItemTimeFields(strings = {}) {
 
    initTimePicker(timeInput, {
       allowInput: false,
+      onChange: commitPickerTime,
       onClose: commitPickerTime,
       onReady(_selectedDates, _dateStr, instance) {
+         flatpickrInstance = instance;
          instance.calendarContainer.classList.add('schedule-item-time-picker');
       },
    });
@@ -76,15 +85,17 @@ export function makeScheduleItemTimeFields(strings = {}) {
    return {
       fields: [timeField, durationField],
       getScheduleTimeOptions() {
+         const startTime = resolveSelectedStartTime();
          const durationMinutes = parseDurationMinutes(durationInput.value);
 
          return {
-            startTime: selectedStartTime,
+            startTime,
             durationMinutes,
          };
       },
       hasDurationWithoutTime() {
-         return !selectedStartTime && parseDurationMinutes(durationInput.value) !== null;
+         return !resolveSelectedStartTime()
+            && parseDurationMinutes(durationInput.value) !== null;
       },
       reset() {
          selectedStartTime = '';

@@ -53,6 +53,10 @@ export function resolveItineraryErrorMessage(
       return strings.noAvailableSlot;
    }
 
+   if (errorType === itineraryErrorTypes?.REQUESTED_TIME_NOT_AVAILABLE) {
+      return strings.requestedTimeNotAvailable;
+   }
+
    if (errorType === itineraryErrorTypes?.ITEM_NOT_ON_ITINERARY) {
       return strings.itemNotOnItinerary;
    }
