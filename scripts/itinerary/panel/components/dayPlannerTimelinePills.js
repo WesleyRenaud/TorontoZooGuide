@@ -1,12 +1,10 @@
 import { getPointPillStripPlacementBand } from '../dayPlannerTimelineMetrics.js';
+import { makeOpenPill } from './dayPlannerTimePill.js';
 import { el } from '../dom.js';
+import { normalizeVisitBoundaryEventTypes } from '../../itineraryEventTypes.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 
 const timelinePlacementsByGridLine = new WeakMap();
-
-function makeTimelinePill(label) {
-   return el('span', 'itinerary-day-open-pill', label);
-}
 
 function makeScheduledPill(label, durationMinutes) {
    const durationFraction = durationMinutes / TIMELINE_SLOT_MINUTES;
@@ -184,14 +182,25 @@ function insertPointPillInStrip(strip, pill) {
    strip.appendChild(pill);
 }
 
-export function appendTimelinePill(gridLine, label, offsetFraction = 0) {
+export function appendTimelinePill(
+   gridLine,
+   label,
+   offsetFraction = 0,
+   pillOptions = {}
+) {
    if (!label) {
+      return;
+   }
+
+   const pill = makeOpenPill(label, pillOptions);
+
+   if (!pill) {
       return;
    }
 
    insertPointPillInStrip(
       getOrCreatePillStrip(gridLine, offsetFraction),
-      makeTimelinePill(label)
+      pill
    );
 }
 
@@ -213,9 +222,59 @@ export function appendScheduledDurationPill(
    strip.appendChild(makeScheduledPill(label, durationMinutes));
 }
 
-export function appendItineraryTimeMarkers(gridLine, markersByAnchorSlot, slotStart) {
+function resolveTimePillOptions(
+   marker,
+   timeHandlers = {},
+   strings = {},
+   visitBoundaryEventTypes = {}
+) {
+   const boundaries = normalizeVisitBoundaryEventTypes(visitBoundaryEventTypes);
+
+   if (
+      marker.kind === boundaries.arrival
+      && typeof timeHandlers.onArrivalTimeChange === 'function'
+   ) {
+      return {
+         menuAriaLabel: strings.arrivalTimeMenuAria,
+         removeLabel: strings.remove,
+         onRemove: () => timeHandlers.onArrivalTimeChange(''),
+      };
+   }
+
+   if (
+      marker.kind === boundaries.departure
+      && typeof timeHandlers.onDepartureTimeChange === 'function'
+   ) {
+      return {
+         menuAriaLabel: strings.departureTimeMenuAria,
+         removeLabel: strings.remove,
+         onRemove: () => timeHandlers.onDepartureTimeChange(''),
+      };
+   }
+
+   return {};
+}
+
+export function appendItineraryTimeMarkers(
+   gridLine,
+   markersByAnchorSlot,
+   slotStart,
+   timeHandlers = {},
+   strings = {},
+   visitBoundaryEventTypes = {}
+) {
    (markersByAnchorSlot.get(slotStart) ?? []).forEach((marker) => {
-      appendTimelinePill(gridLine, marker.label, marker.offsetFraction);
+      appendTimelinePill(
+         gridLine,
+         marker.label,
+         marker.offsetFraction,
+         resolveTimePillOptions(
+            marker,
+            timeHandlers,
+            strings,
+            visitBoundaryEventTypes
+         )
+      );
    });
 }
 

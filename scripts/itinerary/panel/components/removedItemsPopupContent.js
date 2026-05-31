@@ -47,14 +47,14 @@ function addKeepOverrideButton(
 
    function sync() {
       const selected = Boolean(isKeepSelected?.(key));
-      const strings = APP_STRINGS.itinerary.removedItems;
+      const removedItemsStrings = APP_STRINGS.itinerary.removedItems;
 
       btn.classList.toggle('is-selected', selected);
       btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
       btn.textContent = selected
-         ? strings.removeFromItinerary
-         : strings.keepInItinerary;
-      btn.title = selected ? strings.removeFromItineraryHint : '';
+         ? APP_STRINGS.itinerary.dayPlanner.remove
+         : removedItemsStrings.keepInItinerary;
+      btn.title = selected ? removedItemsStrings.removeFromItineraryHint : '';
    }
 
    btn.addEventListener('click', (e) => {

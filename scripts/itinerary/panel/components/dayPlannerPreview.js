@@ -152,7 +152,14 @@ export function makeDayPlannerPreview(
       }
 
       appendScheduledItems(gridLine, scheduledRowsContext.itemsByStart.get(slotStart));
-      appendItineraryTimeMarkers(gridLine, markersByAnchorSlot, slotStart);
+      appendItineraryTimeMarkers(
+         gridLine,
+         markersByAnchorSlot,
+         slotStart,
+         timeHandlers,
+         strings,
+         itinerary.itineraryConfig?.visitBoundaryEventTypes
+      );
    });
 
    section.appendChild(header);

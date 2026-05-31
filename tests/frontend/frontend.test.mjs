@@ -25,6 +25,7 @@ import './scheduleItemEventLabels.test.mjs';
 import './scheduleItemButton.test.mjs';
 import './scheduleItemResults.test.mjs';
 import './itineraryDiff.test.mjs';
+import './itineraryEventType.test.mjs';
 import './itineraryValidation.test.mjs';
 import './layerRequest.test.mjs';
 import './mapDateContext.test.mjs';

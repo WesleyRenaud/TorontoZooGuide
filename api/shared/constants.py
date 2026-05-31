@@ -23,6 +23,10 @@ def itinerary_config_to_dict(
       'itinerary_event_types': [
          event_type.value for event_type in ItineraryEventType
       ],
+      'itinerary_visit_boundary_event_types': {
+         'arrival': ItineraryEventType.ARRIVAL.value,
+         'departure': ItineraryEventType.DEPARTURE.value,
+      },
       'itinerary_error_types': {
          error_type.name: error_type.value
          for error_type in ItineraryErrorType

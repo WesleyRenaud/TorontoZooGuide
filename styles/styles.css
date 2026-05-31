@@ -2319,6 +2319,11 @@ nav ul li a:hover {
    );
 }
 
+.itinerary-day-pill-strip--menu-open,
+.itinerary-day-pill-strip:has(.itinerary-day-open-pill--menu-open) {
+   z-index: 12;
+}
+
 .itinerary-day-scheduled-pill {
    position: static;
    flex: 0 0 auto;
@@ -2355,6 +2360,86 @@ nav ul li a:hover {
    line-height: 1;
    font-weight: 900;
    box-shadow: 0 6px 14px rgba(20, 35, 10, 0.14);
+}
+
+.itinerary-day-open-pill--with-menu {
+   display: inline-flex;
+   align-items: center;
+   gap: 10px;
+   padding-right: 14px;
+}
+
+.itinerary-day-open-pill-label {
+   min-width: 0;
+}
+
+.itinerary-day-open-pill-menu {
+   position: relative;
+   flex: 0 0 auto;
+}
+
+.itinerary-day-open-pill-menu-btn {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   width: 52px;
+   height: 52px;
+   margin: 0;
+   padding: 0;
+   border: 2px solid rgba(94, 150, 0, 0.28);
+   border-radius: 999px;
+   background: rgba(94, 150, 0, 0.06);
+   color: #5e9600;
+   font-size: 2.65rem;
+   line-height: 0.9;
+   font-weight: 900;
+   letter-spacing: -0.04em;
+   cursor: pointer;
+}
+
+.itinerary-day-open-pill-menu-btn:hover,
+.itinerary-day-open-pill-menu-btn:focus-visible {
+   background: rgba(94, 150, 0, 0.12);
+   outline: none;
+}
+
+.itinerary-day-open-pill-menu-panel {
+   position: absolute;
+   top: calc(100% + 8px);
+   right: 0;
+   z-index: 1;
+   min-width: 240px;
+   padding: 10px;
+   border-radius: 20px;
+   background: #ffffff;
+   border: 2px solid rgba(94, 150, 0, 0.35);
+   box-shadow: 0 10px 24px rgba(20, 35, 10, 0.18);
+}
+
+.itinerary-day-open-pill-menu-panel[hidden] {
+   display: none;
+}
+
+.itinerary-day-open-pill-menu-item {
+   display: block;
+   width: 100%;
+   margin: 0;
+   padding: 18px 24px;
+   border: 0;
+   border-radius: 14px;
+   background: transparent;
+   color: #5e9600;
+   font-size: 2.05rem;
+   line-height: 1.1;
+   font-weight: 900;
+   text-align: left;
+   cursor: pointer;
+}
+
+.itinerary-day-open-pill-menu-item:hover,
+.itinerary-day-open-pill-menu-item:focus-visible {
+   background: rgba(94, 150, 0, 0.12);
+   outline: none;
 }
 
 .itinerary-day-items-sections {
