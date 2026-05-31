@@ -250,12 +250,16 @@ export function appendScheduledDurationPill(
       label,
       offsetFraction = 0,
       durationMinutes,
+      startTime,
+      endTime,
       onUnschedule = null,
       menuAriaLabel = '',
       unscheduleLabel = '',
    }
 ) {
    const pill = makeScheduledPill(label, durationMinutes, {
+      startTime,
+      endTime,
       onUnschedule,
       menuAriaLabel,
       unscheduleLabel,

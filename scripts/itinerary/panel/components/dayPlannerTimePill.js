@@ -1,4 +1,8 @@
 import { el } from '../dom.js';
+import {
+   formatScheduledPillTimeRange,
+   isExtendedScheduledPill,
+} from '../scheduledPillPresentation.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 
 function resolvePillStrip(pill) {
@@ -135,10 +139,83 @@ function applyScheduledPillDuration(pill, durationMinutes) {
    pill.setAttribute('data-duration-fraction', String(durationFraction));
 }
 
+function appendScheduledPillTimeRange(pill, startTime, endTime, durationMinutes) {
+   const timeRange = formatScheduledPillTimeRange(startTime, endTime);
+
+   if (!isExtendedScheduledPill(durationMinutes) || !timeRange) {
+      return;
+   }
+
+   pill.appendChild(
+      el('span', 'itinerary-day-scheduled-pill-time-range', timeRange)
+   );
+}
+
+function buildScheduledPillWithMenu(
+   label,
+   durationMinutes,
+   {
+      startTime,
+      endTime,
+      onUnschedule,
+      menuAriaLabel,
+      unscheduleLabel,
+   }
+) {
+   const pill = el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--with-menu');
+   const header = el('div', 'itinerary-day-scheduled-pill-header');
+   const labelNode = el('span', 'itinerary-day-scheduled-pill-label', label);
+   const { menu, menuButton, menuPanel } = buildPillMenuNodes(
+      menuAriaLabel,
+      unscheduleLabel
+   );
+
+   if (isExtendedScheduledPill(durationMinutes)) {
+      pill.classList.add('itinerary-day-scheduled-pill--extended');
+   }
+
+   header.appendChild(labelNode);
+   header.appendChild(menu);
+   pill.appendChild(header);
+   appendScheduledPillTimeRange(pill, startTime, endTime, durationMinutes);
+   bindPillMenu(pill, {
+      menuButton,
+      menuPanel,
+      onAction: onUnschedule,
+      menuOpenClass: 'itinerary-day-scheduled-pill--menu-open',
+   });
+
+   return pill;
+}
+
+function buildScheduledPillWithoutMenu(
+   label,
+   durationMinutes,
+   {
+      startTime,
+      endTime,
+   }
+) {
+   if (!isExtendedScheduledPill(durationMinutes)) {
+      return el('span', 'itinerary-day-scheduled-pill', label);
+   }
+
+   const pill = el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--extended');
+   const header = el('div', 'itinerary-day-scheduled-pill-header');
+
+   header.appendChild(el('span', 'itinerary-day-scheduled-pill-label', label));
+   pill.appendChild(header);
+   appendScheduledPillTimeRange(pill, startTime, endTime, durationMinutes);
+
+   return pill;
+}
+
 export function makeScheduledPill(
    label,
    durationMinutes,
    {
+      startTime,
+      endTime,
       onUnschedule = null,
       menuAriaLabel = '',
       unscheduleLabel = '',
@@ -148,27 +225,18 @@ export function makeScheduledPill(
       return null;
    }
 
-   let pill;
-
-   if (typeof onUnschedule !== 'function') {
-      pill = el('span', 'itinerary-day-scheduled-pill', label);
-   } else {
-      pill = el('div', 'itinerary-day-scheduled-pill itinerary-day-scheduled-pill--with-menu');
-      const labelNode = el('span', 'itinerary-day-scheduled-pill-label', label);
-      const { menu, menuButton, menuPanel } = buildPillMenuNodes(
+   const pill = typeof onUnschedule === 'function'
+      ? buildScheduledPillWithMenu(label, durationMinutes, {
+         startTime,
+         endTime,
+         onUnschedule,
          menuAriaLabel,
-         unscheduleLabel
-      );
-
-      pill.appendChild(labelNode);
-      pill.appendChild(menu);
-      bindPillMenu(pill, {
-         menuButton,
-         menuPanel,
-         onAction: onUnschedule,
-         menuOpenClass: 'itinerary-day-scheduled-pill--menu-open',
+         unscheduleLabel,
+      })
+      : buildScheduledPillWithoutMenu(label, durationMinutes, {
+         startTime,
+         endTime,
       });
-   }
 
    applyScheduledPillDuration(pill, durationMinutes);
 

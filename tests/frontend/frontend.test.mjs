@@ -35,5 +35,6 @@ import './mapSources.test.mjs';
 import './markerHoverText.test.mjs';
 import './sourceHelpers.test.mjs';
 import './dayPlannerScheduledItems.test.mjs';
+import './scheduledPillPresentation.test.mjs';
 import './panelRows.test.mjs';
 import './strings.test.mjs';
