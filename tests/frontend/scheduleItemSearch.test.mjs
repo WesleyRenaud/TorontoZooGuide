@@ -7,6 +7,7 @@ import {
    getScheduleItemRowId,
    getScheduleItemRowKind,
    resolveEffectiveScheduleItemSelection,
+   tagScheduleItemRow,
 } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
 import {
    buildSchedulableEventTypes,
@@ -185,4 +186,23 @@ test('resolveEffectiveScheduleItemSelection infers animals from a selected row',
       ),
       ScheduleItemKind.ATTRACTION.itemType
    );
+});
+
+test('tagScheduleItemRow tags itinerary rows for the schedule module', () => {
+   const animalRow = tagScheduleItemRow(ScheduleItemKind.ANIMAL.itemType, {
+      species: 'Giant Panda',
+      exhibit: 'Eurasia Wilds',
+   });
+   const attractionRow = tagScheduleItemRow(ScheduleItemKind.ATTRACTION.itemType, {
+      name: 'Conservation Carousel',
+   });
+
+   assert.equal(animalRow.scheduleItemKind, ScheduleItemKind.ANIMAL.itemType);
+   assert.equal(
+      getScheduleItemRowId(animalRow),
+      'Giant Panda||Eurasia Wilds'
+   );
+   assert.equal(attractionRow.scheduleItemKind, ScheduleItemKind.ATTRACTION.itemType);
+   assert.equal(getScheduleItemRowId(attractionRow), 'Conservation Carousel');
+   assert.equal(tagScheduleItemRow(ScheduleItemKind.ANIMAL.itemType, null), null);
 });

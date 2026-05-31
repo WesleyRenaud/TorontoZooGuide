@@ -14,10 +14,33 @@ import {
 } from './rowAlerts.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
 import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
+import { tagScheduleItemRow } from './scheduleItemSearch.js';
 import { getAnimalId } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
+
+function buildScheduleRowProps(itemType, item, onScheduleItem) {
+   if (typeof onScheduleItem !== 'function') {
+      return {};
+   }
+
+   const row = tagScheduleItemRow(itemType, item);
+
+   if (!row) {
+      return {};
+   }
+
+   const actionLabel = APP_STRINGS.itinerary.scheduleItem.scheduleButton;
+
+   return {
+      actionLabel,
+      onAction: () => onScheduleItem({
+         itemType,
+         row,
+      }),
+   };
+}
 
 function buildUnscheduleRowProps(itemType, item, onUnscheduleItem) {
    if (typeof onUnscheduleItem !== 'function') {
@@ -195,7 +218,7 @@ function buildNamedRows(
 
 export function buildAnimalRows(
    animals = [],
-   { onUnscheduleItem = null } = {}
+   { onUnscheduleItem = null, onScheduleItem = null } = {}
 ) {
    return buildRows(animals, {
       normalizeItem: normalizeAnimal,
@@ -219,6 +242,11 @@ export function buildAnimalRows(
                animal,
                onUnscheduleItem
             ),
+            ...buildScheduleRowProps(
+               ScheduleItemKind.ANIMAL.itemType,
+               animal,
+               onScheduleItem
+            ),
          };
       },
    });
@@ -226,7 +254,7 @@ export function buildAnimalRows(
 
 export function buildAttractionRows(
    attractions = [],
-   { onUnscheduleItem = null } = {}
+   { onUnscheduleItem = null, onScheduleItem = null } = {}
 ) {
    return buildNamedRows(attractions, {
       normalizeItem: normalizeAttraction,
@@ -241,11 +269,18 @@ export function buildAttractionRows(
       ],
       getAlertLine: buildAttractionRemovalReasonLine,
       getLink: (attraction) => attraction.infoLink,
-      extendRowProps: (attraction) => buildUnscheduleRowProps(
-         ScheduleItemKind.ATTRACTION.itemType,
-         attraction,
-         onUnscheduleItem
-      ),
+      extendRowProps: (attraction) => ({
+         ...buildUnscheduleRowProps(
+            ScheduleItemKind.ATTRACTION.itemType,
+            attraction,
+            onUnscheduleItem
+         ),
+         ...buildScheduleRowProps(
+            ScheduleItemKind.ATTRACTION.itemType,
+            attraction,
+            onScheduleItem
+         ),
+      }),
    });
 }
 

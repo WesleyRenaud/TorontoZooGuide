@@ -49,6 +49,20 @@ async function clearStoredItinerary() {
    }
 }
 
+function openScheduleItemModule({
+   itinerary = {},
+   eventTypes = [],
+   onScheduled = null,
+   preselectedRow = null,
+} = {}) {
+   showScheduleItemModule({
+      itinerary,
+      eventTypes,
+      onScheduled,
+      preselectedRow,
+   });
+}
+
 function makePanelViewShell() {
    return makeItineraryPanelViews({
       activeView: activePanelView,
@@ -69,13 +83,21 @@ function appendDayPlannerViewWithHours(
    dayPlannerView.appendChild(
       makeDayPlannerPreview(zooHours, itinerary, timeHandlers, {
          onScheduleItemClick: () => {
-            showScheduleItemModule({
+            openScheduleItemModule({
                itinerary,
                eventTypes: buildSchedulableEventTypes(itinerary.itineraryConfig),
                onScheduled: onPanelRefresh,
             });
          },
          scheduleHandlers: {
+            onScheduleItineraryItem: (pick) => {
+               openScheduleItemModule({
+                  itinerary,
+                  eventTypes: buildSchedulableEventTypes(itinerary.itineraryConfig),
+                  onScheduled: onPanelRefresh,
+                  preselectedRow: pick?.row ?? null,
+               });
+            },
             onUnscheduleItineraryItem: async ({ itemType, key }) => {
                await unscheduleItineraryItemRequest({ itemType, key });
 

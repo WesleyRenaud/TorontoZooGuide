@@ -37,6 +37,21 @@ export function resolveEffectiveScheduleItemSelection(selection, selectedRow) {
    return selection;
 }
 
+export function tagScheduleItemRow(itemType, row) {
+   if (!row || typeof row !== 'object') {
+      return null;
+   }
+
+   const scheduleItemKind = itemType === ScheduleItemKind.ATTRACTION.itemType
+      ? ScheduleItemKind.ATTRACTION.itemType
+      : ScheduleItemKind.ANIMAL.itemType;
+
+   return {
+      ...row,
+      scheduleItemKind,
+   };
+}
+
 export function getScheduleItemRowId(row) {
    if (getScheduleItemRowKind(row) === ScheduleItemKind.ATTRACTION.itemType) {
       return getAttractionId(row);

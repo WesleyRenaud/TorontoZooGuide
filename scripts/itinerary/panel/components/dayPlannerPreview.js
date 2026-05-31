@@ -34,9 +34,16 @@ import { labels } from '../../../strings/common.js';
 function makeItemsListSection(
    itinerary = {},
    sectionTitle = '',
-   { showEditButton = true, onUnscheduleItem = null } = {}
+   {
+      showEditButton = true,
+      onUnscheduleItem = null,
+      onScheduleItem = null,
+   } = {}
 ) {
-   const sectionConfigs = buildSectionConfigs(itinerary, { onUnscheduleItem });
+   const sectionConfigs = buildSectionConfigs(itinerary, {
+      onUnscheduleItem,
+      onScheduleItem,
+   });
 
    if (sectionConfigs.length === 0) {
       return null;
@@ -198,7 +205,8 @@ export function makeDayPlannerPreview(
    );
    const unscheduledSection = makeItemsListSection(
       buildUnscheduledItinerary(itinerary, scheduledRowsContext),
-      strings.unscheduledTitle
+      strings.unscheduledTitle,
+      { onScheduleItem: scheduleHandlers.onScheduleItineraryItem }
    );
 
    if (scheduledSection) {

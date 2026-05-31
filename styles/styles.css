@@ -1995,13 +1995,41 @@ nav ul li a:hover {
 }
 
 .schedule-item-select,
-.schedule-item-search-input,
+.schedule-item-search-input {
+   width: 100%;
+   box-sizing: border-box;
+   min-height: 120px;
+   padding: 26px 34px;
+   border: 5px solid rgba(94, 150, 0, 0.35);
+   border-radius: 22px;
+   background: rgba(255, 255, 255, 0.96);
+   color: rgba(20, 35, 10, 0.94);
+   font-family: 'Poppins', sans-serif;
+   font-size: 2.65rem;
+   font-weight: 750;
+   line-height: 1.25;
+   outline: none;
+   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+}
+
+.schedule-item-time-field {
+   align-self: flex-start;
+   width: min(100%, 340px);
+   min-width: min(100%, 340px);
+}
+
+.schedule-item-duration-field {
+   align-self: flex-start;
+   width: min(100%, 520px);
+   min-width: min(100%, 360px);
+}
+
 .schedule-item-time-input,
 .schedule-item-duration-input {
    width: 100%;
    box-sizing: border-box;
    min-height: 120px;
-   padding: 26px 34px;
+   padding: 26px 28px;
    border: 5px solid rgba(94, 150, 0, 0.35);
    border-radius: 22px;
    background: rgba(255, 255, 255, 0.96);
@@ -2031,10 +2059,6 @@ nav ul li a:hover {
 .schedule-item-duration-input:disabled {
    opacity: 0.55;
    cursor: not-allowed;
-}
-
-.schedule-item-duration-input {
-   max-width: 280px;
 }
 
 .schedule-item-module .itin-results {
@@ -2309,6 +2333,71 @@ nav ul li a:hover {
 }
 
 .flatpickr-calendar.itinerary-day-time-picker .flatpickr-am-pm:hover {
+   background: rgba(94, 150, 0, 0.18);
+}
+
+.itin-overlay .flatpickr-calendar.schedule-item-time-picker,
+.flatpickr-calendar.schedule-item-time-picker {
+   transform: scale(2.5) !important;
+   transform-origin: top left;
+   width: auto !important;
+   min-width: 0 !important;
+   box-shadow: 0 10px 24px rgba(20, 35, 10, 0.18);
+}
+
+.itin-overlay .flatpickr-calendar.schedule-item-time-picker.open,
+.flatpickr-calendar.schedule-item-time-picker.open {
+   margin-top: 0.5em;
+}
+
+.itin-overlay .flatpickr-calendar.schedule-item-time-picker .flatpickr-time,
+.flatpickr-calendar.schedule-item-time-picker .flatpickr-time {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   gap: 4px;
+   width: auto;
+   max-width: none;
+   padding: 8px 10px;
+}
+
+.itin-overlay .flatpickr-calendar.schedule-item-time-picker .flatpickr-time .numInputWrapper,
+.flatpickr-calendar.schedule-item-time-picker .flatpickr-time .numInputWrapper {
+   flex: 0 0 auto;
+   width: 2.75rem;
+}
+
+.itin-overlay .flatpickr-calendar.schedule-item-time-picker .flatpickr-time input.flatpickr-hour,
+.itin-overlay .flatpickr-calendar.schedule-item-time-picker .flatpickr-time input.flatpickr-minute,
+.flatpickr-calendar.schedule-item-time-picker .flatpickr-time input.flatpickr-hour,
+.flatpickr-calendar.schedule-item-time-picker .flatpickr-time input.flatpickr-minute {
+   width: 100%;
+   padding: 0;
+   font-family: 'Poppins', sans-serif;
+   font-weight: 700;
+   text-align: center;
+}
+
+.itin-overlay .flatpickr-calendar.schedule-item-time-picker .flatpickr-time .flatpickr-time-separator,
+.flatpickr-calendar.schedule-item-time-picker .flatpickr-time .flatpickr-time-separator {
+   margin: 0 2px;
+   font-weight: 800;
+}
+
+.itin-overlay .flatpickr-calendar.schedule-item-time-picker .flatpickr-am-pm,
+.flatpickr-calendar.schedule-item-time-picker .flatpickr-am-pm {
+   flex: 0 0 auto;
+   margin: 0 0 0 4px;
+   padding: 6px 10px;
+   border-radius: 6px;
+   font-family: 'Poppins', sans-serif;
+   font-weight: 700;
+   background: rgba(94, 150, 0, 0.1);
+   cursor: pointer;
+}
+
+.itin-overlay .flatpickr-calendar.schedule-item-time-picker .flatpickr-am-pm:hover,
+.flatpickr-calendar.schedule-item-time-picker .flatpickr-am-pm:hover {
    background: rgba(94, 150, 0, 0.18);
 }
 

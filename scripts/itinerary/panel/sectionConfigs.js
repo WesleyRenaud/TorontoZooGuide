@@ -23,22 +23,23 @@ export function buildSectionConfigs(
    {
       keys = Object.values(ITINERARY_PANEL_SECTION_KEYS),
       onUnscheduleItem = null,
+      onScheduleItem = null,
    } = {}
 ) {
-   const unscheduleRowOptions = { onUnscheduleItem };
+   const rowActionOptions = { onUnscheduleItem, onScheduleItem };
    const sectionConfigs = [
       {
          key: ITINERARY_PANEL_SECTION_KEYS.animals,
          title: APP_STRINGS.site.nav.animals,
          count: animals.length,
-         children: buildAnimalRows(animals, unscheduleRowOptions),
+         children: buildAnimalRows(animals, rowActionOptions),
          stepKey: ITINERARY_PANEL_SECTION_KEYS.animals,
       },
       {
          key: ITINERARY_PANEL_SECTION_KEYS.attractions,
          title: APP_STRINGS.map.filter.attractions,
          count: attractions.length,
-         children: buildAttractionRows(attractions, unscheduleRowOptions),
+         children: buildAttractionRows(attractions, rowActionOptions),
          stepKey: ITINERARY_PANEL_SECTION_KEYS.attractions,
       },
       {
