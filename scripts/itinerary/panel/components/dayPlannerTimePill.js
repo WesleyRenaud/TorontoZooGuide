@@ -225,18 +225,23 @@ export function makeScheduledPill(
       return null;
    }
 
-   const pill = typeof onUnschedule === 'function'
-      ? buildScheduledPillWithMenu(label, durationMinutes, {
+   let pill;
+
+   if (typeof onUnschedule === 'function') {
+      pill = buildScheduledPillWithMenu(label, durationMinutes, {
          startTime,
          endTime,
          onUnschedule,
          menuAriaLabel,
          unscheduleLabel,
-      })
-      : buildScheduledPillWithoutMenu(label, durationMinutes, {
+      });
+   }
+   else {
+      pill = buildScheduledPillWithoutMenu(label, durationMinutes, {
          startTime,
          endTime,
       });
+   }
 
    applyScheduledPillDuration(pill, durationMinutes);
 
