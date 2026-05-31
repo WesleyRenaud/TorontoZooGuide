@@ -524,6 +524,85 @@ test('arrival pill remove menu clears arrival time through handler', () => {
    assert.deepEqual(arrivalRemovals, [ '' ]);
 });
 
+test('scheduled animal pill unschedule menu calls handler with item key', () => {
+   const unscheduleCalls = [];
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         ...EMPTY_ITINERARY,
+         animals: [
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+               start_time: '1:15 PM',
+               end_time: '1:45 PM',
+            },
+         ],
+      },
+      {},
+      {
+         scheduleHandlers: {
+            onUnscheduleItineraryItem: (request) => {
+               unscheduleCalls.push(request);
+            },
+         },
+      }
+   );
+   const lionPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+      allTextFor(pill).includes('African Lion')
+   ));
+   const tigerPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+      allTextFor(pill).includes('Amur Tiger')
+   ));
+
+   assert.ok(lionPill?.classList.contains('itinerary-day-scheduled-pill--with-menu'));
+   lionPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
+   assert.deepEqual(unscheduleCalls, [{
+      itemType: 'animals',
+      key: 'African Lion||Africa Savanna',
+   }]);
+   assert.equal(tigerPill, undefined);
+});
+
+test('scheduled guardians talk pill has no unschedule menu', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         ...EMPTY_ITINERARY,
+         guardiansTalks: [
+            {
+               name: 'Amur Tiger',
+               location: 'Eurasia Wilds',
+               start_time: '1:30 PM',
+               maximum_duration: 30,
+            },
+         ],
+      },
+      {},
+      {
+         scheduleHandlers: {
+            onUnscheduleItineraryItem: () => {},
+         },
+      }
+   );
+   const tigerPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+      allTextFor(pill).includes('Amur Tiger')
+   ));
+
+   assert.ok(tigerPill);
+   assert.equal(tigerPill.classList.contains('itinerary-day-scheduled-pill--with-menu'), false);
+});
+
 test('departure pill remove menu clears departure time through handler', () => {
    const departureRemovals = [];
    const planner = makeDayPlannerPreview(

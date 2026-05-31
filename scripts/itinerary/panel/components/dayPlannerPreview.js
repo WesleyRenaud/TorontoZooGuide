@@ -64,7 +64,7 @@ export function makeDayPlannerPreview(
    zooHours = null,
    itinerary = {},
    timeHandlers = {},
-   { onScheduleItemClick = null } = {}
+   { onScheduleItemClick = null, scheduleHandlers = {} } = {}
 ) {
    const strings = {
       ...APP_STRINGS.itinerary.dayPlanner,
@@ -151,7 +151,12 @@ export function makeDayPlannerPreview(
          appendTimelinePill(gridLine, pillLabel);
       }
 
-      appendScheduledItems(gridLine, scheduledRowsContext.itemsByStart.get(slotStart));
+      appendScheduledItems(
+         gridLine,
+         scheduledRowsContext.itemsByStart.get(slotStart),
+         scheduleHandlers,
+         strings
+      );
       appendItineraryTimeMarkers(
          gridLine,
          markersByAnchorSlot,
