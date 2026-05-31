@@ -1,6 +1,7 @@
 import { initTimePicker } from '../../../datePickers/consoleDatePickers.js';
 import { el } from '../dom.js';
 import { formatClockTime } from '../format.js';
+import { common } from '../../../strings/common.js';
 import { createValidationBubbleController } from '../../../validationBubble.js';
 
 function readPickerTimeValue(instance, dateStr, inputEl) {
@@ -11,6 +12,7 @@ export function makeItineraryTimeInput({
    label,
    value = '',
    onChange = null,
+   clearAriaLabel = '',
    timePickerOptions = {},
    validateTime = null,
    resolveInvalidMessage = null,
@@ -27,6 +29,24 @@ export function makeItineraryTimeInput({
    let committedValue = value ? formatClockTime(value) : '';
    let flatpickrInstance = null;
    let latestPickerValue = committedValue;
+   const clearButton = document.createElement('button');
+
+   clearButton.type = 'button';
+   clearButton.className = 'itinerary-day-time-clear-btn';
+   clearButton.setAttribute('aria-label', clearAriaLabel);
+   clearButton.textContent = common.closeSymbol;
+   clearButton.hidden = !onChange;
+
+   function syncClearButtonState() {
+      if (!onChange) {
+         clearButton.hidden = true;
+         clearButton.disabled = true;
+         return;
+      }
+
+      clearButton.hidden = false;
+      clearButton.disabled = !committedValue;
+   }
 
    function syncPickerToCommittedValue() {
       if (!flatpickrInstance) {
@@ -76,6 +96,7 @@ export function makeItineraryTimeInput({
          await onChange?.(nextValue || null);
          committedValue = nextValue;
          latestPickerValue = nextValue;
+         syncClearButtonState();
       }
       catch (error) {
          if (error?.name !== 'ItineraryTimeChangeCancelledError') {
@@ -89,6 +110,22 @@ export function makeItineraryTimeInput({
       }
    }
 
+   async function clearCommittedTime() {
+      if (!committedValue || !onChange) {
+         return;
+      }
+
+      input.disabled = true;
+      validationBubble.dismiss();
+      await onChange('');
+      committedValue = '';
+      latestPickerValue = '';
+      input.value = '';
+      syncPickerToCommittedValue();
+      syncClearButtonState();
+      input.disabled = !onChange;
+   }
+
    input.type = 'text';
    input.value = committedValue;
    input.placeholder = '--:-- --';
@@ -99,7 +136,14 @@ export function makeItineraryTimeInput({
    });
    field.append(labelText, form);
    form.appendChild(inputWrap);
+   clearButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      clearCommittedTime();
+   });
    inputWrap.appendChild(input);
+   inputWrap.appendChild(clearButton);
+   syncClearButtonState();
    flatpickrInstance = initTimePicker(input, {
       allowInput: false,
       onChange(_selectedDates, dateStr, instance) {

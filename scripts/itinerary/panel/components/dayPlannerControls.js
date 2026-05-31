@@ -27,6 +27,7 @@ export function makeDayPlannerControls(
          label: strings.arrivalInputLabel,
          value: itinerary.arrivalTime,
          onChange: onArrivalTimeChange,
+         clearAriaLabel: strings.clearArrivalTimeAria,
          validateTime: (timeValue) => !resolveArrivalTimeValidationError(
             timeValue,
             arrivalBounds,
@@ -47,6 +48,7 @@ export function makeDayPlannerControls(
          label: strings.departureInputLabel,
          value: itinerary.departureTime,
          onChange: onDepartureTimeChange,
+         clearAriaLabel: strings.clearDepartureTimeAria,
          validateTime: (timeValue) => !resolveDepartureTimeValidationError(
             timeValue,
             departureBounds,

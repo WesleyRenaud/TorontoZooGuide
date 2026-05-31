@@ -2131,8 +2131,53 @@ nav ul li a:hover {
 
 .itinerary-day-time-input-wrap {
    position: relative;
+   display: flex;
+   align-items: center;
+   gap: 28px;
    min-width: 0;
    width: 100%;
+}
+
+.itinerary-day-time-clear-btn {
+   flex: 0 0 auto;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   width: 72px;
+   height: 72px;
+   margin: 0;
+   padding: 0;
+   border: none;
+   border-radius: 999px;
+   background: #8bc34a;
+   color: #ffffff;
+   font-family: 'Poppins', sans-serif;
+   font-size: 3.2rem;
+   line-height: 1;
+   font-weight: 900;
+   cursor: pointer;
+   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+   transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+}
+
+.itinerary-day-time-clear-btn[hidden] {
+   display: none;
+}
+
+.itinerary-day-time-clear-btn:disabled {
+   background: rgba(139, 195, 74, 0.42);
+   color: rgba(255, 255, 255, 0.72);
+   cursor: default;
+   box-shadow: none;
+}
+
+.itinerary-day-time-clear-btn:not(:disabled):hover,
+.itinerary-day-time-clear-btn:not(:disabled):focus-visible {
+   background: #77b800;
+   outline: none;
+   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
 }
 
 .tzg-validation-bubble {
@@ -2190,7 +2235,9 @@ nav ul li a:hover {
 }
 
 .itinerary-day-time-input {
-   width: 100%;
+   flex: 1 1 auto;
+   width: auto;
+   min-width: 0;
    box-sizing: border-box;
    min-height: 104px;
    padding: 18px 22px;
