@@ -1995,7 +1995,9 @@ nav ul li a:hover {
 }
 
 .schedule-item-select,
-.schedule-item-search-input {
+.schedule-item-search-input,
+.schedule-item-time-input,
+.schedule-item-duration-input {
    width: 100%;
    box-sizing: border-box;
    min-height: 120px;
@@ -2013,7 +2015,9 @@ nav ul li a:hover {
 }
 
 .schedule-item-select:focus,
-.schedule-item-search-input:focus {
+.schedule-item-search-input:focus,
+.schedule-item-time-input:focus,
+.schedule-item-duration-input:focus {
    border-color: rgba(94, 150, 0, 0.95);
    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.16);
 }
@@ -2023,9 +2027,14 @@ nav ul li a:hover {
    font-weight: 750;
 }
 
-.schedule-item-search-input:disabled {
+.schedule-item-search-input:disabled,
+.schedule-item-duration-input:disabled {
    opacity: 0.55;
    cursor: not-allowed;
+}
+
+.schedule-item-duration-input {
+   max-width: 280px;
 }
 
 .schedule-item-module .itin-results {
@@ -2306,6 +2315,7 @@ nav ul li a:hover {
 .itinerary-day-timeline {
    --itinerary-half-hour-slot-height: 330px;
    --itinerary-pill-strip-top-offset: 36px;
+   --itinerary-scheduled-pill-min-height: 86px;
 
    display: grid;
    grid-template-columns: 190px minmax(0, 1fr);
@@ -2378,6 +2388,7 @@ nav ul li a:hover {
    order: 1;
    box-sizing: border-box;
    min-width: 0;
+   min-height: var(--itinerary-scheduled-pill-min-height);
    height: calc(
       var(--itinerary-scheduled-pill-duration-fraction)
          * var(--itinerary-half-hour-slot-height)

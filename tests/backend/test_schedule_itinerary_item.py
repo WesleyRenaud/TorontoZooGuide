@@ -322,6 +322,77 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_warning_suppressed(
    assert saved_row.is_added is True
 
 
+def test_schedule_itinerary_animal_honors_requested_start_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='10:00' )
+
+   assert result.success
+   assert result.itinerary.animals[ 0 ].start_time == '10:00'
+   assert result.itinerary.animals[ 0 ].end_time == '10:08'
+
+
+def test_schedule_itinerary_animal_honors_requested_duration(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='10:00',
+      duration_minutes=20 )
+
+   assert result.success
+   assert result.itinerary.animals[ 0 ].start_time == '10:00'
+   assert result.itinerary.animals[ 0 ].end_time == '10:20'
+
+
+def test_schedule_itinerary_item_rejects_duration_without_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      duration_minutes=20 )
+
+   assert not result.success
+   assert result.error_type == ItineraryErrorType.SAVE_FAILED
+
+
 def test_schedule_itinerary_item_requires_visit_date(
       db: DbControllers ) -> None:
    result = ItineraryController.schedule_itinerary_item(

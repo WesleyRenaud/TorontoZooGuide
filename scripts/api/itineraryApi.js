@@ -150,21 +150,16 @@ function normalizeScheduleItineraryItemResponse(response) {
 }
 
 export async function scheduleItineraryItemRequest(
-   { itemType, key },
+   request,
    {
       confirmingScheduleItemNotOnItinerary = false,
       suppressScheduleItemNotOnItineraryWarning = false,
    } = {}
 ) {
    const response = await postJson('/schedule-itinerary-item', {
-      itemType: asTrimmedString(itemType),
-      key: asTrimmedString(key),
-      confirmingScheduleItemNotOnItinerary: Boolean(
-         confirmingScheduleItemNotOnItinerary
-      ),
-      suppressScheduleItemNotOnItineraryWarning: Boolean(
-         suppressScheduleItemNotOnItineraryWarning
-      ),
+      ...request,
+      confirmingScheduleItemNotOnItinerary,
+      suppressScheduleItemNotOnItineraryWarning,
    });
 
    return normalizeScheduleItineraryItemResponse(response);

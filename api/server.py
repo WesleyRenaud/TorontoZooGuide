@@ -828,6 +828,8 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          item_type = data.get( 'itemType' )
          key = data.get( 'key' )
+         start_time = data.get( 'startTime' )
+         duration_minutes = data.get( 'durationMinutes' )
          confirming_schedule_item_not_on_itinerary = bool(
             data.get( 'confirmingScheduleItemNotOnItinerary' ) )
          suppress_schedule_item_not_on_itinerary_warning = bool(
@@ -836,6 +838,8 @@ class MyHandler( BaseHTTPRequestHandler ):
          save_result = ItineraryController.schedule_itinerary_item(
             item_type=item_type,
             key=key,
+            start_time=start_time,
+            duration_minutes=duration_minutes,
             confirming_schedule_item_not_on_itinerary=(
                confirming_schedule_item_not_on_itinerary
             ),

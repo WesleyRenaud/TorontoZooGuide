@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 from ...animals.controllers.animal_controller import AnimalController
@@ -21,10 +22,12 @@ from .itinerary_save_result import ItinerarySaveResult
 from ...models.itinerary_event import ItineraryEvent
 from .parse_schedule_item_request import parse_schedule_item_request
 from .parse_schedule_item_request import ParsedScheduleItemRequest
+from .parse_schedule_time_options import parse_schedule_time_options
+from .parse_schedule_time_options import ParsedScheduleTimeOptions
 from .schedule_item_not_on_itinerary_warning import apply_schedule_item_not_on_itinerary_preferences
 from .schedule_item_not_on_itinerary_warning import saved_itinerary_has_schedule_item
 from .schedule_item_not_on_itinerary_warning import schedule_item_not_on_itinerary_warning_is_required
-from ..scheduling.find_next_available_slot import find_next_available_slot
+from ..scheduling.resolve_schedule_slot import resolve_schedule_slot
 from ..scheduling.scheduling_anchor import scheduling_anchor_minutes
 from ..scheduling.scheduling_anchor import scheduling_day_end_minutes
 from ..scheduling.time_block import collect_time_blocks_from_itinerary
@@ -33,69 +36,60 @@ from ...shared.enums import ItineraryEventType
 from ...shared.enums import ScheduleItemKind
 from ...types import Connection
 from ...types import Cursor
+from ...types import DurationInput
 from ...types import ScheduleTimeKey
+from ...types import TimeInput
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+
+
+def _itinerary_controller_kwargs(
+      *,
+      animal_controller: type[ AnimalController ],
+      attraction_controller: type[ AttractionController ],
+      guardians_controller: type[ GuardiansController ],
+      wild_encounter_controller: type[ WildEncounterController ],
+      visit_date_temp: float | None = None ) -> dict[ str, Any ]:
+   return {
+      'animal_controller': animal_controller,
+      'attraction_controller': attraction_controller,
+      'guardians_controller': guardians_controller,
+      'wild_encounter_controller': wild_encounter_controller,
+      'visit_date_temp': visit_date_temp,
+   }
 
 
 def _build_save_result(
       conn: Connection,
       error_type: ItineraryErrorType,
-      *,
-      animal_controller: type[ AnimalController ],
-      attraction_controller: type[ AttractionController ],
-      guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ],
-      visit_date_temp: float | None = None ) -> ItinerarySaveResult:
+      **itinerary_controller_kwargs: Any ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
       error_type=error_type,
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
-         animal_controller,
-         attraction_controller,
-         guardians_controller,
-         wild_encounter_controller,
-         visit_date_temp=visit_date_temp ) )
+         **itinerary_controller_kwargs ) )
 
 
 def _build_success_result(
       conn: Connection,
-      *,
-      animal_controller: type[ AnimalController ],
-      attraction_controller: type[ AttractionController ],
-      guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ],
-      visit_date_temp: float | None = None ) -> ItinerarySaveResult:
+      **itinerary_controller_kwargs: Any ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
-         animal_controller,
-         attraction_controller,
-         guardians_controller,
-         wild_encounter_controller,
-         visit_date_temp=visit_date_temp ) )
+         **itinerary_controller_kwargs ) )
 
 
 def _resolve_schedule_window(
       conn: Connection,
       saved_itinerary: SavedItinerary,
-      *,
-      animal_controller: type[ AnimalController ],
-      attraction_controller: type[ AttractionController ],
-      guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ],
-      visit_date_temp: float | None = None ) -> tuple[ int, int ] | ItinerarySaveResult:
+      **itinerary_controller_kwargs: Any ) -> tuple[ int, int ] | ItinerarySaveResult:
    visit_date = fetch_itinerary_date( conn )
 
    if visit_date is None:
       return _build_save_result(
          conn,
          ItineraryErrorType.ITINERARY_DATE_NOT_SET,
-         animal_controller=animal_controller,
-         attraction_controller=attraction_controller,
-         guardians_controller=guardians_controller,
-         wild_encounter_controller=wild_encounter_controller,
-         visit_date_temp=visit_date_temp )
+         **itinerary_controller_kwargs )
 
    zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
 
@@ -103,11 +97,7 @@ def _resolve_schedule_window(
       return _build_save_result(
          conn,
          ItineraryErrorType.TIME_OUT_OF_BOUNDS,
-         animal_controller=animal_controller,
-         attraction_controller=attraction_controller,
-         guardians_controller=guardians_controller,
-         wild_encounter_controller=wild_encounter_controller,
-         visit_date_temp=visit_date_temp )
+         **itinerary_controller_kwargs )
 
    anchor_minutes = scheduling_anchor_minutes(
       zoo_hours_record,
@@ -147,6 +137,46 @@ def _prepare_schedule_item_on_itinerary(
          **itinerary_controller_kwargs )
 
    return None
+
+
+def _resolve_slot_times(
+      conn: Connection,
+      saved_itinerary: SavedItinerary,
+      window: tuple[ int, int ],
+      duration_minutes: int,
+      *,
+      start_time: ScheduleTimeKey | None,
+      itinerary_controller_kwargs: dict[ str, Any ],
+) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
+   anchor_minutes, day_end_minutes = window
+   itinerary = build_current_itinerary( saved_itinerary, **itinerary_controller_kwargs )
+   blockers = collect_time_blocks_from_itinerary( itinerary )
+   slot = resolve_schedule_slot(
+      blockers,
+      anchor_minutes,
+      duration_minutes,
+      day_end_minutes,
+      start_time=start_time )
+
+   if slot is None:
+      return None, _build_save_result(
+         conn,
+         ItineraryErrorType.NO_AVAILABLE_SLOT,
+         **itinerary_controller_kwargs )
+
+   return slot, None
+
+
+def _effective_duration_minutes(
+      duration_minutes: int | None,
+      default_duration_minutes: int | None ) -> int | None:
+   if default_duration_minutes is None:
+      return None
+
+   if duration_minutes is not None:
+      return duration_minutes
+
+   return default_duration_minutes
 
 
 def _apply_itinerary_animal_schedule(
@@ -202,89 +232,56 @@ def _apply_itinerary_attraction_schedule(
       end_time=end_time )
 
 
-def schedule_itinerary_item(
+def _commit_listed_schedule(
       conn: Connection,
-      item_type: str,
-      key: str,
       *,
-      animal_controller: type[ AnimalController ],
-      attraction_controller: type[ AttractionController ],
-      guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ],
+      apply_schedule: Callable[
+         [ Cursor, ScheduleTimeKey, ScheduleTimeKey, bool ],
+         bool,
+      ],
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey,
+      insert_if_missing: bool,
+      itinerary_controller_kwargs: dict[ str, Any ],
+) -> ItinerarySaveResult:
+   cur = conn.cursor()
+
+   try:
+      scheduled = apply_schedule(
+         cur,
+         start_time,
+         end_time,
+         insert_if_missing )
+
+      if not scheduled:
+         return _build_save_result(
+            conn,
+            ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+            **itinerary_controller_kwargs )
+
+      conn.commit()
+
+   finally:
+      cur.close()
+
+   return _build_success_result( conn, **itinerary_controller_kwargs )
+
+
+def _schedule_listed_itinerary_item(
+      conn: Connection,
+      parsed: ParsedScheduleItemRequest,
+      time_options: ParsedScheduleTimeOptions,
+      *,
+      itinerary_controller_kwargs: dict[ str, Any ],
       confirming_schedule_item_not_on_itinerary: bool,
-      suppress_schedule_item_not_on_itinerary_warning: bool ) -> ItinerarySaveResult:
-   itinerary_controller_kwargs = {
-      'animal_controller': animal_controller,
-      'attraction_controller': attraction_controller,
-      'guardians_controller': guardians_controller,
-      'wild_encounter_controller': wild_encounter_controller,
-   }
-   schedule_item_kwargs = {
-      **itinerary_controller_kwargs,
-      'confirming_schedule_item_not_on_itinerary': (
-         confirming_schedule_item_not_on_itinerary
-      ),
-      'suppress_schedule_item_not_on_itinerary_warning': (
-         suppress_schedule_item_not_on_itinerary_warning
-      ),
-   }
-
-   parsed = parse_schedule_item_request( item_type, key )
-
-   if parsed is None:
-      return _build_save_result(
-         conn,
-         ItineraryErrorType.SAVE_FAILED,
-         **itinerary_controller_kwargs )
-
-   if parsed.kind == ScheduleItemKind.ANIMAL:
-      return schedule_itinerary_animal(
-         conn,
-         parsed,
-         **schedule_item_kwargs )
-
-   if parsed.kind == ScheduleItemKind.ATTRACTION:
-      return schedule_itinerary_attraction(
-         conn,
-         parsed,
-         **schedule_item_kwargs )
-
-   return schedule_itinerary_event(
+      suppress_schedule_item_not_on_itinerary_warning: bool,
+) -> ItinerarySaveResult:
+   saved_itinerary = fetch_saved_itinerary( conn )
+   window = _resolve_schedule_window(
       conn,
-      event_type=parsed.event_type,
+      saved_itinerary,
       **itinerary_controller_kwargs )
 
-
-def schedule_itinerary_animal(
-      conn: Connection,
-      parsed: ParsedScheduleItemRequest,
-      *,
-      animal_controller: type[ AnimalController ],
-      attraction_controller: type[ AttractionController ],
-      guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ],
-      visit_date_temp: float | None = None,
-      confirming_schedule_item_not_on_itinerary: bool,
-      suppress_schedule_item_not_on_itinerary_warning: bool ) -> ItinerarySaveResult:
-   species = parsed.species
-   exhibit = parsed.exhibit
-   itinerary_controller_kwargs = {
-      'animal_controller': animal_controller,
-      'attraction_controller': attraction_controller,
-      'guardians_controller': guardians_controller,
-      'wild_encounter_controller': wild_encounter_controller,
-      'visit_date_temp': visit_date_temp,
-   }
-   saved_itinerary = fetch_saved_itinerary( conn )
-   window = _resolve_schedule_window(
-      conn,
-      saved_itinerary,
-      animal_controller=animal_controller,
-      attraction_controller=attraction_controller,
-      guardians_controller=guardians_controller,
-      wild_encounter_controller=wild_encounter_controller,
-      visit_date_temp=visit_date_temp )
-
    if isinstance( window, ItinerarySaveResult ):
       return window
 
@@ -303,233 +300,115 @@ def schedule_itinerary_animal(
    if membership_error is not None:
       return membership_error
 
-   needs_itinerary_insert = not saved_itinerary_has_schedule_item(
-      saved_itinerary,
-      parsed )
-   anchor_minutes, day_end_minutes = window
-   duration_minutes = fetch_enclosure_default_duration_minutes(
-      conn,
-      species,
-      exhibit )
+   if parsed.kind == ScheduleItemKind.ANIMAL:
+      default_duration_minutes = fetch_enclosure_default_duration_minutes(
+         conn,
+         parsed.species,
+         parsed.exhibit )
 
-   if duration_minutes is None:
+      def apply_schedule(
+            cur: Cursor,
+            start_time: ScheduleTimeKey,
+            end_time: ScheduleTimeKey,
+            insert_if_missing: bool ) -> bool:
+         return _apply_itinerary_animal_schedule(
+            cur,
+            species=parsed.species,
+            exhibit=parsed.exhibit,
+            start_time=start_time,
+            end_time=end_time,
+            insert_if_missing=insert_if_missing )
+
+   else:
+      default_duration_minutes = fetch_attraction_default_duration_minutes(
+         conn,
+         parsed.attraction_name )
+
+      def apply_schedule(
+            cur: Cursor,
+            start_time: ScheduleTimeKey,
+            end_time: ScheduleTimeKey,
+            insert_if_missing: bool ) -> bool:
+         return _apply_itinerary_attraction_schedule(
+            cur,
+            name=parsed.attraction_name,
+            start_time=start_time,
+            end_time=end_time,
+            insert_if_missing=insert_if_missing )
+
+   effective_duration = _effective_duration_minutes(
+      time_options.duration_minutes,
+      default_duration_minutes )
+
+   if effective_duration is None:
       return _build_save_result(
          conn,
          ItineraryErrorType.SAVE_FAILED,
          **itinerary_controller_kwargs )
 
-   itinerary = build_current_itinerary(
-      saved_itinerary,
-      animal_controller,
-      attraction_controller,
-      guardians_controller,
-      wild_encounter_controller,
-      visit_date_temp=visit_date_temp )
-   blockers = collect_time_blocks_from_itinerary( itinerary )
-   slot = find_next_available_slot(
-      blockers,
-      anchor_minutes,
-      duration_minutes,
-      day_end_minutes )
-
-   if slot is None:
-      return _build_save_result(
-         conn,
-         ItineraryErrorType.NO_AVAILABLE_SLOT,
-         **itinerary_controller_kwargs )
-
-   start_time, end_time = slot
-   cur = conn.cursor()
-
-   try:
-      scheduled = _apply_itinerary_animal_schedule(
-         cur,
-         species=species,
-         exhibit=exhibit,
-         start_time=start_time,
-         end_time=end_time,
-         insert_if_missing=needs_itinerary_insert )
-
-      if not scheduled:
-         return _build_save_result(
-            conn,
-            ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-            **itinerary_controller_kwargs )
-
-      conn.commit()
-
-   finally:
-      cur.close()
-
-   return _build_success_result( conn, **itinerary_controller_kwargs )
-
-
-def schedule_itinerary_attraction(
-      conn: Connection,
-      parsed: ParsedScheduleItemRequest,
-      *,
-      animal_controller: type[ AnimalController ],
-      attraction_controller: type[ AttractionController ],
-      guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ],
-      visit_date_temp: float | None = None,
-      confirming_schedule_item_not_on_itinerary: bool,
-      suppress_schedule_item_not_on_itinerary_warning: bool ) -> ItinerarySaveResult:
-   name = parsed.attraction_name
-   itinerary_controller_kwargs = {
-      'animal_controller': animal_controller,
-      'attraction_controller': attraction_controller,
-      'guardians_controller': guardians_controller,
-      'wild_encounter_controller': wild_encounter_controller,
-      'visit_date_temp': visit_date_temp,
-   }
-   saved_itinerary = fetch_saved_itinerary( conn )
-   window = _resolve_schedule_window(
+   slot, slot_error = _resolve_slot_times(
       conn,
       saved_itinerary,
-      animal_controller=animal_controller,
-      attraction_controller=attraction_controller,
-      guardians_controller=guardians_controller,
-      wild_encounter_controller=wild_encounter_controller,
-      visit_date_temp=visit_date_temp )
+      window,
+      effective_duration,
+      start_time=time_options.start_time,
+      itinerary_controller_kwargs=itinerary_controller_kwargs )
 
-   if isinstance( window, ItinerarySaveResult ):
-      return window
+   if slot_error is not None:
+      return slot_error
 
-   membership_error = _prepare_schedule_item_on_itinerary(
+   start_time_key, end_time = slot
+
+   return _commit_listed_schedule(
       conn,
-      saved_itinerary,
-      parsed,
-      itinerary_controller_kwargs=itinerary_controller_kwargs,
-      confirming_schedule_item_not_on_itinerary=(
-         confirming_schedule_item_not_on_itinerary
-      ),
-      suppress_schedule_item_not_on_itinerary_warning=(
-         suppress_schedule_item_not_on_itinerary_warning
-      ) )
-
-   if membership_error is not None:
-      return membership_error
-
-   needs_itinerary_insert = not saved_itinerary_has_schedule_item(
-      saved_itinerary,
-      parsed )
-   anchor_minutes, day_end_minutes = window
-   duration_minutes = fetch_attraction_default_duration_minutes( conn, name )
-
-   if duration_minutes is None:
-      return _build_save_result(
-         conn,
-         ItineraryErrorType.SAVE_FAILED,
-         **itinerary_controller_kwargs )
-
-   itinerary = build_current_itinerary(
-      saved_itinerary,
-      animal_controller,
-      attraction_controller,
-      guardians_controller,
-      wild_encounter_controller,
-      visit_date_temp=visit_date_temp )
-   blockers = collect_time_blocks_from_itinerary( itinerary )
-   slot = find_next_available_slot(
-      blockers,
-      anchor_minutes,
-      duration_minutes,
-      day_end_minutes )
-
-   if slot is None:
-      return _build_save_result(
-         conn,
-         ItineraryErrorType.NO_AVAILABLE_SLOT,
-         **itinerary_controller_kwargs )
-
-   start_time, end_time = slot
-   cur = conn.cursor()
-
-   try:
-      scheduled = _apply_itinerary_attraction_schedule(
-         cur,
-         name=name,
-         start_time=start_time,
-         end_time=end_time,
-         insert_if_missing=needs_itinerary_insert )
-
-      if not scheduled:
-         return _build_save_result(
-            conn,
-            ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-            **itinerary_controller_kwargs )
-
-      conn.commit()
-
-   finally:
-      cur.close()
-
-   return _build_success_result( conn, **itinerary_controller_kwargs )
+      apply_schedule=apply_schedule,
+      start_time=start_time_key,
+      end_time=end_time,
+      insert_if_missing=not saved_itinerary_has_schedule_item( saved_itinerary, parsed ),
+      itinerary_controller_kwargs=itinerary_controller_kwargs )
 
 
-def schedule_itinerary_event(
+def _schedule_itinerary_event(
       conn: Connection,
       *,
       event_type: ItineraryEventType,
-      animal_controller: type[ AnimalController ],
-      attraction_controller: type[ AttractionController ],
-      guardians_controller: type[ GuardiansController ],
-      wild_encounter_controller: type[ WildEncounterController ],
-      visit_date_temp: float | None = None ) -> ItinerarySaveResult:
-   controller_kwargs = {
-      'animal_controller': animal_controller,
-      'attraction_controller': attraction_controller,
-      'guardians_controller': guardians_controller,
-      'wild_encounter_controller': wild_encounter_controller,
-      'visit_date_temp': visit_date_temp,
-   }
+      time_options: ParsedScheduleTimeOptions,
+      itinerary_controller_kwargs: dict[ str, Any ],
+) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
    window = _resolve_schedule_window(
       conn,
       saved_itinerary,
-      animal_controller=animal_controller,
-      attraction_controller=attraction_controller,
-      guardians_controller=guardians_controller,
-      wild_encounter_controller=wild_encounter_controller,
-      visit_date_temp=visit_date_temp )
+      **itinerary_controller_kwargs )
 
    if isinstance( window, ItinerarySaveResult ):
       return window
 
-   anchor_minutes, day_end_minutes = window
-   duration_minutes = fetch_event_default_duration_minutes( conn, event_type )
+   effective_duration = _effective_duration_minutes(
+      time_options.duration_minutes,
+      fetch_event_default_duration_minutes( conn, event_type ) )
 
-   if duration_minutes is None:
+   if effective_duration is None:
       return _build_save_result(
          conn,
          ItineraryErrorType.SAVE_FAILED,
-         **controller_kwargs )
+         **itinerary_controller_kwargs )
 
-   itinerary = build_current_itinerary(
+   slot, slot_error = _resolve_slot_times(
+      conn,
       saved_itinerary,
-      animal_controller,
-      attraction_controller,
-      guardians_controller,
-      wild_encounter_controller,
-      visit_date_temp=visit_date_temp )
-   blockers = collect_time_blocks_from_itinerary( itinerary )
-   slot = find_next_available_slot(
-      blockers,
-      anchor_minutes,
-      duration_minutes,
-      day_end_minutes )
+      window,
+      effective_duration,
+      start_time=time_options.start_time,
+      itinerary_controller_kwargs=itinerary_controller_kwargs )
 
-   if slot is None:
-      return _build_save_result(
-         conn,
-         ItineraryErrorType.NO_AVAILABLE_SLOT,
-         **controller_kwargs )
+   if slot_error is not None:
+      return slot_error
 
-   start_time, end_time = slot
+   start_time_key, end_time = slot
    event = ItineraryEvent(
       event_type=event_type,
-      start_time=start_time,
+      start_time=start_time_key,
       end_time=end_time )
 
    cur = conn.cursor()
@@ -541,4 +420,61 @@ def schedule_itinerary_event(
    finally:
       cur.close()
 
-   return _build_success_result( conn, **controller_kwargs )
+   return _build_success_result( conn, **itinerary_controller_kwargs )
+
+
+def schedule_itinerary_item(
+      conn: Connection,
+      item_type: str,
+      key: str,
+      *,
+      start_time: TimeInput = None,
+      duration_minutes: DurationInput = None,
+      animal_controller: type[ AnimalController ],
+      attraction_controller: type[ AttractionController ],
+      guardians_controller: type[ GuardiansController ],
+      wild_encounter_controller: type[ WildEncounterController ],
+      confirming_schedule_item_not_on_itinerary: bool,
+      suppress_schedule_item_not_on_itinerary_warning: bool ) -> ItinerarySaveResult:
+   itinerary_controller_kwargs = _itinerary_controller_kwargs(
+      animal_controller=animal_controller,
+      attraction_controller=attraction_controller,
+      guardians_controller=guardians_controller,
+      wild_encounter_controller=wild_encounter_controller )
+
+   parsed = parse_schedule_item_request( item_type, key )
+
+   if parsed is None:
+      return _build_save_result(
+         conn,
+         ItineraryErrorType.SAVE_FAILED,
+         **itinerary_controller_kwargs )
+
+   parsed_schedule_options = parse_schedule_time_options(
+      start_time,
+      duration_minutes )
+
+   if isinstance( parsed_schedule_options, ItineraryErrorType ):
+      return _build_save_result(
+         conn,
+         parsed_schedule_options,
+         **itinerary_controller_kwargs )
+
+   if parsed.kind == ScheduleItemKind.EVENT:
+      return _schedule_itinerary_event(
+         conn,
+         event_type=parsed.event_type,
+         time_options=parsed_schedule_options,
+         itinerary_controller_kwargs=itinerary_controller_kwargs )
+
+   return _schedule_listed_itinerary_item(
+      conn,
+      parsed,
+      parsed_schedule_options,
+      itinerary_controller_kwargs=itinerary_controller_kwargs,
+      confirming_schedule_item_not_on_itinerary=(
+         confirming_schedule_item_not_on_itinerary
+      ),
+      suppress_schedule_item_not_on_itinerary_warning=(
+         suppress_schedule_item_not_on_itinerary_warning
+      ) )

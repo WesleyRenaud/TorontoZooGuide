@@ -30,6 +30,22 @@ export function normalizeNonNegativeNumber(value) {
    return number;
 }
 
+export function parseDurationMinutes(value) {
+   const normalized = String(value ?? '').trim();
+
+   if (!normalized) {
+      return null;
+   }
+
+   const parsed = Number(normalized);
+
+   if (!Number.isFinite(parsed) || parsed <= 0) {
+      return null;
+   }
+
+   return Math.round(parsed);
+}
+
 function normalizeMaximumDuration(value) {
    const maximumDuration = normalizeNumber(value);
    return maximumDuration && maximumDuration > 0 ? maximumDuration : null;
