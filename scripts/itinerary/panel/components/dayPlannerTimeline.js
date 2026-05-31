@@ -28,6 +28,8 @@ export function appendScheduledItems(
          label: scheduledItem.label,
          offsetFraction: scheduledItem.offsetFraction,
          durationMinutes: scheduledItem.maximumDuration,
+         startTime: scheduledItem.item.start_time,
+         endTime: scheduledItem.item.end_time,
          ...resolveScheduledPillOptions(
             scheduledItem,
             scheduleHandlers,

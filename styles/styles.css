@@ -2537,11 +2537,10 @@ nav ul li a:hover {
 }
 
 .itinerary-day-scheduled-pill.itinerary-day-scheduled-pill--with-menu {
-   display: grid;
-   grid-template-columns: minmax(0, 1fr) auto;
-   column-gap: 10px;
-   align-items: center;
-   align-content: center;
+   display: flex;
+   flex-direction: column;
+   align-items: stretch;
+   justify-content: flex-start;
    width: max-content;
    max-width: 100%;
    min-width: 0;
@@ -2559,6 +2558,20 @@ nav ul li a:hover {
    text-overflow: clip;
 }
 
+.itinerary-day-scheduled-pill.itinerary-day-scheduled-pill--extended {
+   background: rgba(94, 150, 0, 0.1);
+   border-color: rgba(94, 150, 0, 0.42);
+}
+
+.itinerary-day-scheduled-pill-header {
+   display: grid;
+   grid-template-columns: minmax(0, 1fr) auto;
+   column-gap: 10px;
+   align-items: center;
+   width: 100%;
+   min-width: 0;
+}
+
 .itinerary-day-scheduled-pill-label {
    display: block;
    min-width: 0;
@@ -2566,6 +2579,29 @@ nav ul li a:hover {
    overflow: hidden;
    text-overflow: ellipsis;
    white-space: nowrap;
+}
+
+.itinerary-day-scheduled-pill-time-range {
+   display: block;
+   margin-top: 10px;
+   color: rgba(20, 35, 10, 0.68);
+   font-size: 1.55rem;
+   font-weight: 750;
+   line-height: 1.2;
+   white-space: nowrap;
+}
+
+.itinerary-day-scheduled-pill--extended:not(.itinerary-day-scheduled-pill--with-menu) {
+   display: flex;
+   flex-direction: column;
+   align-items: stretch;
+   justify-content: flex-start;
+   width: max-content;
+   max-width: 100%;
+   padding: 17px 30px;
+   line-height: normal;
+   overflow: visible;
+   white-space: normal;
 }
 
 .itinerary-day-open-pill {
