@@ -20,6 +20,7 @@ import {
    getScheduleItemRowKind,
    resolveEffectiveScheduleItemSelection,
 } from '../scheduleItemSearch.js';
+import { makeScheduleItemTimeFields } from './scheduleItemTimeFields.js';
 import {
    buildScheduleItemTypeOptions,
    isScheduleItemEventType,
@@ -126,14 +127,21 @@ function buildScheduleItemModuleBody(strings, eventTypes = []) {
 
    const resultsEl = el('div', 'itin-results schedule-item-results');
    resultsEl.setAttribute('aria-live', 'polite');
+   const scheduleTimeFields = makeScheduleItemTimeFields(strings);
 
-   body.append(typeField.field, searchField, resultsEl);
+   body.append(
+      typeField.field,
+      searchField,
+      ...scheduleTimeFields.fields,
+      resultsEl
+   );
 
    return {
       body,
       typeSelect: typeField.select,
       searchInput,
       resultsEl,
+      scheduleTimeFields,
    };
 }
 
@@ -143,7 +151,10 @@ export function showScheduleItemModule({
    onScheduled = null,
 } = {}) {
    const strings = APP_STRINGS.itinerary.scheduleItem;
-   const { body: moduleBodyEl } = buildScheduleItemModuleBody(strings, eventTypes);
+   const {
+      body: moduleBodyEl,
+      scheduleTimeFields,
+   } = buildScheduleItemModuleBody(strings, eventTypes);
    const {
       root,
       overlay,
@@ -331,7 +342,13 @@ export function showScheduleItemModule({
          return;
       }
 
+      if (scheduleTimeFields.hasDurationWithoutTime()) {
+         showScheduleItemNotice(strings.durationRequiresTime);
+         return;
+      }
+
       const selection = getEffectiveSelection();
+      const scheduleOptions = scheduleTimeFields.getScheduleTimeOptions();
 
       isSubmitting = true;
       updateFieldVisibility();
@@ -341,7 +358,8 @@ export function showScheduleItemModule({
             itinerary,
             selection,
             selectedRow,
-            eventTypes
+            eventTypes,
+            scheduleOptions
          );
 
          if (
@@ -381,6 +399,7 @@ export function showScheduleItemModule({
       if (searchInput) {
          searchInput.value = '';
       }
+      scheduleTimeFields.reset();
       updateFieldVisibility();
       void runSearch();
    });

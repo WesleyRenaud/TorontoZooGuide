@@ -178,9 +178,10 @@ def test_normalize_itinerary_schedule_time(
       ( 0, None ),
       ( 7.2, 8 ),
       ( 8, 8 ),
+      ( 20, 20 ),
    ]
 )
-def test_normalize_duration_minutes( value: float | int | None, expected: int | None ) -> None:
+def test_normalize_duration_minutes( value: float | None, expected: int | None ) -> None:
    assert normalize_duration_minutes( value ) == expected
 
 

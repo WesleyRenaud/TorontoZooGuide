@@ -69,11 +69,37 @@ test('buildScheduleItemRequest maps event and animal rows', () => {
    );
 });
 
-test('scheduleSelectedItineraryItem schedules an event', async () => {
-   const urls = [];
+test('buildScheduleItemRequest includes optional schedule times', () => {
+   assert.deepEqual(
+      buildScheduleItemRequest('lunch', null, ['lunch'], {
+         startTime: '10:00 AM',
+         durationMinutes: 20,
+      }),
+      {
+         itemType: 'lunch',
+         key: '',
+         startTime: '10:00 AM',
+         durationMinutes: 20,
+      }
+   );
+   assert.equal(
+      buildScheduleItemRequest('animals', {
+         species: 'Tiger',
+         exhibit: 'Savanna',
+         scheduleItemKind: 'animals',
+      }, [], { durationMinutes: 20 }),
+      null
+   );
+});
 
-   globalThis.fetch = async (url) => {
-      urls.push(url);
+test('scheduleSelectedItineraryItem schedules an event', async () => {
+   const requests = [];
+
+   globalThis.fetch = async (url, options = {}) => {
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
 
       return mockJsonResponse({ errorType: 'success' });
    };
@@ -82,11 +108,22 @@ test('scheduleSelectedItineraryItem schedules an event', async () => {
       { date: '2026-06-15', animals: [], attractions: [] },
       'lunch',
       null,
-      ['lunch']
+      ['lunch'],
+      { startTime: '1:30 PM', durationMinutes: 15 }
    );
 
    assert.equal(result.errorType, 'success');
-   assert.deepEqual(urls, ['/schedule-itinerary-item']);
+   assert.deepEqual(requests, [{
+      url: '/schedule-itinerary-item',
+      body: {
+         itemType: 'lunch',
+         key: '',
+         startTime: '1:30 PM',
+         durationMinutes: 15,
+         confirmingScheduleItemNotOnItinerary: false,
+         suppressScheduleItemNotOnItineraryWarning: false,
+      },
+   }]);
 });
 
 test('scheduleSelectedItineraryItem schedules when type is unset but a row is selected', async () => {

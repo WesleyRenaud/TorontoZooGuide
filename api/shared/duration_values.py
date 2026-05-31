@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import math
 
+from ..types import DurationInput
+
 
 def normalize_duration_minutes(
-      duration_minutes: float | int | None ) -> int | None:
+      duration_minutes: DurationInput ) -> int | None:
    if duration_minutes is None:
       return None
 
-   duration_value = float( duration_minutes )
-
-   if duration_value <= 0:
+   if duration_minutes <= 0:
       return None
 
-   return max( 1, math.ceil( duration_value ) )
+   return max( 1, math.ceil( duration_minutes ) )
