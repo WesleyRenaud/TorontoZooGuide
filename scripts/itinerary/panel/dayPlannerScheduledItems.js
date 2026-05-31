@@ -9,15 +9,21 @@ function getScheduledMaximumDuration(item) {
    return Number.isFinite(maximumDuration) && maximumDuration > 0 ? maximumDuration : null;
 }
 
-function buildScheduledItemRows(items, buildRows) {
+function hasItineraryScheduleTimes(item) {
+   return Boolean(item.start_time && item.end_time);
+}
+
+function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
    return items.map((item, index) => {
       const [row] = buildRows([item]);
-      const maximumDuration = getScheduledMaximumDuration(item);
+      const startMinutes = parseClockTimeMinutes(item.start_time);
+      const maximumDuration = getDurationMinutes(item);
+
       return {
          index,
          item,
          row,
-         startMinutes: parseClockTimeMinutes(item?.start_time),
+         startMinutes,
          maximumDuration,
       };
    }).filter((scheduledItem) => (
@@ -27,31 +33,58 @@ function buildScheduledItemRows(items, buildRows) {
    ));
 }
 
+function buildItineraryScheduledItemIndexes(items = []) {
+   const indexes = new Set();
+
+   items.forEach((item, index) => {
+      if (!hasItineraryScheduleTimes(item)) {
+         return;
+      }
+
+      indexes.add(index);
+   });
+
+   return indexes;
+}
+
+function mergeScheduledItemsByStart(scheduledItems = []) {
+   return scheduledItems.reduce((itemsByStartMap, scheduledItem) => {
+      const items = itemsByStartMap.get(scheduledItem.startMinutes) ?? [];
+      items.push(scheduledItem);
+      itemsByStartMap.set(scheduledItem.startMinutes, items);
+      return itemsByStartMap;
+   }, new Map());
+}
+
 export function buildScheduledItemRowsContext(
    {
+      animals = [],
+      attractions = [],
       guardiansTalks = [],
       wildEncounters = [],
    } = {},
    slotStarts = []
 ) {
    const slotStartSet = new Set(slotStarts);
-   const guardiansTalkRows = buildScheduledItemRows(guardiansTalks, buildGuardiansRows)
-      .filter((scheduledItem) => slotStartSet.has(scheduledItem.startMinutes));
-   const wildEncounterRows = buildScheduledItemRows(wildEncounters, buildWildRows)
-      .filter((scheduledItem) => slotStartSet.has(scheduledItem.startMinutes));
+   const guardiansTalkRows = buildScheduledItemRows(
+      guardiansTalks,
+      buildGuardiansRows,
+      getScheduledMaximumDuration
+   ).filter((scheduledItem) => slotStartSet.has(scheduledItem.startMinutes));
+   const wildEncounterRows = buildScheduledItemRows(
+      wildEncounters,
+      buildWildRows,
+      getScheduledMaximumDuration
+   ).filter((scheduledItem) => slotStartSet.has(scheduledItem.startMinutes));
    const scheduledItems = [
       ...guardiansTalkRows,
       ...wildEncounterRows,
    ];
-   const itemsByStart = scheduledItems.reduce((itemsByStartMap, scheduledItem) => {
-      const items = itemsByStartMap.get(scheduledItem.startMinutes) ?? [];
-      items.push(scheduledItem);
-      itemsByStartMap.set(scheduledItem.startMinutes, items);
-      return itemsByStartMap;
-   }, new Map());
 
    return {
-      itemsByStart,
+      itemsByStart: mergeScheduledItemsByStart(scheduledItems),
+      scheduledAnimalIndexes: buildItineraryScheduledItemIndexes(animals),
+      scheduledAttractionIndexes: buildItineraryScheduledItemIndexes(attractions),
       scheduledGuardiansTalkIndexes: new Set(
          guardiansTalkRows.map((scheduledItem) => scheduledItem.index)
       ),
@@ -64,17 +97,23 @@ export function buildScheduledItemRowsContext(
 export function buildScheduledItinerary(
    itinerary = {},
    {
+      scheduledAnimalIndexes = new Set(),
+      scheduledAttractionIndexes = new Set(),
       scheduledGuardiansTalkIndexes = new Set(),
       scheduledWildEncounterIndexes = new Set(),
    } = {}
 ) {
    return {
-      animals: [],
-      attractions: [],
-      guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
+      animals: itinerary.animals.filter((_, index) => (
+         scheduledAnimalIndexes.has(index)
+      )),
+      attractions: itinerary.attractions.filter((_, index) => (
+         scheduledAttractionIndexes.has(index)
+      )),
+      guardiansTalks: itinerary.guardiansTalks.filter((_, index) => (
          scheduledGuardiansTalkIndexes.has(index)
       )),
-      wildEncounters: (itinerary.wildEncounters ?? []).filter((_, index) => (
+      wildEncounters: itinerary.wildEncounters.filter((_, index) => (
          scheduledWildEncounterIndexes.has(index)
       )),
    };
@@ -83,12 +122,20 @@ export function buildScheduledItinerary(
 export function buildUnscheduledItinerary(
    itinerary = {},
    {
+      scheduledAnimalIndexes = new Set(),
+      scheduledAttractionIndexes = new Set(),
       scheduledGuardiansTalkIndexes = new Set(),
       scheduledWildEncounterIndexes = new Set(),
    } = {}
 ) {
    return {
       ...itinerary,
+      animals: (itinerary.animals ?? []).filter((_, index) => (
+         !scheduledAnimalIndexes.has(index)
+      )),
+      attractions: (itinerary.attractions ?? []).filter((_, index) => (
+         !scheduledAttractionIndexes.has(index)
+      )),
       guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
          !scheduledGuardiansTalkIndexes.has(index)
       )),

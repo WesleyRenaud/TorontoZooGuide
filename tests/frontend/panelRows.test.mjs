@@ -36,6 +36,13 @@ import {
 } from '../../scripts/itinerary/panel/rows.js';
 import { installTestWindow } from './helpers/domMock.mjs';
 
+const EMPTY_ITINERARY = {
+   animals: [],
+   attractions: [],
+   guardiansTalks: [],
+   wildEncounters: [],
+};
+
 function createNode(tagName, className = '', textContent = '') {
    const children = [];
    const listeners = {};
@@ -323,7 +330,7 @@ test('day planner starts at early admission when available', () => {
       openTime: '09:30',
       lastAdmissionTime: '18:00',
       closeTime: '19:00',
-   });
+   }, EMPTY_ITINERARY);
    const text = allTextFor(planner);
 
    assert.match(text, /9:00 AM/);
@@ -342,6 +349,7 @@ test('day planner stacks zoo hours and arrival pills at the same time', () => {
       },
       {
          arrivalTime: '09:30',
+         ...EMPTY_ITINERARY,
       }
    );
    const pillStrip = planner.querySelector('.itinerary-day-pill-strip');
@@ -363,6 +371,7 @@ test('day planner stacks departure and close pills at the same time', () => {
       },
       {
          departureTime: '18:00',
+         ...EMPTY_ITINERARY,
       }
    );
    const timeCells = planner.querySelectorAll('.itinerary-day-time');
@@ -391,6 +400,7 @@ test('day planner positions off-slot arrival and departure between half-hour lin
       {
          arrivalTime: '09:45',
          departureTime: '17:15',
+         ...EMPTY_ITINERARY,
       }
    );
    const timeLabels = [...planner.querySelectorAll('.itinerary-day-time')].map(
@@ -441,12 +451,24 @@ test('day planner renders scheduled guardians talks and wild encounters', () => 
             {
                species: 'African Lion',
                exhibit: 'Africa Savanna',
+               start_time: '1:00 PM',
+               end_time: '1:30 PM',
+            },
+            {
+               species: 'Giant Panda',
+               exhibit: 'Eurasia Wilds',
             },
          ],
          attractions: [
             {
                name: 'Conservation Carousel',
                subtitle: 'Carousels are timeless and fun for all ages!',
+            },
+            {
+               name: 'Zoomobile',
+               subtitle: 'Ride the rails',
+               start_time: '2:30 PM',
+               end_time: '3:00 PM',
             },
          ],
       }
@@ -460,9 +482,13 @@ test('day planner renders scheduled guardians talks and wild encounters', () => 
    assert.match(text, /Scheduled Items/);
    assert.match(text, /Meet The Guardians \(1\)/);
    assert.match(text, /Wild Encounters \(1\)/);
-   assert.match(text, /Unscheduled Items/);
    assert.match(text, /Animals \(1\)/);
    assert.match(text, /African Lion/);
+   assert.match(text, /Attractions \(1\)/);
+   assert.match(text, /Zoomobile/);
+   assert.match(text, /Unscheduled Items/);
+   assert.match(text, /Animals \(1\)/);
+   assert.match(text, /Giant Panda/);
    assert.match(text, /Attractions \(1\)/);
    assert.match(text, /Conservation Carousel/);
    assert.match(text, /Meet The Guardians \(0\)/);
@@ -479,6 +505,7 @@ test('day planner renders zero-count unscheduled sections', () => {
          closeTime: '19:00',
       },
       {
+         ...EMPTY_ITINERARY,
          guardiansTalks: [
             {
                name: 'Amur Tiger',
