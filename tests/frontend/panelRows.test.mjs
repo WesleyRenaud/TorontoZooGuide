@@ -88,6 +88,8 @@ function createNode(tagName, className = '', textContent = '') {
       children,
       listeners,
       attributes,
+      hidden: false,
+      disabled: false,
       style: {
          setProperty(name, value) {
             attributes[`style:${name}`] = value;
@@ -183,7 +185,12 @@ function createNode(tagName, className = '', textContent = '') {
          return children.some((child) => child.contains?.(target) ?? false);
       },
       click() {
-         listeners.click?.({ stopPropagation() {} });
+         const event = {
+            preventDefault() {},
+            stopPropagation() {},
+         };
+
+         listeners.click?.(event);
       },
       getBoundingClientRect() {
          return {
@@ -192,6 +199,9 @@ function createNode(tagName, className = '', textContent = '') {
       },
       setAttribute(name, value) {
          attributes[name] = value;
+      },
+      getAttribute(name) {
+         return attributes[name] ?? null;
       },
       querySelector(selector) {
          const classNameToFind = selector.startsWith('.')
@@ -522,6 +532,69 @@ test('arrival pill remove menu clears arrival time through handler', () => {
 
    arrivalPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
    assert.deepEqual(arrivalRemovals, [ '' ]);
+});
+
+test('day planner header clear buttons remove arrival and departure times', async () => {
+   const arrivalChanges = [];
+   const departureChanges = [];
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         arrivalTime: '09:45',
+         departureTime: '17:15',
+         itineraryConfig: TEST_ITINERARY_CONFIG,
+         ...EMPTY_ITINERARY,
+      },
+      {
+         onArrivalTimeChange: async (value) => {
+            arrivalChanges.push(value);
+         },
+         onDepartureTimeChange: async (value) => {
+            departureChanges.push(value);
+         },
+      }
+   );
+   const clearButtons = [...planner.querySelectorAll('.itinerary-day-time-clear-btn')];
+
+   assert.equal(clearButtons.length, 2);
+   assert.equal(clearButtons[0].attributes?.['aria-label'], 'Clear arrival time');
+   assert.equal(clearButtons[1].attributes?.['aria-label'], 'Clear departure time');
+
+   clearButtons[0].click();
+   await Promise.resolve();
+   clearButtons[1].click();
+   await Promise.resolve();
+
+   assert.deepEqual(arrivalChanges, [ '' ]);
+   assert.deepEqual(departureChanges, [ '' ]);
+});
+
+test('day planner header disables clear buttons when times are unset', () => {
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         itineraryConfig: TEST_ITINERARY_CONFIG,
+         ...EMPTY_ITINERARY,
+      },
+      {
+         onArrivalTimeChange: () => {},
+         onDepartureTimeChange: () => {},
+      }
+   );
+   const clearButtons = [...planner.querySelectorAll('.itinerary-day-time-clear-btn')];
+
+   assert.equal(clearButtons.length, 2);
+   assert.ok(clearButtons.every((button) => button.disabled));
 });
 
 test('scheduled animal pill unschedule menu calls handler with item key', () => {
