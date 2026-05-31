@@ -777,6 +777,113 @@ test('buildAnimalRows adds unschedule action when handler is provided', () => {
    }]);
 });
 
+test('unscheduled list rows show schedule buttons for animals and attractions only', () => {
+   const scheduleCalls = [];
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         guardiansTalks: [
+            {
+               name: 'Amur Tiger',
+               location: 'Eurasia Wilds',
+               start_time: '1:30 PM',
+               maximum_duration: 30,
+            },
+         ],
+         wildEncounters: [],
+         animals: [
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+               start_time: '1:00 PM',
+               end_time: '1:30 PM',
+            },
+            {
+               species: 'Giant Panda',
+               exhibit: 'Eurasia Wilds',
+            },
+         ],
+         attractions: [
+            {
+               name: 'Conservation Carousel',
+               subtitle: 'Carousels are timeless and fun for all ages!',
+            },
+            {
+               name: 'Zoomobile',
+               subtitle: 'Ride the rails',
+               start_time: '2:30 PM',
+               end_time: '3:00 PM',
+            },
+         ],
+      },
+      {},
+      {
+         scheduleHandlers: {
+            onScheduleItineraryItem: (pick) => {
+               scheduleCalls.push(pick);
+            },
+            onUnscheduleItineraryItem: () => {},
+         },
+      }
+   );
+   const dayItemsSections = [...planner.querySelectorAll('.itinerary-day-items-sections')];
+   const scheduledList = dayItemsSections.find((section) => (
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+   ));
+   const unscheduledList = dayItemsSections.find((section) => (
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Unscheduled Items')
+   ));
+   const scheduledButtons = scheduledList?.querySelectorAll('.itin-panel-item-action-btn') ?? [];
+   const unscheduledButtons = unscheduledList?.querySelectorAll('.itin-panel-item-action-btn') ?? [];
+   const pandaRow = [...(unscheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
+      allTextFor(row).includes('Giant Panda')
+   ));
+
+   assert.equal(scheduledButtons.length, 2);
+   assert.equal(scheduledButtons.every((button) => button.textContent === 'Unschedule'), true);
+   assert.equal(unscheduledButtons.length, 2);
+   assert.equal(unscheduledButtons.every((button) => button.textContent === 'Schedule'), true);
+   assert.equal(pandaRow?.querySelector('.itin-panel-item-action-btn')?.textContent, 'Schedule');
+
+   unscheduledButtons[0].click();
+   unscheduledButtons[1].click();
+
+   assert.equal(scheduleCalls.length, 2);
+   assert.equal(scheduleCalls[0].itemType, 'animals');
+   assert.equal(scheduleCalls[0].row.species, 'Giant Panda');
+   assert.equal(scheduleCalls[0].row.scheduleItemKind, 'animals');
+   assert.equal(scheduleCalls[1].itemType, 'attractions');
+   assert.equal(scheduleCalls[1].row.name, 'Conservation Carousel');
+   assert.equal(scheduleCalls[1].row.scheduleItemKind, 'attractions');
+});
+
+test('buildAnimalRows adds schedule action when handler is provided', () => {
+   const scheduleCalls = [];
+   const [row] = buildAnimalRows([
+      {
+         species: 'Giant Panda',
+         exhibit: 'Eurasia Wilds',
+      },
+   ], {
+      onScheduleItem: (pick) => {
+         scheduleCalls.push(pick);
+      },
+   });
+   const button = row.querySelector('.itin-panel-item-action-btn');
+
+   assert.equal(button?.textContent, 'Schedule');
+   button?.click();
+   assert.equal(scheduleCalls.length, 1);
+   assert.equal(scheduleCalls[0].itemType, 'animals');
+   assert.equal(scheduleCalls[0].row.species, 'Giant Panda');
+   assert.equal(scheduleCalls[0].row.scheduleItemKind, 'animals');
+});
+
 test('departure pill remove menu clears departure time through handler', () => {
    const departureRemovals = [];
    const planner = makeDayPlannerPreview(

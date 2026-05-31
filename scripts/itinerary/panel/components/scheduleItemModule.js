@@ -149,6 +149,7 @@ export function showScheduleItemModule({
    itinerary = {},
    eventTypes = [],
    onScheduled = null,
+   preselectedRow = null,
 } = {}) {
    const strings = APP_STRINGS.itinerary.scheduleItem;
    const {
@@ -290,6 +291,31 @@ export function showScheduleItemModule({
       resultsEl?.replaceChildren();
    }
 
+   function applyPreselectedRow() {
+      if (!preselectedRow) {
+         return;
+      }
+
+      selectedRowId = getScheduleItemRowId(preselectedRow);
+      selectedRow = preselectedRow;
+
+      if (typeSelect) {
+         typeSelect.value = getScheduleItemRowKind(preselectedRow);
+      }
+
+      if (searchInput) {
+         const searchLabel = getScheduleItemRowKind(preselectedRow)
+            === ScheduleItemKind.ATTRACTION.itemType
+            ? getAttractionTitle(preselectedRow)
+            : getAnimalSpecies(preselectedRow);
+
+         searchInput.value = searchLabel || '';
+      }
+
+      renderSearchResults([preselectedRow]);
+      updateFieldVisibility();
+   }
+
    async function runSearch() {
       const selection = getSelection();
 
@@ -422,8 +448,13 @@ export function showScheduleItemModule({
       void handleSchedule();
    });
 
-   updateFieldVisibility();
-   clearSearchResults();
+   if (preselectedRow) {
+      applyPreselectedRow();
+   }
+   else {
+      updateFieldVisibility();
+      clearSearchResults();
+   }
 
    return popup;
 }
