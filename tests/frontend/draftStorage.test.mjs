@@ -70,6 +70,7 @@ test('writes and loads the stored itinerary draft', () => {
       attractions: [{ name: 'Conservation Carousel' }],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [{ name: 'African Rainforest' }],
+      events: [],
    });
 });
 

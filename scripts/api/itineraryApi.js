@@ -17,6 +17,22 @@ const ITINERARY_COLLECTION_FIELDS = [
    ['wildEncounters', 'wild_encounters'],
 ];
 
+function normalizeItineraryEvent(event) {
+   const source = asObject(event);
+
+   return {
+      event_type: asTrimmedString(source.event_type),
+      start_time: asTrimmedString(source.start_time),
+      end_time: asTrimmedString(source.end_time),
+   };
+}
+
+function normalizeItineraryEvents(events) {
+   return asArray(events)
+      .map(normalizeItineraryEvent)
+      .filter((event) => Boolean(event.event_type));
+}
+
 function normalizeCollectionFields(source = {}, fields) {
    return Object.fromEntries(
       fields.map(([targetKey, responseKey]) => [
@@ -38,6 +54,7 @@ function normalizeItineraryModel(itinerary) {
       arrivalTime: asTrimmedString(source.arrival_time),
       departureTime: asTrimmedString(source.departure_time),
       ...normalizeItineraryCollections(source),
+      events: normalizeItineraryEvents(source.events),
    };
 }
 

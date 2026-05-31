@@ -20,6 +20,7 @@ test('creates and normalizes itinerary draft shape', () => {
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
+      events: [],
    });
 
    assert.deepEqual(normalizeItineraryDraft({
@@ -38,6 +39,20 @@ test('creates and normalizes itinerary draft shape', () => {
       attractions: [],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [],
+      events: [],
+   });
+
+   assert.deepEqual(normalizeItineraryDraft({
+      events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
+   }), {
+      date: '',
+      arrivalTime: '',
+      departureTime: '',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+      events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
    });
 });
 
@@ -123,6 +138,10 @@ test('treats a draft with only a date as empty', () => {
    assert.equal(isItineraryEmptyDraft({
       date: '2026-06-15',
       wildEncounters: [{ name: 'African Rainforest' }],
+   }), false);
+   assert.equal(isItineraryEmptyDraft({
+      date: '2026-06-15',
+      events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
    }), false);
 });
 

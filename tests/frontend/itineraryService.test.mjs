@@ -62,6 +62,20 @@ test('normalizeItinerary exposes itineraryConfig and active state', () => {
    assert.equal(isItineraryEmpty(normalized), false);
 });
 
+test('normalizeItinerary preserves scheduled generic events', () => {
+   const normalized = normalizeItinerary({
+      date: '2026-06-15',
+      events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
+   });
+
+   assert.deepEqual(normalized.events, [{
+      event_type: 'lunch',
+      start_time: '12:00',
+      end_time: '12:40',
+   }]);
+   assert.equal(isItineraryEmpty(normalized), false);
+});
+
 test('normalizeItinerary treats missing collections as empty', () => {
    const normalized = normalizeItinerary({
       animals: 'not-an-array',
@@ -70,6 +84,7 @@ test('normalizeItinerary treats missing collections as empty', () => {
 
    assert.deepEqual(normalized.animals, []);
    assert.deepEqual(normalized.attractions, []);
+   assert.deepEqual(normalized.events, []);
    assert.equal(normalized.itineraryConfig, null);
    assert.equal(normalized.isActive, false);
 });

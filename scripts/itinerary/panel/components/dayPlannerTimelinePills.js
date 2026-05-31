@@ -6,7 +6,10 @@ import {
 import { el } from '../dom.js';
 import { normalizeVisitBoundaryEventTypes } from '../../itineraryEventTypes.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
-import { isScheduleItemModuleItemType } from '../../../shared/enums/scheduleItemKind.js';
+import {
+   isScheduleItemModuleItemType,
+   ScheduleItemKind,
+} from '../../../shared/enums/scheduleItemKind.js';
 
 const timelinePlacementsByGridLine = new WeakMap();
 
@@ -200,12 +203,33 @@ export function resolveScheduledPillOptions(
    scheduleHandlers = {},
    strings = {}
 ) {
-   const { scheduleItemKind, scheduleItemKey } = scheduledItem;
+   const {
+      scheduleItemKind,
+      scheduleItemKey,
+      scheduleItemEventType,
+   } = scheduledItem;
+
+   if (typeof scheduleHandlers.onUnscheduleItineraryItem !== 'function') {
+      return {};
+   }
+
+   if (
+      scheduleItemKind === ScheduleItemKind.EVENT.kind
+      && scheduleItemEventType
+   ) {
+      return {
+         menuAriaLabel: strings.scheduledItemMenuAria,
+         unscheduleLabel: strings.unschedule,
+         onUnschedule: () => scheduleHandlers.onUnscheduleItineraryItem({
+            itemType: scheduleItemEventType,
+            key: '',
+         }),
+      };
+   }
 
    if (
       !isScheduleItemModuleItemType(scheduleItemKind)
       || !scheduleItemKey
-      || typeof scheduleHandlers.onUnscheduleItineraryItem !== 'function'
    ) {
       return {};
    }
