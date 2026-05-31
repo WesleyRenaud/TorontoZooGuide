@@ -17,6 +17,7 @@ const MOCK_ERROR_TYPES = Object.freeze({
    SUCCESS: 'success',
    SAVE_FAILED: 'saveFailed',
    NO_AVAILABLE_SLOT: 'noAvailableSlot',
+   REQUESTED_TIME_NOT_AVAILABLE: 'requestedTimeNotAvailable',
    ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',
 });
 
@@ -228,4 +229,31 @@ test('resolveItineraryErrorMessage maps noAvailableSlot', () => {
       resolveItineraryErrorMessage('noAvailableSlot'),
       /No open time slot/
    );
+});
+
+test('resolveItineraryErrorMessage maps requestedTimeNotAvailable', () => {
+   assert.match(
+      resolveItineraryErrorMessage('requestedTimeNotAvailable'),
+      /That time is not available/
+   );
+});
+
+test('scheduleSelectedItineraryItem surfaces requestedTimeNotAvailable', async () => {
+   globalThis.fetch = async () => mockJsonResponse({
+      errorType: 'requestedTimeNotAvailable',
+   });
+
+   const result = await scheduleSelectedItineraryItem(
+      { date: '2026-06-15', animals: [], attractions: [] },
+      'animals',
+      {
+         species: 'Tiger',
+         exhibit: 'Savanna',
+         scheduleItemKind: 'animals',
+      },
+      [],
+      { startTime: '12:00 PM' }
+   );
+
+   assert.equal(result.errorType, 'requestedTimeNotAvailable');
 });

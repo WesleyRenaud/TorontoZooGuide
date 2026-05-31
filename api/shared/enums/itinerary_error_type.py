@@ -9,4 +9,5 @@ class ItineraryErrorType( str, Enum ):
    SAVE_FAILED = 'saveFailed'
    ARRIVAL_DEPARTURE_TOO_CLOSE = 'arrivalDepartureTooClose'
    NO_AVAILABLE_SLOT = 'noAvailableSlot'
+   REQUESTED_TIME_NOT_AVAILABLE = 'requestedTimeNotAvailable'
    ITEM_NOT_ON_ITINERARY = 'itemNotOnItinerary'

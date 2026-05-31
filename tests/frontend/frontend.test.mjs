@@ -24,6 +24,8 @@ import './scheduleItemSearch.test.mjs';
 import './scheduleItemEventLabels.test.mjs';
 import './scheduleItemButton.test.mjs';
 import './scheduleItemResults.test.mjs';
+import './scheduleItemActions.test.mjs';
+import './scheduleItemTimeFields.test.mjs';
 import './itineraryDiff.test.mjs';
 import './itineraryEventType.test.mjs';
 import './itineraryValidation.test.mjs';
