@@ -188,12 +188,10 @@ class DateValues:
       if value == None:
          return None
 
-      trimmed_value = str( value ).strip()
-
-      if not trimmed_value:
+      try:
+         return DateValues.format_time_value( value )
+      except ValueError:
          return None
-
-      return DateValues.format_time_value( trimmed_value )
 
 
    @staticmethod

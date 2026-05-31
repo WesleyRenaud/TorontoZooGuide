@@ -26,7 +26,13 @@ def parse_schedule_time_options(
       start_time: TimeInput,
       duration_minutes: DurationInput,
 ) -> ParsedScheduleTimeOptions | ItineraryErrorType:
+   start_time_was_provided = (
+      start_time is not None
+      and str( start_time ).strip() != '' )
    normalized_start = DateValues.normalize_itinerary_schedule_time( start_time )
+
+   if start_time_was_provided and normalized_start is None:
+      return ItineraryErrorType.SAVE_FAILED
 
    parsed_duration = normalize_duration_minutes( duration_minutes )
 

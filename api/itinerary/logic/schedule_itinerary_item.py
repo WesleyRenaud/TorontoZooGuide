@@ -159,9 +159,14 @@ def _resolve_slot_times(
       start_time=start_time )
 
    if slot is None:
+      error_type = (
+         ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
+         if start_time is not None
+         else ItineraryErrorType.NO_AVAILABLE_SLOT )
+
       return None, _build_save_result(
          conn,
-         ItineraryErrorType.NO_AVAILABLE_SLOT,
+         error_type,
          **itinerary_controller_kwargs )
 
    return slot, None

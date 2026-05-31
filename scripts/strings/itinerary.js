@@ -94,6 +94,9 @@ export const itinerary = {
       generic: 'Could not update itinerary.',
       arrivalDepartureTooClose: 'Could not update itinerary time.',
       noAvailableSlot: 'No open time slot is available for this item.',
+      requestedTimeNotAvailable: (
+         'That time is not available. Select another start time and try again.'
+      ),
       itemNotOnItinerary: 'This item must be on your itinerary before it can be scheduled.',
    },
    dayPlanner: {

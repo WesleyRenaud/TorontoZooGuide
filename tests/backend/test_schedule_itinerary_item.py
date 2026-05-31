@@ -193,6 +193,79 @@ def test_schedule_itinerary_animal_skips_existing_scheduled_slot(
    assert scheduled.start_time == '09:45'
 
 
+def test_schedule_itinerary_animal_rejects_unavailable_requested_start_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      animals=[ LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+   ).success
+
+   rejected = ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key=PENGUIN_KEY,
+      start_time='09:30',
+   )
+
+   assert not rejected.success
+   assert rejected.error_type == ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
+
+   penguin = next(
+      animal for animal in rejected.itinerary.animals
+      if animal.species == 'African Penguin'
+   )
+
+   assert penguin.start_time is None
+
+
+def test_schedule_itinerary_animal_rejects_conflicting_noon_start_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      animals=[ LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='12:00 PM',
+   ).success
+
+   result = ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key=PENGUIN_KEY,
+      start_time='12:00 PM',
+   )
+
+   assert not result.success
+   assert result.error_type == ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
+
+   penguin = next(
+      animal for animal in result.itinerary.animals
+      if animal.species == 'African Penguin'
+   )
+
+   assert penguin.start_time is None
+
+
 def test_schedule_itinerary_event_uses_default_duration(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
