@@ -106,9 +106,12 @@ export const itinerary = {
          'Arrival time must be before departure.'
       ),
       arrivalLabel: 'Arrival',
+      arrivalTimeMenuAria: 'Arrival time options',
+      remove: 'Remove',
       dayPlannerLabel: 'Day Planner View',
       date: 'Saturday, June 20',
       departureInputLabel: 'Departure time',
+      departureTimeMenuAria: 'Departure time options',
       departureTimeInvalid: (
          'Departure time must be between opening and closing.'
       ),
@@ -181,7 +184,6 @@ export const itinerary = {
       wildEncountersSubtitle: 'The following encounters are not available on your new date.',
       emptyItineraryTitle: 'Your itinerary is now empty',
       keepInItinerary: 'Keep',
-      removeFromItinerary: 'Remove',
       removeFromItineraryHint: 'This item will stay on your itinerary when you accept.',
    },
    searchPlaceholder: 'Search...',

@@ -41,6 +41,10 @@ test('buildSchedulableEventTypes omits arrival and departure', () => {
    assert.deepEqual(
       buildSchedulableEventTypes({
          eventTypes: ['arrival', 'lunch', 'departure', 'break'],
+         visitBoundaryEventTypes: {
+            arrival: 'arrival',
+            departure: 'departure',
+         },
       }),
       ['lunch', 'break']
    );

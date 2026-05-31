@@ -1,18 +1,26 @@
 import { parseClockTimeMinutes } from './dayPlannerSchedule.js';
+import { normalizeVisitBoundaryEventTypes } from '../itineraryEventTypes.js';
 
 export function buildItineraryTimeMarkers(itinerary = {}, strings = {}) {
+   const visitBoundaryEventTypes = normalizeVisitBoundaryEventTypes(
+      itinerary.itineraryConfig?.visitBoundaryEventTypes
+   );
+
    return [
       {
          startMinutes: parseClockTimeMinutes(itinerary.arrivalTime),
          label: strings.arrivalLabel,
+         kind: visitBoundaryEventTypes.arrival,
       },
       {
          startMinutes: parseClockTimeMinutes(itinerary.departureTime),
          label: strings.departureLabel,
+         kind: visitBoundaryEventTypes.departure,
       },
    ].filter((marker) => (
       Number.isFinite(marker.startMinutes)
       && marker.label
+      && marker.kind
    ));
 }
 
@@ -87,6 +95,7 @@ export function buildMarkersByAnchorSlot(
       markers.push({
          label: marker.label,
          offsetFraction,
+         kind: marker.kind,
       });
       markersMap.set(anchorSlot, markers);
 
