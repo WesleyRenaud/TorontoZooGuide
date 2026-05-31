@@ -2407,29 +2407,31 @@ nav ul li a:hover {
    white-space: nowrap;
 }
 
-.itinerary-day-scheduled-pill--with-menu {
-   display: flex;
-   flex-direction: column;
-   align-items: stretch;
+.itinerary-day-scheduled-pill.itinerary-day-scheduled-pill--with-menu {
+   display: grid;
+   grid-template-columns: minmax(0, 1fr) auto;
+   column-gap: 10px;
+   align-items: center;
+   align-content: center;
+   width: max-content;
+   max-width: 100%;
+   min-width: 0;
+   height: max(
+      var(--itinerary-scheduled-pill-min-height),
+      calc(
+         var(--itinerary-scheduled-pill-duration-fraction, 0)
+            * var(--itinerary-half-hour-slot-height)
+      )
+   );
    padding: 17px 14px 17px 30px;
+   line-height: normal;
    overflow: visible;
    white-space: normal;
-}
-
-.itinerary-day-scheduled-pill-header {
-   display: flex;
-   align-items: center;
-   gap: 10px;
-   flex: 0 0 auto;
-   min-height: 52px;
-   min-width: 0;
+   text-overflow: clip;
 }
 
 .itinerary-day-scheduled-pill-label {
-   display: flex;
-   align-items: center;
-   flex: 1 1 auto;
-   min-height: 52px;
+   display: block;
    min-width: 0;
    line-height: 1;
    overflow: hidden;
@@ -2472,9 +2474,9 @@ nav ul li a:hover {
 }
 
 .itinerary-day-open-pill-menu-btn {
-   display: inline-flex;
-   align-items: center;
-   justify-content: center;
+   display: grid;
+   place-content: center;
+   flex: 0 0 auto;
    width: 52px;
    height: 52px;
    margin: 0;
@@ -2483,11 +2485,25 @@ nav ul li a:hover {
    border-radius: 999px;
    background: rgba(94, 150, 0, 0.06);
    color: #5e9600;
-   font-size: 2.65rem;
-   line-height: 1;
-   font-weight: 900;
-   letter-spacing: -0.04em;
+   appearance: none;
    cursor: pointer;
+}
+
+.itinerary-day-open-pill-menu-dots {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   gap: 5px;
+}
+
+.itinerary-day-open-pill-menu-dot {
+   display: block;
+   flex: 0 0 auto;
+   width: 5px;
+   height: 5px;
+   border-radius: 999px;
+   background: currentColor;
 }
 
 .itinerary-day-open-pill-menu-btn:hover,
