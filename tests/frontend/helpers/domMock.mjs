@@ -44,8 +44,63 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
          },
       },
       appendChild(child) {
+         child.parentElement = node;
+         child.parent = node;
          children.push(child);
          return child;
+      },
+      removeChild(child) {
+         const childIndex = children.indexOf(child);
+
+         if (childIndex >= 0) {
+            children.splice(childIndex, 1);
+         }
+
+         child.parentElement = null;
+         child.parent = null;
+
+         return child;
+      },
+      closest(selector) {
+         let current = node;
+
+         while (current) {
+            if (nodeMatchesSelector(current, selector)) {
+               return current;
+            }
+
+            current = current.parentElement ?? current.parent;
+         }
+
+         return null;
+      },
+      get offsetHeight() {
+         if (classes.has('itinerary-day-open-pill')) {
+            return 69;
+         }
+
+         if (classes.has('itinerary-day-grid-line')) {
+            return 330;
+         }
+
+         return 0;
+      },
+      getBoundingClientRect() {
+         const height = classes.has('itinerary-day-open-pill') ? 69 : 0;
+
+         return {
+            height,
+            width: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: height,
+         };
+      },
+      style: {
+         setProperty(name, value) {
+            this[name] = value;
+         },
       },
       append(...items) {
          children.push(...items);
@@ -214,16 +269,37 @@ export function installTestWindow() {
       return 0;
    };
 
+   const getComputedStyle = (element) => ({
+      gap: '0',
+      paddingBottom: '0',
+      paddingTop: '0',
+      rowGap: '0',
+      getPropertyValue(property) {
+         if (
+            property === '--itinerary-half-hour-slot-height'
+            && element?.classList?.contains('itinerary-day-timeline')
+         ) {
+            return '330px';
+         }
+
+         if (
+            property === '--itinerary-pill-strip-top-offset'
+            && element?.classList?.contains('itinerary-day-timeline')
+         ) {
+            return '36px';
+         }
+
+         return '';
+      },
+   });
+
+   globalThis.getComputedStyle = getComputedStyle;
+
    globalThis.window = {
       addEventListener: () => {},
       removeEventListener: () => {},
       dispatchEvent: () => true,
-      getComputedStyle: () => ({
-         gap: '0',
-         paddingBottom: '0',
-         paddingTop: '0',
-         rowGap: '0',
-      }),
+      getComputedStyle,
       open: () => {},
    };
 }
