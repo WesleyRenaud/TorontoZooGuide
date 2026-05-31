@@ -99,6 +99,7 @@ export const itinerary = {
    dayPlanner: {
       aria: 'Itinerary day planner preview',
       arrivalInputLabel: 'Arrival time',
+      clearArrivalTimeAria: 'Clear arrival time',
       arrivalTimeInvalid: (
          'Arrival time must be between opening and last admission.'
       ),
@@ -113,6 +114,7 @@ export const itinerary = {
       dayPlannerLabel: 'Day Planner View',
       date: 'Saturday, June 20',
       departureInputLabel: 'Departure time',
+      clearDepartureTimeAria: 'Clear departure time',
       departureTimeMenuAria: 'Departure time options',
       departureTimeInvalid: (
          'Departure time must be between opening and closing.'
