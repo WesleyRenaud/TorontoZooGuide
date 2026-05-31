@@ -195,6 +195,13 @@ def test_set_itinerary_arrival_and_departure_time_updates_only_requested_field(
    assert itinerary.arrival_time == '10:15'
    assert itinerary.departure_time == '17:00'
 
+   assert ItineraryController.set_arrival_time( None ).success
+   itinerary = ItineraryController.get_itinerary()
+
+   assert itinerary.arrival_time is None
+   assert itinerary.departure_time == '17:00'
+
+   assert ItineraryController.set_arrival_time( '10:15 AM' ).success
    assert ItineraryController.set_departure_time( None ).success
    itinerary = ItineraryController.get_itinerary()
 

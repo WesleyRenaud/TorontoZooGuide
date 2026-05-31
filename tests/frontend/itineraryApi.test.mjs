@@ -7,6 +7,7 @@ import {
    getItineraryRequest,
    getZooHoursRequest,
    scheduleItineraryItemRequest,
+   unscheduleItineraryItemRequest,
    setItineraryArrivalTimeRequest,
    setItineraryDepartureTimeRequest,
    setItineraryRequest,
@@ -368,6 +369,28 @@ test('normalizes zoo hours response', async () => {
          closeTime: '19:00',
       },
    });
+});
+
+test('normalizes unschedule itinerary item response', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/unschedule-itinerary-item');
+      assert.deepEqual(JSON.parse(options.body), {
+         itemType: 'animals',
+         key: 'African Lion||Africa Savanna',
+      });
+
+      return mockJsonResponse({
+         errorType: 'success',
+      });
+   };
+
+   assert.deepEqual(
+      await unscheduleItineraryItemRequest({
+         itemType: 'animals',
+         key: 'African Lion||Africa Savanna',
+      }),
+      { errorType: 'success' }
+   );
 });
 
 test('normalizes schedule itinerary item response', async () => {

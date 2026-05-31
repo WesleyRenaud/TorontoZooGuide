@@ -15,6 +15,8 @@ class ParsedScheduleItemRequest:
    exhibit: str | None = None
    attraction_name: str | None = None
    event_type: ItineraryEventType | None = None
+   talk_name: str | None = None
+   wild_encounter_name: str | None = None
 
 
 def _parse_animal_key( key: str ) -> tuple[ str, str ] | None:
@@ -83,5 +85,21 @@ def parse_schedule_item_request(
       return ParsedScheduleItemRequest(
          kind=ScheduleItemKind.ATTRACTION,
          attraction_name=normalized_key )
+
+   if item_kind == ScheduleItemKind.GUARDIANS_TALK:
+      if not normalized_key:
+         return None
+
+      return ParsedScheduleItemRequest(
+         kind=ScheduleItemKind.GUARDIANS_TALK,
+         talk_name=normalized_key )
+
+   if item_kind == ScheduleItemKind.WILD_ENCOUNTER:
+      if not normalized_key:
+         return None
+
+      return ParsedScheduleItemRequest(
+         kind=ScheduleItemKind.WILD_ENCOUNTER,
+         wild_encounter_name=normalized_key )
 
    return None

@@ -854,6 +854,29 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/unschedule-itinerary-item':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         item_type = data.get( 'itemType' )
+         key = data.get( 'key' )
+
+         save_result = ItineraryController.unschedule_itinerary_item(
+            item_type=item_type,
+            key=key )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'errorType': save_result.error_type.value,
+         }
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/set-itinerary-arrival-time':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
