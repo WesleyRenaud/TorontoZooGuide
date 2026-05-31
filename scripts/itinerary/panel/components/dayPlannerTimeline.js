@@ -1,4 +1,7 @@
-import { appendScheduledDurationPill } from './dayPlannerTimelinePills.js';
+import {
+   appendScheduledDurationPill,
+   resolveScheduledPillOptions,
+} from './dayPlannerTimelinePills.js';
 import { el } from '../dom.js';
 
 export function makeTimelineRow(timeLabel) {
@@ -14,12 +17,22 @@ export function makeUnavailableMessage(message) {
    return el('div', 'itinerary-day-unavailable', message);
 }
 
-export function appendScheduledItems(gridLine, scheduledItems = []) {
+export function appendScheduledItems(
+   gridLine,
+   scheduledItems = [],
+   scheduleHandlers = {},
+   strings = {}
+) {
    scheduledItems.forEach((scheduledItem) => {
       appendScheduledDurationPill(gridLine, {
          label: scheduledItem.label,
          offsetFraction: scheduledItem.offsetFraction,
          durationMinutes: scheduledItem.maximumDuration,
+         ...resolveScheduledPillOptions(
+            scheduledItem,
+            scheduleHandlers,
+            strings
+         ),
       });
    });
 }
