@@ -318,6 +318,13 @@ def test_itinerary_config_exposes_event_types() -> None:
    ]
 
 
+def test_itinerary_config_exposes_visit_boundary_event_types() -> None:
+   assert itinerary_config_to_dict()[ 'itinerary_visit_boundary_event_types' ] == {
+      'arrival': ItineraryEventType.ARRIVAL.value,
+      'departure': ItineraryEventType.DEPARTURE.value,
+   }
+
+
 def test_itinerary_config_exposes_error_types() -> None:
    assert itinerary_config_to_dict()[ 'itinerary_error_types' ] == {
       error_type.name: error_type.value

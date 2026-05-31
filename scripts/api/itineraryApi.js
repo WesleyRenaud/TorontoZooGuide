@@ -53,6 +53,15 @@ function normalizeItineraryErrorTypes(errorTypes) {
    );
 }
 
+function normalizeVisitBoundaryEventTypes(config) {
+   const source = asObject(config.itinerary_visit_boundary_event_types);
+
+   return {
+      arrival: asTrimmedString(source.arrival),
+      departure: asTrimmedString(source.departure),
+   };
+}
+
 function normalizeItineraryConfig(config) {
    const source = asObject(config);
    const normalizedConfig = {
@@ -60,6 +69,7 @@ function normalizeItineraryConfig(config) {
       eventTypes: asArray(source.itinerary_event_types)
          .map(asTrimmedString)
          .filter(Boolean),
+      visitBoundaryEventTypes: normalizeVisitBoundaryEventTypes(source),
       errorTypes: normalizeItineraryErrorTypes(source.itinerary_error_types),
       suppressedErrorTypes: asArray(source.suppressed_error_types)
          .map(asTrimmedString)

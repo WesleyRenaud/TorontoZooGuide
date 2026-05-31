@@ -28,6 +28,10 @@ function normalizedItineraryConfig(overrides = {}) {
    return {
       animalVisibilityChangeThreshold: overrides.animalVisibilityChangeThreshold,
       eventTypes: overrides.eventTypes ?? [],
+      visitBoundaryEventTypes: overrides.visitBoundaryEventTypes ?? {
+         arrival: 'arrival',
+         departure: 'departure',
+      },
       errorTypes: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
       suppressedErrorTypes: overrides.suppressedErrorTypes ?? [],
    };
@@ -39,6 +43,11 @@ function mockItineraryConfigResponse(overrides = {}) {
          animal_visibility_change_threshold:
             overrides.animalVisibilityChangeThreshold,
          itinerary_event_types: overrides.eventTypes ?? [],
+         itinerary_visit_boundary_event_types:
+            overrides.visitBoundaryEventTypes ?? {
+               arrival: 'arrival',
+               departure: 'departure',
+            },
          itinerary_error_types: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
          suppressed_error_types: overrides.suppressedErrorTypes ?? [],
       },
@@ -319,7 +328,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
          guardiansTalks: [],
          wildEncounters: [],
       },
-      itineraryConfig: {
+      itineraryConfig: normalizedItineraryConfig({
          animalVisibilityChangeThreshold: 25,
          eventTypes: [
             'arrival',
@@ -331,9 +340,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
             'shopping',
             'snack',
          ],
-         errorTypes: MOCK_ITINERARY_ERROR_TYPES,
-         suppressedErrorTypes: [],
-      },
+      }),
    });
 });
 

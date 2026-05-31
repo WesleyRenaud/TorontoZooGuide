@@ -47,6 +47,23 @@ const EMPTY_ITINERARY = {
    wildEncounters: [],
 };
 
+const TEST_ITINERARY_CONFIG = {
+   eventTypes: [
+      'arrival',
+      'breakfast',
+      'break',
+      'departure',
+      'dinner',
+      'lunch',
+      'shopping',
+      'snack',
+   ],
+   visitBoundaryEventTypes: {
+      arrival: 'arrival',
+      departure: 'departure',
+   },
+};
+
 function createNode(tagName, className = '', textContent = '') {
    const children = [];
    const listeners = {};
@@ -158,6 +175,16 @@ function createNode(tagName, className = '', textContent = '') {
       addEventListener(eventName, handler) {
          listeners[eventName] = handler;
       },
+      contains(target) {
+         if (target === node) {
+            return true;
+         }
+
+         return children.some((child) => child.contains?.(target) ?? false);
+      },
+      click() {
+         listeners.click?.({ stopPropagation() {} });
+      },
       getBoundingClientRect() {
          return {
             height: classes.has('itinerary-day-open-pill') ? 69 : 100,
@@ -250,10 +277,25 @@ function imageSrcFor(row) {
    return row.querySelector('.itin-panel-thumb')?.children[0]?.src ?? '';
 }
 
+const documentListeners = new Map();
+
 beforeEach(() => {
+   documentListeners.clear();
    globalThis.document = {
       createElement: (tagName) => createNode(tagName),
       createTextNode: (textContent) => createNode('#text', '', textContent),
+      addEventListener(eventName, handler) {
+         const handlers = documentListeners.get(eventName) ?? [];
+         handlers.push(handler);
+         documentListeners.set(eventName, handlers);
+      },
+      removeEventListener(eventName, handler) {
+         const handlers = documentListeners.get(eventName) ?? [];
+         documentListeners.set(
+            eventName,
+            handlers.filter((registeredHandler) => registeredHandler !== handler)
+         );
+      },
    };
    installTestWindow();
    globalThis.requestAnimationFrame = (callback) => callback();
@@ -413,7 +455,11 @@ test('timeline markers anchor to the preceding half-hour slot', () => {
    const slotStarts = buildHalfHourSlotStarts(570, 1140);
    const markersByAnchor = buildMarkersByAnchorSlot(
       [
-         { startMinutes: parseClockTimeMinutes('11:35'), label: 'Arrival' },
+         {
+            startMinutes: parseClockTimeMinutes('11:35'),
+            label: 'Arrival',
+            kind: TEST_ITINERARY_CONFIG.visitBoundaryEventTypes.arrival,
+         },
       ],
       slotStarts,
       1140
@@ -424,6 +470,7 @@ test('timeline markers anchor to the preceding half-hour slot', () => {
    assert.deepEqual(markersByAnchor.get(690), [{
       label: 'Arrival',
       offsetFraction: 1 / 6,
+      kind: 'arrival',
    }]);
 });
 
@@ -443,6 +490,69 @@ test('day planner starts at early admission when available', () => {
    assert.match(text, /Zoo Opens/);
 });
 
+test('arrival pill remove menu clears arrival time through handler', () => {
+   const arrivalRemovals = [];
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         arrivalTime: '09:45',
+         itineraryConfig: TEST_ITINERARY_CONFIG,
+         ...EMPTY_ITINERARY,
+      },
+      {
+         onArrivalTimeChange: (value) => {
+            arrivalRemovals.push(value);
+         },
+      }
+   );
+   const arrivalPill = [...planner.querySelectorAll('.itinerary-day-open-pill')].find((pill) => (
+      allTextFor(pill).includes('Arrival')
+   ));
+   const openPill = [...planner.querySelectorAll('.itinerary-day-open-pill')].find((pill) => (
+      allTextFor(pill).includes('Zoo Opens')
+   ));
+
+   assert.ok(arrivalPill?.classList.contains('itinerary-day-open-pill--with-menu'));
+   assert.equal(openPill?.classList.contains('itinerary-day-open-pill--with-menu'), false);
+
+   arrivalPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
+   assert.deepEqual(arrivalRemovals, [ '' ]);
+});
+
+test('departure pill remove menu clears departure time through handler', () => {
+   const departureRemovals = [];
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-15',
+         openTime: '09:30',
+         lastAdmissionTime: '17:00',
+         closeTime: '18:00',
+      },
+      {
+         departureTime: '17:15',
+         itineraryConfig: TEST_ITINERARY_CONFIG,
+         ...EMPTY_ITINERARY,
+      },
+      {
+         onDepartureTimeChange: (value) => {
+            departureRemovals.push(value);
+         },
+      }
+   );
+   const departurePill = [...planner.querySelectorAll('.itinerary-day-open-pill')].find((pill) => (
+      allTextFor(pill).includes('Departure')
+   ));
+
+   assert.ok(departurePill?.classList.contains('itinerary-day-open-pill--with-menu'));
+   departurePill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
+   assert.deepEqual(departureRemovals, [ '' ]);
+});
+
 test('day planner stacks zoo hours and arrival pills at the same time', () => {
    const planner = makeDayPlannerPreview(
       {
@@ -453,6 +563,7 @@ test('day planner stacks zoo hours and arrival pills at the same time', () => {
       },
       {
          arrivalTime: '09:30',
+         itineraryConfig: TEST_ITINERARY_CONFIG,
          ...EMPTY_ITINERARY,
       }
    );
@@ -475,6 +586,7 @@ test('day planner stacks departure and close pills at the same time', () => {
       },
       {
          departureTime: '18:00',
+         itineraryConfig: TEST_ITINERARY_CONFIG,
          ...EMPTY_ITINERARY,
       }
    );
@@ -504,6 +616,7 @@ test('day planner positions off-slot arrival and departure between half-hour lin
       {
          arrivalTime: '09:45',
          departureTime: '17:15',
+         itineraryConfig: TEST_ITINERARY_CONFIG,
          ...EMPTY_ITINERARY,
       }
    );
@@ -650,6 +763,7 @@ test('day planner renders scheduled duration as a larger pill', () => {
       {
          arrivalTime: '11:35',
          departureTime: '17:15',
+         itineraryConfig: TEST_ITINERARY_CONFIG,
          ...EMPTY_ITINERARY,
          animals: [
             {
