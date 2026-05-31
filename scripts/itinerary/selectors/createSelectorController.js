@@ -22,6 +22,14 @@ function defaultMigrate(items) {
    return items;
 }
 
+function buildSelectionFingerprint(items = []) {
+   return items
+      .map((item) => String(item.id).trim())
+      .filter(Boolean)
+      .sort((left, right) => left.localeCompare(right, undefined, { sensitivity: 'base' }))
+      .join('\0');
+}
+
 function validateSelectorConfig({
    storageKey,
    getId,
@@ -209,6 +217,13 @@ export function createItinerarySelectorController({
       onRows: renderRows,
    });
 
+   let selectionFingerprintAtShow = '';
+
+   function shouldSkipClosingSelectionSync() {
+      return buildSelectionFingerprint(selectionState.getSelectedSnapshot())
+         === selectionFingerprintAtShow;
+   }
+
    function handlePrev() {
       onPrev?.(getSelectionSnapshot());
    }
@@ -288,6 +303,9 @@ export function createItinerarySelectorController({
 
       ensureBuilt();
       selectionState.reload();
+      selectionFingerprintAtShow = buildSelectionFingerprint(
+         selectionState.getSelectedSnapshot()
+      );
       mountRoot();
       resetInput();
       void searchRunner.runCurrentQuery();
@@ -305,5 +323,6 @@ export function createItinerarySelectorController({
       show,
       hide,
       getSelectionSnapshot,
+      shouldSkipClosingSelectionSync,
    };
 }
