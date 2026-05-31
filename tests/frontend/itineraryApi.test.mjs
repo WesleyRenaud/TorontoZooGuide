@@ -108,6 +108,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
             attractions: [{ name: 'Conservation Carousel' }],
             guardians_talks: [{ name: 'Amur Tiger' }],
             wild_encounters: [{ name: 'African Rainforest' }],
+            events: [{ event_type: 'lunch', start_time: '12:00 PM', end_time: '12:40 PM' }],
          },
          ...mockItineraryConfigResponse(),
       });
@@ -124,6 +125,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
          attractions: [{ name: 'Conservation Carousel' }],
          guardiansTalks: [{ name: 'Amur Tiger' }],
          wildEncounters: [{ name: 'African Rainforest' }],
+         events: [{ event_type: 'lunch', start_time: '12:00 PM', end_time: '12:40 PM' }],
       },
       itineraryConfig: normalizedItineraryConfig(),
    });
@@ -152,6 +154,7 @@ test('normalizes set itinerary failures without dropping returned itinerary data
          attractions: [{ name: 'Conservation Carousel' }],
          guardiansTalks: [],
          wildEncounters: [],
+         events: [],
       },
       itineraryConfig: normalizedItineraryConfig(),
    });
@@ -285,6 +288,7 @@ test('normalizes accept itinerary response', async () => {
          attractions: [],
          guardiansTalks: [],
          wildEncounters: [],
+         events: [],
       },
       itineraryConfig: normalizedItineraryConfig(),
    });
@@ -327,6 +331,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
          attractions: [],
          guardiansTalks: [],
          wildEncounters: [],
+         events: [],
       },
       itineraryConfig: normalizedItineraryConfig({
          animalVisibilityChangeThreshold: 25,
