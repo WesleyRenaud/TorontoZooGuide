@@ -1,0 +1,1 @@
+export const TIMELINE_SLOT_MINUTES = 30;

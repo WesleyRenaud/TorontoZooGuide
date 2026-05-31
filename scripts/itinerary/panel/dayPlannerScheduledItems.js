@@ -1,5 +1,12 @@
 import { parseClockTimeMinutes } from './dayPlannerSchedule.js';
 import {
+   computeMarkerOffsetFraction,
+   findTimelineAnchorSlot,
+   findTimelineSlotEndMinutes,
+} from './dayPlannerTimelineMarkers.js';
+import {
+   buildAnimalRows,
+   buildAttractionRows,
    buildGuardiansRows,
    buildWildRows,
 } from './rows.js';
@@ -9,8 +16,18 @@ function getScheduledMaximumDuration(item) {
    return Number.isFinite(maximumDuration) && maximumDuration > 0 ? maximumDuration : null;
 }
 
+function getDurationMinutesFromScheduleTimes(item) {
+   return (
+      parseClockTimeMinutes(item.end_time) - parseClockTimeMinutes(item.start_time)
+   );
+}
+
 function hasItineraryScheduleTimes(item) {
    return Boolean(item.start_time && item.end_time);
+}
+
+function getScheduledItemLabel(item) {
+   return String(item?.species || item?.name || '').trim();
 }
 
 function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
@@ -18,16 +35,19 @@ function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
       const [row] = buildRows([item]);
       const startMinutes = parseClockTimeMinutes(item.start_time);
       const maximumDuration = getDurationMinutes(item);
+      const label = getScheduledItemLabel(item);
 
       return {
          index,
          item,
          row,
+         label,
          startMinutes,
          maximumDuration,
       };
    }).filter((scheduledItem) => (
       scheduledItem.row
+      && scheduledItem.label
       && Number.isFinite(scheduledItem.startMinutes)
       && Number.isFinite(scheduledItem.maximumDuration)
    ));
@@ -47,12 +67,42 @@ function buildItineraryScheduledItemIndexes(items = []) {
    return indexes;
 }
 
-function mergeScheduledItemsByStart(scheduledItems = []) {
-   return scheduledItems.reduce((itemsByStartMap, scheduledItem) => {
-      const items = itemsByStartMap.get(scheduledItem.startMinutes) ?? [];
-      items.push(scheduledItem);
-      itemsByStartMap.set(scheduledItem.startMinutes, items);
-      return itemsByStartMap;
+function mergeScheduledItemsByAnchorSlot(
+   scheduledItems = [],
+   slotStarts = [],
+   closeMinutes = null
+) {
+   const sortedSlotStarts = [...slotStarts].sort((left, right) => left - right);
+
+   return scheduledItems.reduce((itemsByAnchorMap, scheduledItem) => {
+      const anchorSlot = findTimelineAnchorSlot(
+         scheduledItem.startMinutes,
+         sortedSlotStarts
+      );
+
+      if (!Number.isFinite(anchorSlot)) {
+         return itemsByAnchorMap;
+      }
+
+      const slotEndMinutes = findTimelineSlotEndMinutes(
+         anchorSlot,
+         sortedSlotStarts,
+         closeMinutes
+      );
+      const offsetFraction = computeMarkerOffsetFraction(
+         scheduledItem.startMinutes,
+         anchorSlot,
+         slotEndMinutes
+      );
+      const items = itemsByAnchorMap.get(anchorSlot) ?? [];
+
+      items.push({
+         ...scheduledItem,
+         offsetFraction,
+      });
+      itemsByAnchorMap.set(anchorSlot, items);
+
+      return itemsByAnchorMap;
    }, new Map());
 }
 
@@ -63,26 +113,42 @@ export function buildScheduledItemRowsContext(
       guardiansTalks = [],
       wildEncounters = [],
    } = {},
-   slotStarts = []
+   slotStarts = [],
+   closeMinutes = null
 ) {
-   const slotStartSet = new Set(slotStarts);
    const guardiansTalkRows = buildScheduledItemRows(
       guardiansTalks,
       buildGuardiansRows,
       getScheduledMaximumDuration
-   ).filter((scheduledItem) => slotStartSet.has(scheduledItem.startMinutes));
+   );
    const wildEncounterRows = buildScheduledItemRows(
       wildEncounters,
       buildWildRows,
       getScheduledMaximumDuration
-   ).filter((scheduledItem) => slotStartSet.has(scheduledItem.startMinutes));
+   );
+   const animalRows = buildScheduledItemRows(
+      animals,
+      buildAnimalRows,
+      getDurationMinutesFromScheduleTimes
+   );
+   const attractionRows = buildScheduledItemRows(
+      attractions,
+      buildAttractionRows,
+      getDurationMinutesFromScheduleTimes
+   );
    const scheduledItems = [
       ...guardiansTalkRows,
       ...wildEncounterRows,
+      ...animalRows,
+      ...attractionRows,
    ];
 
    return {
-      itemsByStart: mergeScheduledItemsByStart(scheduledItems),
+      itemsByStart: mergeScheduledItemsByAnchorSlot(
+         scheduledItems,
+         slotStarts,
+         closeMinutes
+      ),
       scheduledAnimalIndexes: buildItineraryScheduledItemIndexes(animals),
       scheduledAttractionIndexes: buildItineraryScheduledItemIndexes(attractions),
       scheduledGuardiansTalkIndexes: new Set(
