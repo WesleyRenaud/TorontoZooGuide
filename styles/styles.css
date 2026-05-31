@@ -1684,6 +1684,14 @@ nav ul li a:hover {
    pointer-events: none;
 }
 
+.itinerary-flow .itin-overlay {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   box-sizing: border-box;
+   padding: 12px 24px;
+}
+
 .itin-overlay {
    position: absolute;
    inset: 0;
@@ -2972,6 +2980,22 @@ nav ul li a:hover {
    max-height: 2400px;
    display: flex;
    flex-direction: column;
+}
+
+.itinerary-flow .itin-overlay > .itin-card {
+   width: min(1800px, 50%);
+   max-height: 95%;
+}
+
+.itinerary-flow .itin-card.itin-card-tall {
+   height: 95%;
+   flex: 0 0 auto;
+   min-height: 0;
+}
+
+.itinerary-flow .itin-card.itin-card-tall .itin-card-topbar,
+.itinerary-flow .itin-card.itin-card-tall .itin-card-actions-dual {
+   flex-shrink: 0;
 }
 
 .itin-card-body.itin-card-body-tall {

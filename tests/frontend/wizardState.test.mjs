@@ -79,6 +79,28 @@ test('hasUnsavedChanges is false when animals match semantically after refetch-s
    assert.equal(wizard.hasUnsavedChanges(), false);
 });
 
+test('hasUnsavedChanges stays false after revisiting date and animals without edits', () => {
+   const wizard = createItineraryWizardState({
+      date: '2026-06-15',
+      animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+      attractions: [{ name: 'Carousel' }],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   wizard.applyValidationResult('2026-06-15', null);
+   wizard.updateSelection('animals', [
+      {
+         species: 'African Lion',
+         exhibit: 'Africa Savanna',
+         likelihood: 91,
+         id: 'African Lion||Africa Savanna',
+      },
+   ]);
+
+   assert.equal(wizard.hasUnsavedChanges(), false);
+});
+
 test('hasUnsavedChanges is true when clearing a non-empty initial itinerary', () => {
    const wizard = createItineraryWizardState({
       date: '2026-06-15',

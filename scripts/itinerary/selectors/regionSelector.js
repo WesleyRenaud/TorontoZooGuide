@@ -90,10 +90,20 @@ export function createItineraryRegionSelectorController({
       });
 
       elements?.nextButtonEl?.addEventListener('click', async () => {
+         if (shouldSkipClosingSelectionSync()) {
+            onNext?.(null);
+            return;
+         }
+
          await commitSelection(onNext);
       });
 
       elements?.finishButtonEl?.addEventListener('click', async () => {
+         if (shouldSkipClosingSelectionSync()) {
+            onFinish?.(null);
+            return;
+         }
+
          await commitSelection(onFinish);
       });
    }
