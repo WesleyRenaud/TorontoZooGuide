@@ -27,7 +27,11 @@ import { el } from '../dom.js';
 import { formatISODateFull } from '../format.js';
 import { makeScheduleItemButton } from './scheduleItemButton.js';
 import { makeSection } from './section.js';
-import { buildSectionConfigs } from '../sectionConfigs.js';
+import {
+   buildSectionConfigs,
+   SCHEDULED_DAY_PLANNER_SECTION_KEYS,
+   UNSCHEDULED_DAY_PLANNER_SECTION_KEYS,
+} from '../sectionConfigs.js';
 import { APP_STRINGS } from '../../../strings.js';
 import { labels } from '../../../strings/common.js';
 
@@ -38,9 +42,11 @@ function makeItemsListSection(
       showEditButton = true,
       onUnscheduleItem = null,
       onScheduleItem = null,
+      sectionKeys = SCHEDULED_DAY_PLANNER_SECTION_KEYS,
    } = {}
 ) {
    const sectionConfigs = buildSectionConfigs(itinerary, {
+      keys: sectionKeys,
       onUnscheduleItem,
       onScheduleItem,
    });
@@ -206,7 +212,10 @@ export function makeDayPlannerPreview(
    const unscheduledSection = makeItemsListSection(
       buildUnscheduledItinerary(itinerary, scheduledRowsContext),
       strings.unscheduledTitle,
-      { onScheduleItem: scheduleHandlers.onScheduleItineraryItem }
+      {
+         onScheduleItem: scheduleHandlers.onScheduleItineraryItem,
+         sectionKeys: UNSCHEDULED_DAY_PLANNER_SECTION_KEYS,
+      }
    );
 
    if (scheduledSection) {

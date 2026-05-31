@@ -1069,8 +1069,8 @@ test.describe('itinerary panel rows', () => {
       assert.match(text, /Giant Panda/);
       assert.match(text, /Attractions \(1\)/);
       assert.match(text, /Conservation Carousel/);
-      assert.match(text, /Meet The Guardians \(0\)/);
-      assert.match(text, /Wild Encounters \(0\)/);
+      assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Meet The Guardians/);
+      assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Wild Encounters/);
       assert.ok(text.indexOf('Scheduled Items') < text.indexOf('Unscheduled Items'));
 
       const timelineEventTexts = timelineScheduledPillTexts(planner);
@@ -1264,7 +1264,7 @@ test.describe('itinerary panel rows', () => {
       ], 0.67, 0.5), 1);
    });
 
-   test('day planner renders zero-count unscheduled sections', () => {
+   test('day planner omits guardians talks and wild encounters from unscheduled items', () => {
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-20',
@@ -1291,8 +1291,8 @@ test.describe('itinerary panel rows', () => {
       assert.match(text, /Unscheduled Items/);
       assert.match(text, /Animals \(0\)/);
       assert.match(text, /Attractions \(0\)/);
-      assert.match(text, /Meet The Guardians \(0\)/);
-      assert.match(text, /Wild Encounters \(0\)/);
+      assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Meet The Guardians/);
+      assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Wild Encounters/);
    });
 
    test('buildAnimalRows deduplicates species and renders visibility alerts', () => {
