@@ -11,6 +11,8 @@ export function makeItemRow({
    alertTone = 'default',
    linkText,
    onLinkClick,
+   actionLabel = '',
+   onAction = null,
 }) {
    const row = el('div', 'itin-panel-item');
 
@@ -48,6 +50,20 @@ export function makeItemRow({
 
    left.appendChild(text);
    row.appendChild(left);
+
+   if (actionLabel && typeof onAction === 'function') {
+      const actionButton = document.createElement('button');
+
+      actionButton.type = 'button';
+      actionButton.className = 'itin-panel-item-action-btn';
+      actionButton.textContent = actionLabel;
+      actionButton.setAttribute('aria-label', actionLabel);
+      actionButton.addEventListener('click', (event) => {
+         event.stopPropagation();
+         onAction();
+      });
+      row.appendChild(actionButton);
+   }
 
    return row;
 }

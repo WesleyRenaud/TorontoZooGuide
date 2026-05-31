@@ -676,6 +676,107 @@ test('scheduled guardians talk pill has no unschedule menu', () => {
    assert.equal(tigerPill.classList.contains('itinerary-day-scheduled-pill--with-menu'), false);
 });
 
+test('scheduled list rows show unschedule buttons for animals and attractions only', () => {
+   const unscheduleCalls = [];
+   const planner = makeDayPlannerPreview(
+      {
+         date: '2026-06-20',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+         closeTime: '19:00',
+      },
+      {
+         ...EMPTY_ITINERARY,
+         guardiansTalks: [
+            {
+               name: 'Amur Tiger',
+               location: 'Eurasia Wilds',
+               start_time: '1:30 PM',
+               maximum_duration: 30,
+            },
+         ],
+         animals: [
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+               start_time: '1:00 PM',
+               end_time: '1:30 PM',
+            },
+         ],
+         attractions: [
+            {
+               name: 'Zoomobile',
+               subtitle: 'Ride the rails',
+               start_time: '2:30 PM',
+               end_time: '3:00 PM',
+            },
+         ],
+      },
+      {},
+      {
+         scheduleHandlers: {
+            onUnscheduleItineraryItem: (request) => {
+               unscheduleCalls.push(request);
+            },
+         },
+      }
+   );
+   const dayItemsSections = [...planner.querySelectorAll('.itinerary-day-items-sections')];
+   const scheduledList = dayItemsSections.find((section) => (
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Scheduled Items')
+   ));
+   const unscheduledList = dayItemsSections.find((section) => (
+      section.querySelector('.itinerary-day-items-title')?.textContent?.includes('Unscheduled Items')
+   ));
+   const scheduledButtons = scheduledList?.querySelectorAll('.itin-panel-item-action-btn') ?? [];
+   const tigerRow = [...(scheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
+      allTextFor(row).includes('Amur Tiger')
+   ));
+
+   assert.equal(scheduledButtons.length, 2);
+   assert.equal(scheduledButtons.every((button) => button.textContent === 'Unschedule'), true);
+   assert.equal(tigerRow?.querySelector('.itin-panel-item-action-btn'), null);
+   assert.equal(unscheduledList?.querySelectorAll('.itin-panel-item-action-btn').length ?? 0, 0);
+
+   scheduledButtons[0].click();
+   scheduledButtons[1].click();
+
+   assert.deepEqual(unscheduleCalls, [
+      {
+         itemType: 'animals',
+         key: 'African Lion||Africa Savanna',
+      },
+      {
+         itemType: 'attractions',
+         key: 'Zoomobile',
+      },
+   ]);
+});
+
+test('buildAnimalRows adds unschedule action when handler is provided', () => {
+   const unscheduleCalls = [];
+   const [row] = buildAnimalRows([
+      {
+         species: 'African Lion',
+         exhibit: 'Africa Savanna',
+         start_time: '1:00 PM',
+         end_time: '1:30 PM',
+      },
+   ], {
+      onUnscheduleItem: (request) => {
+         unscheduleCalls.push(request);
+      },
+   });
+   const button = row.querySelector('.itin-panel-item-action-btn');
+
+   assert.equal(button?.textContent, 'Unschedule');
+   button?.click();
+   assert.deepEqual(unscheduleCalls, [{
+      itemType: 'animals',
+      key: 'African Lion||Africa Savanna',
+   }]);
+});
+
 test('departure pill remove menu clears departure time through handler', () => {
    const departureRemovals = [];
    const planner = makeDayPlannerPreview(
