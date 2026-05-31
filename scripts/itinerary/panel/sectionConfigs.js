@@ -25,6 +25,11 @@ export const UNSCHEDULED_DAY_PLANNER_SECTION_KEYS = [
    ITINERARY_PANEL_SECTION_KEYS.attractions,
 ];
 
+export const SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS = [
+   ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
+   ITINERARY_PANEL_SECTION_KEYS.wildEncounters,
+];
+
 export function buildSectionConfigs(
    {
       animals = [],
