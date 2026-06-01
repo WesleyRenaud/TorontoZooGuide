@@ -101,13 +101,13 @@ test('renderSearchResults links wild encounter titles when url is present', () =
    assert.equal(findDescendant(row, 'tooltip-link'), null);
 });
 
-test('renderSearchResults keeps text-only rows for other result types', () => {
+test('renderSearchResults keeps text-only rows for restrooms', () => {
    installDocument();
 
    const resultsEl = createDomNode('div', 'animal-search-results');
 
    renderSearchResults(resultsEl, [
-      { type: 'giftShop', name: 'Zootique', location: 'Africa' },
+      { type: 'restroom', title: 'Americas Pavilion Restroom' },
    ]);
 
    const row = resultsEl.children[0];
@@ -115,4 +115,36 @@ test('renderSearchResults keeps text-only rows for other result types', () => {
    assert.equal(findDescendant(row, 'itin-animal-content'), null);
    assert.ok(findDescendant(row, 'animal-result-left'));
    assert.ok(findDescendant(row, 'animal-result-map-btn'));
+});
+
+test('renderSearchResults shows thumbnails for named map detail image types', () => {
+   installDocument();
+
+   const resultsEl = createDomNode('div', 'animal-search-results');
+
+   renderSearchResults(resultsEl, [
+      { type: 'restaurant', name: 'Beavertails Pastry', location: 'Front Courtyard' },
+      { type: 'giftShop', name: 'Zootique', location: 'Africa' },
+      { type: 'guardiansTalk', name: 'Amur Tiger', location: 'Eurasia Wilds' },
+      { type: 'pavilion', name: 'Americas Pavilion', region: 'Americas' },
+      { type: 'zoomobileStation', name: 'Zoomobile Station 1' },
+   ]);
+
+   assert.equal(resultsEl.children.length, 5);
+
+   const expectedImageSrcs = [
+      '../images/details/restaurants/beavertails-pastry.png',
+      '../images/details/gift-shops/zootique.png',
+      '../images/details/guardians-talks/amur-tiger.png',
+      '../images/details/pavilions/americas-pavilion.png',
+      '../images/details/zoomobile-stations/zoomobile-station-1.png',
+   ];
+
+   resultsEl.children.forEach((row, index) => {
+      assert.ok(findDescendant(row, 'itin-animal-content'));
+      assert.equal(
+         findDescendant(row, 'itin-animal-thumb-img')?.src,
+         expectedImageSrcs[index]
+      );
+   });
 });
