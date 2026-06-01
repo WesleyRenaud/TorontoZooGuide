@@ -29,7 +29,7 @@ function buildPillMenuButtonDots() {
    return dots;
 }
 
-function buildPillMenuNodes(menuAriaLabel, actionLabel) {
+function buildPillMenuNodes(menuAriaLabel, menuItems = []) {
    const menu = el('div', 'itinerary-day-open-pill-menu');
    const menuButton = document.createElement('button');
 
@@ -44,22 +44,29 @@ function buildPillMenuNodes(menuAriaLabel, actionLabel) {
    menuPanel.setAttribute('role', 'menu');
    menuPanel.hidden = true;
 
-   const actionButton = document.createElement('button');
-   actionButton.type = 'button';
-   actionButton.className = 'itinerary-day-open-pill-menu-item';
-   actionButton.setAttribute('role', 'menuitem');
-   actionButton.textContent = actionLabel;
-   menuPanel.appendChild(actionButton);
+   menuItems.forEach(({ label }) => {
+      const actionButton = document.createElement('button');
+      actionButton.type = 'button';
+      actionButton.className = 'itinerary-day-open-pill-menu-item';
+      actionButton.setAttribute('role', 'menuitem');
+      actionButton.textContent = label;
+      menuPanel.appendChild(actionButton);
+   });
 
    menu.appendChild(menuButton);
    menu.appendChild(menuPanel);
 
-   return { menu, menuButton, menuPanel, actionButton };
+   return { menu, menuButton, menuPanel };
 }
 
 function bindPillMenu(
    pill,
-   { menuButton, menuPanel, onAction, menuOpenClass = 'itinerary-day-open-pill--menu-open' }
+   {
+      menuButton,
+      menuPanel,
+      menuItems = [],
+      menuOpenClass = 'itinerary-day-open-pill--menu-open',
+   }
 ) {
    function setMenuOpen(isOpen) {
       pill.classList.toggle(menuOpenClass, isOpen);
@@ -93,14 +100,20 @@ function bindPillMenu(
       event.stopPropagation();
    });
 
-   const actionButton = menuPanel.querySelector(
-      '.itinerary-day-open-pill-menu-item'
-   );
+   menuItems.forEach((menuItem, index) => {
+      const actionButton = menuPanel.querySelectorAll(
+         '.itinerary-day-open-pill-menu-item'
+      )[index];
 
-   actionButton?.addEventListener('click', async (event) => {
-      event.stopPropagation();
-      closeMenu();
-      await onAction();
+      if (typeof menuItem?.onAction !== 'function') {
+         return;
+      }
+
+      actionButton?.addEventListener('click', async (event) => {
+         event.stopPropagation();
+         closeMenu();
+         await menuItem.onAction();
+      });
    });
 
    const handleDocumentClick = (event) => {
@@ -138,11 +151,12 @@ export function makeOpenPill(
       'itinerary-day-open-pill-label',
       onLabelClick
    );
-   const { menu, menuButton, menuPanel } = buildPillMenuNodes(menuAriaLabel, removeLabel);
+   const menuItems = [{ label: removeLabel, onAction: onRemove }];
+   const { menu, menuButton, menuPanel } = buildPillMenuNodes(menuAriaLabel, menuItems);
 
    pill.appendChild(labelNode);
    pill.appendChild(menu);
-   bindPillMenu(pill, { menuButton, menuPanel, onAction: onRemove });
+   bindPillMenu(pill, { menuButton, menuPanel, menuItems });
 
    return pill;
 }
@@ -175,9 +189,8 @@ function buildScheduledPillWithMenu(
    {
       startTime,
       endTime,
-      onUnschedule,
+      menuItems = [],
       menuAriaLabel,
-      unscheduleLabel,
       onLabelClick = null,
    }
 ) {
@@ -190,7 +203,7 @@ function buildScheduledPillWithMenu(
    );
    const { menu, menuButton, menuPanel } = buildPillMenuNodes(
       menuAriaLabel,
-      unscheduleLabel
+      menuItems
    );
 
    if (isExtendedScheduledPill(durationMinutes)) {
@@ -204,7 +217,7 @@ function buildScheduledPillWithMenu(
    bindPillMenu(pill, {
       menuButton,
       menuPanel,
-      onAction: onUnschedule,
+      menuItems,
       menuOpenClass: 'itinerary-day-scheduled-pill--menu-open',
    });
 
@@ -246,9 +259,8 @@ export function makeScheduledPill(
    {
       startTime,
       endTime,
-      onUnschedule = null,
+      menuItems = [],
       menuAriaLabel = '',
-      unscheduleLabel = '',
       onLabelClick = null,
    } = {}
 ) {
@@ -258,13 +270,12 @@ export function makeScheduledPill(
 
    let pill;
 
-   if (typeof onUnschedule === 'function') {
+   if (menuItems.length > 0) {
       pill = buildScheduledPillWithMenu(label, durationMinutes, {
          startTime,
          endTime,
-         onUnschedule,
+         menuItems,
          menuAriaLabel,
-         unscheduleLabel,
          onLabelClick,
       });
    }

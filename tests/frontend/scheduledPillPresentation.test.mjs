@@ -26,9 +26,11 @@ test('makeScheduledPill adds extended layout for longer visits', () => {
    const pill = makeScheduledPill('Lunch', 40, {
       startTime: '12:00',
       endTime: '12:40',
-      onUnschedule: () => {},
+      menuItems: [
+         { label: 'Unschedule', onAction: () => {} },
+         { label: 'Remove', onAction: () => {} },
+      ],
       menuAriaLabel: 'Menu',
-      unscheduleLabel: 'Unschedule',
    });
 
    assert.ok(pill.classList.contains('itinerary-day-scheduled-pill--extended'));
@@ -43,8 +45,13 @@ test('makeScheduledPill keeps compact layout for short visits', () => {
    const pill = makeScheduledPill('African Lion', 15, {
       startTime: '1:00 PM',
       endTime: '1:15 PM',
-      onUnschedule: () => {},
+      menuItems: [{ label: 'Unschedule', onAction: () => {} }],
    });
+
+   assert.equal(
+      pill.querySelectorAll('.itinerary-day-open-pill-menu-item').length,
+      1
+   );
 
    assert.equal(pill.classList.contains('itinerary-day-scheduled-pill--extended'), false);
    assert.equal(pill.querySelector('.itinerary-day-scheduled-pill-time-range'), null);
