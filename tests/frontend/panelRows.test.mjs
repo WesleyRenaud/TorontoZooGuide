@@ -599,54 +599,6 @@ test.describe('itinerary panel rows', () => {
       assert.ok(clearButtons.every((button) => button.disabled));
    });
 
-   test('scheduled animal pill unschedule menu calls handler with item key', () => {
-      const unscheduleCalls = [];
-      const planner = makeDayPlannerPreview(
-         {
-            date: '2026-06-20',
-            openTime: '09:30',
-            lastAdmissionTime: '18:00',
-            closeTime: '19:00',
-         },
-         {
-            ...EMPTY_ITINERARY,
-            animals: [
-               {
-                  species: 'African Lion',
-                  exhibit: 'Africa Savanna',
-                  start_time: '1:15 PM',
-                  end_time: '1:45 PM',
-               },
-            ],
-         },
-         {},
-         {
-            scheduleHandlers: {
-               onUnscheduleItineraryItem: (request) => {
-                  unscheduleCalls.push(request);
-               },
-            },
-         }
-      );
-      const lionPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
-         allTextFor(pill).includes('African Lion')
-      ));
-      const tigerPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
-         allTextFor(pill).includes('Amur Tiger')
-      ));
-
-      assert.ok(lionPill?.classList.contains('itinerary-day-scheduled-pill--with-menu'));
-      assert.ok(
-         lionPill?.querySelector('.itinerary-day-scheduled-pill-label')?.className.includes('species-link')
-      );
-      lionPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
-      assert.deepEqual(unscheduleCalls, [{
-         itemType: 'animals',
-         key: 'African Lion||Africa Savanna',
-      }]);
-      assert.equal(tigerPill, undefined);
-   });
-
    test('scheduled generic event pill renders on the timeline with unschedule menu', () => {
       const unscheduleCalls = [];
       const planner = makeDayPlannerPreview(
@@ -697,7 +649,7 @@ test.describe('itinerary panel rows', () => {
       }]);
    });
 
-   test('scheduled guardians talk pill has no unschedule menu', () => {
+   test('scheduled guardians talk renders as timeline event card without pill menu', () => {
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-20',
@@ -720,6 +672,7 @@ test.describe('itinerary panel rows', () => {
          {
             scheduleHandlers: {
                onUnscheduleItineraryItem: () => {},
+               onRemoveItineraryItem: () => {},
             },
          }
       );
@@ -732,6 +685,65 @@ test.describe('itinerary panel rows', () => {
          tigerEvent.querySelector('.itinerary-day-scheduled-pill--with-menu'),
          null
       );
+   });
+
+   test('scheduled animal pill menu offers unschedule and remove', () => {
+      const unscheduleCalls = [];
+      const removeCalls = [];
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            animals: [
+               {
+                  species: 'African Lion',
+                  exhibit: 'Africa Savanna',
+                  start_time: '1:15 PM',
+                  end_time: '1:45 PM',
+               },
+            ],
+         },
+         {},
+         {
+            scheduleHandlers: {
+               onUnscheduleItineraryItem: (request) => {
+                  unscheduleCalls.push(request);
+               },
+               onRemoveItineraryItem: (request) => {
+                  removeCalls.push(request);
+               },
+            },
+         }
+      );
+      const lionPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+         allTextFor(pill).includes('African Lion')
+      ));
+      const menuItems = [
+         ...(lionPill?.querySelectorAll('.itinerary-day-open-pill-menu-item') ?? []),
+      ];
+
+      assert.equal(menuItems.length, 2);
+      assert.deepEqual(
+         menuItems.map((button) => button.textContent),
+         ['Unschedule', 'Remove']
+      );
+
+      menuItems[0].click();
+      menuItems[1].click();
+
+      assert.deepEqual(unscheduleCalls, [{
+         itemType: 'animals',
+         key: 'African Lion||Africa Savanna',
+      }]);
+      assert.deepEqual(removeCalls, [{
+         itemType: 'animals',
+         key: 'African Lion||Africa Savanna',
+      }]);
    });
 
    test('scheduled list rows show unschedule and remove buttons for animals and attractions only', () => {

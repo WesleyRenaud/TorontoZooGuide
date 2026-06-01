@@ -33,7 +33,7 @@ test('buildScheduledItemRowsContext places generic events on the timeline', () =
 });
 
 test('resolveScheduledPillOptions unschedules generic events by event type', () => {
-   const requests = [];
+   const unscheduleRequests = [];
 
    const options = resolveScheduledPillOptions(
       {
@@ -43,16 +43,63 @@ test('resolveScheduledPillOptions unschedules generic events by event type', () 
       },
       {
          onUnscheduleItineraryItem: (request) => {
-            requests.push(request);
+            unscheduleRequests.push(request);
          },
       },
-      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule' }
+      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
    );
 
-   options.onUnschedule?.();
+   options.menuItems?.[0]?.onAction?.();
 
-   assert.deepEqual(requests, [{
+   assert.deepEqual(unscheduleRequests, [{
       itemType: 'lunch',
       key: '',
    }]);
+});
+
+test('resolveScheduledPillOptions adds remove for animals and guardians talks', () => {
+   const removeRequests = [];
+
+   const animalOptions = resolveScheduledPillOptions(
+      {
+         scheduleItemKind: 'animals',
+         scheduleItemKey: 'African Lion||Africa Savanna',
+      },
+      {
+         onRemoveItineraryItem: (request) => {
+            removeRequests.push(request);
+         },
+      },
+      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
+   );
+
+   animalOptions.menuItems?.find((item) => item.label === 'Remove')?.onAction?.();
+
+   assert.deepEqual(removeRequests, [{
+      itemType: 'animals',
+      key: 'African Lion||Africa Savanna',
+   }]);
+
+   const talkOptions = resolveScheduledPillOptions(
+      {
+         scheduleItemKind: 'guardians_talks',
+         scheduleItemKey: 'Amur Tiger',
+      },
+      {
+         onRemoveItineraryItem: (request) => {
+            removeRequests.push(request);
+         },
+      },
+      { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
+   );
+
+   assert.equal(talkOptions.menuItems?.length, 1);
+   assert.equal(talkOptions.menuItems?.[0]?.label, 'Remove');
+
+   talkOptions.menuItems?.[0]?.onAction?.();
+
+   assert.deepEqual(removeRequests[1], {
+      itemType: 'guardians_talks',
+      key: 'Amur Tiger',
+   });
 });

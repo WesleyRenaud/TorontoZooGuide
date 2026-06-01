@@ -155,12 +155,20 @@ export function buildScheduledItemRowsContext(
       guardiansTalks,
       buildGuardiansRows,
       getScheduledMaximumDuration
-   );
+   ).map((scheduledItem) => ({
+      ...scheduledItem,
+      scheduleItemKind: 'guardians_talks',
+      scheduleItemKey: String(scheduledItem.item.name).trim(),
+   }));
    const wildEncounterRows = buildScheduledItemRows(
       wildEncounters,
       buildWildRows,
       getScheduledMaximumDuration
-   );
+   ).map((scheduledItem) => ({
+      ...scheduledItem,
+      scheduleItemKind: 'wild_encounters',
+      scheduleItemKey: String(scheduledItem.item.name).trim(),
+   }));
    const animalRows = buildScheduledItemRows(
       animals,
       buildAnimalRows,
