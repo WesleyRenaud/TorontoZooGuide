@@ -1,34 +1,15 @@
+import { createSpeciesLinkTitleElement } from '../../../animals/createSpeciesLinkTitle.js';
 import {
    el,
    safeImg,
 } from '../dom.js';
 
 function appendItemName(text, { name, onNameClick }) {
-   const nameEl = el('div', 'itin-panel-name', name);
-
-   if (typeof onNameClick !== 'function') {
-      text.appendChild(nameEl);
-      return;
-   }
-
-   nameEl.classList.add('species-link');
-   nameEl.setAttribute('role', 'button');
-   nameEl.setAttribute('tabindex', '0');
-
-   const activate = (event) => {
-      event?.stopPropagation?.();
-      onNameClick();
-   };
-
-   nameEl.addEventListener('click', activate);
-   nameEl.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-         event.preventDefault();
-         activate(event);
-      }
-   });
-
-   text.appendChild(nameEl);
+   text.appendChild(createSpeciesLinkTitleElement({
+      text: name,
+      className: 'itin-panel-name',
+      onClick: onNameClick,
+   }));
 }
 
 export function makeItemRow({
