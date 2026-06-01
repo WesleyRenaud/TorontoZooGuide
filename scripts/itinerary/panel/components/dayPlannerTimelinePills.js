@@ -198,7 +198,7 @@ export function appendTimelinePill(
    );
 }
 
-export function resolveScheduledPillOptions(
+function buildScheduledPillMenuItems(
    scheduledItem = {},
    scheduleHandlers = {},
    strings = {}
@@ -208,39 +208,80 @@ export function resolveScheduledPillOptions(
       scheduleItemKey,
       scheduleItemEventType,
    } = scheduledItem;
+   const menuItems = [];
 
-   if (typeof scheduleHandlers.onUnscheduleItineraryItem !== 'function') {
-      return {};
+   if (typeof scheduleHandlers.onUnscheduleItineraryItem === 'function') {
+      if (
+         scheduleItemKind === ScheduleItemKind.EVENT.kind
+         && scheduleItemEventType
+      ) {
+         menuItems.push({
+            label: strings.unschedule,
+            onAction: () => scheduleHandlers.onUnscheduleItineraryItem({
+               itemType: scheduleItemEventType,
+               key: '',
+            }),
+         });
+      }
+      else if (
+         isScheduleItemModuleItemType(scheduleItemKind)
+         && scheduleItemKey
+      ) {
+         menuItems.push({
+            label: strings.unschedule,
+            onAction: () => scheduleHandlers.onUnscheduleItineraryItem({
+               itemType: scheduleItemKind,
+               key: scheduleItemKey,
+            }),
+         });
+      }
    }
 
-   if (
-      scheduleItemKind === ScheduleItemKind.EVENT.kind
-      && scheduleItemEventType
-   ) {
-      return {
-         menuAriaLabel: strings.scheduledItemMenuAria,
-         unscheduleLabel: strings.unschedule,
-         onUnschedule: () => scheduleHandlers.onUnscheduleItineraryItem({
-            itemType: scheduleItemEventType,
-            key: '',
-         }),
-      };
+   if (typeof scheduleHandlers.onRemoveItineraryItem === 'function') {
+      if (
+         scheduleItemKind === ScheduleItemKind.EVENT.kind
+         && scheduleItemEventType
+      ) {
+         menuItems.push({
+            label: strings.remove,
+            onAction: () => scheduleHandlers.onRemoveItineraryItem({
+               itemType: scheduleItemEventType,
+               key: '',
+            }),
+         });
+      }
+      else if (scheduleItemKey) {
+         menuItems.push({
+            label: strings.remove,
+            onAction: () => scheduleHandlers.onRemoveItineraryItem({
+               itemType: scheduleItemKind,
+               key: scheduleItemKey,
+            }),
+         });
+      }
    }
 
-   if (
-      !isScheduleItemModuleItemType(scheduleItemKind)
-      || !scheduleItemKey
-   ) {
+   return menuItems;
+}
+
+export function resolveScheduledPillOptions(
+   scheduledItem = {},
+   scheduleHandlers = {},
+   strings = {}
+) {
+   const menuItems = buildScheduledPillMenuItems(
+      scheduledItem,
+      scheduleHandlers,
+      strings
+   );
+
+   if (!menuItems.length) {
       return {};
    }
 
    return {
       menuAriaLabel: strings.scheduledItemMenuAria,
-      unscheduleLabel: strings.unschedule,
-      onUnschedule: () => scheduleHandlers.onUnscheduleItineraryItem({
-         itemType: scheduleItemKind,
-         key: scheduleItemKey,
-      }),
+      menuItems,
    };
 }
 
@@ -252,18 +293,16 @@ export function appendScheduledDurationPill(
       durationMinutes,
       startTime,
       endTime,
-      onUnschedule = null,
+      menuItems = [],
       menuAriaLabel = '',
-      unscheduleLabel = '',
       onLabelClick = null,
    }
 ) {
    const pill = makeScheduledPill(label, durationMinutes, {
       startTime,
       endTime,
-      onUnschedule,
+      menuItems,
       menuAriaLabel,
-      unscheduleLabel,
       onLabelClick,
    });
 
