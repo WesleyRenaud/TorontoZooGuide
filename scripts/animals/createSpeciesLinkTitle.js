@@ -1,9 +1,10 @@
 export function createSpeciesLinkTitleElement({
    text,
    className,
+   tagName = 'div',
    onClick = null,
 } = {}) {
-   const titleEl = document.createElement('div');
+   const titleEl = document.createElement(tagName);
    titleEl.className = className;
    titleEl.textContent = text;
 

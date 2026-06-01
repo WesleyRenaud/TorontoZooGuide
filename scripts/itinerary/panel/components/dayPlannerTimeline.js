@@ -3,8 +3,12 @@ import {
    resolveScheduledPillOptions,
 } from './dayPlannerTimelinePills.js';
 import { el } from '../dom.js';
+import { openAnimalSpeciesOverlay } from '../../../overlays/speciesOverlay.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
-import { isScheduleItemModuleItemType } from '../../../shared/enums/scheduleItemKind.js';
+import {
+   isScheduleItemModuleItemType,
+   ScheduleItemKind,
+} from '../../../shared/enums/scheduleItemKind.js';
 
 export function makeTimelineRow(timeLabel) {
    const gridLine = el('div', 'itinerary-day-grid-line');
@@ -70,6 +74,9 @@ export function appendScheduledItems(
          durationMinutes: scheduledItem.maximumDuration,
          startTime: scheduledItem.item.start_time,
          endTime: scheduledItem.item.end_time,
+         onLabelClick: scheduledItem.scheduleItemKind === ScheduleItemKind.ANIMAL.itemType
+            ? () => openAnimalSpeciesOverlay(scheduledItem.item)
+            : null,
          ...resolveScheduledPillOptions(
             scheduledItem,
             scheduleHandlers,
