@@ -1453,6 +1453,21 @@ test.describe('itinerary panel rows', () => {
       );
    });
 
+   test('buildWildRows links encounter title when url is present', () => {
+      const [wildRow] = buildWildRows([
+         {
+            name: 'African Rainforest',
+            meeting_spot: 'Wild Encounter - Africa Meeting Spot',
+            link: 'https://www.torontozoo.com/wildencounters/african-rainforest',
+         },
+      ]);
+
+      assert.ok(
+         wildRow.querySelector('.itin-panel-name')?.className.includes('species-link')
+      );
+      assert.equal(wildRow.querySelector('.itin-panel-link'), null);
+   });
+
    test('buildGuardiansRows and buildWildRows sort scheduled rows by start time', () => {
       const talkRows = buildGuardiansRows([
          {

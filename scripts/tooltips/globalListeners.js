@@ -15,6 +15,13 @@ export function createTooltipGlobalListeners({
    function handleSpeciesLinkClick(speciesLink, event) {
       event.stopPropagation();
 
+      const externalHref = String(speciesLink.dataset.externalHref ?? '').trim();
+
+      if (externalHref) {
+         window.open(externalHref, '_blank');
+         return;
+      }
+
       const index = Number(speciesLink.dataset.index);
       const item = getItemAtIndex(index);
 
