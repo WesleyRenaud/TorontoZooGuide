@@ -108,12 +108,12 @@ restaurants = [
       56.601                                                                                             # Y coordinate on map
    ),
    (
-      'Polar Patio',                                                                                     # Name
+      'Tundra Tacos',                                                                                     # Name
       'Tundra Trek',                                                                                     # Location
       None,                                                                                              # Sub-location
-      '''Join us at our fully licensed Polar Patio next to the Arctic wolves, enjoy beer, wine, ciders & seltzers or try our wings,
-         nachos, poutine and tenders!'''.replace( '\n', ' ' ),
-      'https://www.torontozoo.com/!/pdfs/food/Polar%20Patio%20Menu%202024.pdf',                          # Menu link
+      '''Traditional tacos, venison tacos and churros, corn dogs, and fries, beer, wine, soft drinks  and seltzers, There is something
+         for everyone!'''.replace( '\n', ' ' ),
+      None,                                                                                              # Menu link
       72.858,                                                                                            # X coordinate on map
       56.303                                                                                             # Y coordinate on map
    ),
