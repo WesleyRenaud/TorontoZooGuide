@@ -32,14 +32,19 @@ function renderSpeciesOverlayContent(contentEl, animal, onClose) {
    );
 }
 
+let speciesOverlayController = null;
+
 export function initSpeciesOverlay() {
+   if (speciesOverlayController) {
+      return speciesOverlayController;
+   }
+
    const speciesOverlay = document.getElementById('speciesOverlay');
    const speciesOverlayContent = speciesOverlay?.querySelector('.species-overlay-content') ?? null;
 
-   if (speciesOverlay) {
-      speciesOverlay.addEventListener('click', (event) => {
-         if (event.target === speciesOverlay) close();
-      });
+   function close() {
+      if (!speciesOverlay) return;
+      speciesOverlay.classList.add('hidden');
    }
 
    function openFromAnimal(animal) {
@@ -49,10 +54,23 @@ export function initSpeciesOverlay() {
       speciesOverlay.classList.remove('hidden');
    }
 
-   function close() {
-      if (!speciesOverlay) return;
-      speciesOverlay.classList.add('hidden');
+   if (speciesOverlay) {
+      speciesOverlay.addEventListener('click', (event) => {
+         if (event.target === speciesOverlay) close();
+      });
    }
 
-   return { openFromAnimal, close };
+   speciesOverlayController = { openFromAnimal, close };
+
+   return speciesOverlayController;
+}
+
+export function openAnimalSpeciesOverlay(animal) {
+   const species = String(animal.species).trim();
+
+   if (!species) {
+      return;
+   }
+
+   initSpeciesOverlay().openFromAnimal(animal);
 }

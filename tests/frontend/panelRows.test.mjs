@@ -1365,6 +1365,10 @@ test.describe('itinerary panel rows', () => {
          'images/details/animals/africa-savanna/african-lion.png'
       );
       assert.equal(textFor(rows[0], '.itin-panel-name'), 'African Lion');
+      assert.ok(
+         rows[0].querySelector('.itin-panel-name')?.className.includes('species-link'),
+         'animal names should open species detail overlay'
+      );
       assert.equal(textFor(rows[0], '.itin-panel-meta'), 'Exhibit: Africa Savanna');
       assert.equal(
          textFor(rows[0], '.itin-panel-alert'),
@@ -1384,6 +1388,10 @@ test.describe('itinerary panel rows', () => {
       ]);
 
       assert.equal(textFor(row, '.itin-panel-name'), 'Conservation Carousel');
+      assert.equal(
+         row.querySelector('.itin-panel-name')?.className.includes('species-link'),
+         false
+      );
       assert.equal(
          imageSrcFor(row),
          'images/details/attractions/conservation-carousel.png'
