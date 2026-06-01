@@ -191,6 +191,15 @@ export async function unscheduleItineraryItemRequest({ itemType, key }) {
    return normalizeScheduleItineraryItemResponse(response);
 }
 
+export async function removeItemFromItineraryRequest({ itemType, key }) {
+   const response = await postJson('/remove-item-from-itinerary', {
+      itemType: asTrimmedString(itemType),
+      key: asTrimmedString(key),
+   });
+
+   return normalizeScheduleItineraryItemResponse(response);
+}
+
 function normalizeItineraryTimeSetResponse(response) {
    const source = asObject(response);
    const itineraryConfig = normalizeItineraryConfig(source.itinerary_config);

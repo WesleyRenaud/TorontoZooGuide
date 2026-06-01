@@ -6,6 +6,7 @@ import {
    getItineraryDateRequest,
    getItineraryRequest,
    getZooHoursRequest,
+   removeItemFromItineraryRequest,
    scheduleItineraryItemRequest,
    unscheduleItineraryItemRequest,
    setItineraryArrivalTimeRequest,
@@ -400,6 +401,28 @@ test('normalizes unschedule itinerary item response', async () => {
       await unscheduleItineraryItemRequest({
          itemType: 'animals',
          key: 'African Lion||Africa Savanna',
+      }),
+      { errorType: 'success' }
+   );
+});
+
+test('normalizes remove item from itinerary response', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/remove-item-from-itinerary');
+      assert.deepEqual(JSON.parse(options.body), {
+         itemType: 'attractions',
+         key: 'Conservation Carousel',
+      });
+
+      return mockJsonResponse({
+         errorType: 'success',
+      });
+   };
+
+   assert.deepEqual(
+      await removeItemFromItineraryRequest({
+         itemType: 'attractions',
+         key: 'Conservation Carousel',
       }),
       { errorType: 'success' }
    );

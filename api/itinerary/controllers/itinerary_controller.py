@@ -11,6 +11,7 @@ from ..data_access.itinerary_save_input_mapper import map_named_strings
 from ..data_access.itinerary_time import set_itinerary_arrival_time
 from ..data_access.itinerary_time import set_itinerary_departure_time
 from ...guardians.controllers.guardians_controller import GuardiansController
+from ..logic import remove_itinerary_item as remove_itinerary_item_logic
 from ..logic import schedule_itinerary_item as schedule_itinerary_item_logic
 from ..logic import set_itinerary as set_itinerary_logic
 from ..logic import unschedule_itinerary_item as unschedule_itinerary_item_logic
@@ -124,6 +125,17 @@ class ItineraryController():
          item_type: str,
          key: str ) -> ItinerarySaveResult:
       return unschedule_itinerary_item_logic.unschedule_itinerary_item(
+         get_connection(),
+         item_type,
+         key )
+
+
+   @classmethod
+   def remove_itinerary_item(
+         cls,
+         item_type: str,
+         key: str ) -> ItinerarySaveResult:
+      return remove_itinerary_item_logic.remove_itinerary_item(
          get_connection(),
          item_type,
          key )
