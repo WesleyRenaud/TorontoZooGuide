@@ -5,7 +5,9 @@ import { getItineraryRequest } from '../../scripts/api/itineraryApi.js';
 import {
    buildSchedulableEventTypes,
    isItineraryVisitBoundaryEventType,
+   isScheduleItemEventType,
    normalizeVisitBoundaryEventTypes,
+   requiresRemoveItineraryItemConfirmation,
 } from '../../scripts/itinerary/itineraryEventTypes.js';
 
 const BACKEND_ITINERARY_CONFIG = {
@@ -95,4 +97,37 @@ test('normalizeVisitBoundaryEventTypes tolerates missing config', () => {
       arrival: '',
       departure: '',
    });
+});
+
+test('generic itinerary events skip remove confirmation when configured', () => {
+   const itineraryConfig = {
+      eventTypes: BACKEND_ITINERARY_CONFIG.itinerary_event_types,
+   };
+
+   assert.equal(
+      isScheduleItemEventType('lunch', itineraryConfig.eventTypes),
+      true
+   );
+   assert.equal(
+      isScheduleItemEventType('break', itineraryConfig.eventTypes),
+      true
+   );
+   assert.equal(
+      isScheduleItemEventType('animals', itineraryConfig.eventTypes),
+      false
+   );
+   assert.equal(
+      requiresRemoveItineraryItemConfirmation('lunch', itineraryConfig),
+      false
+   );
+   assert.equal(
+      requiresRemoveItineraryItemConfirmation('animals', itineraryConfig),
+      true
+   );
+   assert.equal(
+      requiresRemoveItineraryItemConfirmation('guardians_talks', itineraryConfig),
+      true
+   );
+   assert.equal(isScheduleItemEventType('lunch'), false);
+   assert.equal(requiresRemoveItineraryItemConfirmation('lunch', null), true);
 });

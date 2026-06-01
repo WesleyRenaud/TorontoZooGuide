@@ -1,3 +1,15 @@
+export function isScheduleItemEventType(selection, eventTypes = []) {
+   return eventTypes.includes(selection);
+}
+
+export function requiresRemoveItineraryItemConfirmation(itemType, itineraryConfig) {
+   if (!itineraryConfig) {
+      return true;
+   }
+
+   return !isScheduleItemEventType(itemType, itineraryConfig.eventTypes);
+}
+
 export function normalizeVisitBoundaryEventTypes(source = {}) {
    const visitBoundary = source && typeof source === 'object'
       ? source
@@ -24,16 +36,17 @@ export function isItineraryVisitBoundaryEventType(
       || normalizedValue === boundaries.departure;
 }
 
-export function buildSchedulableEventTypes(itineraryConfig = {}) {
-   const eventTypes = Array.isArray(itineraryConfig?.eventTypes)
-      ? itineraryConfig.eventTypes
-      : [];
+export function buildSchedulableEventTypes(itineraryConfig) {
+   if (!itineraryConfig) {
+      return [];
+   }
+
    const boundaries = normalizeVisitBoundaryEventTypes(
-      itineraryConfig?.visitBoundaryEventTypes
+      itineraryConfig.visitBoundaryEventTypes
    );
    const excluded = new Set(
       [boundaries.arrival, boundaries.departure].filter(Boolean)
    );
 
-   return eventTypes.filter((eventType) => !excluded.has(eventType));
+   return itineraryConfig.eventTypes.filter((eventType) => !excluded.has(eventType));
 }
