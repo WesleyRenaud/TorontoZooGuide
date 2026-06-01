@@ -58,6 +58,9 @@ test('renderSearchResults shows thumbnails for animals and attractions', () => {
       '../images/details/animals/african-savanna/african-lion.png'
    );
 
+   const animalTitle = findDescendant(animalRow, 'animal-result-species');
+   assert.ok(animalTitle?.className.includes('species-link'));
+
    const attractionRow = resultsEl.children[1];
    const attractionContent = findDescendant(attractionRow, 'itin-animal-content');
    const attractionImg = findDescendant(attractionRow, 'itin-animal-thumb-img');
@@ -67,6 +70,9 @@ test('renderSearchResults shows thumbnails for animals and attractions', () => {
       attractionImg.src,
       '../images/details/attractions/conservation-carousel.png'
    );
+
+   const attractionTitle = findDescendant(attractionRow, 'animal-result-species');
+   assert.equal(attractionTitle?.className.includes('species-link'), false);
 });
 
 test('renderSearchResults keeps text-only rows for other result types', () => {

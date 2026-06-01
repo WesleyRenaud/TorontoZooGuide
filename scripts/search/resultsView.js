@@ -10,6 +10,7 @@ import {
    getAttractionTitle,
 } from '../itinerary/selectors/attractionSelector/model.js';
 import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
+import { openAnimalSpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { APP_STRINGS } from '../strings.js';
 
 function buildDetailSummary(parts, fallback) {
@@ -96,6 +97,7 @@ const ROW_LEFT_RENDERERS = {
       getSubtitle: getAnimalSubtitle,
       getImageSrc: buildAnimalImageSrc,
       getInfoLink: () => null,
+      onTitleClick: openAnimalSpeciesOverlay,
    }),
    attraction: createDefaultSelectorRowLeftRenderer({
       getTitle: getAttractionTitle,

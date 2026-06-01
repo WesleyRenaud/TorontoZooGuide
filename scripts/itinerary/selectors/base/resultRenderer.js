@@ -1,3 +1,4 @@
+import { createSpeciesLinkTitleElement } from '../../../animals/createSpeciesLinkTitle.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 function createSelectorInfoLink(infoLink) {
@@ -53,6 +54,7 @@ export function createSelectorTextColumn({
    infoLink = null,
    titleNode = null,
    subtitleNode = null,
+   onTitleClick = null,
 } = {}) {
    const left = document.createElement('div');
    left.className = 'animal-result-left';
@@ -61,10 +63,11 @@ export function createSelectorTextColumn({
       left.appendChild(titleNode);
    }
    else {
-      const titleEl = document.createElement('div');
-      titleEl.className = 'animal-result-species';
-      titleEl.textContent = title;
-      left.appendChild(titleEl);
+      left.appendChild(createSpeciesLinkTitleElement({
+         text: title,
+         className: 'animal-result-species',
+         onClick: onTitleClick,
+      }));
    }
 
    if (subtitleNode) {
@@ -110,6 +113,7 @@ export function createDefaultSelectorRowLeftRenderer({
    getSubtitle,
    getImageSrc,
    getInfoLink,
+   onTitleClick = null,
 } = {}) {
    return function renderDefaultRowLeft(row) {
       const title = getTitle(row) || APP_STRINGS.entityLabels.item;
@@ -124,6 +128,9 @@ export function createDefaultSelectorRowLeftRenderer({
             title,
             subtitle,
             infoLink,
+            onTitleClick: typeof onTitleClick === 'function'
+               ? () => onTitleClick(row)
+               : null,
          }),
       });
    };
