@@ -636,6 +636,9 @@ test.describe('itinerary panel rows', () => {
       ));
 
       assert.ok(lionPill?.classList.contains('itinerary-day-scheduled-pill--with-menu'));
+      assert.ok(
+         lionPill?.querySelector('.itinerary-day-scheduled-pill-label')?.className.includes('species-link')
+      );
       lionPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
       assert.deepEqual(unscheduleCalls, [{
          itemType: 'animals',
@@ -679,6 +682,10 @@ test.describe('itinerary panel rows', () => {
       assert.ok(lunchPill);
       assert.ok(lunchPill.classList.contains('itinerary-day-scheduled-pill--with-menu'));
       assert.ok(lunchPill.classList.contains('itinerary-day-scheduled-pill--extended'));
+      assert.equal(
+         lunchPill.querySelector('.itinerary-day-scheduled-pill-label')?.className.includes('species-link'),
+         false
+      );
       assert.match(
          lunchPill.querySelector('.itinerary-day-scheduled-pill-time-range')?.textContent ?? '',
          /12:00 PM – 12:40 PM/
@@ -1210,7 +1217,7 @@ test.describe('itinerary panel rows', () => {
       assert.ok(polarPill);
       assert.equal(polarStrip?.className, 'itinerary-day-pill-strip');
       assert.equal(polarPill.attributes?.['data-duration-fraction'], String(10 / 30));
-      assert.equal(polarStrip?.children?.[0]?.textContent, 'Arrival');
+      assert.equal(allTextFor(polarStrip?.children?.[0]), 'Arrival');
       assert.match(allTextFor(polarStrip), /Arrival/);
       assert.match(allTextFor(planner), /Departure/);
       assert.equal(

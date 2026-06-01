@@ -2589,6 +2589,10 @@ nav ul li a:hover {
    white-space: nowrap;
 }
 
+.itinerary-day-scheduled-pill-label.species-link {
+   color: inherit;
+}
+
 .itinerary-day-scheduled-pill-time-range {
    display: block;
    margin-top: 10px;
