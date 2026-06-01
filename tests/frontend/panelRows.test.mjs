@@ -599,8 +599,8 @@ test.describe('itinerary panel rows', () => {
       assert.ok(clearButtons.every((button) => button.disabled));
    });
 
-   test('scheduled generic event pill renders on the timeline with unschedule menu', () => {
-      const unscheduleCalls = [];
+   test('scheduled generic event pill renders on the timeline with remove menu', () => {
+      const removeCalls = [];
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-20',
@@ -621,8 +621,8 @@ test.describe('itinerary panel rows', () => {
          {},
          {
             scheduleHandlers: {
-               onUnscheduleItineraryItem: (request) => {
-                  unscheduleCalls.push(request);
+               onRemoveItineraryItem: (request) => {
+                  removeCalls.push(request);
                },
             },
          }
@@ -643,7 +643,7 @@ test.describe('itinerary panel rows', () => {
          /12:00 PM – 12:40 PM/
       );
       lunchPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
-      assert.deepEqual(unscheduleCalls, [{
+      assert.deepEqual(removeCalls, [{
          itemType: 'lunch',
          key: '',
       }]);
