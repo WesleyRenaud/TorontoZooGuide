@@ -1,4 +1,4 @@
-import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
+import { buildDetailImageSrc } from '../../assets/detailImageSrc.js';
 import {
    migrateStoredSelectionItems,
    normalizeStoredId,
@@ -16,13 +16,9 @@ function getOccurrenceName(row) {
 }
 
 function buildOccurrenceImageSrc(imageDirectory, name) {
-   const file = normalizeAssetKey(name || '');
-
-   if (!file) {
-      return null;
-   }
-
-   return `../images/details/${imageDirectory}/${file}.png`;
+   return buildDetailImageSrc(imageDirectory, name, {
+      basePath: '../images/details',
+   });
 }
 
 function buildOccurrenceSubtitle({
