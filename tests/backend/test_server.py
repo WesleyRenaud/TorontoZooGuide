@@ -368,6 +368,11 @@ class StubZooControllers:
       return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
 
+   def remove_itinerary_item( self, **kwargs: Any ) -> ItinerarySaveResult:
+      self.calls.append( ( 'remove_itinerary_item', kwargs ) )
+      return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
+
+
    def accept_itinerary( self, **kwargs: Any ) -> bool:
       self.calls.append( ( 'accept_itinerary', kwargs ) )
       return True
@@ -1257,6 +1262,29 @@ def test_unschedule_itinerary_item_endpoint(
          {
             'item_type': 'animals',
             'key': 'African Lion||Africa Savanna',
+         },
+      ),
+   ]
+
+
+def test_remove_item_from_itinerary_endpoint(
+      stub_database: type[ StubZooControllers ] ) -> None:
+   handler = make_handler(
+      '/remove-item-from-itinerary',
+      {
+         'itemType': 'attractions',
+         'key': 'Conservation Carousel',
+      } )
+
+   server.MyHandler.do_POST( handler )
+
+   assert response_json( handler ) == { 'errorType': 'success' }
+   assert StubZooControllers.instances[ 0 ].calls == [
+      (
+         'remove_itinerary_item',
+         {
+            'item_type': 'attractions',
+            'key': 'Conservation Carousel',
          },
       ),
    ]
