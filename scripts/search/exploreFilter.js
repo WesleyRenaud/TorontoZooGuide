@@ -35,6 +35,7 @@ export function buildExploreSearchIncludeFlags(selectedTypes, zoomobileRoute) {
          ])
       ),
       includeZoomobileStations: hasZoomobileRoute(zoomobileRoute),
+      ...(hasZoomobileRoute(zoomobileRoute) ? { zoomobileRoute } : {}),
    };
 }
 

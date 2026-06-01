@@ -12,7 +12,7 @@ from ..data_access.zoomobile_station_status import save_zoomobile_station_closed
 from ..data_access.zoomobile_station_status import save_zoomobile_station_open_status
 from ..logic.zoomobile_route import build_zoomobile_route_response
 from ..logic.zoomobile_route import is_valid_zoomobile_route
-from ..logic.zoomobile_route import resolve_zoomobile_route
+from ..logic.zoomobile_route import resolve_requested_zoomobile_route
 from ..logic.zoomobile_route import resolve_zoomobile_route_context
 from ..logic.zoomobile_route_schedule import build_current_zoomobile_route_schedule
 from ..logic.zoomobile_station import build_zoomobile_stations
@@ -62,8 +62,21 @@ class ZoomobileController():
          month: MonthInput,
          year: VisitYear ) -> list[ ZoomobileStation ]:
 
+      route_context = resolve_zoomobile_route_context(
+         day=day,
+         month=month,
+         year=year )
+      resolved_route, _ = resolve_requested_zoomobile_route(
+         route,
+         fetch_active_zoomobile_route(
+            get_connection(),
+            target_date=route_context.target_date ),
+         fetch_zoomobile_day_route(
+            get_connection(),
+            month=route_context.normalized_month,
+            day=route_context.normalized_day ) )
       zoomobile_stations = cls.get_zoomobile_stations(
-         route=route,
+         route=resolved_route,
          day=day,
          month=month,
          year=year )
@@ -86,12 +99,12 @@ class ZoomobileController():
          day=day,
          month=month,
          year=year )
-      resolved_route, route_source = resolve_zoomobile_route(
-         requested_route=route,
-         active_route=fetch_active_zoomobile_route(
+      resolved_route, route_source = resolve_requested_zoomobile_route(
+         route,
+         fetch_active_zoomobile_route(
             get_connection(),
             target_date=route_context.target_date ),
-         day_route=fetch_zoomobile_day_route(
+         fetch_zoomobile_day_route(
             get_connection(),
             month=route_context.normalized_month,
             day=route_context.normalized_day ) )
