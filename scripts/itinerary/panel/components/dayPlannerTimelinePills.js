@@ -255,6 +255,7 @@ export function appendScheduledDurationPill(
       onUnschedule = null,
       menuAriaLabel = '',
       unscheduleLabel = '',
+      onLabelClick = null,
    }
 ) {
    const pill = makeScheduledPill(label, durationMinutes, {
@@ -263,6 +264,7 @@ export function appendScheduledDurationPill(
       onUnschedule,
       menuAriaLabel,
       unscheduleLabel,
+      onLabelClick,
    });
 
    if (!pill) {
