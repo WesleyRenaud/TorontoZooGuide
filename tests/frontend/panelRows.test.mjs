@@ -734,8 +734,9 @@ test.describe('itinerary panel rows', () => {
       );
    });
 
-   test('scheduled list rows show unschedule buttons for animals and attractions only', () => {
+   test('scheduled list rows show unschedule and remove buttons for animals and attractions only', () => {
       const unscheduleCalls = [];
+      const removeCalls = [];
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-20',
@@ -776,6 +777,9 @@ test.describe('itinerary panel rows', () => {
                onUnscheduleItineraryItem: (request) => {
                   unscheduleCalls.push(request);
                },
+               onRemoveItineraryItem: (request) => {
+                  removeCalls.push(request);
+               },
             },
          }
       );
@@ -790,14 +794,24 @@ test.describe('itinerary panel rows', () => {
       const tigerRow = [...(scheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
          allTextFor(row).includes('Amur Tiger')
       ));
+      const tigerButtons = tigerRow?.querySelectorAll('.itin-panel-item-action-btn') ?? [];
 
-      assert.equal(scheduledButtons.length, 2);
-      assert.equal(scheduledButtons.every((button) => button.textContent === 'Unschedule'), true);
-      assert.equal(tigerRow?.querySelector('.itin-panel-item-action-btn'), null);
+      assert.equal(scheduledButtons.length, 5);
+      assert.equal(
+         scheduledButtons.every((button) => (
+            button.textContent === 'Unschedule' || button.textContent === 'Remove'
+         )),
+         true
+      );
+      assert.equal(tigerButtons.length, 1);
+      assert.equal(tigerButtons[0]?.textContent, 'Remove');
       assert.equal(unscheduledList?.querySelectorAll('.itin-panel-item-action-btn').length ?? 0, 0);
 
-      scheduledButtons[0].click();
-      scheduledButtons[1].click();
+      [...scheduledButtons]
+         .filter((button) => button.textContent === 'Unschedule')
+         .forEach((button) => {
+            button.click();
+         });
 
       assert.deepEqual(unscheduleCalls, [
          {
@@ -809,6 +823,7 @@ test.describe('itinerary panel rows', () => {
             key: 'Zoomobile',
          },
       ]);
+      assert.equal(removeCalls.length, 0);
    });
 
    test('buildAnimalRows adds unschedule action when handler is provided', () => {
@@ -835,8 +850,9 @@ test.describe('itinerary panel rows', () => {
       }]);
    });
 
-   test('unscheduled list rows show schedule buttons for animals and attractions only', () => {
+   test('unscheduled list rows show schedule and remove buttons for animals and attractions only', () => {
       const scheduleCalls = [];
+      const removeCalls = [];
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-20',
@@ -886,6 +902,9 @@ test.describe('itinerary panel rows', () => {
                   scheduleCalls.push(pick);
                },
                onUnscheduleItineraryItem: () => {},
+               onRemoveItineraryItem: (request) => {
+                  removeCalls.push(request);
+               },
             },
          }
       );
@@ -901,15 +920,30 @@ test.describe('itinerary panel rows', () => {
       const pandaRow = [...(unscheduledList?.querySelectorAll('.itin-panel-item') ?? [])].find((row) => (
          allTextFor(row).includes('Giant Panda')
       ));
+      const pandaButtons = pandaRow?.querySelectorAll('.itin-panel-item-action-btn') ?? [];
 
-      assert.equal(scheduledButtons.length, 2);
-      assert.equal(scheduledButtons.every((button) => button.textContent === 'Unschedule'), true);
-      assert.equal(unscheduledButtons.length, 2);
-      assert.equal(unscheduledButtons.every((button) => button.textContent === 'Schedule'), true);
-      assert.equal(pandaRow?.querySelector('.itin-panel-item-action-btn')?.textContent, 'Schedule');
+      assert.equal(scheduledButtons.length, 5);
+      assert.equal(
+         unscheduledList?.querySelectorAll('.itin-panel-item').length,
+         2
+      );
+      assert.equal(unscheduledButtons.length, 4);
+      assert.equal(
+         unscheduledButtons.every((button) => (
+            button.textContent === 'Schedule' || button.textContent === 'Remove'
+         )),
+         true
+      );
+      assert.deepEqual(
+         [...pandaButtons].map((button) => button.textContent),
+         ['Schedule', 'Remove']
+      );
 
-      unscheduledButtons[0].click();
-      unscheduledButtons[1].click();
+      [...unscheduledButtons]
+         .filter((button) => button.textContent === 'Schedule')
+         .forEach((button) => {
+            button.click();
+         });
 
       assert.equal(scheduleCalls.length, 2);
       assert.equal(scheduleCalls[0].itemType, 'animals');
@@ -918,6 +952,29 @@ test.describe('itinerary panel rows', () => {
       assert.equal(scheduleCalls[1].itemType, 'attractions');
       assert.equal(scheduleCalls[1].row.name, 'Conservation Carousel');
       assert.equal(scheduleCalls[1].row.scheduleItemKind, 'attractions');
+      assert.equal(removeCalls.length, 0);
+   });
+
+   test('buildAnimalRows adds remove action when handler is provided', () => {
+      const removeCalls = [];
+      const [row] = buildAnimalRows([
+         {
+            species: 'Giant Panda',
+            exhibit: 'Eurasia Wilds',
+         },
+      ], {
+         onRemoveItem: (request) => {
+            removeCalls.push(request);
+         },
+      });
+      const button = row.querySelector('.itin-panel-item-action-btn');
+
+      assert.equal(button?.textContent, 'Remove');
+      button?.click();
+      assert.deepEqual(removeCalls, [{
+         itemType: 'animals',
+         key: 'Giant Panda||Eurasia Wilds',
+      }]);
    });
 
    test('buildAnimalRows adds schedule action when handler is provided', () => {

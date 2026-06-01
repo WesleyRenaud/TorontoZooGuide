@@ -60,6 +60,27 @@ export function getScheduleItemRowId(row) {
    return getAnimalId(row);
 }
 
+export function getItineraryItemKey(itemType, item) {
+   const normalizedType = String(itemType).trim().toLowerCase();
+
+   if (normalizedType === ScheduleItemKind.ANIMAL.itemType) {
+      return getAnimalId(item);
+   }
+
+   if (normalizedType === ScheduleItemKind.ATTRACTION.itemType) {
+      return getAttractionId(item);
+   }
+
+   if (
+      normalizedType === 'guardians_talks'
+      || normalizedType === 'wild_encounters'
+   ) {
+      return String(item.name).trim();
+   }
+
+   return '';
+}
+
 export function buildScheduleItemSearchPayload(moduleType, query = '') {
    const normalizedQuery = String(query ?? '').trim();
 
