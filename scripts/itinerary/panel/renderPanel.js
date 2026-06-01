@@ -12,6 +12,7 @@ import {
 import { showScheduleItemModule } from './components/scheduleItemModule.js';
 import { makeSection } from './components/section.js';
 import { clearItineraryDraftStorage } from '../draftStorage.js';
+import { requiresRemoveItineraryItemConfirmation } from '../itineraryEventTypes.js';
 import {
    getItineraryPanelViewFromUrl,
    setItineraryPanelViewInUrl,
@@ -98,15 +99,22 @@ function buildItineraryPanelScheduleHandlers(
          }
       },
       onRemoveItineraryItem: ({ itemType, key }) => {
-         showRemoveItineraryItemConfirmation({
-            onConfirm: async () => {
-               await removeItemFromItineraryRequest({ itemType, key });
+         const performRemove = async () => {
+            await removeItemFromItineraryRequest({ itemType, key });
 
-               if (typeof onPanelRefresh === 'function') {
-                  await onPanelRefresh();
-               }
-            },
-         });
+            if (typeof onPanelRefresh === 'function') {
+               await onPanelRefresh();
+            }
+         };
+
+         if (requiresRemoveItineraryItemConfirmation(itemType, itinerary.itineraryConfig)) {
+            showRemoveItineraryItemConfirmation({
+               onConfirm: performRemove,
+            });
+            return;
+         }
+
+         void performRemove();
       },
    };
 }

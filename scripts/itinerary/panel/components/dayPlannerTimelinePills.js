@@ -210,20 +210,11 @@ function buildScheduledPillMenuItems(
    } = scheduledItem;
    const menuItems = [];
 
-   if (typeof scheduleHandlers.onUnscheduleItineraryItem === 'function') {
+   if (
+      typeof scheduleHandlers.onUnscheduleItineraryItem === 'function'
+      && scheduleItemKind !== ScheduleItemKind.EVENT.kind
+   ) {
       if (
-         scheduleItemKind === ScheduleItemKind.EVENT.kind
-         && scheduleItemEventType
-      ) {
-         menuItems.push({
-            label: strings.unschedule,
-            onAction: () => scheduleHandlers.onUnscheduleItineraryItem({
-               itemType: scheduleItemEventType,
-               key: '',
-            }),
-         });
-      }
-      else if (
          isScheduleItemModuleItemType(scheduleItemKind)
          && scheduleItemKey
       ) {

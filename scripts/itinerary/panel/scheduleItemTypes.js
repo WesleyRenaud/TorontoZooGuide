@@ -1,9 +1,12 @@
-import { buildSchedulableEventTypes } from '../itineraryEventTypes.js';
+import {
+   buildSchedulableEventTypes,
+   isScheduleItemEventType,
+} from '../itineraryEventTypes.js';
 import { formatItineraryEventTypeLabel } from './scheduleItemEventLabels.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
 
-export { buildSchedulableEventTypes };
+export { buildSchedulableEventTypes, isScheduleItemEventType };
 
 export const SCHEDULE_ITEM_TYPE_PLACEHOLDER = '';
 
@@ -13,10 +16,6 @@ export function isScheduleItemTypeUnset(selection) {
 
 export function isScheduleItemSearchEnabled(selection, eventTypes = []) {
    return !isScheduleItemEventType(selection, eventTypes);
-}
-
-export function isScheduleItemEventType(selection, eventTypes = []) {
-   return Array.isArray(eventTypes) && eventTypes.includes(selection);
 }
 
 export function buildScheduleItemTypeOptions(eventTypes = [], strings = {}) {

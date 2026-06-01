@@ -32,8 +32,8 @@ test('buildScheduledItemRowsContext places generic events on the timeline', () =
    assert.equal(lunchItems[0].maximumDuration, 40);
 });
 
-test('resolveScheduledPillOptions unschedules generic events by event type', () => {
-   const unscheduleRequests = [];
+test('resolveScheduledPillOptions offers only remove for generic events', () => {
+   const removeRequests = [];
 
    const options = resolveScheduledPillOptions(
       {
@@ -42,16 +42,22 @@ test('resolveScheduledPillOptions unschedules generic events by event type', () 
          scheduleItemKey: '',
       },
       {
-         onUnscheduleItineraryItem: (request) => {
-            unscheduleRequests.push(request);
+         onUnscheduleItineraryItem: () => {
+            throw new Error('generic events should not expose unschedule');
+         },
+         onRemoveItineraryItem: (request) => {
+            removeRequests.push(request);
          },
       },
       { scheduledItemMenuAria: 'Menu', unschedule: 'Unschedule', remove: 'Remove' }
    );
 
+   assert.equal(options.menuItems?.length, 1);
+   assert.equal(options.menuItems?.[0]?.label, 'Remove');
+
    options.menuItems?.[0]?.onAction?.();
 
-   assert.deepEqual(unscheduleRequests, [{
+   assert.deepEqual(removeRequests, [{
       itemType: 'lunch',
       key: '',
    }]);
