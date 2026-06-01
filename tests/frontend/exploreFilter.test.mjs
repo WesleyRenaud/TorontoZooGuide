@@ -21,8 +21,19 @@ test('buildExploreSearchIncludeFlags maps selected explore types to search flags
 });
 
 test('buildExploreSearchIncludeFlags includes zoomobile stations when a route is selected', () => {
-   assert.equal(
-      buildExploreSearchIncludeFlags(['animal'], 'current').includeZoomobileStations,
-      true
+   assert.deepEqual(
+      buildExploreSearchIncludeFlags(['animal'], 'current'),
+      {
+         includeAnimals: true,
+         includePavilions: false,
+         includeRestaurants: false,
+         includeRestrooms: false,
+         includeGiftShops: false,
+         includeAttractions: false,
+         includeGuardiansTalks: false,
+         includeWildEncounters: false,
+         includeZoomobileStations: true,
+         zoomobileRoute: 'current',
+      }
    );
 });
