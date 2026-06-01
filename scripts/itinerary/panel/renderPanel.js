@@ -1,4 +1,7 @@
-import { unscheduleItineraryItemRequest } from '../../api/itineraryApi.js';
+import {
+   removeItemFromItineraryRequest,
+   unscheduleItineraryItemRequest,
+} from '../../api/itineraryApi.js';
 import { makeActionsBar } from './components/actionsBar.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
@@ -73,6 +76,36 @@ function makePanelViewShell() {
    });
 }
 
+function buildItineraryPanelScheduleHandlers(
+   itinerary = {},
+   { onPanelRefresh = null } = {}
+) {
+   return {
+      onScheduleItineraryItem: (pick) => {
+         openScheduleItemModule({
+            itinerary,
+            eventTypes: buildSchedulableEventTypes(itinerary.itineraryConfig),
+            onScheduled: onPanelRefresh,
+            preselectedRow: pick?.row ?? null,
+         });
+      },
+      onUnscheduleItineraryItem: async ({ itemType, key }) => {
+         await unscheduleItineraryItemRequest({ itemType, key });
+
+         if (typeof onPanelRefresh === 'function') {
+            await onPanelRefresh();
+         }
+      },
+      onRemoveItineraryItem: async ({ itemType, key }) => {
+         await removeItemFromItineraryRequest({ itemType, key });
+
+         if (typeof onPanelRefresh === 'function') {
+            await onPanelRefresh();
+         }
+      },
+   };
+}
+
 function appendDayPlannerViewWithHours(
    dayPlannerView,
    zooHours,
@@ -80,6 +113,10 @@ function appendDayPlannerViewWithHours(
    timeHandlers = {},
    { onPanelRefresh = null } = {}
 ) {
+   const scheduleHandlers = buildItineraryPanelScheduleHandlers(itinerary, {
+      onPanelRefresh,
+   });
+
    dayPlannerView.appendChild(
       makeDayPlannerPreview(zooHours, itinerary, timeHandlers, {
          onScheduleItemClick: () => {
@@ -89,23 +126,7 @@ function appendDayPlannerViewWithHours(
                onScheduled: onPanelRefresh,
             });
          },
-         scheduleHandlers: {
-            onScheduleItineraryItem: (pick) => {
-               openScheduleItemModule({
-                  itinerary,
-                  eventTypes: buildSchedulableEventTypes(itinerary.itineraryConfig),
-                  onScheduled: onPanelRefresh,
-                  preselectedRow: pick?.row ?? null,
-               });
-            },
-            onUnscheduleItineraryItem: async ({ itemType, key }) => {
-               await unscheduleItineraryItemRequest({ itemType, key });
-
-               if (typeof onPanelRefresh === 'function') {
-                  await onPanelRefresh();
-               }
-            },
-         },
+         scheduleHandlers,
       })
    );
 }
@@ -131,7 +152,13 @@ function buildItineraryPanelContent(bodyEl, itinerary, zooHours) {
       sharedHeader.appendChild(dateCard);
    }
 
-   buildSectionConfigs(itinerary).forEach((sectionConfig) => {
+   const scheduleHandlers = buildItineraryPanelScheduleHandlers(itinerary, {
+      onPanelRefresh: () => renderItineraryPanelInto(bodyEl),
+   });
+
+   buildSectionConfigs(itinerary, {
+      onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
+   }).forEach((sectionConfig) => {
       listView.appendChild(
          makeSection(sectionConfig)
       );

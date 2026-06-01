@@ -15,14 +15,23 @@ import {
 } from './rowAlerts.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
 import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
-import { tagScheduleItemRow } from './scheduleItemSearch.js';
-import { getAnimalId } from '../selectors/animalSelector/model.js';
-import { getAttractionId } from '../selectors/attractionSelector/model.js';
+import {
+   getItineraryItemKey,
+   tagScheduleItemRow,
+} from './scheduleItemSearch.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { APP_STRINGS } from '../../strings.js';
 
+function hasItineraryScheduleTimes(item) {
+   return Boolean(item.start_time && item.end_time);
+}
+
 function buildScheduleRowProps(itemType, item, onScheduleItem) {
    if (typeof onScheduleItem !== 'function') {
+      return {};
+   }
+
+   if (hasItineraryScheduleTimes(item)) {
       return {};
    }
 
@@ -48,9 +57,11 @@ function buildUnscheduleRowProps(itemType, item, onUnscheduleItem) {
       return {};
    }
 
-   const key = itemType === ScheduleItemKind.ANIMAL.itemType
-      ? getAnimalId(item)
-      : getAttractionId(item);
+   if (!hasItineraryScheduleTimes(item)) {
+      return {};
+   }
+
+   const key = getItineraryItemKey(itemType, item);
 
    if (!key) {
       return {};
@@ -63,6 +74,56 @@ function buildUnscheduleRowProps(itemType, item, onUnscheduleItem) {
       onAction: () => onUnscheduleItem({
          itemType,
          key,
+      }),
+   };
+}
+
+function buildRemoveRowProps(
+   itemType,
+   item,
+   onRemoveItem,
+   { useSecondaryAction = true } = {}
+) {
+   if (typeof onRemoveItem !== 'function') {
+      return {};
+   }
+
+   const key = getItineraryItemKey(itemType, item);
+
+   if (!key) {
+      return {};
+   }
+
+   const removeLabel = APP_STRINGS.itinerary.dayPlanner.remove;
+   const onRemove = () => onRemoveItem({
+      itemType,
+      key,
+   });
+
+   if (useSecondaryAction) {
+      return {
+         secondaryActionLabel: removeLabel,
+         onSecondaryAction: onRemove,
+      };
+   }
+
+   return {
+      actionLabel: removeLabel,
+      onAction: onRemove,
+   };
+}
+
+function buildRowScheduleActionProps(itemType, item, handlers = {}) {
+   const { onUnscheduleItem = null, onScheduleItem = null, onRemoveItem = null } = handlers;
+   const scheduleActionProps = {
+      ...buildUnscheduleRowProps(itemType, item, onUnscheduleItem),
+      ...buildScheduleRowProps(itemType, item, onScheduleItem),
+   };
+
+   return {
+      ...scheduleActionProps,
+      ...buildRemoveRowProps(itemType, item, onRemoveItem, {
+         useSecondaryAction: Boolean(scheduleActionProps.actionLabel),
       }),
    };
 }
@@ -229,7 +290,11 @@ function buildNamedRows(
 
 export function buildAnimalRows(
    animals = [],
-   { onUnscheduleItem = null, onScheduleItem = null } = {}
+   {
+      onUnscheduleItem = null,
+      onScheduleItem = null,
+      onRemoveItem = null,
+   } = {}
 ) {
    return buildRows(animals, {
       normalizeItem: normalizeAnimal,
@@ -249,15 +314,10 @@ export function buildAnimalRows(
             alertTone: alert.tone,
             onNameClick: () => openAnimalSpeciesOverlay(animal),
             ...buildLinkRowProps(animal.link),
-            ...buildUnscheduleRowProps(
+            ...buildRowScheduleActionProps(
                ScheduleItemKind.ANIMAL.itemType,
                animal,
-               onUnscheduleItem
-            ),
-            ...buildScheduleRowProps(
-               ScheduleItemKind.ANIMAL.itemType,
-               animal,
-               onScheduleItem
+               { onUnscheduleItem, onScheduleItem, onRemoveItem }
             ),
          };
       },
@@ -266,7 +326,11 @@ export function buildAnimalRows(
 
 export function buildAttractionRows(
    attractions = [],
-   { onUnscheduleItem = null, onScheduleItem = null } = {}
+   {
+      onUnscheduleItem = null,
+      onScheduleItem = null,
+      onRemoveItem = null,
+   } = {}
 ) {
    return buildNamedRows(attractions, {
       normalizeItem: normalizeAttraction,
@@ -281,22 +345,18 @@ export function buildAttractionRows(
       ],
       getAlertLine: buildAttractionRemovalReasonLine,
       getLink: (attraction) => attraction.infoLink,
-      extendRowProps: (attraction) => ({
-         ...buildUnscheduleRowProps(
-            ScheduleItemKind.ATTRACTION.itemType,
-            attraction,
-            onUnscheduleItem
-         ),
-         ...buildScheduleRowProps(
-            ScheduleItemKind.ATTRACTION.itemType,
-            attraction,
-            onScheduleItem
-         ),
-      }),
+      extendRowProps: (attraction) => buildRowScheduleActionProps(
+         ScheduleItemKind.ATTRACTION.itemType,
+         attraction,
+         { onUnscheduleItem, onScheduleItem, onRemoveItem }
+      ),
    });
 }
 
-export function buildGuardiansRows(guardiansTalks = []) {
+export function buildGuardiansRows(
+   guardiansTalks = [],
+   { onRemoveItem = null } = {}
+) {
    return buildNamedRows(guardiansTalks, {
       normalizeItem: normalizeTalk,
       prepareItems: sortScheduledOccurrencesByStartTime,
@@ -309,10 +369,19 @@ export function buildGuardiansRows(guardiansTalks = []) {
       ],
       getAlertLine: buildGuardiansRemovalReasonLine,
       getLink: (talk) => talk.link,
+      extendRowProps: (talk) => buildRemoveRowProps(
+         'guardians_talks',
+         talk,
+         onRemoveItem,
+         { useSecondaryAction: false }
+      ),
    });
 }
 
-export function buildWildRows(wildEncounters = []) {
+export function buildWildRows(
+   wildEncounters = [],
+   { onRemoveItem = null } = {}
+) {
    return buildNamedRows(wildEncounters, {
       normalizeItem: normalizeWild,
       prepareItems: sortScheduledOccurrencesByStartTime,
@@ -324,6 +393,9 @@ export function buildWildRows(wildEncounters = []) {
          buildScheduledTimeFieldLine(wild),
       ],
       getAlertLine: buildWildRemovalReasonLine,
-      extendRowProps: (wild) => buildTitleLinkRowProps(wild.link),
+      extendRowProps: (wild) => ({
+         ...buildTitleLinkRowProps(wild.link),
+         ...buildRemoveRowProps('wild_encounters', wild, onRemoveItem),
+      }),
    });
 }

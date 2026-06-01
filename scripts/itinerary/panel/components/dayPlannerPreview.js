@@ -58,6 +58,7 @@ function makeItemsListSection(
       editButtonSectionKeys = null,
       onUnscheduleItem = null,
       onScheduleItem = null,
+      onRemoveItem = null,
       sectionKeys = SCHEDULED_DAY_PLANNER_SECTION_KEYS,
    } = {}
 ) {
@@ -65,6 +66,7 @@ function makeItemsListSection(
       keys: sectionKeys,
       onUnscheduleItem,
       onScheduleItem,
+      onRemoveItem,
    });
 
    if (sectionConfigs.length === 0) {
@@ -226,6 +228,7 @@ export function makeDayPlannerPreview(
       {
          editButtonSectionKeys: SCHEDULED_DAY_PLANNER_EDIT_SECTION_KEYS,
          onUnscheduleItem: scheduleHandlers.onUnscheduleItineraryItem,
+         onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
       }
    );
    const unscheduledSection = makeItemsListSection(
@@ -233,6 +236,7 @@ export function makeDayPlannerPreview(
       strings.unscheduledTitle,
       {
          onScheduleItem: scheduleHandlers.onScheduleItineraryItem,
+         onRemoveItem: scheduleHandlers.onRemoveItineraryItem,
          sectionKeys: UNSCHEDULED_DAY_PLANNER_SECTION_KEYS,
       }
    );

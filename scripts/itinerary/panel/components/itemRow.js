@@ -23,6 +23,8 @@ export function makeItemRow({
    onNameClick = null,
    actionLabel = '',
    onAction = null,
+   secondaryActionLabel = '',
+   onSecondaryAction = null,
 }) {
    const row = el('div', 'itin-panel-item');
 
@@ -61,18 +63,36 @@ export function makeItemRow({
    left.appendChild(text);
    row.appendChild(left);
 
-   if (actionLabel && typeof onAction === 'function') {
-      const actionButton = document.createElement('button');
+   const rowActions = [];
 
-      actionButton.type = 'button';
-      actionButton.className = 'itin-panel-item-action-btn';
-      actionButton.textContent = actionLabel;
-      actionButton.setAttribute('aria-label', actionLabel);
-      actionButton.addEventListener('click', (event) => {
-         event.stopPropagation();
-         onAction();
+   if (actionLabel && typeof onAction === 'function') {
+      rowActions.push({ label: actionLabel, onAction });
+   }
+
+   if (secondaryActionLabel && typeof onSecondaryAction === 'function') {
+      rowActions.push({
+         label: secondaryActionLabel,
+         onAction: onSecondaryAction,
       });
-      row.appendChild(actionButton);
+   }
+
+   if (rowActions.length) {
+      const actions = el('div', 'itin-panel-item-actions');
+
+      rowActions.forEach(({ label, onAction: handleAction }) => {
+         const actionButton = document.createElement('button');
+
+         actionButton.type = 'button';
+         actionButton.className = 'itin-panel-item-action-btn';
+         actionButton.textContent = label;
+         actionButton.setAttribute('aria-label', label);
+         actionButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            handleAction();
+         });
+         actions.appendChild(actionButton);
+      });
+      row.appendChild(actions);
    }
 
    return row;
