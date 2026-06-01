@@ -6,6 +6,7 @@ import {
    normalizeTalk,
    normalizeWild,
 } from './format.js';
+import { openAnimalSpeciesOverlay } from '../../overlays/speciesOverlay.js';
 import {
    buildAnimalAlert,
    buildAttractionRemovalReasonLine,
@@ -236,6 +237,7 @@ export function buildAnimalRows(
             ]),
             alertLine: alert.line,
             alertTone: alert.tone,
+            onNameClick: () => openAnimalSpeciesOverlay(animal),
             ...buildLinkRowProps(animal.link),
             ...buildUnscheduleRowProps(
                ScheduleItemKind.ANIMAL.itemType,
