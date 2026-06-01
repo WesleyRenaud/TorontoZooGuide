@@ -41,9 +41,10 @@ export function buildSectionConfigs(
       keys = Object.values(ITINERARY_PANEL_SECTION_KEYS),
       onUnscheduleItem = null,
       onScheduleItem = null,
+      onRemoveItem = null,
    } = {}
 ) {
-   const rowActionOptions = { onUnscheduleItem, onScheduleItem };
+   const rowActionOptions = { onUnscheduleItem, onScheduleItem, onRemoveItem };
    const sectionConfigs = [
       {
          key: ITINERARY_PANEL_SECTION_KEYS.animals,
@@ -63,14 +64,14 @@ export function buildSectionConfigs(
          key: ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
          title: APP_STRINGS.site.nav.meetTheGuardians,
          count: guardiansTalks.length,
-         children: buildGuardiansRows(guardiansTalks),
+         children: buildGuardiansRows(guardiansTalks, { onRemoveItem }),
          stepKey: ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
       },
       {
          key: ITINERARY_PANEL_SECTION_KEYS.wildEncounters,
          title: APP_STRINGS.site.nav.wildEncounters,
          count: wildEncounters.length,
-         children: buildWildRows(wildEncounters),
+         children: buildWildRows(wildEncounters, { onRemoveItem }),
          stepKey: ITINERARY_PANEL_SECTION_KEYS.wildEncounters,
       },
    ];

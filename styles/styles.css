@@ -3548,6 +3548,14 @@ nav ul li a:hover {
    min-width: 0;
 }
 
+.itin-panel-item-actions {
+   display: flex;
+   flex-direction: column;
+   align-items: stretch;
+   gap: 12px;
+   flex: 0 0 auto;
+}
+
 .itin-panel-item-action-btn {
    border: none;
    cursor: pointer;
