@@ -36,6 +36,23 @@ def resolve_zoomobile_route_context(
    )
 
 
+def resolve_requested_zoomobile_route(
+      requested_route: str,
+      active_route: str | None,
+      day_route: str | None ) -> tuple[ str, str ]:
+
+   if requested_route in (
+         ZoomobileRouteId.SUMMER.value,
+         ZoomobileRouteId.WINTER.value,
+   ):
+      return requested_route, ZoomobileRouteSource.MANUAL.value
+
+   return resolve_zoomobile_route(
+      requested_route,
+      active_route,
+      day_route )
+
+
 def resolve_zoomobile_route(
       requested_route: str,
       active_route: str | None,
