@@ -24,6 +24,7 @@ import {
    setItineraryArrivalTime,
    setItineraryDepartureTime,
 } from '../itineraryService.js';
+import { showRemoveItineraryItemConfirmation } from './removeItineraryItemConfirmation.js';
 import { buildSchedulableEventTypes } from './scheduleItemTypes.js';
 import { buildSectionConfigs } from './sectionConfigs.js';
 import { resolveEffectiveItineraryHoursDateIso } from '../visitDateEarliest.js';
@@ -96,12 +97,16 @@ function buildItineraryPanelScheduleHandlers(
             await onPanelRefresh();
          }
       },
-      onRemoveItineraryItem: async ({ itemType, key }) => {
-         await removeItemFromItineraryRequest({ itemType, key });
+      onRemoveItineraryItem: ({ itemType, key }) => {
+         showRemoveItineraryItemConfirmation({
+            onConfirm: async () => {
+               await removeItemFromItineraryRequest({ itemType, key });
 
-         if (typeof onPanelRefresh === 'function') {
-            await onPanelRefresh();
-         }
+               if (typeof onPanelRefresh === 'function') {
+                  await onPanelRefresh();
+               }
+            },
+         });
       },
    };
 }
