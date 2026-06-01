@@ -79,6 +79,10 @@ export const itinerary = {
          + 'Do you want to add it and schedule a time?'
       ),
       scheduleItemNotOnItineraryConfirm: 'Add to Schedule',
+      removeItemTitle: 'Remove from Itinerary?',
+      removeItemMessage: (
+         'It will no longer appear in your day plan or itinerary lists. You can add it again later from the itinerary builder.'
+      ),
       animalMayBeOffDisplay: 'Animal May Be Off Display',
    },
    emptyText: {
