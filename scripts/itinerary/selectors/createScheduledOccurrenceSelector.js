@@ -237,7 +237,16 @@ export function createScheduledOccurrenceSelectorController({
          timeRange: buildScheduledOccurrenceTimeRange(row),
       }),
       getImageSrc: (row) => buildImageSrc(getName(row)),
-      getInfoLink: getLink || undefined,
+      getInfoLink: () => null,
+      onTitleClick: typeof getLink === 'function'
+         ? (row) => {
+            const link = getLink(row);
+
+            if (link) {
+               window.open(link, '_blank');
+            }
+         }
+         : null,
       makeSelection,
 
       topTitle: APP_STRINGS.itinerary.selectors.builderTitle,
