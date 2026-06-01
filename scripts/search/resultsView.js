@@ -1,3 +1,4 @@
+import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
 import {
    buildAnimalImageSrc,
    getAnimalSpecies,
@@ -10,6 +11,7 @@ import {
    getAttractionTitle,
 } from '../itinerary/selectors/attractionSelector/model.js';
 import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
+import { normalizeStoredLink } from '../itinerary/selectors/base/storedSelection.js';
 import { openAnimalSpeciesOverlay } from '../overlays/speciesOverlay.js';
 import { APP_STRINGS } from '../strings.js';
 
@@ -30,6 +32,35 @@ function buildLocationSummary(row, fallback) {
    ]
       .filter(Boolean)
       .join(', ') || fallback;
+}
+
+function getWildEncounterTitle(row) {
+   return String(row.name).trim() || APP_STRINGS.entityLabels.wildEncounter;
+}
+
+function getWildEncounterSubtitle(row) {
+   return buildDetailSummary(
+      [row.meeting_spot, row.start_time],
+      APP_STRINGS.entityLabels.wildEncounter
+   );
+}
+
+function buildWildEncounterImageSrc(row) {
+   const normalizedName = normalizeAssetKey(getWildEncounterTitle(row));
+
+   if (!normalizedName) {
+      return null;
+   }
+
+   return `../images/details/wild-encounters/${normalizedName}.png`;
+}
+
+function openWildEncounterLink(row) {
+   const link = normalizeStoredLink(row.link);
+
+   if (link) {
+      window.open(link, '_blank');
+   }
 }
 
 function buildNamedResultPresentation(fallbackTitle, getSubtitle) {
@@ -104,6 +135,13 @@ const ROW_LEFT_RENDERERS = {
       getSubtitle: getAttractionSubtitle,
       getImageSrc: buildAttractionImageSrc,
       getInfoLink: getAttractionInfoLink,
+   }),
+   wildEncounter: createDefaultSelectorRowLeftRenderer({
+      getTitle: getWildEncounterTitle,
+      getSubtitle: getWildEncounterSubtitle,
+      getImageSrc: buildWildEncounterImageSrc,
+      getInfoLink: () => null,
+      onTitleClick: openWildEncounterLink,
    }),
 };
 

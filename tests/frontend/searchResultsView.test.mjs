@@ -75,6 +75,32 @@ test('renderSearchResults shows thumbnails for animals and attractions', () => {
    assert.equal(attractionTitle?.className.includes('species-link'), false);
 });
 
+test('renderSearchResults links wild encounter titles when url is present', () => {
+   installDocument();
+
+   const resultsEl = createDomNode('div', 'animal-search-results');
+
+   renderSearchResults(resultsEl, [
+      {
+         type: 'wildEncounter',
+         name: 'African Rainforest',
+         meeting_spot: 'Wild Encounter - Africa Meeting Spot',
+         link: 'https://www.torontozoo.com/wildencounters/african-rainforest',
+      },
+   ]);
+
+   const row = resultsEl.children[0];
+   const title = findDescendant(row, 'animal-result-species');
+   const img = findDescendant(row, 'itin-animal-thumb-img');
+
+   assert.ok(title?.className.includes('species-link'));
+   assert.equal(
+      img?.src,
+      '../images/details/wild-encounters/african-rainforest.png'
+   );
+   assert.equal(findDescendant(row, 'tooltip-link'), null);
+});
+
 test('renderSearchResults keeps text-only rows for other result types', () => {
    installDocument();
 

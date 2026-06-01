@@ -114,6 +114,16 @@ function buildLinkRowProps(link) {
    };
 }
 
+function buildTitleLinkRowProps(link) {
+   if (!link) {
+      return {};
+   }
+
+   return {
+      onNameClick: () => window.open(link, '_blank'),
+   };
+}
+
 function normalizeItems(items = [], normalizeItem) {
    return items.map((item) => normalizeItem(item));
 }
@@ -314,6 +324,6 @@ export function buildWildRows(wildEncounters = []) {
          buildScheduledTimeFieldLine(wild),
       ],
       getAlertLine: buildWildRemovalReasonLine,
-      getLink: (wild) => wild.link,
+      extendRowProps: (wild) => buildTitleLinkRowProps(wild.link),
    });
 }
