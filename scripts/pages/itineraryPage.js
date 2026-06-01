@@ -8,6 +8,7 @@ import { showWizardValidationPopupIfNeeded } from '../itinerary/wizard/validatio
 import { blockMapWheelWhileWizardOpen } from '../itinerary/wizard/wheelBlocker.js';
 import { openItineraryWizard } from '../itinerary/wizard/wizardController.js';
 import { loadInlineZooMap } from '../map/loadInlineZooMap.js';
+import { initSpeciesOverlay } from '../overlays/speciesOverlay.js';
 
 const DEFAULT_WIZARD_STEP = 'date';
 let lastShownValidationSignature = null;
@@ -123,6 +124,8 @@ async function initItineraryPageContent(mountEl, openWizard, refreshPanel) {
 export function initItineraryPage() {
    const mountEl = document.getElementById('itineraryFlow');
    if (!mountEl) return;
+
+   initSpeciesOverlay();
 
    const refreshPanel = (options) => refreshItineraryPageContent(
       mountEl,
