@@ -133,5 +133,43 @@ test('saveItinerary includes selected exhibits in the backend payload', async ()
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
+   }, {
+      selectedExhibits: ['Africa Savanna', 'Eurasia'],
+   });
+});
+
+test('saveItinerary omits selected exhibits by default', async () => {
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/set-itinerary');
+      assert.deepEqual(JSON.parse(options.body).selectedExhibits, []);
+
+      return {
+         ok: true,
+         status: 200,
+         statusText: 'OK',
+         text: async () => JSON.stringify({
+            itinerary: {
+               date: '2026-06-15',
+               animals: [],
+               attractions: [],
+               guardians_talks: [],
+               wild_encounters: [],
+            },
+            issues: [],
+         }),
+      };
+   };
+
+   await saveItinerary({
+      date: '2026-06-15',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
    });
 });

@@ -1,5 +1,6 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { normalizeItineraryDraft } from '../draftStorage.js';
+import { syncItineraryAnimalDraftFromItinerary } from '../draftStorage.js';
 import {
    isItineraryEmpty,
    saveItinerary,
@@ -407,6 +408,8 @@ export async function finalizeItineraryWizard(
    }
 
    const savedItinerary = await saveFinalItinerary(finalItinerary);
+
+   syncItineraryAnimalDraftFromItinerary(savedItinerary);
 
    if (savedItinerary.saveIssues?.length) {
       showSaveIssuesPopup(savedItinerary);

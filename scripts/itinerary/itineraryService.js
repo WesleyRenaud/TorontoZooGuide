@@ -23,29 +23,11 @@ import {
 } from './itineraryShape.js';
 import { buildItineraryValidationState } from './itineraryValidation.js';
 import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
-import { SELECTED_EXHIBITS_KEY } from './storageKeys.js';
 import {
    getDay,
    getMonth,
    getYear,
 } from '../visitDates/visitDateRules.js';
-
-function loadSelectedExhibits() {
-   try {
-      const selectedExhibits = JSON.parse(
-         localStorage.getItem(SELECTED_EXHIBITS_KEY) || '[]'
-      );
-
-      return Array.isArray(selectedExhibits)
-         ? selectedExhibits
-            .map((exhibit) => String(exhibit ?? '').trim())
-            .filter(Boolean)
-         : [];
-   }
-   catch {
-      return [];
-   }
-}
 
 function createEmptyItinerary() {
    return {
@@ -142,12 +124,15 @@ export async function getZooHours(date) {
 
 export async function saveItinerary(
    itinerary = {},
-   { overridingConflictingGuardiansTalks = false } = {},
+   {
+      overridingConflictingGuardiansTalks = false,
+      selectedExhibits = [],
+   } = {},
 ) {
    const savePayload = toSetItineraryPayload(itinerary);
    const payload = {
       ...savePayload,
-      selectedExhibits: loadSelectedExhibits(),
+      selectedExhibits,
       temp: (await getItineraryDateSearchContext({ date: savePayload.date })).temp,
       overridingConflictingGuardiansTalks,
    };

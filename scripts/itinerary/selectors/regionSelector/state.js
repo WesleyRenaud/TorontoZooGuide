@@ -5,16 +5,18 @@ import {
 } from '../../draftStorage.js';
 import { getItineraryDateSearchContext } from '../../itinerarySearchContext.js';
 import {
-   buildSelectedAnimalKey,
    getRegionExhibits,
    isRegionFullySelected,
    makeSelectedAnimal,
    mergeAnimals,
    normalizeRegions,
    normalizeSelectedAnimal,
+   omitRemovedAnimals,
    syncRegionSelection,
 } from './regionSelection.js';
 import {
+   clearRemovedAnimalKeysForExhibit,
+   loadRemovedAnimalKeys,
    loadSelectedNames,
    saveSelectedNames,
 } from './regionStorage.js';
@@ -105,7 +107,9 @@ export function createRegionSelectorState() {
       exhibits.forEach((exhibitName) => {
          if (shouldSelect) {
             selectedExhibitNames.add(exhibitName);
-         } else {
+            clearRemovedAnimalKeysForExhibit(exhibitName);
+         }
+         else {
             selectedExhibitNames.delete(exhibitName);
          }
       });
@@ -125,8 +129,10 @@ export function createRegionSelectorState() {
 
       if (selectedExhibitNames.has(exhibitName)) {
          selectedExhibitNames.delete(exhibitName);
-      } else {
+      }
+      else {
          selectedExhibitNames.add(exhibitName);
+         clearRemovedAnimalKeysForExhibit(exhibitName);
       }
 
       syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);
@@ -153,12 +159,9 @@ export function createRegionSelectorState() {
          day,
          temp,
       });
-      const selectedAnimals = fullAnimals
-         .map(makeSelectedAnimal)
-         .filter(Boolean);
-
-      const selectedAnimalKeys = new Set(
-         selectedAnimals.map(buildSelectedAnimalKey).filter(Boolean)
+      const selectedAnimals = omitRemovedAnimals(
+         fullAnimals.map(makeSelectedAnimal).filter(Boolean),
+         loadRemovedAnimalKeys()
       );
 
       const selectedExhibitSet = new Set(
@@ -172,11 +175,7 @@ export function createRegionSelectorState() {
             return true;
          }
 
-         if (selectedExhibitSet.has(exhibit)) {
-            return selectedAnimalKeys.has(buildSelectedAnimalKey(animal));
-         }
-
-         return false;
+         return selectedExhibitSet.has(exhibit);
       });
 
       const mergedAnimals = mergeAnimals(preservedAnimals, selectedAnimals);

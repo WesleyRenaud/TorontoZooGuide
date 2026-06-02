@@ -1,3 +1,4 @@
+import { syncItineraryAnimalDraftFromItinerary } from '../draftStorage.js';
 import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
 import { createItineraryAnimalSelectorController } from '../../itinerary/selectors/animalSelector.js';
 import { createItineraryAttractionSelectorController } from '../../itinerary/selectors/attractionSelector.js';
@@ -137,6 +138,11 @@ export async function openItineraryWizard({
    }
 
    const existing = await getItinerary();
+
+   if (existing?.isActive) {
+      syncItineraryAnimalDraftFromItinerary(existing);
+   }
+
    const earliestVisitNoon = await resolveEarliestSelectableVisitDateNoon();
    const wizard = createItineraryWizardState(existing ?? {});
    const { state: wizardState } = wizard;
