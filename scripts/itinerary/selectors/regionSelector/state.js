@@ -15,6 +15,7 @@ import {
    syncRegionSelection,
 } from './regionSelection.js';
 import {
+   clearRemovedAnimalKeysForExhibit,
    loadRemovedAnimalKeys,
    loadSelectedNames,
    saveSelectedNames,
@@ -106,7 +107,9 @@ export function createRegionSelectorState() {
       exhibits.forEach((exhibitName) => {
          if (shouldSelect) {
             selectedExhibitNames.add(exhibitName);
-         } else {
+            clearRemovedAnimalKeysForExhibit(exhibitName);
+         }
+         else {
             selectedExhibitNames.delete(exhibitName);
          }
       });
@@ -126,8 +129,10 @@ export function createRegionSelectorState() {
 
       if (selectedExhibitNames.has(exhibitName)) {
          selectedExhibitNames.delete(exhibitName);
-      } else {
+      }
+      else {
          selectedExhibitNames.add(exhibitName);
+         clearRemovedAnimalKeysForExhibit(exhibitName);
       }
 
       syncRegionSelection(region, selectedRegionNames, selectedExhibitNames);

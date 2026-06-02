@@ -6,6 +6,7 @@ import {
    ATTRACTIONS_KEY,
    DATE_KEY,
    GUARDIANS_KEY,
+   REMOVED_ANIMALS_KEY,
    SELECTED_EXHIBITS_KEY,
    WILD_KEY,
 } from '../../scripts/itinerary/storageKeys.js';
@@ -139,4 +140,29 @@ test('removeAnimalFromItineraryAnimalDraft drops animal and exhibit when empty',
 
    assert.deepEqual(JSON.parse(localStorage.getItem(ANIMALS_KEY)), []);
    assert.deepEqual(JSON.parse(localStorage.getItem(SELECTED_EXHIBITS_KEY)), []);
+});
+
+test('removeAnimalFromItineraryAnimalDraft ignores non-animal item types', () => {
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
+   );
+
+   removeAnimalFromItineraryAnimalDraft('events', 'Lunch||');
+   removeAnimalFromItineraryAnimalDraft('animals', '');
+
+   assert.equal(JSON.parse(localStorage.getItem(ANIMALS_KEY)).length, 1);
+});
+
+test('syncItineraryAnimalDraftFromItinerary clears removed animal keys', () => {
+   localStorage.setItem(
+      REMOVED_ANIMALS_KEY,
+      JSON.stringify(['african penguin||africa savanna'])
+   );
+
+   syncItineraryAnimalDraftFromItinerary({
+      animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+   });
+
+   assert.deepEqual(JSON.parse(localStorage.getItem(REMOVED_ANIMALS_KEY)), []);
 });

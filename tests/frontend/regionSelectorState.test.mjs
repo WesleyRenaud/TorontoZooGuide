@@ -132,3 +132,45 @@ test('buildUpdatedAnimalsFromSelection keeps removed animals out of exhibit refr
 
    assert.deepEqual(species, ['African Lion', 'Masai Giraffe']);
 });
+
+test('re-selecting an exhibit re-hydrates previously removed animals', async () => {
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+      ])
+   );
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: async () => JSON.stringify({
+         animals: [
+            { species: 'African Lion', exhibit: 'Africa Savanna' },
+            { species: 'African Penguin', exhibit: 'Africa Savanna' },
+         ],
+      }),
+   });
+
+   removeAnimalFromItineraryAnimalDraft(
+      'animals',
+      'African Penguin||Africa Savanna'
+   );
+
+   const state = createRegionSelectorState();
+   state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
+   state.hydrateSelectionsFromStorage();
+
+   assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
+   assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
+
+   const animals = await state.buildUpdatedAnimalsFromSelection();
+   const species = animals.map((animal) => animal.species).sort();
+
+   assert.deepEqual(species, ['African Lion', 'African Penguin']);
+});

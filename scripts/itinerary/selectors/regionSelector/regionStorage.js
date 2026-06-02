@@ -63,3 +63,21 @@ export function restoreRemovedAnimalKey(key) {
 export function clearRemovedAnimalKeys() {
    saveArray(REMOVED_ANIMALS_KEY, []);
 }
+
+export function clearRemovedAnimalKeysForExhibit(exhibitName) {
+   const normalizedExhibit = String(exhibitName ?? '').trim().toLowerCase();
+
+   if (!normalizedExhibit) {
+      return;
+   }
+
+   const exhibitSuffix = `||${normalizedExhibit}`;
+   const removedKeys = loadRemovedAnimalKeys();
+   const nextKeys = [...removedKeys].filter((key) => !key.endsWith(exhibitSuffix));
+
+   if (nextKeys.length === removedKeys.size) {
+      return;
+   }
+
+   saveArray(REMOVED_ANIMALS_KEY, nextKeys);
+}
