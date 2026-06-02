@@ -3,10 +3,23 @@ import {
    normalizeItineraryDraft,
 } from './itineraryShape.js';
 import {
+   buildSelectedAnimalKey,
+   getExhibitNamesFromAnimals,
+   makeSelectedAnimal,
+   normalizeSelectedAnimal,
+} from './selectors/regionSelector/regionSelection.js';
+import {
+   addRemovedAnimalKey,
+   clearRemovedAnimalKeys,
+   saveSelectedNames,
+} from './selectors/regionSelector/regionStorage.js';
+import { ScheduleItemKind } from '../shared/enums/scheduleItemKind.js';
+import {
    ANIMALS_KEY,
    ATTRACTIONS_KEY,
    DATE_KEY,
    GUARDIANS_KEY,
+   REMOVED_ANIMALS_KEY,
    SELECTED_EXHIBITS_KEY,
    SELECTED_REGIONS_KEY,
    WILD_KEY,
@@ -38,6 +51,7 @@ export const ITINERARY_DRAFT_KEYS = [
 export const ITINERARY_SELECTION_KEYS = [
    SELECTED_EXHIBITS_KEY,
    SELECTED_REGIONS_KEY,
+   REMOVED_ANIMALS_KEY,
 ];
 
 export const ITINERARY_STORAGE_KEYS = [
@@ -144,4 +158,39 @@ export function clearItineraryDraftStorage({ includeSelections = true } = {}) {
    keys.forEach((key) => {
       localStorage.removeItem(key);
    });
+}
+
+function writeItineraryAnimalDraft(animals = []) {
+   const draftAnimals = animals
+      .map(makeSelectedAnimal)
+      .filter(Boolean);
+
+   saveArray(ANIMALS_KEY, draftAnimals);
+   saveSelectedNames(SELECTED_EXHIBITS_KEY, getExhibitNamesFromAnimals(draftAnimals));
+}
+
+export function syncItineraryAnimalDraftFromItinerary(itinerary = {}) {
+   writeItineraryAnimalDraft(itinerary.animals ?? []);
+   clearRemovedAnimalKeys();
+}
+
+export function removeAnimalFromItineraryAnimalDraft(itemType, key) {
+   if (itemType !== ScheduleItemKind.ANIMAL.itemType || !key) {
+      return;
+   }
+
+   const [species, exhibit] = String(key).split('||', 2);
+   const removeKey = buildSelectedAnimalKey({ species, exhibit });
+
+   if (!removeKey) {
+      return;
+   }
+
+   addRemovedAnimalKey(removeKey);
+
+   const remainingAnimals = loadArray(ANIMALS_KEY)
+      .map(normalizeSelectedAnimal)
+      .filter((animal) => animal && buildSelectedAnimalKey(animal) !== removeKey);
+
+   writeItineraryAnimalDraft(remainingAnimals);
 }

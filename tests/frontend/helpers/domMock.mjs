@@ -74,6 +74,23 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
 
          return null;
       },
+      contains(other) {
+         if (!other) {
+            return false;
+         }
+
+         let current = other;
+
+         while (current) {
+            if (current === node) {
+               return true;
+            }
+
+            current = current.parentElement ?? current.parent;
+         }
+
+         return false;
+      },
       get offsetHeight() {
          if (classes.has('itinerary-day-open-pill')) {
             return 69;
@@ -103,16 +120,34 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
          },
       },
       append(...items) {
-         children.push(...items);
+         for (const item of items) {
+            if (item && typeof item === 'object') {
+               item.parentElement = node;
+               item.parent = node;
+            }
+
+            children.push(item);
+         }
       },
       replaceChildren(...items) {
+         for (const child of children) {
+            child.parentElement = null;
+            child.parent = null;
+         }
+
          children.length = 0;
 
          for (const item of items) {
             if (item.tagName === '#fragment') {
-               children.push(...item.children);
+               for (const child of item.children) {
+                  child.parentElement = node;
+                  child.parent = node;
+                  children.push(child);
+               }
             }
             else {
+               item.parentElement = node;
+               item.parent = node;
                children.push(item);
             }
          }
@@ -193,12 +228,33 @@ function queryNodes(root, selector) {
 }
 
 function nodeMatchesSelector(node, selector) {
-   if (!node || selector[0] !== '.') {
+   if (!node || !selector) {
       return false;
    }
 
-   const className = selector.slice(1);
-   return node.classList?.contains(className) ?? false;
+   if (selector[0] === '.') {
+      const className = selector.slice(1);
+      return node.classList?.contains(className) ?? false;
+   }
+
+   const dataAttributeMatch = selector.match(/^\[data-([^\]=]+)(?:="([^"]*)")?\]$/);
+
+   if (dataAttributeMatch) {
+      const datasetKey = dataAttributeMatch[1].replace(
+         /-([a-z])/g,
+         (_, character) => character.toUpperCase()
+      );
+      const expectedValue = dataAttributeMatch[2];
+      const actualValue = node.dataset?.[datasetKey];
+
+      if (expectedValue === undefined) {
+         return actualValue != null && actualValue !== '';
+      }
+
+      return String(actualValue) === expectedValue;
+   }
+
+   return false;
 }
 
 function querySelectorInNode(node, selector) {

@@ -7,6 +7,18 @@ import {
    renderRegionSelectionView,
 } from './regionSelector/view.js';
 
+export function shouldSkipRegionSelectionSync({
+   fingerprintAtShow = '',
+   fingerprintNow = '',
+   selectionChangedSinceShow: selectionChanged = false,
+} = {}) {
+   if (selectionChanged) {
+      return false;
+   }
+
+   return fingerprintAtShow === fingerprintNow;
+}
+
 function createRegionSelectorElements() {
    const shell = buildRegionSelectorShell();
 
@@ -30,6 +42,7 @@ export function createItineraryRegionSelectorController({
    let elements = null;
    const state = createRegionSelectorState();
    let exhibitFingerprintAtShow = '';
+   let selectionChangedSinceShow = false;
 
    function buildExhibitSelectionFingerprint() {
       return [...state.getSelectedExhibitNamesSet()]
@@ -63,16 +76,36 @@ export function createItineraryRegionSelectorController({
       renderRegions();
    }
 
+   function markSelectionChanged() {
+      selectionChangedSinceShow = true;
+   }
+
    function handleRegionToggle(regionName) {
-      rerenderIfChanged(state.toggleRegion(regionName));
+      const changed = state.toggleRegion(regionName);
+
+      if (changed) {
+         markSelectionChanged();
+      }
+
+      rerenderIfChanged(changed);
    }
 
    function handleExhibitToggle(regionName, exhibitName) {
-      rerenderIfChanged(state.toggleExhibit(regionName, exhibitName));
+      const changed = state.toggleExhibit(regionName, exhibitName);
+
+      if (changed) {
+         markSelectionChanged();
+      }
+
+      rerenderIfChanged(changed);
    }
 
    async function commitSelection(callback) {
-      callback?.(await getSelectionSnapshot());
+      const animals = await getSelectionSnapshot();
+
+      selectionChangedSinceShow = false;
+      exhibitFingerprintAtShow = buildExhibitSelectionFingerprint();
+      callback?.(animals);
    }
 
    function bindEvents() {
@@ -139,6 +172,7 @@ export function createItineraryRegionSelectorController({
 
       ensureBuilt();
       await refreshRegions();
+      selectionChangedSinceShow = false;
       exhibitFingerprintAtShow = buildExhibitSelectionFingerprint();
       mountRoot();
    }
@@ -152,6 +186,10 @@ export function createItineraryRegionSelectorController({
    }
 
    function shouldSkipClosingSelectionSync() {
+      if (selectionChangedSinceShow) {
+         return false;
+      }
+
       return buildExhibitSelectionFingerprint() === exhibitFingerprintAtShow;
    }
 
