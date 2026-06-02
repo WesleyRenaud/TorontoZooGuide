@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .animals_matching_query import dedupe_animals_by_species_and_exhibit
 from .animals_matching_query import filter_animals_by_species_exhibit_keys
 from .animals_matching_query import sort_animals_by_species_and_exhibit
 from .animals_matching_query import species_exhibit_key
@@ -96,6 +97,7 @@ def build_itinerary_animals(
    animals = filter_animals_by_species_exhibit_keys(
       viewable_animals,
       species_exhibit_pairs )
+   animals = dedupe_animals_by_species_and_exhibit( animals )
    animals = keep_viewable_animals_per_species( animals )
    animals = sort_animals_by_species_and_exhibit( animals )
    apply_itinerary_animal_old_likelihood( animals, saved_animals )

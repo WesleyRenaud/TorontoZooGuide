@@ -1255,7 +1255,7 @@ def test_validate_animals_removes_unavailable_entries(
    ] == [ ( 'African Penguin', True ) ]
 
 
-def test_get_itinerary_animals_include_all_viewing_enclosures(
+def test_get_itinerary_animals_dedupes_indoor_and_outdoor_viewing_per_row(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 5, 30 ) )
@@ -1280,9 +1280,10 @@ def test_get_itinerary_animals_include_all_viewing_enclosures(
       if animal.species == 'Masai Giraffe'
    ]
 
-   assert len( giraffes ) == 2
-   assert max( animal.likelihood for animal in giraffes ) == 100
-   assert { animal.old_likelihood for animal in giraffes } == { 100 }
+   assert len( giraffes ) == 1
+   assert giraffes[ 0 ].exhibit == 'Africa Savanna'
+   assert giraffes[ 0 ].likelihood == 100
+   assert giraffes[ 0 ].old_likelihood == 100
 
 
 def test_validate_animals_uses_highest_likelihood_across_enclosures(
