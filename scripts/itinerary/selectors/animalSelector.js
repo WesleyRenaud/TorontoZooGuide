@@ -15,6 +15,7 @@ import {
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
 import { showItineraryConfirmPopup } from '../panel/components/confirmPopup.js';
+import { restoreRemovedAnimalKey } from './regionSelector/regionStorage.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAnimals';
@@ -98,16 +99,24 @@ export function createItineraryAnimalSelectorController({ mountEl, onNext, onPre
       renderRowLeft: renderAnimalSelectorRowLeft,
 
       onBeforeToggleAdd: ({ row, isSelected, proceed }) => {
+         const completeToggle = () => {
+            if (!isSelected) {
+               restoreRemovedAnimalKey(getAnimalId(row));
+            }
+
+            proceed();
+         };
+
          if (!shouldConfirmOffDisplayAnimal({
             row,
             isSelected,
             includeOffDisplayAnimals,
          })) {
-            proceed();
+            completeToggle();
             return;
          }
 
-         promptForOffDisplayAnimalSelection(row, proceed);
+         promptForOffDisplayAnimalSelection(row, completeToggle);
       },
 
       renderExtraControls: ({ bodyEl, rerunSearch }) => {

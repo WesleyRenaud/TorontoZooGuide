@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import { createRegionSelectorState } from '../../scripts/itinerary/selectors/regionSelector/state.js';
-import { DATE_KEY } from '../../scripts/itinerary/storageKeys.js';
+import { ANIMALS_KEY, DATE_KEY, SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
+import { removeAnimalFromItineraryAnimalDraft } from '../../scripts/itinerary/draftStorage.js';
 
 function createLocalStorageMock() {
    const values = new Map();
@@ -74,4 +75,60 @@ test('getAnimalsByExhibit falls back to today when no visit date is stored', asy
    assert.equal(state.toggleRegion('R1'), true);
 
    await state.buildUpdatedAnimalsFromSelection();
+});
+
+test('buildUpdatedAnimalsFromSelection keeps removed animals out of exhibit refresh', async () => {
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([
+         {
+            species: 'African Lion',
+            exhibit: 'Africa Savanna',
+         },
+         {
+            species: 'African Penguin',
+            exhibit: 'Africa Savanna',
+         },
+      ])
+   );
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: async () => JSON.stringify({
+         animals: [
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+            },
+            {
+               species: 'African Penguin',
+               exhibit: 'Africa Savanna',
+            },
+            {
+               species: 'Masai Giraffe',
+               exhibit: 'Africa Savanna',
+            },
+         ],
+      }),
+   });
+
+   removeAnimalFromItineraryAnimalDraft(
+      'animals',
+      'African Penguin||Africa Savanna'
+   );
+
+   const state = createRegionSelectorState();
+   state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
+   state.hydrateSelectionsFromStorage();
+
+   const animals = await state.buildUpdatedAnimalsFromSelection();
+   const species = animals.map((animal) => animal.species).sort();
+
+   assert.deepEqual(species, ['African Lion', 'Masai Giraffe']);
 });

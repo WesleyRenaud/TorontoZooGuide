@@ -12,6 +12,7 @@ import {
 import { showScheduleItemModule } from './components/scheduleItemModule.js';
 import { makeSection } from './components/section.js';
 import { clearItineraryDraftStorage } from '../draftStorage.js';
+import { removeAnimalFromItineraryAnimalDraft } from '../draftStorage.js';
 import { requiresRemoveItineraryItemConfirmation } from '../itineraryEventTypes.js';
 import {
    getItineraryPanelViewFromUrl,
@@ -101,6 +102,7 @@ function buildItineraryPanelScheduleHandlers(
       onRemoveItineraryItem: ({ itemType, key }) => {
          const performRemove = async () => {
             await removeItemFromItineraryRequest({ itemType, key });
+            removeAnimalFromItineraryAnimalDraft(itemType, key);
 
             if (typeof onPanelRefresh === 'function') {
                await onPanelRefresh();

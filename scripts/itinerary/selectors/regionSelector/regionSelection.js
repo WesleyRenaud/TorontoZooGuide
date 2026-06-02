@@ -109,6 +109,23 @@ export function buildSelectedAnimalKey(animal) {
    return `${species}||${exhibit}`;
 }
 
+export function getExhibitNamesFromAnimals(animals = []) {
+   return [...new Set(
+      animals
+         .map(normalizeSelectedAnimal)
+         .filter((animal) => animal.exhibit)
+         .map((animal) => animal.exhibit)
+   )];
+}
+
+export function omitRemovedAnimals(animals = [], removedKeys = new Set()) {
+   return animals.filter((animal) => {
+      const key = buildSelectedAnimalKey(animal);
+
+      return key && !removedKeys.has(key);
+   });
+}
+
 export function mergeAnimals(existingAnimals = [], newAnimals = []) {
    const merged = [];
    const seen = new Set();
