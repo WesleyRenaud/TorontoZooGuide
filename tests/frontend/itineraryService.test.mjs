@@ -460,3 +460,126 @@ test('saveItinerary resolves schedule time conflicts before unschedule warnings'
    assert.equal(requests[1].body.guardiansTalks[0].name, 'African Lion');
    assert.deepEqual(requests[1].body.wildEncounters, []);
 });
+
+test('saveItinerary preserves saved animals on conflict retry when payload omits them', async () => {
+   const requests = [];
+   const itineraryConfig = {
+      itinerary_error_types: {
+         SUCCESS: 'success',
+         GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT: 'guardiansTalkWildEncounterTimeConflict',
+      },
+      suppressed_error_types: [],
+   };
+
+   updateItineraryErrorTypesFromConfig({
+      errorTypes: itineraryConfig.itinerary_error_types,
+      suppressedErrorTypes: itineraryConfig.suppressed_error_types,
+   });
+
+   globalThis.fetch = async (url, options) => {
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
+
+      const body = requests.at(-1)?.body ?? {};
+
+      if (body.overridingConflictingGuardiansTalks) {
+         return {
+            ok: true,
+            status: 200,
+            statusText: 'OK',
+            text: async () => JSON.stringify({
+               errorType: 'success',
+               issues: [],
+               itinerary_config: itineraryConfig,
+               itinerary: {
+                  date: '2026-06-15',
+                  animals: [{
+                     species: 'African Lion',
+                     exhibit: 'Africa Savanna',
+                     start_time: '14:30',
+                     end_time: '14:45',
+                  }],
+                  attractions: [],
+                  guardians_talks: [{ name: 'Nile Soft-Shelled Turtle' }],
+                  wild_encounters: [],
+               },
+            }),
+         };
+      }
+
+      return {
+         ok: true,
+         status: 200,
+         statusText: 'OK',
+         text: async () => JSON.stringify({
+            errorType: 'guardiansTalkWildEncounterTimeConflict',
+            issues: [{
+               type: 'wildEncounterTimeConflict',
+               items: [
+                  {
+                     name: 'Nile Soft-Shelled Turtle',
+                     item_type: 'guardiansTalk',
+                     start_time: '14:00',
+                     end_time: '14:30',
+                     location: 'African Rainforest Pavilion',
+                  },
+                  {
+                     name: 'Guardians of White Rhinos',
+                     item_type: 'wildEncounter',
+                     start_time: '14:00',
+                     end_time: '14:45',
+                     meeting_spot: 'Wild Encounter - Penguin Meeting Spot',
+                  },
+               ],
+            }],
+            itinerary_config: itineraryConfig,
+            itinerary: {
+               date: '2026-06-15',
+               animals: [{
+                  species: 'African Lion',
+                  exhibit: 'Africa Savanna',
+                  start_time: '14:30',
+                  end_time: '14:45',
+               }],
+               attractions: [],
+               guardians_talks: [{ name: 'Nile Soft-Shelled Turtle' }],
+               wild_encounters: [],
+            },
+         }),
+      };
+   };
+
+   const savePromise = saveItinerary({
+      date: '2026-06-15',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [{ name: 'Nile Soft-Shelled Turtle' }],
+      wildEncounters: [{ name: 'Guardians of White Rhinos' }],
+   });
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   document.querySelector('.itin-save-issue-select-btn')?.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   document.querySelector('.tzg-popup-confirm')?.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   await savePromise;
+
+   assert.equal(requests.length, 2);
+   assert.deepEqual(requests[1].body.animals, [{
+      species: 'African Lion',
+      exhibit: 'Africa Savanna',
+   }]);
+});
