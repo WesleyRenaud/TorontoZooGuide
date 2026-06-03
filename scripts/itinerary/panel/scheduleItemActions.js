@@ -105,6 +105,7 @@ async function scheduleItineraryItemWithConfirmation(request) {
       return new Promise((resolve) => {
          showGuardiansTalkUnscheduleConfirmation({
             mountEl: getItineraryPanelMountEl() ?? document.body,
+            issues: initialResult.issues,
             onConfirm: async () => {
                const confirmedResult = await scheduleItineraryItemRequest(request, {
                   confirmingGuardiansTalkUnschedule: true,

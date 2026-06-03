@@ -15,7 +15,7 @@ from ..data_access.save_itinerary import save_validated_itinerary
 from ...guardians.controllers.guardians_controller import GuardiansController
 from .guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from .guardians_talk_unschedule_items import apply_guardians_talk_unschedule_to_validated_itinerary
-from .guardians_talk_unschedule_warning import guardians_talk_unschedule_warning_is_required
+from .guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
 from .guardians_talk_unschedule_warning import guardians_talks_requiring_unschedule
 from .itinerary import build_current_itinerary
 from .itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
@@ -220,13 +220,19 @@ def set_itinerary(
       else None )
 
    if saved_itinerary is not None:
-      if guardians_talk_unschedule_warning_is_required(
-            saved_itinerary,
-            validated_itinerary,
-            confirming_guardians_talk_unschedule=(
-               confirming_guardians_talk_unschedule ) ):
+      talks_requiring_unschedule = guardians_talks_requiring_unschedule(
+         saved_itinerary,
+         validated_itinerary )
+
+      if (
+            talks_requiring_unschedule
+            and not confirming_guardians_talk_unschedule ):
          return ItinerarySaveResult(
             error_type=ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+            issues=(
+               build_guardians_talk_unschedule_issue(
+                  talks_requiring_unschedule ),
+            ),
             itinerary=build_current_itinerary(
                saved_itinerary,
                animal_controller,
@@ -234,10 +240,6 @@ def set_itinerary(
                guardians_controller,
                wild_encounter_controller,
                visit_date_temp=visit_date_temp ) )
-
-      talks_requiring_unschedule = guardians_talks_requiring_unschedule(
-         saved_itinerary,
-         validated_itinerary )
 
       if talks_requiring_unschedule:
          validated_itinerary = apply_guardians_talk_unschedule_to_validated_itinerary(
