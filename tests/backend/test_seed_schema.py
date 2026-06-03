@@ -55,6 +55,7 @@ def test_seed_data_exports_all_static_table_rows() -> None:
    assert data.guest_services
    assert data.picnic_sites
    assert data.event_sites
+   assert data.itinerary_error_types
    assert data.itinerary_event_defaults
    assert data.zoo_hours
 

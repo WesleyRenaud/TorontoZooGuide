@@ -82,6 +82,7 @@ export const itinerary = {
       guardiansTalkUnscheduleTitle: 'Unschedule Conflicting Items?',
       guardiansTalkUnscheduleMessage: talksList => `Adding these Meet the Guardians Talks: ${talksList} will unschedule other items that overlap their time. Do you want to continue?`,
       guardiansTalkUnscheduleConfirm: 'Continue',
+      wildEncounterUnscheduleMessage: encountersList => `Adding these Wild Encounters: ${encountersList} will unschedule other items that overlap their time. Do you want to continue?`,
       removeItemTitle: 'Remove from Itinerary?',
       removeItemMessage: (
          'It will no longer appear in your day plan or itinerary lists. You can add it again later from the itinerary builder.'

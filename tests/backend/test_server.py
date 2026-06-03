@@ -1230,6 +1230,7 @@ def test_itinerary_endpoints_return_success_payloads(
          'confirming_short_visit': False,
          'suppress_short_visit_warning': False,
          'confirming_guardians_talk_unschedule': False,
+         'confirming_wild_encounter_unschedule': False,
       }
    )
    assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
