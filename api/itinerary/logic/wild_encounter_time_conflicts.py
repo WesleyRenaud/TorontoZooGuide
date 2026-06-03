@@ -4,21 +4,27 @@ from .itinerary_save_issue import ItinerarySaveIssue
 from .itinerary_save_issue_item import ItinerarySaveIssueItem
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
+from ..scheduling.time_block import time_block_from_schedule_times
 from ...shared.date_values import DateValues
 from ...shared.enums import ItinerarySaveIssueType
 from ...types import ScheduledItem
 
 
-def schedule_time_range( scheduled_item: ScheduledItem ) -> tuple[ int, int ]:
-   start_time = DateValues.time_value_in_minutes( scheduled_item.start_time )
-   end_time = DateValues.time_value_in_minutes( scheduled_item.end_time )
+def schedule_time_range( scheduled_item: ScheduledItem ) -> tuple[ int, int ] | None:
+   time_block = time_block_from_schedule_times(
+      scheduled_item.start_time,
+      scheduled_item.end_time )
 
-   return ( start_time, end_time )
+   if time_block is None:
+      return None
+
+   return ( time_block.start_minutes, time_block.end_minutes )
 
 
 def schedule_times_overlap(
       first: ScheduledItem,
-      second: ScheduledItem ) -> bool:
+      second: ScheduledItem,
+) -> bool:
    first_start, first_end = schedule_time_range( first )
    second_start, second_end = schedule_time_range( second )
 
@@ -32,12 +38,18 @@ def active_scheduled_items(
    active_talks = [
       guardians_talk
       for guardians_talk in guardians_talks
-      if not guardians_talk.is_deleted
+      if (
+         not guardians_talk.is_deleted
+         and schedule_time_range( guardians_talk ) is not None
+      )
    ]
    active_encounters = [
       wild_encounter
       for wild_encounter in wild_encounters
-      if not wild_encounter.is_deleted
+      if (
+         not wild_encounter.is_deleted
+         and schedule_time_range( wild_encounter ) is not None
+      )
    ]
 
    return active_talks + active_encounters
@@ -128,59 +140,17 @@ def build_schedule_time_conflict_issue(
       items=issue_items )
 
 
-def remove_scheduled_items_with_time_conflicts(
+def find_schedule_time_conflict_issues(
       guardians_talks: list[ GuardiansTalkDiff ],
       wild_encounters: list[ WildEncounterDiff ],
-) -> tuple[
-   list[ GuardiansTalkDiff ],
-   list[ WildEncounterDiff ],
-   tuple[ ItinerarySaveIssue, ... ],
-]:
+) -> tuple[ ItinerarySaveIssue, ... ]:
    scheduled_items = active_scheduled_items( guardians_talks, wild_encounters )
    conflict_groups = find_schedule_time_conflict_groups( scheduled_items )
 
    if not conflict_groups:
-      return guardians_talks, wild_encounters, ()
+      return ()
 
-   conflicting_talk_names = {
-      scheduled_item.name
-      for group in conflict_groups
-      for scheduled_item in group
-      if isinstance( scheduled_item, GuardiansTalkDiff )
-   }
-   conflicting_wild_encounter_names = {
-      scheduled_item.name
-      for group in conflict_groups
-      for scheduled_item in group
-      if isinstance( scheduled_item, WildEncounterDiff )
-   }
-   issues = [
+   return tuple(
       build_schedule_time_conflict_issue( group )
       for group in conflict_groups
-   ]
-
-   return (
-      [
-         guardians_talk
-         for guardians_talk in guardians_talks
-         if guardians_talk.name not in conflicting_talk_names
-      ],
-      [
-         wild_encounter
-         for wild_encounter in wild_encounters
-         if wild_encounter.name not in conflicting_wild_encounter_names
-      ],
-      tuple( issues ),
    )
-
-
-def remove_wild_encounters_with_time_conflicts(
-      wild_encounters: list[ WildEncounterDiff ] ) -> tuple[
-         list[ WildEncounterDiff ],
-         tuple[ ItinerarySaveIssue, ... ],
-      ]:
-   filtered_wild_encounters, _, issues = remove_scheduled_items_with_time_conflicts(
-      [],
-      wild_encounters )
-
-   return filtered_wild_encounters, issues

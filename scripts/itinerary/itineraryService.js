@@ -12,6 +12,7 @@ import { setStoredItineraryDate } from './draftStorage.js';
 import {
    isItinerarySuccess,
    requiresGuardiansTalkUnscheduleConfirmation,
+   requiresGuardiansTalkWildEncounterTimeConflictConfirmation,
    requiresShortVisitConfirmation,
    requiresWildEncounterUnscheduleConfirmation,
    resolveItineraryErrorMessage,
@@ -25,6 +26,7 @@ import {
 } from './itineraryShape.js';
 import { buildItineraryValidationState } from './itineraryValidation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
+import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
 import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
 import { showWildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
 import {
@@ -32,6 +34,7 @@ import {
    getMonth,
    getYear,
 } from '../visitDates/visitDateRules.js';
+import { applyConflictSelectionToItineraryDraft } from './wizard/wildEncounterConflictResolution.js';
 
 function createEmptyItinerary() {
    return {
@@ -141,7 +144,7 @@ export async function saveItinerary(
       overridingConflictingGuardiansTalks,
    };
 
-   const result = await requestSetItineraryWithUnscheduleConfirmation(basePayload);
+   const result = await requestSetItineraryWithConfirmations(basePayload);
 
    const normalizedItinerary = normalizeItinerary({
       ...result?.itinerary,
@@ -153,11 +156,44 @@ export async function saveItinerary(
    return normalizedItinerary;
 }
 
-async function requestSetItineraryWithUnscheduleConfirmation(payload) {
+async function requestSetItineraryWithConfirmations(payload) {
    const initialResult = await setItineraryRequest(payload);
 
    if (isItinerarySuccess(initialResult.errorType)) {
       return initialResult;
+   }
+
+   if (requiresGuardiansTalkWildEncounterTimeConflictConfirmation(initialResult.errorType)) {
+      return new Promise((resolve) => {
+         showScheduleTimeConflictConfirmation({
+            issues: initialResult.issues,
+            onConfirm: async (selectedItems) => {
+               const {
+                  guardiansTalks,
+                  wildEncounters,
+               } = applyConflictSelectionToItineraryDraft(
+                  {
+                     guardiansTalks: payload.guardiansTalks,
+                     wildEncounters: payload.wildEncounters,
+                  },
+                  initialResult.issues,
+                  selectedItems
+               );
+
+               const confirmedResult = await requestSetItineraryWithConfirmations({
+                  ...payload,
+                  guardiansTalks,
+                  wildEncounters,
+                  overridingConflictingGuardiansTalks: true,
+               });
+
+               resolve(confirmedResult);
+            },
+            onCancel: () => {
+               resolve(initialResult);
+            },
+         });
+      });
    }
 
    if (requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
@@ -165,7 +201,7 @@ async function requestSetItineraryWithUnscheduleConfirmation(payload) {
          showGuardiansTalkUnscheduleConfirmation({
             issues: initialResult.issues,
             onConfirm: async () => {
-               const confirmedResult = await requestSetItineraryWithUnscheduleConfirmation({
+               const confirmedResult = await requestSetItineraryWithConfirmations({
                   ...payload,
                   confirmingGuardiansTalkUnschedule: true,
                });
@@ -184,7 +220,7 @@ async function requestSetItineraryWithUnscheduleConfirmation(payload) {
          showWildEncounterUnscheduleConfirmation({
             issues: initialResult.issues,
             onConfirm: async () => {
-               const confirmedResult = await requestSetItineraryWithUnscheduleConfirmation({
+               const confirmedResult = await requestSetItineraryWithConfirmations({
                   ...payload,
                   confirmingWildEncounterUnschedule: true,
                });

@@ -10,7 +10,7 @@ from .wild_encounter_unschedule_items import newly_added_active_wild_encounters
 from .wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
 
 
-def wild_encounters_requiring_unschedule(
+def new_wild_encounters_overlapping_saved_schedule(
       saved_itinerary: SavedItinerary,
       validated_itinerary: ValidatedItinerary,
 ) -> list[ WildEncounterDiff ]:

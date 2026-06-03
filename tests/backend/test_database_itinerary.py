@@ -704,7 +704,8 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       ],
    )
 
-   assert result.success is True
+   assert not result.success
+   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
    assert [ issue.to_dict() for issue in result.issues ] == [
       {
          'type': 'wildEncounterTimeConflict',
@@ -731,19 +732,12 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       }
    ]
 
-   saved_wild_encounters = db.conn.execute(
-      """   SELECT WILD_ENCOUNTER
-            FROM ItineraryWildEncounter
-            ORDER BY WILD_ENCOUNTER;
-      """ ).fetchall()
-
-   assert [
-      row[ 'WILD_ENCOUNTER' ] for row in saved_wild_encounters
-   ] == [ 'Capybara' ]
    assert db.conn.execute(
-      """   SELECT ATTRACTION
-            FROM ItineraryAttraction;
-      """ ).fetchone()[ 'ATTRACTION' ] == 'Conservation Carousel'
+      'SELECT COUNT(*) FROM ItineraryWildEncounter;'
+   ).fetchone()[ 0 ] == 0
+   assert db.conn.execute(
+      'SELECT COUNT(*) FROM ItineraryAttraction;'
+   ).fetchone()[ 0 ] == 0
 
 
 def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
@@ -785,7 +779,8 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
       wild_encounters=[ 'African Rainforest' ],
    )
 
-   assert result.success is True
+   assert not result.success
+   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
    assert [ issue.to_dict() for issue in result.issues ] == [
       {
          'type': 'wildEncounterTimeConflict',
@@ -819,9 +814,8 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
       'SELECT COUNT(*) FROM ItineraryWildEncounter;'
    ).fetchone()[ 0 ] == 0
    assert db.conn.execute(
-      """   SELECT ATTRACTION
-            FROM ItineraryAttraction;
-      """ ).fetchone()[ 'ATTRACTION' ] == 'Conservation Carousel'
+      'SELECT COUNT(*) FROM ItineraryAttraction;'
+   ).fetchone()[ 0 ] == 0
 
 
 def test_set_itinerary_reports_partial_guardians_talk_encounter_overlap_without_trimming(
@@ -863,7 +857,8 @@ def test_set_itinerary_reports_partial_guardians_talk_encounter_overlap_without_
       wild_encounters=[ 'Grizzly Bear' ],
    )
 
-   assert result.success is True
+   assert not result.success
+   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
    assert len( result.issues ) == 1
    assert result.issues[ 0 ].to_dict()[ 'type' ] == 'wildEncounterTimeConflict'
    assert { item[ 'name' ] for item in result.issues[ 0 ].to_dict()[ 'items' ] } == {
@@ -996,7 +991,8 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
       wild_encounters=[ 'African Rainforest', 'Kangaroo' ],
    )
 
-   assert result.success is True
+   assert not result.success
+   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
    assert len( result.issues ) == 1
 
    issue = result.issues[ 0 ].to_dict()
