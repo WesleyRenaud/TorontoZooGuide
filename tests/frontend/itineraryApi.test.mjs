@@ -402,7 +402,7 @@ test('normalizes unschedule itinerary item response', async () => {
          itemType: 'animals',
          key: 'African Lion||Africa Savanna',
       }),
-      { errorType: 'success' }
+      { errorType: 'success', issues: [] }
    );
 });
 
@@ -424,7 +424,7 @@ test('normalizes remove item from itinerary response', async () => {
          itemType: 'attractions',
          key: 'Conservation Carousel',
       }),
-      { errorType: 'success' }
+      { errorType: 'success', issues: [] }
    );
 });
 
@@ -446,6 +446,6 @@ test('normalizes schedule itinerary item response', async () => {
 
    assert.deepEqual(
       await scheduleItineraryItemRequest({ itemType: 'lunch', key: '' }),
-      { errorType: 'noAvailableSlot' }
+      { errorType: 'noAvailableSlot', issues: [] }
    );
 });

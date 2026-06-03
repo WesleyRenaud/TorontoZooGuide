@@ -861,6 +861,9 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          response = {
             'errorType': save_result.error_type.value,
+            'issues': [
+               issue.to_dict() for issue in save_result.issues
+            ],
          }
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )

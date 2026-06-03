@@ -211,6 +211,13 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
          statusText: 'OK',
          text: async () => JSON.stringify({
             errorType: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
+            issues: isConfirmed ? [] : [{
+               type: 'guardiansTalkWillUnscheduleItems',
+               items: [{
+                  name: 'African Lion',
+                  item_type: 'guardiansTalk',
+               }],
+            }],
             itinerary_config: itineraryConfig,
             itinerary: {
                date: '2026-06-15',
@@ -219,7 +226,6 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
                guardians_talks: [],
                wild_encounters: [],
             },
-            issues: [],
          }),
       };
    };
@@ -235,6 +241,13 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
    await new Promise((resolve) => {
       setTimeout(resolve, 0);
    });
+
+   const popupMessage = document.querySelector('.tzg-popup-message');
+
+   assert.match(
+      popupMessage?.textContent ?? '',
+      /Adding these Meet the Guardians Talks: African Lion will unschedule other items/
+   );
 
    document.querySelector('.tzg-popup-confirm')?.click();
 

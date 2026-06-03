@@ -163,6 +163,7 @@ function normalizeScheduleItineraryItemResponse(response) {
 
    return {
       errorType: normalizeItineraryErrorTypeFromResponse(source),
+      issues: asArray(source.issues),
    };
 }
 
