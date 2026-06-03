@@ -11,6 +11,7 @@ import {
 import { setStoredItineraryDate } from './draftStorage.js';
 import {
    isItinerarySuccess,
+   requiresGuardiansTalkUnscheduleConfirmation,
    requiresShortVisitConfirmation,
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
@@ -22,6 +23,7 @@ import {
    toSetItineraryPayload,
 } from './itineraryShape.js';
 import { buildItineraryValidationState } from './itineraryValidation.js';
+import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
 import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
 import {
    getDay,
@@ -130,14 +132,14 @@ export async function saveItinerary(
    } = {},
 ) {
    const savePayload = toSetItineraryPayload(itinerary);
-   const payload = {
+   const basePayload = {
       ...savePayload,
       selectedExhibits,
       temp: (await getItineraryDateSearchContext({ date: savePayload.date })).temp,
       overridingConflictingGuardiansTalks,
    };
 
-   const result = await setItineraryRequest(payload);
+   const result = await requestSetItineraryWithGuardiansTalkConfirmation(basePayload);
 
    const normalizedItinerary = normalizeItinerary({
       ...result?.itinerary,
@@ -147,6 +149,33 @@ export async function saveItinerary(
    dispatchItineraryUpdated(normalizedItinerary);
 
    return normalizedItinerary;
+}
+
+async function requestSetItineraryWithGuardiansTalkConfirmation(payload) {
+   const initialResult = await setItineraryRequest(payload);
+
+   if (
+      isItinerarySuccess(initialResult.errorType)
+      || !requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)
+   ) {
+      return initialResult;
+   }
+
+   return new Promise((resolve) => {
+      showGuardiansTalkUnscheduleConfirmation({
+         onConfirm: async () => {
+            const confirmedResult = await setItineraryRequest({
+               ...payload,
+               confirmingGuardiansTalkUnschedule: true,
+            });
+
+            resolve(confirmedResult);
+         },
+         onCancel: () => {
+            resolve(initialResult);
+         },
+      });
+   });
 }
 
 class ItineraryTimeChangeCancelledError extends Error {

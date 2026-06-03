@@ -436,6 +436,7 @@ test('normalizes schedule itinerary item response', async () => {
          key: '',
          confirmingScheduleItemNotOnItinerary: false,
          suppressScheduleItemNotOnItineraryWarning: false,
+         confirmingGuardiansTalkUnschedule: false,
       });
 
       return mockJsonResponse({
