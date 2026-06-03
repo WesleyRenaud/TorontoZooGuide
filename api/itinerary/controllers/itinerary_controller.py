@@ -11,6 +11,7 @@ from ..data_access.itinerary_save_input_mapper import map_named_strings
 from ..data_access.itinerary_time import set_itinerary_arrival_time
 from ..data_access.itinerary_time import set_itinerary_departure_time
 from ...guardians.controllers.guardians_controller import GuardiansController
+from ..logic import bulk_schedule_animals as bulk_schedule_animals_logic
 from ..logic import remove_itinerary_item as remove_itinerary_item_logic
 from ..logic import schedule_itinerary_item as schedule_itinerary_item_logic
 from ..logic import set_itinerary as set_itinerary_logic
@@ -124,6 +125,19 @@ class ItineraryController():
          confirming_wild_encounter_unschedule=(
             confirming_wild_encounter_unschedule
          ) )
+
+
+   @classmethod
+   def bulk_schedule_animals(
+         cls,
+         visit_date_temp: float | None = None ) -> ItinerarySaveResult:
+      return bulk_schedule_animals_logic.bulk_schedule_animals(
+         get_connection(),
+         animal_controller=AnimalController,
+         attraction_controller=AttractionController,
+         guardians_controller=GuardiansController,
+         wild_encounter_controller=WildEncounterController,
+         visit_date_temp=visit_date_temp )
 
 
    @classmethod
