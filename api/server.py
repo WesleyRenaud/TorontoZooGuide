@@ -877,6 +877,32 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
 
+      elif self.path == '/bulk-schedule-animals':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         temp = data.get( 'temp' )
+
+         save_result = ItineraryController.bulk_schedule_animals(
+            visit_date_temp=temp )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = {
+            'errorType': save_result.error_type.value,
+            'issues': [
+               issue.to_dict() for issue in save_result.issues
+            ],
+            'itinerary': save_result.itinerary.to_dict(),
+            'itinerary_config': itinerary_config_to_dict( get_connection() ),
+         }
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
       elif self.path == '/unschedule-itinerary-item':
          content_length = int( self.headers[ 'Content-Length' ] )
          post_data = self.rfile.read( content_length )
