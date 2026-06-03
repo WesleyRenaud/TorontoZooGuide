@@ -11,6 +11,7 @@ from api.guardians.logic.guardians_talk_itinerary_validation import validate_gua
 from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInput
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.data_access.itinerary_animal_save_carryover import itinerary_animal_save_carryover
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from api.itinerary.logic.itinerary_validation import validate_itinerary_animals
@@ -1309,6 +1310,28 @@ def test_validate_animals_uses_highest_likelihood_across_enclosures(
    assert [ ( d.species, d.new_likelihood ) for d in result ] == [
       ( 'Masai Giraffe', 100 )
    ]
+
+
+def test_itinerary_animal_save_carryover_matches_species_exhibit_case_insensitively() -> None:
+   carryover = itinerary_animal_save_carryover(
+      [
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+            start_time='14:30',
+            end_time='14:45',
+         ),
+      ],
+      ItineraryAnimalInput(
+         species='African Lion',
+         exhibit='Africa Savanna' ),
+      old_visit_date='2026-06-15',
+   )
+
+   assert carryover.start_time == '14:30'
+   assert carryover.end_time == '14:45'
 
 
 def test_validate_attractions_removes_closed_entries(

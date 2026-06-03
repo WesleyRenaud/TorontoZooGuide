@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from ...animals.logic.animals_matching_query import species_exhibit_key_from_values
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_animal_record import ItineraryAnimalRecord
 from ...types import DateKey, ScheduleTimeKey
@@ -36,7 +37,7 @@ def itinerary_animal_save_carryover(
          end_time=None,
       )
 
-   pair = ( species, exhibit )
+   pair = species_exhibit_key_from_values( species, exhibit )
 
    for row in saved_rows or []:
       if row.species_exhibit_key() == pair:
