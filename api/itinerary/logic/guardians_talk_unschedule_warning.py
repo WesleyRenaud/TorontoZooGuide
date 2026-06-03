@@ -31,7 +31,7 @@ def guardians_talk_unschedule_warning_is_required(
       new_guardians_talks )
 
 
-def guardians_talks_requiring_unschedule(
+def new_guardians_talks_overlapping_saved_schedule(
       saved_itinerary: SavedItinerary,
       validated_itinerary: ValidatedItinerary,
 ) -> list[ GuardiansTalkDiff ]:

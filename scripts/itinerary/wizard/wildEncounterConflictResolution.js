@@ -113,3 +113,36 @@ export function buildItineraryWithSelectedWildEncounters(
       ],
    };
 }
+
+function getDraftItemName(item) {
+   if (typeof item === 'string') {
+      return item;
+   }
+
+   return item?.name ?? '';
+}
+
+export function applyConflictSelectionToItineraryDraft(
+   itinerary,
+   issues = [],
+   selectedItems = [],
+) {
+   const selectedNames = new Set(selectedItems.map((item) => item.name));
+   const conflictingNames = new Set(
+      issues.flatMap(
+         (issue) => (issue.items ?? []).map((item) => item.name)
+      )
+   );
+
+   const keepDraftItem = (item) => {
+      const name = getDraftItemName(item);
+
+      return !conflictingNames.has(name) || selectedNames.has(name);
+   };
+
+   return {
+      ...itinerary,
+      guardiansTalks: (itinerary.guardiansTalks ?? []).filter(keepDraftItem),
+      wildEncounters: (itinerary.wildEncounters ?? []).filter(keepDraftItem),
+   };
+}
