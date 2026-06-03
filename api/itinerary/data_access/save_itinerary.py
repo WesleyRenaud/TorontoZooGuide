@@ -2,14 +2,15 @@ from __future__ import annotations
 
 from datetime import date
 
-from ..data_access.validated_itinerary import ValidatedItinerary
 from ...models.animal_diff import AnimalDiff
 from ...models.attraction_diff import AttractionDiff
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.itinerary_event import ItineraryEvent
 from ...models.wild_encounter_diff import WildEncounterDiff
+from .schedule_itinerary_item import insert_itinerary_guardians_talk
 from ...shared.date_values import DateValues
 from ...types import Connection, Cursor, ScheduleTimeKey
+from .validated_itinerary import ValidatedItinerary
 
 
 def save_itinerary_date(
@@ -89,21 +90,13 @@ def save_itinerary_guardians_talks( cur: Cursor, guardians_talks: list[ Guardian
       return
 
    for talk in guardians_talks:
-      cur.execute(
-         """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
-                  TALK_NAME,
-                  START_TIME,
-                  END_TIME,
-                  IS_DELETED
-               )
-               VALUES ( ?, ?, ?, ? );
-         """,
-         (
-            talk.name,
-            DateValues.normalize_itinerary_schedule_time( talk.start_time ),
-            DateValues.normalize_itinerary_schedule_time( talk.end_time ),
-            talk.is_deleted,
-         ) )
+      insert_itinerary_guardians_talk(
+         cur,
+         talk_name=talk.name,
+         start_time=talk.start_time,
+         end_time=talk.end_time,
+         is_deleted=talk.is_deleted,
+      )
 
 
 def save_itinerary_wild_encounters( cur: Cursor, wild_encounters: list[ WildEncounterDiff ] ) -> None:

@@ -44,6 +44,9 @@ def is_itinerary_error_suppressed(
 def suppress_itinerary_error(
       conn: Connection,
       error_type: ItineraryErrorType ) -> None:
+   if error_type == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS:
+      return
+
    cur = conn.cursor()
 
    cur.execute(

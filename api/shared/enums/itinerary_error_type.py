@@ -11,3 +11,4 @@ class ItineraryErrorType( str, Enum ):
    NO_AVAILABLE_SLOT = 'noAvailableSlot'
    REQUESTED_TIME_NOT_AVAILABLE = 'requestedTimeNotAvailable'
    ITEM_NOT_ON_ITINERARY = 'itemNotOnItinerary'
+   GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS = 'guardiansTalkWillUnscheduleItems'

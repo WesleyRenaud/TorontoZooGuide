@@ -1,7 +1,10 @@
 import { scheduleItineraryItemRequest } from '../../api/itineraryApi.js';
+import { getItineraryPanelMountEl } from './components/popup.js';
+import { showGuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
 import {
    getItineraryErrorTypes,
    isItinerarySuccess,
+   requiresGuardiansTalkUnscheduleConfirmation,
    requiresScheduleItemNotOnItineraryConfirmation,
 } from '../itineraryErrorTypes.js';
 import { showScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
@@ -76,28 +79,47 @@ export function buildScheduleItemRequest(
 async function scheduleItineraryItemWithConfirmation(request) {
    const initialResult = await scheduleItineraryItemRequest(request);
 
-   if (
-      isItinerarySuccess(initialResult.errorType)
-      || !requiresScheduleItemNotOnItineraryConfirmation(initialResult.errorType)
-   ) {
+   if (isItinerarySuccess(initialResult.errorType)) {
       return initialResult;
    }
 
-   return new Promise((resolve) => {
-      showScheduleItemNotOnItineraryConfirmation({
-         onConfirm: async ({ doNotShowAgain = false } = {}) => {
-            const confirmedResult = await scheduleItineraryItemRequest(request, {
-               confirmingScheduleItemNotOnItinerary: true,
-               suppressScheduleItemNotOnItineraryWarning: doNotShowAgain,
-            });
+   if (requiresScheduleItemNotOnItineraryConfirmation(initialResult.errorType)) {
+      return new Promise((resolve) => {
+         showScheduleItemNotOnItineraryConfirmation({
+            onConfirm: async ({ doNotShowAgain = false } = {}) => {
+               const confirmedResult = await scheduleItineraryItemRequest(request, {
+                  confirmingScheduleItemNotOnItinerary: true,
+                  suppressScheduleItemNotOnItineraryWarning: doNotShowAgain,
+               });
 
-            resolve(confirmedResult);
-         },
-         onCancel: () => {
-            resolve(initialResult);
-         },
+               resolve(confirmedResult);
+            },
+            onCancel: () => {
+               resolve(initialResult);
+            },
+         });
       });
-   });
+   }
+
+   if (requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
+      return new Promise((resolve) => {
+         showGuardiansTalkUnscheduleConfirmation({
+            mountEl: getItineraryPanelMountEl() ?? document.body,
+            onConfirm: async () => {
+               const confirmedResult = await scheduleItineraryItemRequest(request, {
+                  confirmingGuardiansTalkUnschedule: true,
+               });
+
+               resolve(confirmedResult);
+            },
+            onCancel: () => {
+               resolve(initialResult);
+            },
+         });
+      });
+   }
+
+   return initialResult;
 }
 
 export async function scheduleSelectedItineraryItem(

@@ -14,6 +14,9 @@ from ..data_access.itinerary_save_input_mapper import map_itinerary_save_input
 from ..data_access.save_itinerary import save_validated_itinerary
 from ...guardians.controllers.guardians_controller import GuardiansController
 from .guardians_talk_schedule_trimming import apply_guardians_talk_trimming
+from .guardians_talk_unschedule_items import apply_guardians_talk_unschedule_to_validated_itinerary
+from .guardians_talk_unschedule_warning import guardians_talk_unschedule_warning_is_required
+from .guardians_talk_unschedule_warning import guardians_talks_requiring_unschedule
 from .itinerary import build_current_itinerary
 from .itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from .itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
@@ -123,7 +126,8 @@ def set_itinerary(
       wild_encounter_controller: type[ WildEncounterController ],
       overriding_conflicting_guardians_talks: bool = False,
       confirming_short_visit: bool = False,
-      suppress_short_visit_warning: bool = False ) -> ItinerarySaveResult:
+      suppress_short_visit_warning: bool = False,
+      confirming_guardians_talk_unschedule: bool ) -> ItinerarySaveResult:
    save_input = map_itinerary_save_input(
       date,
       arrival_time,
@@ -209,6 +213,36 @@ def set_itinerary(
       wild_encounter_controller,
       new_visit_date_temp=visit_date_temp,
       old_visit_date=old_visit_date )
+
+   saved_itinerary = (
+      fetch_saved_itinerary( conn )
+      if old_visit_date is not None
+      else None )
+
+   if saved_itinerary is not None:
+      if guardians_talk_unschedule_warning_is_required(
+            saved_itinerary,
+            validated_itinerary,
+            confirming_guardians_talk_unschedule=(
+               confirming_guardians_talk_unschedule ) ):
+         return ItinerarySaveResult(
+            error_type=ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+            itinerary=build_current_itinerary(
+               saved_itinerary,
+               animal_controller,
+               attraction_controller,
+               guardians_controller,
+               wild_encounter_controller,
+               visit_date_temp=visit_date_temp ) )
+
+      talks_requiring_unschedule = guardians_talks_requiring_unschedule(
+         saved_itinerary,
+         validated_itinerary )
+
+      if talks_requiring_unschedule:
+         validated_itinerary = apply_guardians_talk_unschedule_to_validated_itinerary(
+            validated_itinerary,
+            talks_requiring_unschedule )
 
    if overriding_conflicting_guardians_talks:
       trimmed_guardians_talks = apply_guardians_talk_trimming(

@@ -113,6 +113,34 @@ def update_itinerary_attraction_schedule(
    return cur.rowcount > 0
 
 
+def insert_itinerary_guardians_talk(
+      cur: Cursor,
+      *,
+      talk_name: str,
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey,
+      is_deleted: bool = False,
+) -> bool:
+   cur.execute(
+      """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
+                  TALK_NAME,
+                  START_TIME,
+                  END_TIME,
+                  IS_DELETED
+               )
+               VALUES ( ?, ?, ?, ? );
+         """,
+         (
+            talk_name,
+            DateValues.normalize_itinerary_schedule_time( start_time ),
+            DateValues.normalize_itinerary_schedule_time( end_time ),
+            is_deleted,
+         ),
+   )
+
+   return cur.rowcount > 0
+
+
 def insert_itinerary_event_schedule(
       cur: Cursor,
       event: ItineraryEvent ) -> None:

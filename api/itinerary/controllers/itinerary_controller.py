@@ -64,7 +64,8 @@ class ItineraryController():
          visit_date_temp: float | None = None,
          overriding_conflicting_guardians_talks: bool = False,
          confirming_short_visit: bool = False,
-         suppress_short_visit_warning: bool = False ) -> ItinerarySaveResult:
+         suppress_short_visit_warning: bool = False,
+         confirming_guardians_talk_unschedule: bool = False ) -> ItinerarySaveResult:
       return set_itinerary_logic.set_itinerary(
          get_connection(),
          date=date,
@@ -80,6 +81,7 @@ class ItineraryController():
             overriding_conflicting_guardians_talks ),
          confirming_short_visit=confirming_short_visit,
          suppress_short_visit_warning=suppress_short_visit_warning,
+         confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule,
          animal_controller=AnimalController,
          attraction_controller=AttractionController,
          guardians_controller=GuardiansController,
@@ -95,7 +97,8 @@ class ItineraryController():
          start_time: TimeInput = None,
          duration_minutes: DurationInput = None,
          confirming_schedule_item_not_on_itinerary: bool = False,
-         suppress_schedule_item_not_on_itinerary_warning: bool = False ) -> ItinerarySaveResult:
+         suppress_schedule_item_not_on_itinerary_warning: bool = False,
+         confirming_guardians_talk_unschedule: bool = False ) -> ItinerarySaveResult:
       return schedule_itinerary_item_logic.schedule_itinerary_item(
          get_connection(),
          item_type,
@@ -111,6 +114,9 @@ class ItineraryController():
          ),
          suppress_schedule_item_not_on_itinerary_warning=(
             suppress_schedule_item_not_on_itinerary_warning
+         ),
+         confirming_guardians_talk_unschedule=(
+            confirming_guardians_talk_unschedule
          ) )
 
 
