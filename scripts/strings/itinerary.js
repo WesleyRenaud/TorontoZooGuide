@@ -80,9 +80,7 @@ export const itinerary = {
       ),
       scheduleItemNotOnItineraryConfirm: 'Add to Schedule',
       guardiansTalkUnscheduleTitle: 'Unschedule Conflicting Items?',
-      guardiansTalkUnscheduleMessage: (
-         'Adding this Meet the Guardians talk will unschedule other items that overlap its time. Do you want to continue?'
-      ),
+      guardiansTalkUnscheduleMessage: talksList => `Adding these Meet the Guardians Talks: ${talksList} will unschedule other items that overlap their time. Do you want to continue?`,
       guardiansTalkUnscheduleConfirm: 'Continue',
       removeItemTitle: 'Remove from Itinerary?',
       removeItemMessage: (

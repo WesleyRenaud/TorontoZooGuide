@@ -218,6 +218,13 @@ test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk'
 
       return mockJsonResponse({
          errorType: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
+         issues: isConfirmed ? [] : [{
+            type: 'guardiansTalkWillUnscheduleItems',
+            items: [{
+               name: 'African Lion',
+               item_type: 'guardiansTalk',
+            }],
+         }],
       });
    };
 
@@ -238,8 +245,13 @@ test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk'
    });
 
    const confirmButton = document.querySelector('.tzg-popup-confirm');
+   const popupMessage = document.querySelector('.tzg-popup-message');
 
    assert.ok(confirmButton);
+   assert.match(
+      popupMessage?.textContent ?? '',
+      /Adding these Meet the Guardians Talks: African Lion will unschedule other items/
+   );
    confirmButton.click();
 
    await new Promise((resolve) => {

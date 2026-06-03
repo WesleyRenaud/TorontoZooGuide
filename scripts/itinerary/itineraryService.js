@@ -163,6 +163,7 @@ async function requestSetItineraryWithGuardiansTalkConfirmation(payload) {
 
    return new Promise((resolve) => {
       showGuardiansTalkUnscheduleConfirmation({
+         issues: initialResult.issues,
          onConfirm: async () => {
             const confirmedResult = await setItineraryRequest({
                ...payload,
