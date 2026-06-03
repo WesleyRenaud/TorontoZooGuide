@@ -39,9 +39,7 @@ def clear_itinerary_guardians_talk_schedule(
       *,
       talk_name: str ) -> None:
    cur.execute(
-      """   UPDATE ItineraryGuardiansTalk
-            SET START_TIME = NULL,
-                END_TIME = NULL
+      """   DELETE FROM ItineraryGuardiansTalk
             WHERE TALK_NAME = ?;
          """,
       ( talk_name, ),

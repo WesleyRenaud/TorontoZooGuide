@@ -279,6 +279,8 @@ function querySelectorInNode(node, selector) {
 
 export function installDocument() {
    const itineraryPanel = createDomNode('div', 'itinerary-panel');
+   const itineraryFlow = createDomNode('div', 'itinerary-flow');
+   itineraryFlow.id = 'itineraryFlow';
    const body = createDomNode('body');
 
    body.appendChild = (child) => {
@@ -286,9 +288,17 @@ export function installDocument() {
       return child;
    };
    body.appendChild(itineraryPanel);
+   body.appendChild(itineraryFlow);
 
    globalThis.document = {
       body,
+      getElementById: (id) => {
+         if (id === 'itineraryFlow') {
+            return itineraryFlow;
+         }
+
+         return null;
+      },
       addEventListener: () => {},
       removeEventListener: () => {},
       createElement: (tagName) => {

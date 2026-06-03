@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api.guardians.controllers.guardians_controller import GuardiansController
 from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from conftest import DbControllers
@@ -11,6 +12,21 @@ AFRICAN_RAINFOREST = 'African Rainforest'
 
 
 def _set_base_itinerary( db: DbControllers ) -> None:
+   assert GuardiansController.set_guardians_talk_schedule(
+      talk=GUARDIANS_TALK,
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday_time='10:00',
+      tuesday_time=None,
+      wednesday_time=None,
+      thursday_time=None,
+      friday_time=None,
+      saturday_time=None,
+      sunday_time=None,
+      message=None,
+   )
+
    assert ItineraryController.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
@@ -22,7 +38,11 @@ def _set_base_itinerary( db: DbControllers ) -> None:
          },
       ],
       attractions=[ CAROUSEL ],
-      guardians_talks=[ { 'name': GUARDIANS_TALK, 'start_time': None, 'end_time': None } ],
+      guardians_talks=[ {
+         'name': GUARDIANS_TALK,
+         'start_time': None,
+         'end_time': None,
+      } ],
       wild_encounters=[ AFRICAN_RAINFOREST ],
    ).success
 

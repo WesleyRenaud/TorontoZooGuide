@@ -19,6 +19,7 @@ const MOCK_ERROR_TYPES = Object.freeze({
    NO_AVAILABLE_SLOT: 'noAvailableSlot',
    REQUESTED_TIME_NOT_AVAILABLE: 'requestedTimeNotAvailable',
    ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',
+   GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',
 });
 
 function mockJsonResponse(payload) {
@@ -123,6 +124,7 @@ test('scheduleSelectedItineraryItem schedules an event', async () => {
          durationMinutes: 15,
          confirmingScheduleItemNotOnItinerary: false,
          suppressScheduleItemNotOnItineraryWarning: false,
+         confirmingGuardiansTalkUnschedule: false,
       },
    }]);
 });
@@ -199,6 +201,57 @@ test('scheduleSelectedItineraryItem confirms before scheduling a new animal', as
    assert.equal(requests.length, 2);
    assert.equal(requests[0].body.confirmingScheduleItemNotOnItinerary, false);
    assert.equal(requests[1].body.confirmingScheduleItemNotOnItinerary, true);
+});
+
+test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk', async () => {
+   const requests = [];
+
+   globalThis.fetch = async (url, options = {}) => {
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
+
+      const isConfirmed = Boolean(
+         requests.at(-1)?.body?.confirmingGuardiansTalkUnschedule
+      );
+
+      return mockJsonResponse({
+         errorType: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
+      });
+   };
+
+   const schedulePromise = scheduleSelectedItineraryItem(
+      {
+         date: '2026-06-15',
+         animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '10:00' }],
+         attractions: [],
+         guardiansTalks: [{ name: 'African Lion' }],
+      },
+      'guardians_talks',
+      { name: 'African Lion', scheduleItemKind: 'guardians_talks' },
+      []
+   );
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const confirmButton = document.querySelector('.tzg-popup-confirm');
+
+   assert.ok(confirmButton);
+   confirmButton.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const result = await schedulePromise;
+
+   assert.equal(result.errorType, 'success');
+   assert.equal(requests.length, 2);
+   assert.equal(requests[0].body.confirmingGuardiansTalkUnschedule, false);
+   assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
 });
 
 test('scheduleSelectedItineraryItem returns noAvailableSlot without refreshing', async () => {

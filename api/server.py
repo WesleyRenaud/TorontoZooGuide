@@ -778,6 +778,8 @@ class MyHandler( BaseHTTPRequestHandler ):
          confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
          suppress_short_visit_warning = bool(
             data.get( 'suppressShortVisitWarning' ) )
+         confirming_guardians_talk_unschedule = bool(
+            data.get( 'confirmingGuardiansTalkUnschedule' ) )
 
          save_result = ItineraryController.set_itinerary(
             date=date,
@@ -792,7 +794,9 @@ class MyHandler( BaseHTTPRequestHandler ):
             overriding_conflicting_guardians_talks=(
                overriding_conflicting_guardians_talks ),
             confirming_short_visit=confirming_short_visit,
-            suppress_short_visit_warning=suppress_short_visit_warning )
+            suppress_short_visit_warning=suppress_short_visit_warning,
+            confirming_guardians_talk_unschedule=(
+               confirming_guardians_talk_unschedule ) )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -834,6 +838,8 @@ class MyHandler( BaseHTTPRequestHandler ):
             data.get( 'confirmingScheduleItemNotOnItinerary' ) )
          suppress_schedule_item_not_on_itinerary_warning = bool(
             data.get( 'suppressScheduleItemNotOnItineraryWarning' ) )
+         confirming_guardians_talk_unschedule = bool(
+            data.get( 'confirmingGuardiansTalkUnschedule' ) )
 
          save_result = ItineraryController.schedule_itinerary_item(
             item_type=item_type,
@@ -845,7 +851,9 @@ class MyHandler( BaseHTTPRequestHandler ):
             ),
             suppress_schedule_item_not_on_itinerary_warning=(
                suppress_schedule_item_not_on_itinerary_warning
-            ) )
+            ),
+            confirming_guardians_talk_unschedule=(
+               confirming_guardians_talk_unschedule ) )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )

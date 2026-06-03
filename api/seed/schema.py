@@ -990,8 +990,8 @@ def create_schema( cursor: Cursor ) -> None:
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryGuardiansTalk
                      (  TALK_NAME            VARCHAR(64) NOT NULL,
-                        START_TIME           TEXT,
-                        END_TIME             TEXT,
+                        START_TIME           TEXT        NOT NULL,
+                        END_TIME             TEXT        NOT NULL,
                         IS_DELETED           BOOL        NOT NULL DEFAULT 0,
                         PRIMARY KEY ( TALK_NAME ),
                         FOREIGN KEY ( TALK_NAME ) REFERENCES MeetTheGuardiansTalk(NAME) ); ''' )
@@ -1014,6 +1014,13 @@ def create_schema( cursor: Cursor ) -> None:
       cursor.execute(
          'ALTER TABLE ItineraryGuardiansTalk ADD COLUMN IS_DELETED BOOL NOT NULL DEFAULT 0;'
       )
+
+   cursor.execute(
+      """   DELETE FROM ItineraryGuardiansTalk
+            WHERE START_TIME IS NULL
+               OR END_TIME IS NULL;
+      """
+   )
 
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryWildEncounter
                      (  WILD_ENCOUNTER       VARCHAR(64) NOT NULL,

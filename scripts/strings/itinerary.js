@@ -79,6 +79,11 @@ export const itinerary = {
          + 'Do you want to add it and schedule a time?'
       ),
       scheduleItemNotOnItineraryConfirm: 'Add to Schedule',
+      guardiansTalkUnscheduleTitle: 'Unschedule Conflicting Items?',
+      guardiansTalkUnscheduleMessage: (
+         'Adding this Meet the Guardians talk will unschedule other items that overlap its time. Do you want to continue?'
+      ),
+      guardiansTalkUnscheduleConfirm: 'Continue',
       removeItemTitle: 'Remove from Itinerary?',
       removeItemMessage: (
          'It will no longer appear in your day plan or itinerary lists. You can add it again later from the itinerary builder.'

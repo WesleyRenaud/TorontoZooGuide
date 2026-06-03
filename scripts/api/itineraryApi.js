@@ -171,12 +171,14 @@ export async function scheduleItineraryItemRequest(
    {
       confirmingScheduleItemNotOnItinerary = false,
       suppressScheduleItemNotOnItineraryWarning = false,
+      confirmingGuardiansTalkUnschedule = false,
    } = {}
 ) {
    const response = await postJson('/schedule-itinerary-item', {
       ...request,
       confirmingScheduleItemNotOnItinerary,
       suppressScheduleItemNotOnItineraryWarning,
+      confirmingGuardiansTalkUnschedule,
    });
 
    return normalizeScheduleItineraryItemResponse(response);

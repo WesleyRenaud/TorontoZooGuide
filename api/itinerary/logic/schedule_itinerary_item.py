@@ -14,11 +14,15 @@ from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.schedule_itinerary_item import insert_itinerary_animal_schedule
 from ..data_access.schedule_itinerary_item import insert_itinerary_attraction_schedule
 from ..data_access.schedule_itinerary_item import insert_itinerary_event_schedule
+from ..data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
 from ..data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ..data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
 from ...guardians.controllers.guardians_controller import GuardiansController
+from .guardians_talk_unschedule_items import clear_saved_schedules_overlapping_guardians_talks
+from .guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
 from .itinerary import build_current_itinerary
 from .itinerary_save_result import ItinerarySaveResult
+from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.itinerary_event import ItineraryEvent
 from .parse_schedule_item_request import parse_schedule_item_request
 from .parse_schedule_item_request import ParsedScheduleItemRequest
@@ -28,6 +32,7 @@ from .schedule_item_not_on_itinerary_warning import apply_schedule_item_not_on_i
 from .schedule_item_not_on_itinerary_warning import saved_itinerary_has_schedule_item
 from .schedule_item_not_on_itinerary_warning import schedule_item_not_on_itinerary_warning_is_required
 from ..scheduling.resolve_schedule_slot import resolve_schedule_slot
+from ..scheduling.scheduled_occurrence import schedule_guardians_talk_for_itinerary
 from ..scheduling.scheduling_anchor import scheduling_anchor_minutes
 from ..scheduling.scheduling_anchor import scheduling_day_end_minutes
 from ..scheduling.time_block import collect_time_blocks_from_itinerary
@@ -428,6 +433,110 @@ def _schedule_itinerary_event(
    return _build_success_result( conn, **itinerary_controller_kwargs )
 
 
+def _saved_guardians_talk_exists(
+      saved_itinerary: SavedItinerary,
+      talk_name: str ) -> bool:
+   return any(
+      row.talk_name == talk_name and not row.is_deleted
+      for row in saved_itinerary.guardians_talk_rows
+   )
+
+
+def _guardians_talk_diff_for_saved_itinerary_day(
+      saved_itinerary: SavedItinerary,
+      talk_name: str,
+      guardians_controller: type[ GuardiansController ],
+) -> GuardiansTalkDiff:
+   talk = guardians_controller.get_guardians_talk_on_day_schedule(
+      month=saved_itinerary.month(),
+      day=saved_itinerary.day(),
+      year=saved_itinerary.year(),
+      talk_name=talk_name )
+
+   return schedule_guardians_talk_for_itinerary( talk_name, talk )
+
+
+def _insert_scheduled_guardians_talk(
+      conn: Connection,
+      *,
+      saved_itinerary: SavedItinerary,
+      talk_name: str,
+      guardians_talk_diff: GuardiansTalkDiff,
+      clear_overlapping_schedules: bool,
+      itinerary_controller_kwargs: dict[ str, Any ],
+) -> ItinerarySaveResult:
+   cur = conn.cursor()
+
+   try:
+      if clear_overlapping_schedules:
+         clear_saved_schedules_overlapping_guardians_talks(
+            cur,
+            saved_itinerary,
+            [ guardians_talk_diff ] )
+
+      scheduled = insert_itinerary_guardians_talk(
+         cur,
+         talk_name=talk_name,
+         start_time=guardians_talk_diff.start_time,
+         end_time=guardians_talk_diff.end_time,
+      )
+
+      if not scheduled:
+         return _build_save_result(
+            conn,
+            ItineraryErrorType.SAVE_FAILED,
+            **itinerary_controller_kwargs )
+
+      conn.commit()
+
+   finally:
+      cur.close()
+
+   return _build_success_result( conn, **itinerary_controller_kwargs )
+
+
+def _schedule_guardians_talk_itinerary_item(
+      conn: Connection,
+      talk_name: str,
+      *,
+      itinerary_controller_kwargs: dict[ str, Any ],
+      confirming_guardians_talk_unschedule: bool,
+) -> ItinerarySaveResult:
+   saved_itinerary = fetch_saved_itinerary( conn )
+
+   if saved_itinerary.is_empty():
+      return _build_save_result(
+         conn,
+         ItineraryErrorType.ITINERARY_DATE_NOT_SET,
+         **itinerary_controller_kwargs )
+
+   if _saved_guardians_talk_exists( saved_itinerary, talk_name ):
+      return _build_success_result( conn, **itinerary_controller_kwargs )
+
+   guardians_talk_diff = _guardians_talk_diff_for_saved_itinerary_day(
+      saved_itinerary,
+      talk_name,
+      itinerary_controller_kwargs[ 'guardians_controller' ] )
+
+   has_overlap = saved_itinerary_has_overlap_with_guardians_talks(
+      saved_itinerary,
+      [ guardians_talk_diff ] )
+
+   if has_overlap and not confirming_guardians_talk_unschedule:
+      return _build_save_result(
+         conn,
+         ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+         **itinerary_controller_kwargs )
+
+   return _insert_scheduled_guardians_talk(
+      conn,
+      saved_itinerary=saved_itinerary,
+      talk_name=talk_name,
+      guardians_talk_diff=guardians_talk_diff,
+      clear_overlapping_schedules=has_overlap,
+      itinerary_controller_kwargs=itinerary_controller_kwargs )
+
+
 def schedule_itinerary_item(
       conn: Connection,
       item_type: str,
@@ -440,7 +549,8 @@ def schedule_itinerary_item(
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       confirming_schedule_item_not_on_itinerary: bool,
-      suppress_schedule_item_not_on_itinerary_warning: bool ) -> ItinerarySaveResult:
+      suppress_schedule_item_not_on_itinerary_warning: bool,
+      confirming_guardians_talk_unschedule: bool ) -> ItinerarySaveResult:
    itinerary_controller_kwargs = _itinerary_controller_kwargs(
       animal_controller=animal_controller,
       attraction_controller=attraction_controller,
@@ -471,6 +581,14 @@ def schedule_itinerary_item(
          event_type=parsed.event_type,
          time_options=parsed_schedule_options,
          itinerary_controller_kwargs=itinerary_controller_kwargs )
+
+   if parsed.kind == ScheduleItemKind.GUARDIANS_TALK:
+      return _schedule_guardians_talk_itinerary_item(
+         conn,
+         parsed.talk_name or '',
+         itinerary_controller_kwargs=itinerary_controller_kwargs,
+         confirming_guardians_talk_unschedule=(
+            confirming_guardians_talk_unschedule ) )
 
    return _schedule_listed_itinerary_item(
       conn,
