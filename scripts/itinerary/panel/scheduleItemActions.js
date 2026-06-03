@@ -6,6 +6,7 @@ import {
    isItinerarySuccess,
    requiresGuardiansTalkUnscheduleConfirmation,
    requiresScheduleItemNotOnItineraryConfirmation,
+   requiresWildEncounterUnscheduleConfirmation,
 } from '../itineraryErrorTypes.js';
 import { showScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
 import {
@@ -22,6 +23,7 @@ import {
    getAnimalSpecies,
 } from '../selectors/animalSelector/model.js';
 import { getAttractionName } from '../selectors/attractionSelector/model.js';
+import { showWildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
 
 export function buildAnimalDraftEntry(row) {
    const species = getAnimalSpecies(row);
@@ -76,8 +78,8 @@ export function buildScheduleItemRequest(
    };
 }
 
-async function scheduleItineraryItemWithConfirmation(request) {
-   const initialResult = await scheduleItineraryItemRequest(request);
+async function scheduleItineraryItemWithConfirmation(request, confirmationOptions = {}) {
+   const initialResult = await scheduleItineraryItemRequest(request, confirmationOptions);
 
    if (isItinerarySuccess(initialResult.errorType)) {
       return initialResult;
@@ -87,10 +89,14 @@ async function scheduleItineraryItemWithConfirmation(request) {
       return new Promise((resolve) => {
          showScheduleItemNotOnItineraryConfirmation({
             onConfirm: async ({ doNotShowAgain = false } = {}) => {
-               const confirmedResult = await scheduleItineraryItemRequest(request, {
-                  confirmingScheduleItemNotOnItinerary: true,
-                  suppressScheduleItemNotOnItineraryWarning: doNotShowAgain,
-               });
+               const confirmedResult = await scheduleItineraryItemWithConfirmation(
+                  request,
+                  {
+                     ...confirmationOptions,
+                     confirmingScheduleItemNotOnItinerary: true,
+                     suppressScheduleItemNotOnItineraryWarning: doNotShowAgain,
+                  }
+               );
 
                resolve(confirmedResult);
             },
@@ -107,9 +113,36 @@ async function scheduleItineraryItemWithConfirmation(request) {
             mountEl: getItineraryPanelMountEl() ?? document.body,
             issues: initialResult.issues,
             onConfirm: async () => {
-               const confirmedResult = await scheduleItineraryItemRequest(request, {
-                  confirmingGuardiansTalkUnschedule: true,
-               });
+               const confirmedResult = await scheduleItineraryItemWithConfirmation(
+                  request,
+                  {
+                     ...confirmationOptions,
+                     confirmingGuardiansTalkUnschedule: true,
+                  }
+               );
+
+               resolve(confirmedResult);
+            },
+            onCancel: () => {
+               resolve(initialResult);
+            },
+         });
+      });
+   }
+
+   if (requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
+      return new Promise((resolve) => {
+         showWildEncounterUnscheduleConfirmation({
+            mountEl: getItineraryPanelMountEl() ?? document.body,
+            issues: initialResult.issues,
+            onConfirm: async () => {
+               const confirmedResult = await scheduleItineraryItemWithConfirmation(
+                  request,
+                  {
+                     ...confirmationOptions,
+                     confirmingWildEncounterUnschedule: true,
+                  }
+               );
 
                resolve(confirmedResult);
             },

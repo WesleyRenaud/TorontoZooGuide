@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .itinerary_error_type import is_itinerary_error_suppressable
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, Cursor
 
@@ -26,6 +27,9 @@ def fetch_suppressed_error_type_values( conn: Connection ) -> list[ str ]:
 def is_itinerary_error_suppressed(
       conn: Connection,
       error_type: ItineraryErrorType ) -> bool:
+   if not is_itinerary_error_suppressable( conn, error_type ):
+      return False
+
    cur = conn.cursor()
 
    row = cur.execute(
@@ -44,7 +48,7 @@ def is_itinerary_error_suppressed(
 def suppress_itinerary_error(
       conn: Connection,
       error_type: ItineraryErrorType ) -> None:
-   if error_type == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS:
+   if not is_itinerary_error_suppressable( conn, error_type ):
       return
 
    cur = conn.cursor()

@@ -15,6 +15,7 @@ from ..data_access.schedule_itinerary_item import insert_itinerary_animal_schedu
 from ..data_access.schedule_itinerary_item import insert_itinerary_attraction_schedule
 from ..data_access.schedule_itinerary_item import insert_itinerary_event_schedule
 from ..data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
+from ..data_access.schedule_itinerary_item import insert_itinerary_wild_encounter
 from ..data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ..data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
 from ...guardians.controllers.guardians_controller import GuardiansController
@@ -26,6 +27,7 @@ from .itinerary_save_issue import ItinerarySaveIssue
 from .itinerary_save_result import ItinerarySaveResult
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.itinerary_event import ItineraryEvent
+from ...models.wild_encounter_diff import WildEncounterDiff
 from .parse_schedule_item_request import parse_schedule_item_request
 from .parse_schedule_item_request import ParsedScheduleItemRequest
 from .parse_schedule_time_options import parse_schedule_time_options
@@ -35,6 +37,7 @@ from .schedule_item_not_on_itinerary_warning import saved_itinerary_has_schedule
 from .schedule_item_not_on_itinerary_warning import schedule_item_not_on_itinerary_warning_is_required
 from ..scheduling.resolve_schedule_slot import resolve_schedule_slot
 from ..scheduling.scheduled_occurrence import schedule_guardians_talk_for_itinerary
+from ..scheduling.scheduled_occurrence import schedule_wild_encounter_for_itinerary
 from ..scheduling.scheduling_anchor import scheduling_anchor_minutes
 from ..scheduling.scheduling_anchor import scheduling_day_end_minutes
 from ..scheduling.time_block import collect_time_blocks_from_itinerary
@@ -46,6 +49,9 @@ from ...types import Cursor
 from ...types import DurationInput
 from ...types import ScheduleTimeKey
 from ...types import TimeInput
+from .wild_encounter_unschedule_items import clear_saved_schedules_overlapping_wild_encounters
+from .wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
+from .wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
@@ -545,6 +551,120 @@ def _schedule_guardians_talk_itinerary_item(
       itinerary_controller_kwargs=itinerary_controller_kwargs )
 
 
+def _saved_wild_encounter_exists(
+      saved_itinerary: SavedItinerary,
+      wild_encounter_name: str ) -> bool:
+   return any(
+      row.wild_encounter == wild_encounter_name and not row.is_deleted
+      for row in saved_itinerary.wild_encounter_rows
+   )
+
+
+def _wild_encounter_diff_for_saved_itinerary_day(
+      saved_itinerary: SavedItinerary,
+      wild_encounter_name: str,
+      wild_encounter_controller: type[ WildEncounterController ],
+) -> WildEncounterDiff:
+   encounter = wild_encounter_controller.get_wild_encounter_on_day_schedule(
+      month=saved_itinerary.month(),
+      day=saved_itinerary.day(),
+      year=saved_itinerary.year(),
+      encounter_name=wild_encounter_name )
+
+   return schedule_wild_encounter_for_itinerary( wild_encounter_name, encounter )
+
+
+def _insert_scheduled_wild_encounter(
+      conn: Connection,
+      *,
+      saved_itinerary: SavedItinerary,
+      wild_encounter_name: str,
+      wild_encounter_diff: WildEncounterDiff,
+      clear_overlapping_schedules: bool,
+      itinerary_controller_kwargs: dict[ str, Any ],
+) -> ItinerarySaveResult:
+   cur = conn.cursor()
+
+   try:
+      if clear_overlapping_schedules:
+         clear_saved_schedules_overlapping_wild_encounters(
+            cur,
+            saved_itinerary,
+            [ wild_encounter_diff ] )
+
+      scheduled = insert_itinerary_wild_encounter(
+         cur,
+         wild_encounter_name=wild_encounter_name,
+         start_time=wild_encounter_diff.start_time,
+         end_time=wild_encounter_diff.end_time,
+         is_deleted=wild_encounter_diff.is_deleted,
+      )
+
+      if not scheduled:
+         return _build_save_result(
+            conn,
+            ItineraryErrorType.SAVE_FAILED,
+            **itinerary_controller_kwargs )
+
+      conn.commit()
+
+   finally:
+      cur.close()
+
+   return _build_success_result( conn, **itinerary_controller_kwargs )
+
+
+def _schedule_wild_encounter_itinerary_item(
+      conn: Connection,
+      wild_encounter_name: str,
+      *,
+      itinerary_controller_kwargs: dict[ str, Any ],
+      confirming_wild_encounter_unschedule: bool,
+) -> ItinerarySaveResult:
+   saved_itinerary = fetch_saved_itinerary( conn )
+
+   if saved_itinerary.is_empty():
+      return _build_save_result(
+         conn,
+         ItineraryErrorType.ITINERARY_DATE_NOT_SET,
+         **itinerary_controller_kwargs )
+
+   if _saved_wild_encounter_exists( saved_itinerary, wild_encounter_name ):
+      return _build_success_result( conn, **itinerary_controller_kwargs )
+
+   wild_encounter_diff = _wild_encounter_diff_for_saved_itinerary_day(
+      saved_itinerary,
+      wild_encounter_name,
+      itinerary_controller_kwargs[ 'wild_encounter_controller' ] )
+
+   if wild_encounter_diff.is_deleted:
+      return _build_save_result(
+         conn,
+         ItineraryErrorType.SAVE_FAILED,
+         **itinerary_controller_kwargs )
+
+   has_overlap = saved_itinerary_has_overlap_with_wild_encounters(
+      saved_itinerary,
+      [ wild_encounter_diff ] )
+
+   if has_overlap and not confirming_wild_encounter_unschedule:
+      return _build_save_result(
+         conn,
+         ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+         issues=(
+            build_wild_encounter_unschedule_issue( [ wild_encounter_diff ] ),
+         ),
+         **itinerary_controller_kwargs )
+
+   return _insert_scheduled_wild_encounter(
+      conn,
+      saved_itinerary=saved_itinerary,
+      wild_encounter_name=wild_encounter_name,
+      wild_encounter_diff=wild_encounter_diff,
+      clear_overlapping_schedules=has_overlap,
+      itinerary_controller_kwargs=itinerary_controller_kwargs )
+
+
 def schedule_itinerary_item(
       conn: Connection,
       item_type: str,
@@ -558,7 +678,8 @@ def schedule_itinerary_item(
       wild_encounter_controller: type[ WildEncounterController ],
       confirming_schedule_item_not_on_itinerary: bool,
       suppress_schedule_item_not_on_itinerary_warning: bool,
-      confirming_guardians_talk_unschedule: bool ) -> ItinerarySaveResult:
+      confirming_guardians_talk_unschedule: bool,
+      confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
    itinerary_controller_kwargs = _itinerary_controller_kwargs(
       animal_controller=animal_controller,
       attraction_controller=attraction_controller,
@@ -597,6 +718,14 @@ def schedule_itinerary_item(
          itinerary_controller_kwargs=itinerary_controller_kwargs,
          confirming_guardians_talk_unschedule=(
             confirming_guardians_talk_unschedule ) )
+
+   if parsed.kind == ScheduleItemKind.WILD_ENCOUNTER:
+      return _schedule_wild_encounter_itinerary_item(
+         conn,
+         parsed.wild_encounter_name or '',
+         itinerary_controller_kwargs=itinerary_controller_kwargs,
+         confirming_wild_encounter_unschedule=(
+            confirming_wild_encounter_unschedule ) )
 
    return _schedule_listed_itinerary_item(
       conn,

@@ -14,6 +14,7 @@ from . import exhibit_day_seasonal_availability_multiplier
 from . import gift_shop
 from . import gift_shop_day_seasonal_availability_multiplier
 from . import guest_service
+from . import itinerary_error_type
 from . import itinerary_event_default
 from . import meet_the_guardians_talk
 from . import pavilion
@@ -43,6 +44,7 @@ static_tables = [
    restroom,
    gift_shop,
    gift_shop_day_seasonal_availability_multiplier,
+   itinerary_error_type,
    itinerary_event_default,
    attraction,
    attraction_day_seasonal_availability_multiplier,

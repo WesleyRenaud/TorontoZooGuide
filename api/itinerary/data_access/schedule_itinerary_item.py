@@ -141,6 +141,34 @@ def insert_itinerary_guardians_talk(
    return cur.rowcount > 0
 
 
+def insert_itinerary_wild_encounter(
+      cur: Cursor,
+      *,
+      wild_encounter_name: str,
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey,
+      is_deleted: bool = False,
+) -> bool:
+   cur.execute(
+      """   INSERT OR IGNORE INTO ItineraryWildEncounter (
+                  WILD_ENCOUNTER,
+                  START_TIME,
+                  END_TIME,
+                  IS_DELETED
+               )
+               VALUES ( ?, ?, ?, ? );
+         """,
+         (
+            wild_encounter_name,
+            DateValues.normalize_itinerary_schedule_time( start_time ),
+            DateValues.normalize_itinerary_schedule_time( end_time ),
+            is_deleted,
+         ),
+   )
+
+   return cur.rowcount > 0
+
+
 def insert_itinerary_event_schedule(
       cur: Cursor,
       event: ItineraryEvent ) -> None:
