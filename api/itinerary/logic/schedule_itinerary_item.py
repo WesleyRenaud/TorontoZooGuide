@@ -547,7 +547,8 @@ def _schedule_guardians_talk_itinerary_item(
       saved_itinerary=saved_itinerary,
       talk_name=talk_name,
       guardians_talk_diff=guardians_talk_diff,
-      clear_overlapping_schedules=has_overlap,
+      clear_overlapping_schedules=(
+         has_overlap and confirming_guardians_talk_unschedule ),
       itinerary_controller_kwargs=itinerary_controller_kwargs )
 
 
@@ -661,7 +662,8 @@ def _schedule_wild_encounter_itinerary_item(
       saved_itinerary=saved_itinerary,
       wild_encounter_name=wild_encounter_name,
       wild_encounter_diff=wild_encounter_diff,
-      clear_overlapping_schedules=has_overlap,
+      clear_overlapping_schedules=(
+         has_overlap and confirming_wild_encounter_unschedule ),
       itinerary_controller_kwargs=itinerary_controller_kwargs )
 
 

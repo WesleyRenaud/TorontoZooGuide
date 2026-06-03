@@ -27,6 +27,10 @@ itinerary_error_types = [
       'wildEncounterWillUnscheduleItems',         # Error type
       0,                                          # Is suppressable
    ),
+   (
+      'guardiansTalkWildEncounterTimeConflict',   # Error type
+      0,                                          # Is suppressable
+   ),
 ]
 
 

@@ -49,6 +49,10 @@ export function requiresWildEncounterUnscheduleConfirmation(errorType) {
    return errorType === itineraryErrorTypes?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS;
 }
 
+export function requiresGuardiansTalkWildEncounterTimeConflictConfirmation(errorType) {
+   return errorType === itineraryErrorTypes?.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT;
+}
+
 export function resolveItineraryErrorMessage(
    errorType,
    strings = APP_STRINGS.itinerary.errors

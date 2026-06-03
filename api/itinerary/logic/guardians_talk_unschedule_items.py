@@ -4,7 +4,6 @@ from ..data_access.itinerary_name_key import itinerary_name_key
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
 from ..data_access.unschedule_itinerary_item import clear_itinerary_attraction_schedule
-from ..data_access.unschedule_itinerary_item import clear_itinerary_wild_encounter_schedule
 from ..data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ...models.guardians_talk_diff import GuardiansTalkDiff
@@ -84,16 +83,6 @@ def saved_itinerary_has_overlap_with_guardians_talks(
             talk_blocks ):
          return True
 
-   for wild_encounter in saved_itinerary.wild_encounter_rows:
-      if wild_encounter.is_deleted:
-         continue
-
-      if _schedule_overlaps_any_block(
-            wild_encounter.start_time,
-            wild_encounter.end_time,
-            talk_blocks ):
-         return True
-
    for event in saved_itinerary.event_rows:
       if _schedule_overlaps_any_block(
             event.start_time,
@@ -125,17 +114,6 @@ def apply_guardians_talk_unschedule_to_validated_itinerary(
             talk_blocks ):
          attraction.start_time = None
          attraction.end_time = None
-
-   for wild_encounter in validated_itinerary.wild_encounters:
-      if wild_encounter.is_deleted:
-         continue
-
-      if _schedule_overlaps_any_block(
-            wild_encounter.start_time,
-            wild_encounter.end_time,
-            talk_blocks ):
-         wild_encounter.start_time = None
-         wild_encounter.end_time = None
 
    validated_itinerary.events[ : ] = [
       event
@@ -174,18 +152,6 @@ def clear_saved_schedules_overlapping_guardians_talks(
          clear_itinerary_attraction_schedule(
             cur,
             name=attraction.attraction )
-
-   for wild_encounter in saved_itinerary.wild_encounter_rows:
-      if wild_encounter.is_deleted:
-         continue
-
-      if _schedule_overlaps_any_block(
-            wild_encounter.start_time,
-            wild_encounter.end_time,
-            talk_blocks ):
-         clear_itinerary_wild_encounter_schedule(
-            cur,
-            wild_encounter=wild_encounter.wild_encounter )
 
    for event in saved_itinerary.event_rows:
       if _schedule_overlaps_any_block(
