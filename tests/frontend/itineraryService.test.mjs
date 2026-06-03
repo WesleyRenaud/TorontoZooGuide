@@ -261,3 +261,80 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
    assert.equal(requests[0].body.confirmingGuardiansTalkUnschedule, undefined);
    assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
 });
+
+test('saveItinerary confirms before saving a wild encounter that unschedules items', async () => {
+   const requests = [];
+   const itineraryConfig = {
+      itinerary_error_types: {
+         SUCCESS: 'success',
+         WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS: 'wildEncounterWillUnscheduleItems',
+      },
+      suppressed_error_types: [],
+   };
+
+   globalThis.fetch = async (url, options) => {
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
+
+      const isConfirmed = Boolean(
+         requests.at(-1)?.body?.confirmingWildEncounterUnschedule
+      );
+
+      return {
+         ok: true,
+         status: 200,
+         statusText: 'OK',
+         text: async () => JSON.stringify({
+            errorType: isConfirmed ? 'success' : 'wildEncounterWillUnscheduleItems',
+            issues: isConfirmed ? [] : [{
+               type: 'wildEncounterWillUnscheduleItems',
+               items: [{
+                  name: 'African Rainforest',
+                  item_type: 'wildEncounter',
+               }],
+            }],
+            itinerary_config: itineraryConfig,
+            itinerary: {
+               date: '2026-06-15',
+               animals: [],
+               attractions: [],
+               guardians_talks: [],
+               wild_encounters: [],
+            },
+         }),
+      };
+   };
+
+   const savePromise = saveItinerary({
+      date: '2026-06-15',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [{ name: 'African Rainforest' }],
+   });
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const popupMessage = document.querySelector('.tzg-popup-message');
+
+   assert.match(
+      popupMessage?.textContent ?? '',
+      /Adding these Wild Encounters: African Rainforest will unschedule other items/
+   );
+
+   document.querySelector('.tzg-popup-confirm')?.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   await savePromise;
+
+   assert.equal(requests.length, 2);
+   assert.equal(requests[0].body.confirmingWildEncounterUnschedule, undefined);
+   assert.equal(requests[1].body.confirmingWildEncounterUnschedule, true);
+});

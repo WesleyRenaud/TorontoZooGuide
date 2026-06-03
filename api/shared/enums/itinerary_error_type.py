@@ -12,3 +12,4 @@ class ItineraryErrorType( str, Enum ):
    REQUESTED_TIME_NOT_AVAILABLE = 'requestedTimeNotAvailable'
    ITEM_NOT_ON_ITINERARY = 'itemNotOnItinerary'
    GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS = 'guardiansTalkWillUnscheduleItems'
+   WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS = 'wildEncounterWillUnscheduleItems'

@@ -13,6 +13,7 @@ import {
    isItinerarySuccess,
    requiresGuardiansTalkUnscheduleConfirmation,
    requiresShortVisitConfirmation,
+   requiresWildEncounterUnscheduleConfirmation,
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
 import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
@@ -25,6 +26,7 @@ import {
 import { buildItineraryValidationState } from './itineraryValidation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
 import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
+import { showWildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
 import {
    getDay,
    getMonth,
@@ -139,7 +141,7 @@ export async function saveItinerary(
       overridingConflictingGuardiansTalks,
    };
 
-   const result = await requestSetItineraryWithGuardiansTalkConfirmation(basePayload);
+   const result = await requestSetItineraryWithUnscheduleConfirmation(basePayload);
 
    const normalizedItinerary = normalizeItinerary({
       ...result?.itinerary,
@@ -151,32 +153,52 @@ export async function saveItinerary(
    return normalizedItinerary;
 }
 
-async function requestSetItineraryWithGuardiansTalkConfirmation(payload) {
+async function requestSetItineraryWithUnscheduleConfirmation(payload) {
    const initialResult = await setItineraryRequest(payload);
 
-   if (
-      isItinerarySuccess(initialResult.errorType)
-      || !requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)
-   ) {
+   if (isItinerarySuccess(initialResult.errorType)) {
       return initialResult;
    }
 
-   return new Promise((resolve) => {
-      showGuardiansTalkUnscheduleConfirmation({
-         issues: initialResult.issues,
-         onConfirm: async () => {
-            const confirmedResult = await setItineraryRequest({
-               ...payload,
-               confirmingGuardiansTalkUnschedule: true,
-            });
+   if (requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
+      return new Promise((resolve) => {
+         showGuardiansTalkUnscheduleConfirmation({
+            issues: initialResult.issues,
+            onConfirm: async () => {
+               const confirmedResult = await requestSetItineraryWithUnscheduleConfirmation({
+                  ...payload,
+                  confirmingGuardiansTalkUnschedule: true,
+               });
 
-            resolve(confirmedResult);
-         },
-         onCancel: () => {
-            resolve(initialResult);
-         },
+               resolve(confirmedResult);
+            },
+            onCancel: () => {
+               resolve(initialResult);
+            },
+         });
       });
-   });
+   }
+
+   if (requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
+      return new Promise((resolve) => {
+         showWildEncounterUnscheduleConfirmation({
+            issues: initialResult.issues,
+            onConfirm: async () => {
+               const confirmedResult = await requestSetItineraryWithUnscheduleConfirmation({
+                  ...payload,
+                  confirmingWildEncounterUnschedule: true,
+               });
+
+               resolve(confirmedResult);
+            },
+            onCancel: () => {
+               resolve(initialResult);
+            },
+         });
+      });
+   }
+
+   return initialResult;
 }
 
 class ItineraryTimeChangeCancelledError extends Error {
