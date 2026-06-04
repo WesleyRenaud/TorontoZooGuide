@@ -133,7 +133,7 @@ test('saveItinerary includes selected exhibits in the backend payload', async ()
                guardians_talks: [],
                wild_encounters: [],
             },
-            issues: [],
+            reasons: [],
          }),
       };
    };
@@ -171,7 +171,7 @@ test('saveItinerary omits selected exhibits by default', async () => {
                guardians_talks: [],
                wild_encounters: [],
             },
-            issues: [],
+            reasons: [],
          }),
       };
    };
@@ -210,9 +210,9 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            errorType: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
-            issues: isConfirmed ? [] : [{
-               type: 'guardiansTalkWillUnscheduleItems',
+            status: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
+            reasons: isConfirmed ? [] : [{
+               code: 'guardiansTalkWillUnscheduleItems',
                items: [{
                   name: 'African Lion',
                   item_type: 'guardiansTalk',
@@ -287,9 +287,9 @@ test('saveItinerary confirms before saving a wild encounter that unschedules ite
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            errorType: isConfirmed ? 'success' : 'wildEncounterWillUnscheduleItems',
-            issues: isConfirmed ? [] : [{
-               type: 'wildEncounterWillUnscheduleItems',
+            status: isConfirmed ? 'success' : 'wildEncounterWillUnscheduleItems',
+            reasons: isConfirmed ? [] : [{
+               code: 'wildEncounterWillUnscheduleItems',
                items: [{
                   name: 'African Rainforest',
                   item_type: 'wildEncounter',
@@ -369,8 +369,8 @@ test('saveItinerary resolves schedule time conflicts before unschedule warnings'
             status: 200,
             statusText: 'OK',
             text: async () => JSON.stringify({
-               errorType: 'success',
-               issues: [],
+               status: 'success',
+               reasons: [],
                itinerary_config: itineraryConfig,
                itinerary: {
                   date: '2026-06-15',
@@ -388,9 +388,9 @@ test('saveItinerary resolves schedule time conflicts before unschedule warnings'
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            errorType: 'guardiansTalkWildEncounterTimeConflict',
-            issues: [{
-               type: 'wildEncounterTimeConflict',
+            status: 'guardiansTalkWildEncounterTimeConflict',
+            reasons: [{
+               code: 'wildEncounterTimeConflict',
                items: [
                   {
                      name: 'African Lion',
@@ -490,8 +490,8 @@ test('saveItinerary preserves saved animals on conflict retry when payload omits
             status: 200,
             statusText: 'OK',
             text: async () => JSON.stringify({
-               errorType: 'success',
-               issues: [],
+               status: 'success',
+               reasons: [],
                itinerary_config: itineraryConfig,
                itinerary: {
                   date: '2026-06-15',
@@ -514,9 +514,9 @@ test('saveItinerary preserves saved animals on conflict retry when payload omits
          status: 200,
          statusText: 'OK',
          text: async () => JSON.stringify({
-            errorType: 'guardiansTalkWildEncounterTimeConflict',
-            issues: [{
-               type: 'wildEncounterTimeConflict',
+            status: 'guardiansTalkWildEncounterTimeConflict',
+            reasons: [{
+               code: 'wildEncounterTimeConflict',
                items: [
                   {
                      name: 'Nile Soft-Shelled Turtle',

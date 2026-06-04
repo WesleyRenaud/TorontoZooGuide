@@ -407,7 +407,7 @@ def test_set_itinerary_arrival_time_rejects_visit_shorter_than_two_hours_without
 
    result = ItineraryController.set_arrival_time( '16:30' )
 
-   assert result.error_type == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+   assert result.status == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.arrival_time == '09:30'
@@ -451,7 +451,7 @@ def test_set_itinerary_departure_time_rejects_visit_shorter_than_two_hours_witho
 
    result = ItineraryController.set_departure_time( '10:00' )
 
-   assert result.error_type == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
+   assert result.status == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
 
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.departure_time == '17:00'
@@ -705,10 +705,10 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
-   assert [ issue.to_dict() for issue in result.issues ] == [
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
+   assert [ issue.to_dict() for issue in result.reasons ] == [
       {
-         'type': 'wildEncounterTimeConflict',
+         'code': 'wildEncounterTimeConflict',
          'items': [
             {
                'name': 'African Rainforest',
@@ -780,10 +780,10 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
-   assert [ issue.to_dict() for issue in result.issues ] == [
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
+   assert [ issue.to_dict() for issue in result.reasons ] == [
       {
-         'type': 'wildEncounterTimeConflict',
+         'code': 'wildEncounterTimeConflict',
          'items': [
             {
                'name': 'African Lion',
@@ -858,10 +858,10 @@ def test_set_itinerary_reports_partial_guardians_talk_encounter_overlap_without_
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
-   assert len( result.issues ) == 1
-   assert result.issues[ 0 ].to_dict()[ 'type' ] == 'wildEncounterTimeConflict'
-   assert { item[ 'name' ] for item in result.issues[ 0 ].to_dict()[ 'items' ] } == {
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
+   assert len( result.reasons ) == 1
+   assert result.reasons[ 0 ].to_dict()[ 'code' ] == 'wildEncounterTimeConflict'
+   assert { item[ 'name' ] for item in result.reasons[ 0 ].to_dict()[ 'items' ] } == {
       'African Lion',
       'Grizzly Bear',
    }
@@ -915,7 +915,7 @@ def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overl
    )
 
    assert result.success is True
-   assert result.issues == ()
+   assert result.reasons == ()
 
    talk_schedule = db.conn.execute(
       """   SELECT START_TIME, END_TIME
@@ -992,12 +992,12 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
-   assert len( result.issues ) == 1
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
+   assert len( result.reasons ) == 1
 
-   issue = result.issues[ 0 ].to_dict()
+   issue = result.reasons[ 0 ].to_dict()
 
-   assert issue[ 'type' ] == 'wildEncounterTimeConflict'
+   assert issue[ 'code' ] == 'wildEncounterTimeConflict'
    assert { item[ 'name' ] for item in issue[ 'items' ] } == {
       'African Lion',
       'African Rainforest',

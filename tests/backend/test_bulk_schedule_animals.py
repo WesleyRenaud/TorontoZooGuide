@@ -14,7 +14,6 @@ from api.itinerary.logic.bulk_schedule_animals import is_itinerary_animal_unsche
 from api.itinerary.logic.bulk_schedule_animals import sort_animals_for_bulk_schedule
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
-from api.shared.enums import ItinerarySaveIssueType
 from conftest import DbControllers
 
 LION_ITINERARY_ENTRY = {
@@ -112,8 +111,8 @@ def test_bulk_schedule_animals_schedules_in_exhibit_order(
    result = ItineraryController.bulk_schedule_animals()
 
    assert result.success
-   assert result.error_type == ItineraryErrorType.SUCCESS
-   assert result.issues == ()
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert result.reasons == ()
 
    cheetah = next(
       animal for animal in result.itinerary.animals
@@ -153,7 +152,7 @@ def test_bulk_schedule_animals_skips_already_scheduled_animals(
    result = ItineraryController.bulk_schedule_animals()
 
    assert result.success
-   assert result.issues == ()
+   assert result.reasons == ()
 
    lion = next(
       animal for animal in result.itinerary.animals
@@ -191,19 +190,19 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
    result = ItineraryController.bulk_schedule_animals()
 
    assert result.success
-   assert len( result.issues ) == 1
+   assert len( result.reasons ) == 1
    assert (
-      result.issues[ 0 ].issue_type
-      == ItinerarySaveIssueType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME )
-   assert [ item.name for item in result.issues[ 0 ].items ] == [
+      result.reasons[ 0 ].code
+      == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME )
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [
       'African Lion',
       'African Penguin',
    ]
-   assert [ item.location for item in result.issues[ 0 ].items ] == [
+   assert [ item.location for item in result.reasons[ 0 ].items ] == [
       'Africa Savanna',
       'Africa Savanna',
    ]
-   assert result.issues[ 0 ].items[ 0 ].item_type == ItinerarySaveIssueItemType.ANIMAL
+   assert result.reasons[ 0 ].items[ 0 ].item_type == ItinerarySaveIssueItemType.ANIMAL
 
    scheduled_species = {
       animal.species
@@ -244,7 +243,7 @@ def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
    result = ItineraryController.bulk_schedule_animals()
 
    assert result.success
-   assert len( result.issues ) == 1
+   assert len( result.reasons ) == 1
 
    assert db.conn is not None
    close_connection( db.conn )
@@ -272,7 +271,7 @@ def test_bulk_schedule_animals_requires_visit_date(
    result = ItineraryController.bulk_schedule_animals()
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.ITINERARY_DATE_NOT_SET
+   assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
 
 
 def test_bulk_schedule_animals_with_no_unscheduled_animals(
@@ -291,5 +290,5 @@ def test_bulk_schedule_animals_with_no_unscheduled_animals(
    result = ItineraryController.bulk_schedule_animals()
 
    assert result.success
-   assert result.issues == ()
+   assert result.reasons == ()
    assert result.itinerary.animals == []

@@ -7,7 +7,7 @@ from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_error_suppression import suppress_itinerary_error
 from api.shared.enums import ItineraryErrorType
-from api.shared.enums import ItinerarySaveIssueType
+from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from conftest import DbControllers
 
@@ -78,12 +78,12 @@ def test_set_itinerary_returns_warning_when_wild_encounter_would_unschedule_item
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
-   assert len( result.issues ) == 1
+   assert result.status == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
+   assert len( result.reasons ) == 1
    assert (
-      result.issues[ 0 ].issue_type
-      == ItinerarySaveIssueType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS )
-   assert [ item.name for item in result.issues[ 0 ].items ] == [ WILD_ENCOUNTER ]
+      result.reasons[ 0 ].code
+      == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS )
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ WILD_ENCOUNTER ]
 
    saved = fetch_saved_itinerary( db.conn )
    animal = next(
@@ -138,12 +138,12 @@ def test_schedule_wild_encounter_returns_warning_when_it_would_unschedule_items(
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
-   assert len( result.issues ) == 1
+   assert result.status == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
+   assert len( result.reasons ) == 1
    assert (
-      result.issues[ 0 ].issue_type
-      == ItinerarySaveIssueType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS )
-   assert [ item.name for item in result.issues[ 0 ].items ] == [ WILD_ENCOUNTER ]
+      result.reasons[ 0 ].code
+      == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS )
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ WILD_ENCOUNTER ]
 
    saved = fetch_saved_itinerary( db.conn )
    animal = next(
@@ -204,9 +204,9 @@ def test_wild_encounter_unschedule_warning_cannot_be_suppressed(
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
-   assert len( result.issues ) == 1
+   assert result.status == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
+   assert len( result.reasons ) == 1
    assert (
-      result.issues[ 0 ].issue_type
-      == ItinerarySaveIssueType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS )
-   assert [ item.name for item in result.issues[ 0 ].items ] == [ WILD_ENCOUNTER ]
+      result.reasons[ 0 ].code
+      == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS )
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ WILD_ENCOUNTER ]

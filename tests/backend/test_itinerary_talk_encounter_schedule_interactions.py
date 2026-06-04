@@ -7,7 +7,6 @@ from api.guardians.controllers.guardians_controller import GuardiansController
 from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.shared.enums import ItineraryErrorType
-from api.shared.enums import ItinerarySaveIssueType
 from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from conftest import DbControllers
 
@@ -104,12 +103,12 @@ def test_set_itinerary_blocks_talk_and_encounter_conflict_before_unschedule_warn
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
-   assert len( result.issues ) == 1
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
+   assert len( result.reasons ) == 1
    assert (
-      result.issues[ 0 ].issue_type
-      == ItinerarySaveIssueType.WILD_ENCOUNTER_TIME_CONFLICT )
-   assert { item.name for item in result.issues[ 0 ].items } == {
+      result.reasons[ 0 ].code
+      == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT )
+   assert { item.name for item in result.reasons[ 0 ].items } == {
       GUARDIANS_TALK,
       WILD_ENCOUNTER,
    }
@@ -142,12 +141,12 @@ def test_set_itinerary_returns_guardians_unschedule_after_talk_encounter_conflic
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
-   assert len( result.issues ) == 1
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
+   assert len( result.reasons ) == 1
    assert (
-      result.issues[ 0 ].issue_type
-      == ItinerarySaveIssueType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
-   assert [ item.name for item in result.issues[ 0 ].items ] == [ GUARDIANS_TALK ]
+      result.reasons[ 0 ].code
+      == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ GUARDIANS_TALK ]
 
    saved = fetch_saved_itinerary( db.conn )
    animal = next(
@@ -176,12 +175,12 @@ def test_set_itinerary_returns_wild_encounter_warning_after_talk_encounter_confl
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
-   assert len( result.issues ) == 1
+   assert result.status == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS
+   assert len( result.reasons ) == 1
    assert (
-      result.issues[ 0 ].issue_type
-      == ItinerarySaveIssueType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS )
-   assert [ item.name for item in result.issues[ 0 ].items ] == [ WILD_ENCOUNTER ]
+      result.reasons[ 0 ].code
+      == ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS )
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ WILD_ENCOUNTER ]
 
    saved = fetch_saved_itinerary( db.conn )
    animal = next(
@@ -211,8 +210,8 @@ def test_set_itinerary_saves_talk_after_conflict_and_unschedule_confirmations(
    )
 
    assert result.success
-   assert result.error_type == ItineraryErrorType.SUCCESS
-   assert result.issues == ()
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert result.reasons == ()
 
    lion = next(
       animal for animal in result.itinerary.animals
@@ -307,8 +306,8 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
    )
 
    assert not conflict.success
-   assert conflict.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
-   assert { item.name for item in conflict.issues[ 0 ].items } == {
+   assert conflict.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
+   assert { item.name for item in conflict.reasons[ 0 ].items } == {
       TURTLE_TALK,
       RHINO_ENCOUNTER,
    }
@@ -324,7 +323,7 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
    )
 
    assert result.success
-   assert result.error_type == ItineraryErrorType.SUCCESS
+   assert result.status == ItineraryErrorType.SUCCESS
 
    lion = next(
       animal for animal in result.itinerary.animals
@@ -384,12 +383,12 @@ def test_set_itinerary_blocks_talk_encounter_conflict_when_no_other_items_overla
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
-   assert len( result.issues ) == 1
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT
+   assert len( result.reasons ) == 1
    assert (
-      result.issues[ 0 ].issue_type
-      == ItinerarySaveIssueType.WILD_ENCOUNTER_TIME_CONFLICT )
-   assert { item.name for item in result.issues[ 0 ].items } == {
+      result.reasons[ 0 ].code
+      == ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT )
+   assert { item.name for item in result.reasons[ 0 ].items } == {
       GUARDIANS_TALK,
       WILD_ENCOUNTER,
    }

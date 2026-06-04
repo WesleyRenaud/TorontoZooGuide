@@ -7,9 +7,9 @@ from ...shared.enums import ItineraryErrorType
 
 @dataclass( frozen=True )
 class ItineraryTimeSetResult:
-   error_type: ItineraryErrorType = ItineraryErrorType.SUCCESS
+   status: ItineraryErrorType = ItineraryErrorType.SUCCESS
 
 
    @property
    def success( self ) -> bool:
-      return self.error_type == ItineraryErrorType.SUCCESS
+      return self.status == ItineraryErrorType.SUCCESS

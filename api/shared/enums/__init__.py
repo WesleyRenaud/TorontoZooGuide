@@ -2,7 +2,6 @@ from .animal_viewing_scope import AnimalViewingScope
 from .itinerary_error_type import ItineraryErrorType
 from .itinerary_event_type import ItineraryEventType
 from .itinerary_save_issue_item_type import ItinerarySaveIssueItemType
-from .itinerary_save_issue_type import ItinerarySaveIssueType
 from .schedule_item_kind import ScheduleItemKind
 from .schedule_status import ScheduleStatus
 from .zoomobile_route import ZoomobileRouteId
@@ -13,7 +12,6 @@ __all__ = [
    'ItineraryErrorType',
    'ItineraryEventType',
    'ItinerarySaveIssueItemType',
-   'ItinerarySaveIssueType',
    'ScheduleItemKind',
    'ScheduleStatus',
    'ZoomobileRouteId',

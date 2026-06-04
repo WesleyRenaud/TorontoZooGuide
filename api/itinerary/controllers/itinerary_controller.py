@@ -193,7 +193,7 @@ class ItineraryController():
          departure_time=saved_itinerary.departure_time )
 
       if validation_error != ItineraryErrorType.SUCCESS:
-         return ItineraryTimeSetResult( error_type=validation_error )
+         return ItineraryTimeSetResult( status=validation_error )
 
       if short_visit_warning_is_required(
             conn,
@@ -201,7 +201,7 @@ class ItineraryController():
             saved_itinerary.departure_time,
             confirming_short_visit=confirming_short_visit ):
          return ItineraryTimeSetResult(
-            error_type=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+            status=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
       apply_short_visit_warning_preferences(
          conn,
@@ -238,7 +238,7 @@ class ItineraryController():
          arrival_time=saved_itinerary.arrival_time )
 
       if validation_error != ItineraryErrorType.SUCCESS:
-         return ItineraryTimeSetResult( error_type=validation_error )
+         return ItineraryTimeSetResult( status=validation_error )
 
       if short_visit_warning_is_required(
             conn,
@@ -246,7 +246,7 @@ class ItineraryController():
             normalized_departure_time,
             confirming_short_visit=confirming_short_visit ):
          return ItineraryTimeSetResult(
-            error_type=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+            status=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
       apply_short_visit_warning_preferences(
          conn,

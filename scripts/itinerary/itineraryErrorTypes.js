@@ -90,7 +90,7 @@ function normalizeItineraryErrorType(errorType, legacySuccess) {
 
 export function normalizeItineraryErrorTypeFromResponse(source = {}) {
    return normalizeItineraryErrorType(
-      source.errorType ?? source.error_type,
+      source.status,
       source.success
    );
 }

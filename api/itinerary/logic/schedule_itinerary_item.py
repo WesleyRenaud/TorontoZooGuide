@@ -23,7 +23,7 @@ from .guardians_talk_unschedule_items import clear_saved_schedules_overlapping_g
 from .guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
 from .guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
 from .itinerary import build_current_itinerary
-from .itinerary_save_issue import ItinerarySaveIssue
+from .itinerary_result_reason import ItineraryResultReason
 from .itinerary_save_result import ItinerarySaveResult
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.itinerary_event import ItineraryEvent
@@ -75,13 +75,13 @@ def _itinerary_controller_kwargs(
 
 def _build_save_result(
       conn: Connection,
-      error_type: ItineraryErrorType,
+      status: ItineraryErrorType,
       *,
-      issues: tuple[ ItinerarySaveIssue, ... ] = (),
+      reasons: tuple[ ItineraryResultReason, ... ] = (),
       **itinerary_controller_kwargs: Any ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
-      error_type=error_type,
-      issues=issues,
+      status=status,
+      reasons=reasons,
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
          **itinerary_controller_kwargs ) )
@@ -528,7 +528,7 @@ def _schedule_guardians_talk_itinerary_item(
       return _build_save_result(
          conn,
          ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-         issues=(
+         reasons=(
             build_guardians_talk_unschedule_issue( [ guardians_talk_diff ] ),
          ),
          **itinerary_controller_kwargs )
@@ -640,7 +640,7 @@ def _schedule_wild_encounter_itinerary_item(
       return _build_save_result(
          conn,
          ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
-         issues=(
+         reasons=(
             build_wild_encounter_unschedule_issue( [ wild_encounter_diff ] ),
          ),
          **itinerary_controller_kwargs )

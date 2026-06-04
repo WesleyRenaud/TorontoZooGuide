@@ -39,6 +39,15 @@ function normalizedItineraryConfig(overrides = {}) {
    };
 }
 
+function normalizedItineraryResultFields(status, reasons = []) {
+   return {
+      status,
+      reasons,
+      errorType: status,
+      issues: reasons,
+   };
+}
+
 function mockItineraryConfigResponse(overrides = {}) {
    return {
       itinerary_config: {
@@ -117,8 +126,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
    };
 
    assert.deepEqual(await getItineraryRequest(), {
-      errorType: 'success',
-      issues: [],
+      ...normalizedItineraryResultFields('success'),
       itinerary: {
          date: '2026-06-15',
          arrivalTime: '09:30',
@@ -136,7 +144,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
 test('normalizes set itinerary failures without dropping returned itinerary data', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       success: false,
-      errorType: 'arrivalDepartureTooClose',
+      status: 'arrivalDepartureTooClose',
       itinerary: {
          date: '2026-06-15',
          animals: 'African Lion',
@@ -146,8 +154,7 @@ test('normalizes set itinerary failures without dropping returned itinerary data
    });
 
    assert.deepEqual(await setItineraryRequest({ date: '2026-06-15' }), {
-      errorType: 'arrivalDepartureTooClose',
-      issues: [],
+      ...normalizedItineraryResultFields('arrivalDepartureTooClose'),
       itinerary: {
          date: '2026-06-15',
          arrivalTime: '',
@@ -168,17 +175,17 @@ test('sets itinerary arrival and departure times through focused endpoints', asy
    globalThis.fetch = async (url, options) => {
       calls.push([url, JSON.parse(options.body)]);
       return mockJsonResponse({
-         errorType: 'success',
+         status: 'success',
          ...mockItineraryConfigResponse(),
       });
    };
 
    assert.deepEqual(await setItineraryArrivalTimeRequest(' 09:45 '), {
-      errorType: 'success',
+      ...normalizedItineraryResultFields('success'),
       itineraryConfig: normalizedItineraryConfig(),
    });
    assert.deepEqual(await setItineraryDepartureTimeRequest(''), {
-      errorType: 'success',
+      ...normalizedItineraryResultFields('success'),
       itineraryConfig: normalizedItineraryConfig(),
    });
    assert.deepEqual(calls, [
@@ -204,14 +211,14 @@ test('sets itinerary arrival and departure times through focused endpoints', asy
 test('normalizes short visit warning from itinerary time endpoints', async () => {
    globalThis.fetch = async () => mockJsonResponse({
       success: false,
-      errorType: 'arrivalDepartureTooClose',
+      status: 'arrivalDepartureTooClose',
       ...mockItineraryConfigResponse(),
    });
 
    assert.deepEqual(await setItineraryArrivalTimeRequest('11:35', {
       confirmingShortVisit: true,
    }), {
-      errorType: 'arrivalDepartureTooClose',
+      ...normalizedItineraryResultFields('arrivalDepartureTooClose'),
       itineraryConfig: normalizedItineraryConfig(),
    });
 });
@@ -227,9 +234,9 @@ test('normalizes accept itinerary response', async () => {
 
       return mockJsonResponse({
          success: true,
-         issues: [
+         reasons: [
             {
-               type: 'wildEncounterTimeConflict',
+               code: 'wildEncounterTimeConflict',
                items: [
                   {
                      name: 'African Rainforest',
@@ -260,9 +267,9 @@ test('normalizes accept itinerary response', async () => {
    };
 
    assert.deepEqual(await acceptItineraryRequest(), {
-      errorType: 'success',
-      issues: [
+      ...normalizedItineraryResultFields('success', [
          {
+            code: 'wildEncounterTimeConflict',
             type: 'wildEncounterTimeConflict',
             items: [
                {
@@ -281,7 +288,7 @@ test('normalizes accept itinerary response', async () => {
                },
             ],
          },
-      ],
+      ]),
       itinerary: {
          date: '2026-06-15',
          arrivalTime: '',
@@ -323,8 +330,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
    });
 
    assert.deepEqual(await getItineraryRequest(), {
-      errorType: 'success',
-      issues: [],
+      ...normalizedItineraryResultFields('success'),
       itinerary: {
          date: '2026-06-15',
          arrivalTime: '',
@@ -394,7 +400,7 @@ test('normalizes unschedule itinerary item response', async () => {
       });
 
       return mockJsonResponse({
-         errorType: 'success',
+         status: 'success',
       });
    };
 
@@ -403,7 +409,7 @@ test('normalizes unschedule itinerary item response', async () => {
          itemType: 'animals',
          key: 'African Lion||Africa Savanna',
       }),
-      { errorType: 'success', issues: [] }
+      normalizedItineraryResultFields('success')
    );
 });
 
@@ -416,7 +422,7 @@ test('normalizes remove item from itinerary response', async () => {
       });
 
       return mockJsonResponse({
-         errorType: 'success',
+         status: 'success',
       });
    };
 
@@ -425,7 +431,7 @@ test('normalizes remove item from itinerary response', async () => {
          itemType: 'attractions',
          key: 'Conservation Carousel',
       }),
-      { errorType: 'success', issues: [] }
+      normalizedItineraryResultFields('success')
    );
 });
 
@@ -442,13 +448,13 @@ test('normalizes schedule itinerary item response', async () => {
       });
 
       return mockJsonResponse({
-         errorType: 'noAvailableSlot',
+         status: 'noAvailableSlot',
       });
    };
 
    assert.deepEqual(
       await scheduleItineraryItemRequest({ itemType: 'lunch', key: '' }),
-      { errorType: 'noAvailableSlot', issues: [] }
+      normalizedItineraryResultFields('noAvailableSlot')
    );
 });
 
@@ -458,10 +464,10 @@ test('normalizes bulk schedule animals response', async () => {
       assert.deepEqual(JSON.parse(options.body), { temp: true });
 
       return mockJsonResponse({
-         errorType: 'success',
-         issues: [
+         status: 'success',
+         reasons: [
             {
-               type: 'bulkScheduleAnimalsNotEnoughTime',
+               code: 'bulkScheduleAnimalsNotEnoughTime',
                items: [
                   {
                      name: 'African Lion',
@@ -494,9 +500,9 @@ test('normalizes bulk schedule animals response', async () => {
 
    const result = await bulkScheduleAnimalsRequest(true);
 
-   assert.equal(result.errorType, 'success');
-   assert.equal(result.issues.length, 1);
-   assert.equal(result.issues[0].type, 'bulkScheduleAnimalsNotEnoughTime');
+   assert.equal(result.status, 'success');
+   assert.equal(result.reasons.length, 1);
+   assert.equal(result.reasons[0].code, 'bulkScheduleAnimalsNotEnoughTime');
    assert.equal(result.itinerary.animals.length, 1);
    assert.equal(result.itinerary.animals[0].species, 'African Lion');
 });
