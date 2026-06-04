@@ -184,6 +184,11 @@ class DateValues:
 
 
    @staticmethod
+   def normalize_schedule_time_key( value: TimeInput ) -> str:
+      return str( value or '' ).strip()
+
+
+   @staticmethod
    def normalize_itinerary_schedule_time( value: TimeInput ) -> str | None:
       if value == None:
          return None
