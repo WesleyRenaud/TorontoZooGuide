@@ -8,6 +8,7 @@ import {
    requiresScheduleItemNotOnItineraryConfirmation,
    requiresWildEncounterUnscheduleConfirmation,
 } from '../itineraryErrorTypes.js';
+import { persistItineraryWarningSuppression } from '../persistItineraryWarningSuppression.js';
 import { showScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
 import {
    getScheduleItemRowId,
@@ -89,16 +90,28 @@ async function scheduleItineraryItemWithConfirmation(request, confirmationOption
       return new Promise((resolve) => {
          showScheduleItemNotOnItineraryConfirmation({
             onConfirm: async ({ doNotShowAgain = false } = {}) => {
-               const confirmedResult = await scheduleItineraryItemWithConfirmation(
-                  request,
-                  {
-                     ...confirmationOptions,
-                     confirmingScheduleItemNotOnItinerary: true,
-                     suppressScheduleItemNotOnItineraryWarning: doNotShowAgain,
+               try {
+                  if (doNotShowAgain) {
+                     await persistItineraryWarningSuppression(
+                        getItineraryErrorTypes()?.ITEM_NOT_ON_ITINERARY
+                     );
                   }
-               );
 
-               resolve(confirmedResult);
+                  const confirmedResult = await scheduleItineraryItemWithConfirmation(
+                     request,
+                     {
+                        ...confirmationOptions,
+                        confirmingScheduleItemNotOnItinerary: true,
+                     }
+                  );
+
+                  resolve(confirmedResult);
+               }
+               catch (error) {
+                  resolve({
+                     errorType: getItineraryErrorTypes()?.SAVE_FAILED,
+                  });
+               }
             },
             onCancel: () => {
                resolve(initialResult);

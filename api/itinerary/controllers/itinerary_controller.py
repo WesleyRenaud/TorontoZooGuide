@@ -15,14 +15,15 @@ from ..logic import bulk_schedule_animals as bulk_schedule_animals_logic
 from ..logic import remove_itinerary_item as remove_itinerary_item_logic
 from ..logic import schedule_itinerary_item as schedule_itinerary_item_logic
 from ..logic import set_itinerary as set_itinerary_logic
+from ..logic import suppress_itinerary_warning as suppress_itinerary_warning_logic
 from ..logic import unschedule_itinerary_item as unschedule_itinerary_item_logic
 from ..logic.itinerary import build_current_itinerary
 from ..logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from ..logic.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from ..logic.itinerary_save_result import ItinerarySaveResult
 from ..logic.itinerary_time_set_result import ItineraryTimeSetResult
-from ..logic.short_visit_warning import apply_short_visit_warning_preferences
 from ..logic.short_visit_warning import short_visit_warning_is_required
+from ..logic.suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...models import Itinerary
 from ...request_connection import get_connection
 from ...shared.date_values import DateValues
@@ -65,7 +66,6 @@ class ItineraryController():
          visit_date_temp: float | None = None,
          overriding_conflicting_guardians_talks: bool = False,
          confirming_short_visit: bool = False,
-         suppress_short_visit_warning: bool = False,
          confirming_guardians_talk_unschedule: bool = False,
          confirming_wild_encounter_unschedule: bool = False ) -> ItinerarySaveResult:
       return set_itinerary_logic.set_itinerary(
@@ -82,7 +82,6 @@ class ItineraryController():
          overriding_conflicting_guardians_talks=(
             overriding_conflicting_guardians_talks ),
          confirming_short_visit=confirming_short_visit,
-         suppress_short_visit_warning=suppress_short_visit_warning,
          confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule,
          confirming_wild_encounter_unschedule=confirming_wild_encounter_unschedule,
          animal_controller=AnimalController,
@@ -100,7 +99,6 @@ class ItineraryController():
          start_time: TimeInput = None,
          duration_minutes: DurationInput = None,
          confirming_schedule_item_not_on_itinerary: bool = False,
-         suppress_schedule_item_not_on_itinerary_warning: bool = False,
          confirming_guardians_talk_unschedule: bool = False,
          confirming_wild_encounter_unschedule: bool = False ) -> ItinerarySaveResult:
       return schedule_itinerary_item_logic.schedule_itinerary_item(
@@ -115,9 +113,6 @@ class ItineraryController():
          wild_encounter_controller=WildEncounterController,
          confirming_schedule_item_not_on_itinerary=(
             confirming_schedule_item_not_on_itinerary
-         ),
-         suppress_schedule_item_not_on_itinerary_warning=(
-            suppress_schedule_item_not_on_itinerary_warning
          ),
          confirming_guardians_talk_unschedule=(
             confirming_guardians_talk_unschedule
@@ -168,12 +163,20 @@ class ItineraryController():
 
 
    @classmethod
+   def suppress_itinerary_warning(
+         cls,
+         warning_type: str ) -> SuppressItineraryWarningResult:
+      return suppress_itinerary_warning_logic.suppress_itinerary_warning(
+         get_connection(),
+         warning_type )
+
+
+   @classmethod
    def set_arrival_time(
          cls,
          arrival_time: TimeInput,
          *,
-         confirming_short_visit: bool = False,
-         suppress_short_visit_warning: bool = False ) -> ItineraryTimeSetResult:
+         confirming_short_visit: bool = False ) -> ItineraryTimeSetResult:
       conn = get_connection()
       normalized_arrival_time = DateValues.normalize_itinerary_schedule_time(
          arrival_time )
@@ -195,21 +198,22 @@ class ItineraryController():
       if validation_error != ItineraryErrorType.SUCCESS:
          return ItineraryTimeSetResult( status=validation_error )
 
+      suppressed_warnings: list[ ItineraryErrorType ] = []
+
       if short_visit_warning_is_required(
             conn,
             normalized_arrival_time,
             saved_itinerary.departure_time,
-            confirming_short_visit=confirming_short_visit ):
+            confirming_short_visit=confirming_short_visit,
+            suppressed_warnings=suppressed_warnings ):
          return ItineraryTimeSetResult(
-            status=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-
-      apply_short_visit_warning_preferences(
-         conn,
-         suppress_short_visit_warning=suppress_short_visit_warning )
+            status=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
+            suppressed_warnings=tuple( suppressed_warnings ) )
 
       set_itinerary_arrival_time( conn, normalized_arrival_time )
 
-      return ItineraryTimeSetResult()
+      return ItineraryTimeSetResult(
+         suppressed_warnings=tuple( suppressed_warnings ) )
 
 
    @classmethod
@@ -217,8 +221,7 @@ class ItineraryController():
          cls,
          departure_time: TimeInput,
          *,
-         confirming_short_visit: bool = False,
-         suppress_short_visit_warning: bool = False ) -> ItineraryTimeSetResult:
+         confirming_short_visit: bool = False ) -> ItineraryTimeSetResult:
       conn = get_connection()
       normalized_departure_time = DateValues.normalize_itinerary_schedule_time(
          departure_time )
@@ -240,21 +243,22 @@ class ItineraryController():
       if validation_error != ItineraryErrorType.SUCCESS:
          return ItineraryTimeSetResult( status=validation_error )
 
+      suppressed_warnings: list[ ItineraryErrorType ] = []
+
       if short_visit_warning_is_required(
             conn,
             saved_itinerary.arrival_time,
             normalized_departure_time,
-            confirming_short_visit=confirming_short_visit ):
+            confirming_short_visit=confirming_short_visit,
+            suppressed_warnings=suppressed_warnings ):
          return ItineraryTimeSetResult(
-            status=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
-
-      apply_short_visit_warning_preferences(
-         conn,
-         suppress_short_visit_warning=suppress_short_visit_warning )
+            status=ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
+            suppressed_warnings=tuple( suppressed_warnings ) )
 
       set_itinerary_departure_time( conn, normalized_departure_time )
 
-      return ItineraryTimeSetResult()
+      return ItineraryTimeSetResult(
+         suppressed_warnings=tuple( suppressed_warnings ) )
 
 
    @classmethod

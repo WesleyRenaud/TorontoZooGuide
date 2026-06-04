@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from ...animals.logic.animals_matching_query import species_exhibit_key_from_values
 from ..data_access.itinerary_error_suppression import is_itinerary_error_suppressed
-from ..data_access.itinerary_error_suppression import suppress_itinerary_error
 from ..data_access.saved_itinerary import SavedItinerary
+from .itinerary_suppressed_warnings import append_suppressed_warning
 from .parse_schedule_item_request import ParsedScheduleItemRequest
 from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ScheduleItemKind
@@ -28,7 +28,8 @@ def schedule_item_not_on_itinerary_warning_is_required(
       saved_itinerary: SavedItinerary,
       parsed: ParsedScheduleItemRequest,
       *,
-      confirming_schedule_item_not_on_itinerary: bool ) -> bool:
+      confirming_schedule_item_not_on_itinerary: bool,
+      suppressed_warnings: list[ ItineraryErrorType ] | None = None ) -> bool:
    if parsed.kind not in ( ScheduleItemKind.ANIMAL, ScheduleItemKind.ATTRACTION ):
       return False
 
@@ -38,18 +39,11 @@ def schedule_item_not_on_itinerary_warning_is_required(
    if is_itinerary_error_suppressed(
          conn,
          ItineraryErrorType.ITEM_NOT_ON_ITINERARY ):
+      if suppressed_warnings is not None:
+         append_suppressed_warning(
+            suppressed_warnings,
+            ItineraryErrorType.ITEM_NOT_ON_ITINERARY )
+
       return False
 
    return not saved_itinerary_has_schedule_item( saved_itinerary, parsed )
-
-
-def apply_schedule_item_not_on_itinerary_preferences(
-      conn: Connection,
-      *,
-      suppress_schedule_item_not_on_itinerary_warning: bool ) -> None:
-   if not suppress_schedule_item_not_on_itinerary_warning:
-      return
-
-   suppress_itinerary_error(
-      conn,
-      ItineraryErrorType.ITEM_NOT_ON_ITINERARY )

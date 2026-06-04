@@ -120,11 +120,15 @@ function normalizeItineraryResult(source = {}, { includeItinerary = true } = {})
    const reasons = asArray(response.reasons).map(
       normalizeItineraryReason
    );
+   const suppressedWarnings = asArray(response.suppressed_warnings)
+      .map(asTrimmedString)
+      .filter(Boolean);
    const result = {
       status,
       reasons,
       errorType: status,
       issues: reasons,
+      suppressedWarnings,
    };
 
    if (includeItinerary && response.itinerary !== undefined) {
@@ -198,7 +202,6 @@ export async function scheduleItineraryItemRequest(
    request,
    {
       confirmingScheduleItemNotOnItinerary = false,
-      suppressScheduleItemNotOnItineraryWarning = false,
       confirmingGuardiansTalkUnschedule = false,
       confirmingWildEncounterUnschedule = false,
    } = {}
@@ -206,7 +209,6 @@ export async function scheduleItineraryItemRequest(
    const response = await postJson('/schedule-itinerary-item', {
       ...request,
       confirmingScheduleItemNotOnItinerary,
-      suppressScheduleItemNotOnItineraryWarning,
       confirmingGuardiansTalkUnschedule,
       confirmingWildEncounterUnschedule,
    });
@@ -238,12 +240,11 @@ function normalizeItineraryTimeSetResponse(response) {
 
 export async function setItineraryArrivalTimeRequest(
    arrivalTime,
-   { confirmingShortVisit = false, suppressShortVisitWarning = false } = {}
+   { confirmingShortVisit = false } = {}
 ) {
    const response = await postJson('/set-itinerary-arrival-time', {
       arrivalTime: asTrimmedString(arrivalTime),
       confirmingShortVisit,
-      suppressShortVisitWarning,
    });
 
    return normalizeItineraryTimeSetResponse(response);
@@ -251,15 +252,22 @@ export async function setItineraryArrivalTimeRequest(
 
 export async function setItineraryDepartureTimeRequest(
    departureTime,
-   { confirmingShortVisit = false, suppressShortVisitWarning = false } = {}
+   { confirmingShortVisit = false } = {}
 ) {
    const response = await postJson('/set-itinerary-departure-time', {
       departureTime: asTrimmedString(departureTime),
       confirmingShortVisit,
-      suppressShortVisitWarning,
    });
 
    return normalizeItineraryTimeSetResponse(response);
+}
+
+export async function suppressItineraryWarningRequest(warningType) {
+   const response = await postJson('/suppress-itinerary-warning', {
+      warningType: asTrimmedString(warningType),
+   });
+
+   return normalizeItineraryResult(response, { includeItinerary: false });
 }
 
 export async function bulkScheduleAnimalsRequest(temp) {

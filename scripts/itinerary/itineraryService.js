@@ -11,6 +11,7 @@ import {
 } from '../api/itineraryApi.js';
 import { setStoredItineraryDate } from './draftStorage.js';
 import {
+   getItineraryErrorTypes,
    isItinerarySuccess,
    requiresGuardiansTalkUnscheduleConfirmation,
    requiresGuardiansTalkWildEncounterTimeConflictConfirmation,
@@ -30,6 +31,7 @@ import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUn
 import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
 import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
 import { showWildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
+import { persistItineraryWarningSuppression } from './persistItineraryWarningSuppression.js';
 import {
    getDay,
    getMonth,
@@ -263,9 +265,14 @@ async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
       showShortVisitConfirmation({
          onConfirm: async ({ doNotShowAgain = false } = {}) => {
             try {
+               if (doNotShowAgain) {
+                  await persistItineraryWarningSuppression(
+                     getItineraryErrorTypes()?.ARRIVAL_DEPARTURE_TOO_CLOSE
+                  );
+               }
+
                const confirmedResult = await requestFn(timeValue, {
                   confirmingShortVisit: true,
-                  suppressShortVisitWarning: doNotShowAgain,
                });
 
                if (!isItinerarySuccess(confirmedResult.errorType)) {

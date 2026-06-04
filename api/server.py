@@ -27,6 +27,7 @@ from .guest_services.controllers.guest_service_controller import GuestServiceCon
 from .itinerary.controllers.itinerary_controller import ItineraryController
 from .itinerary.logic.itinerary_result_response import itinerary_result_to_dict
 from .itinerary.logic.itinerary_result_response import itinerary_time_set_result_to_dict
+from .itinerary.logic.itinerary_result_response import suppress_itinerary_warning_result_to_dict
 from .pavilions.controllers.pavilion_controller import PavilionController
 from .picnic_sites.controllers.picnic_site_controller import PicnicSiteController
 from .request_connection import clear_connection
@@ -778,8 +779,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          overriding_conflicting_guardians_talks = bool(
             data.get( 'overridingConflictingGuardiansTalks' ) )
          confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
-         suppress_short_visit_warning = bool(
-            data.get( 'suppressShortVisitWarning' ) )
          confirming_guardians_talk_unschedule = bool(
             data.get( 'confirmingGuardiansTalkUnschedule' ) )
          confirming_wild_encounter_unschedule = bool(
@@ -798,7 +797,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             overriding_conflicting_guardians_talks=(
                overriding_conflicting_guardians_talks ),
             confirming_short_visit=confirming_short_visit,
-            suppress_short_visit_warning=suppress_short_visit_warning,
             confirming_guardians_talk_unschedule=(
                confirming_guardians_talk_unschedule ),
             confirming_wild_encounter_unschedule=(
@@ -838,8 +836,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          duration_minutes = data.get( 'durationMinutes' )
          confirming_schedule_item_not_on_itinerary = bool(
             data.get( 'confirmingScheduleItemNotOnItinerary' ) )
-         suppress_schedule_item_not_on_itinerary_warning = bool(
-            data.get( 'suppressScheduleItemNotOnItineraryWarning' ) )
          confirming_guardians_talk_unschedule = bool(
             data.get( 'confirmingGuardiansTalkUnschedule' ) )
          confirming_wild_encounter_unschedule = bool(
@@ -852,9 +848,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             duration_minutes=duration_minutes,
             confirming_schedule_item_not_on_itinerary=(
                confirming_schedule_item_not_on_itinerary
-            ),
-            suppress_schedule_item_not_on_itinerary_warning=(
-               suppress_schedule_item_not_on_itinerary_warning
             ),
             confirming_guardians_talk_unschedule=(
                confirming_guardians_talk_unschedule ),
@@ -948,13 +941,10 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          arrival_time = data.get( 'arrivalTime' )
          confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
-         suppress_short_visit_warning = bool(
-            data.get( 'suppressShortVisitWarning' ) )
 
          save_result = ItineraryController.set_arrival_time(
             arrival_time=arrival_time,
-            confirming_short_visit=confirming_short_visit,
-            suppress_short_visit_warning=suppress_short_visit_warning )
+            confirming_short_visit=confirming_short_visit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -975,13 +965,10 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          departure_time = data.get( 'departureTime' )
          confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
-         suppress_short_visit_warning = bool(
-            data.get( 'suppressShortVisitWarning' ) )
 
          save_result = ItineraryController.set_departure_time(
             departure_time=departure_time,
-            confirming_short_visit=confirming_short_visit,
-            suppress_short_visit_warning=suppress_short_visit_warning )
+            confirming_short_visit=confirming_short_visit )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )
@@ -991,6 +978,27 @@ class MyHandler( BaseHTTPRequestHandler ):
             save_result,
             conn=get_connection(),
             extra={ 'departureTime': departure_time } )
+
+         self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
+
+
+      elif self.path == '/suppress-itinerary-warning':
+         content_length = int( self.headers[ 'Content-Length' ] )
+         post_data = self.rfile.read( content_length )
+         data = json.loads( post_data.decode( 'utf-8' ) )
+
+         warning_type = data.get( 'warningType' )
+
+         result = ItineraryController.suppress_itinerary_warning(
+            warning_type=warning_type )
+
+         self.send_response( 200 )
+         self.send_header( 'Content-type', 'application/json' )
+         self.end_headers()
+
+         response = suppress_itinerary_warning_result_to_dict(
+            result,
+            conn=get_connection() )
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

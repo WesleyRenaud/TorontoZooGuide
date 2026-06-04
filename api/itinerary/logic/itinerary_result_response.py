@@ -3,6 +3,7 @@ from __future__ import annotations
 from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_time_set_result import ItineraryTimeSetResult
 from ...shared.constants import itinerary_config_to_dict
+from .suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...types import Connection
 
 
@@ -18,6 +19,9 @@ def itinerary_result_to_dict(
       'status': result.status.value,
       'reasons': [
          reason.to_dict() for reason in result.reasons
+      ],
+      'suppressed_warnings': [
+         warning.value for warning in result.suppressed_warnings
       ],
    }
 
@@ -42,11 +46,29 @@ def itinerary_time_set_result_to_dict(
    payload: dict[ str, object ] = {
       'status': result.status.value,
       'reasons': [],
+      'suppressed_warnings': [
+         warning.value for warning in result.suppressed_warnings
+      ],
    }
 
    payload[ 'itinerary_config' ] = itinerary_config_to_dict( conn )
 
    if extra:
       payload.update( extra )
+
+   return payload
+
+
+def suppress_itinerary_warning_result_to_dict(
+      result: SuppressItineraryWarningResult,
+      *,
+      conn: Connection | None = None,
+) -> dict[ str, object ]:
+   payload: dict[ str, object ] = {
+      'status': result.status.value,
+      'reasons': [],
+      'suppressed_warnings': [],
+      'itinerary_config': itinerary_config_to_dict( conn ),
+   }
 
    return payload

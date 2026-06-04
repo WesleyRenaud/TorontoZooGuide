@@ -12,6 +12,7 @@ class ItinerarySaveResult:
    itinerary: Itinerary
    reasons: tuple[ ItineraryResultReason, ... ] = ()
    status: ItineraryErrorType = ItineraryErrorType.SUCCESS
+   suppressed_warnings: tuple[ ItineraryErrorType, ... ] = ()
 
 
    @property

@@ -1,0 +1,40 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from ..data_access.itinerary_error_suppression import suppress_itinerary_error
+from ..data_access.itinerary_error_type import is_itinerary_error_suppressable
+from ...shared.enums import ItineraryErrorType
+from ...types import Connection
+
+
+@dataclass( frozen=True )
+class SuppressItineraryWarningResult:
+   status: ItineraryErrorType = ItineraryErrorType.SUCCESS
+
+
+   @property
+   def success( self ) -> bool:
+      return self.status == ItineraryErrorType.SUCCESS
+
+
+def suppress_itinerary_warning(
+      conn: Connection,
+      warning_type: str ) -> SuppressItineraryWarningResult:
+   if not warning_type:
+      return SuppressItineraryWarningResult(
+         status=ItineraryErrorType.SAVE_FAILED )
+
+   try:
+      error_type = ItineraryErrorType( warning_type )
+   except ValueError:
+      return SuppressItineraryWarningResult(
+         status=ItineraryErrorType.SAVE_FAILED )
+
+   if not is_itinerary_error_suppressable( conn, error_type ):
+      return SuppressItineraryWarningResult(
+         status=ItineraryErrorType.SAVE_FAILED )
+
+   suppress_itinerary_error( conn, error_type )
+
+   return SuppressItineraryWarningResult()

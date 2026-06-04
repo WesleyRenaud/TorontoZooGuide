@@ -19,6 +19,7 @@ from .itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hou
 from .itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_schedule_time_conflicts import schedule_time_conflict_warning
+from .itinerary_suppressed_warnings import with_suppressed_warnings
 from .itinerary_unschedule_confirmations import apply_confirmed_itinerary_unschedule_changes
 from .itinerary_unschedule_confirmations import find_itinerary_unschedule_requirements
 from .itinerary_unschedule_confirmations import ItineraryUnscheduleRequirements
@@ -26,7 +27,6 @@ from .itinerary_unschedule_confirmations import unschedule_confirmation_warning
 from .itinerary_validation import validate_itinerary_for_save
 from ...models import Itinerary
 from ...shared.enums import ItineraryErrorType
-from .short_visit_warning import apply_short_visit_warning_preferences
 from .short_visit_warning import short_visit_warning_is_required
 from ...types import Connection
 from .wild_encounter_time_conflicts import find_schedule_time_conflict_issues
@@ -43,6 +43,7 @@ class SetItineraryContext:
    saved_itinerary: SavedItinerary | None
    unschedule_requirements: ItineraryUnscheduleRequirements
    itinerary_controller_kwargs: dict[ str, Any ]
+   suppressed_warnings: tuple[ ItineraryErrorType, ... ] = ()
 
 
 def itinerary_controller_kwargs(
@@ -72,9 +73,12 @@ def _build_current_itinerary_response(
 def _build_error_result(
       conn: Connection,
       status: ItineraryErrorType,
-      itinerary_controller_kwargs: dict[ str, Any ] ) -> ItinerarySaveResult:
+      itinerary_controller_kwargs: dict[ str, Any ],
+      *,
+      suppressed_warnings: tuple[ ItineraryErrorType, ... ] = () ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
       status=status,
+      suppressed_warnings=suppressed_warnings,
       itinerary=_build_current_itinerary_response(
          conn,
          itinerary_controller_kwargs ) )
@@ -177,10 +181,13 @@ def check_set_itinerary_save_warnings(
       confirming_short_visit: bool,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool,
-      overriding_conflicting_guardians_talks: bool,
-      suppress_short_visit_warning: bool ) -> ItinerarySaveResult | None:
+      overriding_conflicting_guardians_talks: bool ) -> tuple[
+         SetItineraryContext,
+         ItinerarySaveResult | None,
+      ]:
    save_input = context.save_input
    controller_kwargs = context.itinerary_controller_kwargs
+   suppressed_warnings: list[ ItineraryErrorType ] = []
 
    if (
          save_input.arrival_time is not None
@@ -189,16 +196,21 @@ def check_set_itinerary_save_warnings(
             context.conn,
             save_input.arrival_time,
             save_input.departure_time,
-            confirming_short_visit=confirming_short_visit )
+            confirming_short_visit=confirming_short_visit,
+            suppressed_warnings=suppressed_warnings )
    ):
-      return _build_error_result(
-         context.conn,
-         ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
-         controller_kwargs )
+      warning_tuple = tuple( suppressed_warnings )
+      return (
+         replace( context, suppressed_warnings=warning_tuple ),
+         _build_error_result(
+            context.conn,
+            ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE,
+            controller_kwargs,
+            suppressed_warnings=warning_tuple ),
+      )
 
-   apply_short_visit_warning_preferences(
-      context.conn,
-      suppress_short_visit_warning=suppress_short_visit_warning )
+   warning_tuple = tuple( suppressed_warnings )
+   updated_context = replace( context, suppressed_warnings=warning_tuple )
 
    schedule_conflict_warning = schedule_time_conflict_warning(
       context.validated_itinerary.guardians_talks,
@@ -208,7 +220,10 @@ def check_set_itinerary_save_warnings(
          overriding_conflicting_guardians_talks ) )
 
    if schedule_conflict_warning is not None:
-      return schedule_conflict_warning
+      return (
+         updated_context,
+         with_suppressed_warnings( schedule_conflict_warning, warning_tuple ),
+      )
 
    if context.saved_itinerary is not None:
       unschedule_warning = unschedule_confirmation_warning(
@@ -220,9 +235,12 @@ def check_set_itinerary_save_warnings(
             confirming_wild_encounter_unschedule ) )
 
       if unschedule_warning is not None:
-         return unschedule_warning
+         return (
+            updated_context,
+            with_suppressed_warnings( unschedule_warning, warning_tuple ),
+         )
 
-   return None
+   return ( updated_context, None )
 
 
 def commit_set_itinerary(
@@ -252,6 +270,7 @@ def commit_set_itinerary(
       return ItinerarySaveResult(
          status=ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
          reasons=remaining_conflicts,
+         suppressed_warnings=context.suppressed_warnings,
          itinerary=context.current_itinerary )
 
    clear_itinerary( context.conn )
@@ -261,6 +280,7 @@ def commit_set_itinerary(
       validated_itinerary )
 
    return ItinerarySaveResult(
+      suppressed_warnings=context.suppressed_warnings,
       itinerary=_build_current_itinerary_response(
          context.conn,
          context.itinerary_controller_kwargs ) )

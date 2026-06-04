@@ -8,6 +8,7 @@ from ...shared.enums import ItineraryErrorType
 @dataclass( frozen=True )
 class ItineraryTimeSetResult:
    status: ItineraryErrorType = ItineraryErrorType.SUCCESS
+   suppressed_warnings: tuple[ ItineraryErrorType, ... ] = ()
 
 
    @property
