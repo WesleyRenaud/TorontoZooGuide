@@ -2,6 +2,10 @@ import {
    removeItemFromItineraryRequest,
    unscheduleItineraryItemRequest,
 } from '../../api/itineraryApi.js';
+import {
+   hasBulkScheduleAnimalsNotEnoughTimeIssue,
+   showBulkScheduleAnimalsNotEnoughTimeNotice,
+} from './bulkScheduleAnimalsNotEnoughTimeConfirmation.js';
 import { makeActionsBar } from './components/actionsBar.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
@@ -19,6 +23,7 @@ import {
    setItineraryPanelViewInUrl,
 } from './itineraryPanelViewUrl.js';
 import {
+   bulkScheduleAnimals,
    clearItinerary,
    getItinerary,
    getZooHours,
@@ -29,6 +34,8 @@ import {
 import { showRemoveItineraryItemConfirmation } from './removeItineraryItemConfirmation.js';
 import { buildSchedulableEventTypes } from './scheduleItemTypes.js';
 import { buildSectionConfigs } from './sectionConfigs.js';
+import { showScheduleItemNotice } from './showScheduleItemNotice.js';
+import { APP_STRINGS } from '../../strings.js';
 import { resolveEffectiveItineraryHoursDateIso } from '../visitDateEarliest.js';
 
 let latestRenderToken = 0;
@@ -140,6 +147,25 @@ function appendDayPlannerViewWithHours(
                eventTypes: buildSchedulableEventTypes(itinerary.itineraryConfig),
                onScheduled: onPanelRefresh,
             });
+         },
+         onBulkScheduleAnimalsClick: async () => {
+            try {
+               const { issues } = await bulkScheduleAnimals();
+
+               if (typeof onPanelRefresh === 'function') {
+                  await onPanelRefresh();
+               }
+
+               if (hasBulkScheduleAnimalsNotEnoughTimeIssue(issues)) {
+                  showBulkScheduleAnimalsNotEnoughTimeNotice();
+               }
+            }
+            catch (err) {
+               console.error('Failed to bulk schedule animals:', err);
+               showScheduleItemNotice(
+                  err?.message || APP_STRINGS.itinerary.errors.generic
+               );
+            }
          },
          scheduleHandlers,
       })

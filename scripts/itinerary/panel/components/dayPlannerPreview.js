@@ -90,6 +90,33 @@ function makeItemsListSection(
    return wrapper;
 }
 
+function appendScheduleActionButtons(
+   section,
+   {
+      onScheduleItemClick = null,
+      onBulkScheduleAnimalsClick = null,
+      strings = {},
+   } = {}
+) {
+   if (typeof onScheduleItemClick === 'function') {
+      section.appendChild(
+         makeScheduleItemButton({
+            label: strings.scheduleItemButton,
+            onClick: onScheduleItemClick,
+         })
+      );
+   }
+
+   if (typeof onBulkScheduleAnimalsClick === 'function') {
+      section.appendChild(
+         makeScheduleItemButton({
+            label: strings.bulkScheduleAnimalsButton,
+            onClick: onBulkScheduleAnimalsClick,
+         })
+      );
+   }
+}
+
 function buildTimelineSlotStarts(halfHourSlotStarts, closeMinutes) {
    const slotStarts = [...halfHourSlotStarts];
 
@@ -105,7 +132,11 @@ export function makeDayPlannerPreview(
    zooHours = null,
    itinerary = {},
    timeHandlers = {},
-   { onScheduleItemClick = null, scheduleHandlers = {} } = {}
+   {
+      onScheduleItemClick = null,
+      onBulkScheduleAnimalsClick = null,
+      scheduleHandlers = {},
+   } = {}
 ) {
    const strings = {
       ...APP_STRINGS.itinerary.dayPlanner,
@@ -158,14 +189,11 @@ export function makeDayPlannerPreview(
    if (timelineSlotStarts.length === 0) {
       section.appendChild(header);
 
-      if (typeof onScheduleItemClick === 'function') {
-         section.appendChild(
-            makeScheduleItemButton({
-               label: strings.scheduleItemButton,
-               onClick: onScheduleItemClick,
-            })
-         );
-      }
+      appendScheduleActionButtons(section, {
+         onScheduleItemClick,
+         onBulkScheduleAnimalsClick,
+         strings,
+      });
 
       section.appendChild(makeUnavailableMessage(strings.hoursUnavailable));
       root.appendChild(section);
@@ -210,14 +238,11 @@ export function makeDayPlannerPreview(
 
    section.appendChild(header);
 
-   if (typeof onScheduleItemClick === 'function') {
-      section.appendChild(
-         makeScheduleItemButton({
-            label: strings.scheduleItemButton,
-            onClick: onScheduleItemClick,
-         })
-      );
-   }
+   appendScheduleActionButtons(section, {
+      onScheduleItemClick,
+      onBulkScheduleAnimalsClick,
+      strings,
+   });
 
    section.appendChild(timeline);
    root.appendChild(section);

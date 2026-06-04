@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 from ...animals.controllers.animal_controller import AnimalController
 from ...attractions.controllers.attraction_controller import AttractionController
 from .bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
@@ -20,16 +18,27 @@ from ..scheduling.resolve_schedule_slot import resolve_schedule_slot
 from ..scheduling.time_block import collect_time_blocks_from_itinerary
 from ..scheduling.time_block import time_block_from_schedule_times
 from ..scheduling.time_block import TimeBlock
+from ...shared.date_values import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection
+from ...types import Cursor
 from ...types import ScheduleTimeKey
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 
 
+def has_itinerary_schedule_times(
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey,
+) -> bool:
+   return bool(
+      DateValues.normalize_schedule_time_key( start_time )
+      and DateValues.normalize_schedule_time_key( end_time ) )
+
+
 def is_itinerary_animal_unscheduled( animal_row: ItineraryAnimalRecord ) -> bool:
-   return (
-      animal_row.start_time is None
-      or animal_row.end_time is None )
+   return not has_itinerary_schedule_times(
+      animal_row.start_time,
+      animal_row.end_time )
 
 
 def sort_animals_for_bulk_schedule(
@@ -119,6 +128,7 @@ def _schedule_animals_in_order(
       day_end_minutes: int,
 ) -> list[ ItineraryAnimalRecord ]:
    cur = conn.cursor()
+   scheduled_count = 0
 
    try:
       for index, animal_row in enumerate( animals ):
@@ -128,6 +138,7 @@ def _schedule_animals_in_order(
             animal_row.exhibit )
 
          if duration_minutes is None:
+            _commit_scheduled_animals( conn, scheduled_count )
             return animals[ index: ]
 
          slot = resolve_schedule_slot(
@@ -138,6 +149,7 @@ def _schedule_animals_in_order(
             start_time=None )
 
          if slot is None:
+            _commit_scheduled_animals( conn, scheduled_count )
             return animals[ index: ]
 
          start_time, end_time = slot
@@ -147,7 +159,10 @@ def _schedule_animals_in_order(
                animal_row=animal_row,
                start_time=start_time,
                end_time=end_time ):
+            _commit_scheduled_animals( conn, scheduled_count )
             return animals[ index: ]
+
+         scheduled_count += 1
 
          scheduled_block = time_block_from_schedule_times(
             start_time,
@@ -163,8 +178,16 @@ def _schedule_animals_in_order(
       cur.close()
 
 
+def _commit_scheduled_animals(
+      conn: Connection,
+      scheduled_count: int,
+) -> None:
+   if scheduled_count > 0:
+      conn.commit()
+
+
 def _persist_animal_schedule(
-      cur: Any,
+      cur: Cursor,
       *,
       animal_row: ItineraryAnimalRecord,
       start_time: ScheduleTimeKey,
