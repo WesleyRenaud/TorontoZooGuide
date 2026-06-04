@@ -15,8 +15,7 @@ from ...types import ScheduleTimeKey
 
 
 def guardians_talk_time_blocks(
-      guardians_talks: list[ GuardiansTalkDiff ],
-) -> list[ TimeBlock ]:
+      guardians_talks: list[ GuardiansTalkDiff ] ) -> list[ TimeBlock ]:
    return [
       time_block_from_schedule_times(
          guardians_talk.start_time,
@@ -27,8 +26,7 @@ def guardians_talk_time_blocks(
 
 def newly_added_active_guardians_talks(
       saved_itinerary: SavedItinerary,
-      guardians_talks: list[ GuardiansTalkDiff ],
-) -> list[ GuardiansTalkDiff ]:
+      guardians_talks: list[ GuardiansTalkDiff ] ) -> list[ GuardiansTalkDiff ]:
    saved_names = {
       itinerary_name_key( row.talk_name )
       for row in saved_itinerary.guardians_talk_rows
@@ -50,8 +48,7 @@ def newly_added_active_guardians_talks(
 def _schedule_overlaps_any_block(
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
-      talk_blocks: list[ TimeBlock ],
-) -> bool:
+      talk_blocks: list[ TimeBlock ] ) -> bool:
    item_block = time_block_from_schedule_times( start_time, end_time )
 
    if item_block is None:
@@ -65,8 +62,7 @@ def _schedule_overlaps_any_block(
 
 def saved_itinerary_has_overlap_with_guardians_talks(
       saved_itinerary: SavedItinerary,
-      new_guardians_talks: list[ GuardiansTalkDiff ],
-) -> bool:
+      new_guardians_talks: list[ GuardiansTalkDiff ] ) -> bool:
    talk_blocks = guardians_talk_time_blocks( new_guardians_talks )
 
    for animal in saved_itinerary.animal_rows:
@@ -95,8 +91,7 @@ def saved_itinerary_has_overlap_with_guardians_talks(
 
 def apply_guardians_talk_unschedule_to_validated_itinerary(
       validated_itinerary: ValidatedItinerary,
-      new_guardians_talks: list[ GuardiansTalkDiff ],
-) -> ValidatedItinerary:
+      new_guardians_talks: list[ GuardiansTalkDiff ] ) -> ValidatedItinerary:
    talk_blocks = guardians_talk_time_blocks( new_guardians_talks )
 
    for animal in validated_itinerary.animals:
@@ -130,8 +125,7 @@ def apply_guardians_talk_unschedule_to_validated_itinerary(
 def clear_saved_schedules_overlapping_guardians_talks(
       cur: Cursor,
       saved_itinerary: SavedItinerary,
-      new_guardians_talks: list[ GuardiansTalkDiff ],
-) -> None:
+      new_guardians_talks: list[ GuardiansTalkDiff ] ) -> None:
    talk_blocks = guardians_talk_time_blocks( new_guardians_talks )
 
    for animal in saved_itinerary.animal_rows:

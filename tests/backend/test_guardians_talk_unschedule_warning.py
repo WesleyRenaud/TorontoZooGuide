@@ -23,8 +23,7 @@ def _guardians_talk_save_entry(
       name: str,
       *,
       start_time: str | None = None,
-      end_time: str | None = None,
-) -> dict[ str, str | None ]:
+      end_time: str | None = None ) -> dict[ str, str | None ]:
    return {
       'name': name,
       'start_time': start_time,
@@ -34,8 +33,7 @@ def _guardians_talk_save_entry(
 
 def _set_guardians_talk_schedule(
       *,
-      monday_time: str = '10:00',
-) -> None:
+      monday_time: str = '10:00' ) -> None:
    assert GuardiansController.set_guardians_talk_schedule(
       talk=GUARDIANS_TALK,
       location='Africa Savanna',
@@ -55,8 +53,7 @@ def _set_guardians_talk_schedule(
 def _set_itinerary_with_scheduled_animal(
       db: DbControllers,
       *,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
    assert ItineraryController.set_itinerary(
@@ -77,8 +74,7 @@ def _set_itinerary_with_scheduled_animal(
 
 def test_set_itinerary_returns_warning_when_guardians_talk_would_unschedule_items(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_guardians_talk_schedule()
    _set_itinerary_with_scheduled_animal(
       db,
@@ -112,8 +108,7 @@ def test_set_itinerary_returns_warning_when_guardians_talk_would_unschedule_item
 
 def test_set_itinerary_unschedules_overlapping_items_when_confirmed(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_guardians_talk_schedule()
    _set_itinerary_with_scheduled_animal(
       db,
@@ -143,8 +138,7 @@ def test_set_itinerary_unschedules_overlapping_items_when_confirmed(
 
 def test_schedule_guardians_talk_returns_warning_when_it_would_unschedule_items(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_guardians_talk_schedule()
    _set_itinerary_with_scheduled_animal(
       db,
@@ -173,8 +167,7 @@ def test_schedule_guardians_talk_returns_warning_when_it_would_unschedule_items(
 
 def test_schedule_guardians_talk_unschedules_overlapping_items_when_confirmed(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_guardians_talk_schedule()
    _set_itinerary_with_scheduled_animal(
       db,
@@ -203,8 +196,7 @@ def test_schedule_guardians_talk_unschedules_overlapping_items_when_confirmed(
 
 def test_guardians_talk_unschedule_warning_cannot_be_suppressed(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_guardians_talk_schedule()
    _set_itinerary_with_scheduled_animal(
       db,

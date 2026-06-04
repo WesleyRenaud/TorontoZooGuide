@@ -119,8 +119,7 @@ def insert_itinerary_guardians_talk(
       talk_name: str,
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
-      is_deleted: bool = False,
-) -> bool:
+      is_deleted: bool = False ) -> bool:
    cur.execute(
       """   INSERT OR IGNORE INTO ItineraryGuardiansTalk (
                   TALK_NAME,
@@ -147,8 +146,7 @@ def insert_itinerary_wild_encounter(
       wild_encounter_name: str,
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
-      is_deleted: bool = False,
-) -> bool:
+      is_deleted: bool = False ) -> bool:
    cur.execute(
       """   INSERT OR IGNORE INTO ItineraryWildEncounter (
                   WILD_ENCOUNTER,

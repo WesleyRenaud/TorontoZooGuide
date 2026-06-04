@@ -9,33 +9,33 @@ from ...types import ScheduleTimeKey
 
 @dataclass( frozen=True )
 class TimeBlock:
-   start_minutes: int
-   end_minutes: int
+   start_seconds: int
+   end_seconds: int
 
 
 def time_block_from_schedule_times(
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey ) -> TimeBlock | None:
-   start_minutes = DateValues.time_value_in_minutes( start_time )
-   end_minutes = DateValues.time_value_in_minutes( end_time )
+   start_seconds = DateValues.time_value_in_seconds( start_time )
+   end_seconds = DateValues.time_value_in_seconds( end_time )
 
-   if start_minutes is None or end_minutes is None:
+   if start_seconds is None or end_seconds is None:
       return None
 
-   if end_minutes <= start_minutes:
+   if end_seconds <= start_seconds:
       return None
 
    return TimeBlock(
-      start_minutes=start_minutes,
-      end_minutes=end_minutes )
+      start_seconds=start_seconds,
+      end_seconds=end_seconds )
 
 
 def time_blocks_overlap(
       first: TimeBlock,
       second: TimeBlock ) -> bool:
    return (
-      first.start_minutes < second.end_minutes
-      and second.start_minutes < first.end_minutes
+      first.start_seconds < second.end_seconds
+      and second.start_seconds < first.end_seconds
    )
 
 

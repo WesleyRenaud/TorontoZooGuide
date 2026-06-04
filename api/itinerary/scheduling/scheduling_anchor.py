@@ -5,23 +5,35 @@ from ...types import ScheduleTimeKey
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
-def scheduling_anchor_minutes(
-      zoo_hours_record: ZooHoursRecord,
-      arrival_time: ScheduleTimeKey ) -> int:
+def scheduling_anchor_seconds(
+      zoo_hours_record: ZooHoursRecord | None,
+      arrival_time: ScheduleTimeKey ) -> int | None:
    if arrival_time is not None:
-      return DateValues.time_value_in_minutes( arrival_time )
+      return DateValues.time_value_in_seconds( arrival_time )
 
-   return DateValues.time_value_in_minutes( zoo_hours_record.open_time )
+   if zoo_hours_record is None:
+      return None
+
+   return DateValues.time_value_in_seconds( zoo_hours_record.open_time )
 
 
-def scheduling_day_end_minutes(
-      zoo_hours_record: ZooHoursRecord,
-      departure_time: ScheduleTimeKey ) -> int:
-   close_minutes = DateValues.time_value_in_minutes( zoo_hours_record.close_time )
+def scheduling_day_end_seconds(
+      zoo_hours_record: ZooHoursRecord | None,
+      departure_time: ScheduleTimeKey ) -> int | None:
+   if zoo_hours_record is None:
+      return None
+
+   close_seconds = DateValues.time_value_in_seconds( zoo_hours_record.close_time )
+
+   if close_seconds is None:
+      return None
 
    if departure_time is None:
-      return close_minutes
+      return close_seconds
 
-   departure_minutes = DateValues.time_value_in_minutes( departure_time )
+   departure_seconds = DateValues.time_value_in_seconds( departure_time )
 
-   return min( close_minutes, departure_minutes )
+   if departure_seconds is None:
+      return close_seconds
+
+   return min( close_seconds, departure_seconds )

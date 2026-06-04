@@ -9,8 +9,7 @@ from ...types import ScheduledItem, ScheduleTimeKey
 
 def schedule_time_range(
       start_time: ScheduleTimeKey,
-      end_time: ScheduleTimeKey,
-) -> tuple[ int, int ]:
+      end_time: ScheduleTimeKey ) -> tuple[ int, int ]:
    start = DateValues.time_value_in_minutes( start_time )
    end = DateValues.time_value_in_minutes( end_time )
 
@@ -21,8 +20,7 @@ def trim_range_against_blocker(
       start: int,
       end: int,
       blocker_start: int,
-      blocker_end: int,
-) -> tuple[ int, int ]:
+      blocker_end: int ) -> tuple[ int, int ]:
    if blocker_end <= start or blocker_start >= end:
       return ( start, end )
 
@@ -46,8 +44,7 @@ def trim_range_against_blocker(
 def trim_guardians_talk_times(
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
-      blockers: list[ ScheduledItem ],
-) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ]:
+      blockers: list[ ScheduledItem ] ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ]:
    start, end = schedule_time_range( start_time, end_time )
 
    for blocker in blockers:
@@ -73,8 +70,7 @@ def trim_guardians_talk_times(
 
 
 def active_blockers(
-      scheduled_items: list[ ScheduledItem ],
-) -> list[ ScheduledItem ]:
+      scheduled_items: list[ ScheduledItem ] ) -> list[ ScheduledItem ]:
    return [
       scheduled_item
       for scheduled_item in scheduled_items
@@ -84,8 +80,7 @@ def active_blockers(
 
 def apply_guardians_talk_trimming(
       guardians_talks: list[ GuardiansTalkDiff ],
-      wild_encounters: list[ WildEncounterDiff ],
-) -> list[ GuardiansTalkDiff ]:
+      wild_encounters: list[ WildEncounterDiff ] ) -> list[ GuardiansTalkDiff ]:
    encounter_blockers = active_blockers( wild_encounters )
    trimmed_talks: list[ GuardiansTalkDiff ] = []
    talk_blockers: list[ GuardiansTalkDiff ] = []

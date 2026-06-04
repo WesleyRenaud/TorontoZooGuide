@@ -8,8 +8,7 @@ from ...shared.enums import ItinerarySaveIssueType
 
 
 def build_bulk_schedule_animals_not_enough_time_issue(
-      animals: list[ ItineraryAnimalRecord ],
-) -> ItinerarySaveIssue:
+      animals: list[ ItineraryAnimalRecord ] ) -> ItinerarySaveIssue:
    issue_items = tuple(
       ItinerarySaveIssueItem(
          name=animal.species,

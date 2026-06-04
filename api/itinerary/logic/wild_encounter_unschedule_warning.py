@@ -12,8 +12,7 @@ from .wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wi
 
 def new_wild_encounters_overlapping_saved_schedule(
       saved_itinerary: SavedItinerary,
-      validated_itinerary: ValidatedItinerary,
-) -> list[ WildEncounterDiff ]:
+      validated_itinerary: ValidatedItinerary ) -> list[ WildEncounterDiff ]:
    new_wild_encounters = newly_added_active_wild_encounters(
       saved_itinerary,
       validated_itinerary.wild_encounters )
@@ -30,8 +29,7 @@ def new_wild_encounters_overlapping_saved_schedule(
 
 
 def build_wild_encounter_unschedule_issue(
-      wild_encounters: list[ WildEncounterDiff ],
-) -> ItinerarySaveIssue:
+      wild_encounters: list[ WildEncounterDiff ] ) -> ItinerarySaveIssue:
    issue_items = tuple(
       ItinerarySaveIssueItem.from_wild_encounter_diff( wild_encounter )
       for wild_encounter in wild_encounters )
