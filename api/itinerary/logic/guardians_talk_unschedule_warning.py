@@ -14,8 +14,7 @@ def guardians_talk_unschedule_warning_is_required(
       saved_itinerary: SavedItinerary,
       validated_itinerary: ValidatedItinerary,
       *,
-      confirming_guardians_talk_unschedule: bool,
-) -> bool:
+      confirming_guardians_talk_unschedule: bool ) -> bool:
    if confirming_guardians_talk_unschedule:
       return False
 
@@ -33,8 +32,7 @@ def guardians_talk_unschedule_warning_is_required(
 
 def new_guardians_talks_overlapping_saved_schedule(
       saved_itinerary: SavedItinerary,
-      validated_itinerary: ValidatedItinerary,
-) -> list[ GuardiansTalkDiff ]:
+      validated_itinerary: ValidatedItinerary ) -> list[ GuardiansTalkDiff ]:
    new_guardians_talks = newly_added_active_guardians_talks(
       saved_itinerary,
       validated_itinerary.guardians_talks )
@@ -51,8 +49,7 @@ def new_guardians_talks_overlapping_saved_schedule(
 
 
 def build_guardians_talk_unschedule_issue(
-      guardians_talks: list[ GuardiansTalkDiff ],
-) -> ItinerarySaveIssue:
+      guardians_talks: list[ GuardiansTalkDiff ] ) -> ItinerarySaveIssue:
    issue_items = tuple(
       ItinerarySaveIssueItem.from_guardians_talk_diff( guardians_talk )
       for guardians_talk in guardians_talks )

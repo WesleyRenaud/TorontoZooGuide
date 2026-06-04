@@ -17,6 +17,7 @@ from api.giftshops.logic.gift_shop import calculate_gift_shop_likelihood
 from api.restaurants.logic.restaurant import calculate_restaurant_likelihood
 from api.shared.date_values import DateValues
 from api.shared.duration_values import normalize_duration_minutes
+from api.shared.duration_values import normalize_duration_seconds
 from api.shared.enums import ScheduleStatus
 from api.types import DateInput, DateKey, SeasonalMultiplier
 from conftest import DbControllers
@@ -192,6 +193,34 @@ def test_normalize_schedule_time_key(
    'value, expected',
    [
       ( None, None ),
+      ( '09:30', 9 * 3600 + 30 * 60 ),
+      ( '09:30:30', 9 * 3600 + 30 * 60 + 30 ),
+      ( '1:00 PM', 13 * 3600 ),
+   ]
+)
+def test_time_value_in_seconds(
+      value: str | None,
+      expected: int | None ) -> None:
+   assert DateValues.time_value_in_seconds( value ) == expected
+
+
+@pytest.mark.parametrize(
+   'total_seconds, expected',
+   [
+      ( 9 * 3600 + 30 * 60, '09:30' ),
+      ( 9 * 3600 + 30 * 60 + 30, '09:30:30' ),
+   ]
+)
+def test_schedule_time_key_from_seconds(
+      total_seconds: int,
+      expected: str ) -> None:
+   assert DateValues.schedule_time_key_from_seconds( total_seconds ) == expected
+
+
+@pytest.mark.parametrize(
+   'value, expected',
+   [
+      ( None, None ),
       ( 0, None ),
       ( 7.2, 8 ),
       ( 8, 8 ),
@@ -200,6 +229,21 @@ def test_normalize_schedule_time_key(
 )
 def test_normalize_duration_minutes( value: float | None, expected: int | None ) -> None:
    assert normalize_duration_minutes( value ) == expected
+
+
+@pytest.mark.parametrize(
+   'value, expected',
+   [
+      ( None, None ),
+      ( 0, None ),
+      ( 0.5, 30 ),
+      ( 7.2, 432 ),
+      ( 8, 480 ),
+      ( 20, 1200 ),
+   ]
+)
+def test_normalize_duration_seconds( value: float | None, expected: int | None ) -> None:
+   assert normalize_duration_seconds( value ) == expected
 
 
 @pytest.mark.parametrize(

@@ -21,8 +21,7 @@ LION_ITINERARY_ENTRY = {
 
 def _set_wild_encounter_schedule(
       *,
-      encounter_time: str = '14:00',
-) -> None:
+      encounter_time: str = '14:00' ) -> None:
    assert WildEncounterController.set_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER,
       start_date='2026-06-01',
@@ -42,8 +41,7 @@ def _set_wild_encounter_schedule(
 def _set_itinerary_with_scheduled_animal(
       db: DbControllers,
       *,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
    assert ItineraryController.set_itinerary(
@@ -64,8 +62,7 @@ def _set_itinerary_with_scheduled_animal(
 
 def test_set_itinerary_returns_warning_when_wild_encounter_would_unschedule_items(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_wild_encounter_schedule()
    _set_itinerary_with_scheduled_animal(
       db,
@@ -99,8 +96,7 @@ def test_set_itinerary_returns_warning_when_wild_encounter_would_unschedule_item
 
 def test_set_itinerary_unschedules_overlapping_items_when_wild_encounter_confirmed(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_wild_encounter_schedule()
    _set_itinerary_with_scheduled_animal(
       db,
@@ -130,8 +126,7 @@ def test_set_itinerary_unschedules_overlapping_items_when_wild_encounter_confirm
 
 def test_schedule_wild_encounter_returns_warning_when_it_would_unschedule_items(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_wild_encounter_schedule()
    _set_itinerary_with_scheduled_animal(
       db,
@@ -160,8 +155,7 @@ def test_schedule_wild_encounter_returns_warning_when_it_would_unschedule_items(
 
 def test_schedule_wild_encounter_unschedules_overlapping_items_when_confirmed(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_wild_encounter_schedule()
    _set_itinerary_with_scheduled_animal(
       db,
@@ -190,8 +184,7 @@ def test_schedule_wild_encounter_unschedules_overlapping_items_when_confirmed(
 
 def test_wild_encounter_unschedule_warning_cannot_be_suppressed(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_wild_encounter_schedule()
    _set_itinerary_with_scheduled_animal(
       db,

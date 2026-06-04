@@ -15,8 +15,7 @@ from ...types import ScheduleTimeKey
 
 
 def wild_encounter_time_blocks(
-      wild_encounters: list[ WildEncounterDiff ],
-) -> list[ TimeBlock ]:
+      wild_encounters: list[ WildEncounterDiff ] ) -> list[ TimeBlock ]:
    return [
       time_block_from_schedule_times(
          wild_encounter.start_time,
@@ -27,8 +26,7 @@ def wild_encounter_time_blocks(
 
 def newly_added_active_wild_encounters(
       saved_itinerary: SavedItinerary,
-      wild_encounters: list[ WildEncounterDiff ],
-) -> list[ WildEncounterDiff ]:
+      wild_encounters: list[ WildEncounterDiff ] ) -> list[ WildEncounterDiff ]:
    saved_names = {
       row.name_key()
       for row in saved_itinerary.wild_encounter_rows
@@ -51,8 +49,7 @@ def newly_added_active_wild_encounters(
 def _schedule_overlaps_any_block(
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
-      encounter_blocks: list[ TimeBlock ],
-) -> bool:
+      encounter_blocks: list[ TimeBlock ] ) -> bool:
    item_block = time_block_from_schedule_times( start_time, end_time )
 
    if item_block is None:
@@ -66,8 +63,7 @@ def _schedule_overlaps_any_block(
 
 def saved_itinerary_has_overlap_with_wild_encounters(
       saved_itinerary: SavedItinerary,
-      new_wild_encounters: list[ WildEncounterDiff ],
-) -> bool:
+      new_wild_encounters: list[ WildEncounterDiff ] ) -> bool:
    encounter_blocks = wild_encounter_time_blocks( new_wild_encounters )
 
    for animal in saved_itinerary.animal_rows:
@@ -96,8 +92,7 @@ def saved_itinerary_has_overlap_with_wild_encounters(
 
 def apply_wild_encounter_unschedule_to_validated_itinerary(
       validated_itinerary: ValidatedItinerary,
-      new_wild_encounters: list[ WildEncounterDiff ],
-) -> ValidatedItinerary:
+      new_wild_encounters: list[ WildEncounterDiff ] ) -> ValidatedItinerary:
    encounter_blocks = wild_encounter_time_blocks( new_wild_encounters )
 
    for animal in validated_itinerary.animals:
@@ -131,8 +126,7 @@ def apply_wild_encounter_unschedule_to_validated_itinerary(
 def clear_saved_schedules_overlapping_wild_encounters(
       cur: Cursor,
       saved_itinerary: SavedItinerary,
-      new_wild_encounters: list[ WildEncounterDiff ],
-) -> None:
+      new_wild_encounters: list[ WildEncounterDiff ] ) -> None:
    encounter_blocks = wild_encounter_time_blocks( new_wild_encounters )
 
    for animal in saved_itinerary.animal_rows:

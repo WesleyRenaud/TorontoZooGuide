@@ -63,8 +63,7 @@ def itinerary_controller_kwargs(
 
 def _build_current_itinerary_response(
       conn: Connection,
-      itinerary_controller_kwargs: dict[ str, Any ],
-) -> Itinerary:
+      itinerary_controller_kwargs: dict[ str, Any ] ) -> Itinerary:
    return build_current_itinerary(
       fetch_saved_itinerary( conn ),
       **itinerary_controller_kwargs )
@@ -73,8 +72,7 @@ def _build_current_itinerary_response(
 def _build_error_result(
       conn: Connection,
       error_type: ItineraryErrorType,
-      itinerary_controller_kwargs: dict[ str, Any ],
-) -> ItinerarySaveResult:
+      itinerary_controller_kwargs: dict[ str, Any ] ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
       error_type=error_type,
       itinerary=_build_current_itinerary_response(
@@ -85,8 +83,7 @@ def _build_error_result(
 def validate_set_itinerary_zoo_hours(
       conn: Connection,
       save_input: ItinerarySaveInput,
-      itinerary_controller_kwargs: dict[ str, Any ],
-) -> ItinerarySaveResult | None:
+      itinerary_controller_kwargs: dict[ str, Any ] ) -> ItinerarySaveResult | None:
    if (
          save_input.arrival_time is None
          or save_input.departure_time is None
@@ -132,8 +129,7 @@ def prepare_set_itinerary_context(
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None,
-      itinerary_controller_kwargs: dict[ str, Any ],
-) -> SetItineraryContext:
+      itinerary_controller_kwargs: dict[ str, Any ] ) -> SetItineraryContext:
    validated_itinerary = validate_itinerary_for_save(
       conn,
       save_input,
@@ -182,8 +178,7 @@ def check_set_itinerary_save_warnings(
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool,
       overriding_conflicting_guardians_talks: bool,
-      suppress_short_visit_warning: bool,
-) -> ItinerarySaveResult | None:
+      suppress_short_visit_warning: bool ) -> ItinerarySaveResult | None:
    save_input = context.save_input
    controller_kwargs = context.itinerary_controller_kwargs
 
@@ -233,8 +228,7 @@ def check_set_itinerary_save_warnings(
 def commit_set_itinerary(
       context: SetItineraryContext,
       *,
-      overriding_conflicting_guardians_talks: bool,
-) -> ItinerarySaveResult:
+      overriding_conflicting_guardians_talks: bool ) -> ItinerarySaveResult:
    validated_itinerary = context.validated_itinerary
 
    if overriding_conflicting_guardians_talks:

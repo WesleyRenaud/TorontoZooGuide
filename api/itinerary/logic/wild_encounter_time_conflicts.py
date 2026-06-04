@@ -18,13 +18,12 @@ def schedule_time_range( scheduled_item: ScheduledItem ) -> tuple[ int, int ] | 
    if time_block is None:
       return None
 
-   return ( time_block.start_minutes, time_block.end_minutes )
+   return ( time_block.start_seconds, time_block.end_seconds )
 
 
 def schedule_times_overlap(
       first: ScheduledItem,
-      second: ScheduledItem,
-) -> bool:
+      second: ScheduledItem ) -> bool:
    first_start, first_end = schedule_time_range( first )
    second_start, second_end = schedule_time_range( second )
 
@@ -33,8 +32,7 @@ def schedule_times_overlap(
 
 def active_scheduled_items(
       guardians_talks: list[ GuardiansTalkDiff ],
-      wild_encounters: list[ WildEncounterDiff ],
-) -> list[ ScheduledItem ]:
+      wild_encounters: list[ WildEncounterDiff ] ) -> list[ ScheduledItem ]:
    active_talks = [
       guardians_talk
       for guardians_talk in guardians_talks
@@ -58,8 +56,7 @@ def active_scheduled_items(
 def collect_overlapping_group(
       scheduled_items: list[ ScheduledItem ],
       start_index: int,
-      visited: set[ int ],
-) -> list[ ScheduledItem ]:
+      visited: set[ int ] ) -> list[ ScheduledItem ]:
    group: list[ ScheduledItem ] = []
    pending_indices = [ start_index ]
    visited.add( start_index )
@@ -83,8 +80,7 @@ def collect_overlapping_group(
 
 
 def find_schedule_time_conflict_groups(
-      scheduled_items: list[ ScheduledItem ],
-) -> list[ list[ ScheduledItem ] ]:
+      scheduled_items: list[ ScheduledItem ] ) -> list[ list[ ScheduledItem ] ]:
    if len( scheduled_items ) < 2:
       return []
 
@@ -115,8 +111,7 @@ def scheduled_item_to_issue_item(
 
 
 def sort_scheduled_items_for_issue(
-      scheduled_items: list[ ScheduledItem ],
-) -> list[ ScheduledItem ]:
+      scheduled_items: list[ ScheduledItem ] ) -> list[ ScheduledItem ]:
    return sorted(
       scheduled_items,
       key=lambda scheduled_item: (
@@ -127,8 +122,7 @@ def sort_scheduled_items_for_issue(
 
 
 def build_schedule_time_conflict_issue(
-      scheduled_items: list[ ScheduledItem ],
-) -> ItinerarySaveIssue:
+      scheduled_items: list[ ScheduledItem ] ) -> ItinerarySaveIssue:
    sorted_items = sort_scheduled_items_for_issue( scheduled_items )
    issue_items = tuple(
       scheduled_item_to_issue_item( scheduled_item )
@@ -142,8 +136,7 @@ def build_schedule_time_conflict_issue(
 
 def find_schedule_time_conflict_issues(
       guardians_talks: list[ GuardiansTalkDiff ],
-      wild_encounters: list[ WildEncounterDiff ],
-) -> tuple[ ItinerarySaveIssue, ... ]:
+      wild_encounters: list[ WildEncounterDiff ] ) -> tuple[ ItinerarySaveIssue, ... ]:
    scheduled_items = active_scheduled_items( guardians_talks, wild_encounters )
    conflict_groups = find_schedule_time_conflict_groups( scheduled_items )
 

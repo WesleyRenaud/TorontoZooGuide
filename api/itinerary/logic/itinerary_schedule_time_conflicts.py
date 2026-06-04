@@ -13,8 +13,7 @@ def schedule_time_conflict_warning(
       wild_encounters: list[ WildEncounterDiff ],
       itinerary: Itinerary,
       *,
-      overriding_conflicting_guardians_talks: bool,
-) -> ItinerarySaveResult | None:
+      overriding_conflicting_guardians_talks: bool ) -> ItinerarySaveResult | None:
    conflict_issues = find_schedule_time_conflict_issues(
       guardians_talks,
       wild_encounters )

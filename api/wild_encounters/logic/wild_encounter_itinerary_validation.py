@@ -15,8 +15,7 @@ def build_wild_encounter_diff_for_visit_day(
 
 def _find_saved_wild_encounter_row(
       saved_rows: list[ ItineraryWildEncounterRecord ] | None,
-      name: str,
-) -> ItineraryWildEncounterRecord | None:
+      name: str ) -> ItineraryWildEncounterRecord | None:
    for row in saved_rows or []:
       if row.is_deleted:
          continue
@@ -31,8 +30,7 @@ def validate_wild_encounters_for_itinerary(
       wild_encounters_to_include: list[ str ] | None,
       day_schedule: list[ WildEncounter ],
       *,
-      saved_wild_encounter_rows: list[ ItineraryWildEncounterRecord ] | None = None,
-) -> list[ WildEncounterDiff ]:
+      saved_wild_encounter_rows: list[ ItineraryWildEncounterRecord ] | None = None ) -> list[ WildEncounterDiff ]:
    diffs: list[ WildEncounterDiff ] = []
 
    for encounter_name in wild_encounters_to_include or []:

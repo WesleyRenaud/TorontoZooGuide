@@ -6,7 +6,7 @@ from .bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enoug
 from .bulk_schedule_exhibit_order import bulk_schedule_exhibit_rank
 from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ..data_access.itinerary_default_duration import fetch_enclosure_default_duration_minutes
+from ..data_access.itinerary_default_duration import fetch_enclosure_default_duration_seconds
 from ..data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...guardians.controllers.guardians_controller import GuardiansController
 from .itinerary import build_current_itinerary
@@ -28,8 +28,7 @@ from ...wild_encounters.controllers.wild_encounter_controller import WildEncount
 
 def has_itinerary_schedule_times(
       start_time: ScheduleTimeKey,
-      end_time: ScheduleTimeKey,
-) -> bool:
+      end_time: ScheduleTimeKey ) -> bool:
    return bool(
       DateValues.normalize_schedule_time_key( start_time )
       and DateValues.normalize_schedule_time_key( end_time ) )
@@ -42,8 +41,7 @@ def is_itinerary_animal_unscheduled( animal_row: ItineraryAnimalRecord ) -> bool
 
 
 def sort_animals_for_bulk_schedule(
-      animal_rows: list[ ItineraryAnimalRecord ],
-) -> list[ ItineraryAnimalRecord ]:
+      animal_rows: list[ ItineraryAnimalRecord ] ) -> list[ ItineraryAnimalRecord ]:
    return sorted(
       animal_rows,
       key=lambda animal_row: (
@@ -60,8 +58,7 @@ def bulk_schedule_animals(
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
-      visit_date_temp: float | None = None,
-) -> ItinerarySaveResult:
+      visit_date_temp: float | None = None ) -> ItinerarySaveResult:
    itinerary_controller_kwargs = _itinerary_controller_kwargs(
       animal_controller=animal_controller,
       attraction_controller=attraction_controller,
@@ -78,7 +75,7 @@ def bulk_schedule_animals(
    if isinstance( window, ItinerarySaveResult ):
       return window
 
-   anchor_minutes, day_end_minutes = window
+   anchor_seconds, day_end_seconds = window
    itinerary = build_current_itinerary(
       saved_itinerary,
       **itinerary_controller_kwargs )
@@ -100,8 +97,8 @@ def bulk_schedule_animals(
       conn,
       unscheduled_animals,
       blockers=blockers,
-      anchor_minutes=anchor_minutes,
-      day_end_minutes=day_end_minutes )
+      anchor_seconds=anchor_seconds,
+      day_end_seconds=day_end_seconds )
 
    issues: tuple[ ItinerarySaveIssue, ... ] = ()
 
@@ -124,28 +121,27 @@ def _schedule_animals_in_order(
       animals: list[ ItineraryAnimalRecord ],
       *,
       blockers: list[ TimeBlock ],
-      anchor_minutes: int,
-      day_end_minutes: int,
-) -> list[ ItineraryAnimalRecord ]:
+      anchor_seconds: int,
+      day_end_seconds: int ) -> list[ ItineraryAnimalRecord ]:
    cur = conn.cursor()
    scheduled_count = 0
 
    try:
       for index, animal_row in enumerate( animals ):
-         duration_minutes = fetch_enclosure_default_duration_minutes(
+         duration_seconds = fetch_enclosure_default_duration_seconds(
             conn,
             animal_row.species,
             animal_row.exhibit )
 
-         if duration_minutes is None:
+         if duration_seconds is None:
             _commit_scheduled_animals( conn, scheduled_count )
             return animals[ index: ]
 
          slot = resolve_schedule_slot(
             blockers,
-            anchor_minutes,
-            duration_minutes,
-            day_end_minutes,
+            anchor_seconds,
+            duration_seconds,
+            day_end_seconds,
             start_time=None )
 
          if slot is None:
@@ -180,8 +176,7 @@ def _schedule_animals_in_order(
 
 def _commit_scheduled_animals(
       conn: Connection,
-      scheduled_count: int,
-) -> None:
+      scheduled_count: int ) -> None:
    if scheduled_count > 0:
       conn.commit()
 
@@ -191,8 +186,7 @@ def _persist_animal_schedule(
       *,
       animal_row: ItineraryAnimalRecord,
       start_time: ScheduleTimeKey,
-      end_time: ScheduleTimeKey,
-) -> bool:
+      end_time: ScheduleTimeKey ) -> bool:
    return update_itinerary_animal_schedule(
       cur,
       species=animal_row.species,

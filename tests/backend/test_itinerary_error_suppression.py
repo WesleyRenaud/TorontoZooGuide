@@ -12,8 +12,7 @@ from conftest import DbControllers
 
 
 def test_suppress_short_visit_warning_skips_confirmation_prompt(
-      db: DbControllers,
-) -> None:
+      db: DbControllers ) -> None:
    assert db.conn is not None
 
    assert ItineraryController.set_itinerary(
@@ -39,8 +38,7 @@ def test_suppress_short_visit_warning_skips_confirmation_prompt(
 
 
 def test_suppress_short_visit_warning_persists_in_itinerary_config(
-      db: DbControllers,
-) -> None:
+      db: DbControllers ) -> None:
    assert db.conn is not None
 
    suppress_itinerary_error(
@@ -57,8 +55,7 @@ def test_suppress_short_visit_warning_persists_in_itinerary_config(
 
 
 def test_set_arrival_time_with_suppress_flag_persists_preference(
-      db: DbControllers,
-) -> None:
+      db: DbControllers ) -> None:
    assert db.conn is not None
 
    assert ItineraryController.set_itinerary(
@@ -83,8 +80,7 @@ def test_set_arrival_time_with_suppress_flag_persists_preference(
 
 
 def test_clear_itinerary_leaves_error_suppressions(
-      db: DbControllers,
-) -> None:
+      db: DbControllers ) -> None:
    assert db.conn is not None
 
    suppress_itinerary_error(
@@ -100,8 +96,7 @@ def test_clear_itinerary_leaves_error_suppressions(
 
 def test_clear_user_itinerary_config_clears_error_suppressions(
       db: DbControllers,
-      cursor: Cursor,
-) -> None:
+      cursor: Cursor ) -> None:
    suppress_itinerary_error(
       db.conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
@@ -115,8 +110,7 @@ def test_clear_user_itinerary_config_clears_error_suppressions(
 
 
 def test_non_suppressable_itinerary_error_types_cannot_be_persisted(
-      db: DbControllers,
-) -> None:
+      db: DbControllers ) -> None:
    assert db.conn is not None
 
    non_suppressable_error_types = [

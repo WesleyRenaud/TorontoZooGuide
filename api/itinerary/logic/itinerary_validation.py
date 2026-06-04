@@ -112,8 +112,7 @@ def validate_itinerary_attractions(
 
 
 def itinerary_events_from_saved_rows(
-      event_rows: list[ ItineraryEventRecord ],
-) -> list[ ItineraryEvent ]:
+      event_rows: list[ ItineraryEventRecord ] ) -> list[ ItineraryEvent ]:
    return [
       ItineraryEvent(
          event_type=event.event_type,

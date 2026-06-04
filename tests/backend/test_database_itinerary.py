@@ -29,8 +29,7 @@ def guardians_talk_save_entry(
       name: str,
       *,
       start_time: str | None = None,
-      end_time: str | None = None,
-) -> dict[ str, str | None ]:
+      end_time: str | None = None ) -> dict[ str, str | None ]:
    return {
       'name': name,
       'start_time': start_time,

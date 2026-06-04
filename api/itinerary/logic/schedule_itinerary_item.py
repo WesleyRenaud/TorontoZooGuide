@@ -7,9 +7,9 @@ from ...animals.controllers.animal_controller import AnimalController
 from ...attractions.controllers.attraction_controller import AttractionController
 from ..data_access.itinerary import fetch_itinerary_date
 from ..data_access.itinerary import fetch_saved_itinerary
-from ..data_access.itinerary_default_duration import fetch_attraction_default_duration_minutes
-from ..data_access.itinerary_default_duration import fetch_enclosure_default_duration_minutes
-from ..data_access.itinerary_default_duration import fetch_event_default_duration_minutes
+from ..data_access.itinerary_default_duration import fetch_attraction_default_duration_seconds
+from ..data_access.itinerary_default_duration import fetch_enclosure_default_duration_seconds
+from ..data_access.itinerary_default_duration import fetch_event_default_duration_seconds
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.schedule_itinerary_item import insert_itinerary_animal_schedule
 from ..data_access.schedule_itinerary_item import insert_itinerary_attraction_schedule
@@ -38,9 +38,10 @@ from .schedule_item_not_on_itinerary_warning import schedule_item_not_on_itinera
 from ..scheduling.resolve_schedule_slot import resolve_schedule_slot
 from ..scheduling.scheduled_occurrence import schedule_guardians_talk_for_itinerary
 from ..scheduling.scheduled_occurrence import schedule_wild_encounter_for_itinerary
-from ..scheduling.scheduling_anchor import scheduling_anchor_minutes
-from ..scheduling.scheduling_anchor import scheduling_day_end_minutes
+from ..scheduling.scheduling_anchor import scheduling_anchor_seconds
+from ..scheduling.scheduling_anchor import scheduling_day_end_seconds
 from ..scheduling.time_block import collect_time_blocks_from_itinerary
+from ...shared.duration_values import duration_minutes_to_seconds
 from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ItineraryEventType
 from ...shared.enums import ScheduleItemKind
@@ -109,20 +110,20 @@ def _resolve_schedule_window(
 
    zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
 
-   if zoo_hours_record is None:
-      return _build_save_result(
-         conn,
-         ItineraryErrorType.TIME_OUT_OF_BOUNDS,
-         **itinerary_controller_kwargs )
-
-   anchor_minutes = scheduling_anchor_minutes(
+   anchor_seconds = scheduling_anchor_seconds(
       zoo_hours_record,
       saved_itinerary.arrival_time )
-   day_end_minutes = scheduling_day_end_minutes(
+   day_end_seconds = scheduling_day_end_seconds(
       zoo_hours_record,
       saved_itinerary.departure_time )
 
-   return ( anchor_minutes, day_end_minutes )
+   if anchor_seconds is None or day_end_seconds is None:
+      return _build_save_result(
+         conn,
+         ItineraryErrorType.SAVE_FAILED,
+         **itinerary_controller_kwargs )
+
+   return ( anchor_seconds, day_end_seconds )
 
 
 def _prepare_schedule_item_on_itinerary(
@@ -132,8 +133,7 @@ def _prepare_schedule_item_on_itinerary(
       *,
       itinerary_controller_kwargs: dict[ str, Any ],
       confirming_schedule_item_not_on_itinerary: bool,
-      suppress_schedule_item_not_on_itinerary_warning: bool,
-) -> ItinerarySaveResult | None:
+      suppress_schedule_item_not_on_itinerary_warning: bool ) -> ItinerarySaveResult | None:
    apply_schedule_item_not_on_itinerary_preferences(
       conn,
       suppress_schedule_item_not_on_itinerary_warning=(
@@ -159,19 +159,18 @@ def _resolve_slot_times(
       conn: Connection,
       saved_itinerary: SavedItinerary,
       window: tuple[ int, int ],
-      duration_minutes: int,
+      duration_seconds: int,
       *,
       start_time: ScheduleTimeKey | None,
-      itinerary_controller_kwargs: dict[ str, Any ],
-) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
-   anchor_minutes, day_end_minutes = window
+      itinerary_controller_kwargs: dict[ str, Any ] ) -> tuple[ tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None, ItinerarySaveResult | None ]:
+   anchor_seconds, day_end_seconds = window
    itinerary = build_current_itinerary( saved_itinerary, **itinerary_controller_kwargs )
    blockers = collect_time_blocks_from_itinerary( itinerary )
    slot = resolve_schedule_slot(
       blockers,
-      anchor_minutes,
-      duration_minutes,
-      day_end_minutes,
+      anchor_seconds,
+      duration_seconds,
+      day_end_seconds,
       start_time=start_time )
 
    if slot is None:
@@ -188,16 +187,16 @@ def _resolve_slot_times(
    return slot, None
 
 
-def _effective_duration_minutes(
+def _effective_duration_seconds(
       duration_minutes: int | None,
-      default_duration_minutes: int | None ) -> int | None:
-   if default_duration_minutes is None:
+      default_duration_seconds: int | None ) -> int | None:
+   if default_duration_seconds is None:
       return None
 
    if duration_minutes is not None:
-      return duration_minutes
+      return duration_minutes_to_seconds( duration_minutes )
 
-   return default_duration_minutes
+   return default_duration_seconds
 
 
 def _apply_itinerary_animal_schedule(
@@ -207,8 +206,7 @@ def _apply_itinerary_animal_schedule(
       exhibit: str,
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
-      insert_if_missing: bool,
-) -> bool:
+      insert_if_missing: bool ) -> bool:
    if insert_if_missing:
       inserted = insert_itinerary_animal_schedule(
          cur,
@@ -234,8 +232,7 @@ def _apply_itinerary_attraction_schedule(
       name: str,
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
-      insert_if_missing: bool,
-) -> bool:
+      insert_if_missing: bool ) -> bool:
    if insert_if_missing:
       inserted = insert_itinerary_attraction_schedule(
          cur,
@@ -263,8 +260,7 @@ def _commit_listed_schedule(
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
       insert_if_missing: bool,
-      itinerary_controller_kwargs: dict[ str, Any ],
-) -> ItinerarySaveResult:
+      itinerary_controller_kwargs: dict[ str, Any ] ) -> ItinerarySaveResult:
    cur = conn.cursor()
 
    try:
@@ -295,8 +291,7 @@ def _schedule_listed_itinerary_item(
       *,
       itinerary_controller_kwargs: dict[ str, Any ],
       confirming_schedule_item_not_on_itinerary: bool,
-      suppress_schedule_item_not_on_itinerary_warning: bool,
-) -> ItinerarySaveResult:
+      suppress_schedule_item_not_on_itinerary_warning: bool ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
    window = _resolve_schedule_window(
       conn,
@@ -322,7 +317,7 @@ def _schedule_listed_itinerary_item(
       return membership_error
 
    if parsed.kind == ScheduleItemKind.ANIMAL:
-      default_duration_minutes = fetch_enclosure_default_duration_minutes(
+      default_duration_seconds = fetch_enclosure_default_duration_seconds(
          conn,
          parsed.species,
          parsed.exhibit )
@@ -341,7 +336,7 @@ def _schedule_listed_itinerary_item(
             insert_if_missing=insert_if_missing )
 
    else:
-      default_duration_minutes = fetch_attraction_default_duration_minutes(
+      default_duration_seconds = fetch_attraction_default_duration_seconds(
          conn,
          parsed.attraction_name )
 
@@ -357,9 +352,9 @@ def _schedule_listed_itinerary_item(
             end_time=end_time,
             insert_if_missing=insert_if_missing )
 
-   effective_duration = _effective_duration_minutes(
+   effective_duration = _effective_duration_seconds(
       time_options.duration_minutes,
-      default_duration_minutes )
+      default_duration_seconds )
 
    if effective_duration is None:
       return _build_save_result(
@@ -394,8 +389,7 @@ def _schedule_itinerary_event(
       *,
       event_type: ItineraryEventType,
       time_options: ParsedScheduleTimeOptions,
-      itinerary_controller_kwargs: dict[ str, Any ],
-) -> ItinerarySaveResult:
+      itinerary_controller_kwargs: dict[ str, Any ] ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
    window = _resolve_schedule_window(
       conn,
@@ -405,9 +399,9 @@ def _schedule_itinerary_event(
    if isinstance( window, ItinerarySaveResult ):
       return window
 
-   effective_duration = _effective_duration_minutes(
+   effective_duration = _effective_duration_seconds(
       time_options.duration_minutes,
-      fetch_event_default_duration_minutes( conn, event_type ) )
+      fetch_event_default_duration_seconds( conn, event_type ) )
 
    if effective_duration is None:
       return _build_save_result(
@@ -456,8 +450,7 @@ def _saved_guardians_talk_exists(
 def _guardians_talk_diff_for_saved_itinerary_day(
       saved_itinerary: SavedItinerary,
       talk_name: str,
-      guardians_controller: type[ GuardiansController ],
-) -> GuardiansTalkDiff:
+      guardians_controller: type[ GuardiansController ] ) -> GuardiansTalkDiff:
    talk = guardians_controller.get_guardians_talk_on_day_schedule(
       month=saved_itinerary.month(),
       day=saved_itinerary.day(),
@@ -474,8 +467,7 @@ def _insert_scheduled_guardians_talk(
       talk_name: str,
       guardians_talk_diff: GuardiansTalkDiff,
       clear_overlapping_schedules: bool,
-      itinerary_controller_kwargs: dict[ str, Any ],
-) -> ItinerarySaveResult:
+      itinerary_controller_kwargs: dict[ str, Any ] ) -> ItinerarySaveResult:
    cur = conn.cursor()
 
    try:
@@ -511,8 +503,7 @@ def _schedule_guardians_talk_itinerary_item(
       talk_name: str,
       *,
       itinerary_controller_kwargs: dict[ str, Any ],
-      confirming_guardians_talk_unschedule: bool,
-) -> ItinerarySaveResult:
+      confirming_guardians_talk_unschedule: bool ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
 
    if saved_itinerary.is_empty():
@@ -564,8 +555,7 @@ def _saved_wild_encounter_exists(
 def _wild_encounter_diff_for_saved_itinerary_day(
       saved_itinerary: SavedItinerary,
       wild_encounter_name: str,
-      wild_encounter_controller: type[ WildEncounterController ],
-) -> WildEncounterDiff:
+      wild_encounter_controller: type[ WildEncounterController ] ) -> WildEncounterDiff:
    encounter = wild_encounter_controller.get_wild_encounter_on_day_schedule(
       month=saved_itinerary.month(),
       day=saved_itinerary.day(),
@@ -582,8 +572,7 @@ def _insert_scheduled_wild_encounter(
       wild_encounter_name: str,
       wild_encounter_diff: WildEncounterDiff,
       clear_overlapping_schedules: bool,
-      itinerary_controller_kwargs: dict[ str, Any ],
-) -> ItinerarySaveResult:
+      itinerary_controller_kwargs: dict[ str, Any ] ) -> ItinerarySaveResult:
    cur = conn.cursor()
 
    try:
@@ -620,8 +609,7 @@ def _schedule_wild_encounter_itinerary_item(
       wild_encounter_name: str,
       *,
       itinerary_controller_kwargs: dict[ str, Any ],
-      confirming_wild_encounter_unschedule: bool,
-) -> ItinerarySaveResult:
+      confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
 
    if saved_itinerary.is_empty():
