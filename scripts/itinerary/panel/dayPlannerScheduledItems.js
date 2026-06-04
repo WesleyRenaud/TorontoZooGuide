@@ -223,16 +223,16 @@ export function buildScheduledItinerary(
    } = {}
 ) {
    return {
-      animals: itinerary.animals.filter((_, index) => (
+      animals: (itinerary.animals ?? []).filter((_, index) => (
          scheduledAnimalIndexes.has(index)
       )),
-      attractions: itinerary.attractions.filter((_, index) => (
+      attractions: (itinerary.attractions ?? []).filter((_, index) => (
          scheduledAttractionIndexes.has(index)
       )),
-      guardiansTalks: itinerary.guardiansTalks.filter((_, index) => (
+      guardiansTalks: (itinerary.guardiansTalks ?? []).filter((_, index) => (
          scheduledGuardiansTalkIndexes.has(index)
       )),
-      wildEncounters: itinerary.wildEncounters.filter((_, index) => (
+      wildEncounters: (itinerary.wildEncounters ?? []).filter((_, index) => (
          scheduledWildEncounterIndexes.has(index)
       )),
    };
