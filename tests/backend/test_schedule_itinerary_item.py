@@ -382,12 +382,17 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_warning_suppressed(
       wild_encounters=[],
    ).success
 
+   ItineraryController.suppress_itinerary_warning(
+      ItineraryErrorType.ITEM_NOT_ON_ITINERARY.value )
+
    result = ItineraryController.schedule_itinerary_item(
       item_type='animals',
-      key=ANIMAL_KEY,
-      suppress_schedule_item_not_on_itinerary_warning=True )
+      key=ANIMAL_KEY )
 
    assert result.success
+   assert result.suppressed_warnings == (
+      ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+   )
    assert len( result.itinerary.animals ) == 1
    saved_row = _saved_animal_row(
       db,

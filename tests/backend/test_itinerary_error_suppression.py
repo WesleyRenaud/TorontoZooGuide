@@ -54,7 +54,7 @@ def test_suppress_short_visit_warning_persists_in_itinerary_config(
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
 
-def test_set_arrival_time_with_suppress_flag_persists_preference(
+def test_suppress_itinerary_warning_persists_preference(
       db: DbControllers ) -> None:
    assert db.conn is not None
 
@@ -68,15 +68,26 @@ def test_set_arrival_time_with_suppress_flag_persists_preference(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.set_arrival_time(
-      '16:30',
-      confirming_short_visit=True,
-      suppress_short_visit_warning=True,
-   ).success
+   result = ItineraryController.suppress_itinerary_warning(
+      ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value )
 
+   assert result.success
    assert is_itinerary_error_suppressed(
       db.conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
+
+
+def test_suppress_itinerary_warning_rejects_non_suppressable_type(
+      db: DbControllers ) -> None:
+   assert db.conn is not None
+
+   result = ItineraryController.suppress_itinerary_warning(
+      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS.value )
+
+   assert not result.success
+   assert not is_itinerary_error_suppressed(
+      db.conn,
+      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
 
 
 def test_clear_itinerary_leaves_error_suppressions(

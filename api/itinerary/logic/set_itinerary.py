@@ -115,7 +115,6 @@ def set_itinerary(
       wild_encounter_controller: type[ WildEncounterController ],
       overriding_conflicting_guardians_talks: bool = False,
       confirming_short_visit: bool = False,
-      suppress_short_visit_warning: bool = False,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
    save_input = map_itinerary_save_input(
@@ -159,14 +158,13 @@ def set_itinerary(
       visit_date_temp=visit_date_temp,
       itinerary_controller_kwargs=controller_kwargs )
 
-   save_warning = check_set_itinerary_save_warnings(
+   context, save_warning = check_set_itinerary_save_warnings(
       context,
       confirming_short_visit=confirming_short_visit,
       confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule,
       confirming_wild_encounter_unschedule=confirming_wild_encounter_unschedule,
       overriding_conflicting_guardians_talks=(
-         overriding_conflicting_guardians_talks ),
-      suppress_short_visit_warning=suppress_short_visit_warning )
+         overriding_conflicting_guardians_talks ) )
 
    if save_warning is not None:
       return save_warning

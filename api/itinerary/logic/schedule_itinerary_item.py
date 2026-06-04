@@ -25,6 +25,7 @@ from .guardians_talk_unschedule_warning import build_guardians_talk_unschedule_i
 from .itinerary import build_current_itinerary
 from .itinerary_result_reason import ItineraryResultReason
 from .itinerary_save_result import ItinerarySaveResult
+from .itinerary_suppressed_warnings import with_suppressed_warnings
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.itinerary_event import ItineraryEvent
 from ...models.wild_encounter_diff import WildEncounterDiff
@@ -32,7 +33,6 @@ from .parse_schedule_item_request import parse_schedule_item_request
 from .parse_schedule_item_request import ParsedScheduleItemRequest
 from .parse_schedule_time_options import parse_schedule_time_options
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
-from .schedule_item_not_on_itinerary_warning import apply_schedule_item_not_on_itinerary_preferences
 from .schedule_item_not_on_itinerary_warning import saved_itinerary_has_schedule_item
 from .schedule_item_not_on_itinerary_warning import schedule_item_not_on_itinerary_warning_is_required
 from ..scheduling.resolve_schedule_slot import resolve_schedule_slot
@@ -78,10 +78,12 @@ def _build_save_result(
       status: ItineraryErrorType,
       *,
       reasons: tuple[ ItineraryResultReason, ... ] = (),
+      suppressed_warnings: tuple[ ItineraryErrorType, ... ] = (),
       **itinerary_controller_kwargs: Any ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
       status=status,
       reasons=reasons,
+      suppressed_warnings=suppressed_warnings,
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
          **itinerary_controller_kwargs ) )
@@ -89,8 +91,11 @@ def _build_save_result(
 
 def _build_success_result(
       conn: Connection,
+      *,
+      suppressed_warnings: tuple[ ItineraryErrorType, ... ] = (),
       **itinerary_controller_kwargs: Any ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
+      suppressed_warnings=suppressed_warnings,
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
          **itinerary_controller_kwargs ) )
@@ -133,12 +138,8 @@ def _prepare_schedule_item_on_itinerary(
       *,
       itinerary_controller_kwargs: dict[ str, Any ],
       confirming_schedule_item_not_on_itinerary: bool,
-      suppress_schedule_item_not_on_itinerary_warning: bool ) -> ItinerarySaveResult | None:
-   apply_schedule_item_not_on_itinerary_preferences(
-      conn,
-      suppress_schedule_item_not_on_itinerary_warning=(
-         suppress_schedule_item_not_on_itinerary_warning
-      ) )
+      ) -> tuple[ tuple[ ItineraryErrorType, ... ], ItinerarySaveResult | None ]:
+   suppressed_warnings: list[ ItineraryErrorType ] = []
 
    if schedule_item_not_on_itinerary_warning_is_required(
          conn,
@@ -146,13 +147,19 @@ def _prepare_schedule_item_on_itinerary(
          parsed,
          confirming_schedule_item_not_on_itinerary=(
             confirming_schedule_item_not_on_itinerary
-         ) ):
-      return _build_save_result(
-         conn,
-         ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
-         **itinerary_controller_kwargs )
+         ),
+         suppressed_warnings=suppressed_warnings ):
+      warning_tuple = tuple( suppressed_warnings )
+      return (
+         warning_tuple,
+         _build_save_result(
+            conn,
+            ItineraryErrorType.ITEM_NOT_ON_ITINERARY,
+            suppressed_warnings=warning_tuple,
+            **itinerary_controller_kwargs ),
+      )
 
-   return None
+   return ( tuple( suppressed_warnings ), None )
 
 
 def _resolve_slot_times(
@@ -291,7 +298,7 @@ def _schedule_listed_itinerary_item(
       *,
       itinerary_controller_kwargs: dict[ str, Any ],
       confirming_schedule_item_not_on_itinerary: bool,
-      suppress_schedule_item_not_on_itinerary_warning: bool ) -> ItinerarySaveResult:
+      ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
    window = _resolve_schedule_window(
       conn,
@@ -301,16 +308,13 @@ def _schedule_listed_itinerary_item(
    if isinstance( window, ItinerarySaveResult ):
       return window
 
-   membership_error = _prepare_schedule_item_on_itinerary(
+   suppressed_warnings, membership_error = _prepare_schedule_item_on_itinerary(
       conn,
       saved_itinerary,
       parsed,
       itinerary_controller_kwargs=itinerary_controller_kwargs,
       confirming_schedule_item_not_on_itinerary=(
          confirming_schedule_item_not_on_itinerary
-      ),
-      suppress_schedule_item_not_on_itinerary_warning=(
-         suppress_schedule_item_not_on_itinerary_warning
       ) )
 
    if membership_error is not None:
@@ -375,13 +379,15 @@ def _schedule_listed_itinerary_item(
 
    start_time_key, end_time = slot
 
-   return _commit_listed_schedule(
-      conn,
-      apply_schedule=apply_schedule,
-      start_time=start_time_key,
-      end_time=end_time,
-      insert_if_missing=not saved_itinerary_has_schedule_item( saved_itinerary, parsed ),
-      itinerary_controller_kwargs=itinerary_controller_kwargs )
+   return with_suppressed_warnings(
+      _commit_listed_schedule(
+         conn,
+         apply_schedule=apply_schedule,
+         start_time=start_time_key,
+         end_time=end_time,
+         insert_if_missing=not saved_itinerary_has_schedule_item( saved_itinerary, parsed ),
+         itinerary_controller_kwargs=itinerary_controller_kwargs ),
+      suppressed_warnings )
 
 
 def _schedule_itinerary_event(
@@ -667,7 +673,6 @@ def schedule_itinerary_item(
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       confirming_schedule_item_not_on_itinerary: bool,
-      suppress_schedule_item_not_on_itinerary_warning: bool,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
    itinerary_controller_kwargs = _itinerary_controller_kwargs(
@@ -724,7 +729,4 @@ def schedule_itinerary_item(
       itinerary_controller_kwargs=itinerary_controller_kwargs,
       confirming_schedule_item_not_on_itinerary=(
          confirming_schedule_item_not_on_itinerary
-      ),
-      suppress_schedule_item_not_on_itinerary_warning=(
-         suppress_schedule_item_not_on_itinerary_warning
       ) )

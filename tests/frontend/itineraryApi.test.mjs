@@ -13,6 +13,7 @@ import {
    setItineraryArrivalTimeRequest,
    setItineraryDepartureTimeRequest,
    setItineraryRequest,
+   suppressItineraryWarningRequest,
 } from '../../scripts/api/itineraryApi.js';
 
 const MOCK_ITINERARY_ERROR_TYPES = Object.freeze({
@@ -45,6 +46,7 @@ function normalizedItineraryResultFields(status, reasons = []) {
       reasons,
       errorType: status,
       issues: reasons,
+      suppressedWarnings: [],
    };
 }
 
@@ -194,7 +196,6 @@ test('sets itinerary arrival and departure times through focused endpoints', asy
          {
             arrivalTime: '09:45',
             confirmingShortVisit: false,
-            suppressShortVisitWarning: false,
          },
       ],
       [
@@ -202,10 +203,50 @@ test('sets itinerary arrival and departure times through focused endpoints', asy
          {
             departureTime: '',
             confirmingShortVisit: false,
-            suppressShortVisitWarning: false,
          },
       ],
    ]);
+});
+
+test('suppress itinerary warning request posts warning type', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/suppress-itinerary-warning');
+      assert.deepEqual(JSON.parse(options.body), {
+         warningType: 'arrivalDepartureTooClose',
+      });
+
+      return mockJsonResponse({
+         status: 'success',
+         suppressed_warnings: [],
+         ...mockItineraryConfigResponse({
+            suppressedErrorTypes: ['arrivalDepartureTooClose'],
+         }),
+      });
+   };
+
+   assert.deepEqual(
+      await suppressItineraryWarningRequest('arrivalDepartureTooClose'),
+      {
+         ...normalizedItineraryResultFields('success'),
+         itineraryConfig: normalizedItineraryConfig({
+            suppressedErrorTypes: ['arrivalDepartureTooClose'],
+         }),
+      }
+   );
+});
+
+test('normalizes suppressed warnings on itinerary results', async () => {
+   globalThis.fetch = async () => mockJsonResponse({
+      status: 'success',
+      suppressed_warnings: ['arrivalDepartureTooClose'],
+      ...mockItineraryConfigResponse(),
+   });
+
+   assert.deepEqual(await setItineraryArrivalTimeRequest('09:45'), {
+      ...normalizedItineraryResultFields('success'),
+      suppressedWarnings: ['arrivalDepartureTooClose'],
+      itineraryConfig: normalizedItineraryConfig(),
+   });
 });
 
 test('normalizes short visit warning from itinerary time endpoints', async () => {
@@ -442,7 +483,6 @@ test('normalizes schedule itinerary item response', async () => {
          itemType: 'lunch',
          key: '',
          confirmingScheduleItemNotOnItinerary: false,
-         suppressScheduleItemNotOnItineraryWarning: false,
          confirmingGuardiansTalkUnschedule: false,
          confirmingWildEncounterUnschedule: false,
       });

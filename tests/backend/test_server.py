@@ -9,6 +9,7 @@ import pytest
 
 from api.itinerary.logic.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.logic.itinerary_time_set_result import ItineraryTimeSetResult
+from api.itinerary.logic.suppress_itinerary_warning import SuppressItineraryWarningResult
 from api.models import Animal
 from api.models import Attraction
 from api.models import Defibrillator
@@ -371,6 +372,13 @@ class StubZooControllers:
    def remove_itinerary_item( self, **kwargs: Any ) -> ItinerarySaveResult:
       self.calls.append( ( 'remove_itinerary_item', kwargs ) )
       return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
+
+
+   def suppress_itinerary_warning(
+         self,
+         **kwargs: Any ) -> SuppressItineraryWarningResult:
+      self.calls.append( ( 'suppress_itinerary_warning', kwargs ) )
+      return SuppressItineraryWarningResult()
 
 
    def accept_itinerary( self, **kwargs: Any ) -> bool:
@@ -1228,7 +1236,6 @@ def test_itinerary_endpoints_return_success_payloads(
          'visit_date_temp': None,
          'overriding_conflicting_guardians_talks': False,
          'confirming_short_visit': False,
-         'suppress_short_visit_warning': False,
          'confirming_guardians_talk_unschedule': False,
          'confirming_wild_encounter_unschedule': False,
       }
@@ -1313,12 +1320,14 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
    assert response_json( arrival_handler ) == {
       'status': 'success',
       'reasons': [],
+      'suppressed_warnings': [],
       'arrivalTime': '09:45',
       'itinerary_config': itinerary_config_to_dict(),
    }
    assert response_json( departure_handler ) == {
       'status': 'success',
       'reasons': [],
+      'suppressed_warnings': [],
       'departureTime': None,
       'itinerary_config': itinerary_config_to_dict(),
    }
@@ -1328,7 +1337,6 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
          {
             'arrival_time': '09:45',
             'confirming_short_visit': False,
-            'suppress_short_visit_warning': False,
          },
       ),
       (
@@ -1336,8 +1344,29 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
          {
             'departure_time': None,
             'confirming_short_visit': False,
-            'suppress_short_visit_warning': False,
          },
+      ),
+   ]
+
+
+def test_suppress_itinerary_warning_endpoint(
+      stub_database: type[ StubZooControllers ] ) -> None:
+   handler = make_handler(
+      '/suppress-itinerary-warning',
+      { 'warningType': 'arrivalDepartureTooClose' } )
+
+   server.MyHandler.do_POST( handler )
+
+   assert response_json( handler ) == {
+      'status': 'success',
+      'reasons': [],
+      'suppressed_warnings': [],
+      'itinerary_config': itinerary_config_to_dict(),
+   }
+   assert StubZooControllers.instances[ 0 ].calls == [
+      (
+         'suppress_itinerary_warning',
+         { 'warning_type': 'arrivalDepartureTooClose' },
       ),
    ]
 

@@ -124,11 +124,84 @@ test('scheduleSelectedItineraryItem schedules an event', async () => {
          startTime: '1:30 PM',
          durationMinutes: 15,
          confirmingScheduleItemNotOnItinerary: false,
-         suppressScheduleItemNotOnItineraryWarning: false,
          confirmingGuardiansTalkUnschedule: false,
          confirmingWildEncounterUnschedule: false,
       },
    }]);
+});
+
+test('scheduleSelectedItineraryItem persists suppression before confirming', async () => {
+   const requests = [];
+
+   globalThis.fetch = async (url, options = {}) => {
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
+
+      if (url === '/suppress-itinerary-warning') {
+         return mockJsonResponse({
+            status: 'success',
+            suppressed_warnings: [],
+            itinerary_config: {
+               itinerary_error_types: MOCK_ERROR_TYPES,
+               suppressed_error_types: ['itemNotOnItinerary'],
+            },
+         });
+      }
+
+      const isConfirmed = Boolean(
+         requests.filter((request) => request.url === '/schedule-itinerary-item').at(-1)
+            ?.body?.confirmingScheduleItemNotOnItinerary
+      );
+
+      return mockJsonResponse({
+         status: isConfirmed ? 'success' : 'itemNotOnItinerary',
+         reasons: [],
+      });
+   };
+
+   const schedulePromise = scheduleSelectedItineraryItem(
+      { date: '2026-06-15', animals: [], attractions: [] },
+      'animals',
+      { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
+      []
+   );
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const label = document.querySelector('.tzg-popup-do-not-show-again');
+   const confirmButton = document.querySelector('.tzg-popup-confirm');
+   const checkbox = label?.children?.find((child) => child.tagName === 'input');
+
+   assert.ok(checkbox);
+   assert.ok(confirmButton);
+   checkbox.checked = true;
+   confirmButton.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const result = await schedulePromise;
+
+   assert.equal(result.errorType, 'success');
+   assert.deepEqual(
+      requests.map((request) => request.url),
+      [
+         '/schedule-itinerary-item',
+         '/suppress-itinerary-warning',
+         '/schedule-itinerary-item',
+      ]
+   );
+   assert.equal(requests[1].body.warningType, 'itemNotOnItinerary');
+   assert.equal(requests[2].body.confirmingScheduleItemNotOnItinerary, true);
+   assert.equal(
+      requests[2].body.suppressScheduleItemNotOnItineraryWarning,
+      undefined
+   );
 });
 
 test('scheduleSelectedItineraryItem schedules when type is unset but a row is selected', async () => {
