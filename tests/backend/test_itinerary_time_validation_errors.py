@@ -93,9 +93,9 @@ def test_set_arrival_time_returns_validation_error_types(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.set_arrival_time( '09:00' ).error_type == (
+   assert ItineraryController.set_arrival_time( '09:00' ).status == (
       ItineraryErrorType.TIME_OUT_OF_BOUNDS )
-   assert ItineraryController.set_arrival_time( '17:00' ).error_type == (
+   assert ItineraryController.set_arrival_time( '17:00' ).status == (
       ItineraryErrorType.TIME_ORDER_INVALID )
 
 

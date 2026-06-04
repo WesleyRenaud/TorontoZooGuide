@@ -25,6 +25,8 @@ from .giftshops.controllers.gift_shop_controller import GiftShopController
 from .guardians.controllers.guardians_controller import GuardiansController
 from .guest_services.controllers.guest_service_controller import GuestServiceController
 from .itinerary.controllers.itinerary_controller import ItineraryController
+from .itinerary.logic.itinerary_result_response import itinerary_result_to_dict
+from .itinerary.logic.itinerary_result_response import itinerary_time_set_result_to_dict
 from .pavilions.controllers.pavilion_controller import PavilionController
 from .picnic_sites.controllers.picnic_site_controller import PicnicSiteController
 from .request_connection import clear_connection
@@ -806,14 +808,10 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {
-            'errorType': save_result.error_type.value,
-            'itinerary': save_result.itinerary.to_dict(),
-            'itinerary_config': itinerary_config_to_dict( get_connection() ),
-            'issues': [
-               issue.to_dict() for issue in save_result.issues
-            ],
-         }
+         response = itinerary_result_to_dict(
+            save_result,
+            conn=get_connection(),
+            include_config=True )
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -867,12 +865,10 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {
-            'errorType': save_result.error_type.value,
-            'issues': [
-               issue.to_dict() for issue in save_result.issues
-            ],
-         }
+         response = itinerary_result_to_dict(
+            save_result,
+            conn=get_connection(),
+            include_config=True )
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -891,14 +887,10 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {
-            'errorType': save_result.error_type.value,
-            'issues': [
-               issue.to_dict() for issue in save_result.issues
-            ],
-            'itinerary': save_result.itinerary.to_dict(),
-            'itinerary_config': itinerary_config_to_dict( get_connection() ),
-         }
+         response = itinerary_result_to_dict(
+            save_result,
+            conn=get_connection(),
+            include_config=True )
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -919,9 +911,9 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {
-            'errorType': save_result.error_type.value,
-         }
+         response = itinerary_result_to_dict(
+            save_result,
+            conn=get_connection() )
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -942,9 +934,9 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {
-            'errorType': save_result.error_type.value,
-         }
+         response = itinerary_result_to_dict(
+            save_result,
+            conn=get_connection() )
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -968,11 +960,10 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {
-            'errorType': save_result.error_type.value,
-            'arrivalTime': arrival_time,
-            'itinerary_config': itinerary_config_to_dict( get_connection() ),
-         }
+         response = itinerary_time_set_result_to_dict(
+            save_result,
+            conn=get_connection(),
+            extra={ 'arrivalTime': arrival_time } )
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 
@@ -996,11 +987,10 @@ class MyHandler( BaseHTTPRequestHandler ):
          self.send_header( 'Content-type', 'application/json' )
          self.end_headers()
 
-         response = {
-            'errorType': save_result.error_type.value,
-            'departureTime': departure_time,
-            'itinerary_config': itinerary_config_to_dict( get_connection() ),
-         }
+         response = itinerary_time_set_result_to_dict(
+            save_result,
+            conn=get_connection(),
+            extra={ 'departureTime': departure_time } )
 
          self.wfile.write( json.dumps( response ).encode( 'utf-8' ) )
 

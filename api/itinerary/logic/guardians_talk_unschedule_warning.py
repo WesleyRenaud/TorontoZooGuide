@@ -4,10 +4,10 @@ from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
 from .guardians_talk_unschedule_items import newly_added_active_guardians_talks
 from .guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
-from .itinerary_save_issue import ItinerarySaveIssue
+from .itinerary_result_reason import ItineraryResultReason
 from .itinerary_save_issue_item import ItinerarySaveIssueItem
 from ...models.guardians_talk_diff import GuardiansTalkDiff
-from ...shared.enums import ItinerarySaveIssueType
+from ...shared.enums import ItineraryErrorType
 
 
 def guardians_talk_unschedule_warning_is_required(
@@ -49,11 +49,11 @@ def new_guardians_talks_overlapping_saved_schedule(
 
 
 def build_guardians_talk_unschedule_issue(
-      guardians_talks: list[ GuardiansTalkDiff ] ) -> ItinerarySaveIssue:
+      guardians_talks: list[ GuardiansTalkDiff ] ) -> ItineraryResultReason:
    issue_items = tuple(
       ItinerarySaveIssueItem.from_guardians_talk_diff( guardians_talk )
       for guardians_talk in guardians_talks )
 
-   return ItinerarySaveIssue(
-      issue_type=ItinerarySaveIssueType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+   return ItineraryResultReason(
+      code=ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
       items=issue_items )

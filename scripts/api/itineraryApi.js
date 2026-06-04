@@ -98,16 +98,48 @@ function normalizeItineraryConfig(config) {
    return normalizedConfig;
 }
 
-function normalizeItineraryResponse(response) {
-   const source = asObject(response);
-   const itineraryConfig = normalizeItineraryConfig(source.itinerary_config);
+function normalizeItineraryReason(reason) {
+   const source = asObject(reason);
+   const code = asTrimmedString(source.code);
 
    return {
-      errorType: normalizeItineraryErrorTypeFromResponse(source),
-      issues: asArray(source.issues),
-      itinerary: normalizeItineraryModel(source.itinerary),
-      itineraryConfig,
+      code,
+      type: code,
+      items: asArray(source.items),
    };
+}
+
+function normalizeItineraryResult(source = {}, { includeItinerary = true } = {}) {
+   const response = asObject(source);
+
+   if (response.itinerary_config !== undefined) {
+      normalizeItineraryConfig(response.itinerary_config);
+   }
+
+   const status = normalizeItineraryErrorTypeFromResponse(response);
+   const reasons = asArray(response.reasons).map(
+      normalizeItineraryReason
+   );
+   const result = {
+      status,
+      reasons,
+      errorType: status,
+      issues: reasons,
+   };
+
+   if (includeItinerary && response.itinerary !== undefined) {
+      result.itinerary = normalizeItineraryModel(response.itinerary);
+   }
+
+   if (response.itinerary_config !== undefined) {
+      result.itineraryConfig = normalizeItineraryConfig(response.itinerary_config);
+   }
+
+   return result;
+}
+
+function normalizeItineraryResponse(response) {
+   return normalizeItineraryResult(response, { includeItinerary: true });
 }
 
 function normalizeZooHours(hours) {
@@ -159,12 +191,7 @@ export async function setItineraryRequest(payload) {
 }
 
 function normalizeScheduleItineraryItemResponse(response) {
-   const source = asObject(response);
-
-   return {
-      errorType: normalizeItineraryErrorTypeFromResponse(source),
-      issues: asArray(source.issues),
-   };
+   return normalizeItineraryResult(response, { includeItinerary: true });
 }
 
 export async function scheduleItineraryItemRequest(
@@ -206,13 +233,7 @@ export async function removeItemFromItineraryRequest({ itemType, key }) {
 }
 
 function normalizeItineraryTimeSetResponse(response) {
-   const source = asObject(response);
-   const itineraryConfig = normalizeItineraryConfig(source.itinerary_config);
-
-   return {
-      errorType: normalizeItineraryErrorTypeFromResponse(source),
-      itineraryConfig,
-   };
+   return normalizeItineraryResult(response, { includeItinerary: false });
 }
 
 export async function setItineraryArrivalTimeRequest(

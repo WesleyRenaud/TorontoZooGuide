@@ -66,4 +66,4 @@ def remove_itinerary_item(
 
    return ItinerarySaveResult(
       itinerary=Itinerary( date='' ),
-      error_type=ItineraryErrorType.SUCCESS )
+      status=ItineraryErrorType.SUCCESS )

@@ -1212,8 +1212,8 @@ def test_itinerary_endpoints_return_success_payloads(
    server.MyHandler.do_POST( accept_handler )
 
    set_response = response_json( set_handler )
-   assert set_response[ 'errorType' ] == 'success'
-   assert set_response[ 'issues' ] == []
+   assert set_response[ 'status' ] == 'success'
+   assert set_response[ 'reasons' ] == []
    assert StubZooControllers.instances[ 0 ].calls[ 0 ] == (
       'set_itinerary',
       {
@@ -1257,7 +1257,10 @@ def test_unschedule_itinerary_item_endpoint(
 
    server.MyHandler.do_POST( handler )
 
-   assert response_json( handler ) == { 'errorType': 'success' }
+   response = response_json( handler )
+   assert response[ 'status' ] == 'success'
+   assert response[ 'reasons' ] == []
+   assert response[ 'itinerary' ] is not None
    assert StubZooControllers.instances[ 0 ].calls == [
       (
          'unschedule_itinerary_item',
@@ -1280,7 +1283,10 @@ def test_remove_item_from_itinerary_endpoint(
 
    server.MyHandler.do_POST( handler )
 
-   assert response_json( handler ) == { 'errorType': 'success' }
+   response = response_json( handler )
+   assert response[ 'status' ] == 'success'
+   assert response[ 'reasons' ] == []
+   assert response[ 'itinerary' ] is not None
    assert StubZooControllers.instances[ 0 ].calls == [
       (
          'remove_itinerary_item',
@@ -1305,12 +1311,14 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
    server.MyHandler.do_POST( departure_handler )
 
    assert response_json( arrival_handler ) == {
-      'errorType': 'success',
+      'status': 'success',
+      'reasons': [],
       'arrivalTime': '09:45',
       'itinerary_config': itinerary_config_to_dict(),
    }
    assert response_json( departure_handler ) == {
-      'errorType': 'success',
+      'status': 'success',
+      'reasons': [],
       'departureTime': None,
       'itinerary_config': itinerary_config_to_dict(),
    }

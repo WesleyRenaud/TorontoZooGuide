@@ -48,8 +48,8 @@ def unschedule_confirmation_warning(
          requirements.talks
          and not confirming_guardians_talk_unschedule ):
       return ItinerarySaveResult(
-         error_type=ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-         issues=(
+         status=ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+         reasons=(
             build_guardians_talk_unschedule_issue(
                list( requirements.talks ) ),
          ),
@@ -59,8 +59,8 @@ def unschedule_confirmation_warning(
          requirements.encounters
          and not confirming_wild_encounter_unschedule ):
       return ItinerarySaveResult(
-         error_type=ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
-         issues=(
+         status=ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
+         reasons=(
             build_wild_encounter_unschedule_issue(
                list( requirements.encounters ) ),
          ),

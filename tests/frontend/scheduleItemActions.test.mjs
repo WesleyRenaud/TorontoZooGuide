@@ -104,7 +104,7 @@ test('scheduleSelectedItineraryItem schedules an event', async () => {
          body: JSON.parse(options.body ?? '{}'),
       });
 
-      return mockJsonResponse({ errorType: 'success' });
+      return mockJsonResponse({ status: 'success', reasons: [] });
    };
 
    const result = await scheduleSelectedItineraryItem(
@@ -137,7 +137,7 @@ test('scheduleSelectedItineraryItem schedules when type is unset but a row is se
    globalThis.fetch = async (url) => {
       urls.push(url);
 
-      return mockJsonResponse({ errorType: 'success' });
+      return mockJsonResponse({ status: 'success', reasons: [] });
    };
 
    const result = await scheduleSelectedItineraryItem(
@@ -173,7 +173,8 @@ test('scheduleSelectedItineraryItem confirms before scheduling a new animal', as
       );
 
       return mockJsonResponse({
-         errorType: isConfirmed ? 'success' : 'itemNotOnItinerary',
+         status: isConfirmed ? 'success' : 'itemNotOnItinerary',
+         reasons: isConfirmed ? [] : [],
       });
    };
 
@@ -219,9 +220,9 @@ test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk'
       );
 
       return mockJsonResponse({
-         errorType: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
-         issues: isConfirmed ? [] : [{
-            type: 'guardiansTalkWillUnscheduleItems',
+         status: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
+         reasons: isConfirmed ? [] : [{
+            code: 'guardiansTalkWillUnscheduleItems',
             items: [{
                name: 'African Lion',
                item_type: 'guardiansTalk',
@@ -282,9 +283,9 @@ test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter'
       );
 
       return mockJsonResponse({
-         errorType: isConfirmed ? 'success' : 'wildEncounterWillUnscheduleItems',
-         issues: isConfirmed ? [] : [{
-            type: 'wildEncounterWillUnscheduleItems',
+         status: isConfirmed ? 'success' : 'wildEncounterWillUnscheduleItems',
+         reasons: isConfirmed ? [] : [{
+            code: 'wildEncounterWillUnscheduleItems',
             items: [{
                name: 'African Rainforest',
                item_type: 'wildEncounter',
@@ -334,7 +335,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter'
 test('scheduleSelectedItineraryItem returns noAvailableSlot without refreshing', async () => {
    globalThis.fetch = async (url) => {
       if (url === '/schedule-itinerary-item') {
-         return mockJsonResponse({ errorType: 'noAvailableSlot' });
+         return mockJsonResponse({ status: 'noAvailableSlot', reasons: [] });
       }
 
       throw new Error(`unexpected ${url}`);
@@ -370,7 +371,8 @@ test('resolveItineraryErrorMessage maps requestedTimeNotAvailable', () => {
 
 test('scheduleSelectedItineraryItem surfaces requestedTimeNotAvailable', async () => {
    globalThis.fetch = async () => mockJsonResponse({
-      errorType: 'requestedTimeNotAvailable',
+      status: 'requestedTimeNotAvailable',
+      reasons: [],
    });
 
    const result = await scheduleSelectedItineraryItem(

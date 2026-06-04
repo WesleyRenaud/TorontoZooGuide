@@ -221,7 +221,7 @@ def test_schedule_itinerary_animal_rejects_unavailable_requested_start_time(
    )
 
    assert not rejected.success
-   assert rejected.error_type == ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
+   assert rejected.status == ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
 
    penguin = next(
       animal for animal in rejected.itinerary.animals
@@ -258,7 +258,7 @@ def test_schedule_itinerary_animal_rejects_conflicting_noon_start_time(
    )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
+   assert result.status == ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
 
    penguin = next(
       animal for animal in result.itinerary.animals
@@ -314,7 +314,7 @@ def test_schedule_itinerary_item_returns_no_available_slot(
       key=ANIMAL_KEY )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.NO_AVAILABLE_SLOT
+   assert result.status == ItineraryErrorType.NO_AVAILABLE_SLOT
 
 
 def test_schedule_itinerary_animal_requires_existing_itinerary_row(
@@ -335,7 +335,7 @@ def test_schedule_itinerary_animal_requires_existing_itinerary_row(
       key=ANIMAL_KEY )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.ITEM_NOT_ON_ITINERARY
+   assert result.status == ItineraryErrorType.ITEM_NOT_ON_ITINERARY
    assert result.itinerary.animals == []
 
 
@@ -465,7 +465,7 @@ def test_schedule_itinerary_item_rejects_duration_without_time(
       duration_minutes=20 )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.SAVE_FAILED
+   assert result.status == ItineraryErrorType.SAVE_FAILED
 
 
 def test_schedule_itinerary_item_requires_visit_date(
@@ -475,7 +475,7 @@ def test_schedule_itinerary_item_requires_visit_date(
       key=ANIMAL_KEY )
 
    assert not result.success
-   assert result.error_type == ItineraryErrorType.ITINERARY_DATE_NOT_SET
+   assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
 
 
 def test_time_blocks_overlap_allows_adjacent_slots() -> None:

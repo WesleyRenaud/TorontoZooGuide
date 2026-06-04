@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from .itinerary_save_issue import ItinerarySaveIssue
+from .itinerary_result_reason import ItineraryResultReason
 from .itinerary_save_issue_item import ItinerarySaveIssueItem
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ..scheduling.time_block import time_block_from_schedule_times
 from ...shared.date_values import DateValues
-from ...shared.enums import ItinerarySaveIssueType
+from ...shared.enums import ItineraryErrorType
 from ...types import ScheduledItem
 
 
@@ -122,21 +122,21 @@ def sort_scheduled_items_for_issue(
 
 
 def build_schedule_time_conflict_issue(
-      scheduled_items: list[ ScheduledItem ] ) -> ItinerarySaveIssue:
+      scheduled_items: list[ ScheduledItem ] ) -> ItineraryResultReason:
    sorted_items = sort_scheduled_items_for_issue( scheduled_items )
    issue_items = tuple(
       scheduled_item_to_issue_item( scheduled_item )
       for scheduled_item in sorted_items
    )
 
-   return ItinerarySaveIssue(
-      issue_type=ItinerarySaveIssueType.WILD_ENCOUNTER_TIME_CONFLICT,
+   return ItineraryResultReason(
+      code=ItineraryErrorType.WILD_ENCOUNTER_TIME_CONFLICT,
       items=issue_items )
 
 
 def find_schedule_time_conflict_issues(
       guardians_talks: list[ GuardiansTalkDiff ],
-      wild_encounters: list[ WildEncounterDiff ] ) -> tuple[ ItinerarySaveIssue, ... ]:
+      wild_encounters: list[ WildEncounterDiff ] ) -> tuple[ ItineraryResultReason, ... ]:
    scheduled_items = active_scheduled_items( guardians_talks, wild_encounters )
    conflict_groups = find_schedule_time_conflict_groups( scheduled_items )
 

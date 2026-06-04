@@ -22,8 +22,8 @@ def schedule_time_conflict_warning(
          conflict_issues
          and not overriding_conflicting_guardians_talks ):
       return ItinerarySaveResult(
-         error_type=ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
-         issues=conflict_issues,
+         status=ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
+         reasons=conflict_issues,
          itinerary=itinerary )
 
    return None

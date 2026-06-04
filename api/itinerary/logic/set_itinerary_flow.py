@@ -71,10 +71,10 @@ def _build_current_itinerary_response(
 
 def _build_error_result(
       conn: Connection,
-      error_type: ItineraryErrorType,
+      status: ItineraryErrorType,
       itinerary_controller_kwargs: dict[ str, Any ] ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
-      error_type=error_type,
+      status=status,
       itinerary=_build_current_itinerary_response(
          conn,
          itinerary_controller_kwargs ) )
@@ -250,8 +250,8 @@ def commit_set_itinerary(
 
    if remaining_conflicts:
       return ItinerarySaveResult(
-         error_type=ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
-         issues=remaining_conflicts,
+         status=ItineraryErrorType.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT,
+         reasons=remaining_conflicts,
          itinerary=context.current_itinerary )
 
    clear_itinerary( context.conn )

@@ -10,7 +10,7 @@ from ..data_access.itinerary_default_duration import fetch_enclosure_default_dur
 from ..data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...guardians.controllers.guardians_controller import GuardiansController
 from .itinerary import build_current_itinerary
-from .itinerary_save_issue import ItinerarySaveIssue
+from .itinerary_result_reason import ItineraryResultReason
 from .itinerary_save_result import ItinerarySaveResult
 from .schedule_itinerary_item import _itinerary_controller_kwargs
 from .schedule_itinerary_item import _resolve_schedule_window
@@ -100,17 +100,17 @@ def bulk_schedule_animals(
       anchor_seconds=anchor_seconds,
       day_end_seconds=day_end_seconds )
 
-   issues: tuple[ ItinerarySaveIssue, ... ] = ()
+   reasons: tuple[ ItineraryResultReason, ... ] = ()
 
    if remaining_animals:
-      issues = (
+      reasons = (
          build_bulk_schedule_animals_not_enough_time_issue(
             remaining_animals ),
       )
 
    return ItinerarySaveResult(
-      error_type=ItineraryErrorType.SUCCESS,
-      issues=issues,
+      status=ItineraryErrorType.SUCCESS,
+      reasons=reasons,
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
          **itinerary_controller_kwargs ) )

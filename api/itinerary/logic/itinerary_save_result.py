@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .itinerary_save_issue import ItinerarySaveIssue
+from .itinerary_result_reason import ItineraryResultReason
 from ...models import Itinerary
 from ...shared.enums import ItineraryErrorType
 
@@ -10,10 +10,10 @@ from ...shared.enums import ItineraryErrorType
 @dataclass( frozen=True )
 class ItinerarySaveResult:
    itinerary: Itinerary
-   issues: tuple[ ItinerarySaveIssue, ... ] = ()
-   error_type: ItineraryErrorType = ItineraryErrorType.SUCCESS
+   reasons: tuple[ ItineraryResultReason, ... ] = ()
+   status: ItineraryErrorType = ItineraryErrorType.SUCCESS
 
 
    @property
    def success( self ) -> bool:
-      return self.error_type == ItineraryErrorType.SUCCESS
+      return self.status == ItineraryErrorType.SUCCESS
