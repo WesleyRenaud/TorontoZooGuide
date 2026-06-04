@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { buildScheduledItemRowsContext } from '../../scripts/itinerary/panel/dayPlannerScheduledItems.js';
+import { buildScheduledItemRowsContext, buildScheduledItinerary } from '../../scripts/itinerary/panel/dayPlannerScheduledItems.js';
 import { resolveScheduledPillOptions } from '../../scripts/itinerary/panel/components/dayPlannerTimelinePills.js';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 
@@ -107,5 +107,14 @@ test('resolveScheduledPillOptions adds remove for animals and guardians talks', 
    assert.deepEqual(removeRequests[1], {
       itemType: 'guardians_talks',
       key: 'Amur Tiger',
+   });
+});
+
+test('buildScheduledItinerary tolerates missing itinerary collections', () => {
+   assert.deepEqual(buildScheduledItinerary({}), {
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
    });
 });
