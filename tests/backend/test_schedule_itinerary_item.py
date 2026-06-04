@@ -8,7 +8,7 @@ from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.logic.parse_schedule_item_request import parse_schedule_item_request
 from api.itinerary.scheduling.find_next_available_slot import find_next_available_slot
-from api.itinerary.scheduling.scheduling_anchor import scheduling_anchor_minutes
+from api.itinerary.scheduling.scheduling_anchor import scheduling_anchor_seconds
 from api.itinerary.scheduling.time_block import time_blocks_overlap
 from api.itinerary.scheduling.time_block import TimeBlock
 from api.shared.enums import ItineraryErrorType
@@ -79,8 +79,8 @@ def test_parse_schedule_item_request_attraction_key() -> None:
 def test_scheduling_anchor_uses_arrival_when_set( db: DbControllers ) -> None:
    zoo_hours = fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
 
-   assert scheduling_anchor_minutes( zoo_hours, '09:00' ) == 9 * 60
-   assert scheduling_anchor_minutes( zoo_hours, None ) == 9 * 60 + 30
+   assert scheduling_anchor_seconds( zoo_hours, '09:00' ) == 9 * 3600
+   assert scheduling_anchor_seconds( zoo_hours, None ) == 9 * 3600 + 30 * 60
 
 
 def test_scheduling_anchor_ignores_early_admission_without_arrival(
@@ -89,29 +89,31 @@ def test_scheduling_anchor_ignores_early_admission_without_arrival(
 
    assert zoo_hours.early_admission_time == '09:00'
    assert zoo_hours.open_time == '09:30'
-   assert scheduling_anchor_minutes( zoo_hours, None ) == 9 * 60 + 30
+   assert scheduling_anchor_seconds( zoo_hours, None ) == 9 * 3600 + 30 * 60
 
 
 def test_find_next_available_slot_skips_overlapping_blockers() -> None:
    blockers = [
-      TimeBlock( start_minutes=9 * 60 + 30, end_minutes=9 * 60 + 38 ),
+      TimeBlock(
+         start_seconds=9 * 3600 + 30 * 60,
+         end_seconds=9 * 3600 + 38 * 60 ),
    ]
 
    slot = find_next_available_slot(
       blockers,
-      anchor_minutes=9 * 60 + 30,
-      duration_minutes=8,
-      day_end_minutes=17 * 60 )
+      anchor_seconds=9 * 3600 + 30 * 60,
+      duration_seconds=8 * 60,
+      day_end_seconds=17 * 3600 )
 
-   assert slot == ( '09:45', '09:53' )
+   assert slot == ( '09:38', '09:46' )
 
 
 def test_find_next_available_slot_returns_none_when_window_is_too_short() -> None:
    assert find_next_available_slot(
       [],
-      anchor_minutes=9 * 60 + 30,
-      duration_minutes=8,
-      day_end_minutes=9 * 60 + 35,
+      anchor_seconds=9 * 3600 + 30 * 60,
+      duration_seconds=8 * 60,
+      day_end_seconds=9 * 3600 + 35 * 60,
    ) is None
 
 
@@ -190,7 +192,7 @@ def test_schedule_itinerary_animal_skips_existing_scheduled_slot(
       if animal.species == 'African Penguin'
    )
 
-   assert scheduled.start_time == '09:45'
+   assert scheduled.start_time == '09:38'
 
 
 def test_schedule_itinerary_animal_rejects_unavailable_requested_start_time(
@@ -477,7 +479,7 @@ def test_schedule_itinerary_item_requires_visit_date(
 
 
 def test_time_blocks_overlap_allows_adjacent_slots() -> None:
-   first = TimeBlock( start_minutes=9 * 60, end_minutes=9 * 60 + 30 )
-   second = TimeBlock( start_minutes=9 * 60 + 30, end_minutes=10 * 60 )
+   first = TimeBlock( start_seconds=9 * 60 * 60, end_seconds=( 9 * 60 + 30 ) * 60 )
+   second = TimeBlock( start_seconds=( 9 * 60 + 30 ) * 60, end_seconds=10 * 60 * 60 )
 
    assert not time_blocks_overlap( first, second )

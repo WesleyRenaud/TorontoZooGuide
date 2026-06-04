@@ -25,8 +25,7 @@ class ItineraryUnscheduleRequirements:
 
 def find_itinerary_unschedule_requirements(
       saved_itinerary: SavedItinerary,
-      validated_itinerary: ValidatedItinerary,
-) -> ItineraryUnscheduleRequirements:
+      validated_itinerary: ValidatedItinerary ) -> ItineraryUnscheduleRequirements:
    return ItineraryUnscheduleRequirements(
       talks=tuple(
          new_guardians_talks_overlapping_saved_schedule(
@@ -44,8 +43,7 @@ def unschedule_confirmation_warning(
       itinerary: Itinerary,
       *,
       confirming_guardians_talk_unschedule: bool,
-      confirming_wild_encounter_unschedule: bool,
-) -> ItinerarySaveResult | None:
+      confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult | None:
    if (
          requirements.talks
          and not confirming_guardians_talk_unschedule ):
@@ -73,8 +71,7 @@ def unschedule_confirmation_warning(
 
 def apply_confirmed_itinerary_unschedule_changes(
       validated_itinerary: ValidatedItinerary,
-      requirements: ItineraryUnscheduleRequirements,
-) -> ValidatedItinerary:
+      requirements: ItineraryUnscheduleRequirements ) -> ValidatedItinerary:
    if requirements.talks:
       validated_itinerary = apply_guardians_talk_unschedule_to_validated_itinerary(
          validated_itinerary,

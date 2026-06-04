@@ -18,8 +18,7 @@ def itinerary_attraction_save_carryover(
       saved_rows: list[ ItineraryAttractionRecord ] | None,
       attraction_name: str,
       *,
-      old_visit_date: DateKey | None,
-) -> ItineraryAttractionSaveCarryover:
+      old_visit_date: DateKey | None ) -> ItineraryAttractionSaveCarryover:
    if old_visit_date == None:
       return ItineraryAttractionSaveCarryover(
          name=attraction_name,

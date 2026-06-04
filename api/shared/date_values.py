@@ -32,10 +32,10 @@ class DateValues:
          return None
 
       if isinstance( value, datetime ):
-         return value.time().replace( second=0, microsecond=0 )
+         return value.time().replace( microsecond=0 )
 
       if isinstance( value, time ):
-         return value.replace( second=0, microsecond=0 )
+         return value.replace( microsecond=0 )
 
       value = str( value ).strip()
 
@@ -43,8 +43,10 @@ class DateValues:
          return None
 
       for fmt in (
+         '%H:%M:%S',
          '%H:%M',
-         '%I:%M %p'
+         '%I:%M %p',
+         '%I:%M:%S %p',
       ):
 
          try:
@@ -76,6 +78,19 @@ class DateValues:
 
 
    @staticmethod
+   def time_value_in_seconds( value: TimeInput ) -> int | None:
+      parsed_time = DateValues.parse_time_value( value )
+
+      if parsed_time == None:
+         return None
+
+      return (
+         ( parsed_time.hour * 3600 )
+         + ( parsed_time.minute * 60 )
+         + parsed_time.second )
+
+
+   @staticmethod
    def time_value_in_minutes( value: TimeInput ) -> int | None:
       parsed_time = DateValues.parse_time_value( value )
 
@@ -83,6 +98,21 @@ class DateValues:
          return None
 
       return ( parsed_time.hour * 60 ) + parsed_time.minute
+
+
+   @staticmethod
+   def schedule_time_key_from_seconds( total_seconds: int ) -> str:
+      hours = total_seconds // 3600
+      minutes = ( total_seconds % 3600 ) // 60
+      seconds = total_seconds % 60
+
+      if seconds == 0:
+         return time( hour=hours, minute=minutes ).strftime( '%H:%M' )
+
+      return time(
+         hour=hours,
+         minute=minutes,
+         second=seconds ).strftime( '%H:%M:%S' )
 
 
    @staticmethod

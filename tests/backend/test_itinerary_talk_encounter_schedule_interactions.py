@@ -27,8 +27,7 @@ def _guardians_talk_save_entry(
       name: str,
       *,
       start_time: str | None = None,
-      end_time: str | None = None,
-) -> dict[ str, str | None ]:
+      end_time: str | None = None ) -> dict[ str, str | None ]:
    return {
       'name': name,
       'start_time': start_time,
@@ -69,8 +68,7 @@ def _set_schedules_at_1400() -> None:
 
 def _set_itinerary_with_animal_scheduled_at_1400(
       *,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
    assert ItineraryController.set_itinerary(
@@ -91,8 +89,7 @@ def _set_itinerary_with_animal_scheduled_at_1400(
 
 def test_set_itinerary_blocks_talk_and_encounter_conflict_before_unschedule_warnings(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_schedules_at_1400()
    _set_itinerary_with_animal_scheduled_at_1400(
       freeze_database_today=freeze_database_today )
@@ -129,8 +126,7 @@ def test_set_itinerary_blocks_talk_and_encounter_conflict_before_unschedule_warn
 
 def test_set_itinerary_returns_guardians_unschedule_after_talk_encounter_conflict_resolved(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_schedules_at_1400()
    _set_itinerary_with_animal_scheduled_at_1400(
       freeze_database_today=freeze_database_today )
@@ -164,8 +160,7 @@ def test_set_itinerary_returns_guardians_unschedule_after_talk_encounter_conflic
 
 def test_set_itinerary_returns_wild_encounter_warning_after_talk_encounter_conflict_resolved(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_schedules_at_1400()
    _set_itinerary_with_animal_scheduled_at_1400(
       freeze_database_today=freeze_database_today )
@@ -199,8 +194,7 @@ def test_set_itinerary_returns_wild_encounter_warning_after_talk_encounter_confl
 
 def test_set_itinerary_saves_talk_after_conflict_and_unschedule_confirmations(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_schedules_at_1400()
    _set_itinerary_with_animal_scheduled_at_1400(
       freeze_database_today=freeze_database_today )
@@ -271,8 +265,7 @@ def _set_turtle_and_rhino_schedules_at_1400() -> None:
 
 def _set_itinerary_with_turtle_talk_and_lion_at_1430(
       *,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
    assert ItineraryController.set_itinerary(
@@ -299,8 +292,7 @@ def _set_itinerary_with_turtle_talk_and_lion_at_1430(
 
 def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_turtle_and_rhino_schedules_at_1400()
    _set_itinerary_with_turtle_talk_and_lion_at_1430(
       freeze_database_today=freeze_database_today )
@@ -354,8 +346,7 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
 
 def test_set_itinerary_empty_animals_removes_lion_after_conflict_resolved(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_turtle_and_rhino_schedules_at_1400()
    _set_itinerary_with_turtle_talk_and_lion_at_1430(
       freeze_database_today=freeze_database_today )
@@ -379,8 +370,7 @@ def test_set_itinerary_empty_animals_removes_lion_after_conflict_resolved(
 
 def test_set_itinerary_blocks_talk_encounter_conflict_when_no_other_items_overlap(
       db: DbControllers,
-      freeze_database_today: Callable[ [ date ], None ],
-) -> None:
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
    _set_schedules_at_1400()
    freeze_database_today( date( 2026, 6, 15 ) )
 

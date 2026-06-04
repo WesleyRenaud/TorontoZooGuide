@@ -22,8 +22,7 @@ def itinerary_animal_save_carryover(
       saved_rows: list[ ItineraryAnimalRecord ] | None,
       animal: ItineraryAnimalInput,
       *,
-      old_visit_date: DateKey | None,
-) -> ItineraryAnimalSaveCarryover:
+      old_visit_date: DateKey | None ) -> ItineraryAnimalSaveCarryover:
    species = animal.species
    exhibit = animal.exhibit
 

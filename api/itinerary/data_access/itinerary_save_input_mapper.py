@@ -18,8 +18,7 @@ def map_named_strings( names: Iterable[ str ] | None ) -> tuple[ str, ... ]:
 
 
 def map_guardians_talk_inputs(
-      guardians_talks: Iterable[ dict[ str, str | None ] ] | None,
-) -> tuple[ ItineraryGuardiansTalkInput, ... ]:
+      guardians_talks: Iterable[ dict[ str, str | None ] ] | None ) -> tuple[ ItineraryGuardiansTalkInput, ... ]:
    mapped: list[ ItineraryGuardiansTalkInput ] = []
 
    for item in guardians_talks or []:
