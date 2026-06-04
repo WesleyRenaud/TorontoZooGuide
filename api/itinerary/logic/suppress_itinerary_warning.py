@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ..data_access.itinerary_error_suppression import suppress_itinerary_error
-from ..data_access.itinerary_error_type import is_itinerary_error_suppressable
+from ..data_access.itinerary_status import is_itinerary_status_suppressable
+from ..data_access.itinerary_status import suppress_itinerary_status
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection
 
@@ -31,10 +31,10 @@ def suppress_itinerary_warning(
       return SuppressItineraryWarningResult(
          status=ItineraryErrorType.SAVE_FAILED )
 
-   if not is_itinerary_error_suppressable( conn, error_type ):
+   if not is_itinerary_status_suppressable( conn, error_type ):
       return SuppressItineraryWarningResult(
          status=ItineraryErrorType.SAVE_FAILED )
 
-   suppress_itinerary_error( conn, error_type )
+   suppress_itinerary_status( conn, error_type )
 
    return SuppressItineraryWarningResult()

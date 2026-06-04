@@ -336,6 +336,10 @@ def test_itinerary_config_exposes_suppressed_error_types_without_connection() ->
    assert itinerary_config_to_dict()[ 'suppressed_error_types' ] == []
 
 
+def test_itinerary_config_exposes_itinerary_statuses_without_connection() -> None:
+   assert itinerary_config_to_dict()[ 'itinerary_statuses' ] == []
+
+
 @pytest.mark.parametrize(
    'value, expected',
    [
