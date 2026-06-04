@@ -1,5 +1,6 @@
 import {
    acceptItineraryRequest,
+   bulkScheduleAnimalsRequest,
    clearItineraryRequest,
    getItineraryDateRequest,
    getItineraryRequest,
@@ -309,6 +310,27 @@ export async function clearItinerary() {
    dispatchItineraryUpdated(clearedItinerary);
 
    return result;
+}
+
+export async function bulkScheduleAnimals() {
+   const date = await fetchSavedItineraryVisitDate();
+   const { temp } = await getItineraryDateSearchContext({ date });
+   const result = await bulkScheduleAnimalsRequest(temp);
+
+   if (!isItinerarySuccess(result.errorType)) {
+      throw new Error(resolveItineraryErrorMessage(result.errorType));
+   }
+
+   const normalizedItinerary = normalizeItinerary({
+      ...result?.itinerary,
+      itineraryConfig: result?.itineraryConfig,
+   });
+   dispatchItineraryUpdated(normalizedItinerary);
+
+   return {
+      itinerary: normalizedItinerary,
+      issues: result.issues ?? [],
+   };
 }
 
 export async function acceptItinerary({

@@ -3,6 +3,7 @@ import { afterEach, test } from 'node:test';
 
 import {
    acceptItineraryRequest,
+   bulkScheduleAnimalsRequest,
    getItineraryDateRequest,
    getItineraryRequest,
    getZooHoursRequest,
@@ -449,4 +450,53 @@ test('normalizes schedule itinerary item response', async () => {
       await scheduleItineraryItemRequest({ itemType: 'lunch', key: '' }),
       { errorType: 'noAvailableSlot', issues: [] }
    );
+});
+
+test('normalizes bulk schedule animals response', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/bulk-schedule-animals');
+      assert.deepEqual(JSON.parse(options.body), { temp: true });
+
+      return mockJsonResponse({
+         errorType: 'success',
+         issues: [
+            {
+               type: 'bulkScheduleAnimalsNotEnoughTime',
+               items: [
+                  {
+                     name: 'African Lion',
+                     location: 'Africa Savanna',
+                     item_type: 'animal',
+                  },
+               ],
+            },
+         ],
+         itinerary: {
+            date: '2026-06-20',
+            arrival_time: '9:30 AM',
+            departure_time: '5:00 PM',
+            animals: [
+               {
+                  species: 'African Lion',
+                  exhibit: 'Africa Savanna',
+                  start_time: '',
+                  end_time: '',
+               },
+            ],
+            attractions: [],
+            guardians_talks: [],
+            wild_encounters: [],
+            events: [],
+         },
+         ...mockItineraryConfigResponse(),
+      });
+   };
+
+   const result = await bulkScheduleAnimalsRequest(true);
+
+   assert.equal(result.errorType, 'success');
+   assert.equal(result.issues.length, 1);
+   assert.equal(result.issues[0].type, 'bulkScheduleAnimalsNotEnoughTime');
+   assert.equal(result.itinerary.animals.length, 1);
+   assert.equal(result.itinerary.animals[0].species, 'African Lion');
 });

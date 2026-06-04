@@ -2,10 +2,14 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import date
+from pathlib import Path
 
+from api.connection import close_connection
+from api.connection import open_connection
 from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.logic.bulk_schedule_animals import has_itinerary_schedule_times
 from api.itinerary.logic.bulk_schedule_animals import is_itinerary_animal_unscheduled
 from api.itinerary.logic.bulk_schedule_animals import sort_animals_for_bulk_schedule
 from api.shared.enums import ItineraryErrorType
@@ -65,6 +69,16 @@ def test_is_itinerary_animal_unscheduled() -> None:
          new_likelihood=100,
       )
    )
+   assert is_itinerary_animal_unscheduled(
+      ItineraryAnimalRecord(
+         species='African Lion',
+         exhibit='Africa Savanna',
+         old_likelihood=None,
+         new_likelihood=100,
+         start_time='',
+         end_time='',
+      )
+   )
    assert not is_itinerary_animal_unscheduled(
       ItineraryAnimalRecord(
          species='African Lion',
@@ -75,6 +89,8 @@ def test_is_itinerary_animal_unscheduled() -> None:
          end_time='09:38',
       )
    )
+   assert not has_itinerary_schedule_times( '09:30', None )
+   assert not has_itinerary_schedule_times( None, '09:38' )
 
 
 def test_bulk_schedule_animals_schedules_in_exhibit_order(
@@ -199,6 +215,54 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
    penguin_row = next(
       row for row in saved.animal_rows
       if row.species == 'African Penguin' )
+   assert penguin_row.start_time is None
+   assert penguin_row.end_time is None
+
+
+def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
+      db: DbControllers,
+      db_path: Path,
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      departure_time='09:35',
+      confirming_short_visit=True,
+      animals=[
+         LION_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+         CHEETAH_INDO_MALAYA_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryController.bulk_schedule_animals()
+
+   assert result.success
+   assert len( result.issues ) == 1
+
+   assert db.conn is not None
+   close_connection( db.conn )
+
+   reopened = open_connection( db_path=str( db_path ) )
+   saved = fetch_saved_itinerary( reopened )
+   scheduled_species = {
+      row.species
+      for row in saved.animal_rows
+      if has_itinerary_schedule_times( row.start_time, row.end_time )
+   }
+   penguin_row = next(
+      row for row in saved.animal_rows
+      if row.species == 'African Penguin' )
+
+   close_connection( reopened )
+
+   assert scheduled_species == { 'African Lion', 'Cheetah' }
    assert penguin_row.start_time is None
    assert penguin_row.end_time is None
 

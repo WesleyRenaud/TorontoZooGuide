@@ -88,6 +88,8 @@ export const itinerary = {
          'It will no longer appear in your day plan or itinerary lists. You can add it again later from the itinerary builder.'
       ),
       animalMayBeOffDisplay: 'Animal May Be Off Display',
+      bulkScheduleAnimalsNotEnoughTimeTitle: 'Not Enough Time',
+      bulkScheduleAnimalsNotEnoughTimeMessage: 'There is not enough time left in your day to schedule all unscheduled animals. Some animals could not be added to your day plan, but they are still on your itinerary.',
    },
    emptyText: {
       animals: 'No animals found.',
@@ -146,6 +148,7 @@ export const itinerary = {
       scheduledTitle: 'Scheduled Items',
       unscheduledTitle: 'Unscheduled Items',
       scheduleItemButton: 'Schedule an item',
+      bulkScheduleAnimalsButton: 'Schedule all animals',
    },
    scheduleItem: {
       title: 'Schedule item',

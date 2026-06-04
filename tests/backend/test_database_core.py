@@ -175,6 +175,22 @@ def test_normalize_itinerary_schedule_time(
 @pytest.mark.parametrize(
    'value, expected',
    [
+      ( None, '' ),
+      ( '', '' ),
+      ( '   ', '' ),
+      ( '09:30', '09:30' ),
+      ( ' 1:00 PM ', '1:00 PM' ),
+   ]
+)
+def test_normalize_schedule_time_key(
+      value: str | None,
+      expected: str ) -> None:
+   assert DateValues.normalize_schedule_time_key( value ) == expected
+
+
+@pytest.mark.parametrize(
+   'value, expected',
+   [
       ( None, None ),
       ( 0, None ),
       ( 7.2, 8 ),

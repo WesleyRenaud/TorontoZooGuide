@@ -241,6 +241,11 @@ export async function setItineraryDepartureTimeRequest(
    return normalizeItineraryTimeSetResponse(response);
 }
 
+export async function bulkScheduleAnimalsRequest(temp) {
+   const response = await postJson('/bulk-schedule-animals', { temp });
+   return normalizeItineraryResponse(response);
+}
+
 export async function acceptItineraryRequest(
    temp,
    { animalsToKeep = [], attractionsToKeep = [] } = {}
