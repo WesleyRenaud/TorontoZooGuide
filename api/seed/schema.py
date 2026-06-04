@@ -890,6 +890,10 @@ def create_schema( cursor: Cursor ) -> None:
 
    # Itinerary tables
 
+   cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryStatusSuppression
+                     (  STATUS             TEXT NOT NULL PRIMARY KEY,
+                        IS_SUPPRESSED      BOOL NOT NULL DEFAULT 0 ); ''' )
+
    cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryDate
                      (  ITINERARY_DATE     DATE,
                         ARRIVAL_TIME       TEXT,
@@ -1068,7 +1072,3 @@ def create_schema( cursor: Cursor ) -> None:
       cursor.execute(
          'ALTER TABLE ItineraryEvent ADD COLUMN END_TIME TEXT;'
       )
-
-   cursor.execute( ''' CREATE TABLE IF NOT EXISTS ItineraryErrorSuppression
-                     (  ERROR_TYPE         TEXT NOT NULL PRIMARY KEY,
-                        SUPPRESS_WARNING   BOOL NOT NULL DEFAULT 0 ); ''' )

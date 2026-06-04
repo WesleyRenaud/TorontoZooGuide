@@ -79,8 +79,23 @@ function normalizeVisitBoundaryEventTypes(config) {
    };
 }
 
+function normalizeItineraryStatuses(statuses) {
+   return asArray(statuses)
+      .map((entry) => {
+         const source = asObject(entry);
+
+         return {
+            status: asTrimmedString(source.status),
+            isSuppressable: Boolean(source.is_suppressable),
+            isSuppressed: Boolean(source.is_suppressed),
+         };
+      })
+      .filter((entry) => Boolean(entry.status));
+}
+
 function normalizeItineraryConfig(config) {
    const source = asObject(config);
+   const normalizedStatuses = normalizeItineraryStatuses(source.itinerary_statuses);
    const normalizedConfig = {
       animalVisibilityChangeThreshold: source.animal_visibility_change_threshold,
       eventTypes: asArray(source.itinerary_event_types)
@@ -88,10 +103,20 @@ function normalizeItineraryConfig(config) {
          .filter(Boolean),
       visitBoundaryEventTypes: normalizeVisitBoundaryEventTypes(source),
       errorTypes: normalizeItineraryErrorTypes(source.itinerary_error_types),
+      statuses: normalizedStatuses,
       suppressedErrorTypes: asArray(source.suppressed_error_types)
          .map(asTrimmedString)
          .filter(Boolean),
    };
+
+   if (
+      normalizedConfig.suppressedErrorTypes.length === 0
+      && normalizedStatuses.length > 0
+   ) {
+      normalizedConfig.suppressedErrorTypes = normalizedStatuses
+         .filter((entry) => entry.isSuppressable && entry.isSuppressed)
+         .map((entry) => entry.status);
+   }
 
    updateItineraryErrorTypesFromConfig(normalizedConfig);
 

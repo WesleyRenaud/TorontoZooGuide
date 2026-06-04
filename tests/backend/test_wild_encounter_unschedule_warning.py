@@ -5,7 +5,7 @@ from datetime import date
 
 from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
-from api.itinerary.data_access.itinerary_error_suppression import suppress_itinerary_error
+from api.itinerary.data_access.itinerary_status import suppress_itinerary_status
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
@@ -190,7 +190,7 @@ def test_wild_encounter_unschedule_warning_cannot_be_suppressed(
       db,
       freeze_database_today=freeze_database_today )
 
-   suppress_itinerary_error(
+   suppress_itinerary_status(
       db.conn,
       ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS )
 

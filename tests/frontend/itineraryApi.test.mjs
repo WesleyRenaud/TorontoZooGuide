@@ -36,6 +36,7 @@ function normalizedItineraryConfig(overrides = {}) {
          departure: 'departure',
       },
       errorTypes: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
+      statuses: overrides.statuses ?? [],
       suppressedErrorTypes: overrides.suppressedErrorTypes ?? [],
    };
 }
@@ -62,6 +63,7 @@ function mockItineraryConfigResponse(overrides = {}) {
                departure: 'departure',
             },
          itinerary_error_types: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
+         itinerary_statuses: overrides.statuses ?? [],
          suppressed_error_types: overrides.suppressedErrorTypes ?? [],
       },
    };

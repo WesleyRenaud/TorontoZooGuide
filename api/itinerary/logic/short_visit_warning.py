@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..data_access.itinerary_error_suppression import is_itinerary_error_suppressed
+from ..data_access.itinerary_status import is_itinerary_error_suppressed
 from .itinerary_suppressed_warnings import append_suppressed_warning
 from .itinerary_visit_duration_validation import itinerary_visit_is_shorter_than_minimum
 from ...shared.date_values import DateValues

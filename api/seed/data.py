@@ -14,8 +14,8 @@ from .tables.exhibit_day_seasonal_availability_multiplier import exhibit_day_sea
 from .tables.gift_shop import gift_shops
 from .tables.gift_shop_day_seasonal_availability_multiplier import gift_shop_day_seasonal_availability_multipliers
 from .tables.guest_service import guest_services
-from .tables.itinerary_error_type import itinerary_error_types
 from .tables.itinerary_event_default import itinerary_event_defaults
+from .tables.itinerary_status import itinerary_statuses
 from .tables.meet_the_guardians_talk import guardians_talks
 from .tables.pavilion import pavilions
 from .tables.picnic_site import picnic_sites
@@ -43,7 +43,7 @@ __all__ = [
    'restrooms',
    'gift_shops',
    'gift_shop_day_seasonal_availability_multipliers',
-   'itinerary_error_types',
+   'itinerary_statuses',
    'itinerary_event_defaults',
    'attractions',
    'attraction_day_seasonal_availability_multipliers',
