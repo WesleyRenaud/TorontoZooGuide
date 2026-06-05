@@ -1,5 +1,6 @@
 import {
    appendScheduledDurationPill,
+   resolveGroupedScheduledPillOptions,
    resolveScheduledPillOptions,
 } from './dayPlannerTimelinePills.js';
 import { el } from '../dom.js';
@@ -50,14 +51,74 @@ function usesScheduledTimelineEventBlock(scheduledItem) {
    );
 }
 
-export function appendScheduledItems(
-   gridLine,
-   scheduledItems = [],
+function resolveRenderGroupLabel(renderGroup = {}) {
+   if (renderGroup.label) {
+      return renderGroup.label;
+   }
+
+   return renderGroup.items?.[0]?.label ?? '';
+}
+
+function resolveRenderGroupStartTime(renderGroup = {}) {
+   return renderGroup.items?.[0]?.item?.start_time ?? '';
+}
+
+function resolveRenderGroupEndTime(renderGroup = {}) {
+   if (renderGroup.items?.length === 1) {
+      return renderGroup.items[0]?.item?.end_time ?? '';
+   }
+
+   const endTimes = (renderGroup.items ?? [])
+      .map((scheduledItem) => scheduledItem.item?.end_time)
+      .filter(Boolean);
+
+   return endTimes[endTimes.length - 1] ?? '';
+}
+
+function resolveRenderGroupLabelClick(renderGroup = {}) {
+   if (renderGroup.items?.length !== 1) {
+      return null;
+   }
+
+   const scheduledItem = renderGroup.items[0];
+
+   if (scheduledItem.scheduleItemKind !== ScheduleItemKind.ANIMAL.itemType) {
+      return null;
+   }
+
+   return () => openAnimalSpeciesOverlay(scheduledItem.item);
+}
+
+function resolveRenderGroupPillOptions(
+   renderGroup = {},
    scheduleHandlers = {},
    strings = {}
 ) {
-   scheduledItems.forEach((scheduledItem) => {
-      if (usesScheduledTimelineEventBlock(scheduledItem)) {
+   if ((renderGroup.items ?? []).length === 1) {
+      return resolveScheduledPillOptions(
+         renderGroup.items[0],
+         scheduleHandlers,
+         strings
+      );
+   }
+
+   return resolveGroupedScheduledPillOptions(
+      renderGroup.items,
+      scheduleHandlers,
+      strings
+   );
+}
+
+export function appendScheduledItems(
+   gridLine,
+   scheduledRenderGroups = [],
+   scheduleHandlers = {},
+   strings = {}
+) {
+   (scheduledRenderGroups ?? []).forEach((renderGroup) => {
+      const scheduledItem = renderGroup.items?.[0];
+
+      if (scheduledItem && usesScheduledTimelineEventBlock(scheduledItem)) {
          gridLine.appendChild(
             makeScheduledItemBlock(
                scheduledItem.row,
@@ -69,16 +130,17 @@ export function appendScheduledItems(
       }
 
       appendScheduledDurationPill(gridLine, {
-         label: scheduledItem.label,
-         offsetFraction: scheduledItem.offsetFraction,
-         durationMinutes: scheduledItem.maximumDuration,
-         startTime: scheduledItem.item.start_time,
-         endTime: scheduledItem.item.end_time,
-         onLabelClick: scheduledItem.scheduleItemKind === ScheduleItemKind.ANIMAL.itemType
-            ? () => openAnimalSpeciesOverlay(scheduledItem.item)
-            : null,
-         ...resolveScheduledPillOptions(
-            scheduledItem,
+         label: resolveRenderGroupLabel(renderGroup),
+         offsetFraction: renderGroup.offsetFraction,
+         durationMinutes: renderGroup.durationMinutes,
+         startTime: resolveRenderGroupStartTime(renderGroup),
+         endTime: resolveRenderGroupEndTime(renderGroup),
+         horizontalOffsetIndex: renderGroup.horizontalOffsetIndex,
+         visualStartMinutes: renderGroup.visualStartMinutes,
+         visualEndMinutes: renderGroup.visualEndMinutes,
+         onLabelClick: resolveRenderGroupLabelClick(renderGroup),
+         ...resolveRenderGroupPillOptions(
+            renderGroup,
             scheduleHandlers,
             strings
          ),

@@ -20,6 +20,7 @@ import {
    findTimelineAnchorSlot,
 } from '../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
 import {
+   compactScheduledPillStripOffsets,
    computeStripHorizontalOffsetIndex,
    computeTimelineHorizontalOffsetIndex,
 } from '../../scripts/itinerary/panel/components/dayPlannerTimelinePills.js';
@@ -38,6 +39,10 @@ import {
    buildGuardiansRows,
    buildWildRows,
 } from '../../scripts/itinerary/panel/rows.js';
+import {
+   TIMELINE_POINT_PILL_HEIGHT_PX,
+   TIMELINE_SLOT_HEIGHT_PX,
+} from '../../scripts/shared/constants.js';
 import { installTestWindow } from './helpers/domMock.mjs';
 
 const EMPTY_ITINERARY = {
@@ -162,11 +167,11 @@ function createNode(tagName, className = '', textContent = '') {
       },
       get offsetHeight() {
          if (classes.has('itinerary-day-open-pill')) {
-            return 69;
+            return TIMELINE_POINT_PILL_HEIGHT_PX;
          }
 
          if (classes.has('itinerary-day-grid-line')) {
-            return 330;
+            return TIMELINE_SLOT_HEIGHT_PX;
          }
 
          return 0;
@@ -194,7 +199,9 @@ function createNode(tagName, className = '', textContent = '') {
       },
       getBoundingClientRect() {
          return {
-            height: classes.has('itinerary-day-open-pill') ? 69 : 100,
+            height: classes.has('itinerary-day-open-pill')
+               ? TIMELINE_POINT_PILL_HEIGHT_PX
+               : 100,
          };
       },
       setAttribute(name, value) {
@@ -1285,9 +1292,14 @@ test.describe('itinerary panel rows', () => {
 
       assert.ok(polarPill);
       assert.equal(polarStrip?.className, 'itinerary-day-pill-strip');
+      assert.equal(polarStrip?.attributes?.['data-horizontal-offset-index'], '1');
       assert.equal(polarPill.attributes?.['data-duration-fraction'], String(10 / 30));
-      assert.equal(allTextFor(polarStrip?.children?.[0]), 'Arrival');
-      assert.match(allTextFor(polarStrip), /Arrival/);
+      assert.equal(
+         [...planner.querySelectorAll('.itinerary-day-open-pill')].some((pill) => (
+            allTextFor(pill).includes('Arrival')
+         )),
+         true
+      );
       assert.match(allTextFor(planner), /Departure/);
       assert.equal(
          [...planner.querySelectorAll('.itinerary-day-open-pill')].some((pill) => (
@@ -1352,8 +1364,8 @@ test.describe('itinerary panel rows', () => {
                {
                   species: 'African Lion',
                   exhibit: 'Africa Savanna',
-                  start_time: '9:50 AM',
-                  end_time: '10:05 AM',
+                  start_time: '9:52 AM',
+                  end_time: '10:07 AM',
                },
             ],
          }
@@ -1367,8 +1379,90 @@ test.describe('itinerary panel rows', () => {
       assert.equal(lionStrip?.attributes?.['data-horizontal-offset-index'], '1');
    });
 
+   test('compactScheduledPillStripOffsets starts indented pills after measured blockers', () => {
+      const timeline = createNode('div', 'itinerary-day-timeline');
+      const gridLine = createNode('div', 'itinerary-day-grid-line');
+      const leftStrip = createNode('div', 'itinerary-day-pill-strip');
+      const rightStrip = createNode('div', 'itinerary-day-pill-strip');
+      const leftPill = createNode('div', 'itinerary-day-scheduled-pill');
+      const rightPill = createNode('div', 'itinerary-day-scheduled-pill');
+
+      gridLine.getBoundingClientRect = () => ({ width: 640 });
+      leftPill.getBoundingClientRect = () => ({ width: 180 });
+      rightPill.getBoundingClientRect = () => ({ width: 160 });
+      leftStrip.setAttribute('data-scheduled-column', 'true');
+      leftStrip.setAttribute('data-horizontal-offset-index', '0');
+      leftStrip.setAttribute('data-visual-start-minutes', '570');
+      leftStrip.setAttribute('data-visual-end-minutes', '585');
+      rightStrip.setAttribute('data-scheduled-column', 'true');
+      rightStrip.setAttribute('data-horizontal-offset-index', '1');
+      rightStrip.setAttribute('data-visual-start-minutes', '575');
+      rightStrip.setAttribute('data-visual-end-minutes', '590');
+
+      leftStrip.appendChild(leftPill);
+      rightStrip.appendChild(rightPill);
+      gridLine.appendChild(leftStrip);
+      gridLine.appendChild(rightStrip);
+      timeline.appendChild(gridLine);
+
+      compactScheduledPillStripOffsets(timeline);
+
+      assert.equal(rightStrip.attributes['data-dynamic-horizontal-offset'], 'true');
+      assert.equal(
+         rightStrip.attributes['style:--itinerary-pill-dynamic-horizontal-offset'],
+         '192px'
+      );
+   });
+
+   test('compactScheduledPillStripOffsets separates same-column rendered overlaps', () => {
+      const timeline = createNode('div', 'itinerary-day-timeline');
+      const gridLine = createNode('div', 'itinerary-day-grid-line');
+      const firstStrip = createNode('div', 'itinerary-day-pill-strip');
+      const secondStrip = createNode('div', 'itinerary-day-pill-strip');
+      const firstPill = createNode('div', 'itinerary-day-scheduled-pill');
+      const secondPill = createNode('div', 'itinerary-day-scheduled-pill');
+
+      gridLine.getBoundingClientRect = () => ({ left: 100, width: 640 });
+      firstStrip.getBoundingClientRect = () => ({
+         left: 370,
+         top: 10,
+         bottom: 96,
+      });
+      secondStrip.getBoundingClientRect = () => ({
+         left: 370,
+         top: 50,
+         bottom: 136,
+      });
+      firstPill.getBoundingClientRect = () => ({ width: 220 });
+      secondPill.getBoundingClientRect = () => ({ width: 130 });
+      firstStrip.setAttribute('data-scheduled-column', 'true');
+      firstStrip.setAttribute('data-horizontal-offset-index', '1');
+      firstStrip.setAttribute('data-visual-start-minutes', '590');
+      firstStrip.setAttribute('data-visual-end-minutes', '602');
+      secondStrip.setAttribute('data-scheduled-column', 'true');
+      secondStrip.setAttribute('data-horizontal-offset-index', '1');
+      secondStrip.setAttribute('data-visual-start-minutes', '598');
+      secondStrip.setAttribute('data-visual-end-minutes', '610');
+
+      firstStrip.appendChild(firstPill);
+      secondStrip.appendChild(secondPill);
+      gridLine.appendChild(firstStrip);
+      gridLine.appendChild(secondStrip);
+      timeline.appendChild(gridLine);
+
+      compactScheduledPillStripOffsets(timeline);
+
+      assert.equal(secondStrip.attributes['data-dynamic-horizontal-offset'], 'true');
+      assert.equal(
+         secondStrip.attributes['style:--itinerary-pill-dynamic-horizontal-offset'],
+         '480px'
+      );
+   });
+
    test('computeStripHorizontalOffsetIndex shifts later overlapping strips', () => {
-      const pointPillVerticalSpanFraction = 69 / 330;
+      const pointPillVerticalSpanFraction = (
+         TIMELINE_POINT_PILL_HEIGHT_PX / TIMELINE_SLOT_HEIGHT_PX
+      );
 
       assert.equal(
          computeStripHorizontalOffsetIndex([], 0.5, pointPillVerticalSpanFraction),
