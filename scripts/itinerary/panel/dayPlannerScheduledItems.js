@@ -133,6 +133,7 @@ function mergeScheduledItemsByAnchorSlot(
       items.push({
          ...scheduledItem,
          offsetFraction,
+         anchorSlotMinutes: anchorSlot,
       });
       itemsByAnchorMap.set(anchorSlot, items);
 

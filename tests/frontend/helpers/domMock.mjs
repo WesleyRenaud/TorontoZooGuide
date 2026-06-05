@@ -1,5 +1,11 @@
 /** Minimal DOM stubs for itinerary panel component tests. */
 
+import {
+   TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
+   TIMELINE_POINT_PILL_HEIGHT_PX,
+   TIMELINE_SLOT_HEIGHT_PX,
+} from '../../../scripts/shared/constants.js';
+
 export function createDomNode(tagName = 'div', className = '', textContent = '') {
    const children = [];
    const listeners = {};
@@ -93,17 +99,19 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
       },
       get offsetHeight() {
          if (classes.has('itinerary-day-open-pill')) {
-            return 69;
+            return TIMELINE_POINT_PILL_HEIGHT_PX;
          }
 
          if (classes.has('itinerary-day-grid-line')) {
-            return 330;
+            return TIMELINE_SLOT_HEIGHT_PX;
          }
 
          return 0;
       },
       getBoundingClientRect() {
-         const height = classes.has('itinerary-day-open-pill') ? 69 : 0;
+         const height = classes.has('itinerary-day-open-pill')
+            ? TIMELINE_POINT_PILL_HEIGHT_PX
+            : 0;
 
          return {
             height,
@@ -345,14 +353,14 @@ export function installTestWindow() {
             property === '--itinerary-half-hour-slot-height'
             && element?.classList?.contains('itinerary-day-timeline')
          ) {
-            return '330px';
+            return `${TIMELINE_SLOT_HEIGHT_PX}px`;
          }
 
          if (
             property === '--itinerary-pill-strip-top-offset'
             && element?.classList?.contains('itinerary-day-timeline')
          ) {
-            return '36px';
+            return `${TIMELINE_PILL_STRIP_TOP_OFFSET_PX}px`;
          }
 
          return '';

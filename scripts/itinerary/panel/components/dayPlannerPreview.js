@@ -19,9 +19,11 @@ import {
    buildMarkersByAnchorSlot,
    resolveTimelinePillLabel,
 } from '../dayPlannerTimelineMarkers.js';
+import { planScheduledPillRenderGroupsByAnchor } from './dayPlannerTimelinePillOverlap.js';
 import {
    appendItineraryTimeMarkers,
    appendTimelinePill,
+   scheduleScheduledPillStripCompaction,
 } from './dayPlannerTimelinePills.js';
 import { el } from '../dom.js';
 import { formatISODateFull } from '../format.js';
@@ -117,6 +119,24 @@ function appendScheduleActionButtons(
    }
 }
 
+function buildTimelinePointPillMarkers({
+   earlyAdmissionMinutes,
+   openMinutes,
+   lastAdmissionMinutes,
+   closeMinutes,
+   itineraryTimeMarkers = [],
+} = {}) {
+   return [
+      earlyAdmissionMinutes,
+      openMinutes,
+      lastAdmissionMinutes,
+      closeMinutes,
+      ...itineraryTimeMarkers.map((marker) => marker.startMinutes),
+   ]
+      .filter((startMinutes) => Number.isFinite(startMinutes))
+      .map((startMinutes) => ({ startMinutes }));
+}
+
 function buildTimelineSlotStarts(halfHourSlotStarts, closeMinutes) {
    const slotStarts = [...halfHourSlotStarts];
 
@@ -185,6 +205,16 @@ export function makeDayPlannerPreview(
       timelineSlotStarts,
       closeMinutes
    );
+   const scheduledPillRenderGroupsByAnchor = planScheduledPillRenderGroupsByAnchor(
+      [...scheduledRowsContext.itemsByStart.values()].flat(),
+      buildTimelinePointPillMarkers({
+         earlyAdmissionMinutes,
+         openMinutes,
+         lastAdmissionMinutes,
+         closeMinutes,
+         itineraryTimeMarkers,
+      })
+   );
 
    if (timelineSlotStarts.length === 0) {
       section.appendChild(header);
@@ -220,12 +250,6 @@ export function makeDayPlannerPreview(
          appendTimelinePill(gridLine, pillLabel);
       }
 
-      appendScheduledItems(
-         gridLine,
-         scheduledRowsContext.itemsByStart.get(slotStart),
-         scheduleHandlers,
-         strings
-      );
       appendItineraryTimeMarkers(
          gridLine,
          markersByAnchorSlot,
@@ -233,6 +257,12 @@ export function makeDayPlannerPreview(
          timeHandlers,
          strings,
          itinerary.itineraryConfig?.visitBoundaryEventTypes
+      );
+      appendScheduledItems(
+         gridLine,
+         scheduledPillRenderGroupsByAnchor.get(slotStart),
+         scheduleHandlers,
+         strings
       );
    });
 
@@ -246,6 +276,7 @@ export function makeDayPlannerPreview(
 
    section.appendChild(timeline);
    root.appendChild(section);
+   scheduleScheduledPillStripCompaction(timeline);
 
    const scheduledSection = makeItemsListSection(
       buildScheduledItinerary(itinerary, scheduledRowsContext),
