@@ -298,7 +298,9 @@ export function buildAnimalRows(
 ) {
    return buildRows(animals, {
       normalizeItem: normalizeAnimal,
-      prepareItems: buildUniqueAnimals,
+      prepareItems: (normalizedItems) => sortScheduledOccurrencesByStartTime(
+         buildUniqueAnimals(normalizedItems)
+      ),
       buildRowProps: (animal) => {
          const name = animal.species || 'Animal';
          const alert = buildAnimalAlert(animal);
@@ -334,6 +336,7 @@ export function buildAttractionRows(
 ) {
    return buildNamedRows(attractions, {
       normalizeItem: normalizeAttraction,
+      prepareItems: sortScheduledOccurrencesByStartTime,
       defaultName: 'Attraction',
       imageDirectory: 'attractions',
       getName: (attraction) => attraction.name,
