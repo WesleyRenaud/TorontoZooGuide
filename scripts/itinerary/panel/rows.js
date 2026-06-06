@@ -219,23 +219,25 @@ function maxStoredLikelihood(...values) {
 }
 
 function buildUniqueAnimals(animals = []) {
-   const uniqueAnimalsBySpecies = new Map();
+   const uniqueAnimalsBySpeciesExhibit = new Map();
 
    animals.forEach((animal) => {
       const speciesKey = String(animal.species || '').trim().toLowerCase();
+      const exhibitKey = String(animal.exhibit || '').trim().toLowerCase();
 
       if (!speciesKey) {
          return;
       }
 
-      const existing = uniqueAnimalsBySpecies.get(speciesKey);
+      const animalKey = `${speciesKey}||${exhibitKey}`;
+      const existing = uniqueAnimalsBySpeciesExhibit.get(animalKey);
 
       if (!existing) {
-         uniqueAnimalsBySpecies.set(speciesKey, animal);
+         uniqueAnimalsBySpeciesExhibit.set(animalKey, animal);
          return;
       }
 
-      uniqueAnimalsBySpecies.set(speciesKey, {
+      uniqueAnimalsBySpeciesExhibit.set(animalKey, {
          ...existing,
          likelihood: maxStoredLikelihood(existing.likelihood, animal.likelihood),
          old_likelihood: maxStoredLikelihood(
@@ -253,7 +255,7 @@ function buildUniqueAnimals(animals = []) {
       });
    });
 
-   return Array.from(uniqueAnimalsBySpecies.values());
+   return Array.from(uniqueAnimalsBySpeciesExhibit.values());
 }
 
 function buildNamedRows(
