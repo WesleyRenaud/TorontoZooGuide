@@ -1513,6 +1513,33 @@ test.describe('itinerary panel rows', () => {
       assert.equal(textFor(rows[1], '.itin-panel-meta'), 'Exhibit: Indo-Malaya Outdoor');
    });
 
+   test('animal and attraction rows show approximate scheduled start times', () => {
+      const [animalRow] = buildAnimalRows([
+         {
+            species: 'African Lion',
+            exhibit: 'Africa Savanna',
+            start_time: '14:28',
+            end_time: '14:36',
+         },
+      ]);
+      const [attractionRow] = buildAttractionRows([
+         {
+            name: 'Zoomobile',
+            start_time: '2:23 PM',
+            end_time: '2:35 PM',
+         },
+      ]);
+
+      assert.equal(
+         animalRow.querySelectorAll('.itin-panel-meta')[1].textContent,
+         'Time: ~2:30 PM'
+      );
+      assert.equal(
+         attractionRow.querySelectorAll('.itin-panel-meta')[0].textContent,
+         'Time: ~2:25 PM'
+      );
+   });
+
    test('buildAttractionRows renders seeded attraction metadata and removal reason', () => {
       const [row] = buildAttractionRows([
          {

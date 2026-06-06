@@ -1,6 +1,10 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { makeItemRow } from './components/itemRow.js';
 import {
+   formatMinutesAsClockTime,
+   parseClockTimeMinutes,
+} from './dayPlannerSchedule.js';
+import {
    normalizeAnimal,
    normalizeAttraction,
    normalizeTalk,
@@ -160,6 +164,17 @@ function buildScheduledTimeFieldLine(item) {
    return buildTimeFieldLine(buildScheduledOccurrenceTimeRange(item));
 }
 
+function buildApproximateStartTimeFieldLine(item) {
+   const startMinutes = parseClockTimeMinutes(item?.start_time);
+
+   if (!Number.isFinite(startMinutes)) {
+      return '';
+   }
+
+   const roundedMinutes = Math.round(startMinutes / 5) * 5;
+   return buildTimeFieldLine(`~${formatMinutesAsClockTime(roundedMinutes)}`);
+}
+
 function buildMetaLines(lines = []) {
    return lines.filter(Boolean);
 }
@@ -312,7 +327,7 @@ export function buildAnimalRows(
             imageSrc: buildImageSrc('animals', animal.exhibit, name),
             metaLines: buildMetaLines([
                buildFieldLine('Exhibit', animal.exhibit),
-               buildScheduledTimeFieldLine(animal),
+               buildApproximateStartTimeFieldLine(animal),
             ]),
             alertLine: alert.line,
             alertTone: alert.tone,
@@ -346,7 +361,7 @@ export function buildAttractionRows(
          attraction.subtitle,
          buildFieldLine('Location', attraction.location),
          buildFieldLine('Price', attraction.price),
-         buildScheduledTimeFieldLine(attraction),
+         buildApproximateStartTimeFieldLine(attraction),
       ],
       getAlertLine: buildAttractionRemovalReasonLine,
       getLink: (attraction) => attraction.infoLink,
