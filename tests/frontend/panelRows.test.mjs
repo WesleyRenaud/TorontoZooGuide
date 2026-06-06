@@ -1476,7 +1476,7 @@ test.describe('itinerary panel rows', () => {
       assert.doesNotMatch(text, /Unscheduled Items[\s\S]*Wild Encounters/);
    });
 
-   test('buildAnimalRows deduplicates species and renders visibility alerts', () => {
+   test('buildAnimalRows deduplicates animal exhibit pairs and renders visibility alerts', () => {
       const rows = buildAnimalRows([
          {
             species: 'African Lion',
@@ -1488,9 +1488,13 @@ test.describe('itinerary panel rows', () => {
             species: ' african lion ',
             exhibit: 'Africa Savanna',
          },
+         {
+            species: 'African Lion',
+            exhibit: 'Indo-Malaya Outdoor',
+         },
       ]);
 
-      assert.equal(rows.length, 1);
+      assert.equal(rows.length, 2);
       assert.equal(
          imageSrcFor(rows[0]),
          'images/details/animals/africa-savanna/african-lion.png'
@@ -1505,6 +1509,8 @@ test.describe('itinerary panel rows', () => {
          textFor(rows[0], '.itin-panel-alert'),
          'Projected visibility changed from 90% to 60% on your new date.'
       );
+      assert.equal(textFor(rows[1], '.itin-panel-name'), 'African Lion');
+      assert.equal(textFor(rows[1], '.itin-panel-meta'), 'Exhibit: Indo-Malaya Outdoor');
    });
 
    test('buildAttractionRows renders seeded attraction metadata and removal reason', () => {
