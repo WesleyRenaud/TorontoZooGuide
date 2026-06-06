@@ -1251,7 +1251,7 @@ def test_validate_animals_removes_unavailable_entries(
    ] == [ ( 'African Penguin', True ) ]
 
 
-def test_get_itinerary_animals_dedupes_indoor_and_outdoor_viewing_per_row(
+def test_get_itinerary_animals_keeps_indoor_and_outdoor_viewing_for_map_markers(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 5, 30 ) )
@@ -1276,10 +1276,15 @@ def test_get_itinerary_animals_dedupes_indoor_and_outdoor_viewing_per_row(
       if animal.species == 'Masai Giraffe'
    ]
 
-   assert len( giraffes ) == 1
-   assert giraffes[ 0 ].exhibit == 'Africa Savanna'
-   assert giraffes[ 0 ].likelihood == 100
-   assert giraffes[ 0 ].old_likelihood == 100
+   assert sorted( [
+      ( giraffe.exhibit, giraffe.enclosure_type, giraffe.x_coord, giraffe.y_coord )
+      for giraffe in giraffes
+   ] ) == [
+      ( 'Africa Savanna', 'Indoor', 42.35, 71.366 ),
+      ( 'Africa Savanna', 'Outdoor', 39.885, 70.927 ),
+   ]
+   assert all( giraffe.likelihood == 100 for giraffe in giraffes )
+   assert all( giraffe.old_likelihood == 100 for giraffe in giraffes )
 
 
 def test_validate_animals_uses_highest_likelihood_across_enclosures(
@@ -1501,6 +1506,35 @@ def test_itinerary_filter_helpers_sort_matching_animals( db: DbControllers ) -> 
    )
    assert { animal.species for animal in animals } == { 'African Lion', 'African Penguin' }
    assert [ attraction.name for attraction in attractions ] == [ 'Conservation Carousel', 'Greenhouse' ]
+
+
+def test_itinerary_animals_keep_same_species_in_multiple_exhibits_for_map_markers(
+      db: DbControllers ) -> None:
+   animals = AnimalController.get_animals_for_saved_itinerary(
+      day=15,
+      month='June',
+      year=2026,
+      saved_animals=[
+         ItineraryAnimalRecord(
+            species='Cheetah',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=None ),
+         ItineraryAnimalRecord(
+            species='Cheetah',
+            exhibit='Indo-Malaya Outdoor',
+            old_likelihood=None,
+            new_likelihood=None ),
+      ] )
+
+   assert [
+      ( animal.species, animal.exhibit )
+      for animal in animals
+      if animal.species == 'Cheetah'
+   ] == [
+      ( 'Cheetah', 'Africa Savanna' ),
+      ( 'Cheetah', 'Indo-Malaya Outdoor' ),
+   ]
 
 
 def test_itinerary_filter_helpers_return_empty_without_filters( db: DbControllers ) -> None:

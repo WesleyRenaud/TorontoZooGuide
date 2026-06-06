@@ -9,12 +9,18 @@ import {
 
 test('builds typed itinerary rows for map focus candidates', () => {
    assert.deepEqual(buildItineraryRows({
-      animals: [{ species: 'African Lion' }],
+      animals: [
+         { species: 'African Lion' },
+         { species: 'Cheetah', exhibit: 'Africa Savanna' },
+         { species: 'Cheetah', exhibit: 'Indo-Malaya Outdoor' },
+      ],
       attractions: [{ name: 'Conservation Carousel' }],
       guardiansTalks: [{ name: 'Amur Tiger' }],
       wildEncounters: [{ name: 'African Rainforest' }],
    }), [
       { species: 'African Lion', type: 'animal' },
+      { species: 'Cheetah', exhibit: 'Africa Savanna', type: 'animal' },
+      { species: 'Cheetah', exhibit: 'Indo-Malaya Outdoor', type: 'animal' },
       { name: 'Conservation Carousel', type: 'attraction' },
       { name: 'Amur Tiger', type: 'guardiansTalk' },
       { name: 'African Rainforest', type: 'wildEncounter' },
