@@ -1592,7 +1592,33 @@ test.describe('itinerary panel rows', () => {
       assert.equal(wildRow.querySelector('.itin-panel-link'), null);
    });
 
-   test('buildGuardiansRows and buildWildRows sort scheduled rows by start time', () => {
+   test('scheduled item row builders sort rows by start time', () => {
+      const animalRows = buildAnimalRows([
+         {
+            species: 'Late Animal',
+            exhibit: 'Eurasia Wilds',
+            start_time: '1:30 PM',
+            end_time: '2:00 PM',
+         },
+         {
+            species: 'Early Animal',
+            exhibit: 'Africa Savanna',
+            start_time: '10:00 AM',
+            end_time: '10:30 AM',
+         },
+      ]);
+      const attractionRows = buildAttractionRows([
+         {
+            name: 'Afternoon Attraction',
+            start_time: '14:00',
+            end_time: '14:30',
+         },
+         {
+            name: 'Morning Attraction',
+            start_time: '11:00',
+            end_time: '11:30',
+         },
+      ]);
       const talkRows = buildGuardiansRows([
          {
             name: 'Late Talk',
@@ -1618,6 +1644,14 @@ test.describe('itinerary panel rows', () => {
          },
       ]);
 
+      assert.deepEqual(
+         animalRows.map((row) => textFor(row, '.itin-panel-name')),
+         ['Early Animal', 'Late Animal']
+      );
+      assert.deepEqual(
+         attractionRows.map((row) => textFor(row, '.itin-panel-name')),
+         ['Morning Attraction', 'Afternoon Attraction']
+      );
       assert.deepEqual(
          talkRows.map((row) => textFor(row, '.itin-panel-name')),
          ['Early Talk', 'Late Talk']
