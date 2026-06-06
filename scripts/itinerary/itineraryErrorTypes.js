@@ -73,6 +73,10 @@ export function resolveItineraryErrorMessage(
       return strings.itemNotOnItinerary;
    }
 
+   if (errorType === itineraryErrorTypes?.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED) {
+      return strings.bulkScheduleAnimalsAlreadyScheduled;
+   }
+
    return strings.generic;
 }
 

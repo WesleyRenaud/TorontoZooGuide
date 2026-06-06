@@ -88,7 +88,14 @@ def bulk_schedule_animals(
    ] )
 
    if not unscheduled_animals:
+      status = (
+         ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED
+         if saved_itinerary.animal_rows
+         else ItineraryErrorType.SUCCESS
+      )
+
       return ItinerarySaveResult(
+         status=status,
          itinerary=build_current_itinerary(
             fetch_saved_itinerary( conn ),
             **itinerary_controller_kwargs ) )

@@ -173,6 +173,44 @@ def test_bulk_schedule_animals_skips_already_scheduled_animals(
    assert penguin.end_time is not None
 
 
+def test_bulk_schedule_animals_warns_when_all_animals_are_already_scheduled(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      animals=[
+         LION_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key='African Lion||Africa Savanna',
+   ).success
+   assert ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key='African Penguin||Africa Savanna',
+   ).success
+
+   result = ItineraryController.bulk_schedule_animals()
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED
+   assert result.reasons == ()
+   assert {
+      animal.species
+      for animal in result.itinerary.animals
+      if has_itinerary_schedule_times( animal.start_time, animal.end_time )
+   } == { 'African Lion', 'African Penguin' }
+
+
 def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:

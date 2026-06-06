@@ -108,6 +108,9 @@ export const itinerary = {
          'That time is not available. Select another start time and try again.'
       ),
       itemNotOnItinerary: 'This item must be on your itinerary before it can be scheduled.',
+      bulkScheduleAnimalsAlreadyScheduled: (
+         'All animals on your itinerary are already scheduled.'
+      ),
    },
    dayPlanner: {
       aria: 'Itinerary day planner preview',

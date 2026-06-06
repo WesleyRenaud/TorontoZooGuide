@@ -61,6 +61,10 @@ itinerary_statuses = [
       'bulkScheduleAnimalsNotEnoughTime',             # Status
       0,                                              # Is suppressable
    ),
+   (
+      'bulkScheduleAnimalsAlreadyScheduled',          # Status
+      0,                                              # Is suppressable
+   ),
 ]
 
 def insert_rows( cursor: Cursor ) -> None:

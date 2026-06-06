@@ -21,6 +21,7 @@ const MOCK_ERROR_TYPES = Object.freeze({
    ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',
    GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',
    WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS: 'wildEncounterWillUnscheduleItems',
+   BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED: 'bulkScheduleAnimalsAlreadyScheduled',
 });
 
 function mockJsonResponse(payload) {
@@ -439,6 +440,13 @@ test('resolveItineraryErrorMessage maps requestedTimeNotAvailable', () => {
    assert.match(
       resolveItineraryErrorMessage('requestedTimeNotAvailable'),
       /That time is not available/
+   );
+});
+
+test('resolveItineraryErrorMessage maps bulkScheduleAnimalsAlreadyScheduled', () => {
+   assert.match(
+      resolveItineraryErrorMessage('bulkScheduleAnimalsAlreadyScheduled'),
+      /already scheduled/
    );
 });
 
