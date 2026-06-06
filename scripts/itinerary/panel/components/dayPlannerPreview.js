@@ -24,7 +24,10 @@ import { planScheduledPillRenderGroupsByAnchor } from './dayPlannerTimelinePillO
 import { appendItineraryTimeMarkers } from './dayPlannerTimelinePills.js';
 import { el } from '../dom.js';
 import { formatISODateFull } from '../format.js';
-import { makeScheduleItemButton } from './scheduleItemButton.js';
+import {
+   makeScheduleActionsBar,
+   makeScheduleItemButton,
+} from './scheduleItemButton.js';
 import { makeSection } from './section.js';
 import {
    buildSectionConfigs,
@@ -97,8 +100,10 @@ function appendScheduleActionButtons(
       strings = {},
    } = {}
 ) {
+   const buttons = [];
+
    if (typeof onScheduleItemClick === 'function') {
-      section.appendChild(
+      buttons.push(
          makeScheduleItemButton({
             label: strings.scheduleItemButton,
             onClick: onScheduleItemClick,
@@ -107,12 +112,17 @@ function appendScheduleActionButtons(
    }
 
    if (typeof onBulkScheduleAnimalsClick === 'function') {
-      section.appendChild(
+      buttons.push(
          makeScheduleItemButton({
             label: strings.bulkScheduleAnimalsButton,
             onClick: onBulkScheduleAnimalsClick,
+            variant: 'secondary',
          })
       );
+   }
+
+   if (buttons.length > 0) {
+      section.appendChild(makeScheduleActionsBar(buttons));
    }
 }
 

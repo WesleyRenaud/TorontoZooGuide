@@ -16,13 +16,12 @@ test('makeScheduleItemButton wires an optional click handler', () => {
    installDocument();
 
    let clicked = false;
-   const row = makeScheduleItemButton({
+   const button = makeScheduleItemButton({
       label: 'Schedule an item',
       onClick: () => {
          clicked = true;
       },
    });
-   const button = row.children[0];
 
    assert.equal(button.textContent, 'Schedule an item');
    assert.equal(button.type, 'button');
@@ -60,4 +59,8 @@ test('makeDayPlannerPreview renders bulk schedule button below schedule item but
 
    buttons[1].listeners.click();
    assert.equal(bulkScheduleClicked, true);
+
+   const actionsBar = planner.querySelector('.itinerary-day-schedule-actions');
+   assert.ok(actionsBar);
+   assert.ok(buttons[1].classList.contains('itinerary-day-schedule-item-btn--secondary'));
 });
