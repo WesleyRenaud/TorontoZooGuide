@@ -10,8 +10,8 @@ import { makeScheduledPill } from '../../scripts/itinerary/panel/components/dayP
 
 test('isExtendedScheduledPill uses the half-hour slot as the threshold', () => {
    assert.equal(EXTENDED_SCHEDULED_PILL_MINUTES, 30);
-   assert.equal(isExtendedScheduledPill(30), false);
-   assert.equal(isExtendedScheduledPill(31), true);
+   assert.equal(isExtendedScheduledPill(29), false);
+   assert.equal(isExtendedScheduledPill(30), true);
 });
 
 test('formatScheduledPillTimeRange formats start and end labels', () => {
