@@ -2452,10 +2452,7 @@ nav ul li a:hover {
 .itinerary-day-timeline {
    --itinerary-half-hour-slot-height: 330px;
    --itinerary-pill-strip-top-offset: 36px;
-   --itinerary-pill-column-count: 2;
-   --itinerary-pill-horizontal-step: calc(
-      (100% - 44px) / var(--itinerary-pill-column-count)
-   );
+   --itinerary-point-pill-clearance: 56px;
    --itinerary-scheduled-pill-min-height: 86px;
 
    display: grid;
@@ -2473,12 +2470,34 @@ nav ul li a:hover {
 }
 
 .itinerary-day-time {
+   display: flex;
+   flex-direction: column;
+   align-items: flex-end;
+   gap: 8px;
    padding-top: 18px;
    padding-right: 28px;
    color: rgba(20, 35, 10, 0.64);
    font-size: 1.85rem;
    font-weight: 900;
    text-align: right;
+   white-space: nowrap;
+}
+
+.itinerary-day-time-label {
+   display: block;
+}
+
+.itinerary-day-time-boundary-label {
+   display: inline-block;
+   padding: 8px 14px;
+   border-radius: 999px;
+   background: #ffffff;
+   border: 2px solid rgba(94, 150, 0, 0.35);
+   color: #5e9600;
+   font-size: 1.15rem;
+   line-height: 1;
+   font-weight: 900;
+   box-shadow: 0 4px 10px rgba(20, 35, 10, 0.1);
    white-space: nowrap;
 }
 
@@ -2504,38 +2523,32 @@ nav ul li a:hover {
    box-sizing: border-box;
 }
 
+.itinerary-day-pill-strip:not([data-scheduled-column]) {
+   z-index: 3;
+   width: max-content;
+}
+
 .itinerary-day-pill-strip[data-scheduled-column] {
+   top: 0;
    width: calc(100% - 44px);
    max-width: calc(100% - 44px);
    overflow: hidden;
 }
 
-.itinerary-day-pill-strip[data-horizontal-offset-index] {
-   left: calc(
-      22px
-      + var(--itinerary-pill-horizontal-offset-index)
-         * var(--itinerary-pill-horizontal-step)
+.itinerary-day-pill-strip[data-scheduled-column][data-offset-fraction] {
+   top: calc(
+      var(--itinerary-pill-offset-fraction) * var(--itinerary-half-hour-slot-height)
    );
 }
 
-.itinerary-day-pill-strip[data-scheduled-column][data-horizontal-offset-index] {
-   max-width: min(
-      var(--itinerary-pill-horizontal-step),
-      calc(
-         100% - 22px
-         - var(--itinerary-pill-horizontal-offset-index)
-            * var(--itinerary-pill-horizontal-step)
-      )
-   );
+.itinerary-day-pill-strip[data-scheduled-column][data-clears-point-pill] {
+   top: var(--itinerary-point-pill-clearance);
 }
 
-.itinerary-day-pill-strip[data-scheduled-column][data-dynamic-horizontal-offset] {
-   left: calc(22px + var(--itinerary-pill-dynamic-horizontal-offset));
-   width: calc(
-      100% - 44px - var(--itinerary-pill-dynamic-horizontal-offset)
-   );
-   max-width: calc(
-      100% - 44px - var(--itinerary-pill-dynamic-horizontal-offset)
+.itinerary-day-pill-strip[data-scheduled-column][data-clears-point-pill][data-offset-fraction] {
+   top: calc(
+      var(--itinerary-point-pill-clearance)
+      + var(--itinerary-pill-offset-fraction) * var(--itinerary-half-hour-slot-height)
    );
 }
 
@@ -2558,7 +2571,7 @@ nav ul li a:hover {
    flex: 0 1 auto;
    order: 1;
    box-sizing: border-box;
-   width: max-content;
+   width: 100%;
    max-width: 100%;
    min-width: 0;
    min-height: var(--itinerary-scheduled-pill-min-height);
@@ -2585,7 +2598,7 @@ nav ul li a:hover {
    flex-direction: column;
    align-items: flex-start;
    justify-content: flex-start;
-   width: max-content;
+   width: 100%;
    max-width: 100%;
    min-width: 0;
    height: max(
@@ -2615,9 +2628,54 @@ nav ul li a:hover {
    display: flex;
    align-items: center;
    column-gap: 8px;
-   width: max-content;
+   width: 100%;
    max-width: 100%;
    min-width: 0;
+}
+
+.itinerary-day-scheduled-pill-header--grouped {
+   align-items: flex-start;
+}
+
+.itinerary-day-scheduled-pill-label-mount {
+   display: flex;
+   flex: 1 1 auto;
+   align-items: baseline;
+   column-gap: 6px;
+   min-width: 0;
+   overflow: hidden;
+}
+
+.itinerary-day-scheduled-pill-label-mount .itinerary-day-scheduled-pill-label-name {
+   flex: 1 1 auto;
+   min-width: 0;
+   overflow: hidden;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+}
+
+.itinerary-day-scheduled-pill-count {
+   flex: 0 0 auto;
+   white-space: nowrap;
+}
+
+.itinerary-day-scheduled-pill-toggle {
+   flex: 0 0 auto;
+   width: 28px;
+   height: 28px;
+   padding: 0;
+   border: 2px solid rgba(94, 150, 0, 0.35);
+   border-radius: 8px;
+   background: #ffffff;
+   color: #5e9600;
+   font-size: 1.4rem;
+   line-height: 1;
+   font-weight: 900;
+   cursor: pointer;
+}
+
+.itinerary-day-scheduled-pill-toggle:hover {
+   background: rgba(94, 150, 0, 0.08);
 }
 
 .itinerary-day-scheduled-pill-label {

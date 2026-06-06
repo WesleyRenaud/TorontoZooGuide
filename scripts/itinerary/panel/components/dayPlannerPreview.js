@@ -11,6 +11,7 @@ import {
 } from '../dayPlannerScheduledItems.js';
 import {
    appendScheduledItems,
+   appendTimelineBoundaryLabel,
    makeTimelineRow,
    makeUnavailableMessage,
 } from './dayPlannerTimeline.js';
@@ -20,11 +21,7 @@ import {
    resolveTimelinePillLabel,
 } from '../dayPlannerTimelineMarkers.js';
 import { planScheduledPillRenderGroupsByAnchor } from './dayPlannerTimelinePillOverlap.js';
-import {
-   appendItineraryTimeMarkers,
-   appendTimelinePill,
-   scheduleScheduledPillStripCompaction,
-} from './dayPlannerTimelinePills.js';
+import { appendItineraryTimeMarkers } from './dayPlannerTimelinePills.js';
 import { el } from '../dom.js';
 import { formatISODateFull } from '../format.js';
 import { makeScheduleItemButton } from './scheduleItemButton.js';
@@ -247,7 +244,7 @@ export function makeDayPlannerPreview(
       timeline.appendChild(gridLine);
 
       if (pillLabel) {
-         appendTimelinePill(gridLine, pillLabel);
+         appendTimelineBoundaryLabel(timeCell, pillLabel);
       }
 
       appendItineraryTimeMarkers(
@@ -276,7 +273,6 @@ export function makeDayPlannerPreview(
 
    section.appendChild(timeline);
    root.appendChild(section);
-   scheduleScheduledPillStripCompaction(timeline);
 
    const scheduledSection = makeItemsListSection(
       buildScheduledItinerary(itinerary, scheduledRowsContext),

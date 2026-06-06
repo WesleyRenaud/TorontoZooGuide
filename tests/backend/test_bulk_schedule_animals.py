@@ -12,6 +12,7 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.logic.bulk_schedule_animals import has_itinerary_schedule_times
 from api.itinerary.logic.bulk_schedule_animals import is_itinerary_animal_unscheduled
 from api.itinerary.logic.bulk_schedule_animals import sort_animals_for_bulk_schedule
+from api.itinerary.logic.bulk_schedule_exhibit_order import bulk_schedule_exhibit_rank
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
 from conftest import DbControllers
@@ -57,6 +58,11 @@ def test_sort_animals_for_bulk_schedule_orders_by_exhibit_then_species() -> None
       ( 'African Lion', 'Africa Savanna' ),
       ( 'African Penguin', 'Africa Savanna' ),
    ]
+
+
+def test_bulk_schedule_exhibit_rank_orders_americas_pavilion_before_mayan_temple() -> None:
+   assert bulk_schedule_exhibit_rank( 'Americas Pavilion' ) < bulk_schedule_exhibit_rank(
+      'Americas Outdoor Mayan Temple Ruins' )
 
 
 def test_is_itinerary_animal_unscheduled() -> None:

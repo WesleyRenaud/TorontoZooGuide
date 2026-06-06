@@ -9,7 +9,7 @@ BULK_SCHEDULE_EXHIBIT_ORDER: tuple[ str, ... ] = (
    'Africa Savanna',
    'Canadian Domain',
    'Americas Pavilion',
-   'Mayan Temple',
+   'Americas Outdoor Mayan Temple Ruins',
    'Tundra Trek',
    'Australasia Pavilion',
    'Australasia Outdoor',

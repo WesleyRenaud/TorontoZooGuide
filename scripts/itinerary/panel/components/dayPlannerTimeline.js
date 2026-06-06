@@ -12,12 +12,24 @@ import {
 } from '../../../shared/enums/scheduleItemKind.js';
 
 export function makeTimelineRow(timeLabel) {
+   const timeCell = el('div', 'itinerary-day-time');
+
+   timeCell.appendChild(el('span', 'itinerary-day-time-label', timeLabel));
+
    const gridLine = el('div', 'itinerary-day-grid-line');
 
    return [
-      el('div', 'itinerary-day-time', timeLabel),
+      timeCell,
       gridLine,
    ];
+}
+
+export function appendTimelineBoundaryLabel(timeCell, label) {
+   if (!timeCell || !label) {
+      return;
+   }
+
+   timeCell.appendChild(el('span', 'itinerary-day-time-boundary-label', label));
 }
 
 export function makeUnavailableMessage(message) {
@@ -75,6 +87,14 @@ function resolveRenderGroupEndTime(renderGroup = {}) {
    return endTimes[endTimes.length - 1] ?? '';
 }
 
+function resolveScheduledItemLabelClick(scheduledItem = {}) {
+   if (scheduledItem.scheduleItemKind !== ScheduleItemKind.ANIMAL.itemType) {
+      return null;
+   }
+
+   return () => openAnimalSpeciesOverlay(scheduledItem.item);
+}
+
 function resolveRenderGroupLabelClick(renderGroup = {}) {
    if (renderGroup.items?.length !== 1) {
       return null;
@@ -105,7 +125,8 @@ function resolveRenderGroupPillOptions(
    return resolveGroupedScheduledPillOptions(
       renderGroup.items,
       scheduleHandlers,
-      strings
+      strings,
+      resolveScheduledItemLabelClick
    );
 }
 
@@ -135,9 +156,6 @@ export function appendScheduledItems(
          durationMinutes: renderGroup.durationMinutes,
          startTime: resolveRenderGroupStartTime(renderGroup),
          endTime: resolveRenderGroupEndTime(renderGroup),
-         horizontalOffsetIndex: renderGroup.horizontalOffsetIndex,
-         visualStartMinutes: renderGroup.visualStartMinutes,
-         visualEndMinutes: renderGroup.visualEndMinutes,
          onLabelClick: resolveRenderGroupLabelClick(renderGroup),
          ...resolveRenderGroupPillOptions(
             renderGroup,

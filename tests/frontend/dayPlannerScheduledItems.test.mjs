@@ -7,14 +7,16 @@ import {
    resolveScheduledPillOptions,
 } from '../../scripts/itinerary/panel/components/dayPlannerTimelinePills.js';
 import {
-   clusterScheduledItemsByStartTimeProximity,
+   clusterScheduledItemsByDuration,
+   clusterShortScheduledItemsForDisplay,
    computeFirstFreeHorizontalOffsetIndex,
    doScheduledTimeRangesOverlap,
    formatScheduledPillGroupLabel,
    MAX_TIMELINE_PILL_COLUMNS,
    MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS,
+   getScheduledItemEndMinutes,
+   getScheduledPillMinDisplayMinutes,
    planScheduledPillRenderGroupsByAnchor,
-   SCHEDULED_PILL_TIME_CLUSTER_MINUTES,
    scheduledPillsOverlapInDefaultPosition,
 } from '../../scripts/itinerary/panel/components/dayPlannerTimelinePillOverlap.js';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
@@ -23,6 +25,7 @@ function makeScheduledItem(label, startMinutes, maximumDuration = 30, anchorSlot
    return {
       label,
       startMinutes,
+      endMinutes: startMinutes + maximumDuration,
       maximumDuration,
       offsetFraction: (startMinutes - anchorSlotMinutes) / 30,
       anchorSlotMinutes,
@@ -35,6 +38,21 @@ function makeScheduledItem(label, startMinutes, maximumDuration = 30, anchorSlot
       scheduleItemKey: `${label}||Exhibit`,
    };
 }
+
+test('getScheduledItemEndMinutes uses parsed endMinutes from schedule times', () => {
+   assert.equal(
+      getScheduledItemEndMinutes({
+         startMinutes: 600,
+         maximumDuration: 8,
+         endMinutes: 615,
+      }),
+      615
+   );
+   assert.ok(Number.isNaN(getScheduledItemEndMinutes({
+      startMinutes: 600,
+      maximumDuration: 8,
+   })));
+});
 
 test('doScheduledTimeRangesOverlap uses strict bounds for touching windows', () => {
    assert.equal(
@@ -105,25 +123,40 @@ test('planScheduledPillRenderGroupsByAnchor keeps sequential visits in column ze
    );
 });
 
-test('clusterScheduledItemsByStartTimeProximity groups visits in fixed five-minute buckets', () => {
-   const clusteredItems = clusterScheduledItemsByStartTimeProximity([
+test('getScheduledPillMinDisplayMinutes matches the scheduled pill min height', () => {
+   assert.ok(getScheduledPillMinDisplayMinutes() > 7);
+   assert.ok(getScheduledPillMinDisplayMinutes() < 8);
+});
+
+test('clusterShortScheduledItemsForDisplay groups short visits until display span is filled', () => {
+   const clusteredItems = clusterShortScheduledItemsForDisplay([
+      makeScheduledItem('Babirusa', 570, 2, 570),
+      makeScheduledItem('Cheetah', 572, 2, 570),
+      makeScheduledItem('Red Panda', 582, 2, 570),
+   ], 8);
+
+   assert.equal(clusteredItems.length, 2);
+   assert.equal(clusteredItems[0].label, 'Babirusa + 1');
+   assert.equal(clusteredItems[1].label, 'Red Panda');
+});
+
+test('clusterShortScheduledItemsForDisplay keeps readable visits separate', () => {
+   const clusteredItems = clusterShortScheduledItemsForDisplay([
       makeScheduledItem('Babirusa', 570, 30, 570),
       makeScheduledItem('Cheetah', 574, 30, 570),
       makeScheduledItem('Red Panda', 575, 30, 570),
-      makeScheduledItem('Masai Giraffe', 582, 30, 570),
-   ], SCHEDULED_PILL_TIME_CLUSTER_MINUTES, 570);
+   ]);
 
    assert.equal(clusteredItems.length, 3);
-   assert.equal(clusteredItems[0].label, 'Babirusa + 1');
-   assert.equal(clusteredItems[1].label, 'Red Panda');
-   assert.equal(clusteredItems[2].label, 'Masai Giraffe');
-   assert.equal(SCHEDULED_PILL_TIME_CLUSTER_MINUTES, 5);
+   assert.equal(clusteredItems[0].label, 'Babirusa');
+   assert.equal(clusteredItems[1].label, 'Cheetah');
+   assert.equal(clusteredItems[2].label, 'Red Panda');
 });
 
-test('planScheduledPillRenderGroupsByAnchor clusters visits in the same five-minute bucket', () => {
+test('planScheduledPillRenderGroupsByAnchor clusters short visits in the same slot', () => {
    const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
-      makeScheduledItem('Babirusa', 570, 30, 570),
-      makeScheduledItem('Cheetah', 574, 30, 570),
+      makeScheduledItem('Babirusa', 570, 2, 570),
+      makeScheduledItem('Cheetah', 572, 2, 570),
    ]);
 
    assert.equal(groupsByAnchor.get(570)?.length, 1);
@@ -134,7 +167,7 @@ test('planScheduledPillRenderGroupsByAnchor clusters visits in the same five-min
    );
 });
 
-test('planScheduledPillRenderGroupsByAnchor keeps consecutive five-minute buckets visible', () => {
+test('planScheduledPillRenderGroupsByAnchor keeps consecutive time buckets visible', () => {
    const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Eurasian Eagle Owl', 990, 2, 990),
       makeScheduledItem('Great Horned Owl', 992, 2, 990),
@@ -153,28 +186,73 @@ test('planScheduledPillRenderGroupsByAnchor keeps consecutive five-minute bucket
    ));
 
    assert.deepEqual(groupLabels, [
-      'Eurasian Eagle Owl + 2',
-      'Harris Hawk + 2',
+      'Eurasian Eagle Owl + 3',
+      'Marabou Stork + 1',
       'American Flamingo',
       'Black-Handed Spider Monkey',
-      'Capybara',
-      'Red-Legged Seriema + 1',
+      'Capybara + 1',
+      'Turkey Vulture',
    ]);
 });
 
-test('planScheduledPillRenderGroupsByAnchor offsets non-clustered overlapping visits', () => {
+test('planScheduledPillRenderGroupsByAnchor stacks successive bins after the previous ends', () => {
+   const minDisplayFraction = 86 / 330;
+   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+      makeScheduledItem('Two-Toed Sloth', 570, 30, 570),
+      ...Array.from({ length: 9 }, (_, index) => (
+         makeScheduledItem(
+            `Fish ${index + 1}`,
+            571 + index,
+            2,
+            570
+         )
+      )),
+   ]);
+   const groups = groupsByAnchor.get(570) ?? [];
+
+   assert.equal(groups[0]?.label ?? groups[0]?.items[0]?.label, 'Two-Toed Sloth');
+
+   for (let index = 1; index < groups.length; index += 1) {
+      const previousGroup = groups[index - 1];
+      const previousEndOffset = (previousGroup.offsetFraction ?? 0) + Math.max(
+         (previousGroup.durationMinutes ?? 0) / 30,
+         minDisplayFraction
+      );
+
+      assert.ok((groups[index]?.offsetFraction ?? 0) >= previousEndOffset - 0.0001);
+   }
+});
+
+test('planScheduledPillRenderGroupsByAnchor carries overflow into the next slot', () => {
+   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+      makeScheduledItem('Babirusa', 570, 30, 570),
+      makeScheduledItem('Cheetah', 571, 30, 570),
+      makeScheduledItem('Red Panda', 600, 2, 600),
+   ]);
+   const nextSlotGroups = groupsByAnchor.get(600) ?? [];
+
+   assert.equal(nextSlotGroups.length, 1);
+   assert.ok((nextSlotGroups[0]?.offsetFraction ?? 0) >= 1);
+});
+
+test('planScheduledPillRenderGroupsByAnchor keeps full-length overlapping visits separate', () => {
    const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Babirusa', 570, 30, 570),
       makeScheduledItem('Cheetah', 576, 30, 570),
    ]);
 
+   assert.equal(groupsByAnchor.get(570)?.length, 2);
+   assert.deepEqual(
+      groupsByAnchor.get(570)?.map((group) => group.label ?? group.items[0].label),
+      [ 'Babirusa', 'Cheetah' ]
+   );
    assert.deepEqual(
       groupsByAnchor.get(570)?.map((group) => group.horizontalOffsetIndex),
-      [ 0, 1 ]
+      [ 0, 0 ]
    );
 });
 
-test('planScheduledPillRenderGroupsByAnchor avoids overlapping timeline point pills', () => {
+test('planScheduledPillRenderGroupsByAnchor keeps scheduled pills at full width', () => {
    const groupsByAnchor = planScheduledPillRenderGroupsByAnchor(
       [
          makeScheduledItem('Red-Legged Seriema', 1015, 2, 990),
@@ -186,11 +264,11 @@ test('planScheduledPillRenderGroupsByAnchor avoids overlapping timeline point pi
 
    assert.deepEqual(
       groupsByAnchor.get(990)?.map((group) => group.horizontalOffsetIndex),
-      [ 1 ]
+      [ 0 ]
    );
 });
 
-test('planScheduledPillRenderGroupsByAnchor merges overflow buckets instead of overlapping them', () => {
+test('planScheduledPillRenderGroupsByAnchor merges overlapping visits into carousel groups', () => {
    const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Snow Leopard', 971, 8, 960),
       makeScheduledItem('Steller Sea Eagle', 979, 3, 960),
@@ -201,21 +279,17 @@ test('planScheduledPillRenderGroupsByAnchor merges overflow buckets instead of o
    ]);
    const groups = groupsByAnchor.get(960) ?? [];
 
+   assert.equal(groups.length, 3);
    assert.deepEqual(
       groups.map((group) => group.label ?? group.items[0].label),
-      [
-         'Snow Leopard',
-         'Steller Sea Eagle',
-         'West Caucasian Tur + 3',
-      ]
+      [ 'Snow Leopard', 'Steller Sea Eagle + 1', 'Domestic Goat + 2' ]
    );
-   assert.deepEqual(
-      groups.map((group) => group.horizontalOffsetIndex),
-      [ 0, 0, 1 ]
-   );
+   assert.equal(groups[0]?.items.length, 1);
+   assert.equal(groups[1]?.items.length, 2);
+   assert.equal(groups[2]?.items.length, 3);
 });
 
-test('planScheduledPillRenderGroupsByAnchor keeps one pill per five-minute bucket', () => {
+test('planScheduledPillRenderGroupsByAnchor gives each full-length visit its own pill', () => {
    const scheduledItems = [
       'Babirusa',
       'Cheetah',
@@ -224,14 +298,23 @@ test('planScheduledPillRenderGroupsByAnchor keeps one pill per five-minute bucke
       'Ostrich',
       'African Lion',
    ].map((label, labelIndex) => (
-      makeScheduledItem(label, 570 + (labelIndex % 5), 30, 570)
+      makeScheduledItem(label, 570 + labelIndex, 30, 570)
    ));
    const groupsByAnchor = planScheduledPillRenderGroupsByAnchor(scheduledItems);
    const groups = groupsByAnchor.get(570) ?? [];
 
-   assert.equal(groups.length, 1);
-   assert.equal(groups[0]?.label, 'African Lion + 5');
-   assert.equal(groups[0]?.items.length, 6);
+   assert.equal(groups.length, 6);
+   assert.deepEqual(
+      groups.map((group) => group.label ?? group.items[0].label),
+      [
+         'Babirusa',
+         'Cheetah',
+         'Red Panda',
+         'Masai Giraffe',
+         'Ostrich',
+         'African Lion',
+      ]
+   );
    assert.equal(MAX_TIMELINE_PILL_COLUMNS, 2);
    assert.equal(MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS, 2);
 });
