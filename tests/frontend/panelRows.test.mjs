@@ -20,7 +20,6 @@ import {
    findTimelineAnchorSlot,
 } from '../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
 import {
-   compactScheduledPillStripOffsets,
    computeStripHorizontalOffsetIndex,
    computeTimelineHorizontalOffsetIndex,
 } from '../../scripts/itinerary/panel/components/dayPlannerTimelinePills.js';
@@ -532,12 +531,12 @@ test.describe('itinerary panel rows', () => {
       const arrivalPill = [...planner.querySelectorAll('.itinerary-day-open-pill')].find((pill) => (
          allTextFor(pill).includes('Arrival')
       ));
-      const openPill = [...planner.querySelectorAll('.itinerary-day-open-pill')].find((pill) => (
-         allTextFor(pill).includes('Zoo Opens')
+      const openPill = [...planner.querySelectorAll('.itinerary-day-time-boundary-label')].find((label) => (
+         allTextFor(label).includes('Zoo Opens')
       ));
 
       assert.ok(arrivalPill?.classList.contains('itinerary-day-open-pill--with-menu'));
-      assert.equal(openPill?.classList.contains('itinerary-day-open-pill--with-menu'), false);
+      assert.ok(openPill);
 
       arrivalPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
       assert.deepEqual(arrivalRemovals, [ '' ]);
@@ -671,6 +670,7 @@ test.describe('itinerary panel rows', () => {
                   name: 'Amur Tiger',
                   location: 'Eurasia Wilds',
                   start_time: '1:30 PM',
+                  end_time: '2:00 PM',
                   maximum_duration: 30,
                },
             ],
@@ -770,6 +770,7 @@ test.describe('itinerary panel rows', () => {
                   name: 'Amur Tiger',
                   location: 'Eurasia Wilds',
                   start_time: '1:30 PM',
+                  end_time: '2:00 PM',
                   maximum_duration: 30,
                },
             ],
@@ -885,6 +886,7 @@ test.describe('itinerary panel rows', () => {
                   name: 'Amur Tiger',
                   location: 'Eurasia Wilds',
                   start_time: '1:30 PM',
+                  end_time: '2:00 PM',
                   maximum_duration: 30,
                },
             ],
@@ -1061,13 +1063,18 @@ test.describe('itinerary panel rows', () => {
             ...EMPTY_ITINERARY,
          }
       );
-      const pillStrip = planner.querySelector('.itinerary-day-pill-strip');
-      const pills = pillStrip.querySelectorAll('.itinerary-day-open-pill');
+      const openTimeCell = [...planner.querySelectorAll('.itinerary-day-time')].find((cell) => (
+         cell.querySelector('.itinerary-day-time-label')?.textContent === '9:30 AM'
+      ));
+      const arrivalStrip = [...planner.querySelectorAll('.itinerary-day-pill-strip')].find((strip) => (
+         allTextFor(strip).includes('Arrival')
+      ));
+      const pills = arrivalStrip?.querySelectorAll('.itinerary-day-open-pill') ?? [];
 
-      assert.ok(pillStrip);
-      assert.equal(pills.length, 2);
-      assert.match(allTextFor(pillStrip), /Zoo Opens/);
-      assert.match(allTextFor(pillStrip), /Arrival/);
+      assert.match(allTextFor(openTimeCell), /Zoo Opens/);
+      assert.ok(arrivalStrip);
+      assert.equal(pills.length, 1);
+      assert.match(allTextFor(arrivalStrip), /Arrival/);
    });
 
    test('day planner stacks departure and close pills at the same time', () => {
@@ -1085,18 +1092,21 @@ test.describe('itinerary panel rows', () => {
          }
       );
       const timeCells = planner.querySelectorAll('.itinerary-day-time');
-      const closeTimeCells = timeCells.filter((cell) => cell.textContent === '6:00 PM');
-
-      assert.equal(closeTimeCells.length, 1);
-
-      const pillStrips = planner.querySelectorAll('.itinerary-day-pill-strip');
-      const closePillStrip = pillStrips.find((strip) => (
-         allTextFor(strip).includes('Departure')
-         && allTextFor(strip).includes('Zoo Closes')
+      const closeTimeCells = [...timeCells].filter((cell) => (
+         cell.querySelector('.itinerary-day-time-label')?.textContent === '6:00 PM'
       ));
 
-      assert.ok(closePillStrip);
-      assert.equal(closePillStrip.querySelectorAll('.itinerary-day-open-pill').length, 2);
+      assert.equal(closeTimeCells.length, 1);
+      assert.match(allTextFor(closeTimeCells[0]), /Zoo Closes/);
+
+      const pillStrips = planner.querySelectorAll('.itinerary-day-pill-strip');
+      const departureStrip = [...pillStrips].find((strip) => (
+         allTextFor(strip).includes('Departure')
+         && !allTextFor(strip).includes('Zoo Closes')
+      ));
+
+      assert.ok(departureStrip);
+      assert.equal(departureStrip.querySelectorAll('.itinerary-day-open-pill').length, 1);
    });
 
    test('day planner positions off-slot arrival and departure between half-hour lines', () => {
@@ -1114,7 +1124,7 @@ test.describe('itinerary panel rows', () => {
             ...EMPTY_ITINERARY,
          }
       );
-      const timeLabels = [...planner.querySelectorAll('.itinerary-day-time')].map(
+      const timeLabels = [...planner.querySelectorAll('.itinerary-day-time-label')].map(
          (cell) => cell.textContent
       );
       const pillStrips = planner.querySelectorAll('.itinerary-day-pill-strip');
@@ -1147,6 +1157,7 @@ test.describe('itinerary panel rows', () => {
                   name: 'Amur Tiger',
                   location: 'Eurasia Wilds',
                   start_time: '1:30 PM',
+                  end_time: '2:00 PM',
                   maximum_duration: 30,
                },
             ],
@@ -1155,6 +1166,7 @@ test.describe('itinerary panel rows', () => {
                   name: 'African Rainforest',
                   meeting_spot: 'Wild Encounter - Africa Meeting Spot',
                   start_time: '2:00 PM',
+                  end_time: '2:45 PM',
                   maximum_duration: 45,
                },
             ],
@@ -1292,7 +1304,7 @@ test.describe('itinerary panel rows', () => {
 
       assert.ok(polarPill);
       assert.equal(polarStrip?.className, 'itinerary-day-pill-strip');
-      assert.equal(polarStrip?.attributes?.['data-horizontal-offset-index'], '1');
+      assert.equal(polarStrip?.attributes?.['data-scheduled-column'], 'true');
       assert.equal(polarPill.attributes?.['data-duration-fraction'], String(10 / 30));
       assert.equal(
          [...planner.querySelectorAll('.itinerary-day-open-pill')].some((pill) => (
@@ -1344,7 +1356,7 @@ test.describe('itinerary panel rows', () => {
       assert.match(allTextFor(lemurPill), /Ring-Tailed Lemur/);
    });
 
-   test('day planner offsets overlapping scheduled pills horizontally', () => {
+   test('day planner merges overlapping scheduled pills into carousel groups', () => {
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-20',
@@ -1358,105 +1370,53 @@ test.describe('itinerary panel rows', () => {
                {
                   species: 'Polar Bear',
                   exhibit: 'Tundra Trek',
-                  start_time: '9:45 AM',
-                  end_time: '10:00 AM',
+                  start_time: '4:30 PM',
+                  end_time: '4:32 PM',
                },
                {
                   species: 'African Lion',
                   exhibit: 'Africa Savanna',
-                  start_time: '9:52 AM',
-                  end_time: '10:07 AM',
+                  start_time: '4:32 PM',
+                  end_time: '4:34 PM',
                },
             ],
          }
       );
-      const lionPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
-         allTextFor(pill).includes('African Lion')
+      const groupedPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill--grouped')].find((pill) => (
+         allTextFor(pill).includes('Polar Bear')
+         || allTextFor(pill).includes('African Lion')
       ));
-      const lionStrip = lionPill?.parentElement;
 
-      assert.ok(lionPill);
-      assert.equal(lionStrip?.attributes?.['data-horizontal-offset-index'], '1');
+      assert.ok(groupedPill);
+      assert.match(allTextFor(groupedPill), /\+ 1/);
    });
 
-   test('compactScheduledPillStripOffsets starts indented pills after measured blockers', () => {
-      const timeline = createNode('div', 'itinerary-day-timeline');
-      const gridLine = createNode('div', 'itinerary-day-grid-line');
-      const leftStrip = createNode('div', 'itinerary-day-pill-strip');
-      const rightStrip = createNode('div', 'itinerary-day-pill-strip');
-      const leftPill = createNode('div', 'itinerary-day-scheduled-pill');
-      const rightPill = createNode('div', 'itinerary-day-scheduled-pill');
-
-      gridLine.getBoundingClientRect = () => ({ width: 640 });
-      leftPill.getBoundingClientRect = () => ({ width: 180 });
-      rightPill.getBoundingClientRect = () => ({ width: 160 });
-      leftStrip.setAttribute('data-scheduled-column', 'true');
-      leftStrip.setAttribute('data-horizontal-offset-index', '0');
-      leftStrip.setAttribute('data-visual-start-minutes', '570');
-      leftStrip.setAttribute('data-visual-end-minutes', '585');
-      rightStrip.setAttribute('data-scheduled-column', 'true');
-      rightStrip.setAttribute('data-horizontal-offset-index', '1');
-      rightStrip.setAttribute('data-visual-start-minutes', '575');
-      rightStrip.setAttribute('data-visual-end-minutes', '590');
-
-      leftStrip.appendChild(leftPill);
-      rightStrip.appendChild(rightPill);
-      gridLine.appendChild(leftStrip);
-      gridLine.appendChild(rightStrip);
-      timeline.appendChild(gridLine);
-
-      compactScheduledPillStripOffsets(timeline);
-
-      assert.equal(rightStrip.attributes['data-dynamic-horizontal-offset'], 'true');
-      assert.equal(
-         rightStrip.attributes['style:--itinerary-pill-dynamic-horizontal-offset'],
-         '192px'
+   test('day planner keeps scheduled pills within the timeline grid width', () => {
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            animals: [
+               {
+                  species: 'Solomon Island Leaf Frog',
+                  exhibit: 'Americas',
+                  start_time: '11:00 AM',
+                  end_time: '11:30 AM',
+               },
+            ],
+         }
       );
-   });
+      const pill = planner.querySelector('.itinerary-day-scheduled-pill');
+      const strip = pill?.parentElement;
 
-   test('compactScheduledPillStripOffsets separates same-column rendered overlaps', () => {
-      const timeline = createNode('div', 'itinerary-day-timeline');
-      const gridLine = createNode('div', 'itinerary-day-grid-line');
-      const firstStrip = createNode('div', 'itinerary-day-pill-strip');
-      const secondStrip = createNode('div', 'itinerary-day-pill-strip');
-      const firstPill = createNode('div', 'itinerary-day-scheduled-pill');
-      const secondPill = createNode('div', 'itinerary-day-scheduled-pill');
-
-      gridLine.getBoundingClientRect = () => ({ left: 100, width: 640 });
-      firstStrip.getBoundingClientRect = () => ({
-         left: 370,
-         top: 10,
-         bottom: 96,
-      });
-      secondStrip.getBoundingClientRect = () => ({
-         left: 370,
-         top: 50,
-         bottom: 136,
-      });
-      firstPill.getBoundingClientRect = () => ({ width: 220 });
-      secondPill.getBoundingClientRect = () => ({ width: 130 });
-      firstStrip.setAttribute('data-scheduled-column', 'true');
-      firstStrip.setAttribute('data-horizontal-offset-index', '1');
-      firstStrip.setAttribute('data-visual-start-minutes', '590');
-      firstStrip.setAttribute('data-visual-end-minutes', '602');
-      secondStrip.setAttribute('data-scheduled-column', 'true');
-      secondStrip.setAttribute('data-horizontal-offset-index', '1');
-      secondStrip.setAttribute('data-visual-start-minutes', '598');
-      secondStrip.setAttribute('data-visual-end-minutes', '610');
-
-      firstStrip.appendChild(firstPill);
-      secondStrip.appendChild(secondPill);
-      gridLine.appendChild(firstStrip);
-      gridLine.appendChild(secondStrip);
-      timeline.appendChild(gridLine);
-
-      compactScheduledPillStripOffsets(timeline);
-
-      assert.equal(secondStrip.attributes['data-dynamic-horizontal-offset'], 'true');
-      assert.equal(
-         secondStrip.attributes['style:--itinerary-pill-dynamic-horizontal-offset'],
-         '480px'
-      );
+      assert.ok(pill);
+      assert.equal(strip?.attributes?.['data-scheduled-column'], 'true');
+      assert.equal(strip?.attributes?.['data-dynamic-horizontal-offset'], undefined);
    });
 
    test('computeStripHorizontalOffsetIndex shifts later overlapping strips', () => {
@@ -1499,6 +1459,7 @@ test.describe('itinerary panel rows', () => {
                   name: 'Amur Tiger',
                   location: 'Eurasia Wilds',
                   start_time: '1:30 PM',
+                  end_time: '2:00 PM',
                   maximum_duration: 30,
                },
             ],

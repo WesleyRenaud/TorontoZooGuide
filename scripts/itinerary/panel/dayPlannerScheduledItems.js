@@ -42,6 +42,7 @@ function buildGenericEventScheduledRows(events = []) {
    return events.map((event, index) => {
       const eventType = getItineraryEventType(event);
       const startMinutes = parseClockTimeMinutes(event.start_time);
+      const endMinutes = parseClockTimeMinutes(event.end_time);
       const maximumDuration = getDurationMinutesFromScheduleTimes(event);
       const label = formatItineraryEventTypeLabel(eventType);
 
@@ -51,6 +52,7 @@ function buildGenericEventScheduledRows(events = []) {
          row: null,
          label,
          startMinutes,
+         endMinutes,
          maximumDuration,
          scheduleItemKind: ScheduleItemKind.EVENT.kind,
          scheduleItemEventType: eventType,
@@ -60,6 +62,7 @@ function buildGenericEventScheduledRows(events = []) {
       scheduledItem.label
       && scheduledItem.scheduleItemEventType
       && Number.isFinite(scheduledItem.startMinutes)
+      && Number.isFinite(scheduledItem.endMinutes)
       && Number.isFinite(scheduledItem.maximumDuration)
    ));
 }
@@ -68,6 +71,7 @@ function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
    return items.map((item, index) => {
       const [row] = buildRows([item]);
       const startMinutes = parseClockTimeMinutes(item.start_time);
+      const endMinutes = parseClockTimeMinutes(item.end_time);
       const maximumDuration = getDurationMinutes(item);
       const label = getScheduledItemLabel(item);
 
@@ -77,12 +81,14 @@ function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
          row,
          label,
          startMinutes,
+         endMinutes,
          maximumDuration,
       };
    }).filter((scheduledItem) => (
       scheduledItem.row
       && scheduledItem.label
       && Number.isFinite(scheduledItem.startMinutes)
+      && Number.isFinite(scheduledItem.endMinutes)
       && Number.isFinite(scheduledItem.maximumDuration)
    ));
 }

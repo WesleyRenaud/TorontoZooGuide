@@ -1,7 +1,6 @@
 import {
    MAX_TIMELINE_PILL_COLUMNS,
    MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS,
-   SCHEDULED_PILL_TIME_CLUSTER_MINUTES,
    TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
    TIMELINE_POINT_PILL_HEIGHT_PX,
    TIMELINE_SCHEDULED_PILL_MIN_HEIGHT_PX,
@@ -12,8 +11,15 @@ import {
 export {
    MAX_TIMELINE_PILL_COLUMNS,
    MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS,
-   SCHEDULED_PILL_TIME_CLUSTER_MINUTES,
 };
+
+export function getScheduledPillMinDisplayMinutes() {
+   return minutesPerSlotFromHeightPx(TIMELINE_SCHEDULED_PILL_MIN_HEIGHT_PX);
+}
+
+function getScheduledPillMinDisplayDurationFraction() {
+   return TIMELINE_SCHEDULED_PILL_MIN_HEIGHT_PX / TIMELINE_SLOT_HEIGHT_PX;
+}
 
 function minutesPerSlotFromHeightPx(heightPx) {
    return (heightPx / TIMELINE_SLOT_HEIGHT_PX) * TIMELINE_SLOT_MINUTES;
@@ -21,12 +27,18 @@ function minutesPerSlotFromHeightPx(heightPx) {
 
 export function getScheduledItemTimeRange(scheduledItem = {}) {
    const startMinutes = Number(scheduledItem.startMinutes);
-   const durationMinutes = Number(scheduledItem.maximumDuration);
+   const endMinutes = getScheduledItemEndMinutes(scheduledItem);
 
    return {
       startMinutes,
-      endMinutes: startMinutes + durationMinutes,
+      endMinutes,
    };
+}
+
+export function getScheduledItemEndMinutes(scheduledItem = {}) {
+   const endMinutes = Number(scheduledItem.endMinutes);
+
+   return Number.isFinite(endMinutes) ? endMinutes : Number.NaN;
 }
 
 export function getScheduledPillVisualBand(scheduledItem = {}) {
@@ -60,17 +72,6 @@ export function getScheduledPillVisualBand(scheduledItem = {}) {
       startMinutes: visualStartMinutes,
       endMinutes: visualStartMinutes + visualDurationMinutes,
    };
-}
-
-function buildPointPillPlacementBlockers(pointPillMarkers = []) {
-   return pointPillMarkers
-      .filter((marker) => Number.isFinite(marker?.startMinutes))
-      .map((marker) => ({
-         isPointPillBlocker: true,
-         startMinutes: marker.startMinutes,
-         maximumDuration: 0,
-         horizontalOffsetIndex: 0,
-      }));
 }
 
 export function doScheduledTimeRangesOverlap(leftRange = {}, rightRange = {}) {
@@ -154,15 +155,43 @@ function getLayoutUnitItems(scheduledItem = {}) {
       ?? [scheduledItem];
 }
 
+function getScheduledItemDurationMinutes(scheduledItem = {}) {
+   const endMinutes = getScheduledItemEndMinutes(scheduledItem);
+   const startMinutes = Number(scheduledItem.startMinutes);
+
+   if (Number.isFinite(endMinutes) && Number.isFinite(startMinutes)) {
+      return endMinutes - startMinutes;
+   }
+
+   return Number(scheduledItem.maximumDuration) || 0;
+}
+
+function isShortScheduledItem(
+   scheduledItem = {},
+   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+) {
+   return getScheduledItemDurationMinutes(scheduledItem) < minDisplayMinutes;
+}
+
+function getClusterWallSpanMinutes(items = []) {
+   if (!items.length) {
+      return 0;
+   }
+
+   const startMinutes = Math.min(...items.map((item) => item.startMinutes));
+   const endMinutes = Math.max(...items.map(getScheduledItemEndMinutes));
+
+   return endMinutes - startMinutes;
+}
+
 function buildClusterLayoutItem(items = []) {
    const startMinutes = Math.min(...items.map((item) => item.startMinutes));
-   const endMinutes = Math.max(
-      ...items.map((item) => item.startMinutes + item.maximumDuration)
-   );
+   const endMinutes = Math.max(...items.map(getScheduledItemEndMinutes));
 
    return {
       clusterItems: items,
       startMinutes,
+      endMinutes,
       maximumDuration: endMinutes - startMinutes,
       offsetFraction: Math.min(...items.map((item) => item.offsetFraction ?? 0)),
       anchorSlotMinutes: items[0].anchorSlotMinutes,
@@ -170,61 +199,78 @@ function buildClusterLayoutItem(items = []) {
    };
 }
 
-export function clusterScheduledItemsByStartTimeProximity(
+export function clusterShortScheduledItemsForDisplay(
    scheduledItems = [],
-   clusterWindowMinutes = SCHEDULED_PILL_TIME_CLUSTER_MINUTES,
-   windowStartMinutes = 0
+   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
 ) {
    const sortedItems = [...scheduledItems].sort(compareScheduledItemsForLayout);
-   const clustersByBucket = new Map();
+   const clusters = [];
+   let index = 0;
 
-   sortedItems.forEach((scheduledItem) => {
-      const bucketIndex = Math.floor(
-         (scheduledItem.startMinutes - windowStartMinutes) / clusterWindowMinutes
+   while (index < sortedItems.length) {
+      const item = sortedItems[index];
+
+      if (!isShortScheduledItem(item, minDisplayMinutes)) {
+         clusters.push(item);
+         index += 1;
+         continue;
+      }
+
+      const clusterItems = [item];
+      index += 1;
+
+      while (index < sortedItems.length) {
+         const nextItem = sortedItems[index];
+
+         if (!isShortScheduledItem(nextItem, minDisplayMinutes)) {
+            break;
+         }
+
+         const candidateSpan = getClusterWallSpanMinutes([
+            ...clusterItems,
+            nextItem,
+         ]);
+
+         if (candidateSpan > minDisplayMinutes && clusterItems.length >= 1) {
+            break;
+         }
+
+         clusterItems.push(nextItem);
+         index += 1;
+
+         if (getClusterWallSpanMinutes(clusterItems) >= minDisplayMinutes) {
+            break;
+         }
+      }
+
+      clusters.push(
+         clusterItems.length === 1
+            ? clusterItems[0]
+            : buildClusterLayoutItem(clusterItems)
       );
-      const bucketStartMinutes = windowStartMinutes + (
-         bucketIndex * clusterWindowMinutes
-      );
-      const currentCluster = clustersByBucket.get(bucketStartMinutes) ?? {
-         startMinutes: bucketStartMinutes,
-         items: [],
-      };
+   }
 
-      currentCluster.items.push(scheduledItem);
-      clustersByBucket.set(bucketStartMinutes, currentCluster);
-   });
-
-   return [...clustersByBucket.values()].map((cluster) => (
-      cluster.items.length === 1
-         ? cluster.items[0]
-         : buildClusterLayoutItem(cluster.items)
-   ));
+   return clusters;
 }
 
-function clusterScheduledItemsByAnchorSlot(scheduledItems = []) {
-   const itemsByAnchor = new Map();
-
-   scheduledItems.forEach((scheduledItem) => {
-      const anchorItems = itemsByAnchor.get(scheduledItem.anchorSlotMinutes) ?? [];
-
-      anchorItems.push(scheduledItem);
-      itemsByAnchor.set(scheduledItem.anchorSlotMinutes, anchorItems);
-   });
-
-   return [...itemsByAnchor.values()].flatMap((anchorItems) => (
-      clusterScheduledItemsByStartTimeProximity(
-         anchorItems,
-         SCHEDULED_PILL_TIME_CLUSTER_MINUTES,
-         anchorItems[0]?.anchorSlotMinutes ?? 0
-      )
-   ));
+/** @deprecated Use clusterShortScheduledItemsForDisplay */
+export function clusterScheduledItemsByDuration(
+   scheduledItems = [],
+   minDisplayMinutes = getScheduledPillMinDisplayMinutes(),
+   _windowStartMinutes = 0
+) {
+   return clusterShortScheduledItemsForDisplay(
+      scheduledItems,
+      minDisplayMinutes
+   );
 }
+
+/** @deprecated Use clusterShortScheduledItemsForDisplay */
+export const clusterScheduledItemsByStartTimeProximity = clusterScheduledItemsByDuration;
 
 function buildRenderGroup(items, horizontalOffsetIndex) {
    const startMinutes = Math.min(...items.map((item) => item.startMinutes));
-   const endMinutes = Math.max(
-      ...items.map((item) => item.startMinutes + item.maximumDuration)
-   );
+   const endMinutes = Math.max(...items.map(getScheduledItemEndMinutes));
    const visualBand = getScheduledPillVisualBand({
       summaryItems: items,
    });
@@ -242,71 +288,22 @@ function buildRenderGroup(items, horizontalOffsetIndex) {
    };
 }
 
-function buildRenderGroupPlacementProxy(renderGroup = {}) {
-   return buildPlacementProxy(
-      {
-         startMinutes: Math.min(
-            ...(renderGroup.items ?? []).map((item) => item.startMinutes)
-         ),
-         maximumDuration: renderGroup.durationMinutes,
-         label: renderGroup.label,
-      },
-      renderGroup.horizontalOffsetIndex
-   );
-}
-
-function findOverlappingRenderGroupForOverflow(
-   groupsByAnchor,
-   anchorSlotMinutes,
-   layoutUnit
-) {
-   const groups = groupsByAnchor.get(anchorSlotMinutes) ?? [];
-
-   return [...groups].reverse().find((group) => (
-      scheduledPillsOverlapInDefaultPosition(
-         buildRenderGroupPlacementProxy(group),
-         layoutUnit
-      )
-   )) ?? null;
-}
-
-function mergeLayoutUnitIntoRenderGroup(renderGroup, layoutUnit) {
-   const layoutUnitItems = getLayoutUnitItems(layoutUnit);
-
-   renderGroup.items.push(...layoutUnitItems);
-   renderGroup.items.sort(compareScheduledItemsForLayout);
-   renderGroup.offsetFraction = Math.min(
-      ...renderGroup.items.map((item) => item.offsetFraction ?? 0)
-   );
-   renderGroup.durationMinutes = Math.max(
-      ...renderGroup.items.map((item) => item.startMinutes + item.maximumDuration)
-   ) - Math.min(...renderGroup.items.map((item) => item.startMinutes));
-   const visualBand = getScheduledPillVisualBand({
-      summaryItems: renderGroup.items,
-   });
-
-   renderGroup.visualStartMinutes = visualBand.startMinutes;
-   renderGroup.visualEndMinutes = visualBand.endMinutes;
-   renderGroup.label = formatScheduledPillGroupLabel(renderGroup.items);
-
-   layoutUnitItems.forEach((scheduledItem) => {
-      scheduledItem.horizontalOffsetIndex = renderGroup.horizontalOffsetIndex;
-   });
-}
-
-function buildPlacementProxy(layoutUnit, horizontalOffsetIndex) {
+function getLayoutUnitDurationFraction(layoutUnit = {}) {
    const items = getLayoutUnitItems(layoutUnit);
+   const startMinutes = Math.min(...items.map((item) => item.startMinutes));
+   const endMinutes = Math.max(...items.map(getScheduledItemEndMinutes));
+   const durationMinutes = endMinutes - startMinutes;
 
-   if (items.length === 1) {
-      return items[0];
-   }
+   return Math.max(
+      durationMinutes / TIMELINE_SLOT_MINUTES,
+      getScheduledPillMinDisplayDurationFraction()
+   );
+}
 
-   return {
-      horizontalOffsetIndex,
-      startMinutes: layoutUnit.startMinutes,
-      maximumDuration: layoutUnit.maximumDuration,
-      label: layoutUnit.label,
-   };
+function getLayoutUnitNaturalOffsetFraction(layoutUnit = {}) {
+   return Math.min(
+      ...getLayoutUnitItems(layoutUnit).map((item) => item.offsetFraction ?? 0)
+   );
 }
 
 function compareRenderGroupsForDisplay(leftGroup = {}, rightGroup = {}) {
@@ -325,58 +322,49 @@ function compareRenderGroupsForDisplay(leftGroup = {}, rightGroup = {}) {
 
 export function planScheduledPillRenderGroupsByAnchor(
    scheduledItems = [],
-   pointPillMarkers = []
+   _pointPillMarkers = []
 ) {
-   const layoutUnits = clusterScheduledItemsByAnchorSlot(scheduledItems)
-      .sort(compareScheduledItemsForLayout);
-   const placedItems = buildPointPillPlacementBlockers(pointPillMarkers);
+   const itemsByAnchor = new Map();
+
+   scheduledItems.forEach((scheduledItem) => {
+      const anchorItems = itemsByAnchor.get(scheduledItem.anchorSlotMinutes) ?? [];
+
+      anchorItems.push(scheduledItem);
+      itemsByAnchor.set(scheduledItem.anchorSlotMinutes, anchorItems);
+   });
+
    const groupsByAnchor = new Map();
+   const sortedAnchorSlots = [...itemsByAnchor.keys()].sort((left, right) => (
+      left - right
+   ));
+   let carryOverFraction = 0;
 
-   layoutUnits.forEach((layoutUnit) => {
-      const anchorSlotMinutes = layoutUnit.anchorSlotMinutes;
-      const layoutUnitItems = getLayoutUnitItems(layoutUnit);
-      const layoutUnitPlacementProxy = buildPlacementProxy(layoutUnit, 0);
-      const horizontalOffsetIndex = computeFirstFreeHorizontalOffsetIndex(
-         placedItems,
-         layoutUnitPlacementProxy,
-         {
-            minColumn: 0,
-            maxColumn: MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS - 1,
-         }
-      );
-      const resolvedHorizontalOffsetIndex = horizontalOffsetIndex
-         >= MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS
-         ? MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS - 1
-         : horizontalOffsetIndex;
+   sortedAnchorSlots.forEach((anchorSlotMinutes) => {
+      const anchorItems = itemsByAnchor.get(anchorSlotMinutes) ?? [];
+      const layoutUnits = clusterShortScheduledItemsForDisplay(anchorItems)
+         .sort(compareScheduledItemsForLayout);
+      let nextStackedOffsetFraction = null;
 
-      if (horizontalOffsetIndex >= MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS) {
-         const overlappingRenderGroup = findOverlappingRenderGroupForOverflow(
-            groupsByAnchor,
-            anchorSlotMinutes,
-            layoutUnitPlacementProxy
+      layoutUnits.forEach((layoutUnit) => {
+         const naturalOffsetFraction = getLayoutUnitNaturalOffsetFraction(
+            layoutUnit
+         );
+         const offsetFraction = nextStackedOffsetFraction === null
+            ? Math.max(naturalOffsetFraction, carryOverFraction)
+            : Math.max(naturalOffsetFraction, nextStackedOffsetFraction);
+         const renderGroup = buildRenderGroup(getLayoutUnitItems(layoutUnit), 0);
+
+         renderGroup.offsetFraction = offsetFraction;
+         nextStackedOffsetFraction = (
+            offsetFraction + getLayoutUnitDurationFraction(layoutUnit)
          );
 
-         if (overlappingRenderGroup) {
-            mergeLayoutUnitIntoRenderGroup(overlappingRenderGroup, layoutUnit);
-            placedItems.push(
-               buildPlacementProxy(layoutUnit, overlappingRenderGroup.horizontalOffsetIndex)
-            );
-            return;
-         }
-      }
-
-      layoutUnit.horizontalOffsetIndex = resolvedHorizontalOffsetIndex;
-      layoutUnitItems.forEach((scheduledItem) => {
-         scheduledItem.horizontalOffsetIndex = resolvedHorizontalOffsetIndex;
+         appendRenderGroup(groupsByAnchor, anchorSlotMinutes, renderGroup);
       });
-      placedItems.push(
-         buildPlacementProxy(layoutUnit, resolvedHorizontalOffsetIndex)
-      );
-      appendRenderGroup(
-         groupsByAnchor,
-         anchorSlotMinutes,
-         buildRenderGroup(layoutUnitItems, resolvedHorizontalOffsetIndex)
-      );
+
+      if (layoutUnits.length > 0 && nextStackedOffsetFraction !== null) {
+         carryOverFraction = Math.max(0, nextStackedOffsetFraction - 1);
+      }
    });
 
    groupsByAnchor.forEach((groups) => {

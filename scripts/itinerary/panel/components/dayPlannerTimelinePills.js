@@ -12,8 +12,6 @@ import {
 } from '../../../shared/enums/scheduleItemKind.js';
 
 const timelinePlacementsByGridLine = new WeakMap();
-const SCHEDULED_PILL_DYNAMIC_GAP_PX = 12;
-const SCHEDULED_PILL_DYNAMIC_MIN_WIDTH_PX = 112;
 
 function getTimelinePlacements(gridLine) {
    let placements = timelinePlacementsByGridLine.get(gridLine);
@@ -75,163 +73,6 @@ function registerTimelinePlacement(
    });
 }
 
-function findPlacementForStrip(
-   gridLine,
-   offsetFraction,
-   horizontalOffsetIndex = 0
-) {
-   const offsetKey = String(offsetFraction);
-   const horizontalOffsetKey = String(horizontalOffsetIndex);
-
-   return getTimelinePlacements(gridLine).find((placement) => (
-      String(placement.anchorOffsetFraction) === offsetKey
-      && String(placement.horizontalOffsetIndex ?? 0) === horizontalOffsetKey
-   )) ?? null;
-}
-
-function expandPlacementForScheduledPill(
-   gridLine,
-   offsetFraction,
-   durationMinutes,
-   horizontalOffsetIndex = 0
-) {
-   const existingPlacement = findPlacementForStrip(
-      gridLine,
-      offsetFraction,
-      horizontalOffsetIndex
-   );
-
-   if (!existingPlacement) {
-      return;
-   }
-
-   const durationFraction = durationMinutes / TIMELINE_SLOT_MINUTES;
-
-   existingPlacement.durationFraction = Math.max(
-      existingPlacement.durationFraction,
-      durationFraction
-   );
-}
-
-function readStripHorizontalOffsetIndex(strip) {
-   const rawValue = strip.getAttribute?.('data-horizontal-offset-index')
-      ?? strip.attributes?.['data-horizontal-offset-index']
-      ?? '0';
-
-   const parsedValue = Number.parseInt(rawValue, 10);
-
-   return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : 0;
-}
-
-function readNumericAttribute(element, attributeName) {
-   const rawValue = element.getAttribute?.(attributeName)
-      ?? element.attributes?.[attributeName];
-   const parsedValue = Number.parseFloat(rawValue);
-
-   return Number.isFinite(parsedValue) ? parsedValue : null;
-}
-
-function readStripVisualRange(strip) {
-   const rect = strip.getBoundingClientRect?.();
-
-   if (
-      rect
-      && Number.isFinite(rect.top)
-      && Number.isFinite(rect.bottom)
-      && rect.bottom > rect.top
-   ) {
-      return {
-         start: rect.top,
-         end: rect.bottom,
-      };
-   }
-
-   const start = readNumericAttribute(strip, 'data-visual-start-minutes');
-   const end = readNumericAttribute(strip, 'data-visual-end-minutes');
-
-   if (Number.isFinite(start) && Number.isFinite(end) && end > start) {
-      return {
-         start,
-         end,
-      };
-   }
-
-   return null;
-}
-
-function visualRangesOverlap(leftRange, rightRange) {
-   return Boolean(
-      leftRange
-      && rightRange
-      && leftRange.start < rightRange.end
-      && rightRange.start < leftRange.end
-   );
-}
-
-function findPrimaryPillInStrip(strip) {
-   for (const child of strip.children ?? []) {
-      if (
-         child.classList?.contains('itinerary-day-scheduled-pill')
-         || child.classList?.contains('itinerary-day-open-pill')
-      ) {
-         return child;
-      }
-   }
-
-   return null;
-}
-
-function measurePillWidth(pill) {
-   const rect = pill?.getBoundingClientRect?.();
-
-   if (rect && Number.isFinite(rect.width) && rect.width > 0) {
-      return rect.width;
-   }
-
-   if (Number.isFinite(pill?.offsetWidth) && pill.offsetWidth > 0) {
-      return pill.offsetWidth;
-   }
-
-   return 0;
-}
-
-function getStripAvailableWidth(strip) {
-   const gridLine = strip.parentElement;
-   const rect = gridLine?.getBoundingClientRect?.();
-
-   if (rect && Number.isFinite(rect.width) && rect.width > 0) {
-      return Math.max(0, rect.width - 44);
-   }
-
-   return 0;
-}
-
-function measureStripHorizontalOffsetPx(strip) {
-   const gridLineRect = strip.parentElement?.getBoundingClientRect?.();
-   const stripRect = strip.getBoundingClientRect?.();
-
-   if (
-      gridLineRect
-      && stripRect
-      && Number.isFinite(gridLineRect.left)
-      && Number.isFinite(stripRect.left)
-   ) {
-      return Math.max(0, stripRect.left - gridLineRect.left - 22);
-   }
-
-   return 0;
-}
-
-function applyDynamicScheduledOffset(strip, offsetPx) {
-   const roundedOffset = Math.max(0, Math.round(offsetPx));
-
-   strip.setAttribute('data-dynamic-horizontal-offset', 'true');
-   strip.style.setProperty(
-      '--itinerary-pill-dynamic-horizontal-offset',
-      `${roundedOffset}px`
-   );
-}
-
 function isScheduledPillStrip(strip) {
    return (
       strip.getAttribute?.('data-scheduled-column')
@@ -239,131 +80,19 @@ function isScheduledPillStrip(strip) {
    ) === 'true';
 }
 
-function isPillStrip(strip) {
-   return strip?.classList?.contains('itinerary-day-pill-strip')
-      || strip?.className === 'itinerary-day-pill-strip';
-}
-
-function compareScheduledStripEntriesForCompaction(leftEntry, rightEntry) {
-   const leftStart = leftEntry.visualRange?.start ?? Number.POSITIVE_INFINITY;
-   const rightStart = rightEntry.visualRange?.start ?? Number.POSITIVE_INFINITY;
-   const startDelta = leftStart - rightStart;
-
-   if (startDelta !== 0) {
-      return startDelta;
-   }
-
-   const leftEnd = leftEntry.visualRange?.end ?? Number.POSITIVE_INFINITY;
-   const rightEnd = rightEntry.visualRange?.end ?? Number.POSITIVE_INFINITY;
-   const endDelta = leftEnd - rightEnd;
-
-   if (endDelta !== 0) {
-      return endDelta;
-   }
-
-   return leftEntry.horizontalOffsetIndex - rightEntry.horizontalOffsetIndex;
-}
-
-export function compactScheduledPillStripOffsets(timeline) {
-   if (!timeline?.querySelectorAll) {
-      return;
-   }
-
-   const strips = [...timeline.querySelectorAll('.itinerary-day-pill-strip')]
-      .filter(isPillStrip)
-      .map((strip) => ({
-         strip,
-         horizontalOffsetIndex: readStripHorizontalOffsetIndex(strip),
-         isScheduled: isScheduledPillStrip(strip),
-         visualRange: readStripVisualRange(strip),
-      }));
-   const dynamicOffsets = new Map();
-   const placedEntries = strips.filter((entry) => !entry.isScheduled);
-
-   placedEntries.forEach((entry) => {
-      dynamicOffsets.set(entry.strip, measureStripHorizontalOffsetPx(entry.strip));
-   });
-
-   strips
-      .filter((entry) => entry.isScheduled)
-      .sort(compareScheduledStripEntriesForCompaction)
-      .forEach((entry) => {
-         const blockers = placedEntries.filter((candidate) => (
-            candidate.horizontalOffsetIndex <= entry.horizontalOffsetIndex
-            && visualRangesOverlap(candidate.visualRange, entry.visualRange)
-         ));
-         const requestedOffset = blockers.reduce((maxOffset, blocker) => {
-            const blockerOffset = dynamicOffsets.get(blocker.strip) ?? 0;
-            const blockerWidth = measurePillWidth(findPrimaryPillInStrip(blocker.strip));
-
-            if (blockerWidth <= 0) {
-               return maxOffset;
-            }
-
-            return Math.max(
-               maxOffset,
-               blockerOffset + blockerWidth + SCHEDULED_PILL_DYNAMIC_GAP_PX
-            );
-         }, 0);
-         const availableWidth = getStripAvailableWidth(entry.strip);
-         const clampedOffset = availableWidth > SCHEDULED_PILL_DYNAMIC_MIN_WIDTH_PX
-            ? Math.min(
-               requestedOffset,
-               availableWidth - SCHEDULED_PILL_DYNAMIC_MIN_WIDTH_PX
-            )
-            : requestedOffset;
-
-         dynamicOffsets.set(
-            entry.strip,
-            clampedOffset > 0
-               ? clampedOffset
-               : measureStripHorizontalOffsetPx(entry.strip)
-         );
-
-         if (clampedOffset > 0) {
-            applyDynamicScheduledOffset(entry.strip, clampedOffset);
-         }
-
-         placedEntries.push(entry);
-      });
-}
-
-export function scheduleScheduledPillStripCompaction(timeline) {
-   if (!timeline) {
-      return;
-   }
-
-   const compactTimeline = () => compactScheduledPillStripOffsets(timeline);
-   const requestFrame = globalThis.requestAnimationFrame
-      ?? globalThis.window?.requestAnimationFrame;
-
-   if (typeof requestFrame === 'function') {
-      requestFrame(compactTimeline);
-   }
-   else {
-      compactTimeline();
-   }
-
-}
-
-function findPillStrip(gridLine, offsetFraction = 0, horizontalOffsetIndex = 0) {
+function findPointPillStrip(gridLine, offsetFraction = 0) {
    const offsetKey = String(offsetFraction);
-   const horizontalOffsetKey = String(horizontalOffsetIndex);
 
    for (const child of gridLine.children) {
-      if (child.className !== 'itinerary-day-pill-strip') {
+      if (child.className !== 'itinerary-day-pill-strip' || isScheduledPillStrip(child)) {
          continue;
       }
 
       const childOffset = child.getAttribute?.('data-offset-fraction')
          ?? child.attributes?.['data-offset-fraction']
          ?? '0';
-      const childHorizontalOffset = String(readStripHorizontalOffsetIndex(child));
 
-      if (
-         childOffset === offsetKey
-         && childHorizontalOffset === horizontalOffsetKey
-      ) {
+      if (childOffset === offsetKey) {
          return child;
       }
    }
@@ -391,49 +120,14 @@ function resolveStripPlacementBand(
    return pointBand;
 }
 
-function getOrCreatePillStrip(
-   gridLine,
-   offsetFraction = 0,
-   {
-      durationMinutes = null,
-      horizontalOffsetIndex = null,
-   } = {}
-) {
-   const placementBand = resolveStripPlacementBand(
-      gridLine,
-      offsetFraction,
-      durationMinutes
-   );
-   const placements = getTimelinePlacements(gridLine);
-   const isPointPillStrip = !Number.isFinite(durationMinutes) || durationMinutes <= 0;
-   const hasPresetHorizontalOffsetIndex = Number.isFinite(horizontalOffsetIndex);
-   const resolvedHorizontalOffsetIndex = hasPresetHorizontalOffsetIndex
-      ? horizontalOffsetIndex
-      : computeTimelineHorizontalOffsetIndex(
-         placements,
-         placementBand.offsetFraction,
-         placementBand.durationFraction
-      );
+function getOrCreatePointPillStrip(gridLine, offsetFraction = 0) {
+   const existingStrip = findPointPillStrip(gridLine, offsetFraction);
 
-   if (isPointPillStrip) {
-      const existingStrip = findPillStrip(gridLine, offsetFraction, 0);
-
-      if (existingStrip) {
-         return existingStrip;
-      }
-   }
-   else {
-      const existingStrip = findPillStrip(
-         gridLine,
-         offsetFraction,
-         resolvedHorizontalOffsetIndex
-      );
-
-      if (existingStrip) {
-         return existingStrip;
-      }
+   if (existingStrip) {
+      return existingStrip;
    }
 
+   const placementBand = resolveStripPlacementBand(gridLine, offsetFraction);
    const pillStrip = el('div', 'itinerary-day-pill-strip');
 
    if (offsetFraction > 0) {
@@ -444,41 +138,50 @@ function getOrCreatePillStrip(
       );
    }
 
-   applyHorizontalOffsetIndex(pillStrip, resolvedHorizontalOffsetIndex);
-
-   if (!isPointPillStrip) {
-      markScheduledPillStrip(pillStrip);
-   }
-
+   applyHorizontalOffsetIndex(pillStrip, 0);
    registerTimelinePlacement(gridLine, {
       ...placementBand,
       anchorOffsetFraction: offsetFraction,
-      horizontalOffsetIndex: resolvedHorizontalOffsetIndex,
+      horizontalOffsetIndex: 0,
    });
    gridLine.appendChild(pillStrip);
 
    return pillStrip;
 }
 
-function findFirstScheduledPillInStrip(strip) {
-   for (const child of strip.children) {
-      if (child.classList?.contains('itinerary-day-scheduled-pill')) {
-         return child;
-      }
+function createScheduledPillStrip(
+   gridLine,
+   offsetFraction = 0,
+   durationMinutes = 0
+) {
+   const placementBand = resolveStripPlacementBand(
+      gridLine,
+      offsetFraction,
+      durationMinutes
+   );
+   const pillStrip = el('div', 'itinerary-day-pill-strip');
+
+   if (offsetFraction > 0) {
+      pillStrip.setAttribute('data-offset-fraction', String(offsetFraction));
+      pillStrip.style.setProperty(
+         '--itinerary-pill-offset-fraction',
+         String(offsetFraction)
+      );
    }
 
-   return null;
-}
-
-function insertPointPillInStrip(strip, pill) {
-   const firstScheduledPill = findFirstScheduledPillInStrip(strip);
-
-   if (firstScheduledPill) {
-      strip.insertBefore(pill, firstScheduledPill);
-      return;
+   if (findPointPillStrip(gridLine, offsetFraction)) {
+      pillStrip.setAttribute('data-clears-point-pill', 'true');
    }
 
-   strip.appendChild(pill);
+   markScheduledPillStrip(pillStrip);
+   registerTimelinePlacement(gridLine, {
+      ...placementBand,
+      anchorOffsetFraction: offsetFraction,
+      horizontalOffsetIndex: 0,
+   });
+   gridLine.appendChild(pillStrip);
+
+   return pillStrip;
 }
 
 export function appendTimelinePill(
@@ -498,9 +201,13 @@ export function appendTimelinePill(
    }
 
    insertPointPillInStrip(
-      getOrCreatePillStrip(gridLine, offsetFraction),
+      getOrCreatePointPillStrip(gridLine, offsetFraction),
       pill
    );
+}
+
+function insertPointPillInStrip(strip, pill) {
+   strip.appendChild(pill);
 }
 
 function buildScheduledPillMenuItems(
@@ -593,24 +300,51 @@ function mergeScheduledPillMenuItems(items = [], scheduleHandlers = {}, strings 
    return menuItems;
 }
 
+export function buildGroupedScheduledPillItems(
+   scheduledItems = [],
+   scheduleHandlers = {},
+   strings = {},
+   resolveItemLabelClick = () => null
+) {
+   return scheduledItems.map((scheduledItem) => ({
+      label: scheduledItem.label,
+      startTime: scheduledItem.item?.start_time ?? '',
+      endTime: scheduledItem.item?.end_time ?? '',
+      onLabelClick: resolveItemLabelClick(scheduledItem),
+      menuItems: buildScheduledPillMenuItems(
+         scheduledItem,
+         scheduleHandlers,
+         strings
+      ),
+   }));
+}
+
 export function resolveGroupedScheduledPillOptions(
    scheduledItems = [],
    scheduleHandlers = {},
-   strings = {}
+   strings = {},
+   resolveItemLabelClick = () => null
 ) {
+   const groupItems = buildGroupedScheduledPillItems(
+      scheduledItems,
+      scheduleHandlers,
+      strings,
+      resolveItemLabelClick
+   );
    const menuItems = mergeScheduledPillMenuItems(
       scheduledItems,
       scheduleHandlers,
       strings
    );
 
-   if (!menuItems.length) {
+   if (!menuItems.length && groupItems.length <= 1) {
       return {};
    }
 
    return {
       menuAriaLabel: strings.scheduledItemMenuAria,
       menuItems,
+      groupItems,
    };
 }
 
@@ -622,17 +356,16 @@ export function appendScheduledDurationPill(
       durationMinutes,
       startTime,
       endTime,
+      groupItems = [],
       menuItems = [],
       menuAriaLabel = '',
       onLabelClick = null,
-      horizontalOffsetIndex = null,
-      visualStartMinutes = null,
-      visualEndMinutes = null,
    }
 ) {
    const pill = makeScheduledPill(label, durationMinutes, {
       startTime,
       endTime,
+      groupItems,
       menuItems,
       menuAriaLabel,
       onLabelClick,
@@ -642,22 +375,12 @@ export function appendScheduledDurationPill(
       return;
    }
 
-   const strip = getOrCreatePillStrip(gridLine, offsetFraction, {
-      durationMinutes,
-      horizontalOffsetIndex,
-   });
-
-   if (Number.isFinite(visualStartMinutes) && Number.isFinite(visualEndMinutes)) {
-      strip.setAttribute('data-visual-start-minutes', String(visualStartMinutes));
-      strip.setAttribute('data-visual-end-minutes', String(visualEndMinutes));
-   }
-
-   expandPlacementForScheduledPill(
+   const strip = createScheduledPillStrip(
       gridLine,
       offsetFraction,
-      durationMinutes,
-      readStripHorizontalOffsetIndex(strip)
+      durationMinutes
    );
+
    strip.appendChild(pill);
 }
 
