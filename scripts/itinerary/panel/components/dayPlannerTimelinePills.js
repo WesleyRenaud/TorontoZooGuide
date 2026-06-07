@@ -1,5 +1,6 @@
 import { getPointPillStripPlacementBand } from '../dayPlannerTimelineMetrics.js';
 import {
+   makeBoundaryMarker,
    makeOpenPill,
    makeScheduledPill,
 } from './dayPlannerTimePill.js';
@@ -151,6 +152,14 @@ function getOrCreatePointPillStrip(gridLine, offsetFraction = 0) {
    return pillStrip;
 }
 
+function applyPointPillStripPlacement(pillStrip, placement = '') {
+   if (!pillStrip || !placement) {
+      return;
+   }
+
+   pillStrip.setAttribute('data-visit-boundary-placement', placement);
+}
+
 function createScheduledPillStrip(
    gridLine,
    offsetFraction = 0,
@@ -171,10 +180,6 @@ function createScheduledPillStrip(
          '--itinerary-pill-offset-fraction',
          String(offsetFraction)
       );
-   }
-
-   if (findPointPillStrip(gridLine, offsetFraction)) {
-      pillStrip.setAttribute('data-clears-point-pill', 'true');
    }
 
    markScheduledPillStrip(pillStrip);
@@ -198,16 +203,18 @@ export function appendTimelinePill(
       return;
    }
 
-   const pill = makeOpenPill(label, pillOptions);
+   const pill = pillOptions.visitBoundaryPlacement
+      ? makeBoundaryMarker(label, pillOptions)
+      : makeOpenPill(label, pillOptions);
 
    if (!pill) {
       return;
    }
 
-   insertPointPillInStrip(
-      getOrCreatePointPillStrip(gridLine, offsetFraction),
-      pill
-   );
+   const strip = getOrCreatePointPillStrip(gridLine, offsetFraction);
+
+   applyPointPillStripPlacement(strip, pillOptions.visitBoundaryPlacement);
+   insertPointPillInStrip(strip, pill);
 }
 
 function insertPointPillInStrip(strip, pill) {
@@ -401,26 +408,32 @@ function resolveTimePillOptions(
 ) {
    const boundaries = normalizeVisitBoundaryEventTypes(visitBoundaryEventTypes);
 
-   if (
-      marker.kind === boundaries.arrival
-      && typeof timeHandlers.onArrivalTimeChange === 'function'
-   ) {
-      return {
+   if (marker.kind === boundaries.arrival) {
+      const options = {
          menuAriaLabel: strings.arrivalTimeMenuAria,
          removeLabel: strings.remove,
-         onRemove: () => timeHandlers.onArrivalTimeChange(''),
+         visitBoundaryPlacement: 'ends-at-anchor',
       };
+
+      if (typeof timeHandlers.onArrivalTimeChange === 'function') {
+         options.onRemove = () => timeHandlers.onArrivalTimeChange('');
+      }
+
+      return options;
    }
 
-   if (
-      marker.kind === boundaries.departure
-      && typeof timeHandlers.onDepartureTimeChange === 'function'
-   ) {
-      return {
+   if (marker.kind === boundaries.departure) {
+      const options = {
          menuAriaLabel: strings.departureTimeMenuAria,
          removeLabel: strings.remove,
-         onRemove: () => timeHandlers.onDepartureTimeChange(''),
+         visitBoundaryPlacement: 'starts-at-anchor',
       };
+
+      if (typeof timeHandlers.onDepartureTimeChange === 'function') {
+         options.onRemove = () => timeHandlers.onDepartureTimeChange('');
+      }
+
+      return options;
    }
 
    return {};
