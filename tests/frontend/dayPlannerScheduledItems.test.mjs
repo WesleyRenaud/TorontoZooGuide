@@ -231,6 +231,40 @@ test('planScheduledPillRenderGroupsByAnchor leaves no gap between consecutive la
    }
 });
 
+test('planScheduledPillRenderGroupsByAnchor merges gapped under-min clusters into the next group', () => {
+   const groups = planScheduledPillRenderGroupsByAnchor([
+      makeScheduledItem('Black Carp', 600, 1, 600),
+      makeScheduledItem('Black-Breasted Leaf Turtle', 601, 1, 600),
+      makeScheduledItem('Burmese Star Tortoise', 603, 1, 600),
+      makeScheduledItem('Crested Wood Partridge', 604, 2, 600),
+   ]).get(600) ?? [];
+
+   assert.equal(groups.length, 1);
+   assert.equal(groups[0]?.label ?? groups[0]?.items[0]?.label, 'Black Carp + 3');
+   assert.equal(groups[0]?.durationMinutes, 6);
+   assert.equal(groups[0]?.displayDurationMinutes, 6);
+});
+
+test('planScheduledPillRenderGroupsByAnchor keeps real gaps after short groups', () => {
+   const groups = planScheduledPillRenderGroupsByAnchor([
+      makeScheduledItem('Indian Peafowl', 600, 1, 600),
+      makeScheduledItem('Luzon Bleeding-Heart Dove', 625, 2, 600),
+   ]).get(600) ?? [];
+
+   assert.equal(groups.length, 2);
+   assert.deepEqual(
+      groups.map((group) => group.label ?? group.items[0].label),
+      [
+         'Indian Peafowl',
+         'Luzon Bleeding-Heart Dove',
+      ]
+   );
+   assert.equal(groups[0]?.durationMinutes, 1);
+   assert.equal(groups[0]?.displayDurationMinutes, getScheduledPillMinDisplayMinutes());
+   assert.equal(groups[1]?.durationMinutes, 2);
+   assert.equal(groups[1]?.displayDurationMinutes, getScheduledPillMinDisplayMinutes());
+});
+
 test('planScheduledPillRenderGroupsByAnchor uses start times for pill positions', () => {
    const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Two-Toed Sloth', 570, 30, 570),
@@ -296,10 +330,10 @@ test('planScheduledPillRenderGroupsByAnchor merges a lone tail orphan into the p
    ]);
    const groups = groupsByAnchor.get(990) ?? [];
 
-   assert.equal(groups.length, 2);
-   assert.equal(groups[0]?.label ?? groups[0]?.items[0]?.label, 'Black-Handed Spider Monkey');
-   assert.equal(groups[1]?.label ?? groups[1]?.items[0]?.label, 'Red-Legged Seriema');
-   assert.equal(groups[1]?.displayDurationMinutes, getScheduledPillMinDisplayMinutes());
+   assert.equal(groups.length, 1);
+   assert.equal(groups[0]?.label ?? groups[0]?.items[0]?.label, 'Black-Handed Spider Monkey + 1');
+   assert.equal(groups[0]?.durationMinutes, 12);
+   assert.equal(groups[0]?.displayDurationMinutes, 12);
 });
 
 test('planScheduledPillRenderGroupsByAnchor renders isolated short visits at minimum height', () => {
@@ -348,19 +382,18 @@ test('planScheduledPillRenderGroupsByAnchor merges overlapping visits into carou
    ]);
    const groups = groupsByAnchor.get(960) ?? [];
 
-   assert.equal(groups.length, 5);
+   assert.equal(groups.length, 4);
    assert.deepEqual(
       groups.map((group) => group.label ?? group.items[0].label),
       [
          'Snow Leopard',
          'Steller Sea Eagle',
          'West Caucasian Tur',
-         'Domestic Goat',
-         'African Spurred Tortoise + 1',
+         'Domestic Goat + 2',
       ]
    );
    assert.equal(groups[0]?.items.length, 1);
-   assert.equal(groups[4]?.items.length, 2);
+   assert.equal(groups[3]?.items.length, 3);
 });
 
 test('planScheduledPillRenderGroupsByAnchor gives each full-length visit its own pill', () => {

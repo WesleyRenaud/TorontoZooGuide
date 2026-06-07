@@ -94,7 +94,7 @@ export function formatClockTime(timeValue, fallback = '') {
       return fallback;
    }
 
-   const timeParts = timeValue.trim().match(/^(\d{1,2}):(\d{2})$/);
+   const timeParts = timeValue.trim().match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
 
    if (!timeParts) {
       return timeValue.trim();
@@ -102,10 +102,14 @@ export function formatClockTime(timeValue, fallback = '') {
 
    const hours = Number(timeParts[1]);
    const minutes = Number(timeParts[2]);
+   const seconds = timeParts[3] == null ? 0 : Number(timeParts[3]);
    const period = hours >= 12 ? 'PM' : 'AM';
    const displayHours = hours % 12 || 12;
+   const secondsLabel = seconds > 0
+      ? `:${String(seconds).padStart(2, '0')}`
+      : '';
 
-   return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+   return `${displayHours}:${String(minutes).padStart(2, '0')}${secondsLabel} ${period}`;
 }
 
 export function normalizeAnimal(value) {

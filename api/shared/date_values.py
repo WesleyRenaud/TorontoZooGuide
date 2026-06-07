@@ -64,7 +64,10 @@ class DateValues:
       if parsed_time == None:
          return None
 
-      return parsed_time.strftime( '%H:%M' )
+      if parsed_time.second == 0:
+         return parsed_time.strftime( '%H:%M' )
+
+      return parsed_time.strftime( '%H:%M:%S' )
 
 
    @staticmethod

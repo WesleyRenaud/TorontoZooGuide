@@ -163,6 +163,7 @@ def test_parse_values_raise_for_unsupported_formats() -> None:
       ( '   ', None ),
       ( '1:00 PM', '13:00' ),
       ( '13:45', '13:45' ),
+      ( '13:45:30', '13:45:30' ),
       ( '10:00', '10:00' ),
       ( 'not-a-time', None ),
    ]

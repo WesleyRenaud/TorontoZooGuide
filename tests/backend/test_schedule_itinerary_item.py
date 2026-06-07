@@ -195,6 +195,51 @@ def test_schedule_itinerary_animal_skips_existing_scheduled_slot(
    assert scheduled.start_time == '09:38'
 
 
+def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   db.conn.execute(
+      """   UPDATE Enclosure
+            SET DEFAULT_ITINERARY_DURATION_MINUTES = ?
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?;
+      """,
+      ( 0.5, 'African Lion', 'Africa Savanna' ) )
+   db.conn.commit()
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY )
+
+   assert result.success
+   assert result.itinerary.animals[ 0 ].start_time == '09:30'
+   assert result.itinerary.animals[ 0 ].end_time == '09:30:30'
+
+   db.conn.execute(
+      """   UPDATE Enclosure
+            SET DEFAULT_ITINERARY_DURATION_MINUTES = ?
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?;
+      """,
+      ( 8, 'African Lion', 'Africa Savanna' ) )
+   db.conn.commit()
+
+   refreshed_itinerary = ItineraryController.get_itinerary()
+
+   assert refreshed_itinerary.animals[ 0 ].start_time == '09:30'
+   assert refreshed_itinerary.animals[ 0 ].end_time == '09:30:30'
+
+
 def test_schedule_itinerary_animal_rejects_unavailable_requested_start_time(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
