@@ -223,6 +223,34 @@ function isUnderMinDisplayLayoutUnit(
    return getLayoutUnitWallSpanMinutes(layoutUnit) < minDisplayMinutes;
 }
 
+function underMinLayoutUnitsNeedMerge(
+   leftUnit = {},
+   rightUnit = {},
+   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+) {
+   const leftStartMinutes = getLayoutUnitStartMinutes(leftUnit);
+   const leftEndMinutes = getLayoutUnitEndMinutes(leftUnit);
+   const rightStartMinutes = getLayoutUnitStartMinutes(rightUnit);
+   const rightEndMinutes = getLayoutUnitEndMinutes(rightUnit);
+
+   if (
+      !Number.isFinite(leftStartMinutes)
+      || !Number.isFinite(leftEndMinutes)
+      || !Number.isFinite(rightStartMinutes)
+      || !Number.isFinite(rightEndMinutes)
+   ) {
+      return false;
+   }
+
+   return (
+      isUnderMinDisplayLayoutUnit(leftUnit, minDisplayMinutes)
+      && leftStartMinutes + minDisplayMinutes >= rightStartMinutes
+   ) || (
+      isUnderMinDisplayLayoutUnit(rightUnit, minDisplayMinutes)
+      && rightEndMinutes - minDisplayMinutes <= leftEndMinutes
+   );
+}
+
 function mergeConsecutiveUnderMinDisplayLayoutUnits(
    layoutUnits = [],
    minDisplayMinutes = getScheduledPillMinDisplayMinutes()
@@ -258,6 +286,56 @@ function mergeConsecutiveUnderMinDisplayLayoutUnits(
    }
 
    return mergedUnits;
+}
+
+function mergeUnderMinDisplayLayoutUnits(
+   layoutUnits = [],
+   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+) {
+   const nextUnits = [];
+   let index = 0;
+   let changed = false;
+
+   while (index < layoutUnits.length) {
+      const layoutUnit = layoutUnits[index];
+      const nextUnit = layoutUnits[index + 1];
+
+      if (
+         isUnderMinDisplayLayoutUnit(layoutUnit, minDisplayMinutes)
+         && nextUnit
+         && underMinLayoutUnitsNeedMerge(layoutUnit, nextUnit, minDisplayMinutes)
+         && canMergeCarouselLayoutUnits(layoutUnit, nextUnit)
+      ) {
+         nextUnits.push(mergeLayoutUnits(layoutUnit, nextUnit));
+         index += 2;
+         changed = true;
+         continue;
+      }
+
+      if (
+         isUnderMinDisplayLayoutUnit(layoutUnit, minDisplayMinutes)
+         && nextUnits.length > 0
+         && underMinLayoutUnitsNeedMerge(
+            nextUnits[nextUnits.length - 1],
+            layoutUnit,
+            minDisplayMinutes
+         )
+         && canMergeCarouselLayoutUnits(nextUnits[nextUnits.length - 1], layoutUnit)
+      ) {
+         nextUnits[nextUnits.length - 1] = mergeLayoutUnits(
+            nextUnits[nextUnits.length - 1],
+            layoutUnit
+         );
+         index += 1;
+         changed = true;
+         continue;
+      }
+
+      nextUnits.push(layoutUnit);
+      index += 1;
+   }
+
+   return { layoutUnits: nextUnits, changed };
 }
 
 function absorbHeadOrphanLayoutUnits(
@@ -302,10 +380,17 @@ function normalizeLayoutUnitsForDisplay(
          ),
          minDisplayMinutes
       );
+      const underMinMergeResult = mergeUnderMinDisplayLayoutUnits(
+         normalizedUnits,
+         minDisplayMinutes
+      );
+
+      normalizedUnits = underMinMergeResult.layoutUnits;
       changed = normalizedUnits.length !== previousUnits.length
          || normalizedUnits.some((layoutUnit, index) => (
             layoutUnit !== previousUnits[index]
-         ));
+         ))
+         || underMinMergeResult.changed;
    }
 
    return normalizedUnits;

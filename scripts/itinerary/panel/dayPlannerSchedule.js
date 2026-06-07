@@ -7,20 +7,30 @@ export function parseClockTimeMinutes(timeValue) {
    }
 
    const normalizedTimeValue = timeValue.trim();
-   const timeParts = normalizedTimeValue.match(/^(\d{1,2}):(\d{2})$/);
+   const timeParts = normalizedTimeValue.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
 
    if (timeParts) {
       const hours = Number(timeParts[1]);
       const minutes = Number(timeParts[2]);
+      const seconds = timeParts[3] == null ? 0 : Number(timeParts[3]);
 
-      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+      if (
+         hours < 0
+         || hours > 23
+         || minutes < 0
+         || minutes > 59
+         || seconds < 0
+         || seconds > 59
+      ) {
          return null;
       }
 
-      return (hours * 60) + minutes;
+      return (hours * 60) + minutes + (seconds / 60);
    }
 
-   const displayTimeParts = normalizedTimeValue.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+   const displayTimeParts = normalizedTimeValue.match(
+      /^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)$/i
+   );
 
    if (!displayTimeParts) {
       return null;
@@ -28,20 +38,25 @@ export function parseClockTimeMinutes(timeValue) {
 
    const displayHours = Number(displayTimeParts[1]);
    const displayMinutes = Number(displayTimeParts[2]);
-   const period = displayTimeParts[3].toUpperCase();
+   const displaySeconds = displayTimeParts[3] == null
+      ? 0
+      : Number(displayTimeParts[3]);
+   const period = displayTimeParts[4].toUpperCase();
 
    if (
       displayHours < 1
       || displayHours > 12
       || displayMinutes < 0
       || displayMinutes > 59
+      || displaySeconds < 0
+      || displaySeconds > 59
    ) {
       return null;
    }
 
    const hours = (displayHours % 12) + (period === 'PM' ? 12 : 0);
 
-   return (hours * 60) + displayMinutes;
+   return (hours * 60) + displayMinutes + (displaySeconds / 60);
 }
 
 export function formatMinutesAsScheduleTimeKey(totalMinutes) {

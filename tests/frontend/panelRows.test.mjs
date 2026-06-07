@@ -340,10 +340,13 @@ test.describe('itinerary panel rows', () => {
       assert.equal(formatISODateFull('2026-06-20'), 'Saturday, June 20, 2026');
       assert.equal(formatISODateFull('not-a-date', 'Fallback Date'), 'not-a-date');
       assert.equal(formatClockTime('09:30'), '9:30 AM');
+      assert.equal(formatClockTime('09:30:30'), '9:30:30 AM');
       assert.equal(formatClockTime('19:00'), '7:00 PM');
       assert.equal(formatClockTime('', 'Fallback Time'), 'Fallback Time');
       assert.equal(parseClockTimeMinutes('09:30'), 570);
+      assert.equal(parseClockTimeMinutes('09:30:30'), 570.5);
       assert.equal(parseClockTimeMinutes('10:00 AM'), 600);
+      assert.equal(parseClockTimeMinutes('10:00:30 AM'), 600.5);
       assert.equal(parseClockTimeMinutes('1:30 PM'), 810);
       assert.equal(parseClockTimeMinutes('bad-time'), null);
       assert.equal(formatMinutesAsClockTime(1140), '7:00 PM');
