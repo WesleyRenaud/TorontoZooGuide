@@ -299,7 +299,26 @@ test('planScheduledPillRenderGroupsByAnchor merges a lone tail orphan into the p
    assert.equal(groups.length, 2);
    assert.equal(groups[0]?.label ?? groups[0]?.items[0]?.label, 'Black-Handed Spider Monkey');
    assert.equal(groups[1]?.label ?? groups[1]?.items[0]?.label, 'Red-Legged Seriema');
-   assert.equal(groups[1]?.displayDurationMinutes, 2);
+   assert.equal(groups[1]?.displayDurationMinutes, getScheduledPillMinDisplayMinutes());
+});
+
+test('planScheduledPillRenderGroupsByAnchor renders isolated short visits at minimum height', () => {
+   const groups = planScheduledPillRenderGroupsByAnchor([
+      makeScheduledItem('Greater One-Horned Rhinoceros', 930, 30, 930),
+      makeScheduledItem('Black-Throated Laughingthrush', 960, 2, 960),
+      makeScheduledItem('Red Panda', 990, 30, 990),
+   ]).get(960) ?? [];
+
+   assert.equal(groups.length, 1);
+   assert.equal(
+      groups[0]?.label ?? groups[0]?.items[0]?.label,
+      'Black-Throated Laughingthrush'
+   );
+   assert.equal(groups[0]?.durationMinutes, 2);
+   assert.equal(
+      groups[0]?.displayDurationMinutes,
+      getScheduledPillMinDisplayMinutes()
+   );
 });
 
 test('planScheduledPillRenderGroupsByAnchor keeps scheduled pills at full width', () => {
