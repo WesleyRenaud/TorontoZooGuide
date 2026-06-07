@@ -14,6 +14,7 @@ import { formatItineraryEventTypeLabel } from './scheduleItemEventLabels.js';
 import { getAnimalId } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
+import { buildUniqueSpeciesExhibitEntries } from '../speciesExhibitKey.js';
 
 function getScheduledMaximumDuration(item) {
    const maximumDuration = Number(item?.maximum_duration);
@@ -93,6 +94,35 @@ function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
    ));
 }
 
+function buildScheduledAnimalRows(animals = []) {
+   return buildUniqueSpeciesExhibitEntries(animals, {
+      includeAnimal: hasItineraryScheduleTimes,
+      requireExhibit: false,
+   }).map(({ item, index }) => {
+      const [row] = buildAnimalRows([item]);
+      const startMinutes = parseClockTimeMinutes(item.start_time);
+      const endMinutes = parseClockTimeMinutes(item.end_time);
+      const maximumDuration = getDurationMinutesFromScheduleTimes(item);
+      const label = getScheduledItemLabel(item);
+
+      return {
+         index,
+         item,
+         row,
+         label,
+         startMinutes,
+         endMinutes,
+         maximumDuration,
+      };
+   }).filter((scheduledItem) => (
+      scheduledItem.row
+      && scheduledItem.label
+      && Number.isFinite(scheduledItem.startMinutes)
+      && Number.isFinite(scheduledItem.endMinutes)
+      && Number.isFinite(scheduledItem.maximumDuration)
+   ));
+}
+
 function buildItineraryScheduledItemIndexes(items = []) {
    const indexes = new Set();
 
@@ -140,6 +170,7 @@ function mergeScheduledItemsByAnchorSlot(
          ...scheduledItem,
          offsetFraction,
          anchorSlotMinutes: anchorSlot,
+         slotEndMinutes,
       });
       itemsByAnchorMap.set(anchorSlot, items);
 
@@ -176,11 +207,7 @@ export function buildScheduledItemRowsContext(
       scheduleItemKind: 'wild_encounters',
       scheduleItemKey: String(scheduledItem.item.name).trim(),
    }));
-   const animalRows = buildScheduledItemRows(
-      animals,
-      buildAnimalRows,
-      getDurationMinutesFromScheduleTimes
-   ).map((scheduledItem) => ({
+   const animalRows = buildScheduledAnimalRows(animals).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: ScheduleItemKind.ANIMAL.itemType,
       scheduleItemKey: getAnimalId(scheduledItem.item),

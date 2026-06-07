@@ -195,8 +195,15 @@ export function makeOpenPill(
    return pill;
 }
 
-function applyScheduledPillDuration(pill, durationMinutes) {
-   const durationFraction = durationMinutes / TIMELINE_SLOT_MINUTES;
+function applyScheduledPillDuration(
+   pill,
+   durationMinutes,
+   slotSpanMinutes = TIMELINE_SLOT_MINUTES
+) {
+   const slotSpan = Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
+      ? slotSpanMinutes
+      : TIMELINE_SLOT_MINUTES;
+   const durationFraction = durationMinutes / slotSpan;
 
    pill.style.setProperty(
       '--itinerary-scheduled-pill-duration-fraction',
@@ -364,13 +371,17 @@ function buildGroupedScheduledPill(
       syncActiveItem();
    });
 
+   const trailingControls = el('div', 'itinerary-day-scheduled-pill-trailing-controls');
+
    header.appendChild(previousButton);
    header.appendChild(labelMount);
-   header.appendChild(nextButton);
+   trailingControls.appendChild(nextButton);
 
    if (menuNodes) {
-      header.appendChild(menuNodes.menu);
+      trailingControls.appendChild(menuNodes.menu);
    }
+
+   header.appendChild(trailingControls);
 
    pill.appendChild(header);
    pill.appendChild(timeRangeNode);
@@ -469,6 +480,8 @@ export function makeScheduledPill(
       menuItems = [],
       menuAriaLabel = '',
       onLabelClick = null,
+      slotSpanMinutes = TIMELINE_SLOT_MINUTES,
+      displayDurationMinutes = durationMinutes,
    } = {}
 ) {
    if (!label || !Number.isFinite(durationMinutes) || durationMinutes <= 0) {
@@ -499,7 +512,7 @@ export function makeScheduledPill(
       });
    }
 
-   applyScheduledPillDuration(pill, durationMinutes);
+   applyScheduledPillDuration(pill, displayDurationMinutes, slotSpanMinutes);
 
    return pill;
 }

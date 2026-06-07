@@ -24,6 +24,7 @@ import {
    tagScheduleItemRow,
 } from './scheduleItemSearch.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
+import { buildUniqueSpeciesExhibitEntries } from '../speciesExhibitKey.js';
 import { APP_STRINGS } from '../../strings.js';
 
 function hasItineraryScheduleTimes(item) {
@@ -234,25 +235,8 @@ function maxStoredLikelihood(...values) {
 }
 
 function buildUniqueAnimals(animals = []) {
-   const uniqueAnimalsBySpeciesExhibit = new Map();
-
-   animals.forEach((animal) => {
-      const speciesKey = String(animal.species || '').trim().toLowerCase();
-      const exhibitKey = String(animal.exhibit || '').trim().toLowerCase();
-
-      if (!speciesKey) {
-         return;
-      }
-
-      const animalKey = `${speciesKey}||${exhibitKey}`;
-      const existing = uniqueAnimalsBySpeciesExhibit.get(animalKey);
-
-      if (!existing) {
-         uniqueAnimalsBySpeciesExhibit.set(animalKey, animal);
-         return;
-      }
-
-      uniqueAnimalsBySpeciesExhibit.set(animalKey, {
+   return buildUniqueSpeciesExhibitEntries(animals, {
+      mergeAnimals: (existing, animal) => ({
          ...existing,
          likelihood: maxStoredLikelihood(existing.likelihood, animal.likelihood),
          old_likelihood: maxStoredLikelihood(
@@ -267,10 +251,9 @@ function buildUniqueAnimals(animals = []) {
             existing.likelihoodAfter,
             animal.likelihoodAfter
          ),
-      });
-   });
-
-   return Array.from(uniqueAnimalsBySpeciesExhibit.values());
+      }),
+      requireExhibit: false,
+   }).map(({ item }) => item);
 }
 
 function buildNamedRows(

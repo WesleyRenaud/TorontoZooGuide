@@ -154,6 +154,8 @@ export function appendScheduledItems(
          label: resolveRenderGroupLabel(renderGroup),
          offsetFraction: renderGroup.offsetFraction,
          durationMinutes: renderGroup.durationMinutes,
+         displayDurationMinutes: renderGroup.displayDurationMinutes,
+         slotSpanMinutes: renderGroup.slotSpanMinutes,
          startTime: resolveRenderGroupStartTime(renderGroup),
          endTime: resolveRenderGroupEndTime(renderGroup),
          onLabelClick: resolveRenderGroupLabelClick(renderGroup),
