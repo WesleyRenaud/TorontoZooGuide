@@ -115,6 +115,7 @@ def set_itinerary(
       wild_encounter_controller: type[ WildEncounterController ],
       overriding_conflicting_guardians_talks: bool = False,
       confirming_short_visit: bool = False,
+      confirming_early_admission: bool = False,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
    save_input = map_itinerary_save_input(
@@ -161,6 +162,7 @@ def set_itinerary(
    context, save_warning = check_set_itinerary_save_warnings(
       context,
       confirming_short_visit=confirming_short_visit,
+      confirming_early_admission=confirming_early_admission,
       confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule,
       confirming_wild_encounter_unschedule=confirming_wild_encounter_unschedule,
       overriding_conflicting_guardians_talks=(

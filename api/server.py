@@ -779,6 +779,8 @@ class MyHandler( BaseHTTPRequestHandler ):
          overriding_conflicting_guardians_talks = bool(
             data.get( 'overridingConflictingGuardiansTalks' ) )
          confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
+         confirming_early_admission = bool(
+            data.get( 'confirmingEarlyAdmission' ) )
          confirming_guardians_talk_unschedule = bool(
             data.get( 'confirmingGuardiansTalkUnschedule' ) )
          confirming_wild_encounter_unschedule = bool(
@@ -797,6 +799,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             overriding_conflicting_guardians_talks=(
                overriding_conflicting_guardians_talks ),
             confirming_short_visit=confirming_short_visit,
+            confirming_early_admission=confirming_early_admission,
             confirming_guardians_talk_unschedule=(
                confirming_guardians_talk_unschedule ),
             confirming_wild_encounter_unschedule=(
@@ -941,10 +944,13 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          arrival_time = data.get( 'arrivalTime' )
          confirming_short_visit = bool( data.get( 'confirmingShortVisit' ) )
+         confirming_early_admission = bool(
+            data.get( 'confirmingEarlyAdmission' ) )
 
          save_result = ItineraryController.set_arrival_time(
             arrival_time=arrival_time,
-            confirming_short_visit=confirming_short_visit )
+            confirming_short_visit=confirming_short_visit,
+            confirming_early_admission=confirming_early_admission )
 
          self.send_response( 200 )
          self.send_header( 'Content-type', 'application/json' )

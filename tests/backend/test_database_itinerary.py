@@ -60,6 +60,7 @@ def test_get_itinerary_date_returns_saved_visit_date(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    assert ItineraryController.get_itinerary_date() == '2026-06-15'
@@ -187,6 +188,7 @@ def test_set_itinerary_arrival_and_departure_time_updates_only_requested_field(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    assert ItineraryController.set_arrival_time( '10:15 AM' ).success
@@ -219,6 +221,7 @@ def test_set_itinerary_arrival_time_must_be_within_zoo_admission_hours(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    assert not ItineraryController.set_arrival_time( '09:00' ).success
@@ -250,6 +253,7 @@ def test_set_itinerary_arrival_time_allows_early_admission_when_offered(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    itinerary = ItineraryController.get_itinerary()
@@ -271,6 +275,7 @@ def test_set_itinerary_rejects_arrival_time_outside_zoo_admission_hours(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    result = ItineraryController.set_itinerary(
@@ -327,6 +332,7 @@ def test_set_itinerary_departure_time_requires_opening_not_early_admission(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    assert not ItineraryController.set_departure_time( '09:00' ).success

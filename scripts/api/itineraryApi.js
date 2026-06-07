@@ -265,11 +265,15 @@ function normalizeItineraryTimeSetResponse(response) {
 
 export async function setItineraryArrivalTimeRequest(
    arrivalTime,
-   { confirmingShortVisit = false } = {}
+   {
+      confirmingShortVisit = false,
+      confirmingEarlyAdmission = false,
+   } = {}
 ) {
    const response = await postJson('/set-itinerary-arrival-time', {
       arrivalTime: asTrimmedString(arrivalTime),
       confirmingShortVisit,
+      confirmingEarlyAdmission,
    });
 
    return normalizeItineraryTimeSetResponse(response);
