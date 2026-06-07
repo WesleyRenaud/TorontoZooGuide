@@ -198,6 +198,7 @@ test('sets itinerary arrival and departure times through focused endpoints', asy
          {
             arrivalTime: '09:45',
             confirmingShortVisit: false,
+            confirmingEarlyAdmission: false,
          },
       ],
       [

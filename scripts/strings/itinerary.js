@@ -69,14 +69,16 @@ export const itinerary = {
       scheduleOverrideSelectionTitle: 'Adjust Activity Times?',
       shortVisitTitle: 'Short Visit?',
       shortVisitMessage: (
-         'Your arrival and departure times are very close together. '
-         + 'Are you sure you want to save these times?'
+         'Your arrival and departure times are very close together. Are you sure you want to save these times?'
+      ),
+      earlyAdmissionTitle: 'Early Admission Hours',
+      earlyAdmissionMessage: (
+         'Early admission hours are only available for members and sensory hours. '
       ),
       doNotShowAgain: 'Don’t show this again',
       scheduleItemNotOnItineraryTitle: 'Add to Itinerary?',
       scheduleItemNotOnItineraryMessage: (
-         'This item is not on your itinerary yet. '
-         + 'Do you want to add it and schedule a time?'
+         'This item is not on your itinerary yet. Do you want to add it and schedule a time?'
       ),
       scheduleItemNotOnItineraryConfirm: 'Add to Schedule',
       guardiansTalkUnscheduleTitle: 'Unschedule Conflicting Items?',
@@ -103,6 +105,7 @@ export const itinerary = {
    errors: {
       generic: 'Could not update itinerary.',
       arrivalDepartureTooClose: 'Could not update itinerary time.',
+      earlyAdmissionRequiresMembership: 'Early admission requires membership.',
       noAvailableSlot: 'No open time slot is available for this item.',
       requestedTimeNotAvailable: (
          'That time is not available. Select another start time and try again.'

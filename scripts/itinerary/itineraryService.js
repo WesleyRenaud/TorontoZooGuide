@@ -13,6 +13,7 @@ import { setStoredItineraryDate } from './draftStorage.js';
 import {
    getItineraryErrorTypes,
    isItinerarySuccess,
+   requiresEarlyAdmissionConfirmation,
    requiresGuardiansTalkUnscheduleConfirmation,
    requiresGuardiansTalkWildEncounterTimeConflictConfirmation,
    requiresShortVisitConfirmation,
@@ -27,6 +28,7 @@ import {
    toSetItineraryPayload,
 } from './itineraryShape.js';
 import { buildItineraryValidationState } from './itineraryValidation.js';
+import { showEarlyAdmissionConfirmation } from './panel/earlyAdmissionConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
 import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
 import { showShortVisitConfirmation } from './panel/shortVisitConfirmation.js';
@@ -250,15 +252,47 @@ class ItineraryTimeChangeCancelledError extends Error {
 async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
    const initialResult = await requestFn(timeValue);
 
-   if (
-      isItinerarySuccess(initialResult.errorType)
-      || !requiresShortVisitConfirmation(initialResult.errorType)
-   ) {
-      if (!isItinerarySuccess(initialResult.errorType)) {
-         throw new Error(resolveItineraryErrorMessage(initialResult.errorType));
-      }
-
+   if (isItinerarySuccess(initialResult.errorType)) {
       return initialResult;
+   }
+
+   if (requiresEarlyAdmissionConfirmation(initialResult.errorType)) {
+      return new Promise((resolve, reject) => {
+         showEarlyAdmissionConfirmation({
+            onConfirm: async ({ doNotShowAgain = false } = {}) => {
+               try {
+                  if (doNotShowAgain) {
+                     await persistItineraryWarningSuppression(
+                        getItineraryErrorTypes()?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
+                     );
+                  }
+
+                  const confirmedResult = await requestFn(timeValue, {
+                     confirmingEarlyAdmission: true,
+                  });
+
+                  if (!isItinerarySuccess(confirmedResult.errorType)) {
+                     reject(new Error(
+                        resolveItineraryErrorMessage(confirmedResult.errorType)
+                     ));
+                     return;
+                  }
+
+                  resolve(confirmedResult);
+               }
+               catch (error) {
+                  reject(error);
+               }
+            },
+            onCancel: () => {
+               reject(new ItineraryTimeChangeCancelledError());
+            },
+         });
+      });
+   }
+
+   if (!requiresShortVisitConfirmation(initialResult.errorType)) {
+      throw new Error(resolveItineraryErrorMessage(initialResult.errorType));
    }
 
    return new Promise((resolve, reject) => {

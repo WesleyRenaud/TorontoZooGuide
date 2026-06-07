@@ -30,6 +30,10 @@ itinerary_statuses = [
       1,                                              # Is suppressable
    ),
    (
+      'earlyAdmissionRequiresMembership',             # Status
+      1,                                              # Is suppressable
+   ),
+   (
       'noAvailableSlot',                              # Status
       0,                                              # Is suppressable
    ),

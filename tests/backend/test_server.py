@@ -1236,6 +1236,7 @@ def test_itinerary_endpoints_return_success_payloads(
          'visit_date_temp': None,
          'overriding_conflicting_guardians_talks': False,
          'confirming_short_visit': False,
+         'confirming_early_admission': False,
          'confirming_guardians_talk_unschedule': False,
          'confirming_wild_encounter_unschedule': False,
       }
@@ -1337,6 +1338,7 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
          {
             'arrival_time': '09:45',
             'confirming_short_visit': False,
+            'confirming_early_admission': False,
          },
       ),
       (

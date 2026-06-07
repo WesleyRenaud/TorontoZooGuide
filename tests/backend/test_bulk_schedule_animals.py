@@ -112,6 +112,7 @@ def test_bulk_schedule_animals_schedules_in_exhibit_order(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    result = ItineraryController.bulk_schedule_animals()
@@ -148,6 +149,7 @@ def test_bulk_schedule_animals_skips_already_scheduled_animals(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    assert ItineraryController.schedule_itinerary_item(
@@ -188,6 +190,7 @@ def test_bulk_schedule_animals_warns_when_all_animals_are_already_scheduled(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    assert ItineraryController.schedule_itinerary_item(

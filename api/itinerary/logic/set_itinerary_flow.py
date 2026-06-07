@@ -12,6 +12,7 @@ from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.save_itinerary import save_validated_itinerary
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
+from .early_admission_warning import early_admission_warning_is_required
 from ...guardians.controllers.guardians_controller import GuardiansController
 from .guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from .itinerary import build_current_itinerary
@@ -179,6 +180,7 @@ def check_set_itinerary_save_warnings(
       context: SetItineraryContext,
       *,
       confirming_short_visit: bool,
+      confirming_early_admission: bool,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool,
       overriding_conflicting_guardians_talks: bool ) -> tuple[
@@ -188,6 +190,31 @@ def check_set_itinerary_save_warnings(
    save_input = context.save_input
    controller_kwargs = context.itinerary_controller_kwargs
    suppressed_warnings: list[ ItineraryErrorType ] = []
+   zoo_hours_record = (
+      fetch_zoo_hours_record(
+         context.conn,
+         save_input.date.isoformat() )
+      if save_input.arrival_time is not None
+      else None )
+
+   if (
+         save_input.arrival_time is not None
+         and early_admission_warning_is_required(
+            context.conn,
+            save_input.arrival_time,
+            zoo_hours_record,
+            confirming_early_admission=confirming_early_admission,
+            suppressed_warnings=suppressed_warnings )
+   ):
+      warning_tuple = tuple( suppressed_warnings )
+      return (
+         replace( context, suppressed_warnings=warning_tuple ),
+         _build_error_result(
+            context.conn,
+            ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
+            controller_kwargs,
+            suppressed_warnings=warning_tuple ),
+      )
 
    if (
          save_input.arrival_time is not None

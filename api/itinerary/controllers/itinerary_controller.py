@@ -17,6 +17,7 @@ from ..logic import schedule_itinerary_item as schedule_itinerary_item_logic
 from ..logic import set_itinerary as set_itinerary_logic
 from ..logic import suppress_itinerary_warning as suppress_itinerary_warning_logic
 from ..logic import unschedule_itinerary_item as unschedule_itinerary_item_logic
+from ..logic.early_admission_warning import early_admission_warning_is_required
 from ..logic.itinerary import build_current_itinerary
 from ..logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from ..logic.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
@@ -66,6 +67,7 @@ class ItineraryController():
          visit_date_temp: float | None = None,
          overriding_conflicting_guardians_talks: bool = False,
          confirming_short_visit: bool = False,
+         confirming_early_admission: bool = False,
          confirming_guardians_talk_unschedule: bool = False,
          confirming_wild_encounter_unschedule: bool = False ) -> ItinerarySaveResult:
       return set_itinerary_logic.set_itinerary(
@@ -82,6 +84,7 @@ class ItineraryController():
          overriding_conflicting_guardians_talks=(
             overriding_conflicting_guardians_talks ),
          confirming_short_visit=confirming_short_visit,
+         confirming_early_admission=confirming_early_admission,
          confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule,
          confirming_wild_encounter_unschedule=confirming_wild_encounter_unschedule,
          animal_controller=AnimalController,
@@ -176,7 +179,8 @@ class ItineraryController():
          cls,
          arrival_time: TimeInput,
          *,
-         confirming_short_visit: bool = False ) -> ItineraryTimeSetResult:
+         confirming_short_visit: bool = False,
+         confirming_early_admission: bool = False ) -> ItineraryTimeSetResult:
       conn = get_connection()
       normalized_arrival_time = DateValues.normalize_itinerary_schedule_time(
          arrival_time )
@@ -199,6 +203,16 @@ class ItineraryController():
          return ItineraryTimeSetResult( status=validation_error )
 
       suppressed_warnings: list[ ItineraryErrorType ] = []
+
+      if early_admission_warning_is_required(
+            conn,
+            normalized_arrival_time,
+            zoo_hours_record,
+            confirming_early_admission=confirming_early_admission,
+            suppressed_warnings=suppressed_warnings ):
+         return ItineraryTimeSetResult(
+            status=ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP,
+            suppressed_warnings=tuple( suppressed_warnings ) )
 
       if short_visit_warning_is_required(
             conn,

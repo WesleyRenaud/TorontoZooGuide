@@ -9,6 +9,7 @@ import {
    isItineraryEmpty,
    normalizeItinerary,
    saveItinerary,
+   setItineraryArrivalTime,
 } from '../../scripts/itinerary/itineraryService.js';
 import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
@@ -182,6 +183,79 @@ test('saveItinerary omits selected exhibits by default', async () => {
       attractions: [],
       guardiansTalks: [],
       wildEncounters: [],
+   });
+});
+
+test('setItineraryArrivalTime confirms early admission warning before retrying', async () => {
+   const requests = [];
+
+   updateItineraryErrorTypesFromConfig({
+      errorTypes: {
+         SUCCESS: 'success',
+         EARLY_ADMISSION_REQUIRES_MEMBERSHIP: 'earlyAdmissionRequiresMembership',
+      },
+      suppressedErrorTypes: [],
+   });
+
+   globalThis.fetch = async (url, options) => {
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
+
+      const isConfirmed = Boolean(
+         requests.at(-1)?.body?.confirmingEarlyAdmission
+      );
+
+      return {
+         ok: true,
+         status: 200,
+         statusText: 'OK',
+         text: async () => JSON.stringify({
+            status: isConfirmed ? 'success' : 'earlyAdmissionRequiresMembership',
+            reasons: [],
+            itinerary: {
+               date: '2026-06-20',
+               arrival_time: isConfirmed ? '09:00' : '',
+               animals: [],
+               attractions: [],
+               guardians_talks: [],
+               wild_encounters: [],
+            },
+         }),
+      };
+   };
+
+   const setPromise = setItineraryArrivalTime('09:00');
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   assert.match(
+      document.querySelector('.tzg-popup-message')?.textContent ?? '',
+      /Early admission hours are only available/
+   );
+
+   document.querySelector('.tzg-popup-confirm')?.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   await setPromise;
+
+   assert.equal(requests.length, 2);
+   assert.equal(requests[0].url, '/set-itinerary-arrival-time');
+   assert.deepEqual(requests[0].body, {
+      arrivalTime: '09:00',
+      confirmingShortVisit: false,
+      confirmingEarlyAdmission: false,
+   });
+   assert.deepEqual(requests[1].body, {
+      arrivalTime: '09:00',
+      confirmingShortVisit: false,
+      confirmingEarlyAdmission: true,
    });
 });
 

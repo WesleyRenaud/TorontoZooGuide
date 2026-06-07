@@ -33,6 +33,18 @@ export function requiresShortVisitConfirmation(errorType) {
    return errorType === itineraryErrorTypes?.ARRIVAL_DEPARTURE_TOO_CLOSE;
 }
 
+export function requiresEarlyAdmissionConfirmation(errorType) {
+   if (
+      isItineraryErrorSuppressed(
+         itineraryErrorTypes?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
+      )
+   ) {
+      return false;
+   }
+
+   return errorType === itineraryErrorTypes?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP;
+}
+
 export function requiresScheduleItemNotOnItineraryConfirmation(errorType) {
    if (isItineraryErrorSuppressed(itineraryErrorTypes?.ITEM_NOT_ON_ITINERARY)) {
       return false;
@@ -59,6 +71,10 @@ export function resolveItineraryErrorMessage(
 ) {
    if (errorType === itineraryErrorTypes?.ARRIVAL_DEPARTURE_TOO_CLOSE) {
       return strings.arrivalDepartureTooClose;
+   }
+
+   if (errorType === itineraryErrorTypes?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP) {
+      return strings.earlyAdmissionRequiresMembership;
    }
 
    if (errorType === itineraryErrorTypes?.NO_AVAILABLE_SLOT) {

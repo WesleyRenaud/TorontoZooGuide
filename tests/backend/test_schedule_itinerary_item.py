@@ -128,6 +128,7 @@ def test_schedule_itinerary_animal_uses_open_time_without_arrival(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    result = ItineraryController.schedule_itinerary_item(
@@ -152,6 +153,7 @@ def test_schedule_itinerary_animal_uses_arrival_time_when_set(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    result = ItineraryController.schedule_itinerary_item(
@@ -175,6 +177,7 @@ def test_schedule_itinerary_animal_skips_existing_scheduled_slot(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    assert ItineraryController.schedule_itinerary_item(
@@ -215,6 +218,7 @@ def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    result = ItineraryController.schedule_itinerary_item(
@@ -252,6 +256,7 @@ def test_schedule_itinerary_animal_rejects_unavailable_requested_start_time(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    assert ItineraryController.schedule_itinerary_item(
@@ -459,6 +464,7 @@ def test_schedule_itinerary_animal_honors_requested_start_time(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    result = ItineraryController.schedule_itinerary_item(
@@ -483,6 +489,7 @@ def test_schedule_itinerary_animal_honors_requested_duration(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
+      confirming_early_admission=True,
    ).success
 
    result = ItineraryController.schedule_itinerary_item(
