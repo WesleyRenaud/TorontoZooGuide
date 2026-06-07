@@ -286,6 +286,16 @@ function timelineScheduledPillTexts(planner) {
    ].map(allTextFor);
 }
 
+function boundaryMarkerByLabel(planner, label) {
+   return [...planner.querySelectorAll('.itinerary-day-boundary-marker')].find((marker) => (
+      marker.attributes?.['aria-label'] === label
+   ));
+}
+
+function boundaryMarkerStripByLabel(planner, label) {
+   return boundaryMarkerByLabel(planner, label)?.parentElement ?? null;
+}
+
 function textFor(row, selector) {
    return row.querySelector(selector)?.textContent ?? '';
 }
@@ -508,7 +518,7 @@ test.describe('itinerary panel rows', () => {
       assert.match(text, /Zoo Opens/);
    });
 
-   test('arrival pill remove menu clears arrival time through handler', () => {
+   test('arrival marker remove menu clears arrival time through handler', () => {
       const arrivalRemovals = [];
       const planner = makeDayPlannerPreview(
          {
@@ -528,17 +538,17 @@ test.describe('itinerary panel rows', () => {
             },
          }
       );
-      const arrivalPill = [...planner.querySelectorAll('.itinerary-day-open-pill')].find((pill) => (
-         allTextFor(pill).includes('Arrival')
-      ));
+      const arrivalMarker = boundaryMarkerByLabel(planner, 'Arrival');
       const openPill = [...planner.querySelectorAll('.itinerary-day-time-boundary-label')].find((label) => (
          allTextFor(label).includes('Zoo Opens')
       ));
 
-      assert.ok(arrivalPill?.classList.contains('itinerary-day-open-pill--with-menu'));
+      assert.ok(arrivalMarker?.classList.contains('itinerary-day-boundary-marker--with-menu'));
+      assert.equal(arrivalMarker?.attributes?.['data-boundary-marker-kind'], 'arrival');
+      assert.equal(arrivalMarker?.attributes?.['aria-label'], 'Arrival');
       assert.ok(openPill);
 
-      arrivalPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
+      arrivalMarker?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
       assert.deepEqual(arrivalRemovals, [ '' ]);
    });
 
@@ -1020,7 +1030,7 @@ test.describe('itinerary panel rows', () => {
       assert.equal(scheduleCalls[0].row.scheduleItemKind, 'animals');
    });
 
-   test('departure pill remove menu clears departure time through handler', () => {
+   test('departure marker remove menu clears departure time through handler', () => {
       const departureRemovals = [];
       const planner = makeDayPlannerPreview(
          {
@@ -1040,16 +1050,16 @@ test.describe('itinerary panel rows', () => {
             },
          }
       );
-      const departurePill = [...planner.querySelectorAll('.itinerary-day-open-pill')].find((pill) => (
-         allTextFor(pill).includes('Departure')
-      ));
+      const departureMarker = boundaryMarkerByLabel(planner, 'Departure');
 
-      assert.ok(departurePill?.classList.contains('itinerary-day-open-pill--with-menu'));
-      departurePill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
+      assert.ok(departureMarker?.classList.contains('itinerary-day-boundary-marker--with-menu'));
+      assert.equal(departureMarker?.attributes?.['data-boundary-marker-kind'], 'departure');
+      assert.equal(departureMarker?.attributes?.['aria-label'], 'Departure');
+      departureMarker?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
       assert.deepEqual(departureRemovals, [ '' ]);
    });
 
-   test('day planner stacks zoo hours and arrival pills at the same time', () => {
+   test('day planner stacks zoo hours and arrival markers at the same time', () => {
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-20',
@@ -1066,18 +1076,52 @@ test.describe('itinerary panel rows', () => {
       const openTimeCell = [...planner.querySelectorAll('.itinerary-day-time')].find((cell) => (
          cell.querySelector('.itinerary-day-time-label')?.textContent === '9:30 AM'
       ));
-      const arrivalStrip = [...planner.querySelectorAll('.itinerary-day-pill-strip')].find((strip) => (
-         allTextFor(strip).includes('Arrival')
-      ));
-      const pills = arrivalStrip?.querySelectorAll('.itinerary-day-open-pill') ?? [];
+      const arrivalStrip = boundaryMarkerStripByLabel(planner, 'Arrival');
+      const markers = arrivalStrip?.querySelectorAll('.itinerary-day-boundary-marker') ?? [];
 
       assert.match(allTextFor(openTimeCell), /Zoo Opens/);
       assert.ok(arrivalStrip);
-      assert.equal(pills.length, 1);
-      assert.match(allTextFor(arrivalStrip), /Arrival/);
+      assert.equal(markers.length, 1);
+      assert.equal(arrivalStrip?.querySelector('.itinerary-day-boundary-marker')?.attributes?.['aria-label'], 'Arrival');
    });
 
-   test('day planner stacks departure and close pills at the same time', () => {
+   test('day planner keeps scheduled items visible when they start at arrival time', () => {
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            arrivalTime: '09:30',
+            itineraryConfig: TEST_ITINERARY_CONFIG,
+            ...EMPTY_ITINERARY,
+            animals: [
+               {
+                  species: 'Babirusa',
+                  exhibit: 'Indo-Malaya',
+                  start_time: '09:30',
+                  end_time: '09:45',
+               },
+            ],
+         }
+      );
+      const arrivalStrip = boundaryMarkerStripByLabel(planner, 'Arrival');
+      const babirusaPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
+         allTextFor(pill).includes('Babirusa')
+      ));
+      const babirusaStrip = babirusaPill?.parentElement;
+
+      assert.ok(arrivalStrip);
+      assert.ok(babirusaPill);
+      assert.equal(babirusaStrip?.attributes?.['data-scheduled-column'], 'true');
+      assert.equal(babirusaStrip?.attributes?.['data-offset-fraction'], undefined);
+      assert.equal(arrivalStrip?.attributes?.['data-visit-boundary-placement'], 'ends-at-anchor');
+      assert.notEqual(arrivalStrip, babirusaStrip);
+   });
+
+   test('day planner stacks departure marker and close pills at the same time', () => {
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-15',
@@ -1100,13 +1144,11 @@ test.describe('itinerary panel rows', () => {
       assert.match(allTextFor(closeTimeCells[0]), /Zoo Closes/);
 
       const pillStrips = planner.querySelectorAll('.itinerary-day-pill-strip');
-      const departureStrip = [...pillStrips].find((strip) => (
-         allTextFor(strip).includes('Departure')
-         && !allTextFor(strip).includes('Zoo Closes')
-      ));
+      const departureStrip = boundaryMarkerStripByLabel(planner, 'Departure');
 
       assert.ok(departureStrip);
-      assert.equal(departureStrip.querySelectorAll('.itinerary-day-open-pill').length, 1);
+      assert.equal(departureStrip.querySelectorAll('.itinerary-day-boundary-marker').length, 1);
+      assert.equal(departureStrip.attributes?.['data-visit-boundary-placement'], 'starts-at-anchor');
    });
 
    test('day planner positions off-slot arrival and departure between half-hour lines', () => {
@@ -1127,18 +1169,13 @@ test.describe('itinerary panel rows', () => {
       const timeLabels = [...planner.querySelectorAll('.itinerary-day-time-label')].map(
          (cell) => cell.textContent
       );
-      const pillStrips = planner.querySelectorAll('.itinerary-day-pill-strip');
-      const arrivalStrip = pillStrips.find((strip) => (
-         allTextFor(strip).includes('Arrival')
-      ));
-      const departureStrip = pillStrips.find((strip) => (
-         allTextFor(strip).includes('Departure')
-      ));
+      const arrivalStrip = boundaryMarkerStripByLabel(planner, 'Arrival');
+      const departureStrip = boundaryMarkerStripByLabel(planner, 'Departure');
 
       assert.ok(!timeLabels.includes('9:45 AM'));
       assert.ok(!timeLabels.includes('5:15 PM'));
-      assert.match(allTextFor(planner), /Arrival/);
-      assert.match(allTextFor(planner), /Departure/);
+      assert.ok(boundaryMarkerByLabel(planner, 'Arrival'));
+      assert.ok(boundaryMarkerByLabel(planner, 'Departure'));
       assert.equal(arrivalStrip?.attributes?.['data-offset-fraction'], '0.5');
       assert.equal(departureStrip?.attributes?.['data-offset-fraction'], '0.5');
    });
@@ -1307,15 +1344,13 @@ test.describe('itinerary panel rows', () => {
       assert.equal(polarStrip?.attributes?.['data-scheduled-column'], 'true');
       assert.equal(polarPill.attributes?.['data-duration-fraction'], String(10 / 30));
       assert.equal(
-         [...planner.querySelectorAll('.itinerary-day-open-pill')].some((pill) => (
-            allTextFor(pill).includes('Arrival')
-         )),
+         Boolean(boundaryMarkerByLabel(planner, 'Arrival')),
          true
       );
-      assert.match(allTextFor(planner), /Departure/);
+      assert.ok(boundaryMarkerByLabel(planner, 'Departure'));
       assert.equal(
-         [...planner.querySelectorAll('.itinerary-day-open-pill')].some((pill) => (
-            allTextFor(pill).includes('Polar Bear')
+         [...planner.querySelectorAll('.itinerary-day-boundary-marker')].some((marker) => (
+            marker.attributes?.['aria-label'] === 'Polar Bear'
          )),
          false
       );

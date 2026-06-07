@@ -195,6 +195,68 @@ export function makeOpenPill(
    return pill;
 }
 
+export function makeBoundaryMarker(
+   label,
+   {
+      onRemove = null,
+      menuAriaLabel = '',
+      removeLabel = '',
+      visitBoundaryPlacement = '',
+   } = {}
+) {
+   if (!label) {
+      return null;
+   }
+
+   const marker = el('span', 'itinerary-day-boundary-marker');
+   const markerKind = visitBoundaryPlacement === 'starts-at-anchor'
+      ? 'departure'
+      : 'arrival';
+
+   marker.setAttribute('aria-label', label);
+   marker.setAttribute('data-boundary-marker-kind', markerKind);
+
+   if (typeof onRemove === 'function') {
+      const menuItems = [{ label: removeLabel, onAction: onRemove }];
+      const menuButton = document.createElement('button');
+      const menuPanel = el('div', 'itinerary-day-open-pill-menu-panel');
+
+      menuButton.type = 'button';
+      menuButton.className = 'itinerary-day-boundary-marker-btn';
+      menuButton.setAttribute('aria-label', menuAriaLabel || label);
+      menuButton.setAttribute('aria-haspopup', 'menu');
+      menuButton.setAttribute('aria-expanded', 'false');
+
+      menuPanel.setAttribute('role', 'menu');
+      menuPanel.hidden = true;
+
+      menuItems.forEach(({ label: itemLabel }) => {
+         const actionButton = document.createElement('button');
+
+         actionButton.type = 'button';
+         actionButton.className = 'itinerary-day-open-pill-menu-item';
+         actionButton.setAttribute('role', 'menuitem');
+         actionButton.textContent = itemLabel;
+         menuPanel.appendChild(actionButton);
+      });
+
+      marker.classList.add('itinerary-day-boundary-marker--with-menu');
+      marker.appendChild(menuButton);
+      marker.appendChild(menuPanel);
+      bindPillMenu(marker, {
+         menuButton,
+         menuPanel,
+         menuItems,
+         menuOpenClass: 'itinerary-day-boundary-marker--menu-open',
+      });
+      return marker;
+   }
+
+   marker.appendChild(el('span', 'itinerary-day-boundary-marker-icon'));
+
+   return marker;
+}
+
 function applyScheduledPillDuration(
    pill,
    durationMinutes,
