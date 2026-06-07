@@ -103,17 +103,19 @@ function findPointPillStrip(gridLine, offsetFraction = 0) {
 function resolveStripPlacementBand(
    gridLine,
    offsetFraction = 0,
-   durationMinutes = null
+   durationMinutes = null,
+   slotSpanMinutes = TIMELINE_SLOT_MINUTES
 ) {
    const pointBand = getPointPillStripPlacementBand(gridLine, offsetFraction);
 
    if (Number.isFinite(durationMinutes) && durationMinutes > 0) {
+      const slotSpan = Number.isFinite(slotSpanMinutes) && slotSpanMinutes > 0
+         ? slotSpanMinutes
+         : TIMELINE_SLOT_MINUTES;
+
       return {
          offsetFraction: pointBand.offsetFraction,
-         durationFraction: Math.max(
-            pointBand.durationFraction,
-            durationMinutes / TIMELINE_SLOT_MINUTES
-         ),
+         durationFraction: durationMinutes / slotSpan,
       };
    }
 
@@ -152,12 +154,14 @@ function getOrCreatePointPillStrip(gridLine, offsetFraction = 0) {
 function createScheduledPillStrip(
    gridLine,
    offsetFraction = 0,
-   durationMinutes = 0
+   durationMinutes = 0,
+   slotSpanMinutes = TIMELINE_SLOT_MINUTES
 ) {
    const placementBand = resolveStripPlacementBand(
       gridLine,
       offsetFraction,
-      durationMinutes
+      durationMinutes,
+      slotSpanMinutes
    );
    const pillStrip = el('div', 'itinerary-day-pill-strip');
 
@@ -354,6 +358,8 @@ export function appendScheduledDurationPill(
       label,
       offsetFraction = 0,
       durationMinutes,
+      displayDurationMinutes = durationMinutes,
+      slotSpanMinutes = TIMELINE_SLOT_MINUTES,
       startTime,
       endTime,
       groupItems = [],
@@ -369,6 +375,8 @@ export function appendScheduledDurationPill(
       menuItems,
       menuAriaLabel,
       onLabelClick,
+      slotSpanMinutes,
+      displayDurationMinutes,
    });
 
    if (!pill) {
@@ -378,7 +386,8 @@ export function appendScheduledDurationPill(
    const strip = createScheduledPillStrip(
       gridLine,
       offsetFraction,
-      durationMinutes
+      displayDurationMinutes,
+      slotSpanMinutes
    );
 
    strip.appendChild(pill);
