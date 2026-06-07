@@ -488,6 +488,7 @@ function buildRenderGroup(layoutUnit, horizontalOffsetIndex) {
    const startMinutes = Math.min(...items.map((item) => item.startMinutes));
    const endMinutes = Math.max(...items.map(getScheduledItemEndMinutes));
    const wallDurationMinutes = endMinutes - startMinutes;
+   const minDisplayMinutes = getScheduledPillMinDisplayMinutes();
    const grouped = items.length > 1;
    const visualBand = getScheduledPillVisualBand({
       summaryItems: items,
@@ -499,7 +500,7 @@ function buildRenderGroup(layoutUnit, horizontalOffsetIndex) {
       slotSpanMinutes,
       horizontalOffsetIndex,
       durationMinutes: wallDurationMinutes,
-      displayDurationMinutes: wallDurationMinutes,
+      displayDurationMinutes: Math.max(wallDurationMinutes, minDisplayMinutes),
       visualStartMinutes: visualBand.startMinutes,
       visualEndMinutes: visualBand.endMinutes,
       label: grouped
