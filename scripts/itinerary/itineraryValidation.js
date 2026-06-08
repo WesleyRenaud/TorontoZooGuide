@@ -6,6 +6,7 @@ import {
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,
+   hasUnscheduledItems,
 } from './wizard/itineraryDiff.js';
 
 function maxStoredLikelihood(...values) {
@@ -163,9 +164,14 @@ export function buildItineraryValidationState(
          visibilityChangeThreshold
       ),
    };
+   const unscheduled = {
+      animals: [],
+      attractions: [],
+   };
 
    return {
       removed,
+      unscheduled,
       added,
       reducedVisibility,
       improvedVisibility,
@@ -173,6 +179,7 @@ export function buildItineraryValidationState(
       hasChanges: (
          hasAddedItems(added)
          || hasRemovedItems(removed)
+         || hasUnscheduledItems(unscheduled)
          || hasReducedVisibility(reducedVisibility)
          || hasImprovedVisibility(improvedVisibility)
       ),

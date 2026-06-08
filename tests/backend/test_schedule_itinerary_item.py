@@ -165,6 +165,85 @@ def test_schedule_itinerary_animal_uses_arrival_time_when_set(
    assert result.itinerary.animals[ 0 ].end_time == '09:08'
 
 
+def test_date_change_unschedules_animal_before_new_admission_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   scheduled = ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY )
+
+   assert scheduled.success
+   assert scheduled.itinerary.animals[ 0 ].start_time == '09:00'
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-22',
+      arrival_time='09:00',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   )
+
+   assert result.success
+   assert result.itinerary.arrival_time == '09:30'
+   assert result.itinerary.animals[ 0 ].start_time is None
+   assert result.itinerary.animals[ 0 ].end_time is None
+
+
+def test_date_change_unschedules_animal_after_new_closing_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryController.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:30',
+      departure_time='19:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   scheduled = ItineraryController.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='18:30' )
+
+   assert scheduled.success
+   assert scheduled.itinerary.animals[ 0 ].start_time == '18:30'
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-22',
+      arrival_time='09:30',
+      departure_time='19:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   )
+
+   assert result.success
+   assert result.itinerary.departure_time == '18:00'
+   assert result.itinerary.animals[ 0 ].start_time is None
+   assert result.itinerary.animals[ 0 ].end_time is None
+
+
 def test_schedule_itinerary_animal_skips_existing_scheduled_slot(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:

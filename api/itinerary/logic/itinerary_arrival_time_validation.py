@@ -9,11 +9,16 @@ from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 def earliest_arrival_minutes(
       zoo_hours_record: ZooHoursRecord ) -> int | None:
-   if zoo_hours_record.early_admission_time != None:
-      return DateValues.time_value_in_minutes(
-         zoo_hours_record.early_admission_time )
+   return DateValues.time_value_in_minutes(
+      earliest_arrival_time( zoo_hours_record ) )
 
-   return DateValues.time_value_in_minutes( zoo_hours_record.open_time )
+
+def earliest_arrival_time(
+      zoo_hours_record: ZooHoursRecord ) -> ScheduleTimeKey:
+   return (
+      zoo_hours_record.early_admission_time
+      if zoo_hours_record.early_admission_time != None
+      else zoo_hours_record.open_time )
 
 
 def arrival_time_is_valid_for_zoo_hours(

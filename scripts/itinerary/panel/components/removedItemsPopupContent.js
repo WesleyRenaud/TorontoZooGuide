@@ -127,6 +127,21 @@ function buildAdjustmentRows(adjustments = []) {
    return adjustments.map((adjustment) => buildAdjustmentRow(adjustment));
 }
 
+function hasUnscheduledItems(unscheduled = {}) {
+   return Boolean(
+      unscheduled?.animals?.length || unscheduled?.attractions?.length
+   );
+}
+
+function buildUnscheduledRows(unscheduledGroups = []) {
+   const unscheduled = unscheduledGroups[0] ?? {};
+
+   return [
+      ...buildAnimalRows(unscheduled.animals ?? []),
+      ...buildAttractionRows(unscheduled.attractions ?? []),
+   ];
+}
+
 function buildSectionRows(
    items,
    rowBuilder,
@@ -184,12 +199,14 @@ function buildSectionRows(
 function getSectionSpecs({
    added,
    removed,
+   unscheduled,
    reducedVisibility,
    improvedVisibility,
    adjustments,
 } = {}) {
    const safeAdded = added ?? {};
    const safeRemoved = removed ?? {};
+   const safeUnscheduled = unscheduled ?? {};
    const safeReduced = reducedVisibility ?? {};
    const safeImproved = improvedVisibility ?? {};
 
@@ -208,6 +225,14 @@ function getSectionSpecs({
          subtitle: APP_STRINGS.itinerary.removedItems.animalsAddedSubtitle,
          rowBuilder: buildAnimalRows,
          stepKey: 'animals',
+         showViewAlternatives: false,
+      },
+      {
+         items: hasUnscheduledItems(safeUnscheduled) ? [safeUnscheduled] : [],
+         title: APP_STRINGS.itinerary.dayPlanner.unscheduledTitle,
+         subtitle: APP_STRINGS.itinerary.removedItems.unscheduledSubtitle,
+         rowBuilder: buildUnscheduledRows,
+         stepKey: 'date',
          showViewAlternatives: false,
       },
       {
@@ -261,11 +286,19 @@ function getSectionSpecs({
 export function hasRemovedItemsPopupContent({
    added,
    removed,
+   unscheduled,
    reducedVisibility,
    improvedVisibility,
    adjustments,
 } = {}) {
-   return getSectionSpecs({ added, removed, reducedVisibility, improvedVisibility, adjustments })
+   return getSectionSpecs({
+      added,
+      removed,
+      unscheduled,
+      reducedVisibility,
+      improvedVisibility,
+      adjustments,
+   })
       .some((section) => Array.isArray(section.items) && section.items.length > 0);
 }
 
@@ -297,6 +330,7 @@ function resolveKeepOverride(section, {
 export function buildRemovedItemsPopupSections({
    added,
    removed,
+   unscheduled,
    reducedVisibility,
    improvedVisibility,
    adjustments,
@@ -314,7 +348,14 @@ export function buildRemovedItemsPopupSections({
       isKeepAttractionSelected,
    };
 
-   return getSectionSpecs({ added, removed, reducedVisibility, improvedVisibility, adjustments })
+   return getSectionSpecs({
+      added,
+      removed,
+      unscheduled,
+      reducedVisibility,
+      improvedVisibility,
+      adjustments,
+   })
       .map((section) => makeSection(
          section.title,
          section.subtitle,

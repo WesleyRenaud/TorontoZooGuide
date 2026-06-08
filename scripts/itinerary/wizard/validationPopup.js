@@ -4,6 +4,7 @@ import {
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,
+   hasUnscheduledItems,
 } from './itineraryDiff.js';
 import { acceptItinerary } from '../itineraryService.js';
 
@@ -13,6 +14,7 @@ export function showWizardValidationPopupIfNeeded({
    onViewAlternatives,
 } = {}) {
    const removed = pendingValidation?.removed ?? null;
+   const unscheduled = pendingValidation?.unscheduled ?? null;
    const added = pendingValidation?.added ?? null;
    const reducedVisibility = pendingValidation?.reducedVisibility ?? null;
    const improvedVisibility = pendingValidation?.improvedVisibility ?? null;
@@ -21,6 +23,7 @@ export function showWizardValidationPopupIfNeeded({
 
    if (
       !hasRemovedItems(removed) &&
+      !hasUnscheduledItems(unscheduled) &&
       !hasAddedItems(added) &&
       !hasReducedVisibility(reducedVisibility) &&
       !hasImprovedVisibility(improvedVisibility) &&
@@ -33,6 +36,7 @@ export function showWizardValidationPopupIfNeeded({
       mountEl,
       added,
       removed,
+      unscheduled,
       reducedVisibility,
       improvedVisibility,
       adjustments,

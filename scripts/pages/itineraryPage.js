@@ -37,6 +37,7 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
       date: itinerary.date,
       added: itinerary.validation.added,
       removed: itinerary.validation.removed,
+      unscheduled: itinerary.validation.unscheduled,
       reducedVisibility: itinerary.validation.reducedVisibility,
       improvedVisibility: itinerary.validation.improvedVisibility,
       adjustments: itinerary.validation.adjustments,
@@ -53,6 +54,7 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
       pendingValidation: {
          added: itinerary.validation.added,
          removed: itinerary.validation.removed,
+         unscheduled: itinerary.validation.unscheduled,
          reducedVisibility: itinerary.validation.reducedVisibility,
          improvedVisibility: itinerary.validation.improvedVisibility,
          adjustments: itinerary.validation.adjustments,

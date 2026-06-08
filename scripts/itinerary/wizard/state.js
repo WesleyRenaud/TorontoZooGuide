@@ -6,6 +6,7 @@ import {
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,
+   hasUnscheduledItems,
    isValidatedItineraryEmpty,
 } from './itineraryDiff.js';
 import {
@@ -17,6 +18,7 @@ import {
 function createPendingValidationState() {
    return {
       pendingRemovedItems: null,
+      pendingUnscheduledItems: null,
       pendingReducedVisibility: null,
       pendingImprovedVisibility: null,
       pendingValidatedEmpty: false,
@@ -43,6 +45,7 @@ function assignWizardDraft(state, draft) {
 
 function resetPendingValidation(state) {
    state.pendingRemovedItems = null;
+   state.pendingUnscheduledItems = null;
    state.pendingReducedVisibility = null;
    state.pendingImprovedVisibility = null;
    state.pendingValidatedEmpty = false;
@@ -51,6 +54,7 @@ function resetPendingValidation(state) {
 function consumePendingValidationState(state) {
    const pendingValidation = {
       removed: state.pendingRemovedItems,
+      unscheduled: state.pendingUnscheduledItems,
       reducedVisibility: state.pendingReducedVisibility,
       improvedVisibility: state.pendingImprovedVisibility,
       isEmptyItinerary: state.pendingValidatedEmpty,
@@ -76,6 +80,7 @@ function applySelectionUpdate(state, key, value, { preserveOnInvalid = false } =
 
 function applyPendingValidation(state, {
    removed = null,
+   unscheduled = null,
    reducedVisibility = null,
    improvedVisibility = null,
    validated = null,
@@ -88,6 +93,7 @@ function applyPendingValidation(state, {
    }
 
    state.pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
+   state.pendingUnscheduledItems = hasUnscheduledItems(unscheduled) ? unscheduled : null;
    state.pendingReducedVisibility = hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
    state.pendingImprovedVisibility = hasImprovedVisibility(improvedVisibility) ? improvedVisibility : null;
    state.pendingValidatedEmpty = validated != null

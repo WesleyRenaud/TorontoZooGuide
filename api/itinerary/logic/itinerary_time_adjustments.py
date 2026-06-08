@@ -7,19 +7,11 @@ from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.saved_itinerary import SavedItinerary
 from .itinerary_adjustment import ItineraryAdjustment
 from .itinerary_adjustment import ItineraryAdjustmentType
+from .itinerary_arrival_time_validation import earliest_arrival_time
 from ...shared.date_values import DateValues
 from ...types import Connection
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
-
-
-def _earliest_arrival_time_for_hours(
-      zoo_hours_record: ZooHoursRecord ) -> str:
-   return (
-      zoo_hours_record.early_admission_time
-      if zoo_hours_record.early_admission_time is not None
-      else zoo_hours_record.open_time
-   )
 
 
 def _arrival_adjustment_for_restrictive_hours(
@@ -34,7 +26,7 @@ def _arrival_adjustment_for_restrictive_hours(
       return None
 
    arrival_minutes = DateValues.time_value_in_minutes( save_input.arrival_time )
-   earliest_time = _earliest_arrival_time_for_hours( zoo_hours_record )
+   earliest_time = earliest_arrival_time( zoo_hours_record )
    earliest_minutes = DateValues.time_value_in_minutes( earliest_time )
    last_admission_minutes = DateValues.time_value_in_minutes(
       zoo_hours_record.last_admission_time )
