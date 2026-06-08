@@ -203,6 +203,9 @@ export const itinerary = {
       itineraryUpdated: 'Itinerary Updated',
       itineraryTimesSubtitle: 'The following times were adjusted for your new date.',
       itineraryTimesTitle: 'Times Updated',
+      unscheduledSubtitle: (
+         'These items are still on your itinerary, but their scheduled times are not available on the new date.'
+      ),
       arrivalAdjusted: (oldTime, newTime) => (
          `Arrival changed from ${oldTime} to ${newTime} because the new date has different admission hours.`
       ),

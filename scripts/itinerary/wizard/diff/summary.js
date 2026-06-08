@@ -39,6 +39,14 @@ export function hasImprovedVisibility(improvedVisibility) {
    return hasItems(improvedVisibility.animals);
 }
 
+export function hasUnscheduledItems(unscheduled) {
+   if (!unscheduled || typeof unscheduled !== 'object') {
+      return false;
+   }
+
+   return hasItems(unscheduled.animals) || hasItems(unscheduled.attractions);
+}
+
 export function isValidatedItineraryEmpty(validated) {
    if (!validated || typeof validated !== 'object') {
       return true;

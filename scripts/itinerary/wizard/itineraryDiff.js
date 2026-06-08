@@ -1,13 +1,16 @@
 import { buildAnimalVisibilityChanges } from './diff/animalVisibility.js';
+import { buildItemKey } from './diff/itemKey.js';
 import { mergeRemovedItems } from './diff/removedItems.js';
 import {
    hasAddedItems,
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,
+   hasUnscheduledItems,
    isValidatedItineraryEmpty,
 } from './diff/summary.js';
 import { normalizeNonNegativeNumber } from '../panel/format.js';
+import { buildSpeciesExhibitKey } from '../speciesExhibitKey.js';
 
 function buildRemovedItems(previous, validated, backendRemoved = {}) {
    return {
@@ -47,6 +50,48 @@ function buildAnimalVisibilityDiff(previous, validated, removed, minDelta = null
    );
 }
 
+function hasScheduleTimes(item) {
+   return Boolean(item?.start_time && item?.end_time);
+}
+
+function buildUnscheduledItemsByKey(previousItems = [], validatedItems = [], buildKey) {
+   const validatedByKey = new Map();
+
+   validatedItems.forEach((item) => {
+      const key = buildKey(item);
+
+      if (key) {
+         validatedByKey.set(key, item);
+      }
+   });
+
+   return previousItems.filter((item) => {
+      if (!hasScheduleTimes(item)) {
+         return false;
+      }
+
+      const key = buildKey(item);
+      const validatedItem = key ? validatedByKey.get(key) : null;
+
+      return Boolean(validatedItem && !hasScheduleTimes(validatedItem));
+   });
+}
+
+function buildUnscheduledItems(previous, validated) {
+   return {
+      animals: buildUnscheduledItemsByKey(
+         previous.animals,
+         validated.animals,
+         buildSpeciesExhibitKey
+      ),
+      attractions: buildUnscheduledItemsByKey(
+         previous.attractions,
+         validated.attractions,
+         (item) => buildItemKey(item, 'name')
+      ),
+   };
+}
+
 export function buildItineraryDiff(
    previous,
    validated,
@@ -54,6 +99,7 @@ export function buildItineraryDiff(
    { animalVisibilityChangeThreshold } = {}
 ) {
    const removed = buildRemovedItems(previous, validated, backendRemoved);
+   const unscheduled = buildUnscheduledItems(previous, validated);
    const minDelta = normalizeNonNegativeNumber(animalVisibilityChangeThreshold);
    const visibilityChanges = buildAnimalVisibilityDiff(previous, validated, removed, (
       minDelta == null ? undefined : minDelta / 100
@@ -61,6 +107,7 @@ export function buildItineraryDiff(
 
    return {
       removed,
+      unscheduled,
       reducedVisibility: {
          animals: visibilityChanges.reduced,
       },
@@ -75,5 +122,6 @@ export {
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,
+   hasUnscheduledItems,
    isValidatedItineraryEmpty,
 };

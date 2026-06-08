@@ -1623,6 +1623,38 @@ test.describe('itinerary panel rows', () => {
       );
    });
 
+   test('removed items popup renders unscheduled items', () => {
+      const mount = document.createElement('div');
+
+      showRemovedItemsPopup({
+         mountEl: mount,
+         unscheduled: {
+            animals: [
+               {
+                  species: 'African Lion',
+                  exhibit: 'Africa Savanna',
+                  start_time: '09:00',
+                  end_time: '09:08',
+               },
+            ],
+            attractions: [
+               {
+                  name: 'Conservation Carousel',
+                  start_time: '09:08',
+                  end_time: '09:16',
+               },
+            ],
+         },
+      });
+
+      const text = allTextFor(mount);
+
+      assert.match(text, /Unscheduled Items/);
+      assert.match(text, /still on your itinerary/);
+      assert.match(text, /African Lion/);
+      assert.match(text, /Conservation Carousel/);
+   });
+
    test('animal and attraction rows show approximate scheduled start times', () => {
       const [animalRow] = buildAnimalRows([
          {

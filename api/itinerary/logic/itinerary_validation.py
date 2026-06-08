@@ -19,14 +19,35 @@ from ..data_access.itinerary_wild_encounter_record import ItineraryWildEncounter
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ...guardians.controllers.guardians_controller import GuardiansController
 from ...guardians.logic.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
+from .itinerary_arrival_time_validation import earliest_arrival_time
 from ...models import Animal
 from ...models import AnimalDiff
 from ...models import Attraction
 from ...models import AttractionDiff
 from ...models.itinerary_event import ItineraryEvent
-from ...types import Connection, DateInput, DateKey
+from ...shared.date_values import DateValues
+from ...types import Connection, DateKey, ScheduleTimeKey
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from ...wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
+from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
+
+
+def schedule_time_occurs_outside_operating_hours(
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey,
+      zoo_hours_record: ZooHoursRecord | None ) -> bool:
+   if start_time is None or zoo_hours_record is None:
+      return False
+
+   if DateValues.time_value_is_before(
+         start_time,
+         earliest_arrival_time( zoo_hours_record ) ):
+      return True
+
+   return DateValues.time_value_is_after(
+      end_time,
+      zoo_hours_record.close_time )
 
 
 def validate_itinerary_animals(
@@ -35,7 +56,8 @@ def validate_itinerary_animals(
       new_visit_date: date,
       new_visit_date_temp: float | None = None,
       old_visit_date: DateKey | None = None,
-      saved_itinerary_animal_rows: list[ ItineraryAnimalRecord ] | None = None ) -> list[ AnimalDiff ]:
+      saved_itinerary_animal_rows: list[ ItineraryAnimalRecord ] | None = None,
+      zoo_hours_record: ZooHoursRecord | None = None ) -> list[ AnimalDiff ]:
    diffs: list[ AnimalDiff ] = []
 
    for animal in animals:
@@ -61,6 +83,15 @@ def validate_itinerary_animals(
          None
          if not saved_animals
          else max( ( a.likelihood or 0 ) for a in saved_animals ) )
+      start_time = carryover.start_time
+      end_time = carryover.end_time
+
+      if schedule_time_occurs_outside_operating_hours(
+            start_time,
+            end_time,
+            zoo_hours_record ):
+         start_time = None
+         end_time = None
 
       diffs.append(
          AnimalDiff(
@@ -69,8 +100,8 @@ def validate_itinerary_animals(
             old_likelihood=carryover.old_likelihood,
             new_likelihood=new_likelihood,
             is_added=carryover.is_added,
-            start_time=carryover.start_time,
-            end_time=carryover.end_time,
+            start_time=start_time,
+            end_time=end_time,
          )
       )
 
@@ -83,7 +114,8 @@ def validate_itinerary_attractions(
       attractions: tuple[ str, ... ],
       new_visit_date: date,
       old_visit_date: DateKey | None = None,
-      saved_itinerary_attraction_rows: list[ ItineraryAttractionRecord ] | None = None ) -> list[ AttractionDiff ]:
+      saved_itinerary_attraction_rows: list[ ItineraryAttractionRecord ] | None = None,
+      zoo_hours_record: ZooHoursRecord | None = None ) -> list[ AttractionDiff ]:
 
    diffs: list[ AttractionDiff ] = []
 
@@ -96,14 +128,23 @@ def validate_itinerary_attractions(
       new_likelihood = attraction_controller.get_attraction_likelihood_for_visit_date(
          visit_date=new_visit_date,
          attraction_name=attraction_name )
+      start_time = carryover.start_time
+      end_time = carryover.end_time
+
+      if schedule_time_occurs_outside_operating_hours(
+            start_time,
+            end_time,
+            zoo_hours_record ):
+         start_time = None
+         end_time = None
 
       diffs.append(
          AttractionDiff(
             name=carryover.name,
             old_likelihood=carryover.old_likelihood,
             new_likelihood=new_likelihood,
-            start_time=carryover.start_time,
-            end_time=carryover.end_time,
+            start_time=start_time,
+            end_time=end_time,
          )
       )
 
@@ -145,6 +186,8 @@ def validate_itinerary_for_save(
       saved_itinerary_wild_encounter_rows = fetch_itinerary_wild_encounter_rows( conn )
       saved_itinerary_event_rows = fetch_itinerary_event_rows( conn )
 
+   zoo_hours_record = fetch_zoo_hours_record( conn, save_input.date )
+
    return ValidatedItinerary(
       arrival_time=save_input.arrival_time,
       departure_time=save_input.departure_time,
@@ -155,7 +198,8 @@ def validate_itinerary_for_save(
             new_visit_date=save_input.date,
             new_visit_date_temp=new_visit_date_temp,
             old_visit_date=old_visit_date,
-            saved_itinerary_animal_rows=saved_itinerary_animal_rows )
+            saved_itinerary_animal_rows=saved_itinerary_animal_rows,
+            zoo_hours_record=zoo_hours_record )
          if save_input.animals
          else [] ),
       attractions=(
@@ -164,7 +208,8 @@ def validate_itinerary_for_save(
             attractions=save_input.attractions,
             new_visit_date=save_input.date,
             old_visit_date=old_visit_date,
-            saved_itinerary_attraction_rows=saved_itinerary_attraction_rows )
+            saved_itinerary_attraction_rows=saved_itinerary_attraction_rows,
+            zoo_hours_record=zoo_hours_record )
          if save_input.attractions
          else [] ),
       guardians_talks=validate_guardians_talks_for_itinerary(

@@ -6,6 +6,7 @@ import {
    hasImprovedVisibility,
    hasReducedVisibility,
    hasRemovedItems,
+   hasUnscheduledItems,
    isValidatedItineraryEmpty,
 } from '../../scripts/itinerary/wizard/itineraryDiff.js';
 
@@ -146,6 +147,57 @@ test('reports meaningful animal visibility changes after date validation', () =>
    assert.equal(hasImprovedVisibility(diff.improvedVisibility), true);
 });
 
+test('reports items unscheduled during validation', () => {
+   const diff = buildItineraryDiff(
+      {
+         animals: [
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+               start_time: '09:00',
+               end_time: '09:08',
+            },
+         ],
+         attractions: [
+            {
+               name: 'Conservation Carousel',
+               start_time: '09:08',
+               end_time: '09:16',
+            },
+         ],
+      },
+      {
+         animals: [
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+               start_time: '',
+               end_time: '',
+            },
+         ],
+         attractions: [
+            {
+               name: 'Conservation Carousel',
+               start_time: '',
+               end_time: '',
+            },
+         ],
+      },
+      {},
+      { animalVisibilityChangeThreshold: 20 }
+   );
+
+   assert.deepEqual(
+      diff.unscheduled.animals.map((animal) => animal.species),
+      ['African Lion']
+   );
+   assert.deepEqual(
+      diff.unscheduled.attractions.map((attraction) => attraction.name),
+      ['Conservation Carousel']
+   );
+   assert.equal(hasUnscheduledItems(diff.unscheduled), true);
+});
+
 test('summary helpers handle empty validation results', () => {
    assert.equal(isValidatedItineraryEmpty(null), true);
    assert.equal(isValidatedItineraryEmpty({
@@ -161,6 +213,7 @@ test('summary helpers handle empty validation results', () => {
       wildEncounters: [],
    }), false);
    assert.equal(hasRemovedItems(null), false);
+   assert.equal(hasUnscheduledItems(null), false);
    assert.equal(hasReducedVisibility({ animals: [] }), false);
    assert.equal(hasImprovedVisibility({ animals: [] }), false);
 });

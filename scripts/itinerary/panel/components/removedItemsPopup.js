@@ -25,6 +25,7 @@ export function showRemovedItemsPopup({
    mountEl,
    added = {},
    removed = {},
+   unscheduled = {},
    reducedVisibility = {},
    improvedVisibility = {},
    adjustments = [],
@@ -35,7 +36,14 @@ export function showRemovedItemsPopup({
 } = {}) {
    if (!mountEl) return;
 
-   if (!hasRemovedItemsPopupContent({ added, removed, reducedVisibility, improvedVisibility, adjustments })) {
+   if (!hasRemovedItemsPopupContent({
+      added,
+      removed,
+      unscheduled,
+      reducedVisibility,
+      improvedVisibility,
+      adjustments,
+   })) {
       return;
    }
 
@@ -73,6 +81,7 @@ export function showRemovedItemsPopup({
    buildRemovedItemsPopupSections({
       added,
       removed,
+      unscheduled,
       reducedVisibility,
       improvedVisibility,
       adjustments,

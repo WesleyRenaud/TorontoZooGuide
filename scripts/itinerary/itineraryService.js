@@ -39,6 +39,10 @@ import {
    getMonth,
    getYear,
 } from '../visitDates/visitDateRules.js';
+import {
+   buildItineraryDiff,
+   hasUnscheduledItems,
+} from './wizard/itineraryDiff.js';
 import { applyConflictSelectionToItineraryDraft } from './wizard/wildEncounterConflictResolution.js';
 
 function createEmptyItinerary() {
@@ -159,10 +163,19 @@ export async function saveItinerary(
       ...result?.itinerary,
       itineraryConfig: result?.itineraryConfig,
    });
+   const saveDiff = buildItineraryDiff(
+      normalizeItineraryDraft(itinerary),
+      normalizedItinerary,
+      {},
+      normalizedItinerary.itineraryConfig ?? {}
+   );
+
    normalizedItinerary.saveIssues = result.issues;
+   normalizedItinerary.validation.unscheduled = saveDiff.unscheduled;
    normalizedItinerary.validation.adjustments = result.adjustments ?? [];
    normalizedItinerary.validation.hasChanges = (
       normalizedItinerary.validation.hasChanges
+      || hasUnscheduledItems(normalizedItinerary.validation.unscheduled)
       || normalizedItinerary.validation.adjustments.length > 0
    );
    dispatchItineraryUpdated(normalizedItinerary);
