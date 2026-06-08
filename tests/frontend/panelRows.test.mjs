@@ -311,7 +311,10 @@ const documentListeners = new Map();
 test.describe('itinerary panel rows', () => {
    beforeEach(() => {
       documentListeners.clear();
+      const documentBody = createNode('body');
+
       globalThis.document = {
+         body: documentBody,
          createElement: (tagName) => createNode(tagName),
          createTextNode: (textContent) => createNode('#text', '', textContent),
          addEventListener(eventName, handler) {
@@ -624,6 +627,69 @@ test.describe('itinerary panel rows', () => {
 
       assert.equal(clearButtons.length, 2);
       assert.ok(clearButtons.every((button) => button.disabled));
+   });
+
+   test('day planner departure input rejects invalid picker value on outside click', async () => {
+      const departureChanges = [];
+      const pickerInstances = [];
+
+      window.flatpickr = (input, options = {}) => {
+         const instance = {
+            input,
+            isOpen: true,
+            calendarContainer: createNode('div', 'flatpickr-calendar'),
+            closeCalled: false,
+            clear() {
+               input.value = '';
+            },
+            close() {
+               instance.closeCalled = true;
+               instance.isOpen = false;
+               options.onClose?.([], '', instance);
+            },
+            setDate(value) {
+               input.value = value;
+            },
+         };
+
+         pickerInstances.push(instance);
+         options.onReady?.([], input.value, instance);
+         options.onOpen?.([], input.value, instance);
+
+         return instance;
+      };
+
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            departureTime: '18:30',
+            itineraryConfig: TEST_ITINERARY_CONFIG,
+            ...EMPTY_ITINERARY,
+         },
+         {
+            onDepartureTimeChange: async (value) => {
+               departureChanges.push(value);
+            },
+         }
+      );
+      const inputs = [...planner.querySelectorAll('.itinerary-day-time-input')];
+      const departureInput = inputs[1];
+      const outsideTarget = createNode('button');
+
+      departureInput.value = '8:00 PM';
+      documentListeners.get('mousedown')?.forEach((handler) => {
+         handler({ target: outsideTarget });
+      });
+      await Promise.resolve();
+
+      assert.deepEqual(departureChanges, []);
+      assert.equal(pickerInstances[1]?.closeCalled, true);
+      assert.equal(departureInput.value, '6:30 PM');
    });
 
    test('scheduled generic event pill renders on the timeline with remove menu', () => {

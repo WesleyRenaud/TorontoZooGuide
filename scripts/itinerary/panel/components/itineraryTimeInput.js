@@ -29,6 +29,8 @@ export function makeItineraryTimeInput({
    let committedValue = value ? formatClockTime(value) : '';
    let flatpickrInstance = null;
    let latestPickerValue = committedValue;
+   let suppressNextCloseSave = false;
+   let outsidePointerDownHandler = null;
    const clearButton = document.createElement('button');
 
    clearButton.type = 'button';
@@ -126,6 +128,61 @@ export function makeItineraryTimeInput({
       input.disabled = !onChange;
    }
 
+   function isPickerTarget(target) {
+      return (
+         field.contains?.(target)
+         || flatpickrInstance?.calendarContainer?.contains?.(target)
+      );
+   }
+
+   function commitPickerValueAfterOutsideClick() {
+      requestAnimationFrame(() => {
+         if (flatpickrInstance?.isOpen) {
+            suppressNextCloseSave = true;
+            flatpickrInstance.close();
+         }
+
+         saveSelectedTime(null, '', flatpickrInstance);
+      });
+   }
+
+   function unbindOutsidePointerDown() {
+      if (!outsidePointerDownHandler) {
+         return;
+      }
+
+      document.removeEventListener(
+         'mousedown',
+         outsidePointerDownHandler,
+         true
+      );
+      outsidePointerDownHandler = null;
+   }
+
+   function bindOutsidePointerDown() {
+      unbindOutsidePointerDown();
+      outsidePointerDownHandler = (event) => {
+         if (isPickerTarget(event.target)) {
+            return;
+         }
+
+         commitPickerValueAfterOutsideClick();
+      };
+
+      document.addEventListener('mousedown', outsidePointerDownHandler, true);
+   }
+
+   function handlePickerClose(selectedDates, dateStr, instance) {
+      unbindOutsidePointerDown();
+
+      if (suppressNextCloseSave) {
+         suppressNextCloseSave = false;
+         return;
+      }
+
+      saveSelectedTime(selectedDates, dateStr, instance);
+   }
+
    input.type = 'text';
    input.value = committedValue;
    input.placeholder = '--:-- --';
@@ -151,8 +208,9 @@ export function makeItineraryTimeInput({
       },
       onOpen: () => {
          validationBubble.dismiss();
+         bindOutsidePointerDown();
       },
-      onClose: saveSelectedTime,
+      onClose: handlePickerClose,
       onReady(_selectedDates, _dateStr, instance) {
          flatpickrInstance = instance;
          instance.calendarContainer.classList.add('itinerary-day-time-picker');
