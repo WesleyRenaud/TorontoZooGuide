@@ -111,6 +111,7 @@ export const itinerary = {
          'That time is not available. Select another start time and try again.'
       ),
       itemNotOnItinerary: 'This item must be on your itinerary before it can be scheduled.',
+      timeOutOfBounds: 'One or more visit times are outside operating hours for this date.',
       bulkScheduleAnimalsAlreadyScheduled: (
          'All animals on your itinerary are already scheduled.'
       ),
@@ -200,6 +201,14 @@ export const itinerary = {
       ),
       improvedAnimalVisibilityTitle: 'Improved Animal Visibility',
       itineraryUpdated: 'Itinerary Updated',
+      itineraryTimesSubtitle: 'The following times were adjusted for your new date.',
+      itineraryTimesTitle: 'Times Updated',
+      arrivalAdjusted: (oldTime, newTime) => (
+         `Arrival changed from ${oldTime} to ${newTime} because the new date has different admission hours.`
+      ),
+      departureAdjusted: (oldTime, newTime) => (
+         `Departure changed from ${oldTime} to ${newTime} because the new date has different operating hours.`
+      ),
       emptyItinerarySubtitle: (
          'None of your selected items are available on the new date. You can view alternatives below.'
       ),
@@ -209,7 +218,7 @@ export const itinerary = {
       reducedAnimalVisibilityTitle: 'Reduced Animal Visibility',
       someDetailsChanged: 'Some itinerary details changed',
       talksSubtitle: 'The following talks are not scheduled on your new date.',
-      changedSubtitle: 'Some itinerary items changed for your new date. Review the updates below.',
+      changedSubtitle: 'Some itinerary details changed for your new date. Review the updates below.',
       viewAlternatives: 'View Alternatives',
       wildEncountersSubtitle: 'The following encounters are not available on your new date.',
       emptyItineraryTitle: 'Your itinerary is now empty',

@@ -90,7 +90,9 @@ function applyPendingValidation(state, {
    state.pendingRemovedItems = hasRemovedItems(removed) ? removed : null;
    state.pendingReducedVisibility = hasReducedVisibility(reducedVisibility) ? reducedVisibility : null;
    state.pendingImprovedVisibility = hasImprovedVisibility(improvedVisibility) ? improvedVisibility : null;
-   state.pendingValidatedEmpty = isValidatedItineraryEmpty(validated);
+   state.pendingValidatedEmpty = validated != null
+      ? isValidatedItineraryEmpty(validated)
+      : false;
 }
 
 export function createItineraryWizardState(existing = {}) {

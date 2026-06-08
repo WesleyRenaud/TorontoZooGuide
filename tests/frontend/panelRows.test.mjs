@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import { makeDayPlannerPreview } from '../../scripts/itinerary/panel/components/dayPlanner.js';
+import { showRemovedItemsPopup } from '../../scripts/itinerary/panel/components/removedItemsPopup.js';
+import { updateItineraryAdjustmentTypesFromConfig } from '../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import {
    areItineraryScheduleTimesOrdered,
    buildArrivalTimeBounds,
@@ -326,6 +328,12 @@ test.describe('itinerary panel rows', () => {
          },
       };
       installTestWindow();
+      updateItineraryAdjustmentTypesFromConfig({
+         adjustmentTypes: {
+            ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
+         DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
+         },
+      });
       globalThis.requestAnimationFrame = (callback) => callback();
    });
 
@@ -1549,6 +1557,70 @@ test.describe('itinerary panel rows', () => {
       );
       assert.equal(textFor(rows[1], '.itin-panel-name'), 'African Lion');
       assert.equal(textFor(rows[1], '.itin-panel-meta'), 'Exhibit: Indo-Malaya Outdoor');
+   });
+
+   test('removed items popup renders arrival time adjustments', () => {
+      const mount = document.createElement('div');
+
+      showRemovedItemsPopup({
+         mountEl: mount,
+         adjustments: [
+            {
+               type: 'arrivalTimeAdjusted',
+               field: 'arrivalTime',
+               previousValue: '09:00',
+               value: '09:30',
+               reason: 'arrivalOutsideAdmissionHours',
+            },
+         ],
+      });
+
+      const text = allTextFor(mount);
+
+      assert.match(text, /Times Updated/);
+      assert.match(text, /Arrival changed from 9:00 AM to 9:30 AM/);
+      assert.match(text, /different admission hours/);
+      assert.ok(
+         mount.querySelector('.itin-panel-item'),
+         'arrival adjustments should use the same item row styling as animals'
+      );
+      assert.equal(
+         mount.querySelector('.itin-panel-item .itin-panel-thumb'),
+         null,
+         'arrival adjustments should not render an image placeholder'
+      );
+   });
+
+   test('removed items popup renders departure time adjustments', () => {
+      const mount = document.createElement('div');
+
+      showRemovedItemsPopup({
+         mountEl: mount,
+         adjustments: [
+            {
+               type: 'departureTimeAdjusted',
+               field: 'departureTime',
+               previousValue: '18:30',
+               value: '18:00',
+               reason: 'departureOutsideOperatingHours',
+            },
+         ],
+      });
+
+      const text = allTextFor(mount);
+
+      assert.match(text, /Times Updated/);
+      assert.match(text, /Departure changed from 6:30 PM to 6:00 PM/);
+      assert.match(text, /different operating hours/);
+      assert.ok(
+         mount.querySelector('.itin-panel-item'),
+         'departure adjustments should use the same item row styling as animals'
+      );
+      assert.equal(
+         mount.querySelector('.itin-panel-item .itin-panel-thumb'),
+         null,
+         'departure adjustments should not render an image placeholder'
+      );
    });
 
    test('animal and attraction rows show approximate scheduled start times', () => {

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .itinerary_adjustment import ItineraryAdjustment
 from .itinerary_result_reason import ItineraryResultReason
 from ...models import Itinerary
 from ...shared.enums import ItineraryErrorType
@@ -11,6 +12,7 @@ from ...shared.enums import ItineraryErrorType
 class ItinerarySaveResult:
    itinerary: Itinerary
    reasons: tuple[ ItineraryResultReason, ... ] = ()
+   adjustments: tuple[ ItineraryAdjustment, ... ] = ()
    status: ItineraryErrorType = ItineraryErrorType.SUCCESS
    suppressed_warnings: tuple[ ItineraryErrorType, ... ] = ()
 

@@ -4,6 +4,7 @@ import {
    getItinerary,
    isItineraryEmpty,
 } from '../itinerary/itineraryService.js';
+import { isValidatedItineraryEmpty } from '../itinerary/wizard/itineraryDiff.js';
 import { showWizardValidationPopupIfNeeded } from '../itinerary/wizard/validationPopup.js';
 import { blockMapWheelWhileWizardOpen } from '../itinerary/wizard/wheelBlocker.js';
 import { openItineraryWizard } from '../itinerary/wizard/wizardController.js';
@@ -38,6 +39,7 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
       removed: itinerary.validation.removed,
       reducedVisibility: itinerary.validation.reducedVisibility,
       improvedVisibility: itinerary.validation.improvedVisibility,
+      adjustments: itinerary.validation.adjustments,
    });
 
    if (validationSignature === lastShownValidationSignature) {
@@ -53,7 +55,8 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
          removed: itinerary.validation.removed,
          reducedVisibility: itinerary.validation.reducedVisibility,
          improvedVisibility: itinerary.validation.improvedVisibility,
-         isEmptyItinerary: isItineraryEmpty(itinerary),
+         adjustments: itinerary.validation.adjustments,
+         isEmptyItinerary: isValidatedItineraryEmpty(itinerary),
       },
       onViewAlternatives: (step) => openWizard({ startAt: step }),
    });

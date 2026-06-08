@@ -265,6 +265,78 @@ def test_set_itinerary_arrival_time_allows_early_admission_when_offered(
    assert itinerary.arrival_time == '09:00'
 
 
+def test_set_itinerary_date_change_adjusts_arrival_when_early_admission_is_unavailable(
+      db: DbControllers ) -> None:
+   assert ItineraryController.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:15',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-22',
+      arrival_time='09:15',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   )
+
+   assert result.success
+   assert result.itinerary.arrival_time == '09:30'
+   assert [ adjustment.to_dict() for adjustment in result.adjustments ] == [
+      {
+         'type': 'arrivalTimeAdjusted',
+         'field': 'arrivalTime',
+         'previous_value': '09:15',
+         'value': '09:30',
+         'reason': 'arrivalOutsideAdmissionHours',
+      },
+   ]
+
+
+def test_set_itinerary_date_change_adjusts_departure_when_close_time_is_earlier(
+      db: DbControllers ) -> None:
+   assert ItineraryController.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:30',
+      departure_time='18:30',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-22',
+      arrival_time='09:30',
+      departure_time='18:30',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   )
+
+   assert result.success
+   assert result.itinerary.departure_time == '18:00'
+   assert [ adjustment.to_dict() for adjustment in result.adjustments ] == [
+      {
+         'type': 'departureTimeAdjusted',
+         'field': 'departureTime',
+         'previous_value': '18:30',
+         'value': '18:00',
+         'reason': 'departureOutsideOperatingHours',
+      },
+   ]
+
+
 def test_set_itinerary_rejects_arrival_time_outside_zoo_admission_hours(
       db: DbControllers ) -> None:
    assert ItineraryController.set_itinerary(

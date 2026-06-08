@@ -27,6 +27,7 @@ export function showRemovedItemsPopup({
    removed = {},
    reducedVisibility = {},
    improvedVisibility = {},
+   adjustments = [],
    isEmptyItinerary = false,
    onAccept,
    onDismiss,
@@ -34,7 +35,7 @@ export function showRemovedItemsPopup({
 } = {}) {
    if (!mountEl) return;
 
-   if (!hasRemovedItemsPopupContent({ added, removed, reducedVisibility, improvedVisibility })) {
+   if (!hasRemovedItemsPopupContent({ added, removed, reducedVisibility, improvedVisibility, adjustments })) {
       return;
    }
 
@@ -74,6 +75,7 @@ export function showRemovedItemsPopup({
       removed,
       reducedVisibility,
       improvedVisibility,
+      adjustments,
       onViewAlternatives,
       removePopupOnly,
       onToggleKeepAnimal: (animal) => {

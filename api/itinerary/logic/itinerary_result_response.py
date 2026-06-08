@@ -20,6 +20,9 @@ def itinerary_result_to_dict(
       'reasons': [
          reason.to_dict() for reason in result.reasons
       ],
+      'adjustments': [
+         adjustment.to_dict() for adjustment in result.adjustments
+      ],
       'suppressed_warnings': [
          warning.value for warning in result.suppressed_warnings
       ],

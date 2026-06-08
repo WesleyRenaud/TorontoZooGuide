@@ -36,6 +36,10 @@ function normalizedItineraryConfig(overrides = {}) {
          departure: 'departure',
       },
       errorTypes: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
+      adjustmentTypes: overrides.adjustmentTypes ?? {
+         ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
+         DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
+      },
       statuses: overrides.statuses ?? [],
       suppressedErrorTypes: overrides.suppressedErrorTypes ?? [],
    };
@@ -45,6 +49,7 @@ function normalizedItineraryResultFields(status, reasons = []) {
    return {
       status,
       reasons,
+      adjustments: [],
       errorType: status,
       issues: reasons,
       suppressedWarnings: [],
@@ -63,6 +68,10 @@ function mockItineraryConfigResponse(overrides = {}) {
                departure: 'departure',
             },
          itinerary_error_types: overrides.errorTypes ?? MOCK_ITINERARY_ERROR_TYPES,
+         itinerary_adjustment_types: overrides.adjustmentTypes ?? {
+            ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
+         DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
+         },
          itinerary_statuses: overrides.statuses ?? [],
          suppressed_error_types: overrides.suppressedErrorTypes ?? [],
       },
@@ -250,6 +259,52 @@ test('normalizes suppressed warnings on itinerary results', async () => {
       suppressedWarnings: ['arrivalDepartureTooClose'],
       itineraryConfig: normalizedItineraryConfig(),
    });
+});
+
+test('normalizes itinerary adjustments on save results', async () => {
+   globalThis.fetch = async () => mockJsonResponse({
+      status: 'success',
+      reasons: [],
+      adjustments: [
+         {
+            type: 'arrivalTimeAdjusted',
+            field: 'arrivalTime',
+            previous_value: '09:00',
+            value: '09:30',
+            reason: 'arrivalOutsideAdmissionHours',
+         },
+      ],
+      itinerary: {
+         date: '2026-06-22',
+         arrival_time: '09:30',
+         animals: [],
+         attractions: [],
+         guardians_talks: [],
+         wild_encounters: [],
+      },
+      ...mockItineraryConfigResponse(),
+   });
+
+   const result = await setItineraryRequest({
+      date: '2026-06-22',
+      arrivalTime: '09:00',
+      departureTime: '17:00',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   assert.deepEqual(result.adjustments, [
+      {
+         type: 'arrivalTimeAdjusted',
+         field: 'arrivalTime',
+         previousValue: '09:00',
+         value: '09:30',
+         reason: 'arrivalOutsideAdmissionHours',
+      },
+   ]);
+   assert.equal(result.itinerary.arrivalTime, '09:30');
 });
 
 test('normalizes short visit warning from itinerary time endpoints', async () => {

@@ -12,6 +12,7 @@ import './weatherApi.test.mjs';
 import './assetNormalization.test.mjs';
 import './likelihood.test.mjs';
 import './itineraryShape.test.mjs';
+import './wizardController.test.mjs';
 import './wizardState.test.mjs';
 import './wildEncounterConflictResolution.test.mjs';
 import './scheduleConflictCompatibility.test.mjs';

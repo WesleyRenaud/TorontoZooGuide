@@ -1,5 +1,9 @@
 import { postJson } from './apiClient.js';
 import {
+   normalizeItineraryAdjustmentType,
+   updateItineraryAdjustmentTypesFromConfig,
+} from '../itinerary/itineraryAdjustmentTypes.js';
+import {
    normalizeItineraryErrorTypeFromResponse,
    updateItineraryErrorTypesFromConfig,
 } from '../itinerary/itineraryErrorTypes.js';
@@ -70,6 +74,18 @@ function normalizeItineraryErrorTypes(errorTypes) {
    );
 }
 
+function normalizeItineraryAdjustmentTypes(adjustmentTypes) {
+   const source = asObject(adjustmentTypes);
+
+   return Object.freeze(
+      Object.fromEntries(
+         Object.entries(source)
+            .map(([key, value]) => [key, asTrimmedString(value)])
+            .filter(([, value]) => value)
+      )
+   );
+}
+
 function normalizeVisitBoundaryEventTypes(config) {
    const source = asObject(config.itinerary_visit_boundary_event_types);
 
@@ -103,6 +119,9 @@ function normalizeItineraryConfig(config) {
          .filter(Boolean),
       visitBoundaryEventTypes: normalizeVisitBoundaryEventTypes(source),
       errorTypes: normalizeItineraryErrorTypes(source.itinerary_error_types),
+      adjustmentTypes: normalizeItineraryAdjustmentTypes(
+         source.itinerary_adjustment_types
+      ),
       statuses: normalizedStatuses,
       suppressedErrorTypes: asArray(source.suppressed_error_types)
          .map(asTrimmedString)
@@ -119,6 +138,7 @@ function normalizeItineraryConfig(config) {
    }
 
    updateItineraryErrorTypesFromConfig(normalizedConfig);
+   updateItineraryAdjustmentTypesFromConfig(normalizedConfig);
 
    return normalizedConfig;
 }
@@ -134,6 +154,18 @@ function normalizeItineraryReason(reason) {
    };
 }
 
+function normalizeItineraryAdjustment(adjustment) {
+   const source = asObject(adjustment);
+
+   return {
+      type: normalizeItineraryAdjustmentType(source.type),
+      field: asTrimmedString(source.field),
+      previousValue: asTrimmedString(source.previous_value ?? source.previousValue),
+      value: asTrimmedString(source.value),
+      reason: asTrimmedString(source.reason),
+   };
+}
+
 function normalizeItineraryResult(source = {}, { includeItinerary = true } = {}) {
    const response = asObject(source);
 
@@ -145,12 +177,16 @@ function normalizeItineraryResult(source = {}, { includeItinerary = true } = {})
    const reasons = asArray(response.reasons).map(
       normalizeItineraryReason
    );
+   const adjustments = asArray(response.adjustments).map(
+      normalizeItineraryAdjustment
+   );
    const suppressedWarnings = asArray(response.suppressed_warnings)
       .map(asTrimmedString)
       .filter(Boolean);
    const result = {
       status,
       reasons,
+      adjustments,
       errorType: status,
       issues: reasons,
       suppressedWarnings,
