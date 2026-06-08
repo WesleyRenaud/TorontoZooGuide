@@ -45,33 +45,37 @@ export function buildSectionConfigs(
    } = {}
 ) {
    const rowActionOptions = { onUnscheduleItem, onScheduleItem, onRemoveItem };
+   const animalRows = buildAnimalRows(animals, rowActionOptions);
+   const attractionRows = buildAttractionRows(attractions, rowActionOptions);
+   const guardiansRows = buildGuardiansRows(guardiansTalks, { onRemoveItem });
+   const wildRows = buildWildRows(wildEncounters, { onRemoveItem });
    const sectionConfigs = [
       {
          key: ITINERARY_PANEL_SECTION_KEYS.animals,
          title: APP_STRINGS.site.nav.animals,
-         count: animals.length,
-         children: buildAnimalRows(animals, rowActionOptions),
+         count: animalRows.length,
+         children: animalRows,
          stepKey: ITINERARY_PANEL_SECTION_KEYS.animals,
       },
       {
          key: ITINERARY_PANEL_SECTION_KEYS.attractions,
          title: APP_STRINGS.map.filter.attractions,
-         count: attractions.length,
-         children: buildAttractionRows(attractions, rowActionOptions),
+         count: attractionRows.length,
+         children: attractionRows,
          stepKey: ITINERARY_PANEL_SECTION_KEYS.attractions,
       },
       {
          key: ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
          title: APP_STRINGS.site.nav.meetTheGuardians,
-         count: guardiansTalks.length,
-         children: buildGuardiansRows(guardiansTalks, { onRemoveItem }),
+         count: guardiansRows.length,
+         children: guardiansRows,
          stepKey: ITINERARY_PANEL_SECTION_KEYS.guardiansTalks,
       },
       {
          key: ITINERARY_PANEL_SECTION_KEYS.wildEncounters,
          title: APP_STRINGS.site.nav.wildEncounters,
-         count: wildEncounters.length,
-         children: buildWildRows(wildEncounters, { onRemoveItem }),
+         count: wildRows.length,
+         children: wildRows,
          stepKey: ITINERARY_PANEL_SECTION_KEYS.wildEncounters,
       },
    ];
