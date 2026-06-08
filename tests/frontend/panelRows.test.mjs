@@ -40,6 +40,7 @@ import {
    buildGuardiansRows,
    buildWildRows,
 } from '../../scripts/itinerary/panel/rows.js';
+import { buildSectionConfigs } from '../../scripts/itinerary/panel/sectionConfigs.js';
 import {
    TIMELINE_POINT_PILL_HEIGHT_PX,
    TIMELINE_SLOT_HEIGHT_PX,
@@ -1623,6 +1624,30 @@ test.describe('itinerary panel rows', () => {
       );
       assert.equal(textFor(rows[1], '.itin-panel-name'), 'African Lion');
       assert.equal(textFor(rows[1], '.itin-panel-meta'), 'Exhibit: Indo-Malaya Outdoor');
+   });
+
+   test('animal section count matches deduplicated rendered rows', () => {
+      const [animalSection] = buildSectionConfigs({
+         animals: [
+            {
+               species: 'African Lion',
+               exhibit: 'Africa Savanna',
+            },
+            {
+               species: ' african lion ',
+               exhibit: 'Africa Savanna',
+            },
+            {
+               species: 'African Lion',
+               exhibit: 'Indo-Malaya Outdoor',
+            },
+         ],
+      }, {
+         keys: ['animals'],
+      });
+
+      assert.equal(animalSection.count, 2);
+      assert.equal(animalSection.children.length, 2);
    });
 
    test('removed items popup renders arrival time adjustments', () => {
