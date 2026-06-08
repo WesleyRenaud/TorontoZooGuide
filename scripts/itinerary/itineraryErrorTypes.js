@@ -89,6 +89,10 @@ export function resolveItineraryErrorMessage(
       return strings.itemNotOnItinerary;
    }
 
+   if (errorType === itineraryErrorTypes?.TIME_OUT_OF_BOUNDS) {
+      return strings.timeOutOfBounds;
+   }
+
    if (errorType === itineraryErrorTypes?.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED) {
       return strings.bulkScheduleAnimalsAlreadyScheduled;
    }

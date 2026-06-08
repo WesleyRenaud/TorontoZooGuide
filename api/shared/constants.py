@@ -4,6 +4,7 @@ from .enums import ItineraryErrorType
 from .enums import ItineraryEventType
 from ..itinerary.data_access.itinerary_status import fetch_itinerary_statuses
 from ..itinerary.data_access.itinerary_status import fetch_suppressed_status_values
+from ..itinerary.logic.itinerary_adjustment import ItineraryAdjustmentType
 from ..types import Connection
 
 
@@ -35,6 +36,10 @@ def itinerary_config_to_dict(
       'itinerary_error_types': {
          error_type.name: error_type.value
          for error_type in ItineraryErrorType
+      },
+      'itinerary_adjustment_types': {
+         adjustment_type.name: adjustment_type.value
+         for adjustment_type in ItineraryAdjustmentType
       },
       'itinerary_statuses': [
          {

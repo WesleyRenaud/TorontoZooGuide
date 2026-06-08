@@ -16,6 +16,7 @@ from .early_admission_warning import early_admission_warning_is_required
 from ...guardians.controllers.guardians_controller import GuardiansController
 from .guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from .itinerary import build_current_itinerary
+from .itinerary_adjustment import ItineraryAdjustment
 from .itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from .itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from .itinerary_save_result import ItinerarySaveResult
@@ -44,6 +45,7 @@ class SetItineraryContext:
    saved_itinerary: SavedItinerary | None
    unschedule_requirements: ItineraryUnscheduleRequirements
    itinerary_controller_kwargs: dict[ str, Any ]
+   adjustments: tuple[ ItineraryAdjustment, ... ] = ()
    suppressed_warnings: tuple[ ItineraryErrorType, ... ] = ()
 
 
@@ -134,7 +136,8 @@ def prepare_set_itinerary_context(
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None,
-      itinerary_controller_kwargs: dict[ str, Any ] ) -> SetItineraryContext:
+      itinerary_controller_kwargs: dict[ str, Any ],
+      adjustments: tuple[ ItineraryAdjustment, ... ] = () ) -> SetItineraryContext:
    validated_itinerary = validate_itinerary_for_save(
       conn,
       save_input,
@@ -173,7 +176,8 @@ def prepare_set_itinerary_context(
       current_itinerary=current_itinerary,
       saved_itinerary=saved_itinerary,
       unschedule_requirements=unschedule_requirements,
-      itinerary_controller_kwargs=itinerary_controller_kwargs )
+      itinerary_controller_kwargs=itinerary_controller_kwargs,
+      adjustments=adjustments )
 
 
 def check_set_itinerary_save_warnings(
@@ -307,6 +311,7 @@ def commit_set_itinerary(
       validated_itinerary )
 
    return ItinerarySaveResult(
+      adjustments=context.adjustments,
       suppressed_warnings=context.suppressed_warnings,
       itinerary=_build_current_itinerary_response(
          context.conn,

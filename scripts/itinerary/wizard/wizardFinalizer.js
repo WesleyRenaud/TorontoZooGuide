@@ -109,7 +109,20 @@ export async function finalizeItineraryWizard(
       return null;
    }
 
-   const savedItinerary = await saveFinalItinerary(finalItinerary);
+   let savedItinerary;
+
+   try {
+      savedItinerary = await saveFinalItinerary(finalItinerary);
+   }
+   catch (error) {
+      showItineraryWizardPopup({
+         mountEl,
+         title: APP_STRINGS.itinerary.errors.generic,
+         message: error?.message || APP_STRINGS.itinerary.errors.generic,
+         buttonText: APP_STRINGS.itinerary.actions.accept,
+      });
+      return null;
+   }
 
    syncItineraryAnimalDraftFromItinerary(savedItinerary);
 
@@ -119,7 +132,7 @@ export async function finalizeItineraryWizard(
 
    clearWizardMount(mountEl);
 
-   onDone?.();
+   onDone?.(savedItinerary);
 
    return savedItinerary;
 }

@@ -6,12 +6,14 @@ import { createItineraryDateSelectorController } from '../../itinerary/selectors
 import { createItineraryGuardiansTalkSelectorController } from '../../itinerary/selectors/guardiansTalkSelector.js';
 import { createItineraryRegionSelectorController } from '../../itinerary/selectors/regionSelector.js';
 import { createItineraryWildEncounterSelectorController } from '../../itinerary/selectors/wildEncounterSelector.js';
+import { isValidatedItineraryEmpty } from './itineraryDiff.js';
 import { getItinerary } from '../itineraryService.js';
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
 import { showWizardValidationPopupIfNeeded } from './validationPopup.js';
 import { resolveEarliestSelectableVisitDateNoon } from '../visitDateEarliest.js';
 import { toISODate } from '../../visitDates/visitDateRules.js';
+import { buildWizardDraft } from './wizardDraft.js';
 import { finalizeItineraryWizard } from './wizardFinalizer.js';
 
 const DEFAULT_START_STEP = 'date';
@@ -67,16 +69,6 @@ function clearWizard(mountEl) {
 function closeWizard(mountEl, onDone) {
    clearWizard(mountEl);
    onDone?.();
-}
-
-function buildWizardDraft(wizardState, override = {}) {
-   return {
-      date: override.date ?? wizardState.date,
-      animals: override.animals ?? wizardState.animals,
-      attractions: override.attractions ?? wizardState.attractions,
-      guardiansTalks: override.guardiansTalks ?? wizardState.guardiansTalks,
-      wildEncounters: override.wildEncounters ?? wizardState.wildEncounters,
-   };
 }
 
 function buildSelectionStepHandlers({
@@ -167,10 +159,22 @@ export async function openItineraryWizard({
       wizard.updateSelection(selectionKey, value, options);
    }
 
-   function handleFinishDone() {
+   function handleFinishDone(savedItinerary) {
       onDone?.();
 
+      const validation = savedItinerary?.validation ?? {};
       const pendingValidation = wizard.consumePendingValidation();
+
+      pendingValidation.added = validation.added ?? pendingValidation.added;
+      pendingValidation.removed = validation.removed ?? pendingValidation.removed;
+      pendingValidation.reducedVisibility = (
+         validation.reducedVisibility ?? pendingValidation.reducedVisibility
+      );
+      pendingValidation.improvedVisibility = (
+         validation.improvedVisibility ?? pendingValidation.improvedVisibility
+      );
+      pendingValidation.adjustments = validation.adjustments;
+      pendingValidation.isEmptyItinerary = isValidatedItineraryEmpty(savedItinerary);
 
       scheduleWizardValidationPopup({
          mountEl,

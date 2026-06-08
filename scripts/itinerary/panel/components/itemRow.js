@@ -30,9 +30,11 @@ export function makeItemRow({
 
    const left = el('div', 'itin-panel-item-left');
 
-   const thumb = el('div', 'itin-panel-thumb');
-   if (imageSrc) thumb.appendChild(safeImg(imageSrc));
-   left.appendChild(thumb);
+   if (imageSrc) {
+      const thumb = el('div', 'itin-panel-thumb');
+      thumb.appendChild(safeImg(imageSrc));
+      left.appendChild(thumb);
+   }
 
    const text = el('div', 'itin-panel-text');
    appendItemName(text, { name, onNameClick });

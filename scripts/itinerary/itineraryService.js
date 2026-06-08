@@ -151,11 +151,20 @@ export async function saveItinerary(
 
    const result = await requestSetItineraryWithConfirmations(basePayload);
 
+   if (!isItinerarySuccess(result.errorType)) {
+      throw new Error(resolveItineraryErrorMessage(result.errorType));
+   }
+
    const normalizedItinerary = normalizeItinerary({
       ...result?.itinerary,
       itineraryConfig: result?.itineraryConfig,
    });
    normalizedItinerary.saveIssues = result.issues;
+   normalizedItinerary.validation.adjustments = result.adjustments ?? [];
+   normalizedItinerary.validation.hasChanges = (
+      normalizedItinerary.validation.hasChanges
+      || normalizedItinerary.validation.adjustments.length > 0
+   );
    dispatchItineraryUpdated(normalizedItinerary);
 
    return normalizedItinerary;

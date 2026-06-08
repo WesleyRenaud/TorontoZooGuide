@@ -16,13 +16,15 @@ export function showWizardValidationPopupIfNeeded({
    const added = pendingValidation?.added ?? null;
    const reducedVisibility = pendingValidation?.reducedVisibility ?? null;
    const improvedVisibility = pendingValidation?.improvedVisibility ?? null;
+   const adjustments = pendingValidation?.adjustments ?? null;
    const isEmptyItinerary = pendingValidation?.isEmptyItinerary ?? false;
 
    if (
       !hasRemovedItems(removed) &&
       !hasAddedItems(added) &&
       !hasReducedVisibility(reducedVisibility) &&
-      !hasImprovedVisibility(improvedVisibility)
+      !hasImprovedVisibility(improvedVisibility) &&
+      !adjustments?.length
    ) {
       return;
    }
@@ -33,6 +35,7 @@ export function showWizardValidationPopupIfNeeded({
       removed,
       reducedVisibility,
       improvedVisibility,
+      adjustments,
       isEmptyItinerary,
       onAccept: ({ animalsToKeep = [], attractionsToKeep = [] } = {}) => {
          void acceptItinerary({ animalsToKeep, attractionsToKeep });

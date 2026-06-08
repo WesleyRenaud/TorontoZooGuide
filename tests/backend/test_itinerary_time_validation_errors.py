@@ -117,3 +117,34 @@ def test_set_arrival_time_succeeds_when_departure_is_unset(
    itinerary = ItineraryController.get_itinerary()
    assert itinerary.arrival_time == '10:15'
    assert itinerary.departure_time is None
+
+
+def test_set_itinerary_rejects_invalid_departure_on_date_change_without_adjustment(
+      db: DbControllers ) -> None:
+   assert ItineraryController.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:30',
+      departure_time='18:30',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryController.set_itinerary(
+      date='2026-06-22',
+      arrival_time='09:30',
+      departure_time='19:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   )
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.TIME_OUT_OF_BOUNDS
+
+   itinerary = ItineraryController.get_itinerary()
+   assert itinerary.date == '2026-06-20'
+   assert itinerary.departure_time == '18:30'

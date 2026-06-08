@@ -1,4 +1,7 @@
 import { el } from '../dom.js';
+import { formatClockTime } from '../format.js';
+import { makeItemRow } from './itemRow.js';
+import { getItineraryAdjustmentTypes } from '../../itineraryAdjustmentTypes.js';
 import {
    buildAnimalRows,
    buildAttractionRows,
@@ -94,6 +97,36 @@ function makeSection(title, subtitle, rowNodes = []) {
    return section;
 }
 
+function buildAdjustmentRow(adjustment = {}) {
+   const adjustmentTypes = getItineraryAdjustmentTypes();
+   const oldTime = formatClockTime(adjustment.previousValue);
+   const newTime = formatClockTime(adjustment.value);
+
+   if (!oldTime || !newTime) {
+      return null;
+   }
+
+   if (adjustment.type === adjustmentTypes?.ARRIVAL_TIME_ADJUSTED) {
+      return makeItemRow({
+         name: APP_STRINGS.itinerary.dayPlanner.arrivalLabel,
+         alertLine: APP_STRINGS.itinerary.removedItems.arrivalAdjusted(oldTime, newTime),
+      });
+   }
+
+   if (adjustment.type === adjustmentTypes?.DEPARTURE_TIME_ADJUSTED) {
+      return makeItemRow({
+         name: APP_STRINGS.labels.departure,
+         alertLine: APP_STRINGS.itinerary.removedItems.departureAdjusted(oldTime, newTime),
+      });
+   }
+
+   return null;
+}
+
+function buildAdjustmentRows(adjustments = []) {
+   return adjustments.map((adjustment) => buildAdjustmentRow(adjustment));
+}
+
 function buildSectionRows(
    items,
    rowBuilder,
@@ -153,6 +186,7 @@ function getSectionSpecs({
    removed,
    reducedVisibility,
    improvedVisibility,
+   adjustments,
 } = {}) {
    const safeAdded = added ?? {};
    const safeRemoved = removed ?? {};
@@ -160,6 +194,14 @@ function getSectionSpecs({
    const safeImproved = improvedVisibility ?? {};
 
    return [
+      {
+         items: adjustments ?? [],
+         title: APP_STRINGS.itinerary.removedItems.itineraryTimesTitle,
+         subtitle: APP_STRINGS.itinerary.removedItems.itineraryTimesSubtitle,
+         rowBuilder: buildAdjustmentRows,
+         stepKey: 'date',
+         showViewAlternatives: false,
+      },
       {
          items: safeAdded.animals ?? [],
          title: APP_STRINGS.itinerary.removedItems.animalsAddedTitle,
@@ -221,8 +263,9 @@ export function hasRemovedItemsPopupContent({
    removed,
    reducedVisibility,
    improvedVisibility,
+   adjustments,
 } = {}) {
-   return getSectionSpecs({ added, removed, reducedVisibility, improvedVisibility })
+   return getSectionSpecs({ added, removed, reducedVisibility, improvedVisibility, adjustments })
       .some((section) => Array.isArray(section.items) && section.items.length > 0);
 }
 
@@ -256,6 +299,7 @@ export function buildRemovedItemsPopupSections({
    removed,
    reducedVisibility,
    improvedVisibility,
+   adjustments,
    onViewAlternatives,
    removePopupOnly,
    onToggleKeepAnimal,
@@ -270,7 +314,7 @@ export function buildRemovedItemsPopupSections({
       isKeepAttractionSelected,
    };
 
-   return getSectionSpecs({ added, removed, reducedVisibility, improvedVisibility })
+   return getSectionSpecs({ added, removed, reducedVisibility, improvedVisibility, adjustments })
       .map((section) => makeSection(
          section.title,
          section.subtitle,

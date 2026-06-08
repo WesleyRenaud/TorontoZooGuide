@@ -101,6 +101,20 @@ test('hasUnsavedChanges stays false after revisiting date and animals without ed
    assert.equal(wizard.hasUnsavedChanges(), false);
 });
 
+test('applyValidationResult with null validated does not mark itinerary as empty', () => {
+   const wizard = createItineraryWizardState({
+      date: '2026-06-15',
+      animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   wizard.applyValidationResult('2026-06-20', null);
+
+   assert.equal(wizard.consumePendingValidation().isEmptyItinerary, false);
+});
+
 test('hasUnsavedChanges is true when clearing a non-empty initial itinerary', () => {
    const wizard = createItineraryWizardState({
       date: '2026-06-15',

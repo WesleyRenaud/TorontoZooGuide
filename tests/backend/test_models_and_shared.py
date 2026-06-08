@@ -5,6 +5,7 @@ from typing import Any
 
 import pytest
 
+from api.itinerary.logic.itinerary_adjustment import ItineraryAdjustmentType
 from api.itinerary.scheduling import ItineraryActivityScheduler
 from api.models import Animal
 from api.models import Attraction
@@ -329,6 +330,13 @@ def test_itinerary_config_exposes_error_types() -> None:
    assert itinerary_config_to_dict()[ 'itinerary_error_types' ] == {
       error_type.name: error_type.value
       for error_type in ItineraryErrorType
+   }
+
+
+def test_itinerary_config_exposes_adjustment_types() -> None:
+   assert itinerary_config_to_dict()[ 'itinerary_adjustment_types' ] == {
+      adjustment_type.name: adjustment_type.value
+      for adjustment_type in ItineraryAdjustmentType
    }
 
 

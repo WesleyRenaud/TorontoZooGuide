@@ -11,6 +11,7 @@ from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.itinerary_save_input_mapper import map_itinerary_save_input
 from ...guardians.controllers.guardians_controller import GuardiansController
 from .itinerary_save_result import ItinerarySaveResult
+from .itinerary_time_adjustments import adjust_set_itinerary_for_restrictive_hours
 from .set_itinerary_flow import check_set_itinerary_save_warnings
 from .set_itinerary_flow import commit_set_itinerary
 from .set_itinerary_flow import itinerary_controller_kwargs
@@ -139,6 +140,10 @@ def set_itinerary(
       guardians_controller=guardians_controller,
       wild_encounter_controller=wild_encounter_controller,
       visit_date_temp=visit_date_temp )
+   save_input, adjustments = adjust_set_itinerary_for_restrictive_hours(
+      conn,
+      save_input,
+      old_visit_date=old_visit_date )
 
    zoo_hours_error = validate_set_itinerary_zoo_hours(
       conn,
@@ -157,7 +162,8 @@ def set_itinerary(
       guardians_controller=guardians_controller,
       wild_encounter_controller=wild_encounter_controller,
       visit_date_temp=visit_date_temp,
-      itinerary_controller_kwargs=controller_kwargs )
+      itinerary_controller_kwargs=controller_kwargs,
+      adjustments=adjustments )
 
    context, save_warning = check_set_itinerary_save_warnings(
       context,

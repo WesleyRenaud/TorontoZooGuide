@@ -169,6 +169,7 @@ export function buildItineraryValidationState(
       added,
       reducedVisibility,
       improvedVisibility,
+      adjustments: [],
       hasChanges: (
          hasAddedItems(added)
          || hasRemovedItems(removed)
