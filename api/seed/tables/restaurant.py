@@ -146,10 +146,10 @@ restaurants = [
       74.56                                                                                              # Y coordinate on map
    ),
    (
-      'Tim Hortons Express',                                                                             # Name
+      "Wolf's Den",                                                                                      # Name
       'Tundra Trek',                                                                                     # Location
       None,                                                                                              # Sub-location
-      '''Grab a quick beverage or snack including coffee, tea, iced caps, timbits, and frozen lemonade.''',
+      '''Grab a quick beverage or snack including coffee and tea.''',
       'https://www.torontozoo.com/!/pdfs/food/Express%20Menu%202025.pdf',                                # Menu link
       79.073,                                                                                            # X coordinate on map
       56.207                                                                                             # Y coordinate on map
