@@ -27,7 +27,7 @@ from .itinerary.controllers.itinerary_controller import ItineraryController
 from .itinerary.logic.itinerary_result_response import itinerary_result_to_dict
 from .itinerary.logic.itinerary_result_response import itinerary_time_set_result_to_dict
 from .itinerary.logic.itinerary_result_response import suppress_itinerary_warning_result_to_dict
-from .pavilions.controllers.pavilion_controller import PavilionController
+from .pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from .picnic_sites.controllers.picnic_site_controller import PicnicSiteController
 from .request_connection import clear_connection
 from .request_connection import get_connection
@@ -181,14 +181,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          route( self )
          return
 
-      if self.path == '/get-pavilions':
-         pavilions = PavilionController.get_pavilions()
-
-         response = { "pavilions": [ pavilion.to_dict() for pavilion in pavilions ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-restaurants':
+      if self.path == '/get-restaurants':
          data = self._read_json_body()
 
          month = data.get( 'month' )
@@ -438,7 +431,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             pavilions_json = [
                to_dict_with_type( pavilion, 'pavilion' )
                for pavilion in (
-                  PavilionController.get_pavilions_matching_query( query=query ) or []
+                  PavilionCoordinator.get_pavilions_matching_query( query=query ) or []
                )
             ]
 

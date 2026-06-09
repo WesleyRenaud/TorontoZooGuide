@@ -22,7 +22,7 @@ from api.giftshops.data_access.gift_shop_schedule_record import GiftShopSchedule
 from api.giftshops.logic.gift_shop import get_active_gift_shop_schedule_status
 from api.guardians.controllers.guardians_controller import GuardiansController
 from api.guest_services.controllers.guest_service_controller import GuestServiceController
-from api.pavilions.controllers.pavilion_controller import PavilionController
+from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from api.picnic_sites.controllers.picnic_site_controller import PicnicSiteController
 from api.restaurants.controllers.restaurant_controller import RestaurantController
 from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_override_records
@@ -148,7 +148,7 @@ def test_region_and_static_location_queries( db: DbControllers ) -> None:
 
    pavilions = {
       pavilion.name: pavilion
-      for pavilion in PavilionController.get_pavilions()
+      for pavilion in PavilionCoordinator.get_pavilions()
    }
    restrooms = {
       restroom.title: restroom
