@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api.animals.controllers.animal_controller import AnimalController
+from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.controllers.attraction_controller import AttractionController
 from api.exhibits.controllers.exhibit_controller import ExhibitController
 from api.giftshops.controllers.gift_shop_controller import GiftShopController
@@ -22,7 +22,7 @@ from conftest import DbControllers
 
 
 def get_animal( db: DbControllers, species: str, exhibit: str ) -> Animal:
-   animals = AnimalController.get_animals_viewable_on_day(
+   animals = AnimalCoordinator.get_animals_viewable_on_day(
       day=15,
       month='June',
       year=2026,
@@ -40,7 +40,7 @@ def get_animals_for_exhibit(
       species: str,
       exhibit: str,
       include_off_display_animals: bool = True ) -> list[ Animal ]:
-   animals = AnimalController.get_animals_viewable_on_day(
+   animals = AnimalCoordinator.get_animals_viewable_on_day(
       day=15,
       month='June',
       year=2026,
@@ -109,7 +109,7 @@ def test_set_animal_as_off_display_changes_visible_animal_result(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert AnimalController.set_animal_as_off_display( 'African Lion', 'Africa Savanna', '2026-06-01', '', '' )
+   assert AnimalCoordinator.set_animal_as_off_display( 'African Lion', 'Africa Savanna', '2026-06-01', '', '' )
 
    lion = get_animal( db, 'African Lion', 'Africa Savanna' )
 
@@ -121,14 +121,14 @@ def test_set_animal_as_on_display_restores_visible_animal_result(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert AnimalController.set_animal_as_off_display(
+   assert AnimalCoordinator.set_animal_as_off_display(
       'African Lion',
       'Africa Savanna',
       '2026-06-01',
       '2026-06-30',
       'Unavailable.' )
 
-   assert AnimalController.set_animal_as_on_display( 'African Lion', 'Africa Savanna' )
+   assert AnimalCoordinator.set_animal_as_on_display( 'African Lion', 'Africa Savanna' )
 
    lion = get_animal( db, 'African Lion', 'Africa Savanna' )
 
@@ -141,7 +141,7 @@ def test_set_animal_as_off_display_can_scope_to_indoor_viewing(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert AnimalController.set_animal_as_off_display(
+   assert AnimalCoordinator.set_animal_as_off_display(
       'African Penguin',
       'Africa Savanna',
       '2026-06-01',
@@ -170,13 +170,13 @@ def test_set_animal_as_off_display_replaces_matching_scopes(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert AnimalController.set_animal_as_off_display(
+   assert AnimalCoordinator.set_animal_as_off_display(
       'African Penguin',
       'Africa Savanna',
       '2026-06-01',
       '2026-06-30',
       'All unavailable.' )
-   assert AnimalController.set_animal_as_off_display(
+   assert AnimalCoordinator.set_animal_as_off_display(
       'African Penguin',
       'Africa Savanna',
       '2026-06-01',
@@ -196,14 +196,14 @@ def test_set_animal_as_on_display_can_scope_to_indoor_viewing(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert AnimalController.set_animal_as_off_display(
+   assert AnimalCoordinator.set_animal_as_off_display(
       'African Penguin',
       'Africa Savanna',
       '2026-06-01',
       '2026-06-30',
       'All unavailable.' )
 
-   assert AnimalController.set_animal_as_on_display(
+   assert AnimalCoordinator.set_animal_as_on_display(
       'African Penguin',
       'Africa Savanna',
       viewing_scope=AnimalViewingScope.INDOOR )
@@ -220,14 +220,14 @@ def test_set_animal_as_on_display_removes_matching_scoped_status(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert AnimalController.set_animal_as_off_display(
+   assert AnimalCoordinator.set_animal_as_off_display(
       'African Penguin',
       'Africa Savanna',
       '2026-06-01',
       '2026-06-30',
       'Indoor unavailable.',
       viewing_scope=AnimalViewingScope.INDOOR )
-   assert AnimalController.set_animal_as_off_display(
+   assert AnimalCoordinator.set_animal_as_off_display(
       'African Penguin',
       'Africa Savanna',
       '2026-06-01',
@@ -235,7 +235,7 @@ def test_set_animal_as_on_display_removes_matching_scoped_status(
       'Outdoor unavailable.',
       viewing_scope=AnimalViewingScope.OUTDOOR )
 
-   assert AnimalController.set_animal_as_on_display(
+   assert AnimalCoordinator.set_animal_as_on_display(
       'African Penguin',
       'Africa Savanna',
       viewing_scope=AnimalViewingScope.INDOOR )
@@ -251,7 +251,7 @@ def test_set_animal_as_off_display_rejects_missing_viewing_scope(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert not AnimalController.set_animal_as_off_display(
+   assert not AnimalCoordinator.set_animal_as_off_display(
       'African Lion',
       'Africa Savanna',
       '2026-06-01',
@@ -264,9 +264,9 @@ def test_set_and_remove_animal_visibility_schedule_changes_visible_animal_result
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert AnimalController.remove_animal_visibility_schedule( 'African Lion', 'Africa Savanna' ) is False
+   assert AnimalCoordinator.remove_animal_visibility_schedule( 'African Lion', 'Africa Savanna' ) is False
 
-   assert AnimalController.set_animal_limited_viewing_schedule(
+   assert AnimalCoordinator.set_animal_limited_viewing_schedule(
       'African Lion',
       'Africa Savanna',
       '2026-06-01',
@@ -281,7 +281,7 @@ def test_set_and_remove_animal_visibility_schedule_changes_visible_animal_result
    assert lion.has_limited_viewing_schedule is True
    assert lion.limited_viewing_message == 'The African Lion is viewable daily only from 9:00 AM to 10:00 AM.'
 
-   assert AnimalController.remove_animal_visibility_schedule( 'African Lion', 'Africa Savanna' ) is True
+   assert AnimalCoordinator.remove_animal_visibility_schedule( 'African Lion', 'Africa Savanna' ) is True
 
    lion = get_animal( db, 'African Lion', 'Africa Savanna' )
 
@@ -294,14 +294,14 @@ def test_set_and_remove_animal_viewing_alert_changes_visible_animal_result(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert AnimalController.set_animal_viewing_alert( 'African Lion', 'Africa Savanna', '2026-06-01', '', '' )
+   assert AnimalCoordinator.set_animal_viewing_alert( 'African Lion', 'Africa Savanna', '2026-06-01', '', '' )
 
    lion = get_animal( db, 'African Lion', 'Africa Savanna' )
 
    assert lion.has_viewing_alert is True
    assert lion.viewing_alert_message == 'The African Lion may be less visible than usual at this time.'
 
-   assert AnimalController.remove_animal_viewing_alert( 'African Lion', 'Africa Savanna' ) is True
+   assert AnimalCoordinator.remove_animal_viewing_alert( 'African Lion', 'Africa Savanna' ) is True
 
    lion = get_animal( db, 'African Lion', 'Africa Savanna' )
 

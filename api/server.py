@@ -14,7 +14,7 @@ from typing import Any
 from urllib.parse import unquote, urlparse
 
 from . import connection
-from .animals.controllers.animal_controller import AnimalController
+from .animals.coordinators.animal_coordinator import AnimalCoordinator
 from .attractions.controllers.attraction_controller import AttractionController
 from .defibrillators.controllers.defibrillator_controller import DefibrillatorController
 from .drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
@@ -35,8 +35,9 @@ from .request_connection import get_connection
 from .request_connection import set_connection
 from .restaurants.controllers.restaurant_controller import RestaurantController
 from .restrooms.controllers.restroom_controller import RestroomController
+from .routes import POST_ROUTES
 from .shared.constants import itinerary_config_to_dict
-from .shared.enums import AnimalViewingScope
+from .shared.typed_dict import to_dict_with_type
 from .updates.controllers.update_controller import UpdateController
 from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from .zoo_hours.controllers.zoo_hours_controller import ZooHoursController
@@ -175,29 +176,13 @@ class MyHandler( BaseHTTPRequestHandler ):
 
    @with_controllers
    def do_POST( self ) -> None:
-      if self.path == '/get-visible-animals':
-         data = self._read_json_body()
+      route = POST_ROUTES.get( self.path )
 
-         day = data.get( 'day' )
-         month = data.get( 'month' )
-         year = data.get( 'year' )
-         temp = data.get( 'temp' )
-         include_off_display_animals = data.get( 'includeOffDisplayAnimals' ) or False
+      if route is not None:
+         route( self )
+         return
 
-         animals = AnimalController.get_animals_viewable_on_day(
-            day=day,
-            month=month,
-            year=year,
-            temp=temp,
-            include_off_display_animals=include_off_display_animals,
-            threshold=0 )
-
-         response = { "animals": [ animal.to_dict() for animal in animals ] }
-
-         self._write_json( response )
-
-
-      elif self.path == '/get-exhibits-in-region':
+      if self.path == '/get-exhibits-in-region':
          data = self._read_json_body()
 
          region = data.get( 'region' )
@@ -223,67 +208,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          animals = ExhibitController.get_names_of_animals_in_exhibit( exhibit=exhibit )
 
          response = { "animals": animals }
-         self._write_json( response )
-
-
-      elif self.path == '/get-animal-viewing-scopes':
-         data = self._read_json_body()
-
-         species = data.get( 'species' )
-         exhibit = data.get( 'exhibit' )
-
-         viewing_scopes = AnimalController.get_animal_viewing_scopes(
-            species=species,
-            exhibit=exhibit )
-
-         response = {
-            'viewingScopes': [
-               viewing_scope.value for viewing_scope in viewing_scopes
-            ]
-         }
-         self._write_json( response )
-
-
-      elif self.path == '/get-animal-information':
-         data = self._read_json_body()
-
-         species = data.get( 'species' )
-
-         animal_info = AnimalController.get_animal_information( species=species )
-
-         response = { "information": [ animal_info.to_dict() ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-animals-by-exhibit':
-         data = self._read_json_body()
-
-         day = data.get( 'day' )
-         month = data.get( 'month' )
-         year = data.get( 'year' )
-         temp = data.get( 'temp' )
-         exhibits_to_include = data.get( 'exhibitsToInclude' ) or []
-
-         animals = AnimalController.get_animals_viewable_on_day(
-            day=day,
-            month=month,
-            year=year,
-            temp=temp,
-            include_off_display_animals=False,
-            threshold=0,
-            exhibits_to_include=exhibits_to_include )
-
-         animals_json = []
-
-         for animal in animals:
-            d = animal.to_dict()
-            d[ 'type' ] = d.get( 'type', 'animal' )
-            animals_json.append( d )
-
-         response = {
-            'animals': animals_json
-         }
-
          self._write_json( response )
 
 
@@ -544,105 +468,114 @@ class MyHandler( BaseHTTPRequestHandler ):
          guardians_talks_json = []
 
          if include_animals:
-            animals = AnimalController.get_animals_matching_query(
-               query=query,
-               day=day,
-               month=month,
-               year=year,
-               temp=temp,
-               include_off_display_animals=include_off_display_animals ) or []
-            for animal in animals:
-                  d = animal.to_dict()
-                  d[ 'type' ] = d.get( 'type', 'animal' )
-                  animals_json.append( d )
+            animals_json = [
+               to_dict_with_type( animal, 'animal' )
+               for animal in (
+                  AnimalCoordinator.get_animals_matching_query(
+                     query=query,
+                     day=day,
+                     month=month,
+                     year=year,
+                     temp=temp,
+                     include_off_display_animals=include_off_display_animals ) or []
+               )
+            ]
 
          if include_pavilions:
-            pavilions = PavilionController.get_pavilions_matching_query( query=query ) or []
-            for pavilion in pavilions:
-                  d = pavilion.to_dict()
-                  d[ 'type' ] = d.get( 'type', 'pavilion' )
-                  pavilions_json.append( d )
+            pavilions_json = [
+               to_dict_with_type( pavilion, 'pavilion' )
+               for pavilion in (
+                  PavilionController.get_pavilions_matching_query( query=query ) or []
+               )
+            ]
 
          if include_restaurants:
-            restaurants = RestaurantController.get_restaurants_matching_query(
-               query=query,
-               day=day,
-               month=month,
-               year=year,
-               include_closed_restaurants=include_closed_restaurants ) or []
-            for restaurant in restaurants:
-                  d = restaurant.to_dict()
-                  d[ 'type' ] = d.get( 'type', 'restaurant' )
-                  restaurants_json.append( d )
+            restaurants_json = [
+               to_dict_with_type( restaurant, 'restaurant' )
+               for restaurant in (
+                  RestaurantController.get_restaurants_matching_query(
+                     query=query,
+                     day=day,
+                     month=month,
+                     year=year,
+                     include_closed_restaurants=include_closed_restaurants ) or []
+               )
+            ]
 
          if include_restrooms:
-            restrooms = RestroomController.get_restrooms_matching_query(
-               query=query,
-               day=day,
-               month=month,
-               year=year,
-               include_closed_restrooms=include_closed_restrooms ) or []
-            for restroom in restrooms:
-                  d = restroom.to_dict()
-                  d[ 'type' ] = d.get( 'type', 'restroom' )
-                  restrooms_json.append( d )
+            restrooms_json = [
+               to_dict_with_type( restroom, 'restroom' )
+               for restroom in (
+                  RestroomController.get_restrooms_matching_query(
+                     query=query,
+                     day=day,
+                     month=month,
+                     year=year,
+                     include_closed_restrooms=include_closed_restrooms ) or []
+               )
+            ]
 
          if include_gift_shops:
-            gift_shops = GiftShopController.get_gift_shops_matching_query(
-               query=query,
-               day=day,
-               month=month,
-               year=year ) or []
-            for gift_shop in gift_shops:
-                  d = gift_shop.to_dict()
-                  d[ 'type' ] = d.get( 'type', 'giftShop' )
-                  gift_shops_json.append( d )
+            gift_shops_json = [
+               to_dict_with_type( gift_shop, 'giftShop' )
+               for gift_shop in (
+                  GiftShopController.get_gift_shops_matching_query(
+                     query=query,
+                     day=day,
+                     month=month,
+                     year=year ) or []
+               )
+            ]
 
          if include_attractions:
-            attractions = AttractionController.get_attractions_matching_query(
-               query=query,
-               day=day,
-               month=month,
-               year=year,
-               include_closed_attractions=include_closed_attractions ) or []
-            for attraction in attractions:
-                  d = attraction.to_dict()
-                  d[ 'type' ] = d.get( 'type', 'attraction' )
-                  attractions_json.append( d )
+            attractions_json = [
+               to_dict_with_type( attraction, 'attraction' )
+               for attraction in (
+                  AttractionController.get_attractions_matching_query(
+                     query=query,
+                     day=day,
+                     month=month,
+                     year=year,
+                     include_closed_attractions=include_closed_attractions ) or []
+               )
+            ]
 
          if include_zoomobile_stations:
-            zoomobile_stations = ZoomobileController.get_zoomobile_stations_matching_query(
-               query=query,
-               route=zoomobile_route,
-               day=day,
-               month=month,
-               year=year ) or []
-            for zoomobile_station in zoomobile_stations:
-                  d = zoomobile_station.to_dict()
-                  d[ 'type' ] = d.get( 'type', 'zoomobileStation' )
-                  zoomobile_stations_json.append( d )
+            zoomobile_stations_json = [
+               to_dict_with_type( zoomobile_station, 'zoomobileStation' )
+               for zoomobile_station in (
+                  ZoomobileController.get_zoomobile_stations_matching_query(
+                     query=query,
+                     route=zoomobile_route,
+                     day=day,
+                     month=month,
+                     year=year ) or []
+               )
+            ]
 
          if include_guardians_talks:
-            guardians_talks = GuardiansController.get_guardians_talks_matching_query(
-               query=query,
-               month=month,
-               day=day,
-               year=year ) or []
-            for guardians_talk in guardians_talks:
-                  d = guardians_talk.to_dict()
-                  d[ 'type' ] = d.get( 'type', 'guardiansTalk' )
-                  guardians_talks_json.append( d )
+            guardians_talks_json = [
+               to_dict_with_type( guardians_talk, 'guardiansTalk' )
+               for guardians_talk in (
+                  GuardiansController.get_guardians_talks_matching_query(
+                     query=query,
+                     month=month,
+                     day=day,
+                     year=year ) or []
+               )
+            ]
 
          if include_wild_encounters:
-            wild_encounters = WildEncounterController.get_wild_encounters_matching_query(
-               query=query,
-               month=month,
-               day=day,
-               year=year ) or []
-            for wild_encounter in wild_encounters:
-                  d = wild_encounter.to_dict()
-                  d[ 'type' ] = d.get( 'type', 'wildEncounter' )
-                  wild_encounters_json.append( d )
+            wild_encounters_json = [
+               to_dict_with_type( wild_encounter, 'wildEncounter' )
+               for wild_encounter in (
+                  WildEncounterController.get_wild_encounters_matching_query(
+                     query=query,
+                     month=month,
+                     day=day,
+                     year=year ) or []
+               )
+            ]
 
          response = {
             'animals': animals_json,
@@ -926,13 +859,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          self._write_json( response )
 
 
-      elif self.path == '/get-animal-species-names':
-         species = AnimalController.get_animal_species_names()
-
-         response = { "species": species }
-         self._write_json( response )
-
-
       elif self.path == '/get-restaurant-names':
          restaurants = RestaurantController.get_restaurant_names()
 
@@ -1051,173 +977,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          exhibits = ExhibitController.get_exhibits()
 
          response = { "exhibits": exhibits }
-         self._write_json( response )
-
-
-      elif self.path == '/set-animal-off-display':
-         data = self._read_json_body()
-
-         species = data.get( 'species' )
-         exhibit = data.get( 'exhibit' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-         message = data.get( 'message' )
-         viewing_scope = AnimalViewingScope.normalize( data.get( 'viewingScope' ) )
-
-         success = AnimalController.set_animal_as_off_display(
-            species=species,
-            exhibit=exhibit,
-            start_date=start_date,
-            end_date=end_date,
-            message=message,
-            viewing_scope=viewing_scope )
-
-         response = {
-            'success': success,
-            'species': species,
-            'exhibit': exhibit,
-            'startDate': start_date,
-            'endDate': end_date,
-            'message': message,
-            'viewingScope': viewing_scope.value,
-         }
-
-         if not success:
-            response[ 'error' ] = f'No animal found with species "{ species }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-animal-on-display':
-         data = self._read_json_body()
-
-         species = data.get( 'species' )
-         exhibit = data.get( 'exhibit' )
-         viewing_scope = AnimalViewingScope.normalize( data.get( 'viewingScope' ) )
-
-         success = AnimalController.set_animal_as_on_display(
-            species=species,
-            exhibit=exhibit,
-            viewing_scope=viewing_scope )
-
-         response = {
-            'success': success,
-            'species': species,
-            'exhibit': exhibit,
-            'viewingScope': viewing_scope.value,
-         }
-
-         if not success:
-            response[ 'error' ] = f'No off-display entry found for "{ species }" in "{ exhibit }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-animal-visibility-schedule':
-         data = self._read_json_body()
-
-         species = data.get( 'species' )
-         exhibit = data.get( 'exhibit' )
-         schedule_start_date = data.get( 'scheduleStartDate' )
-         schedule_end_date = data.get( 'scheduleEndDate' )
-         daily_start_time = data.get( 'dailyStartTime' )
-         daily_end_time = data.get( 'dailyEndTime' )
-         message = data.get( 'message' )
-
-         success = AnimalController.set_animal_limited_viewing_schedule(
-            species=species,
-            exhibit=exhibit,
-            start_date=schedule_start_date,
-            end_date=schedule_end_date,
-            daily_start_time=daily_start_time,
-            daily_end_time=daily_end_time,
-            message=message )
-
-         response = {
-            'success': success,
-            'species': species,
-            'exhibit': exhibit,
-            'scheduleStartDate': schedule_start_date,
-            'scheduleEndDate': schedule_end_date,
-            'dailyStartTime': daily_start_time,
-            'dailyEndTime': daily_end_time,
-            'message': message,
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set limited viewing schedule for "{ species }" in "{ exhibit }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/remove-animal-visibility-schedule':
-         data = self._read_json_body()
-
-         species = data.get( 'species' )
-         exhibit = data.get( 'exhibit' )
-
-         success = AnimalController.remove_animal_visibility_schedule( species=species, exhibit=exhibit )
-
-         response = {
-            'success': success,
-            'species': species,
-            'exhibit': exhibit,
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not remove visibility schedule for "{ species }" in "{ exhibit }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-animal-viewing-alert':
-         data = self._read_json_body()
-
-         species = data.get( 'species' )
-         exhibit = data.get( 'exhibit' )
-         alert_start_date = data.get( 'alertStartDate' )
-         alert_end_date = data.get( 'alertEndDate' )
-         message = data.get( 'message' )
-
-         success = AnimalController.set_animal_viewing_alert(
-            species=species,
-            exhibit=exhibit,
-            alert_start_date=alert_start_date,
-            alert_end_date=alert_end_date,
-            message=message )
-
-         response = {
-            'success': success,
-            'species': species,
-            'exhibit': exhibit,
-            'alertStartDate': alert_start_date,
-            'alertEndDate': alert_end_date,
-            'message': message,
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set viewing alert for "{ species }" in "{ exhibit }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/remove-animal-viewing-alert':
-         data = self._read_json_body()
-
-         species = data.get( 'species' )
-         exhibit = data.get( 'exhibit' )
-
-         success = AnimalController.remove_animal_viewing_alert( species=species, exhibit=exhibit )
-
-         response = {
-            'success': success,
-            'species': species,
-            'exhibit': exhibit
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not remove viewing alert for "{ species }" in "{ exhibit }".'
-
          self._write_json( response )
 
 

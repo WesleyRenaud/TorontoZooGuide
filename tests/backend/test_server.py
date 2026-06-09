@@ -558,7 +558,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
    monkeypatch.setattr( server, 'clear_connection', stub_clear_connection )
 
    controller_classes = [
-      server.AnimalController,
+      server.AnimalCoordinator,
       server.ExhibitController,
       server.PavilionController,
       server.RestaurantController,

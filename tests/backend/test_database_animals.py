@@ -3,14 +3,14 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api.animals.controllers.animal_controller import AnimalController
+from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.exhibits.controllers.exhibit_controller import ExhibitController
 from api.types import Cursor
 from conftest import DbControllers
 
 
 def test_get_animals_viewable_on_day_returns_animals_from_seeded_database( db: DbControllers ) -> None:
-   animals = AnimalController.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
+   animals = AnimalCoordinator.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
 
    assert animals
    assert all( animal.species for animal in animals )
@@ -18,7 +18,7 @@ def test_get_animals_viewable_on_day_returns_animals_from_seeded_database( db: D
 
 
 def test_get_animals_viewable_on_day_filters_by_exhibit( db: DbControllers ) -> None:
-   animals = AnimalController.get_animals_viewable_on_day(
+   animals = AnimalCoordinator.get_animals_viewable_on_day(
       day=15,
       month='June',
       year=2026,
@@ -34,7 +34,7 @@ def test_off_display_animals_are_excluded_or_included_by_flag(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   AnimalController.set_animal_as_off_display(
+   AnimalCoordinator.set_animal_as_off_display(
       species='African Lion',
       exhibit='Africa Savanna',
       start_date='2026-06-01',
@@ -42,14 +42,14 @@ def test_off_display_animals_are_excluded_or_included_by_flag(
       message='Lions are resting.'
    )
 
-   without_closed = AnimalController.get_animals_viewable_on_day(
+   without_closed = AnimalCoordinator.get_animals_viewable_on_day(
       day=15,
       month='June',
       year=2026,
       temp=22,
       include_off_display_animals=False
    )
-   with_closed = AnimalController.get_animals_viewable_on_day(
+   with_closed = AnimalCoordinator.get_animals_viewable_on_day(
       day=15,
       month='June',
       year=2026,
@@ -67,7 +67,7 @@ def test_limited_viewing_and_alert_messages_are_returned(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert AnimalController.set_animal_limited_viewing_schedule(
+   assert AnimalCoordinator.set_animal_limited_viewing_schedule(
       species='African Penguin',
       exhibit='Africa Savanna',
       start_date='2026-06-01',
@@ -76,7 +76,7 @@ def test_limited_viewing_and_alert_messages_are_returned(
       daily_end_time='11:00',
       message='Morning viewing only.'
    )
-   assert AnimalController.set_animal_viewing_alert(
+   assert AnimalCoordinator.set_animal_viewing_alert(
       species='African Penguin',
       exhibit='Africa Savanna',
       alert_start_date='2026-06-01',
@@ -84,7 +84,7 @@ def test_limited_viewing_and_alert_messages_are_returned(
       message='Penguins may be harder to spot.'
    )
 
-   animals = AnimalController.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
+   animals = AnimalCoordinator.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
    penguin = next( animal for animal in animals if animal.species == 'African Penguin' )
 
    assert penguin.has_limited_viewing_schedule is True
@@ -98,14 +98,14 @@ def test_setting_animal_viewing_alert_twice_updates_existing_alert(
       cursor: Cursor,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert AnimalController.set_animal_viewing_alert(
+   assert AnimalCoordinator.set_animal_viewing_alert(
       species='African Penguin',
       exhibit='Africa Savanna',
       alert_start_date='2026-06-01',
       alert_end_date='2026-06-30',
       message='Penguins may be harder to spot.'
    )
-   assert AnimalController.set_animal_viewing_alert(
+   assert AnimalCoordinator.set_animal_viewing_alert(
       species='African Penguin',
       exhibit='Africa Savanna',
       alert_start_date='2026-06-15',
@@ -124,7 +124,7 @@ def test_setting_animal_viewing_alert_twice_updates_existing_alert(
       """,
       ( 'African Penguin', 'Africa Savanna' )
    ).fetchall()
-   animals = AnimalController.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
+   animals = AnimalCoordinator.get_animals_viewable_on_day( day=15, month='June', year=2026, temp=22 )
    penguin = next( animal for animal in animals if animal.species == 'African Penguin' )
 
    assert len( alert_rows ) == 1
@@ -148,7 +148,7 @@ def test_exhibit_closure_sets_animal_likelihood_to_zero(
       message='Savanna is closed.'
    )
 
-   animals = AnimalController.get_animals_viewable_on_day(
+   animals = AnimalCoordinator.get_animals_viewable_on_day(
       day=15,
       month='June',
       year=2026,
@@ -163,7 +163,7 @@ def test_exhibit_closure_sets_animal_likelihood_to_zero(
 
 
 def test_animal_query_matches_species_not_exhibit( db: DbControllers ) -> None:
-   species_matches = AnimalController.get_animals_matching_query(
+   species_matches = AnimalCoordinator.get_animals_matching_query(
       query='cheetah',
       day=15,
       month='June',
@@ -178,7 +178,7 @@ def test_animal_query_matches_species_not_exhibit( db: DbControllers ) -> None:
       for animal in species_matches
    )
 
-   exhibit_matches = AnimalController.get_animals_matching_query(
+   exhibit_matches = AnimalCoordinator.get_animals_matching_query(
       query='africa savanna',
       day=15,
       month='June',
@@ -191,7 +191,7 @@ def test_animal_query_matches_species_not_exhibit( db: DbControllers ) -> None:
 
 
 def test_animal_query_helpers_dedupe_and_sort( db: DbControllers ) -> None:
-   animals = AnimalController.get_animals_matching_query(
+   animals = AnimalCoordinator.get_animals_matching_query(
       query='african',
       day=15,
       month='June',
@@ -213,7 +213,7 @@ def test_animal_query_helpers_dedupe_and_sort( db: DbControllers ) -> None:
 
 
 def test_animal_query_returns_same_species_in_multiple_exhibits( db: DbControllers ) -> None:
-   animals = AnimalController.get_animals_matching_query(
+   animals = AnimalCoordinator.get_animals_matching_query(
       query='cheetah',
       day=15,
       month='June',
@@ -230,7 +230,7 @@ def test_animal_query_returns_same_species_in_multiple_exhibits( db: DbControlle
 def test_basic_animal_lookup_methods( db: DbControllers ) -> None:
    assert 'African Lion' in ExhibitController.get_names_of_animals_in_exhibit( 'Africa Savanna' )
 
-   information = AnimalController.get_animal_information( 'African Lion' )
+   information = AnimalCoordinator.get_animal_information( 'African Lion' )
 
    assert information.species == 'African Lion'
    assert information.exhibit == 'Africa Savanna'

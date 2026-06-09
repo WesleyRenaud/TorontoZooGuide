@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api.animals.controllers.animal_controller import AnimalController
+from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.animals.logic.itinerary_animals import build_itinerary_animals
 from api.attractions.controllers.attraction_controller import AttractionController
 from api.guardians.controllers.guardians_controller import GuardiansController
@@ -1292,7 +1292,7 @@ def test_validate_animals_removes_unavailable_entries(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   AnimalController.set_animal_as_off_display(
+   AnimalCoordinator.set_animal_as_off_display(
       species='African Lion',
       exhibit='Africa Savanna',
       start_date='2026-06-01',
@@ -1301,7 +1301,7 @@ def test_validate_animals_removes_unavailable_entries(
    )
 
    result = validate_itinerary_animals(
-      AnimalController,
+      AnimalCoordinator,
       animals=[
          ItineraryAnimalInput(
             species='African Lion',
@@ -1336,7 +1336,7 @@ def test_get_itinerary_animals_keeps_indoor_and_outdoor_viewing_for_map_markers(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 5, 30 ) )
 
-   animals = AnimalController.get_animals_for_saved_itinerary(
+   animals = AnimalCoordinator.get_animals_for_saved_itinerary(
       day=30,
       month='May',
       year=2026,
@@ -1373,7 +1373,7 @@ def test_validate_animals_uses_highest_likelihood_across_enclosures(
    freeze_database_today( date( 2026, 5, 26 ) )
 
    result = validate_itinerary_animals(
-      AnimalController,
+      AnimalCoordinator,
       animals=[
          ItineraryAnimalInput(
             species='Masai Giraffe',
@@ -1552,7 +1552,7 @@ def test_validate_wild_encounters_splits_available_and_unavailable_entries() -> 
 
 
 def test_itinerary_filter_helpers_sort_matching_animals( db: DbControllers ) -> None:
-   animal_controller = AnimalController
+   animal_controller = AnimalCoordinator
    attraction_controller = AttractionController
 
    animals = animal_controller.get_animals_for_saved_itinerary(
@@ -1596,7 +1596,7 @@ def test_itinerary_filter_helpers_sort_matching_animals( db: DbControllers ) -> 
 
 def test_itinerary_animals_keep_same_species_in_multiple_exhibits_for_map_markers(
       db: DbControllers ) -> None:
-   animals = AnimalController.get_animals_for_saved_itinerary(
+   animals = AnimalCoordinator.get_animals_for_saved_itinerary(
       day=15,
       month='June',
       year=2026,
@@ -1625,7 +1625,7 @@ def test_itinerary_animals_keep_same_species_in_multiple_exhibits_for_map_marker
 
 def test_itinerary_filter_helpers_return_empty_without_filters( db: DbControllers ) -> None:
    assert build_itinerary_animals( [], [] ) == []
-   assert AnimalController.get_animals_for_saved_itinerary(
+   assert AnimalCoordinator.get_animals_for_saved_itinerary(
       day=15,
       month='June',
       year=2026,

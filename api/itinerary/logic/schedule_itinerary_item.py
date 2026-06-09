@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from ...animals.controllers.animal_controller import AnimalController
+from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.controllers.attraction_controller import AttractionController
 from ..data_access.itinerary import fetch_itinerary_date
 from ..data_access.itinerary import fetch_saved_itinerary
@@ -59,13 +59,13 @@ from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
 def _itinerary_controller_kwargs(
       *,
-      animal_controller: type[ AnimalController ],
+      animal_coordinator: type[ AnimalCoordinator ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None = None ) -> dict[ str, Any ]:
    return {
-      'animal_controller': animal_controller,
+      'animal_coordinator': animal_coordinator,
       'attraction_controller': attraction_controller,
       'guardians_controller': guardians_controller,
       'wild_encounter_controller': wild_encounter_controller,
@@ -668,7 +668,7 @@ def schedule_itinerary_item(
       *,
       start_time: TimeInput = None,
       duration_minutes: DurationInput = None,
-      animal_controller: type[ AnimalController ],
+      animal_coordinator: type[ AnimalCoordinator ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
@@ -676,7 +676,7 @@ def schedule_itinerary_item(
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
    itinerary_controller_kwargs = _itinerary_controller_kwargs(
-      animal_controller=animal_controller,
+      animal_coordinator=animal_coordinator,
       attraction_controller=attraction_controller,
       guardians_controller=guardians_controller,
       wild_encounter_controller=wild_encounter_controller )

@@ -5,7 +5,7 @@ from datetime import date, datetime
 
 import pytest
 
-from api.animals.controllers.animal_controller import AnimalController
+from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.animals.data_access.animal_viewability_record import AnimalViewabilityRecord
 from api.animals.logic.animal_viewability import calculate_animal_likelihood
 from api.animals.logic.animal_viewability import get_active_exhibit_status
@@ -70,7 +70,7 @@ def make_animal_viewability_record( **overrides: object ) -> AnimalViewabilityRe
 
 
 def test_database_uses_injected_path( db: DbControllers ) -> None:
-   assert AnimalController.get_animal_species_names()
+   assert AnimalCoordinator.get_animal_species_names()
 
 
 def test_close_is_idempotent( db: DbControllers ) -> None:

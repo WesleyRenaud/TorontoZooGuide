@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...animals.controllers.animal_controller import AnimalController
+from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.controllers.attraction_controller import AttractionController
 from .bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
 from .bulk_schedule_exhibit_order import bulk_schedule_exhibit_rank
@@ -54,13 +54,13 @@ def sort_animals_for_bulk_schedule(
 def bulk_schedule_animals(
       conn: Connection,
       *,
-      animal_controller: type[ AnimalController ],
+      animal_coordinator: type[ AnimalCoordinator ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None = None ) -> ItinerarySaveResult:
    itinerary_controller_kwargs = _itinerary_controller_kwargs(
-      animal_controller=animal_controller,
+      animal_coordinator=animal_coordinator,
       attraction_controller=attraction_controller,
       guardians_controller=guardians_controller,
       wild_encounter_controller=wild_encounter_controller,
