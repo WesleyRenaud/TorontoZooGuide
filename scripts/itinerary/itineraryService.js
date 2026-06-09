@@ -30,6 +30,7 @@ import {
    normalizeItineraryDraft,
    toSetItineraryPayload,
 } from './itineraryShape.js';
+import { applyItineraryDiffToValidation } from './itineraryValidationResult.js';
 import { showEarlyAdmissionConfirmation } from './panel/earlyAdmissionConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
 import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
@@ -41,15 +42,7 @@ import {
    getMonth,
    getYear,
 } from '../visitDates/visitDateRules.js';
-import {
-   buildItineraryDiff,
-   hasAddedItems,
-   hasImprovedVisibility,
-   hasReducedVisibility,
-   hasRemovedItems,
-   hasUnscheduledItems,
-   mergeRemovedValidationState,
-} from './wizard/itineraryDiff.js';
+import { buildItineraryDiff } from './wizard/itineraryDiff.js';
 import { applyConflictSelectionToItineraryDraft } from './wizard/wildEncounterConflictResolution.js';
 
 export { isItineraryEmpty, normalizeItinerary };
@@ -338,24 +331,6 @@ async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
          confirmingShortVisit: true,
       },
    });
-}
-
-function applyItineraryDiffToValidation(normalizedItinerary, diff, { adjustments = [] } = {}) {
-   const validation = normalizedItinerary.validation;
-
-   validation.unscheduled = diff.unscheduled;
-   validation.removed = mergeRemovedValidationState(
-      validation.removed,
-      diff.removed);
-   validation.adjustments = adjustments;
-   validation.hasChanges = (
-      hasAddedItems(validation.added)
-      || hasRemovedItems(validation.removed)
-      || hasUnscheduledItems(validation.unscheduled)
-      || hasReducedVisibility(validation.reducedVisibility)
-      || hasImprovedVisibility(validation.improvedVisibility)
-      || validation.adjustments.length > 0
-   );
 }
 
 function buildValidatedTimeSetItinerary(previousItinerary, result) {
