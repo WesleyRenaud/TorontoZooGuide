@@ -7,6 +7,8 @@ from typing import Any
 
 import pytest
 
+from api.animals.coordinators.animal_coordinator import AnimalCoordinator
+from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.itinerary.logic.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.logic.itinerary_time_set_result import ItineraryTimeSetResult
 from api.itinerary.logic.suppress_itinerary_warning import SuppressItineraryWarningResult
@@ -558,8 +560,8 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
    monkeypatch.setattr( server, 'clear_connection', stub_clear_connection )
 
    controller_classes = [
-      server.AnimalCoordinator,
-      server.ExhibitController,
+      AnimalCoordinator,
+      ExhibitCoordinator,
       server.PavilionController,
       server.RestaurantController,
       server.RestroomController,

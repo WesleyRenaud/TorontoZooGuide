@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
-from api.exhibits.controllers.exhibit_controller import ExhibitController
+from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.types import Cursor
 from conftest import DbControllers
 
@@ -141,7 +141,7 @@ def test_exhibit_closure_sets_animal_likelihood_to_zero(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   ExhibitController.set_exhibit_as_closed(
+   ExhibitCoordinator.set_exhibit_as_closed(
       exhibit='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -228,7 +228,7 @@ def test_animal_query_returns_same_species_in_multiple_exhibits( db: DbControlle
 
 
 def test_basic_animal_lookup_methods( db: DbControllers ) -> None:
-   assert 'African Lion' in ExhibitController.get_names_of_animals_in_exhibit( 'Africa Savanna' )
+   assert 'African Lion' in ExhibitCoordinator.get_names_of_animals_in_exhibit( 'Africa Savanna' )
 
    information = AnimalCoordinator.get_animal_information( 'African Lion' )
 

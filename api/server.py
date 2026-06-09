@@ -20,7 +20,6 @@ from .defibrillators.controllers.defibrillator_controller import DefibrillatorCo
 from .drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
 from .emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
 from .event_sites.controllers.event_site_controller import EventSiteController
-from .exhibits.controllers.exhibit_controller import ExhibitController
 from .giftshops.controllers.gift_shop_controller import GiftShopController
 from .guardians.controllers.guardians_controller import GuardiansController
 from .guest_services.controllers.guest_service_controller import GuestServiceController
@@ -182,36 +181,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          route( self )
          return
 
-      if self.path == '/get-exhibits-in-region':
-         data = self._read_json_body()
-
-         region = data.get( 'region' )
-
-         exhibits = ExhibitController.get_exhibits_in_region( region=region )
-
-         response = { "exhibits": exhibits }
-         self._write_json( response )
-
-
-      elif self.path == '/get-regions':
-         regions = ExhibitController.get_regions()
-
-         response = { 'regions': [ region.to_dict() for region in regions ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-animal-names-by-exhibit':
-         data = self._read_json_body()
-
-         exhibit = data.get( 'exhibit' )
-
-         animals = ExhibitController.get_names_of_animals_in_exhibit( exhibit=exhibit )
-
-         response = { "animals": animals }
-         self._write_json( response )
-
-
-      elif self.path == '/get-pavilions':
+      if self.path == '/get-pavilions':
          pavilions = PavilionController.get_pavilions()
 
          response = { "pavilions": [ pavilion.to_dict() for pavilion in pavilions ] }
@@ -412,23 +382,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             year=year )
 
          response = { "updates": [ update.to_dict() for update in updates ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-closed-exhibits':
-         data = self._read_json_body()
-
-         month = data.get( 'month' )
-         day = data.get( 'day' )
-         year = data.get( 'year' )
-
-         closed_exhibits = ExhibitController.get_closed_exhibits_for_visit_date(
-            month=month,
-            day=day,
-            year=year )
-
-         response = { "closed_exhibits": closed_exhibits }
-
          self._write_json( response )
 
 
@@ -963,69 +916,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          updates = UpdateController.get_unexpired_updates()
 
          response = { 'updates': [ update.to_dict() for update in updates ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-exhibits-by-region':
-         regions = ExhibitController.get_regions_with_exhibits()
-
-         response = { "regions": [ region.to_dict() for region in regions ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-exhibits':
-         exhibits = ExhibitController.get_exhibits()
-
-         response = { "exhibits": exhibits }
-         self._write_json( response )
-
-
-      elif self.path == '/set-exhibit-closed':
-         data = self._read_json_body()
-
-         exhibit = data.get( 'exhibit' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-         message = data.get( 'message' )
-
-         success = ExhibitController.set_exhibit_as_closed( exhibit=exhibit, start_date=start_date, end_date=end_date, message=message )
-
-         response = {
-            'success': success,
-            'exhibit': exhibit,
-            'startDate': start_date,
-            'endDate': end_date,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set "{ exhibit }" as closed.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-exhibit-open':
-         data = self._read_json_body()
-
-         exhibit = data.get( 'exhibit' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-
-         success = ExhibitController.set_exhibit_as_open(
-            exhibit=exhibit,
-            start_date=start_date,
-            end_date=end_date )
-
-         response = {
-            'success': success,
-            'exhibit': exhibit,
-            'startDate': start_date,
-            'endDate': end_date
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set "{ exhibit }" as open.'
-
          self._write_json( response )
 
 

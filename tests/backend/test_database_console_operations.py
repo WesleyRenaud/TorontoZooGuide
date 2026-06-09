@@ -5,7 +5,7 @@ from datetime import date
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.controllers.attraction_controller import AttractionController
-from api.exhibits.controllers.exhibit_controller import ExhibitController
+from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.giftshops.controllers.gift_shop_controller import GiftShopController
 from api.guardians.controllers.guardians_controller import GuardiansController
 from api.models.animal import Animal
@@ -314,21 +314,21 @@ def test_set_exhibit_closed_and_open_changes_animal_and_closed_exhibit_results(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ExhibitController.set_exhibit_as_closed( 'Africa Savanna', '2026-06-01', '2026-06-30', '' )
+   assert ExhibitCoordinator.set_exhibit_as_closed( 'Africa Savanna', '2026-06-01', '2026-06-30', '' )
 
    lion = get_animal( db, 'African Lion', 'Africa Savanna' )
 
    assert lion.likelihood == 0
    assert lion.off_display_message == 'The Africa Savanna is temporarily closed.'
-   assert 'Africa Savanna' in ExhibitController.get_closed_exhibits_for_visit_date( month='June', day=15, year=2026 )
+   assert 'Africa Savanna' in ExhibitCoordinator.get_closed_exhibits_for_visit_date( month='June', day=15, year=2026 )
 
-   assert ExhibitController.set_exhibit_as_open( 'Africa Savanna', '2026-06-01', '' )
+   assert ExhibitCoordinator.set_exhibit_as_open( 'Africa Savanna', '2026-06-01', '' )
 
    lion = get_animal( db, 'African Lion', 'Africa Savanna' )
 
    assert lion.likelihood > 0
    assert lion.off_display_message is None
-   assert 'Africa Savanna' not in ExhibitController.get_closed_exhibits_for_visit_date( month='June', day=15, year=2026 )
+   assert 'Africa Savanna' not in ExhibitCoordinator.get_closed_exhibits_for_visit_date( month='June', day=15, year=2026 )
 
 
 def test_set_restaurant_closed_and_opening_schedule_changes_restaurant_results(
