@@ -1,15 +1,20 @@
 from __future__ import annotations
 
+from typing import Protocol
+
+
+class DictSerializable( Protocol ):
+   def to_dict( self ) -> dict[ str, object ]:
+      ...
+
 
 def to_dict_with_type(
-      obj: object,
+      obj: DictSerializable | dict[ str, object ],
       fallback_type: str ) -> dict[ str, object ]:
-   if hasattr( obj, 'to_dict' ):
-      serialized = obj.to_dict()
-   elif isinstance( obj, dict ):
+   if isinstance( obj, dict ):
       serialized = dict( obj )
    else:
-      serialized = {}
+      serialized = obj.to_dict()
 
    serialized[ 'type' ] = serialized.get( 'type', fallback_type )
    return serialized

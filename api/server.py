@@ -30,12 +30,12 @@ from .itinerary.logic.itinerary_result_response import itinerary_time_set_result
 from .itinerary.logic.itinerary_result_response import suppress_itinerary_warning_result_to_dict
 from .pavilions.controllers.pavilion_controller import PavilionController
 from .picnic_sites.controllers.picnic_site_controller import PicnicSiteController
-from .routes import POST_ROUTES
 from .request_connection import clear_connection
 from .request_connection import get_connection
 from .request_connection import set_connection
 from .restaurants.controllers.restaurant_controller import RestaurantController
 from .restrooms.controllers.restroom_controller import RestroomController
+from .routes import POST_ROUTES
 from .shared.constants import itinerary_config_to_dict
 from .shared.typed_dict import to_dict_with_type
 from .updates.controllers.update_controller import UpdateController
