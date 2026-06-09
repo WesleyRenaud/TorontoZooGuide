@@ -44,7 +44,10 @@ export function hasUnscheduledItems(unscheduled) {
       return false;
    }
 
-   return hasItems(unscheduled.animals) || hasItems(unscheduled.attractions);
+   return hasItems(unscheduled.animals)
+      || hasItems(unscheduled.attractions)
+      || hasItems(unscheduled.guardiansTalks)
+      || hasItems(unscheduled.wildEncounters);
 }
 
 export function isValidatedItineraryEmpty(validated) {

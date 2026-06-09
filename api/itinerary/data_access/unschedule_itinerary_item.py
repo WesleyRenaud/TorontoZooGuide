@@ -51,9 +51,7 @@ def clear_itinerary_wild_encounter_schedule(
       *,
       wild_encounter: str ) -> None:
    cur.execute(
-      """   UPDATE ItineraryWildEncounter
-            SET START_TIME = NULL,
-                END_TIME = NULL
+      """   DELETE FROM ItineraryWildEncounter
             WHERE WILD_ENCOUNTER = ?;
          """,
       ( wild_encounter, ),

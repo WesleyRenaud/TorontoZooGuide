@@ -41,7 +41,12 @@ import {
 } from '../visitDates/visitDateRules.js';
 import {
    buildItineraryDiff,
+   hasAddedItems,
+   hasImprovedVisibility,
+   hasReducedVisibility,
+   hasRemovedItems,
    hasUnscheduledItems,
+   mergeRemovedValidationState,
 } from './wizard/itineraryDiff.js';
 import { applyConflictSelectionToItineraryDraft } from './wizard/wildEncounterConflictResolution.js';
 
@@ -171,13 +176,10 @@ export async function saveItinerary(
    );
 
    normalizedItinerary.saveIssues = result.issues;
-   normalizedItinerary.validation.unscheduled = saveDiff.unscheduled;
-   normalizedItinerary.validation.adjustments = result.adjustments ?? [];
-   normalizedItinerary.validation.hasChanges = (
-      normalizedItinerary.validation.hasChanges
-      || hasUnscheduledItems(normalizedItinerary.validation.unscheduled)
-      || normalizedItinerary.validation.adjustments.length > 0
-   );
+   applyItineraryDiffToValidation(
+      normalizedItinerary,
+      saveDiff,
+      { adjustments: result.adjustments ?? [] });
    dispatchItineraryUpdated(normalizedItinerary);
 
    return normalizedItinerary;
@@ -351,15 +353,74 @@ async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
    });
 }
 
+function applyItineraryDiffToValidation(normalizedItinerary, diff, { adjustments = [] } = {}) {
+   const validation = normalizedItinerary.validation;
+
+   validation.unscheduled = diff.unscheduled;
+   validation.removed = mergeRemovedValidationState(
+      validation.removed,
+      diff.removed);
+   validation.adjustments = adjustments;
+   validation.hasChanges = (
+      hasAddedItems(validation.added)
+      || hasRemovedItems(validation.removed)
+      || hasUnscheduledItems(validation.unscheduled)
+      || hasReducedVisibility(validation.reducedVisibility)
+      || hasImprovedVisibility(validation.improvedVisibility)
+      || validation.adjustments.length > 0
+   );
+}
+
+function buildValidatedTimeSetItinerary(previousItinerary, result) {
+   if (!result?.itinerary) {
+      return null;
+   }
+
+   const normalizedItinerary = normalizeItinerary({
+      ...result.itinerary,
+      itineraryConfig: result.itineraryConfig,
+   });
+   const timeDiff = buildItineraryDiff(
+      normalizeItineraryDraft(previousItinerary),
+      normalizedItinerary,
+      {},
+      normalizedItinerary.itineraryConfig ?? {}
+   );
+
+   normalizedItinerary.saveIssues = result.issues;
+   applyItineraryDiffToValidation(
+      normalizedItinerary,
+      timeDiff,
+      { adjustments: result.adjustments ?? [] });
+
+   return normalizedItinerary;
+}
+
+async function setItineraryTimeAndDispatch(requestFn, timeValue) {
+   const previousItinerary = await getItinerary();
+   const result = await setItineraryTimeWithConfirmation(requestFn, timeValue);
+   const normalizedItinerary = buildValidatedTimeSetItinerary(
+      previousItinerary,
+      result
+   );
+
+   if (normalizedItinerary) {
+      dispatchItineraryUpdated(normalizedItinerary);
+      return normalizedItinerary;
+   }
+
+   return result;
+}
+
 export async function setItineraryArrivalTime(arrivalTime) {
-   return setItineraryTimeWithConfirmation(
+   return setItineraryTimeAndDispatch(
       setItineraryArrivalTimeRequest,
       arrivalTime
    );
 }
 
 export async function setItineraryDepartureTime(departureTime) {
-   return setItineraryTimeWithConfirmation(
+   return setItineraryTimeAndDispatch(
       setItineraryDepartureTimeRequest,
       departureTime
    );

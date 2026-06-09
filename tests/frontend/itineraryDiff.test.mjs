@@ -198,6 +198,48 @@ test('reports items unscheduled during validation', () => {
    assert.equal(hasUnscheduledItems(diff.unscheduled), true);
 });
 
+test('reports guardians talks and wild encounters removed when dropped from validated', () => {
+   const diff = buildItineraryDiff(
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [
+            {
+               name: 'African Lion',
+               start_time: '16:30',
+               end_time: '16:45',
+            },
+         ],
+         wildEncounters: [
+            {
+               name: 'African Rainforest',
+               start_time: '16:30',
+               end_time: '16:45',
+            },
+         ],
+      },
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+      },
+      {},
+      { animalVisibilityChangeThreshold: 20 }
+   );
+
+   assert.deepEqual(
+      diff.removed.guardiansTalks.map((talk) => talk.name),
+      ['African Lion']
+   );
+   assert.deepEqual(
+      diff.removed.wildEncounters.map((encounter) => encounter.name),
+      ['African Rainforest']
+   );
+   assert.equal(hasRemovedItems(diff.removed), true);
+   assert.equal(hasUnscheduledItems(diff.unscheduled), false);
+});
+
 test('summary helpers handle empty validation results', () => {
    assert.equal(isValidatedItineraryEmpty(null), true);
    assert.equal(isValidatedItineraryEmpty({

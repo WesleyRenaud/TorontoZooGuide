@@ -296,7 +296,7 @@ export async function removeItemFromItineraryRequest({ itemType, key }) {
 }
 
 function normalizeItineraryTimeSetResponse(response) {
-   return normalizeItineraryResult(response, { includeItinerary: false });
+   return normalizeItineraryResult(response, { includeItinerary: true });
 }
 
 export async function setItineraryArrivalTimeRequest(

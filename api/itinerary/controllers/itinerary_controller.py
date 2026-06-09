@@ -23,18 +23,46 @@ from ..logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_
 from ..logic.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from ..logic.itinerary_save_result import ItinerarySaveResult
 from ..logic.itinerary_time_set_result import ItineraryTimeSetResult
+from ..logic.itinerary_visit_window import clear_schedules_outside_visit_window
 from ..logic.short_visit_warning import short_visit_warning_is_required
 from ..logic.suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...models import Itinerary
 from ...request_connection import get_connection
 from ...shared.date_values import DateValues
 from ...shared.enums import ItineraryErrorType
-from ...types import DateInput, DurationInput, TimeInput
+from ...types import Connection, DateInput, DurationInput, TimeInput
 from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
 
 class ItineraryController():
+
+
+   @classmethod
+   def _current_itinerary( cls, conn: Connection ) -> Itinerary:
+      return build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         animal_controller=AnimalController,
+         attraction_controller=AttractionController,
+         guardians_controller=GuardiansController,
+         wild_encounter_controller=WildEncounterController )
+
+
+   @classmethod
+   def _time_set_result(
+         cls,
+         conn: Connection,
+         suppressed_warnings: tuple[ ItineraryErrorType, ... ] = () ) -> ItineraryTimeSetResult:
+      saved_itinerary = fetch_saved_itinerary( conn )
+
+      clear_schedules_outside_visit_window(
+         conn,
+         arrival_time=saved_itinerary.arrival_time,
+         departure_time=saved_itinerary.departure_time )
+
+      return ItineraryTimeSetResult(
+         suppressed_warnings=suppressed_warnings,
+         itinerary=cls._current_itinerary( conn ) )
 
 
    @classmethod
@@ -187,7 +215,7 @@ class ItineraryController():
 
       if normalized_arrival_time is None:
          set_itinerary_arrival_time( conn, None )
-         return ItineraryTimeSetResult()
+         return cls._time_set_result( conn )
 
       saved_itinerary = fetch_saved_itinerary( conn )
       zoo_hours_record = fetch_zoo_hours_record(
@@ -226,7 +254,8 @@ class ItineraryController():
 
       set_itinerary_arrival_time( conn, normalized_arrival_time )
 
-      return ItineraryTimeSetResult(
+      return cls._time_set_result(
+         conn,
          suppressed_warnings=tuple( suppressed_warnings ) )
 
 
@@ -242,7 +271,7 @@ class ItineraryController():
 
       if normalized_departure_time is None:
          set_itinerary_departure_time( conn, None )
-         return ItineraryTimeSetResult()
+         return cls._time_set_result( conn )
 
       saved_itinerary = fetch_saved_itinerary( conn )
       zoo_hours_record = fetch_zoo_hours_record(
@@ -271,7 +300,8 @@ class ItineraryController():
 
       set_itinerary_departure_time( conn, normalized_departure_time )
 
-      return ItineraryTimeSetResult(
+      return cls._time_set_result(
+         conn,
          suppressed_warnings=tuple( suppressed_warnings ) )
 
 
