@@ -20,14 +20,16 @@ import {
    requiresWildEncounterUnscheduleConfirmation,
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
+import {
+   createEmptyItinerary,
+   isItineraryEmpty,
+   normalizeItinerary,
+} from './itineraryNormalization.js';
 import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 import {
-   createEmptyItineraryDraft,
-   isItineraryEmptyDraft,
    normalizeItineraryDraft,
    toSetItineraryPayload,
 } from './itineraryShape.js';
-import { buildItineraryValidationState } from './itineraryValidation.js';
 import { showEarlyAdmissionConfirmation } from './panel/earlyAdmissionConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
 import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
@@ -50,60 +52,12 @@ import {
 } from './wizard/itineraryDiff.js';
 import { applyConflictSelectionToItineraryDraft } from './wizard/wildEncounterConflictResolution.js';
 
-function createEmptyItinerary() {
-   return {
-      ...createEmptyItineraryDraft(),
-      isActive: false,
-   };
-}
-
-function normalizeItineraryItems(items) {
-   return Array.isArray(items) ? items : [];
-}
-
-function normalizeItinerarySource(itinerary) {
-   const source = itinerary && typeof itinerary === 'object'
-      ? itinerary
-      : {};
-
-   return {
-      date: source.date,
-      arrivalTime: source.arrivalTime,
-      departureTime: source.departureTime,
-      animals: normalizeItineraryItems(source.animals),
-      attractions: normalizeItineraryItems(source.attractions),
-      guardiansTalks: normalizeItineraryItems(source.guardiansTalks),
-      wildEncounters: normalizeItineraryItems(source.wildEncounters),
-      events: normalizeItineraryItems(source.events),
-   };
-}
+export { isItineraryEmpty, normalizeItinerary };
 
 function dispatchItineraryUpdated(itinerary) {
    window.dispatchEvent(new CustomEvent('tzg:itineraryUpdated', {
       detail: { itinerary },
    }));
-}
-
-export function isItineraryEmpty(itinerary) {
-   return isItineraryEmptyDraft(
-      normalizeItinerarySource(itinerary)
-   );
-}
-
-export function normalizeItinerary(itinerary) {
-   const normalizedDraft = normalizeItineraryDraft(
-      normalizeItinerarySource(itinerary)
-   );
-
-   return {
-      ...normalizedDraft,
-      itineraryConfig: itinerary?.itineraryConfig ?? null,
-      validation: buildItineraryValidationState(
-         normalizedDraft,
-         itinerary?.itineraryConfig ?? {}
-      ),
-      isActive: !isItineraryEmptyDraft(normalizedDraft),
-   };
 }
 
 async function fetchSavedItineraryVisitDate() {
