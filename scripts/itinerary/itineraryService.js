@@ -195,6 +195,42 @@ function createConfirmedSetItineraryResult(result, diffBaseline = null) {
    };
 }
 
+function getSetItineraryResultPayload(result) {
+   return result?.itinerary
+      ? toSetItineraryPayload(result.itinerary)
+      : {};
+}
+
+function requestSetItineraryConfirmation({
+   showConfirmation,
+   initialResult,
+   payload,
+   diffBaseline,
+   buildConfirmedPayload,
+   getConfirmedDiffBaseline = () => diffBaseline,
+}) {
+   return new Promise((resolve) => {
+      showConfirmation({
+         issues: initialResult.issues,
+         onConfirm: async (...confirmationArgs) => {
+            const confirmedPayload = buildConfirmedPayload(...confirmationArgs);
+            const confirmedResult = await requestSetItineraryWithConfirmations(
+               confirmedPayload,
+               getConfirmedDiffBaseline(confirmedPayload)
+            );
+
+            resolve(confirmedResult);
+         },
+         onCancel: () => {
+            resolve(createConfirmedSetItineraryResult(
+               initialResult,
+               diffBaseline,
+            ));
+         },
+      });
+   });
+}
+
 async function requestSetItineraryWithConfirmations(
    payload,
    diffBaseline = null,
@@ -206,86 +242,61 @@ async function requestSetItineraryWithConfirmations(
    }
 
    if (requiresGuardiansTalkWildEncounterTimeConflictConfirmation(initialResult.errorType)) {
-      return new Promise((resolve) => {
-         showScheduleTimeConflictConfirmation({
-            issues: initialResult.issues,
-            onConfirm: async (selectedItems) => {
-               const {
-                  guardiansTalks,
-                  wildEncounters,
-               } = applyConflictSelectionToItineraryDraft(
-                  {
-                     guardiansTalks: payload.guardiansTalks,
-                     wildEncounters: payload.wildEncounters,
-                  },
-                  initialResult.issues,
-                  selectedItems
-               );
+      return requestSetItineraryConfirmation({
+         showConfirmation: showScheduleTimeConflictConfirmation,
+         initialResult,
+         payload,
+         diffBaseline,
+         buildConfirmedPayload: (selectedItems) => {
+            const resultPayload = getSetItineraryResultPayload(initialResult);
+            const {
+               guardiansTalks,
+               wildEncounters,
+            } = applyConflictSelectionToItineraryDraft(
+               {
+                  guardiansTalks: payload.guardiansTalks,
+                  wildEncounters: payload.wildEncounters,
+               },
+               initialResult.issues,
+               selectedItems
+            );
 
-               const confirmedPayload = {
-                  ...payload,
-                  guardiansTalks,
-                  wildEncounters,
-                  overridingConflictingGuardiansTalks: true,
-               };
-               const confirmedResult = await requestSetItineraryWithConfirmations(
-                  confirmedPayload,
-                  confirmedPayload,
-               );
-
-               resolve(confirmedResult);
-            },
-            onCancel: () => {
-               resolve(createConfirmedSetItineraryResult(
-                  initialResult,
-                  diffBaseline,
-               ));
-            },
-         });
+            return {
+               ...payload,
+               animals: resultPayload.animals ?? payload.animals,
+               attractions: resultPayload.attractions ?? payload.attractions,
+               guardiansTalks,
+               wildEncounters,
+               overridingConflictingGuardiansTalks: true,
+            };
+         },
+         getConfirmedDiffBaseline: (confirmedPayload) => confirmedPayload,
       });
    }
 
    if (requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
-      return new Promise((resolve) => {
-         showGuardiansTalkUnscheduleConfirmation({
-            issues: initialResult.issues,
-            onConfirm: async () => {
-               const confirmedResult = await requestSetItineraryWithConfirmations({
-                  ...payload,
-                  confirmingGuardiansTalkUnschedule: true,
-               }, diffBaseline);
-
-               resolve(confirmedResult);
-            },
-            onCancel: () => {
-               resolve(createConfirmedSetItineraryResult(
-                  initialResult,
-                  diffBaseline,
-               ));
-            },
-         });
+      return requestSetItineraryConfirmation({
+         showConfirmation: showGuardiansTalkUnscheduleConfirmation,
+         initialResult,
+         payload,
+         diffBaseline,
+         buildConfirmedPayload: () => ({
+            ...payload,
+            confirmingGuardiansTalkUnschedule: true,
+         }),
       });
    }
 
    if (requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
-      return new Promise((resolve) => {
-         showWildEncounterUnscheduleConfirmation({
-            issues: initialResult.issues,
-            onConfirm: async () => {
-               const confirmedResult = await requestSetItineraryWithConfirmations({
-                  ...payload,
-                  confirmingWildEncounterUnschedule: true,
-               }, diffBaseline);
-
-               resolve(confirmedResult);
-            },
-            onCancel: () => {
-               resolve(createConfirmedSetItineraryResult(
-                  initialResult,
-                  diffBaseline,
-               ));
-            },
-         });
+      return requestSetItineraryConfirmation({
+         showConfirmation: showWildEncounterUnscheduleConfirmation,
+         initialResult,
+         payload,
+         diffBaseline,
+         buildConfirmedPayload: () => ({
+            ...payload,
+            confirmingWildEncounterUnschedule: true,
+         }),
       });
    }
 
