@@ -1,21 +1,16 @@
 from __future__ import annotations
 
-from ..data_access.pavilion import fetch_pavilions
-from ..logic.pavilions_matching_query import build_pavilions_matching_query
-from ...models import Pavilion
-from ...request_connection import get_connection
+from ..coordinators.pavilion_coordinator import PavilionCoordinator
+from ...json_handler import JsonRequestHandler
 
 
 class PavilionController():
 
 
-   @classmethod
-   def get_pavilions( cls ) -> list[ Pavilion ]:
-      return fetch_pavilions( get_connection() )
+   @staticmethod
+   def get_pavilions( handler: JsonRequestHandler ) -> None:
+      pavilions = PavilionCoordinator.get_pavilions()
 
-
-   @classmethod
-   def get_pavilions_matching_query( cls, query: str ) -> list[ Pavilion ]:
-      return build_pavilions_matching_query(
-         cls.get_pavilions(),
-         query )
+      handler._write_json( {
+         'pavilions': [ pavilion.to_dict() for pavilion in pavilions ],
+      } )
