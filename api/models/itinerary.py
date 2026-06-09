@@ -4,6 +4,7 @@ from .animal import Animal
 from .attraction import Attraction
 from .guardians_talk import GuardiansTalk
 from .itinerary_event import ItineraryEvent
+from ..shared.typed_dict import to_dict_with_type
 from ..types import ScheduleTimeKey
 from .wild_encounter import WildEncounter
 
@@ -35,31 +36,18 @@ class Itinerary:
          'arrival_time': self.arrival_time,
          'departure_time': self.departure_time,
          'animals': [
-            self._to_dict_with_type( a, 'animal' ) for a in self.animals
+            to_dict_with_type( a, 'animal' ) for a in self.animals
          ],
          'attractions': [
-            self._to_dict_with_type( a, 'attraction' ) for a in self.attractions
+            to_dict_with_type( a, 'attraction' ) for a in self.attractions
          ],
          'guardians_talks': [
-            self._to_dict_with_type( g, 'guardiansTalk' ) for g in self.guardians_talks
+            to_dict_with_type( g, 'guardiansTalk' ) for g in self.guardians_talks
          ],
          'wild_encounters': [
-            self._to_dict_with_type( w, 'wildEncounter' ) for w in self.wild_encounters
+            to_dict_with_type( w, 'wildEncounter' ) for w in self.wild_encounters
          ],
          'events': [
-            self._to_dict_with_type( event, 'itineraryEvent' ) for event in self.events
+            to_dict_with_type( event, 'itineraryEvent' ) for event in self.events
          ]
       }
-
-
-   def _to_dict_with_type(
-         self,
-         obj: Animal | Attraction | GuardiansTalk | WildEncounter | ItineraryEvent | dict[ str, object ],
-         fallback_type: str ) -> dict[ str, object ]:
-      if hasattr( obj, 'to_dict' ):
-         d = obj.to_dict()
-      else:
-         d = dict( obj ) if isinstance( obj, dict ) else {}
-
-      d[ 'type' ] = d.get( 'type', fallback_type )
-      return d

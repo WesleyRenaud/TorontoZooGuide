@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from ...animals.controllers.animal_controller import AnimalController
+from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...animals.logic.animals_matching_query import species_exhibit_key_from_values
 from ...attractions.controllers.attraction_controller import AttractionController
 from ..data_access.itinerary import fetch_itinerary_date
@@ -45,12 +45,12 @@ def merge_itinerary_animal_inputs(
 
 def build_itinerary_animal_inputs_from_selected_exhibits(
       save_input: ItinerarySaveInput,
-      animal_controller: type[ AnimalController ],
+      animal_coordinator: type[ AnimalCoordinator ],
       visit_date_temp: float | None = None ) -> tuple[ ItineraryAnimalInput, ... ]:
    if not save_input.selected_exhibits:
       return ()
 
-   animals = animal_controller.get_animals_viewable_on_day(
+   animals = animal_coordinator.get_animals_viewable_on_day(
       day=save_input.day(),
       month=save_input.month(),
       year=save_input.year(),
@@ -70,11 +70,11 @@ def build_itinerary_animal_inputs_from_selected_exhibits(
 
 def expand_selected_exhibit_animals(
       save_input: ItinerarySaveInput,
-      animal_controller: type[ AnimalController ],
+      animal_coordinator: type[ AnimalCoordinator ],
       visit_date_temp: float | None = None ) -> ItinerarySaveInput:
    animals_from_selected_exhibits = build_itinerary_animal_inputs_from_selected_exhibits(
       save_input,
-      animal_controller,
+      animal_coordinator,
       visit_date_temp=visit_date_temp )
 
    if not animals_from_selected_exhibits:
@@ -110,7 +110,7 @@ def set_itinerary(
       selected_exhibits: list[ str ] | None = None,
       visit_date_temp: float | None = None,
       *,
-      animal_controller: type[ AnimalController ],
+      animal_coordinator: type[ AnimalCoordinator ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
@@ -131,11 +131,11 @@ def set_itinerary(
    old_visit_date = fetch_itinerary_date( conn )
    save_input = expand_selected_exhibit_animals(
       save_input,
-      animal_controller,
+      animal_coordinator,
       visit_date_temp=visit_date_temp )
 
    controller_kwargs = itinerary_controller_kwargs(
-      animal_controller=animal_controller,
+      animal_coordinator=animal_coordinator,
       attraction_controller=attraction_controller,
       guardians_controller=guardians_controller,
       wild_encounter_controller=wild_encounter_controller,
@@ -157,7 +157,7 @@ def set_itinerary(
       conn,
       save_input,
       old_visit_date=old_visit_date,
-      animal_controller=animal_controller,
+      animal_coordinator=animal_coordinator,
       attraction_controller=attraction_controller,
       guardians_controller=guardians_controller,
       wild_encounter_controller=wild_encounter_controller,

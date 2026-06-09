@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ...animals.controllers.animal_controller import AnimalController
+from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.controllers.attraction_controller import AttractionController
 from ..data_access.itinerary import fetch_itinerary_animal_rows
 from ..data_access.itinerary import fetch_itinerary_attraction_rows
@@ -33,7 +33,7 @@ from ...wild_encounters.logic.wild_encounter_itinerary_validation import validat
 
 
 def validate_itinerary_animals(
-      animal_controller: type[ AnimalController ],
+      animal_coordinator: type[ AnimalCoordinator ],
       animals: tuple[ ItineraryAnimalInput, ... ],
       new_visit_date: date,
       *,
@@ -50,7 +50,7 @@ def validate_itinerary_animals(
          animal,
          old_visit_date=old_visit_date )
 
-      saved_animals = animal_controller.get_animals_for_saved_itinerary(
+      saved_animals = animal_coordinator.get_animals_for_saved_itinerary(
          day=new_visit_date.day,
          month=new_visit_date.month,
          year=new_visit_date.year,
@@ -199,7 +199,7 @@ def itinerary_events_from_saved_rows(
 def validate_itinerary_for_save(
       conn: Connection,
       save_input: ItinerarySaveInput,
-      animal_controller: type[ AnimalController ],
+      animal_coordinator: type[ AnimalCoordinator ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
@@ -225,7 +225,7 @@ def validate_itinerary_for_save(
       departure_time=departure_time,
       animals=(
          validate_itinerary_animals(
-            animal_controller,
+            animal_coordinator,
             animals=save_input.animals,
             new_visit_date=save_input.date,
             arrival_time=arrival_time,

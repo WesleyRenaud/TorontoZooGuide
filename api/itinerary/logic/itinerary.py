@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...animals.controllers.animal_controller import AnimalController
+from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.controllers.attraction_controller import AttractionController
 from ..data_access.saved_itinerary import SavedItinerary
 from ...guardians.controllers.guardians_controller import GuardiansController
@@ -49,7 +49,7 @@ def build_itinerary(
 
 def build_current_itinerary(
       saved_itinerary: SavedItinerary,
-      animal_controller: type[ AnimalController ],
+      animal_coordinator: type[ AnimalCoordinator ],
       attraction_controller: type[ AttractionController ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
@@ -62,7 +62,7 @@ def build_current_itinerary(
    month = saved_itinerary.month()
    year = saved_itinerary.year()
 
-   animals = animal_controller.get_animals_for_saved_itinerary(
+   animals = animal_coordinator.get_animals_for_saved_itinerary(
       day=day,
       month=month,
       year=year,
