@@ -310,65 +310,25 @@ class ItineraryTimeChangeCancelledError extends Error {
    }
 }
 
-async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
-   const initialResult = await requestFn(timeValue);
-
-   if (isItinerarySuccess(initialResult.errorType)) {
-      return initialResult;
-   }
-
-   if (requiresEarlyAdmissionConfirmation(initialResult.errorType)) {
-      return new Promise((resolve, reject) => {
-         showEarlyAdmissionConfirmation({
-            onConfirm: async ({ doNotShowAgain = false } = {}) => {
-               try {
-                  if (doNotShowAgain) {
-                     await persistItineraryWarningSuppression(
-                        getItineraryErrorTypes()?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
-                     );
-                  }
-
-                  const confirmedResult = await requestFn(timeValue, {
-                     confirmingEarlyAdmission: true,
-                  });
-
-                  if (!isItinerarySuccess(confirmedResult.errorType)) {
-                     reject(new Error(
-                        resolveItineraryErrorMessage(confirmedResult.errorType)
-                     ));
-                     return;
-                  }
-
-                  resolve(confirmedResult);
-               }
-               catch (error) {
-                  reject(error);
-               }
-            },
-            onCancel: () => {
-               reject(new ItineraryTimeChangeCancelledError());
-            },
-         });
-      });
-   }
-
-   if (!requiresShortVisitConfirmation(initialResult.errorType)) {
-      throw new Error(resolveItineraryErrorMessage(initialResult.errorType));
-   }
-
+function requestConfirmedItineraryTimeChange({
+   showConfirmation,
+   requestFn,
+   timeValue,
+   suppressionType,
+   confirmationOptions,
+}) {
    return new Promise((resolve, reject) => {
-      showShortVisitConfirmation({
+      showConfirmation({
          onConfirm: async ({ doNotShowAgain = false } = {}) => {
             try {
                if (doNotShowAgain) {
-                  await persistItineraryWarningSuppression(
-                     getItineraryErrorTypes()?.ARRIVAL_DEPARTURE_TOO_CLOSE
-                  );
+                  await persistItineraryWarningSuppression(suppressionType);
                }
 
-               const confirmedResult = await requestFn(timeValue, {
-                  confirmingShortVisit: true,
-               });
+               const confirmedResult = await requestFn(
+                  timeValue,
+                  confirmationOptions
+               );
 
                if (!isItinerarySuccess(confirmedResult.errorType)) {
                   reject(new Error(
@@ -387,6 +347,42 @@ async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
             reject(new ItineraryTimeChangeCancelledError());
          },
       });
+   });
+}
+
+async function setItineraryTimeWithConfirmation(requestFn, timeValue) {
+   const initialResult = await requestFn(timeValue);
+
+   if (isItinerarySuccess(initialResult.errorType)) {
+      return initialResult;
+   }
+
+   if (requiresEarlyAdmissionConfirmation(initialResult.errorType)) {
+      return requestConfirmedItineraryTimeChange({
+         showConfirmation: showEarlyAdmissionConfirmation,
+         requestFn,
+         timeValue,
+         suppressionType: (
+            getItineraryErrorTypes()?.EARLY_ADMISSION_REQUIRES_MEMBERSHIP
+         ),
+         confirmationOptions: {
+            confirmingEarlyAdmission: true,
+         },
+      });
+   }
+
+   if (!requiresShortVisitConfirmation(initialResult.errorType)) {
+      throw new Error(resolveItineraryErrorMessage(initialResult.errorType));
+   }
+
+   return requestConfirmedItineraryTimeChange({
+      showConfirmation: showShortVisitConfirmation,
+      requestFn,
+      timeValue,
+      suppressionType: getItineraryErrorTypes()?.ARRIVAL_DEPARTURE_TOO_CLOSE,
+      confirmationOptions: {
+         confirmingShortVisit: true,
+      },
    });
 }
 
