@@ -14,7 +14,7 @@ from api.defibrillators.controllers.defibrillator_controller import Defibrillato
 from api.drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
 from api.emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
 from api.event_sites.controllers.event_site_controller import EventSiteController
-from api.exhibits.controllers.exhibit_controller import ExhibitController
+from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.giftshops.controllers.gift_shop_controller import GiftShopController
 from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_override_records
 from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_records
@@ -99,7 +99,7 @@ def get_amenity_schedule_status(
 
 
 def test_region_and_static_location_queries( db: DbControllers ) -> None:
-   regions = ExhibitController.get_regions()
+   regions = ExhibitCoordinator.get_regions()
 
    assert [
       region.to_dict()
@@ -115,11 +115,11 @@ def test_region_and_static_location_queries( db: DbControllers ) -> None:
       { 'name': 'Tundra Trek', 'hasExhibits': False }
    ]
 
-   assert ExhibitController.get_exhibits_in_region( 'Africa' ) == [
+   assert ExhibitCoordinator.get_exhibits_in_region( 'Africa' ) == [
       'Africa Savanna',
       'African Rainforest Pavilion'
    ]
-   assert ExhibitController.get_exhibits() == [
+   assert ExhibitCoordinator.get_exhibits() == [
       'Africa Savanna',
       'African Rainforest Pavilion',
       'Americas Outdoor Mayan Temple Ruins',
@@ -136,7 +136,7 @@ def test_region_and_static_location_queries( db: DbControllers ) -> None:
       'Tundra Trek'
    ]
 
-   region_exhibits = ExhibitController.get_regions_with_exhibits()
+   region_exhibits = ExhibitCoordinator.get_regions_with_exhibits()
    africa = next(
       region for region in region_exhibits
       if region.name == 'Africa'

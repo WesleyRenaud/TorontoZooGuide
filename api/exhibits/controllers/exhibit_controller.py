@@ -1,107 +1,126 @@
 from __future__ import annotations
 
-from ..data_access.exhibit import fetch_animal_names_in_exhibit
-from ..data_access.exhibit import fetch_exhibit_names
-from ..data_access.exhibit import fetch_exhibit_names_in_region
-from ..data_access.exhibit import fetch_region_exhibit_rows
-from ..data_access.exhibit_closure import fetch_exhibit_closure_records
-from ..data_access.exhibit_closure import save_exhibit_closed_status
-from ..data_access.exhibit_closure import save_exhibit_open_status
-from ..logic.exhibit import build_region_options
-from ..logic.exhibit_closure import exhibit_names_closed_on_visit_date
-from ..logic.exhibit_status import build_exhibit_closed_status
-from ..logic.regions_with_exhibits import build_regions_with_exhibits
-from ...models import Region
-from ...models import RegionWithExhibits
-from ...request_connection import get_connection
-from ...shared.calendar_dates import CalendarDates
-from ...shared.date_values import DateValues
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
+from ..coordinators.exhibit_coordinator import ExhibitCoordinator
+from ...json_handler import JsonRequestHandler
 
 
 class ExhibitController():
 
 
-   @classmethod
-   def get_exhibits_in_region( cls, region: str ) -> list[ str ]:
-      return fetch_exhibit_names_in_region(
-         get_connection(),
-         region=region )
+   @staticmethod
+   def get_exhibits_in_region( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      exhibits = ExhibitCoordinator.get_exhibits_in_region( region=data.get( 'region' ) )
+
+      handler._write_json( {
+         'exhibits': exhibits,
+      } )
 
 
-   @classmethod
-   def get_exhibits( cls ) -> list[ str ]:
-      return fetch_exhibit_names( get_connection() )
+   @staticmethod
+   def get_regions( handler: JsonRequestHandler ) -> None:
+      regions = ExhibitCoordinator.get_regions()
+
+      handler._write_json( {
+         'regions': [ region.to_dict() for region in regions ],
+      } )
 
 
-   @classmethod
-   def get_regions( cls ) -> list[ Region ]:
-      return build_region_options(
-         fetch_region_exhibit_rows( get_connection() ) )
+   @staticmethod
+   def get_animal_names_by_exhibit( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      animals = ExhibitCoordinator.get_names_of_animals_in_exhibit(
+         exhibit=data.get( 'exhibit' ) )
+
+      handler._write_json( {
+         'animals': animals,
+      } )
 
 
-   @classmethod
-   def get_regions_with_exhibits( cls ) -> list[ RegionWithExhibits ]:
-      return build_regions_with_exhibits(
-         fetch_region_exhibit_rows( get_connection() ) )
+   @staticmethod
+   def get_closed_exhibits( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      closed_exhibits = ExhibitCoordinator.get_closed_exhibits_for_visit_date(
+         month=data.get( 'month' ),
+         day=data.get( 'day' ),
+         year=data.get( 'year' ) )
+
+      handler._write_json( {
+         'closed_exhibits': closed_exhibits,
+      } )
 
 
-   @classmethod
-   def get_names_of_animals_in_exhibit( cls, exhibit: str ) -> list[ str ]:
-      return fetch_animal_names_in_exhibit(
-         get_connection(),
-         exhibit=exhibit )
+   @staticmethod
+   def get_exhibits_by_region( handler: JsonRequestHandler ) -> None:
+      regions = ExhibitCoordinator.get_regions_with_exhibits()
+
+      handler._write_json( {
+         'regions': [ region.to_dict() for region in regions ],
+      } )
 
 
-   @classmethod
-   def get_closed_exhibits_for_visit_date(
-         cls,
-         month: MonthInput,
-         day: VisitDay,
-         year: VisitYear ) -> list[ str ]:
-      target_date = CalendarDates.visit_target_date(
-         month=month,
-         day=day,
-         year=year )
+   @staticmethod
+   def get_exhibits( handler: JsonRequestHandler ) -> None:
+      exhibits = ExhibitCoordinator.get_exhibits()
 
-      return exhibit_names_closed_on_visit_date(
-         fetch_exhibit_closure_records( get_connection() ),
-         target_date )
+      handler._write_json( {
+         'exhibits': exhibits,
+      } )
 
 
-   @classmethod
-   def set_exhibit_as_closed(
-         cls,
-         exhibit: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         message: str ) -> bool:
-      status = build_exhibit_closed_status(
+   @staticmethod
+   def set_exhibit_closed( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      exhibit = data.get( 'exhibit' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+      message = data.get( 'message' )
+
+      success = ExhibitCoordinator.set_exhibit_as_closed(
          exhibit=exhibit,
          start_date=start_date,
          end_date=end_date,
          message=message )
 
-      return save_exhibit_closed_status(
-         get_connection(),
-         exhibit=status.exhibit,
-         start_date=status.start_date,
-         end_date=status.end_date,
-         message=status.message )
+      response = {
+         'success': success,
+         'exhibit': exhibit,
+         'startDate': start_date,
+         'endDate': end_date,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = f'Could not set "{ exhibit }" as closed.'
+
+      handler._write_json( response )
 
 
-   @classmethod
-   def set_exhibit_as_open(
-         cls,
-         exhibit: str,
-         start_date: DateInput,
-         end_date: DateInput ) -> bool:
-      date_range = DateValues.resolve_open_ended_date_range(
+   @staticmethod
+   def set_exhibit_open( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      exhibit = data.get( 'exhibit' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+
+      success = ExhibitCoordinator.set_exhibit_as_open(
+         exhibit=exhibit,
          start_date=start_date,
          end_date=end_date )
 
-      return save_exhibit_open_status(
-         get_connection(),
-         exhibit=exhibit,
-         start_date=date_range.start_date,
-         end_date=date_range.end_date )
+      response = {
+         'success': success,
+         'exhibit': exhibit,
+         'startDate': start_date,
+         'endDate': end_date,
+      }
+
+      if not success:
+         response[ 'error' ] = f'Could not set "{ exhibit }" as open.'
+
+      handler._write_json( response )
