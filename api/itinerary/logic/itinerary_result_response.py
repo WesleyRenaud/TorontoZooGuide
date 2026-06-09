@@ -56,6 +56,9 @@ def itinerary_time_set_result_to_dict(
 
    payload[ 'itinerary_config' ] = itinerary_config_to_dict( conn )
 
+   if result.itinerary is not None:
+      payload[ 'itinerary' ] = result.itinerary.to_dict()
+
    if extra:
       payload.update( extra )
 

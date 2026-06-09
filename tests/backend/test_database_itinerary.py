@@ -1311,6 +1311,8 @@ def test_validate_animals_removes_unavailable_entries(
             exhibit='Africa Savanna' ),
       ],
       new_visit_date=date( 2026, 6, 15 ),
+      arrival_time='09:30',
+      departure_time='17:00',
       new_visit_date_temp=22,
       old_visit_date='2026-06-15' )
 
@@ -1378,6 +1380,8 @@ def test_validate_animals_uses_highest_likelihood_across_enclosures(
             exhibit='Africa Savanna' ),
       ],
       new_visit_date=date( 2026, 5, 30 ),
+      arrival_time='09:30',
+      departure_time='17:00',
       old_visit_date='2026-05-26',
       saved_itinerary_animal_rows=[
          ItineraryAnimalRecord(
@@ -1431,6 +1435,8 @@ def test_validate_attractions_removes_closed_entries(
       AttractionController,
       attractions=[ 'Conservation Carousel', 'Greenhouse' ],
       new_visit_date=date( 2026, 6, 15 ),
+      arrival_time='09:30',
+      departure_time='17:00',
       old_visit_date='2026-06-15' )
 
    assert [
@@ -1475,6 +1481,8 @@ def test_validate_attractions_removes_closure_override_entries(
       AttractionController,
       attractions=[ 'Conservation Carousel' ],
       new_visit_date=date( 2026, 6, 15 ),
+      arrival_time='09:30',
+      departure_time='17:00',
       old_visit_date='2026-06-15' )
 
    assert [

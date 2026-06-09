@@ -89,6 +89,61 @@ function buildUnscheduledItems(previous, validated) {
          validated.attractions,
          (item) => buildItemKey(item, 'name')
       ),
+      guardiansTalks: buildUnscheduledItemsByKey(
+         previous.guardiansTalks,
+         validated.guardiansTalks,
+         (item) => buildItemKey(item, 'name')
+      ),
+      wildEncounters: buildUnscheduledItemsByKey(
+         previous.wildEncounters,
+         validated.wildEncounters,
+         (item) => buildItemKey(item, 'name')
+      ),
+   };
+}
+
+function mergeRemovedItemLists(existing = [], incoming = [], buildKey) {
+   const merged = [...existing];
+   const keys = new Set(
+      existing
+         .map((item) => buildKey(item))
+         .filter(Boolean)
+   );
+
+   incoming.forEach((item) => {
+      const key = buildKey(item);
+
+      if (!key || keys.has(key)) {
+         return;
+      }
+
+      merged.push(item);
+      keys.add(key);
+   });
+
+   return merged;
+}
+
+export function mergeRemovedValidationState(
+      existingRemoved = {},
+      diffRemoved = {}) {
+   return {
+      animals: mergeRemovedItemLists(
+         existingRemoved.animals,
+         diffRemoved.animals,
+         buildSpeciesExhibitKey),
+      attractions: mergeRemovedItemLists(
+         existingRemoved.attractions,
+         diffRemoved.attractions,
+         (item) => buildItemKey(item, 'name')),
+      guardiansTalks: mergeRemovedItemLists(
+         existingRemoved.guardiansTalks,
+         diffRemoved.guardiansTalks,
+         (item) => buildItemKey(item, 'name')),
+      wildEncounters: mergeRemovedItemLists(
+         existingRemoved.wildEncounters,
+         diffRemoved.wildEncounters,
+         (item) => buildItemKey(item, 'name')),
    };
 }
 

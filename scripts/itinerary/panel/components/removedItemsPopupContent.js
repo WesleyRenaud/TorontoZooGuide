@@ -127,19 +127,54 @@ function buildAdjustmentRows(adjustments = []) {
    return adjustments.map((adjustment) => buildAdjustmentRow(adjustment));
 }
 
-function hasUnscheduledItems(unscheduled = {}) {
-   return Boolean(
-      unscheduled?.animals?.length || unscheduled?.attractions?.length
-   );
-}
+function getUnscheduledSectionSpecs(safeUnscheduled = {}) {
+   const sections = [];
 
-function buildUnscheduledRows(unscheduledGroups = []) {
-   const unscheduled = unscheduledGroups[0] ?? {};
+   if (safeUnscheduled.animals?.length) {
+      sections.push({
+         items: safeUnscheduled.animals,
+         title: APP_STRINGS.itinerary.dayPlanner.unscheduledTitle,
+         subtitle: APP_STRINGS.itinerary.removedItems.unscheduledSubtitle,
+         rowBuilder: buildAnimalRows,
+         stepKey: 'animals',
+         showViewAlternatives: false,
+      });
+   }
 
-   return [
-      ...buildAnimalRows(unscheduled.animals ?? []),
-      ...buildAttractionRows(unscheduled.attractions ?? []),
-   ];
+   if (safeUnscheduled.attractions?.length) {
+      sections.push({
+         items: safeUnscheduled.attractions,
+         title: APP_STRINGS.map.filter.attractions,
+         subtitle: APP_STRINGS.itinerary.removedItems.unscheduledSubtitle,
+         rowBuilder: buildAttractionRows,
+         stepKey: 'attractions',
+         showViewAlternatives: false,
+      });
+   }
+
+   if (safeUnscheduled.guardiansTalks?.length) {
+      sections.push({
+         items: safeUnscheduled.guardiansTalks,
+         title: APP_STRINGS.site.nav.meetTheGuardians,
+         subtitle: APP_STRINGS.itinerary.removedItems.unscheduledSubtitle,
+         rowBuilder: buildGuardiansRows,
+         stepKey: 'guardiansTalks',
+         showViewAlternatives: false,
+      });
+   }
+
+   if (safeUnscheduled.wildEncounters?.length) {
+      sections.push({
+         items: safeUnscheduled.wildEncounters,
+         title: APP_STRINGS.site.nav.wildEncounters,
+         subtitle: APP_STRINGS.itinerary.removedItems.unscheduledSubtitle,
+         rowBuilder: buildWildRows,
+         stepKey: 'wildEncounters',
+         showViewAlternatives: false,
+      });
+   }
+
+   return sections;
 }
 
 function buildSectionRows(
@@ -227,14 +262,7 @@ function getSectionSpecs({
          stepKey: 'animals',
          showViewAlternatives: false,
       },
-      {
-         items: hasUnscheduledItems(safeUnscheduled) ? [safeUnscheduled] : [],
-         title: APP_STRINGS.itinerary.dayPlanner.unscheduledTitle,
-         subtitle: APP_STRINGS.itinerary.removedItems.unscheduledSubtitle,
-         rowBuilder: buildUnscheduledRows,
-         stepKey: 'date',
-         showViewAlternatives: false,
-      },
+      ...getUnscheduledSectionSpecs(safeUnscheduled),
       {
          items: safeRemoved.animals ?? [],
          title: APP_STRINGS.itinerary.removedItems.animalsRemovedTitle,
