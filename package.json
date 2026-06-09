@@ -17,7 +17,7 @@
       "seed": "python3 -m api.seed.migrations.runner && python3 -m api.seed.runner",
       "seed:schema": "python3 -m api.seed.create_schema",
       "seed:data": "python3 -m api.seed.seed_data",
-      "test:js": "node --test --test-concurrency=1 tests/frontend/frontend.test.mjs tests/frontend/scheduleItemActions.test.mjs tests/frontend/itineraryService.test.mjs",
+      "test:js": "node --test --test-concurrency=1 tests/frontend/frontend.test.mjs",
       "test:py": "python3 -m pytest tests/backend",
       "start": "python3 -m api.server"
    },
