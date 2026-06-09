@@ -79,6 +79,63 @@ export function buildScheduleItemRequest(
    };
 }
 
+function createScheduleItemSaveFailedResult() {
+   return {
+      errorType: getItineraryErrorTypes()?.SAVE_FAILED,
+   };
+}
+
+function getConfirmationMountEl() {
+   return getItineraryPanelMountEl() ?? document.body;
+}
+
+function requestScheduleItemConfirmation({
+   showConfirmation,
+   initialResult,
+   request,
+   confirmationOptions,
+   confirmationProps = {},
+   buildConfirmedOptions,
+   beforeConfirm = async () => {},
+   resolveConfirmErrorAsSaveFailed = false,
+}) {
+   return new Promise((resolve) => {
+      const confirm = async (confirmArgs = {}) => {
+         await beforeConfirm(confirmArgs);
+
+         const confirmedResult = await scheduleItineraryItemWithConfirmation(
+            request,
+            {
+               ...confirmationOptions,
+               ...buildConfirmedOptions(confirmArgs),
+            }
+         );
+
+         resolve(confirmedResult);
+      };
+
+      showConfirmation({
+         ...confirmationProps,
+         onConfirm: async (confirmArgs) => {
+            if (!resolveConfirmErrorAsSaveFailed) {
+               await confirm(confirmArgs);
+               return;
+            }
+
+            try {
+               await confirm(confirmArgs);
+            }
+            catch (error) {
+               resolve(createScheduleItemSaveFailedResult());
+            }
+         },
+         onCancel: () => {
+            resolve(initialResult);
+         },
+      });
+   });
+}
+
 async function scheduleItineraryItemWithConfirmation(request, confirmationOptions = {}) {
    const initialResult = await scheduleItineraryItemRequest(request, confirmationOptions);
 
@@ -87,82 +144,54 @@ async function scheduleItineraryItemWithConfirmation(request, confirmationOption
    }
 
    if (requiresScheduleItemNotOnItineraryConfirmation(initialResult.errorType)) {
-      return new Promise((resolve) => {
-         showScheduleItemNotOnItineraryConfirmation({
-            onConfirm: async ({ doNotShowAgain = false } = {}) => {
-               try {
-                  if (doNotShowAgain) {
-                     await persistItineraryWarningSuppression(
-                        getItineraryErrorTypes()?.ITEM_NOT_ON_ITINERARY
-                     );
-                  }
-
-                  const confirmedResult = await scheduleItineraryItemWithConfirmation(
-                     request,
-                     {
-                        ...confirmationOptions,
-                        confirmingScheduleItemNotOnItinerary: true,
-                     }
-                  );
-
-                  resolve(confirmedResult);
-               }
-               catch (error) {
-                  resolve({
-                     errorType: getItineraryErrorTypes()?.SAVE_FAILED,
-                  });
-               }
-            },
-            onCancel: () => {
-               resolve(initialResult);
-            },
-         });
+      return requestScheduleItemConfirmation({
+         showConfirmation: showScheduleItemNotOnItineraryConfirmation,
+         initialResult,
+         request,
+         confirmationOptions,
+         buildConfirmedOptions: () => ({
+            confirmingScheduleItemNotOnItinerary: true,
+         }),
+         beforeConfirm: async ({ doNotShowAgain = false } = {}) => {
+            if (doNotShowAgain) {
+               await persistItineraryWarningSuppression(
+                  getItineraryErrorTypes()?.ITEM_NOT_ON_ITINERARY
+               );
+            }
+         },
+         resolveConfirmErrorAsSaveFailed: true,
       });
    }
 
    if (requiresGuardiansTalkUnscheduleConfirmation(initialResult.errorType)) {
-      return new Promise((resolve) => {
-         showGuardiansTalkUnscheduleConfirmation({
-            mountEl: getItineraryPanelMountEl() ?? document.body,
+      return requestScheduleItemConfirmation({
+         showConfirmation: showGuardiansTalkUnscheduleConfirmation,
+         initialResult,
+         request,
+         confirmationOptions,
+         confirmationProps: {
+            mountEl: getConfirmationMountEl(),
             issues: initialResult.issues,
-            onConfirm: async () => {
-               const confirmedResult = await scheduleItineraryItemWithConfirmation(
-                  request,
-                  {
-                     ...confirmationOptions,
-                     confirmingGuardiansTalkUnschedule: true,
-                  }
-               );
-
-               resolve(confirmedResult);
-            },
-            onCancel: () => {
-               resolve(initialResult);
-            },
-         });
+         },
+         buildConfirmedOptions: () => ({
+            confirmingGuardiansTalkUnschedule: true,
+         }),
       });
    }
 
    if (requiresWildEncounterUnscheduleConfirmation(initialResult.errorType)) {
-      return new Promise((resolve) => {
-         showWildEncounterUnscheduleConfirmation({
-            mountEl: getItineraryPanelMountEl() ?? document.body,
+      return requestScheduleItemConfirmation({
+         showConfirmation: showWildEncounterUnscheduleConfirmation,
+         initialResult,
+         request,
+         confirmationOptions,
+         confirmationProps: {
+            mountEl: getConfirmationMountEl(),
             issues: initialResult.issues,
-            onConfirm: async () => {
-               const confirmedResult = await scheduleItineraryItemWithConfirmation(
-                  request,
-                  {
-                     ...confirmationOptions,
-                     confirmingWildEncounterUnschedule: true,
-                  }
-               );
-
-               resolve(confirmedResult);
-            },
-            onCancel: () => {
-               resolve(initialResult);
-            },
-         });
+         },
+         buildConfirmedOptions: () => ({
+            confirmingWildEncounterUnschedule: true,
+         }),
       });
    }
 
@@ -188,9 +217,7 @@ export async function scheduleSelectedItineraryItem(
    );
 
    if (!request) {
-      return {
-         errorType: getItineraryErrorTypes()?.SAVE_FAILED,
-      };
+      return createScheduleItemSaveFailedResult();
    }
 
    return scheduleItineraryItemWithConfirmation(request);
