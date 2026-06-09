@@ -158,7 +158,10 @@ export async function saveItinerary(
       overridingConflictingGuardiansTalks,
    };
 
-   const result = await requestSetItineraryWithConfirmations(basePayload);
+   const {
+      result,
+      diffBaseline,
+   } = await requestSetItineraryWithConfirmations(basePayload);
 
    if (!isItinerarySuccess(result.errorType)) {
       throw new Error(resolveItineraryErrorMessage(result.errorType));
@@ -169,7 +172,7 @@ export async function saveItinerary(
       itineraryConfig: result?.itineraryConfig,
    });
    const saveDiff = buildItineraryDiff(
-      normalizeItineraryDraft(itinerary),
+      normalizeItineraryDraft(diffBaseline ?? itinerary),
       normalizedItinerary,
       {},
       normalizedItinerary.itineraryConfig ?? {}
@@ -185,11 +188,21 @@ export async function saveItinerary(
    return normalizedItinerary;
 }
 
-async function requestSetItineraryWithConfirmations(payload) {
+function createConfirmedSetItineraryResult(result, diffBaseline = null) {
+   return {
+      result,
+      diffBaseline,
+   };
+}
+
+async function requestSetItineraryWithConfirmations(
+   payload,
+   diffBaseline = null,
+) {
    const initialResult = await setItineraryRequest(payload);
 
    if (isItinerarySuccess(initialResult.errorType)) {
-      return initialResult;
+      return createConfirmedSetItineraryResult(initialResult, diffBaseline);
    }
 
    if (requiresGuardiansTalkWildEncounterTimeConflictConfirmation(initialResult.errorType)) {
@@ -209,17 +222,24 @@ async function requestSetItineraryWithConfirmations(payload) {
                   selectedItems
                );
 
-               const confirmedResult = await requestSetItineraryWithConfirmations({
+               const confirmedPayload = {
                   ...payload,
                   guardiansTalks,
                   wildEncounters,
                   overridingConflictingGuardiansTalks: true,
-               });
+               };
+               const confirmedResult = await requestSetItineraryWithConfirmations(
+                  confirmedPayload,
+                  confirmedPayload,
+               );
 
                resolve(confirmedResult);
             },
             onCancel: () => {
-               resolve(initialResult);
+               resolve(createConfirmedSetItineraryResult(
+                  initialResult,
+                  diffBaseline,
+               ));
             },
          });
       });
@@ -233,12 +253,15 @@ async function requestSetItineraryWithConfirmations(payload) {
                const confirmedResult = await requestSetItineraryWithConfirmations({
                   ...payload,
                   confirmingGuardiansTalkUnschedule: true,
-               });
+               }, diffBaseline);
 
                resolve(confirmedResult);
             },
             onCancel: () => {
-               resolve(initialResult);
+               resolve(createConfirmedSetItineraryResult(
+                  initialResult,
+                  diffBaseline,
+               ));
             },
          });
       });
@@ -252,18 +275,21 @@ async function requestSetItineraryWithConfirmations(payload) {
                const confirmedResult = await requestSetItineraryWithConfirmations({
                   ...payload,
                   confirmingWildEncounterUnschedule: true,
-               });
+               }, diffBaseline);
 
                resolve(confirmedResult);
             },
             onCancel: () => {
-               resolve(initialResult);
+               resolve(createConfirmedSetItineraryResult(
+                  initialResult,
+                  diffBaseline,
+               ));
             },
          });
       });
    }
 
-   return initialResult;
+   return createConfirmedSetItineraryResult(initialResult, diffBaseline);
 }
 
 class ItineraryTimeChangeCancelledError extends Error {

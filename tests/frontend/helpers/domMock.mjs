@@ -204,7 +204,7 @@ function queryNode(root, selector) {
          return current;
       }
 
-      stack.push(...current.children);
+      stack.push(...(current.children ?? []));
    }
 
    return null;
@@ -229,7 +229,7 @@ function queryNodes(root, selector) {
          matches.push(current);
       }
 
-      stack.push(...current.children);
+      stack.push(...(current.children ?? []));
    }
 
    return matches;
