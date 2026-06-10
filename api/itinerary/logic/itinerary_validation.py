@@ -28,7 +28,7 @@ from ...models import WildEncounterDiff
 from ...models.itinerary_event import ItineraryEvent
 from ...shared.enums import ItineraryEventType
 from ...types import Connection, DateKey, ScheduleTimeKey
-from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
 
 
@@ -202,7 +202,7 @@ def validate_itinerary_for_save(
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
       guardians_coordinator: type[ GuardiansCoordinator ],
-      wild_encounter_controller: type[ WildEncounterController ],
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       *,
       new_visit_date_temp: float | None = None,
       old_visit_date: DateKey | None = None ) -> ValidatedItinerary:
@@ -258,7 +258,7 @@ def validate_itinerary_for_save(
       wild_encounters=wild_encounter_diffs_within_visit_window(
          validate_wild_encounters_for_itinerary(
             save_input.wild_encounters,
-            wild_encounter_controller.get_wild_encounter_schedule(
+            wild_encounter_coordinator.get_wild_encounter_schedule(
                month=save_input.month(),
                day=save_input.day(),
                year=save_input.year() ),

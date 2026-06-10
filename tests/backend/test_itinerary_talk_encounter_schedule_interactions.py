@@ -7,7 +7,7 @@ from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.shared.enums import ItineraryErrorType
-from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
 
 
@@ -49,7 +49,7 @@ def _set_schedules_at_1400() -> None:
       sunday_time=None,
       message=None,
    )
-   assert WildEncounterController.set_wild_encounter_schedule(
+   assert WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER,
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -246,7 +246,7 @@ def _set_turtle_and_rhino_schedules_at_1400() -> None:
       sunday_time=None,
       message=None,
    )
-   assert WildEncounterController.set_wild_encounter_schedule(
+   assert WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name=RHINO_ENCOUNTER,
       start_date='2026-06-01',
       end_date='2026-06-30',

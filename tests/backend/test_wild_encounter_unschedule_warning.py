@@ -8,7 +8,7 @@ from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_status import suppress_itinerary_status
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryErrorType
-from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
 
 ANIMAL_KEY = 'African Lion||Africa Savanna'
@@ -22,7 +22,7 @@ LION_ITINERARY_ENTRY = {
 def _set_wild_encounter_schedule(
       *,
       encounter_time: str = '14:00' ) -> None:
-   assert WildEncounterController.set_wild_encounter_schedule(
+   assert WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER,
       start_date='2026-06-01',
       end_date='2026-06-30',

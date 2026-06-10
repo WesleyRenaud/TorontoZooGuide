@@ -5,7 +5,7 @@ from api.itinerary.logic.itinerary_departure_time_validation import departure_ti
 from api.itinerary.logic.itinerary_schedule_time_order_validation import departure_follows_arrival
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
-from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 from conftest import DbControllers
 
@@ -29,7 +29,7 @@ def _guardians_talk_save_entry(
 
 
 def _set_wild_encounter_schedule( *, encounter_time: str ) -> None:
-   assert WildEncounterController.set_wild_encounter_schedule(
+   assert WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER,
       start_date='2026-06-01',
       end_date='2026-06-30',

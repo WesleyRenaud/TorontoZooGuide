@@ -23,7 +23,7 @@ from ...shared.enums import ItineraryErrorType
 from ...types import Connection
 from ...types import Cursor
 from ...types import ScheduleTimeKey
-from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
 def has_itinerary_schedule_times(
@@ -57,13 +57,13 @@ def bulk_schedule_animals(
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
       guardians_coordinator: type[ GuardiansCoordinator ],
-      wild_encounter_controller: type[ WildEncounterController ],
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None = None ) -> ItinerarySaveResult:
    itinerary_controller_kwargs = _itinerary_controller_kwargs(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
       guardians_coordinator=guardians_coordinator,
-      wild_encounter_controller=wild_encounter_controller,
+      wild_encounter_coordinator=wild_encounter_coordinator,
       visit_date_temp=visit_date_temp )
 
    saved_itinerary = fetch_saved_itinerary( conn )

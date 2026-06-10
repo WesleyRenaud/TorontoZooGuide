@@ -19,7 +19,7 @@ from api.itinerary.logic.itinerary_validation import validate_itinerary_attracti
 from api.models import GuardiansTalk
 from api.models import WildEncounter
 from api.shared.enums import ItineraryErrorType
-from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from api.wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
 from api.zoo_hours.controllers.zoo_hours_controller import ZooHoursController
 from conftest import DbControllers
@@ -84,7 +84,7 @@ def test_set_get_and_clear_itinerary(
       sunday_time=None,
       message=None
    )
-   WildEncounterController.set_wild_encounter_schedule(
+   WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -137,7 +137,7 @@ def test_set_get_and_clear_itinerary(
       date='2026-06-15',
       time='10:00'
    )
-   assert WildEncounterController.cancel_wild_encounter_occurrence(
+   assert WildEncounterCoordinator.cancel_wild_encounter_occurrence(
       wild_encounter_name='African Rainforest',
       date='2026-06-15',
       time='14:00'
@@ -586,7 +586,7 @@ def test_set_itinerary_normalizes_display_format_schedule_times(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   WildEncounterController.set_wild_encounter_schedule(
+   WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='Grizzly Bear',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -727,7 +727,7 @@ def test_accept_itinerary_clears_added_animal_flags( db: DbControllers ) -> None
 
 def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       db: DbControllers ) -> None:
-   WildEncounterController.set_wild_encounter_schedule(
+   WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -741,7 +741,7 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       sunday=False,
       message=None
    )
-   WildEncounterController.set_wild_encounter_schedule(
+   WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='Kangaroo',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -755,7 +755,7 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       sunday=False,
       message=None
    )
-   WildEncounterController.set_wild_encounter_schedule(
+   WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='Capybara',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -834,7 +834,7 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
       sunday_time=None,
       message=None
    )
-   WildEncounterController.set_wild_encounter_schedule(
+   WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -912,7 +912,7 @@ def test_set_itinerary_reports_partial_guardians_talk_encounter_overlap_without_
       sunday_time=None,
       message=None
    )
-   WildEncounterController.set_wild_encounter_schedule(
+   WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='Grizzly Bear',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -968,7 +968,7 @@ def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overl
       sunday_time=None,
       message=None
    )
-   WildEncounterController.set_wild_encounter_schedule(
+   WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='Grizzly Bear',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -1032,7 +1032,7 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
       sunday_time=None,
       message=None
    )
-   WildEncounterController.set_wild_encounter_schedule(
+   WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -1046,7 +1046,7 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
       sunday=False,
       message=None
    )
-   WildEncounterController.set_wild_encounter_schedule(
+   WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='Kangaroo',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -1640,7 +1640,7 @@ def test_itinerary_filter_helpers_return_empty_without_filters( db: DbController
    assert GuardiansCoordinator.get_guardians_talk_details(
       guardians_talks_to_include=[]
    ) == []
-   assert WildEncounterController.get_wild_encounter_details(
+   assert WildEncounterCoordinator.get_wild_encounter_details(
       wild_encounters_to_include=[]
    ) == []
 
@@ -1677,7 +1677,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
       sunday_time=None,
       message=None
    )
-   assert WildEncounterController.set_wild_encounter_schedule(
+   assert WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -1691,7 +1691,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
       sunday=False,
       message=None
    )
-   assert WildEncounterController.set_wild_encounter_schedule(
+   assert WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='Kangaroo',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -1718,7 +1718,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
    )
    encounter_result = validate_wild_encounters_for_itinerary(
       [ ' kangaroo ', 'AFRICAN RAINFOREST' ],
-      WildEncounterController.get_wild_encounter_schedule(
+      WildEncounterCoordinator.get_wild_encounter_schedule(
          month='June',
          day=15,
          year=2026 )

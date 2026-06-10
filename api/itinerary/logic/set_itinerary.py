@@ -18,7 +18,7 @@ from .set_itinerary_flow import itinerary_controller_kwargs
 from .set_itinerary_flow import prepare_set_itinerary_context
 from .set_itinerary_flow import validate_set_itinerary_zoo_hours
 from ...types import Connection, DateInput, TimeInput
-from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
 def itinerary_animal_input_key( animal: ItineraryAnimalInput ) -> tuple[ str, str ]:
@@ -113,7 +113,7 @@ def set_itinerary(
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
       guardians_coordinator: type[ GuardiansCoordinator ],
-      wild_encounter_controller: type[ WildEncounterController ],
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       overriding_conflicting_guardians_talks: bool = False,
       confirming_short_visit: bool = False,
       confirming_early_admission: bool = False,
@@ -138,7 +138,7 @@ def set_itinerary(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
       guardians_coordinator=guardians_coordinator,
-      wild_encounter_controller=wild_encounter_controller,
+      wild_encounter_coordinator=wild_encounter_coordinator,
       visit_date_temp=visit_date_temp )
    save_input, adjustments = adjust_set_itinerary_for_restrictive_hours(
       conn,
@@ -160,7 +160,7 @@ def set_itinerary(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
       guardians_coordinator=guardians_coordinator,
-      wild_encounter_controller=wild_encounter_controller,
+      wild_encounter_coordinator=wild_encounter_coordinator,
       visit_date_temp=visit_date_temp,
       itinerary_controller_kwargs=controller_kwargs,
       adjustments=adjustments )
