@@ -33,7 +33,7 @@ from .shared.constants import itinerary_config_to_dict
 from .shared.typed_dict import to_dict_with_type
 from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from .zoo_hours.controllers.zoo_hours_controller import ZooHoursController
-from .zoomobile.controllers.zoomobile_controller import ZoomobileController
+from .zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 
 
 DEFAULT_PORT = 8000
@@ -174,28 +174,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          route( self )
          return
 
-      if self.path == '/get-zoomobile-route':
-         data = self._read_json_body()
-
-         route = data.get( 'zoomobileRoute' )
-         month = data.get( 'month' )
-         day = data.get( 'day' )
-         year = data.get( 'year' )
-         zoomobile_stations_to_include = data.get( 'zoomobileStationsToInclude' ) or []
-
-         zoomobile_route = ZoomobileController.get_zoomobile_route(
-            route=route,
-            day=day,
-            month=month,
-            year=year,
-            zoomobile_stations_to_include=zoomobile_stations_to_include )
-
-         response = zoomobile_route.to_dict()
-
-         self._write_json( response )
-
-
-      elif self.path == '/get-guardians-talks':
+      if self.path == '/get-guardians-talks':
          data = self._read_json_body()
 
          month = data.get( 'month' )
@@ -340,7 +319,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             zoomobile_stations_json = [
                to_dict_with_type( zoomobile_station, 'zoomobileStation' )
                for zoomobile_station in (
-                  ZoomobileController.get_zoomobile_stations_matching_query(
+                  ZoomobileCoordinator.get_zoomobile_stations_matching_query(
                      query=query,
                      route=zoomobile_route,
                      day=day,
@@ -655,13 +634,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          self._write_json( response )
 
 
-      elif self.path == '/get-zoomobile-station-names':
-         zoomobile_stations = ZoomobileController.get_zoomobile_station_names()
-
-         response = { "zoomobile_stations": zoomobile_stations }
-         self._write_json( response )
-
-
       elif self.path == '/get-guardians-talk-locations':
          guardians_talk_locations = GuardiansController.get_guardians_talk_locations()
 
@@ -723,80 +695,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             'occurrences': [ occurrence.to_dict() for occurrence in occurrences ],
             'wildEncounter': wild_encounter
          }
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-zoomobile-station-closed':
-         data = self._read_json_body()
-
-         zoomobile_station = data.get( 'zoomobileStation' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-         message = data.get( 'message' )
-
-         success = ZoomobileController.set_zoomobile_station_as_closed(
-            zoomobile_station=zoomobile_station,
-            start_date=start_date,
-            end_date=end_date,
-            message=message )
-
-         response = {
-            'success': success,
-            'zoomobile_station': zoomobile_station,
-            'startDate': start_date,
-            'endDate': end_date,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set "{ zoomobile_station }" as closed.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-zoomobile-station-open':
-         data = self._read_json_body()
-
-         zoomobile_station = data.get( 'zoomobileStation' )
-
-         success = ZoomobileController.set_zoomobile_station_as_open( zoomobile_station=zoomobile_station )
-
-         response = {
-            'success': success,
-            'zoomobile_station': zoomobile_station
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set "{ zoomobile_station }" as open.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-current-zoomobile-route':
-         data = self._read_json_body()
-
-         route = data.get( 'route' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-
-         success = False
-
-         if route in ( 'summer', 'winter' ):
-            success = ZoomobileController.set_current_zoomobile_route(
-               route=route,
-               start_date=start_date,
-               end_date=end_date )
-
-         response = {
-            'success': success,
-            'route': route,
-            'startDate': start_date,
-            'endDate': end_date
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set Zoomobile route to "{ route }".'
 
          self._write_json( response )
 

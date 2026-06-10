@@ -33,7 +33,7 @@ from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from api.shared.enums import ScheduleStatus
 from api.types import Connection, Cursor
 from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
-from api.zoomobile.controllers.zoomobile_controller import ZoomobileController
+from api.zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 from conftest import DbControllers
 
 
@@ -1161,14 +1161,14 @@ def test_zoomobile_route_selection_and_station_filtering(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 1, 15 ) )
 
-   manual = ZoomobileController.get_zoomobile_route( route='winter', day=15, month='January', year=2026 )
-   invalid = ZoomobileController.get_zoomobile_route( route='bad-route', day=15, month='January', year=2026 )
+   manual = ZoomobileCoordinator.get_zoomobile_route( route='winter', day=15, month='January', year=2026 )
+   invalid = ZoomobileCoordinator.get_zoomobile_route( route='bad-route', day=15, month='January', year=2026 )
 
    assert manual.route == 'winter'
    assert invalid.route == 'summer'
 
-   assert ZoomobileController.set_current_zoomobile_route( route='winter', start_date='2026-01-01', end_date='2026-01-31' )
-   current = ZoomobileController.get_zoomobile_route( route='current', day=15, month='January', year=2026 )
+   assert ZoomobileCoordinator.set_current_zoomobile_route( route='winter', start_date='2026-01-01', end_date='2026-01-31' )
+   current = ZoomobileCoordinator.get_zoomobile_route( route='current', day=15, month='January', year=2026 )
 
    assert current.route == 'winter'
    assert current.route_source == 'override'
@@ -1441,7 +1441,7 @@ def test_search_helpers_filter_case_insensitively( db: DbControllers ) -> None:
 
    assert [
       station.name
-      for station in ZoomobileController.get_zoomobile_stations_matching_query(
+      for station in ZoomobileCoordinator.get_zoomobile_stations_matching_query(
          query='MAIN',
          route='summer',
          day=15,

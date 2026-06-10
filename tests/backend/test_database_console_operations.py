@@ -17,7 +17,7 @@ from api.shared.enums import AnimalViewingScope
 from api.types import Cursor
 from api.updates.coordinators.update_coordinator import UpdateCoordinator
 from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
-from api.zoomobile.controllers.zoomobile_controller import ZoomobileController
+from api.zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 from conftest import DbControllers
 
 
@@ -450,15 +450,15 @@ def test_set_zoomobile_station_closed_and_open_changes_route_results(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ZoomobileController.set_zoomobile_station_as_closed( 'Africa Zoomobile Station', '2026-06-01', '2026-06-30', '' )
+   assert ZoomobileCoordinator.set_zoomobile_station_as_closed( 'Africa Zoomobile Station', '2026-06-01', '2026-06-30', '' )
 
-   route = ZoomobileController.get_zoomobile_route( route='summer', day=15, month='June', year=2026 )
+   route = ZoomobileCoordinator.get_zoomobile_route( route='summer', day=15, month='June', year=2026 )
 
    assert all( station.name != 'Africa Zoomobile Station' for station in route.zoomobile_stations )
 
-   assert ZoomobileController.set_zoomobile_station_as_open( 'Africa Zoomobile Station' )
+   assert ZoomobileCoordinator.set_zoomobile_station_as_open( 'Africa Zoomobile Station' )
 
-   route = ZoomobileController.get_zoomobile_route( route='summer', day=15, month='June', year=2026 )
+   route = ZoomobileCoordinator.get_zoomobile_route( route='summer', day=15, month='June', year=2026 )
 
    assert any( station.name == 'Africa Zoomobile Station' for station in route.zoomobile_stations )
 
@@ -570,9 +570,9 @@ def test_set_current_zoomobile_route_changes_current_route_result(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ZoomobileController.set_current_zoomobile_route( 'winter', '2026-06-01', '2026-06-30' )
+   assert ZoomobileCoordinator.set_current_zoomobile_route( 'winter', '2026-06-01', '2026-06-30' )
 
-   route = ZoomobileController.get_zoomobile_route( route='current', day=15, month='June', year=2026 )
+   route = ZoomobileCoordinator.get_zoomobile_route( route='current', day=15, month='June', year=2026 )
 
    assert route.route == 'winter'
    assert route.route_source == 'override'
