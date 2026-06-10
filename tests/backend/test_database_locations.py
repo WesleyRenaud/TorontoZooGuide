@@ -15,7 +15,7 @@ from api.drinking_fountains.controllers.drinking_fountain_controller import Drin
 from api.emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
 from api.event_sites.controllers.event_site_controller import EventSiteController
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
-from api.giftshops.controllers.gift_shop_controller import GiftShopController
+from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_override_records
 from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_records
 from api.giftshops.data_access.gift_shop_schedule_record import GiftShopScheduleRecord
@@ -52,7 +52,7 @@ def apply_amenity_opening_schedule(
       return RestaurantCoordinator.set_restaurant_opening_schedule( **schedule )
 
    if setter_name == 'set_gift_shop_opening_schedule':
-      return GiftShopController.set_gift_shop_opening_schedule( **schedule )
+      return GiftShopCoordinator.set_gift_shop_opening_schedule( **schedule )
 
    if setter_name == 'set_attraction_opening_schedule':
       return AttractionController.set_attraction_opening_schedule( **schedule )
@@ -375,7 +375,7 @@ def test_gift_shop_schedule_controls_open_and_closed_results(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert GiftShopController.set_gift_shop_opening_schedule(
+   assert GiftShopCoordinator.set_gift_shop_opening_schedule(
       gift_shop='Zootique',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -390,8 +390,8 @@ def test_gift_shop_schedule_controls_open_and_closed_results(
       message='Closed for testing.'
    )
 
-   open_only = GiftShopController.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=False )
-   with_closed = GiftShopController.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=True )
+   open_only = GiftShopCoordinator.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=False )
+   with_closed = GiftShopCoordinator.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=True )
 
    assert all( shop.name != 'Zootique' for shop in open_only )
    shop = next( item for item in with_closed if item.name == 'Zootique' )
@@ -586,7 +586,7 @@ def test_attraction_opening_schedule_rejects_overlapping_date_ranges( db: DbCont
          'Africa Restaurant'
       ),
       (
-         GiftShopController.set_gift_shop_opening_schedule,
+         GiftShopCoordinator.set_gift_shop_opening_schedule,
          'gift_shop',
          'Zootique'
       )
@@ -640,7 +640,7 @@ def test_restaurant_and_gift_shop_opening_schedules_reject_overlapping_date_rang
          'restaurant'
       ),
       (
-         GiftShopController,
+         GiftShopCoordinator,
          'gift_shop',
          'Zootique',
          fetch_gift_shop_schedule_records,
@@ -725,7 +725,7 @@ def test_opening_schedule_can_replace_overlapping_schedules(
          'restaurant'
       ),
       (
-         GiftShopController,
+         GiftShopCoordinator,
          'gift_shop',
          'Zootique',
          fetch_gift_shop_schedule_records,
@@ -944,7 +944,7 @@ def test_restaurant_closure_override_takes_precedence_over_opening_schedule( db:
 
 
 def test_gift_shop_closure_override_takes_precedence_over_opening_schedule( db: DbControllers ) -> None:
-   assert GiftShopController.set_gift_shop_opening_schedule(
+   assert GiftShopCoordinator.set_gift_shop_opening_schedule(
       gift_shop='Zootique',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -959,7 +959,7 @@ def test_gift_shop_closure_override_takes_precedence_over_opening_schedule( db: 
       message='Open for June.'
    )
 
-   assert GiftShopController.set_gift_shop_closure_override(
+   assert GiftShopCoordinator.set_gift_shop_closure_override(
       gift_shop='Zootique',
       start_date='2026-06-20',
       end_date='2026-06-21',
@@ -988,7 +988,7 @@ def test_gift_shop_closure_override_takes_precedence_over_opening_schedule( db: 
    ]
 
    closed_gift_shop = next(
-      gift_shop for gift_shop in GiftShopController.get_gift_shops(
+      gift_shop for gift_shop in GiftShopCoordinator.get_gift_shops(
          day=20,
          month='June',
          year=2026,
@@ -996,7 +996,7 @@ def test_gift_shop_closure_override_takes_precedence_over_opening_schedule( db: 
       if gift_shop.name == 'Zootique'
    )
    open_gift_shop = next(
-      gift_shop for gift_shop in GiftShopController.get_gift_shops(
+      gift_shop for gift_shop in GiftShopCoordinator.get_gift_shops(
          day=22,
          month='June',
          year=2026,
@@ -1431,7 +1431,7 @@ def test_search_helpers_filter_case_insensitively( db: DbControllers ) -> None:
 
    assert [
       shop.name
-      for shop in GiftShopController.get_gift_shops_matching_query( 'ZOOTIQUE', 15, 'June', 2026 )
+      for shop in GiftShopCoordinator.get_gift_shops_matching_query( 'ZOOTIQUE', 15, 'June', 2026 )
    ] == [ 'Zootique' ]
 
    assert [
