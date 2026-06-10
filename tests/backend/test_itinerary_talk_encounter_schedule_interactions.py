@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api.guardians.controllers.guardians_controller import GuardiansController
+from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.shared.enums import ItineraryErrorType
@@ -35,7 +35,7 @@ def _guardians_talk_save_entry(
 
 
 def _set_schedules_at_1400() -> None:
-   assert GuardiansController.set_guardians_talk_schedule(
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
       talk=GUARDIANS_TALK,
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -232,7 +232,7 @@ def test_set_itinerary_saves_talk_after_conflict_and_unschedule_confirmations(
 
 
 def _set_turtle_and_rhino_schedules_at_1400() -> None:
-   assert GuardiansController.set_guardians_talk_schedule(
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
       talk=TURTLE_TALK,
       location='African Rainforest Pavilion',
       start_date='2026-06-01',

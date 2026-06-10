@@ -7,7 +7,7 @@ from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
-from api.guardians.controllers.guardians_controller import GuardiansController
+from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.models.animal import Animal
 from api.models.attraction import Attraction
 from api.models.gift_shop import GiftShop
@@ -583,7 +583,7 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert GuardiansController.set_guardians_talk_schedule(
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -598,17 +598,17 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results(
       message=''
    )
 
-   talks = GuardiansController.get_guardians_talk_schedule( month='June', day=15, year=2026 )
+   talks = GuardiansCoordinator.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
    assert any( talk.name == 'African Lion' and talk.start_time == '10:00' for talk in talks )
 
-   assert GuardiansController.end_guardians_talk_schedule( 'African Lion', 'Africa Savanna', '2026-06-14' )
+   assert GuardiansCoordinator.end_guardians_talk_schedule( 'African Lion', 'Africa Savanna', '2026-06-14' )
 
-   talks = GuardiansController.get_guardians_talk_schedule( month='June', day=15, year=2026 )
+   talks = GuardiansCoordinator.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
    assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00' ) for talk in talks )
 
-   assert GuardiansController.set_guardians_talk_schedule(
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -622,12 +622,12 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results(
       sunday_time=None,
       message=''
    )
-   assert GuardiansController.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', '10:00' )
+   assert GuardiansCoordinator.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', '10:00' )
 
-   talks = GuardiansController.get_guardians_talk_schedule( month='June', day=15, year=2026 )
+   talks = GuardiansCoordinator.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
    assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00' ) for talk in talks )
-   assert GuardiansController.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', '10:00' ) is False
+   assert GuardiansCoordinator.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', '10:00' ) is False
 
 
 def test_set_end_and_cancel_wild_encounter_schedule_changes_wild_encounter_results(

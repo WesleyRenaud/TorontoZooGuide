@@ -17,7 +17,7 @@ from ..data_access.itinerary_event_record import ItineraryEventRecord
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ..data_access.validated_itinerary import ValidatedItinerary
-from ...guardians.controllers.guardians_controller import GuardiansController
+from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians.logic.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
 from .itinerary_visit_window import cleared_schedule_times_for_visit_window
 from .itinerary_visit_window import schedule_time_occurs_outside_visit_window
@@ -201,7 +201,7 @@ def validate_itinerary_for_save(
       save_input: ItinerarySaveInput,
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
-      guardians_controller: type[ GuardiansController ],
+      guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_controller: type[ WildEncounterController ],
       *,
       new_visit_date_temp: float | None = None,
@@ -249,7 +249,7 @@ def validate_itinerary_for_save(
       guardians_talks=guardians_talk_diffs_within_visit_window(
          validate_guardians_talks_for_itinerary(
             save_input.guardians_talks,
-            guardians_controller.get_guardians_talk_schedule(
+            guardians_coordinator.get_guardians_talk_schedule(
                month=save_input.month(),
                day=save_input.day(),
                year=save_input.year() ) ),

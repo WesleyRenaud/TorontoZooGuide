@@ -9,7 +9,7 @@ from ..data_access.itinerary import fetch_itinerary_date
 from ..data_access.itinerary_animal_input import ItineraryAnimalInput
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.itinerary_save_input_mapper import map_itinerary_save_input
-from ...guardians.controllers.guardians_controller import GuardiansController
+from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_time_adjustments import adjust_set_itinerary_for_restrictive_hours
 from .set_itinerary_flow import check_set_itinerary_save_warnings
@@ -112,7 +112,7 @@ def set_itinerary(
       *,
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
-      guardians_controller: type[ GuardiansController ],
+      guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_controller: type[ WildEncounterController ],
       overriding_conflicting_guardians_talks: bool = False,
       confirming_short_visit: bool = False,
@@ -137,7 +137,7 @@ def set_itinerary(
    controller_kwargs = itinerary_controller_kwargs(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
-      guardians_controller=guardians_controller,
+      guardians_coordinator=guardians_coordinator,
       wild_encounter_controller=wild_encounter_controller,
       visit_date_temp=visit_date_temp )
    save_input, adjustments = adjust_set_itinerary_for_restrictive_hours(
@@ -159,7 +159,7 @@ def set_itinerary(
       old_visit_date=old_visit_date,
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
-      guardians_controller=guardians_controller,
+      guardians_coordinator=guardians_coordinator,
       wild_encounter_controller=wild_encounter_controller,
       visit_date_temp=visit_date_temp,
       itinerary_controller_kwargs=controller_kwargs,

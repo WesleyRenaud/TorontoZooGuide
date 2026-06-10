@@ -10,7 +10,7 @@ from ..data_access.itinerary_save_input_mapper import map_animal_inputs
 from ..data_access.itinerary_save_input_mapper import map_named_strings
 from ..data_access.itinerary_time import set_itinerary_arrival_time
 from ..data_access.itinerary_time import set_itinerary_departure_time
-from ...guardians.controllers.guardians_controller import GuardiansController
+from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..logic import bulk_schedule_animals as bulk_schedule_animals_logic
 from ..logic import remove_itinerary_item as remove_itinerary_item_logic
 from ..logic import schedule_itinerary_item as schedule_itinerary_item_logic
@@ -42,7 +42,7 @@ class ItineraryController():
          fetch_saved_itinerary( conn ),
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
-         guardians_controller=GuardiansController,
+         guardians_coordinator=GuardiansCoordinator,
          wild_encounter_controller=WildEncounterController )
 
 
@@ -74,7 +74,7 @@ class ItineraryController():
          saved_itinerary=fetch_saved_itinerary( get_connection() ),
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
-         guardians_controller=GuardiansController,
+         guardians_coordinator=GuardiansCoordinator,
          wild_encounter_controller=WildEncounterController,
          visit_date_temp=visit_date_temp )
 
@@ -115,7 +115,7 @@ class ItineraryController():
          confirming_wild_encounter_unschedule=confirming_wild_encounter_unschedule,
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
-         guardians_controller=GuardiansController,
+         guardians_coordinator=GuardiansCoordinator,
          wild_encounter_controller=WildEncounterController )
 
 
@@ -138,7 +138,7 @@ class ItineraryController():
          duration_minutes=duration_minutes,
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
-         guardians_controller=GuardiansController,
+         guardians_coordinator=GuardiansCoordinator,
          wild_encounter_controller=WildEncounterController,
          confirming_schedule_item_not_on_itinerary=(
             confirming_schedule_item_not_on_itinerary
@@ -159,7 +159,7 @@ class ItineraryController():
          get_connection(),
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
-         guardians_controller=GuardiansController,
+         guardians_coordinator=GuardiansCoordinator,
          wild_encounter_controller=WildEncounterController,
          visit_date_temp=visit_date_temp )
 

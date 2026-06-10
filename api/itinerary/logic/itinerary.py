@@ -3,7 +3,7 @@ from __future__ import annotations
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.saved_itinerary import SavedItinerary
-from ...guardians.controllers.guardians_controller import GuardiansController
+from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...models import Animal
 from ...models import Attraction
 from ...models import GuardiansTalk
@@ -51,7 +51,7 @@ def build_current_itinerary(
       saved_itinerary: SavedItinerary,
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
-      guardians_controller: type[ GuardiansController ],
+      guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None = None ) -> Itinerary:
 
@@ -75,7 +75,7 @@ def build_current_itinerary(
       year=year,
       saved_attractions=list( saved_itinerary.attraction_rows ) )
 
-   guardians_talks = guardians_controller.get_guardians_talks_for_saved_itinerary(
+   guardians_talks = guardians_coordinator.get_guardians_talks_for_saved_itinerary(
       list( saved_itinerary.guardians_talk_rows ) )
 
    wild_encounters = wild_encounter_controller.get_wild_encounters_for_saved_itinerary(

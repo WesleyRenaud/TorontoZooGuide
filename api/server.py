@@ -17,7 +17,7 @@ from . import connection
 from .animals.coordinators.animal_coordinator import AnimalCoordinator
 from .attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
-from .guardians.controllers.guardians_controller import GuardiansController
+from .guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .itinerary.controllers.itinerary_controller import ItineraryController
 from .itinerary.logic.itinerary_result_response import itinerary_result_to_dict
 from .itinerary.logic.itinerary_result_response import itinerary_time_set_result_to_dict
@@ -174,24 +174,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          route( self )
          return
 
-      if self.path == '/get-guardians-talks':
-         data = self._read_json_body()
-
-         month = data.get( 'month' )
-         day = data.get( 'day' )
-         year = data.get( 'year' )
-
-         guardians_talks = GuardiansController.get_guardians_talk_schedule(
-            month=month,
-            day=day,
-            year=year )
-
-         response = { "guardians_talks": [ guardians_talk.to_dict() for guardians_talk in guardians_talks ] }
-
-         self._write_json( response )
-
-
-      elif self.path == '/get-wild-encounters':
+      if self.path == '/get-wild-encounters':
          data = self._read_json_body()
 
          month = data.get( 'month' )
@@ -332,7 +315,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             guardians_talks_json = [
                to_dict_with_type( guardians_talk, 'guardiansTalk' )
                for guardians_talk in (
-                  GuardiansController.get_guardians_talks_matching_query(
+                  GuardiansCoordinator.get_guardians_talks_matching_query(
                      query=query,
                      month=month,
                      day=day,
@@ -634,48 +617,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          self._write_json( response )
 
 
-      elif self.path == '/get-guardians-talk-locations':
-         guardians_talk_locations = GuardiansController.get_guardians_talk_locations()
-
-         response = { "guardians_talk_locations": guardians_talk_locations }
-         self._write_json( response )
-
-
-      elif self.path == '/get-guardians-talk-names':
-         guardians_talks = GuardiansController.get_guardians_talk_names()
-
-         response = { "guardians_talks": guardians_talks }
-         self._write_json( response )
-
-
-      elif self.path == '/get-guardians-talk-names-at-location':
-         data = self._read_json_body()
-
-         location = data.get( 'location' )
-
-         guardians_talks = GuardiansController.get_guardians_talk_names_at_location( location=location )
-
-         response = { "guardians_talks": guardians_talks }
-         self._write_json( response )
-
-
-      elif self.path == '/get-guardians-talk-occurrences':
-         data = self._read_json_body()
-
-         talk = data.get( 'talk' )
-         location = data.get( 'location' )
-
-         occurrences = GuardiansController.get_guardians_talk_occurrences( talk=talk, location=location )
-
-         response = {
-            'occurrences': [ occurrence.to_dict() for occurrence in occurrences ],
-            'talk': talk,
-            'location': location
-         }
-
-         self._write_json( response )
-
-
       elif self.path == '/get-wild-encounter-names':
          wild_encounters = WildEncounterController.get_wild_encounter_names()
 
@@ -695,112 +636,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             'occurrences': [ occurrence.to_dict() for occurrence in occurrences ],
             'wildEncounter': wild_encounter
          }
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-guardians-talk-schedule':
-         data = self._read_json_body()
-
-         talk = data.get( 'talk' )
-         location = data.get( 'location' )
-         schedule_start_date = data.get( 'startDate' )
-         schedule_end_date = data.get( 'endDate' )
-         monday_time = data.get( 'mondayTime' )
-         tuesday_time = data.get( 'tuesdayTime' )
-         wednesday_time = data.get( 'wednesdayTime' )
-         thursday_time = data.get( 'thursdayTime' )
-         friday_time = data.get( 'fridayTime' )
-         saturday_time = data.get( 'saturdayTime' )
-         sunday_time = data.get( 'sundayTime' )
-
-         message = data.get( 'message' )
-
-         success = GuardiansController.set_guardians_talk_schedule(
-            talk=talk,
-            location=location,
-            start_date=schedule_start_date,
-            end_date=schedule_end_date,
-            monday_time=monday_time,
-            tuesday_time=tuesday_time,
-            wednesday_time=wednesday_time,
-            thursday_time=thursday_time,
-            friday_time=friday_time,
-            saturday_time=saturday_time,
-            sunday_time=sunday_time,
-            message=message )
-
-         response = {
-            'success': success,
-            'talk': talk,
-            'location': location,
-            'startDate': schedule_start_date,
-            'endDate': schedule_end_date,
-            'mondayTime': monday_time,
-            'tuesdayTime': tuesday_time,
-            'wednesdayTime': wednesday_time,
-            'thursdayTime': thursday_time,
-            'fridayTime': friday_time,
-            'saturdayTime': saturday_time,
-            'sundayTime': sunday_time,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set schedule for "{ talk }" at "{ location }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/end-guardians-talk-schedule':
-         data = self._read_json_body()
-
-         talk = data.get( 'talk' )
-         location = data.get( 'location' )
-         schedule_end_date = data.get( 'endDate' )
-
-         success = GuardiansController.end_guardians_talk_schedule(
-            talk=talk,
-            location=location,
-            schedule_end_date=schedule_end_date )
-
-         response = {
-            'success': success,
-            'talk': talk,
-            'location': location,
-            'endDate': schedule_end_date
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not end schedule for "{ talk }" at "{ location }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/cancel-guardians-talk-occurrence':
-         data = self._read_json_body()
-
-         talk = data.get( 'talk' )
-         location = data.get( 'location' )
-         date = data.get( 'date' )
-         time = data.get( 'time' )
-
-         success = GuardiansController.cancel_guardians_talk_occurrence(
-            talk=talk,
-            location=location,
-            date=date,
-            time=time )
-
-         response = {
-            'success': success,
-            'talk': talk,
-            'location': location,
-            'date': date,
-            'time': time
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not cancel "{ talk }" at "{ location }" on { date } at { time }.'
 
          self._write_json( response )
 
