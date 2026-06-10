@@ -1,133 +1,116 @@
 from __future__ import annotations
 
-from ..data_access.gift_shop import fetch_gift_shop_names
-from ..data_access.gift_shop import fetch_gift_shop_records
-from ..data_access.gift_shop import fetch_gift_shop_schedule_override_records
-from ..data_access.gift_shop import fetch_gift_shop_schedule_records
-from ..data_access.gift_shop_schedule import save_gift_shop_opening_schedule
-from ..data_access.gift_shop_schedule import save_gift_shop_schedule_override
-from ..logic.gift_shop import build_gift_shops
-from ..logic.gift_shop import resolve_gift_shop_context
-from ..logic.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_replacing_overlaps
-from ..logic.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_trimming_overlaps
-from ..logic.gift_shop_status import build_gift_shop_closed_schedule
-from ..logic.gift_shop_status import build_gift_shop_closure_override
-from ..logic.gift_shop_status import build_gift_shop_opening_schedule
-from ..logic.gift_shops_matching_query import build_gift_shops_matching_query
-from ...models import GiftShop
-from ...request_connection import get_connection
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
+from ..coordinators.gift_shop_coordinator import GiftShopCoordinator
+from ...json_handler import JsonRequestHandler
 
 
 class GiftShopController():
 
 
-   @classmethod
-   def get_gift_shop_names( cls ) -> list[ str ]:
-      return fetch_gift_shop_names( get_connection() )
+   @staticmethod
+   def get_gift_shops( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      gift_shops = GiftShopCoordinator.get_gift_shops(
+         day=data.get( 'day' ),
+         month=data.get( 'month' ),
+         year=data.get( 'year' ),
+         include_closed_gift_shops=data.get( 'includeClosedGiftShops' ),
+         gift_shops_to_include=data.get( 'giftShopsToInclude' ) )
+
+      handler._write_json( {
+         'gift_shops': [ gift_shop.to_dict() for gift_shop in gift_shops ],
+      } )
 
 
-   @classmethod
-   def get_gift_shops(
-         cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
-         include_closed_gift_shops: bool,
-         gift_shops_to_include: list[ str ] | None = None ) -> list[ GiftShop ]:
+   @staticmethod
+   def get_gift_shop_names( handler: JsonRequestHandler ) -> None:
+      gift_shops = GiftShopCoordinator.get_gift_shop_names()
 
-      context = resolve_gift_shop_context(
-         day=day,
-         month=month,
-         year=year )
-
-      return build_gift_shops(
-         gift_shop_records=fetch_gift_shop_records(
-            get_connection(),
-            month=context.normalized_month,
-            day=context.normalized_day ),
-         schedule_records=fetch_gift_shop_schedule_records( get_connection() ),
-         schedule_override_records=fetch_gift_shop_schedule_override_records(
-            get_connection() ),
-         context=context,
-         include_closed_gift_shops=include_closed_gift_shops,
-         gift_shops_to_include=gift_shops_to_include )
+      handler._write_json( {
+         'gift_shops': gift_shops,
+      } )
 
 
-   @classmethod
-   def get_gift_shops_matching_query(
-         cls,
-         query: str,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear ) -> list[ GiftShop ]:
+   @staticmethod
+   def set_gift_shop_closed( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
 
-      gift_shops = cls.get_gift_shops(
-         day=day,
-         month=month,
-         year=year,
-         include_closed_gift_shops=True )
+      gift_shop = data.get( 'giftShop' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+      message = data.get( 'message' )
 
-      return build_gift_shops_matching_query(
-         gift_shops,
-         query )
-
-
-   @classmethod
-   def set_gift_shop_as_closed(
-         cls,
-         gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         message: str ) -> bool:
-      schedule = build_gift_shop_closed_schedule(
+      success = GiftShopCoordinator.set_gift_shop_as_closed(
          gift_shop=gift_shop,
          start_date=start_date,
          end_date=end_date,
          message=message )
 
-      return save_gift_shop_opening_schedule(
-         get_connection(),
-         schedule=schedule )
+      response = {
+         'success': success,
+         'gift_shop': gift_shop,
+         'startDate': start_date,
+         'endDate': end_date,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = f'Could not set "{ gift_shop }" as closed.'
+
+      handler._write_json( response )
 
 
-   @classmethod
-   def set_gift_shop_closure_override(
-         cls,
-         gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         message: str ) -> bool:
-      override = build_gift_shop_closure_override(
+   @staticmethod
+   def set_gift_shop_closure_override( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      gift_shop = data.get( 'giftShop' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+      message = data.get( 'message' )
+
+      success = GiftShopCoordinator.set_gift_shop_closure_override(
          gift_shop=gift_shop,
          start_date=start_date,
          end_date=end_date,
          message=message )
 
-      return save_gift_shop_schedule_override(
-         get_connection(),
-         override=override )
+      response = {
+         'success': success,
+         'gift_shop': gift_shop,
+         'startDate': start_date,
+         'endDate': end_date,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = f'Could not create closure override for "{ gift_shop }".'
+
+      handler._write_json( response )
 
 
-   @classmethod
-   def set_gift_shop_opening_schedule(
-         cls,
-         gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         monday: bool,
-         tuesday: bool,
-         wednesday: bool,
-         thursday: bool,
-         friday: bool,
-         saturday: bool,
-         sunday: bool,
-         holidays_only: bool,
-         message: str ) -> bool:
-      schedule = build_gift_shop_opening_schedule(
+   @staticmethod
+   def set_gift_shop_opening_schedule( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      gift_shop = data.get( 'giftShop' )
+      schedule_start_date = data.get( 'scheduleStartDate' )
+      schedule_end_date = data.get( 'scheduleEndDate' )
+      monday = data.get( 'monday' )
+      tuesday = data.get( 'tuesday' )
+      wednesday = data.get( 'wednesday' )
+      thursday = data.get( 'thursday' )
+      friday = data.get( 'friday' )
+      saturday = data.get( 'saturday' )
+      sunday = data.get( 'sunday' )
+      holidays_only = data.get( 'holidaysOnly' )
+      message = data.get( 'message' )
+
+      success = GiftShopCoordinator.set_gift_shop_opening_schedule(
          gift_shop=gift_shop,
-         start_date=start_date,
-         end_date=end_date,
+         start_date=schedule_start_date,
+         end_date=schedule_end_date,
          monday=monday,
          tuesday=tuesday,
          wednesday=wednesday,
@@ -138,30 +121,50 @@ class GiftShopController():
          holidays_only=holidays_only,
          message=message )
 
-      return save_gift_shop_opening_schedule(
-         get_connection(),
-         schedule=schedule )
+      response = {
+         'success': success,
+         'gift_shop': gift_shop,
+         'scheduleStartDate': schedule_start_date,
+         'scheduleEndDate': schedule_end_date,
+         'monday': monday,
+         'tuesday': tuesday,
+         'wednesday': wednesday,
+         'thursday': thursday,
+         'friday': friday,
+         'saturday': saturday,
+         'sunday': sunday,
+         'holidaysOnly': holidays_only,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = f'Could not set opening schedule for "{ gift_shop }".'
+         response[ 'errorType' ] = 'overlappingSchedule'
+
+      handler._write_json( response )
 
 
-   @classmethod
-   def replace_gift_shop_opening_schedule_overlaps(
-         cls,
-         gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         monday: bool,
-         tuesday: bool,
-         wednesday: bool,
-         thursday: bool,
-         friday: bool,
-         saturday: bool,
-         sunday: bool,
-         holidays_only: bool,
-         message: str ) -> bool:
-      schedule = build_gift_shop_opening_schedule(
+   @staticmethod
+   def replace_gift_shop_opening_schedule_overlaps( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      gift_shop = data.get( 'giftShop' )
+      schedule_start_date = data.get( 'scheduleStartDate' )
+      schedule_end_date = data.get( 'scheduleEndDate' )
+      monday = data.get( 'monday' )
+      tuesday = data.get( 'tuesday' )
+      wednesday = data.get( 'wednesday' )
+      thursday = data.get( 'thursday' )
+      friday = data.get( 'friday' )
+      saturday = data.get( 'saturday' )
+      sunday = data.get( 'sunday' )
+      holidays_only = data.get( 'holidaysOnly' )
+      message = data.get( 'message' )
+
+      success = GiftShopCoordinator.replace_gift_shop_opening_schedule_overlaps(
          gift_shop=gift_shop,
-         start_date=start_date,
-         end_date=end_date,
+         start_date=schedule_start_date,
+         end_date=schedule_end_date,
          monday=monday,
          tuesday=tuesday,
          wednesday=wednesday,
@@ -172,30 +175,51 @@ class GiftShopController():
          holidays_only=holidays_only,
          message=message )
 
-      return save_gift_shop_opening_schedule_replacing_overlaps(
-         get_connection(),
-         schedule=schedule )
+      response = {
+         'success': success,
+         'gift_shop': gift_shop,
+         'scheduleStartDate': schedule_start_date,
+         'scheduleEndDate': schedule_end_date,
+         'monday': monday,
+         'tuesday': tuesday,
+         'wednesday': wednesday,
+         'thursday': thursday,
+         'friday': friday,
+         'saturday': saturday,
+         'sunday': sunday,
+         'holidaysOnly': holidays_only,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = (
+            f'Could not replace opening schedule overlaps for "{ gift_shop }".'
+         )
+
+      handler._write_json( response )
 
 
-   @classmethod
-   def trim_gift_shop_opening_schedule_overlaps(
-         cls,
-         gift_shop: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         monday: bool,
-         tuesday: bool,
-         wednesday: bool,
-         thursday: bool,
-         friday: bool,
-         saturday: bool,
-         sunday: bool,
-         holidays_only: bool,
-         message: str ) -> bool:
-      schedule = build_gift_shop_opening_schedule(
+   @staticmethod
+   def trim_gift_shop_opening_schedule_overlaps( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      gift_shop = data.get( 'giftShop' )
+      schedule_start_date = data.get( 'scheduleStartDate' )
+      schedule_end_date = data.get( 'scheduleEndDate' )
+      monday = data.get( 'monday' )
+      tuesday = data.get( 'tuesday' )
+      wednesday = data.get( 'wednesday' )
+      thursday = data.get( 'thursday' )
+      friday = data.get( 'friday' )
+      saturday = data.get( 'saturday' )
+      sunday = data.get( 'sunday' )
+      holidays_only = data.get( 'holidaysOnly' )
+      message = data.get( 'message' )
+
+      success = GiftShopCoordinator.trim_gift_shop_opening_schedule_overlaps(
          gift_shop=gift_shop,
-         start_date=start_date,
-         end_date=end_date,
+         start_date=schedule_start_date,
+         end_date=schedule_end_date,
          monday=monday,
          tuesday=tuesday,
          wednesday=wednesday,
@@ -206,6 +230,25 @@ class GiftShopController():
          holidays_only=holidays_only,
          message=message )
 
-      return save_gift_shop_opening_schedule_trimming_overlaps(
-         get_connection(),
-         schedule=schedule )
+      response = {
+         'success': success,
+         'gift_shop': gift_shop,
+         'scheduleStartDate': schedule_start_date,
+         'scheduleEndDate': schedule_end_date,
+         'monday': monday,
+         'tuesday': tuesday,
+         'wednesday': wednesday,
+         'thursday': thursday,
+         'friday': friday,
+         'saturday': saturday,
+         'sunday': sunday,
+         'holidaysOnly': holidays_only,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = (
+            f'Could not trim opening schedule overlaps for "{ gift_shop }".'
+         )
+
+      handler._write_json( response )

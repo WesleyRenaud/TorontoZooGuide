@@ -6,7 +6,7 @@ from datetime import date
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.controllers.attraction_controller import AttractionController
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
-from api.giftshops.controllers.gift_shop_controller import GiftShopController
+from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.guardians.controllers.guardians_controller import GuardiansController
 from api.models.animal import Animal
 from api.models.attraction import Attraction
@@ -85,7 +85,7 @@ def get_restaurant( db: DbControllers, name: str ) -> Restaurant:
 
 
 def get_gift_shop( db: DbControllers, name: str ) -> GiftShop:
-   gift_shops = GiftShopController.get_gift_shops(
+   gift_shops = GiftShopCoordinator.get_gift_shops(
       day=15,
       month='June',
       year=2026,
@@ -374,7 +374,7 @@ def test_set_gift_shop_closed_and_opening_schedule_changes_gift_shop_results(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert GiftShopController.set_gift_shop_as_closed( 'Zootique', '2026-06-01', '2026-06-30', '' )
+   assert GiftShopCoordinator.set_gift_shop_as_closed( 'Zootique', '2026-06-01', '2026-06-30', '' )
 
    gift_shop = get_gift_shop( db, 'Zootique' )
 
@@ -383,10 +383,10 @@ def test_set_gift_shop_closed_and_opening_schedule_changes_gift_shop_results(
    assert gift_shop.closed_message == 'The Zootique is temporarily closed.'
    assert all(
       item.name != 'Zootique'
-      for item in GiftShopController.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=False )
+      for item in GiftShopCoordinator.get_gift_shops( day=15, month='June', year=2026, include_closed_gift_shops=False )
    )
 
-   assert GiftShopController.set_gift_shop_opening_schedule(
+   assert GiftShopCoordinator.set_gift_shop_opening_schedule(
       gift_shop='Zootique',
       start_date='2026-06-01',
       end_date='',
