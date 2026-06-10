@@ -17,6 +17,7 @@ from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.guest_services.coordinators.guest_service_coordinator import GuestServiceCoordinator
+from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.logic.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.logic.itinerary_time_set_result import ItineraryTimeSetResult
 from api.itinerary.logic.suppress_itinerary_warning import SuppressItineraryWarningResult
@@ -362,6 +363,16 @@ class StubZooControllers:
       return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
 
+   def schedule_itinerary_item( self, **kwargs: Any ) -> ItinerarySaveResult:
+      self.calls.append( ( 'schedule_itinerary_item', kwargs ) )
+      return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
+
+
+   def bulk_schedule_animals( self, **kwargs: Any ) -> ItinerarySaveResult:
+      self.calls.append( ( 'bulk_schedule_animals', kwargs ) )
+      return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
+
+
    def get_itinerary_date( self ) -> str:
       self.calls.append( ( 'get_itinerary_date', {} ) )
       return '2026-06-15'
@@ -593,7 +604,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
       PicnicSiteCoordinator,
       EventSiteCoordinator,
       UpdateCoordinator,
-      server.ItineraryController,
+      ItineraryCoordinator,
       ZooHoursCoordinator,
    ]
 

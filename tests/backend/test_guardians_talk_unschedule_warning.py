@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from api.itinerary.controllers.itinerary_controller import ItineraryController
+from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_status import suppress_itinerary_status
 from api.shared.enums import ItineraryErrorType
@@ -55,7 +55,7 @@ def _set_itinerary_with_scheduled_animal(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -64,7 +64,7 @@ def _set_itinerary_with_scheduled_animal(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='10:00',
@@ -79,7 +79,7 @@ def test_set_itinerary_returns_warning_when_guardians_talk_would_unschedule_item
       db,
       freeze_database_today=freeze_database_today )
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -113,7 +113,7 @@ def test_set_itinerary_unschedules_overlapping_items_when_confirmed(
       db,
       freeze_database_today=freeze_database_today )
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -143,7 +143,7 @@ def test_schedule_guardians_talk_returns_warning_when_it_would_unschedule_items(
       db,
       freeze_database_today=freeze_database_today )
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='guardians_talks',
       key=GUARDIANS_TALK,
    )
@@ -172,7 +172,7 @@ def test_schedule_guardians_talk_unschedules_overlapping_items_when_confirmed(
       db,
       freeze_database_today=freeze_database_today )
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='guardians_talks',
       key=GUARDIANS_TALK,
       confirming_guardians_talk_unschedule=True,
@@ -205,7 +205,7 @@ def test_guardians_talk_unschedule_warning_cannot_be_suppressed(
       db.conn,
       ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS )
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],

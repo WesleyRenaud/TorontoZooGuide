@@ -1,4 +1,4 @@
-from api.itinerary.controllers.itinerary_controller import ItineraryController
+from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_itinerary_date
 from api.itinerary.logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from api.itinerary.logic.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
@@ -49,7 +49,7 @@ def test_arrival_time_is_valid_for_zoo_hours(
       db: DbControllers ) -> None:
    conn = db.conn
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -88,7 +88,7 @@ def test_departure_time_is_valid_for_zoo_hours(
       db: DbControllers ) -> None:
    conn = db.conn
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -120,7 +120,7 @@ def test_departure_time_is_valid_for_zoo_hours(
 
 def test_set_arrival_time_returns_validation_error_types(
       db: DbControllers ) -> None:
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -130,15 +130,15 @@ def test_set_arrival_time_returns_validation_error_types(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.set_arrival_time( '09:00' ).status == (
+   assert ItineraryCoordinator.set_arrival_time( '09:00' ).status == (
       ItineraryErrorType.TIME_OUT_OF_BOUNDS )
-   assert ItineraryController.set_arrival_time( '17:00' ).status == (
+   assert ItineraryCoordinator.set_arrival_time( '17:00' ).status == (
       ItineraryErrorType.TIME_ORDER_INVALID )
 
 
 def test_set_arrival_time_succeeds_when_departure_is_unset(
       db: DbControllers ) -> None:
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -147,18 +147,18 @@ def test_set_arrival_time_succeeds_when_departure_is_unset(
       guardians_talks=[],
       wild_encounters=[],
    ).success
-   assert ItineraryController.set_departure_time( None ).success
+   assert ItineraryCoordinator.set_departure_time( None ).success
 
-   assert ItineraryController.set_arrival_time( '10:15' ).success
+   assert ItineraryCoordinator.set_arrival_time( '10:15' ).success
 
-   itinerary = ItineraryController.get_itinerary()
+   itinerary = ItineraryCoordinator.get_itinerary()
    assert itinerary.arrival_time == '10:15'
    assert itinerary.departure_time is None
 
 
 def test_set_arrival_time_unschedules_items_before_arrival(
       db: DbControllers ) -> None:
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -177,17 +177,17 @@ def test_set_arrival_time_unschedules_items_before_arrival(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='10:00',
    ).success
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=CHEETAH_KEY,
       start_time='10:30',
    ).success
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
       start_time='10:10',
@@ -195,7 +195,7 @@ def test_set_arrival_time_unschedules_items_before_arrival(
 
    _set_wild_encounter_schedule( encounter_time='09:45' )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -221,8 +221,8 @@ def test_set_arrival_time_unschedules_items_before_arrival(
       confirming_wild_encounter_unschedule=True,
    ).success
 
-   result = ItineraryController.set_arrival_time( '10:15' )
-   itinerary = ItineraryController.get_itinerary()
+   result = ItineraryCoordinator.set_arrival_time( '10:15' )
+   itinerary = ItineraryCoordinator.get_itinerary()
 
    assert result.success
    assert result.itinerary is not None
@@ -245,7 +245,7 @@ def test_set_arrival_time_unschedules_items_before_arrival(
 
 def test_set_arrival_time_unschedules_generic_event_before_arrival(
       db: DbControllers ) -> None:
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -255,13 +255,13 @@ def test_set_arrival_time_unschedules_generic_event_before_arrival(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type=ItineraryEventType.LUNCH.value,
       key='',
    ).success
 
-   result = ItineraryController.set_arrival_time( '10:15' )
-   itinerary = ItineraryController.get_itinerary()
+   result = ItineraryCoordinator.set_arrival_time( '10:15' )
+   itinerary = ItineraryCoordinator.get_itinerary()
 
    assert result.success
    assert itinerary.events == []
@@ -269,7 +269,7 @@ def test_set_arrival_time_unschedules_generic_event_before_arrival(
 
 def test_set_departure_time_unschedules_items_after_departure(
       db: DbControllers ) -> None:
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -288,17 +288,17 @@ def test_set_departure_time_unschedules_items_after_departure(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='15:45',
    ).success
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=CHEETAH_KEY,
       start_time='16:30',
    ).success
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
       start_time='15:54',
@@ -306,7 +306,7 @@ def test_set_departure_time_unschedules_items_after_departure(
 
    _set_wild_encounter_schedule( encounter_time='16:30' )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -332,8 +332,8 @@ def test_set_departure_time_unschedules_items_after_departure(
       confirming_wild_encounter_unschedule=True,
    ).success
 
-   result = ItineraryController.set_departure_time( '16:15' )
-   itinerary = ItineraryController.get_itinerary()
+   result = ItineraryCoordinator.set_departure_time( '16:15' )
+   itinerary = ItineraryCoordinator.get_itinerary()
 
    assert result.success
    assert result.itinerary is not None
@@ -353,7 +353,7 @@ def test_set_departure_time_unschedules_items_after_departure(
 
 def test_set_departure_time_unschedules_generic_event_after_departure(
       db: DbControllers ) -> None:
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -363,14 +363,14 @@ def test_set_departure_time_unschedules_generic_event_after_departure(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type=ItineraryEventType.LUNCH.value,
       key='',
       start_time='16:00',
    ).success
 
-   result = ItineraryController.set_departure_time( '16:15' )
-   itinerary = ItineraryController.get_itinerary()
+   result = ItineraryCoordinator.set_departure_time( '16:15' )
+   itinerary = ItineraryCoordinator.get_itinerary()
 
    assert result.success
    assert itinerary.events == []
@@ -378,7 +378,7 @@ def test_set_departure_time_unschedules_generic_event_after_departure(
 
 def test_set_itinerary_rejects_invalid_departure_on_date_change_without_adjustment(
       db: DbControllers ) -> None:
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:30',
       departure_time='18:30',
@@ -389,7 +389,7 @@ def test_set_itinerary_rejects_invalid_departure_on_date_change_without_adjustme
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-22',
       arrival_time='09:30',
       departure_time='19:00',
@@ -402,14 +402,14 @@ def test_set_itinerary_rejects_invalid_departure_on_date_change_without_adjustme
    assert not result.success
    assert result.status == ItineraryErrorType.TIME_OUT_OF_BOUNDS
 
-   itinerary = ItineraryController.get_itinerary()
+   itinerary = ItineraryCoordinator.get_itinerary()
    assert itinerary.date == '2026-06-20'
    assert itinerary.departure_time == '18:30'
 
 
 def test_date_change_with_adjusted_arrival_unschedules_all_item_types_before_arrival(
       db: DbControllers ) -> None:
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:15',
       departure_time='17:00',
@@ -429,17 +429,17 @@ def test_date_change_with_adjusted_arrival_unschedules_all_item_types_before_arr
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='09:20',
    ).success
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=CHEETAH_KEY,
       start_time='10:30',
    ).success
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
       start_time='10:10',
@@ -447,7 +447,7 @@ def test_date_change_with_adjusted_arrival_unschedules_all_item_types_before_arr
 
    _set_wild_encounter_schedule( encounter_time='09:20' )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:15',
       departure_time='17:00',
@@ -474,12 +474,12 @@ def test_date_change_with_adjusted_arrival_unschedules_all_item_types_before_arr
       confirming_wild_encounter_unschedule=True,
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type=ItineraryEventType.LUNCH.value,
       key='',
    ).success
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-22',
       arrival_time='09:15',
       departure_time='17:00',
@@ -527,7 +527,7 @@ def test_date_change_with_adjusted_arrival_unschedules_all_item_types_before_arr
 
 def test_date_change_with_adjusted_departure_unschedules_all_item_types_after_departure(
       db: DbControllers ) -> None:
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:30',
       departure_time='18:30',
@@ -547,17 +547,17 @@ def test_date_change_with_adjusted_departure_unschedules_all_item_types_after_de
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='15:45',
    ).success
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
       start_time='15:54',
    ).success
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=CHEETAH_KEY,
       start_time='18:15',
@@ -565,7 +565,7 @@ def test_date_change_with_adjusted_departure_unschedules_all_item_types_after_de
 
    _set_wild_encounter_schedule( encounter_time='18:15' )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:30',
       departure_time='18:30',
@@ -591,7 +591,7 @@ def test_date_change_with_adjusted_departure_unschedules_all_item_types_after_de
       confirming_wild_encounter_unschedule=True,
    ).success
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-22',
       arrival_time='09:30',
       departure_time='18:30',
