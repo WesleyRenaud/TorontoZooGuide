@@ -1291,6 +1291,14 @@ enclosure_viewings =\
       41.967                  # Y coordinate on map
    ),
    (
+      'Grevy\'s Zebra',
+      'Africa Savanna',
+      'Outdoor',
+      None,                   # Seasonally off-display message
+      51.664,                  # X coordinate on map (Savanna Barn)
+      29.598                   # Y coordinate on map
+   ),
+   (
       'Marabou Stork',
       'Africa Savanna',
       'Outdoor',
@@ -1944,6 +1952,14 @@ enclosure_viewings =\
       None,                   # Seasonally off-display message
       53.679,                 # X coordinate on map
       84.485                  # Y coordinate on map
+   ),
+   (
+      'Greater One-Horned Rhinoceros',
+      'Indo-Malaya Outdoor',
+      'Outdoor',
+      '''The greater one-horned rhinoceros is most likely inside and off-display on this day due to cold weather.''',
+      52.485,                 # X coordinate on map
+      85.012                  # Y coordinate on map
    ),
    (
       'Greater One-Horned Rhinoceros',

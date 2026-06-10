@@ -1544,7 +1544,7 @@ enclosures =\
    (
       'Greater One-Horned Rhinoceros',
       'Indo-Malaya Outdoor',
-      'Year-round',                                # Seasonal viewing summary
+      'Outdoor: May-Oct, Indoor: Nov-Apr',         # Seasonal viewing summary
       None,                                        # Seasonal viewing information (for seasonal exhibits)
       7,                                           # Default itinerary duration (minutes)
    ),

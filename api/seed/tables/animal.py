@@ -6695,11 +6695,12 @@ animals = [
    (
       'Greater One-Horned Rhinoceros',
       'Rhinoceros Unicornis',
-      None,                                                          # Minimum temperature (only for animals with outdoor viewing)
+      10,                                                            # Minimum temperature (only for animals with outdoor viewing)
       '''The greater one-horned rhinoceros shares its indoor space with the babirusa. They rotate between the on-exhibit and
          off-exhibit spaces, and thus the rhino may not always be viewable. Your best chance of spotting him involves visiting the
          rhino house in the afternoon, and checking both sides of the indoor habitat.'''.replace( '\n', ' ' ),
-      None,                                                          # Seasonal viewing tips
+      '''Greater one-horned rhinoceroses are warm-weather animals and are only viewable outside during the warmer months of the year.
+         They can be reliably seen from May through October, and on other warm spring or fall days.'''.replace( '\n', ' ' ),
       '''The Greater One-Horned Rhinoceros is a massive, heavily armored herbivore, with adult males weighing 2,000–3,000 kg and
          females slightly smaller at 1,600–2,500 kg. Its most recognizable feature is a single black horn on the snout, which can
          reach 60–100 cm in length. The thick, gray skin forms large, folded plates, giving an appearance of natural armor. Short,
