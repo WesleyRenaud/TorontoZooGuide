@@ -16,6 +16,7 @@ from ..restaurants.routes import RESTAURANT_ROUTES
 from ..restrooms.routes import RESTROOM_ROUTES
 from ..updates.routes import UPDATE_ROUTES
 from ..wild_encounters.routes import WILD_ENCOUNTER_ROUTES
+from ..zoo_hours.routes import ZOO_HOURS_ROUTES
 from ..zoomobile.routes import ZOOMOBILE_ROUTES
 
 register_post_routes( ANIMAL_ROUTES )
@@ -34,6 +35,7 @@ register_post_routes( RESTAURANT_ROUTES )
 register_post_routes( RESTROOM_ROUTES )
 register_post_routes( UPDATE_ROUTES )
 register_post_routes( WILD_ENCOUNTER_ROUTES )
+register_post_routes( ZOO_HOURS_ROUTES )
 register_post_routes( ZOOMOBILE_ROUTES )
 
 __all__ = [

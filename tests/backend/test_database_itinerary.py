@@ -21,7 +21,7 @@ from api.models import WildEncounter
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from api.wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
-from api.zoo_hours.controllers.zoo_hours_controller import ZooHoursController
+from api.zoo_hours.coordinators.zoo_hours_coordinator import ZooHoursCoordinator
 from conftest import DbControllers
 
 
@@ -1091,7 +1091,7 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
 
 
 def test_get_zoo_hours_returns_seeded_operating_bounds( db: DbControllers ) -> None:
-   assert ZooHoursController.get_zoo_hours( day=20, month='June', year=2026 ).to_dict() == {
+   assert ZooHoursCoordinator.get_zoo_hours( day=20, month='June', year=2026 ).to_dict() == {
       'date': '2026-06-20',
       'earlyAdmissionTime': '09:00',
       'openTime': '09:30',
@@ -1099,7 +1099,7 @@ def test_get_zoo_hours_returns_seeded_operating_bounds( db: DbControllers ) -> N
       'closeTime': '19:00'
    }
 
-   assert ZooHoursController.get_zoo_hours( day=22, month='June', year=2026 ).to_dict() == {
+   assert ZooHoursCoordinator.get_zoo_hours( day=22, month='June', year=2026 ).to_dict() == {
       'date': '2026-06-22',
       'earlyAdmissionTime': None,
       'openTime': '09:30',
@@ -1107,7 +1107,7 @@ def test_get_zoo_hours_returns_seeded_operating_bounds( db: DbControllers ) -> N
       'closeTime': '18:00'
    }
 
-   assert ZooHoursController.get_zoo_hours( day=25, month='December', year=2026 ).to_dict() == {
+   assert ZooHoursCoordinator.get_zoo_hours( day=25, month='December', year=2026 ).to_dict() == {
       'date': '2026-12-25',
       'earlyAdmissionTime': None,
       'openTime': '11:00',
