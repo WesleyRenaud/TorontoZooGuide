@@ -29,7 +29,7 @@ from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_ove
 from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_records
 from api.restaurants.data_access.restaurant_schedule_record import RestaurantScheduleRecord
 from api.restaurants.logic.restaurant import get_active_restaurant_schedule_status
-from api.restrooms.controllers.restroom_controller import RestroomController
+from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from api.shared.enums import ScheduleStatus
 from api.types import Connection, Cursor
 from api.wild_encounters.controllers.wild_encounter_controller import WildEncounterController
@@ -152,7 +152,7 @@ def test_region_and_static_location_queries( db: DbControllers ) -> None:
    }
    restrooms = {
       restroom.title: restroom
-      for restroom in RestroomController.get_restrooms( day=15, month='June', year=2026 )
+      for restroom in RestroomCoordinator.get_restrooms( day=15, month='June', year=2026 )
    }
    drinking_fountains = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
 
@@ -403,28 +403,28 @@ def test_restroom_status_controls_open_and_closed_results(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert RestroomController.set_restroom_as_closed(
+   assert RestroomCoordinator.set_restroom_as_closed(
       restroom='Entrance Restroom',
       start_date='2026-06-01',
       end_date='2026-06-30',
       message='Closed for testing.'
    )
 
-   open_only = RestroomController.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=False )
-   with_closed = RestroomController.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=True )
+   open_only = RestroomCoordinator.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=False )
+   with_closed = RestroomCoordinator.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=True )
 
    assert all( restroom.title != 'Entrance Restroom' for restroom in open_only )
    restroom = next( item for item in with_closed if item.title == 'Entrance Restroom' )
    assert restroom.is_closed is True
    assert restroom.closed_message == 'Closed for testing.'
 
-   assert RestroomController.set_restroom_as_open(
+   assert RestroomCoordinator.set_restroom_as_open(
       restroom='Entrance Restroom',
       start_date='2026-06-15',
       end_date=None
    )
 
-   reopened = RestroomController.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=False )
+   reopened = RestroomCoordinator.get_restrooms( day=15, month='June', year=2026, include_closed_restrooms=False )
 
    assert any( restroom.title == 'Entrance Restroom' for restroom in reopened )
 
@@ -433,7 +433,7 @@ def test_restroom_alert_controls_guest_message(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert RestroomController.set_restroom_alert(
+   assert RestroomCoordinator.set_restroom_alert(
       restroom='Entrance Restroom',
       alert_start_date='2026-06-01',
       alert_end_date='2026-06-30',
@@ -441,17 +441,17 @@ def test_restroom_alert_controls_guest_message(
    )
 
    restroom = next(
-      item for item in RestroomController.get_restrooms( day=15, month='June', year=2026 )
+      item for item in RestroomCoordinator.get_restrooms( day=15, month='June', year=2026 )
       if item.title == 'Entrance Restroom'
    )
 
    assert restroom.has_alert is True
    assert restroom.alert_message == 'Women\'s restroom is temporarily unavailable.'
 
-   assert RestroomController.remove_restroom_alert( restroom='Entrance Restroom' )
+   assert RestroomCoordinator.remove_restroom_alert( restroom='Entrance Restroom' )
 
    restroom = next(
-      item for item in RestroomController.get_restrooms( day=15, month='June', year=2026 )
+      item for item in RestroomCoordinator.get_restrooms( day=15, month='June', year=2026 )
       if item.title == 'Entrance Restroom'
    )
 
@@ -464,13 +464,13 @@ def test_setting_restroom_alert_twice_updates_existing_alert(
       cursor: Cursor,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert RestroomController.set_restroom_alert(
+   assert RestroomCoordinator.set_restroom_alert(
       restroom='Entrance Restroom',
       alert_start_date='2026-06-01',
       alert_end_date='2026-06-30',
       message='Women\'s restroom is temporarily unavailable.'
    )
-   assert RestroomController.set_restroom_alert(
+   assert RestroomCoordinator.set_restroom_alert(
       restroom='Entrance Restroom',
       alert_start_date='2026-06-15',
       alert_end_date='2026-07-15',
@@ -488,7 +488,7 @@ def test_setting_restroom_alert_twice_updates_existing_alert(
       ( 'Entrance Restroom', )
    ).fetchall()
    restroom = next(
-      item for item in RestroomController.get_restrooms( day=15, month='June', year=2026 )
+      item for item in RestroomCoordinator.get_restrooms( day=15, month='June', year=2026 )
       if item.title == 'Entrance Restroom'
    )
 
