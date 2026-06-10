@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
-from api.attractions.controllers.attraction_controller import AttractionController
+from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.guardians.controllers.guardians_controller import GuardiansController
@@ -95,7 +95,7 @@ def get_gift_shop( db: DbControllers, name: str ) -> GiftShop:
 
 
 def get_attraction( db: DbControllers, name: str ) -> Attraction:
-   attractions = AttractionController.get_attractions(
+   attractions = AttractionCoordinator.get_attractions(
       day=15,
       month='June',
       year=2026,
@@ -412,7 +412,7 @@ def test_set_attraction_closed_and_opening_schedule_changes_attraction_results(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert AttractionController.set_attraction_as_closed( 'Conservation Carousel', '2026-06-01', '2026-06-30', '' )
+   assert AttractionCoordinator.set_attraction_as_closed( 'Conservation Carousel', '2026-06-01', '2026-06-30', '' )
 
    attraction = get_attraction( db, 'Conservation Carousel' )
 
@@ -421,10 +421,10 @@ def test_set_attraction_closed_and_opening_schedule_changes_attraction_results(
    assert attraction.closed_message == 'The Conservation Carousel is temporarily closed.'
    assert all(
       item.name != 'Conservation Carousel'
-      for item in AttractionController.get_attractions( day=15, month='June', year=2026, include_closed_attractions=False )
+      for item in AttractionCoordinator.get_attractions( day=15, month='June', year=2026, include_closed_attractions=False )
    )
 
-   assert AttractionController.set_attraction_opening_schedule(
+   assert AttractionCoordinator.set_attraction_opening_schedule(
       attraction='Conservation Carousel',
       start_date='2026-06-01',
       end_date='',

@@ -4,7 +4,7 @@ from dataclasses import replace
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...animals.logic.animals_matching_query import species_exhibit_key_from_values
-from ...attractions.controllers.attraction_controller import AttractionController
+from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.itinerary import fetch_itinerary_date
 from ..data_access.itinerary_animal_input import ItineraryAnimalInput
 from ..data_access.itinerary_save_input import ItinerarySaveInput
@@ -111,7 +111,7 @@ def set_itinerary(
       visit_date_temp: float | None = None,
       *,
       animal_coordinator: type[ AnimalCoordinator ],
-      attraction_controller: type[ AttractionController ],
+      attraction_coordinator: type[ AttractionCoordinator ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       overriding_conflicting_guardians_talks: bool = False,
@@ -136,7 +136,7 @@ def set_itinerary(
 
    controller_kwargs = itinerary_controller_kwargs(
       animal_coordinator=animal_coordinator,
-      attraction_controller=attraction_controller,
+      attraction_coordinator=attraction_coordinator,
       guardians_controller=guardians_controller,
       wild_encounter_controller=wild_encounter_controller,
       visit_date_temp=visit_date_temp )
@@ -158,7 +158,7 @@ def set_itinerary(
       save_input,
       old_visit_date=old_visit_date,
       animal_coordinator=animal_coordinator,
-      attraction_controller=attraction_controller,
+      attraction_coordinator=attraction_coordinator,
       guardians_controller=guardians_controller,
       wild_encounter_controller=wild_encounter_controller,
       visit_date_temp=visit_date_temp,
