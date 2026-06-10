@@ -13,7 +13,7 @@ from ..data_access.save_itinerary import save_validated_itinerary
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
 from .early_admission_warning import early_admission_warning_is_required
-from ...guardians.controllers.guardians_controller import GuardiansController
+from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from .itinerary import build_current_itinerary
 from .itinerary_adjustment import ItineraryAdjustment
@@ -53,13 +53,13 @@ def itinerary_controller_kwargs(
       *,
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
-      guardians_controller: type[ GuardiansController ],
+      guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None = None ) -> dict[ str, Any ]:
    return {
       'animal_coordinator': animal_coordinator,
       'attraction_coordinator': attraction_coordinator,
-      'guardians_controller': guardians_controller,
+      'guardians_coordinator': guardians_coordinator,
       'wild_encounter_controller': wild_encounter_controller,
       'visit_date_temp': visit_date_temp,
    }
@@ -133,7 +133,7 @@ def prepare_set_itinerary_context(
       old_visit_date: str | None,
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
-      guardians_controller: type[ GuardiansController ],
+      guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None,
       itinerary_controller_kwargs: dict[ str, Any ],
@@ -143,7 +143,7 @@ def prepare_set_itinerary_context(
       save_input,
       animal_coordinator,
       attraction_coordinator,
-      guardians_controller,
+      guardians_coordinator,
       wild_encounter_controller,
       new_visit_date_temp=visit_date_temp,
       old_visit_date=old_visit_date )

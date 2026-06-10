@@ -18,7 +18,7 @@ from ..data_access.schedule_itinerary_item import insert_itinerary_guardians_tal
 from ..data_access.schedule_itinerary_item import insert_itinerary_wild_encounter
 from ..data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ..data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
-from ...guardians.controllers.guardians_controller import GuardiansController
+from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .guardians_talk_unschedule_items import clear_saved_schedules_overlapping_guardians_talks
 from .guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
 from .guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
@@ -61,13 +61,13 @@ def _itinerary_controller_kwargs(
       *,
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
-      guardians_controller: type[ GuardiansController ],
+      guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None = None ) -> dict[ str, Any ]:
    return {
       'animal_coordinator': animal_coordinator,
       'attraction_coordinator': attraction_coordinator,
-      'guardians_controller': guardians_controller,
+      'guardians_coordinator': guardians_coordinator,
       'wild_encounter_controller': wild_encounter_controller,
       'visit_date_temp': visit_date_temp,
    }
@@ -456,8 +456,8 @@ def _saved_guardians_talk_exists(
 def _guardians_talk_diff_for_saved_itinerary_day(
       saved_itinerary: SavedItinerary,
       talk_name: str,
-      guardians_controller: type[ GuardiansController ] ) -> GuardiansTalkDiff:
-   talk = guardians_controller.get_guardians_talk_on_day_schedule(
+      guardians_coordinator: type[ GuardiansCoordinator ] ) -> GuardiansTalkDiff:
+   talk = guardians_coordinator.get_guardians_talk_on_day_schedule(
       month=saved_itinerary.month(),
       day=saved_itinerary.day(),
       year=saved_itinerary.year(),
@@ -524,7 +524,7 @@ def _schedule_guardians_talk_itinerary_item(
    guardians_talk_diff = _guardians_talk_diff_for_saved_itinerary_day(
       saved_itinerary,
       talk_name,
-      itinerary_controller_kwargs[ 'guardians_controller' ] )
+      itinerary_controller_kwargs[ 'guardians_coordinator' ] )
 
    has_overlap = saved_itinerary_has_overlap_with_guardians_talks(
       saved_itinerary,
@@ -670,7 +670,7 @@ def schedule_itinerary_item(
       duration_minutes: DurationInput = None,
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
-      guardians_controller: type[ GuardiansController ],
+      guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_controller: type[ WildEncounterController ],
       confirming_schedule_item_not_on_itinerary: bool,
       confirming_guardians_talk_unschedule: bool,
@@ -678,7 +678,7 @@ def schedule_itinerary_item(
    itinerary_controller_kwargs = _itinerary_controller_kwargs(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
-      guardians_controller=guardians_controller,
+      guardians_coordinator=guardians_coordinator,
       wild_encounter_controller=wild_encounter_controller )
 
    parsed = parse_schedule_item_request( item_type, key )

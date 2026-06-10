@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api.guardians.controllers.guardians_controller import GuardiansController
+from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_status import suppress_itinerary_status
@@ -33,7 +33,7 @@ def _guardians_talk_save_entry(
 def _set_guardians_talk_schedule(
       *,
       monday_time: str = '10:00' ) -> None:
-   assert GuardiansController.set_guardians_talk_schedule(
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
       talk=GUARDIANS_TALK,
       location='Africa Savanna',
       start_date='2026-06-01',

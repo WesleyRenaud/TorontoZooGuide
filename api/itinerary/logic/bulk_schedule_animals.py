@@ -8,7 +8,7 @@ from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ..data_access.itinerary_default_duration import fetch_enclosure_default_duration_seconds
 from ..data_access.schedule_itinerary_item import update_itinerary_animal_schedule
-from ...guardians.controllers.guardians_controller import GuardiansController
+from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .itinerary import build_current_itinerary
 from .itinerary_result_reason import ItineraryResultReason
 from .itinerary_save_result import ItinerarySaveResult
@@ -56,13 +56,13 @@ def bulk_schedule_animals(
       *,
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
-      guardians_controller: type[ GuardiansController ],
+      guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None = None ) -> ItinerarySaveResult:
    itinerary_controller_kwargs = _itinerary_controller_kwargs(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
-      guardians_controller=guardians_controller,
+      guardians_coordinator=guardians_coordinator,
       wild_encounter_controller=wild_encounter_controller,
       visit_date_temp=visit_date_temp )
 

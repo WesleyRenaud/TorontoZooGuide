@@ -6,7 +6,7 @@ from datetime import date
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.animals.logic.itinerary_animals import build_itinerary_animals
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from api.guardians.controllers.guardians_controller import GuardiansController
+from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.guardians.logic.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
 from api.itinerary.controllers.itinerary_controller import ItineraryController
 from api.itinerary.data_access.itinerary_animal_input import ItineraryAnimalInput
@@ -70,7 +70,7 @@ def test_set_get_and_clear_itinerary(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   GuardiansController.set_guardians_talk_schedule(
+   GuardiansCoordinator.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -131,7 +131,7 @@ def test_set_get_and_clear_itinerary(
       'IS_DELETED': 0
    }
 
-   assert GuardiansController.cancel_guardians_talk_occurrence(
+   assert GuardiansCoordinator.cancel_guardians_talk_occurrence(
       talk='African Lion',
       location='Africa Savanna',
       date='2026-06-15',
@@ -820,7 +820,7 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
 
 def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
       db: DbControllers ) -> None:
-   GuardiansController.set_guardians_talk_schedule(
+   GuardiansCoordinator.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -898,7 +898,7 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
 
 def test_set_itinerary_reports_partial_guardians_talk_encounter_overlap_without_trimming(
       db: DbControllers ) -> None:
-   GuardiansController.set_guardians_talk_schedule(
+   GuardiansCoordinator.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -954,7 +954,7 @@ def test_set_itinerary_reports_partial_guardians_talk_encounter_overlap_without_
 
 def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overlap(
       db: DbControllers ) -> None:
-   GuardiansController.set_guardians_talk_schedule(
+   GuardiansCoordinator.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -1018,7 +1018,7 @@ def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overl
 
 def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
       db: DbControllers ) -> None:
-   GuardiansController.set_guardians_talk_schedule(
+   GuardiansCoordinator.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -1637,7 +1637,7 @@ def test_itinerary_filter_helpers_return_empty_without_filters( db: DbController
       year=2026,
       saved_attractions=[],
    ) == []
-   assert GuardiansController.get_guardians_talk_details(
+   assert GuardiansCoordinator.get_guardians_talk_details(
       guardians_talks_to_include=[]
    ) == []
    assert WildEncounterController.get_wild_encounter_details(
@@ -1649,7 +1649,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert GuardiansController.set_guardians_talk_schedule(
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
       start_date='2026-06-01',
@@ -1663,7 +1663,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
       sunday_time=None,
       message=None
    )
-   assert GuardiansController.set_guardians_talk_schedule(
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
       talk='Amur Tiger',
       location='Eurasia Wilds',
       start_date='2026-06-01',
@@ -1711,7 +1711,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
          ItineraryGuardiansTalkInput( name=' african lion ' ),
          ItineraryGuardiansTalkInput( name='AMUR TIGER' ),
       ],
-      GuardiansController.get_guardians_talk_schedule(
+      GuardiansCoordinator.get_guardians_talk_schedule(
          month='June',
          day=15,
          year=2026 )

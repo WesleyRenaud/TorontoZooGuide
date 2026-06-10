@@ -15,6 +15,7 @@ from api.emergency_intercoms.coordinators.emergency_intercom_coordinator import 
 from api.event_sites.coordinators.event_site_coordinator import EventSiteCoordinator
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
+from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.guest_services.coordinators.guest_service_coordinator import GuestServiceCoordinator
 from api.itinerary.logic.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.logic.itinerary_time_set_result import ItineraryTimeSetResult
@@ -581,7 +582,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
       GiftShopCoordinator,
       AttractionCoordinator,
       ZoomobileCoordinator,
-      server.GuardiansController,
+      GuardiansCoordinator,
       server.WildEncounterController,
       DrinkingFountainCoordinator,
       DefibrillatorCoordinator,
