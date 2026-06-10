@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+pytest_plugins = [ 'http_support' ]
+
 from collections.abc import Callable, Generator, Mapping
 from datetime import date, datetime, tzinfo
 from io import BytesIO
