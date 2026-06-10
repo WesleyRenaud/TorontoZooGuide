@@ -5,7 +5,7 @@ from dataclasses import replace
 from typing import Any
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
-from ...attractions.controllers.attraction_controller import AttractionController
+from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.clear_itinerary import clear_itinerary
 from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_save_input import ItinerarySaveInput
@@ -52,13 +52,13 @@ class SetItineraryContext:
 def itinerary_controller_kwargs(
       *,
       animal_coordinator: type[ AnimalCoordinator ],
-      attraction_controller: type[ AttractionController ],
+      attraction_coordinator: type[ AttractionCoordinator ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None = None ) -> dict[ str, Any ]:
    return {
       'animal_coordinator': animal_coordinator,
-      'attraction_controller': attraction_controller,
+      'attraction_coordinator': attraction_coordinator,
       'guardians_controller': guardians_controller,
       'wild_encounter_controller': wild_encounter_controller,
       'visit_date_temp': visit_date_temp,
@@ -132,7 +132,7 @@ def prepare_set_itinerary_context(
       *,
       old_visit_date: str | None,
       animal_coordinator: type[ AnimalCoordinator ],
-      attraction_controller: type[ AttractionController ],
+      attraction_coordinator: type[ AttractionCoordinator ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None,
@@ -142,7 +142,7 @@ def prepare_set_itinerary_context(
       conn,
       save_input,
       animal_coordinator,
-      attraction_controller,
+      attraction_coordinator,
       guardians_controller,
       wild_encounter_controller,
       new_visit_date_temp=visit_date_temp,

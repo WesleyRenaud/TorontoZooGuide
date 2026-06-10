@@ -15,7 +15,7 @@ from urllib.parse import unquote, urlparse
 
 from . import connection
 from .animals.coordinators.animal_coordinator import AnimalCoordinator
-from .attractions.controllers.attraction_controller import AttractionController
+from .attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .defibrillators.controllers.defibrillator_controller import DefibrillatorController
 from .drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
 from .emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
@@ -181,25 +181,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          route( self )
          return
 
-      if self.path == '/get-attractions':
-         data = self._read_json_body()
-
-         month = data.get( 'month' )
-         day = data.get( 'day' )
-         year = data.get( 'year' )
-         include_closed_attractions = data.get( 'includeClosedAttractions' ) or False
-
-         attractions = AttractionController.get_attractions(
-            day=day,
-            month=month,
-            year=year,
-            include_closed_attractions=include_closed_attractions )
-
-         response = { "attractions": [ attraction.to_dict() for attraction in attractions ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-zoomobile-route':
+      if self.path == '/get-zoomobile-route':
          data = self._read_json_body()
 
          route = data.get( 'zoomobileRoute' )
@@ -419,7 +401,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             attractions_json = [
                to_dict_with_type( attraction, 'attraction' )
                for attraction in (
-                  AttractionController.get_attractions_matching_query(
+                  AttractionCoordinator.get_attractions_matching_query(
                      query=query,
                      day=day,
                      month=month,
@@ -747,13 +729,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          self._write_json( response )
 
 
-      elif self.path == '/get-attraction-names':
-         attractions = AttractionController.get_attraction_names()
-
-         response = { "attractions": attractions }
-         self._write_json( response )
-
-
       elif self.path == '/get-zoomobile-station-names':
          zoomobile_stations = ZoomobileController.get_zoomobile_station_names()
 
@@ -916,225 +891,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = 'Could not edit update.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-attraction-closed':
-         data = self._read_json_body()
-
-         attraction = data.get( 'attraction' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-         message = data.get( 'message' )
-
-         success = AttractionController.set_attraction_as_closed(
-            attraction=attraction,
-            start_date=start_date,
-            end_date=end_date,
-            message=message )
-
-         response = {
-            'success': success,
-            'attraction': attraction,
-            'startDate': start_date,
-            'endDate': end_date,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set "{ attraction }" as closed.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-attraction-closure-override':
-         data = self._read_json_body()
-
-         attraction = data.get( 'attraction' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-         message = data.get( 'message' )
-
-         success = AttractionController.set_attraction_closure_override(
-            attraction=attraction,
-            start_date=start_date,
-            end_date=end_date,
-            message=message )
-
-         response = {
-            'success': success,
-            'attraction': attraction,
-            'startDate': start_date,
-            'endDate': end_date,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not create closure override for "{ attraction }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-attraction-opening-schedule':
-         data = self._read_json_body()
-
-         attraction = data.get( 'attraction' )
-         schedule_start_date = data.get( 'scheduleStartDate' )
-         schedule_end_date = data.get( 'scheduleEndDate' )
-
-         monday = data.get( 'monday' )
-         tuesday = data.get( 'tuesday' )
-         wednesday = data.get( 'wednesday' )
-         thursday = data.get( 'thursday' )
-         friday = data.get( 'friday' )
-         saturday = data.get( 'saturday' )
-         sunday = data.get( 'sunday' )
-         holidays_only = data.get( 'holidaysOnly' )
-
-         message = data.get( 'message' )
-
-         success = AttractionController.set_attraction_opening_schedule(
-            attraction=attraction,
-            start_date=schedule_start_date,
-            end_date=schedule_end_date,
-            monday=monday,
-            tuesday=tuesday,
-            wednesday=wednesday,
-            thursday=thursday,
-            friday=friday,
-            saturday=saturday,
-            sunday=sunday,
-            holidays_only=holidays_only,
-            message=message )
-
-         response = {
-            'success': success,
-            'attraction': attraction,
-            'scheduleStartDate': schedule_start_date,
-            'scheduleEndDate': schedule_end_date,
-            'monday': monday,
-            'tuesday': tuesday,
-            'wednesday': wednesday,
-            'thursday': thursday,
-            'friday': friday,
-            'saturday': saturday,
-            'sunday': sunday,
-            'holidaysOnly': holidays_only,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set opening schedule for "{ attraction }".'
-            response[ 'errorType' ] = 'overlappingSchedule'
-
-         self._write_json( response )
-
-
-      elif self.path == '/replace-attraction-opening-schedule-overlaps':
-         data = self._read_json_body()
-
-         attraction = data.get( 'attraction' )
-         schedule_start_date = data.get( 'scheduleStartDate' )
-         schedule_end_date = data.get( 'scheduleEndDate' )
-
-         monday = data.get( 'monday' )
-         tuesday = data.get( 'tuesday' )
-         wednesday = data.get( 'wednesday' )
-         thursday = data.get( 'thursday' )
-         friday = data.get( 'friday' )
-         saturday = data.get( 'saturday' )
-         sunday = data.get( 'sunday' )
-         holidays_only = data.get( 'holidaysOnly' )
-
-         message = data.get( 'message' )
-
-         success = AttractionController.replace_attraction_opening_schedule_overlaps(
-            attraction=attraction,
-            start_date=schedule_start_date,
-            end_date=schedule_end_date,
-            monday=monday,
-            tuesday=tuesday,
-            wednesday=wednesday,
-            thursday=thursday,
-            friday=friday,
-            saturday=saturday,
-            sunday=sunday,
-            holidays_only=holidays_only,
-            message=message )
-
-         response = {
-            'success': success,
-            'attraction': attraction,
-            'scheduleStartDate': schedule_start_date,
-            'scheduleEndDate': schedule_end_date,
-            'monday': monday,
-            'tuesday': tuesday,
-            'wednesday': wednesday,
-            'thursday': thursday,
-            'friday': friday,
-            'saturday': saturday,
-            'sunday': sunday,
-            'holidaysOnly': holidays_only,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not replace opening schedule overlaps for "{ attraction }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/trim-attraction-opening-schedule-overlaps':
-         data = self._read_json_body()
-
-         attraction = data.get( 'attraction' )
-         schedule_start_date = data.get( 'scheduleStartDate' )
-         schedule_end_date = data.get( 'scheduleEndDate' )
-
-         monday = data.get( 'monday' )
-         tuesday = data.get( 'tuesday' )
-         wednesday = data.get( 'wednesday' )
-         thursday = data.get( 'thursday' )
-         friday = data.get( 'friday' )
-         saturday = data.get( 'saturday' )
-         sunday = data.get( 'sunday' )
-         holidays_only = data.get( 'holidaysOnly' )
-
-         message = data.get( 'message' )
-
-         success = AttractionController.trim_attraction_opening_schedule_overlaps(
-            attraction=attraction,
-            start_date=schedule_start_date,
-            end_date=schedule_end_date,
-            monday=monday,
-            tuesday=tuesday,
-            wednesday=wednesday,
-            thursday=thursday,
-            friday=friday,
-            saturday=saturday,
-            sunday=sunday,
-            holidays_only=holidays_only,
-            message=message )
-
-         response = {
-            'success': success,
-            'attraction': attraction,
-            'scheduleStartDate': schedule_start_date,
-            'scheduleEndDate': schedule_end_date,
-            'monday': monday,
-            'tuesday': tuesday,
-            'wednesday': wednesday,
-            'thursday': thursday,
-            'friday': friday,
-            'saturday': saturday,
-            'sunday': sunday,
-            'holidaysOnly': holidays_only,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not trim opening schedule overlaps for "{ attraction }".'
 
          self._write_json( response )
 

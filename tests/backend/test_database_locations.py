@@ -5,7 +5,7 @@ from datetime import date
 
 import pytest
 
-from api.attractions.controllers.attraction_controller import AttractionController
+from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.attractions.data_access.attraction import fetch_attraction_schedule_override_records
 from api.attractions.data_access.attraction import fetch_attraction_schedule_records
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
@@ -55,7 +55,7 @@ def apply_amenity_opening_schedule(
       return GiftShopCoordinator.set_gift_shop_opening_schedule( **schedule )
 
    if setter_name == 'set_attraction_opening_schedule':
-      return AttractionController.set_attraction_opening_schedule( **schedule )
+      return AttractionCoordinator.set_attraction_opening_schedule( **schedule )
 
    raise AssertionError( setter_name )
 
@@ -506,7 +506,7 @@ def test_attraction_schedule_controls_open_and_closed_results(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert AttractionController.set_attraction_opening_schedule(
+   assert AttractionCoordinator.set_attraction_opening_schedule(
       attraction='Conservation Carousel',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -521,8 +521,8 @@ def test_attraction_schedule_controls_open_and_closed_results(
       message='Closed for testing.'
    )
 
-   open_only = AttractionController.get_attractions( day=15, month='June', year=2026, include_closed_attractions=False )
-   with_closed = AttractionController.get_attractions( day=15, month='June', year=2026, include_closed_attractions=True )
+   open_only = AttractionCoordinator.get_attractions( day=15, month='June', year=2026, include_closed_attractions=False )
+   with_closed = AttractionCoordinator.get_attractions( day=15, month='June', year=2026, include_closed_attractions=True )
 
    assert all( attraction.name != 'Conservation Carousel' for attraction in open_only )
    attraction = next( item for item in with_closed if item.name == 'Conservation Carousel' )
@@ -531,7 +531,7 @@ def test_attraction_schedule_controls_open_and_closed_results(
 
 
 def test_attraction_opening_schedule_rejects_overlapping_date_ranges( db: DbControllers ) -> None:
-   assert AttractionController.set_attraction_opening_schedule(
+   assert AttractionCoordinator.set_attraction_opening_schedule(
       attraction='Conservation Carousel',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -546,7 +546,7 @@ def test_attraction_opening_schedule_rejects_overlapping_date_ranges( db: DbCont
       message='June schedule.'
    )
 
-   assert AttractionController.set_attraction_opening_schedule(
+   assert AttractionCoordinator.set_attraction_opening_schedule(
       attraction='Conservation Carousel',
       start_date='2026-06-15',
       end_date='2026-07-15',
@@ -561,7 +561,7 @@ def test_attraction_opening_schedule_rejects_overlapping_date_ranges( db: DbCont
       message='Overlapping schedule.'
    ) is False
 
-   assert AttractionController.set_attraction_opening_schedule(
+   assert AttractionCoordinator.set_attraction_opening_schedule(
       attraction='Conservation Carousel',
       start_date='2026-07-01',
       end_date='2026-07-31',
@@ -647,7 +647,7 @@ def test_restaurant_and_gift_shop_opening_schedules_reject_overlapping_date_rang
          'gift_shop'
       ),
       (
-         AttractionController,
+         AttractionCoordinator,
          'attraction',
          'Conservation Carousel',
          fetch_attraction_schedule_records,
@@ -732,7 +732,7 @@ def test_opening_schedule_can_replace_overlapping_schedules(
          'gift_shop'
       ),
       (
-         AttractionController,
+         AttractionCoordinator,
          'attraction',
          'Conservation Carousel',
          fetch_attraction_schedule_records,
@@ -812,7 +812,7 @@ def test_opening_schedule_can_trim_existing_schedule_around_new_schedule(
 
 
 def test_attraction_closure_override_takes_precedence_over_opening_schedule( db: DbControllers ) -> None:
-   assert AttractionController.set_attraction_opening_schedule(
+   assert AttractionCoordinator.set_attraction_opening_schedule(
       attraction='Conservation Carousel',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -827,7 +827,7 @@ def test_attraction_closure_override_takes_precedence_over_opening_schedule( db:
       message='Open for June.'
    )
 
-   assert AttractionController.set_attraction_closure_override(
+   assert AttractionCoordinator.set_attraction_closure_override(
       attraction='Conservation Carousel',
       start_date='2026-06-20',
       end_date='2026-06-21',
@@ -856,7 +856,7 @@ def test_attraction_closure_override_takes_precedence_over_opening_schedule( db:
    ]
 
    closed_attraction = next(
-      attraction for attraction in AttractionController.get_attractions(
+      attraction for attraction in AttractionCoordinator.get_attractions(
          day=20,
          month='June',
          year=2026,
@@ -864,7 +864,7 @@ def test_attraction_closure_override_takes_precedence_over_opening_schedule( db:
       if attraction.name == 'Conservation Carousel'
    )
    open_attraction = next(
-      attraction for attraction in AttractionController.get_attractions(
+      attraction for attraction in AttractionCoordinator.get_attractions(
          day=22,
          month='June',
          year=2026,
@@ -1436,7 +1436,7 @@ def test_search_helpers_filter_case_insensitively( db: DbControllers ) -> None:
 
    assert [
       attraction.name
-      for attraction in AttractionController.get_attractions_matching_query( 'CAROUSEL', 15, 'June', 2026, True )
+      for attraction in AttractionCoordinator.get_attractions_matching_query( 'CAROUSEL', 15, 'June', 2026, True )
    ] == [ 'Conservation Carousel' ]
 
    assert [

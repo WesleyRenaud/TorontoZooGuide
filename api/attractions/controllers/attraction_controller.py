@@ -1,167 +1,115 @@
 from __future__ import annotations
 
-from datetime import date
-
-from ..data_access.attraction import fetch_attraction_names
-from ..data_access.attraction import fetch_attraction_record_for_calendar_day
-from ..data_access.attraction import fetch_attraction_records
-from ..data_access.attraction import fetch_attraction_schedule_override_records
-from ..data_access.attraction import fetch_attraction_schedule_records
-from ..data_access.attraction_schedule import save_attraction_opening_schedule
-from ..data_access.attraction_schedule import save_attraction_schedule_override
-from ...itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
-from ..logic.attraction import build_attractions
-from ..logic.attraction import get_attraction_likelihood_and_message_for_date
-from ..logic.attraction import resolve_attraction_context
-from ..logic.attraction_schedule_conflict_resolution import save_attraction_opening_schedule_replacing_overlaps
-from ..logic.attraction_schedule_conflict_resolution import save_attraction_opening_schedule_trimming_overlaps
-from ..logic.attraction_status import build_attraction_closed_schedule
-from ..logic.attraction_status import build_attraction_closure_override
-from ..logic.attraction_status import build_attraction_opening_schedule
-from ..logic.attractions_matching_query import build_attractions_matching_query
-from ..logic.itinerary_attractions import build_itinerary_attractions
-from ...models import Attraction
-from ...request_connection import get_connection
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
+from ..coordinators.attraction_coordinator import AttractionCoordinator
+from ...json_handler import JsonRequestHandler
 
 
 class AttractionController():
 
 
-   @classmethod
-   def get_attraction_names( cls ) -> list[ str ]:
-      return fetch_attraction_names( get_connection() )
+   @staticmethod
+   def get_attractions( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      attractions = AttractionCoordinator.get_attractions(
+         day=data.get( 'day' ),
+         month=data.get( 'month' ),
+         year=data.get( 'year' ),
+         include_closed_attractions=data.get( 'includeClosedAttractions' ) or False )
+
+      handler._write_json( {
+         'attractions': [ attraction.to_dict() for attraction in attractions ],
+      } )
 
 
-   @classmethod
-   def get_attractions(
-         cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
-         include_closed_attractions: bool = False ) -> list[ Attraction ]:
+   @staticmethod
+   def get_attraction_names( handler: JsonRequestHandler ) -> None:
+      attractions = AttractionCoordinator.get_attraction_names()
 
-      context = resolve_attraction_context(
-         day=day,
-         month=month,
-         year=year )
-
-      return build_attractions(
-         attraction_records=fetch_attraction_records(
-            get_connection(),
-            month=context.normalized_month,
-            day=context.normalized_day ),
-         schedule_records=fetch_attraction_schedule_records( get_connection() ),
-         schedule_override_records=fetch_attraction_schedule_override_records(
-            get_connection() ),
-         context=context,
-         include_closed_attractions=include_closed_attractions )
+      handler._write_json( {
+         'attractions': attractions,
+      } )
 
 
-   @classmethod
-   def get_attractions_for_saved_itinerary(
-         cls,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
-         saved_attractions: list[ ItineraryAttractionRecord ] ) -> list[ Attraction ]:
+   @staticmethod
+   def set_attraction_closed( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
 
-      if not saved_attractions:
-         return []
+      attraction = data.get( 'attraction' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+      message = data.get( 'message' )
 
-      attractions = cls.get_attractions(
-         day=day,
-         month=month,
-         year=year,
-         include_closed_attractions=True )
-
-      return build_itinerary_attractions(
-         attractions,
-         saved_attractions )
-
-
-   @classmethod
-   def get_attractions_matching_query(
-         cls,
-         query: str,
-         day: VisitDay,
-         month: MonthInput,
-         year: VisitYear,
-         include_closed_attractions: bool ) -> list[ Attraction ]:
-
-      attractions = cls.get_attractions(
-         day=day,
-         month=month,
-         year=year,
-         include_closed_attractions=include_closed_attractions )
-
-      return build_attractions_matching_query(
-         attractions,
-         query )
-
-
-   @classmethod
-   def get_attraction_likelihood_for_visit_date(
-         cls,
-         visit_date: date,
-         attraction_name: str ) -> int | None:
-
-      attraction_record = fetch_attraction_record_for_calendar_day(
-         get_connection(),
-         attraction_name=attraction_name,
-         month=visit_date.month,
-         day=visit_date.day )
-
-      if attraction_record == None:
-         return None
-
-      likelihood, _ = get_attraction_likelihood_and_message_for_date(
-         attraction_record=attraction_record,
-         schedule_records=fetch_attraction_schedule_records( get_connection() ),
-         schedule_override_records=fetch_attraction_schedule_override_records(
-            get_connection() ),
-         target_date=visit_date )
-
-      return likelihood
-
-
-   @classmethod
-   def set_attraction_as_closed(
-         cls,
-         attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         message: str ) -> bool:
-      schedule = build_attraction_closed_schedule(
+      success = AttractionCoordinator.set_attraction_as_closed(
          attraction=attraction,
          start_date=start_date,
          end_date=end_date,
          message=message )
 
-      return save_attraction_opening_schedule(
-         get_connection(),
-         schedule=schedule )
+      response = {
+         'success': success,
+         'attraction': attraction,
+         'startDate': start_date,
+         'endDate': end_date,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = f'Could not set "{ attraction }" as closed.'
+
+      handler._write_json( response )
 
 
-   @classmethod
-   def replace_attraction_opening_schedule_overlaps(
-         cls,
-         attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         monday: bool,
-         tuesday: bool,
-         wednesday: bool,
-         thursday: bool,
-         friday: bool,
-         saturday: bool,
-         sunday: bool,
-         holidays_only: bool,
-         message: str ) -> bool:
-      schedule = build_attraction_opening_schedule(
+   @staticmethod
+   def set_attraction_closure_override( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      attraction = data.get( 'attraction' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+      message = data.get( 'message' )
+
+      success = AttractionCoordinator.set_attraction_closure_override(
          attraction=attraction,
          start_date=start_date,
          end_date=end_date,
+         message=message )
+
+      response = {
+         'success': success,
+         'attraction': attraction,
+         'startDate': start_date,
+         'endDate': end_date,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = f'Could not create closure override for "{ attraction }".'
+
+      handler._write_json( response )
+
+
+   @staticmethod
+   def set_attraction_opening_schedule( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      attraction = data.get( 'attraction' )
+      schedule_start_date = data.get( 'scheduleStartDate' )
+      schedule_end_date = data.get( 'scheduleEndDate' )
+      monday = data.get( 'monday' )
+      tuesday = data.get( 'tuesday' )
+      wednesday = data.get( 'wednesday' )
+      thursday = data.get( 'thursday' )
+      friday = data.get( 'friday' )
+      saturday = data.get( 'saturday' )
+      sunday = data.get( 'sunday' )
+      holidays_only = data.get( 'holidaysOnly' )
+      message = data.get( 'message' )
+
+      success = AttractionCoordinator.set_attraction_opening_schedule(
+         attraction=attraction,
+         start_date=schedule_start_date,
+         end_date=schedule_end_date,
          monday=monday,
          tuesday=tuesday,
          wednesday=wednesday,
@@ -172,30 +120,50 @@ class AttractionController():
          holidays_only=holidays_only,
          message=message )
 
-      return save_attraction_opening_schedule_replacing_overlaps(
-         get_connection(),
-         schedule=schedule )
+      response = {
+         'success': success,
+         'attraction': attraction,
+         'scheduleStartDate': schedule_start_date,
+         'scheduleEndDate': schedule_end_date,
+         'monday': monday,
+         'tuesday': tuesday,
+         'wednesday': wednesday,
+         'thursday': thursday,
+         'friday': friday,
+         'saturday': saturday,
+         'sunday': sunday,
+         'holidaysOnly': holidays_only,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = f'Could not set opening schedule for "{ attraction }".'
+         response[ 'errorType' ] = 'overlappingSchedule'
+
+      handler._write_json( response )
 
 
-   @classmethod
-   def trim_attraction_opening_schedule_overlaps(
-         cls,
-         attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         monday: bool,
-         tuesday: bool,
-         wednesday: bool,
-         thursday: bool,
-         friday: bool,
-         saturday: bool,
-         sunday: bool,
-         holidays_only: bool,
-         message: str ) -> bool:
-      schedule = build_attraction_opening_schedule(
+   @staticmethod
+   def replace_attraction_opening_schedule_overlaps( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      attraction = data.get( 'attraction' )
+      schedule_start_date = data.get( 'scheduleStartDate' )
+      schedule_end_date = data.get( 'scheduleEndDate' )
+      monday = data.get( 'monday' )
+      tuesday = data.get( 'tuesday' )
+      wednesday = data.get( 'wednesday' )
+      thursday = data.get( 'thursday' )
+      friday = data.get( 'friday' )
+      saturday = data.get( 'saturday' )
+      sunday = data.get( 'sunday' )
+      holidays_only = data.get( 'holidaysOnly' )
+      message = data.get( 'message' )
+
+      success = AttractionCoordinator.replace_attraction_opening_schedule_overlaps(
          attraction=attraction,
-         start_date=start_date,
-         end_date=end_date,
+         start_date=schedule_start_date,
+         end_date=schedule_end_date,
          monday=monday,
          tuesday=tuesday,
          wednesday=wednesday,
@@ -206,48 +174,51 @@ class AttractionController():
          holidays_only=holidays_only,
          message=message )
 
-      return save_attraction_opening_schedule_trimming_overlaps(
-         get_connection(),
-         schedule=schedule )
+      response = {
+         'success': success,
+         'attraction': attraction,
+         'scheduleStartDate': schedule_start_date,
+         'scheduleEndDate': schedule_end_date,
+         'monday': monday,
+         'tuesday': tuesday,
+         'wednesday': wednesday,
+         'thursday': thursday,
+         'friday': friday,
+         'saturday': saturday,
+         'sunday': sunday,
+         'holidaysOnly': holidays_only,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = (
+            f'Could not replace opening schedule overlaps for "{ attraction }".'
+         )
+
+      handler._write_json( response )
 
 
-   @classmethod
-   def set_attraction_closure_override(
-         cls,
-         attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         message: str ) -> bool:
-      override = build_attraction_closure_override(
+   @staticmethod
+   def trim_attraction_opening_schedule_overlaps( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      attraction = data.get( 'attraction' )
+      schedule_start_date = data.get( 'scheduleStartDate' )
+      schedule_end_date = data.get( 'scheduleEndDate' )
+      monday = data.get( 'monday' )
+      tuesday = data.get( 'tuesday' )
+      wednesday = data.get( 'wednesday' )
+      thursday = data.get( 'thursday' )
+      friday = data.get( 'friday' )
+      saturday = data.get( 'saturday' )
+      sunday = data.get( 'sunday' )
+      holidays_only = data.get( 'holidaysOnly' )
+      message = data.get( 'message' )
+
+      success = AttractionCoordinator.trim_attraction_opening_schedule_overlaps(
          attraction=attraction,
-         start_date=start_date,
-         end_date=end_date,
-         message=message )
-
-      return save_attraction_schedule_override(
-         get_connection(),
-         override=override )
-
-
-   @classmethod
-   def set_attraction_opening_schedule(
-         cls,
-         attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         monday: bool,
-         tuesday: bool,
-         wednesday: bool,
-         thursday: bool,
-         friday: bool,
-         saturday: bool,
-         sunday: bool,
-         holidays_only: bool,
-         message: str ) -> bool:
-      schedule = build_attraction_opening_schedule(
-         attraction=attraction,
-         start_date=start_date,
-         end_date=end_date,
+         start_date=schedule_start_date,
+         end_date=schedule_end_date,
          monday=monday,
          tuesday=tuesday,
          wednesday=wednesday,
@@ -258,6 +229,25 @@ class AttractionController():
          holidays_only=holidays_only,
          message=message )
 
-      return save_attraction_opening_schedule(
-         get_connection(),
-         schedule=schedule )
+      response = {
+         'success': success,
+         'attraction': attraction,
+         'scheduleStartDate': schedule_start_date,
+         'scheduleEndDate': schedule_end_date,
+         'monday': monday,
+         'tuesday': tuesday,
+         'wednesday': wednesday,
+         'thursday': thursday,
+         'friday': friday,
+         'saturday': saturday,
+         'sunday': sunday,
+         'holidaysOnly': holidays_only,
+         'message': message,
+      }
+
+      if not success:
+         response[ 'error' ] = (
+            f'Could not trim opening schedule overlaps for "{ attraction }".'
+         )
+
+      handler._write_json( response )

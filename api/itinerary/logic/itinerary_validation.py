@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
-from ...attractions.controllers.attraction_controller import AttractionController
+from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.itinerary import fetch_itinerary_animal_rows
 from ..data_access.itinerary import fetch_itinerary_attraction_rows
 from ..data_access.itinerary import fetch_itinerary_event_rows
@@ -90,7 +90,7 @@ def validate_itinerary_animals(
 
 
 def validate_itinerary_attractions(
-      attraction_controller: type[ AttractionController ],
+      attraction_coordinator: type[ AttractionCoordinator ],
       attractions: tuple[ str, ... ],
       new_visit_date: date,
       *,
@@ -107,7 +107,7 @@ def validate_itinerary_attractions(
          attraction_name,
          old_visit_date=old_visit_date )
 
-      new_likelihood = attraction_controller.get_attraction_likelihood_for_visit_date(
+      new_likelihood = attraction_coordinator.get_attraction_likelihood_for_visit_date(
          visit_date=new_visit_date,
          attraction_name=attraction_name )
       start_time, end_time = cleared_schedule_times_for_visit_window(
@@ -200,7 +200,7 @@ def validate_itinerary_for_save(
       conn: Connection,
       save_input: ItinerarySaveInput,
       animal_coordinator: type[ AnimalCoordinator ],
-      attraction_controller: type[ AttractionController ],
+      attraction_coordinator: type[ AttractionCoordinator ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       *,
@@ -237,7 +237,7 @@ def validate_itinerary_for_save(
          else [] ),
       attractions=(
          validate_itinerary_attractions(
-            attraction_controller,
+            attraction_coordinator,
             attractions=save_input.attractions,
             new_visit_date=save_input.date,
             arrival_time=arrival_time,

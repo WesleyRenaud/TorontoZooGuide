@@ -4,7 +4,7 @@ from collections.abc import Callable
 from typing import Any
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
-from ...attractions.controllers.attraction_controller import AttractionController
+from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..data_access.itinerary import fetch_itinerary_date
 from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_default_duration import fetch_attraction_default_duration_seconds
@@ -60,13 +60,13 @@ from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 def _itinerary_controller_kwargs(
       *,
       animal_coordinator: type[ AnimalCoordinator ],
-      attraction_controller: type[ AttractionController ],
+      attraction_coordinator: type[ AttractionCoordinator ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       visit_date_temp: float | None = None ) -> dict[ str, Any ]:
    return {
       'animal_coordinator': animal_coordinator,
-      'attraction_controller': attraction_controller,
+      'attraction_coordinator': attraction_coordinator,
       'guardians_controller': guardians_controller,
       'wild_encounter_controller': wild_encounter_controller,
       'visit_date_temp': visit_date_temp,
@@ -669,7 +669,7 @@ def schedule_itinerary_item(
       start_time: TimeInput = None,
       duration_minutes: DurationInput = None,
       animal_coordinator: type[ AnimalCoordinator ],
-      attraction_controller: type[ AttractionController ],
+      attraction_coordinator: type[ AttractionCoordinator ],
       guardians_controller: type[ GuardiansController ],
       wild_encounter_controller: type[ WildEncounterController ],
       confirming_schedule_item_not_on_itinerary: bool,
@@ -677,7 +677,7 @@ def schedule_itinerary_item(
       confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
    itinerary_controller_kwargs = _itinerary_controller_kwargs(
       animal_coordinator=animal_coordinator,
-      attraction_controller=attraction_controller,
+      attraction_coordinator=attraction_coordinator,
       guardians_controller=guardians_controller,
       wild_encounter_controller=wild_encounter_controller )
 
