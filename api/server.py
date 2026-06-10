@@ -17,7 +17,6 @@ from . import connection
 from .animals.coordinators.animal_coordinator import AnimalCoordinator
 from .attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .defibrillators.controllers.defibrillator_controller import DefibrillatorController
-from .drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
 from .emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
 from .event_sites.controllers.event_site_controller import EventSiteController
 from .giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
@@ -232,22 +231,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             year=year )
 
          response = { "wild_encounters": [ wild_encounter.to_dict() for wild_encounter in wild_encounters ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-drinking-fountains':
-         data = self._read_json_body()
-
-         month = data.get( 'month' )
-         day = data.get( 'day' )
-         year = data.get( 'year' )
-
-         drinking_fountains = DrinkingFountainController.get_drinking_fountains(
-            day=day,
-            month=month,
-            year=year )
-
-         response = { "drinking_fountains": [ drinking_fountain.to_dict() for drinking_fountain in drinking_fountains ] }
          self._write_json( response )
 
 
@@ -1172,53 +1155,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = f'Could not cancel "{ wild_encounter }" on { date } at { time }.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-drinking-fountains-closed':
-         data = self._read_json_body()
-
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-         message = data.get( 'message' )
-
-         success = DrinkingFountainController.set_drinking_fountains_as_closed(
-            start_date=start_date,
-            end_date=end_date,
-            message=message )
-
-         response = {
-            'success': success,
-            'startDate': start_date,
-            'endDate': end_date,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = 'Could not set drinking fountains as closed.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-drinking-fountains-open':
-         data = self._read_json_body()
-
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-
-         success = DrinkingFountainController.set_drinking_fountains_as_open(
-            start_date=start_date,
-            end_date=end_date )
-
-         response = {
-            'success': success,
-            'startDate': start_date,
-            'endDate': end_date
-         }
-
-         if not success:
-            response[ 'error' ] = 'Could not set drinking fountains as open.'
 
          self._write_json( response )
 

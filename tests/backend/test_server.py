@@ -9,6 +9,7 @@ import pytest
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
+from api.drinking_fountains.coordinators.drinking_fountain_coordinator import DrinkingFountainCoordinator
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.itinerary.logic.itinerary_save_result import ItinerarySaveResult
@@ -575,7 +576,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
       server.ZoomobileController,
       server.GuardiansController,
       server.WildEncounterController,
-      server.DrinkingFountainController,
+      DrinkingFountainCoordinator,
       server.DefibrillatorController,
       server.EmergencyIntercomController,
       server.GuestServiceController,
