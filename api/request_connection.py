@@ -1,5 +1,11 @@
-import contextvars
+from __future__ import annotations
 
+from collections.abc import Callable
+import contextvars
+from functools import wraps
+from typing import Any
+
+from . import connection
 from .types import Connection
 
 
@@ -16,3 +22,19 @@ def get_connection() -> Connection | None:
 
 def clear_connection() -> None:
    _connection.set( None )
+
+
+def with_db_connection(
+      handler: Callable[ ..., Any ] ) -> Callable[ ..., Any ]:
+   @wraps( handler )
+   def wrapped( self: Any, *args: Any, **kwargs: Any ) -> Any:
+      conn = connection.open_connection()
+
+      try:
+         set_connection( conn )
+         return handler( self, *args, **kwargs )
+      finally:
+         connection.close_connection( conn )
+         clear_connection()
+
+   return wrapped

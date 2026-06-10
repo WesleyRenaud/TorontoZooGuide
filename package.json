@@ -19,7 +19,7 @@
       "seed:data": "python3 -m api.seed.seed_data",
       "test:js": "node --test --test-concurrency=1 tests/frontend/frontend.test.mjs",
       "test:py": "python3 -m pytest tests/backend",
-      "start": "python3 -m api.server"
+      "start": "python3 -m api"
    },
    "devDependencies": {
       "eslint": "^10.2.0"

@@ -7,6 +7,7 @@ from typing import Any
 
 import pytest
 
+from api import connection
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.defibrillators.coordinators.defibrillator_coordinator import DefibrillatorCoordinator
@@ -45,6 +46,7 @@ from api.models import ZoomobileStation
 from api.models.zoomobile_route import ZoomobileRoute
 from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from api.picnic_sites.coordinators.picnic_site_coordinator import PicnicSiteCoordinator
+import api.request_connection as request_connection
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 import api.server as server
@@ -574,7 +576,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
    StubZooControllers.default_success = True
    stub = StubZooControllers( None )
 
-   monkeypatch.setattr( server.connection, 'open_connection', lambda db_path='animals.db': None )
+   monkeypatch.setattr( connection, 'open_connection', lambda db_path='animals.db': None )
 
    def stub_set_connection( conn: Connection | None ) -> None:
       StubZooControllers._active = stub
@@ -583,8 +585,8 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
       if StubZooControllers.instances:
          StubZooControllers.instances[ -1 ].closed = True
 
-   monkeypatch.setattr( server, 'set_connection', stub_set_connection )
-   monkeypatch.setattr( server, 'clear_connection', stub_clear_connection )
+   monkeypatch.setattr( request_connection, 'set_connection', stub_set_connection )
+   monkeypatch.setattr( request_connection, 'clear_connection', stub_clear_connection )
 
    controller_classes = [
       AnimalCoordinator,
