@@ -53,7 +53,7 @@ from ...types import TimeInput
 from .wild_encounter_unschedule_items import clear_saved_schedules_overlapping_wild_encounters
 from .wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
 from .wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
-from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
 
@@ -62,13 +62,13 @@ def _itinerary_controller_kwargs(
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
       guardians_coordinator: type[ GuardiansCoordinator ],
-      wild_encounter_controller: type[ WildEncounterController ],
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None = None ) -> dict[ str, Any ]:
    return {
       'animal_coordinator': animal_coordinator,
       'attraction_coordinator': attraction_coordinator,
       'guardians_coordinator': guardians_coordinator,
-      'wild_encounter_controller': wild_encounter_controller,
+      'wild_encounter_coordinator': wild_encounter_coordinator,
       'visit_date_temp': visit_date_temp,
    }
 
@@ -561,8 +561,8 @@ def _saved_wild_encounter_exists(
 def _wild_encounter_diff_for_saved_itinerary_day(
       saved_itinerary: SavedItinerary,
       wild_encounter_name: str,
-      wild_encounter_controller: type[ WildEncounterController ] ) -> WildEncounterDiff:
-   encounter = wild_encounter_controller.get_wild_encounter_on_day_schedule(
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ] ) -> WildEncounterDiff:
+   encounter = wild_encounter_coordinator.get_wild_encounter_on_day_schedule(
       month=saved_itinerary.month(),
       day=saved_itinerary.day(),
       year=saved_itinerary.year(),
@@ -630,7 +630,7 @@ def _schedule_wild_encounter_itinerary_item(
    wild_encounter_diff = _wild_encounter_diff_for_saved_itinerary_day(
       saved_itinerary,
       wild_encounter_name,
-      itinerary_controller_kwargs[ 'wild_encounter_controller' ] )
+      itinerary_controller_kwargs[ 'wild_encounter_coordinator' ] )
 
    if wild_encounter_diff.is_deleted:
       return _build_save_result(
@@ -671,7 +671,7 @@ def schedule_itinerary_item(
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
       guardians_coordinator: type[ GuardiansCoordinator ],
-      wild_encounter_controller: type[ WildEncounterController ],
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       confirming_schedule_item_not_on_itinerary: bool,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
@@ -679,7 +679,7 @@ def schedule_itinerary_item(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
       guardians_coordinator=guardians_coordinator,
-      wild_encounter_controller=wild_encounter_controller )
+      wild_encounter_coordinator=wild_encounter_coordinator )
 
    parsed = parse_schedule_item_request( item_type, key )
 

@@ -31,7 +31,7 @@ from ...request_connection import get_connection
 from ...shared.date_values import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, DateInput, DurationInput, TimeInput
-from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
 
@@ -43,7 +43,7 @@ class ItineraryController():
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
-         wild_encounter_controller=WildEncounterController )
+         wild_encounter_coordinator=WildEncounterCoordinator )
 
 
    @classmethod
@@ -75,7 +75,7 @@ class ItineraryController():
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
-         wild_encounter_controller=WildEncounterController,
+         wild_encounter_coordinator=WildEncounterCoordinator,
          visit_date_temp=visit_date_temp )
 
 
@@ -116,7 +116,7 @@ class ItineraryController():
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
-         wild_encounter_controller=WildEncounterController )
+         wild_encounter_coordinator=WildEncounterCoordinator )
 
 
    @classmethod
@@ -139,7 +139,7 @@ class ItineraryController():
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
-         wild_encounter_controller=WildEncounterController,
+         wild_encounter_coordinator=WildEncounterCoordinator,
          confirming_schedule_item_not_on_itinerary=(
             confirming_schedule_item_not_on_itinerary
          ),
@@ -160,7 +160,7 @@ class ItineraryController():
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
-         wild_encounter_controller=WildEncounterController,
+         wild_encounter_coordinator=WildEncounterCoordinator,
          visit_date_temp=visit_date_temp )
 
 

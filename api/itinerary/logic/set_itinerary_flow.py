@@ -32,7 +32,7 @@ from ...shared.enums import ItineraryErrorType
 from .short_visit_warning import short_visit_warning_is_required
 from ...types import Connection
 from .wild_encounter_time_conflicts import find_schedule_time_conflict_issues
-from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
 
@@ -54,13 +54,13 @@ def itinerary_controller_kwargs(
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
       guardians_coordinator: type[ GuardiansCoordinator ],
-      wild_encounter_controller: type[ WildEncounterController ],
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None = None ) -> dict[ str, Any ]:
    return {
       'animal_coordinator': animal_coordinator,
       'attraction_coordinator': attraction_coordinator,
       'guardians_coordinator': guardians_coordinator,
-      'wild_encounter_controller': wild_encounter_controller,
+      'wild_encounter_coordinator': wild_encounter_coordinator,
       'visit_date_temp': visit_date_temp,
    }
 
@@ -134,7 +134,7 @@ def prepare_set_itinerary_context(
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
       guardians_coordinator: type[ GuardiansCoordinator ],
-      wild_encounter_controller: type[ WildEncounterController ],
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None,
       itinerary_controller_kwargs: dict[ str, Any ],
       adjustments: tuple[ ItineraryAdjustment, ... ] = () ) -> SetItineraryContext:
@@ -144,7 +144,7 @@ def prepare_set_itinerary_context(
       animal_coordinator,
       attraction_coordinator,
       guardians_coordinator,
-      wild_encounter_controller,
+      wild_encounter_coordinator,
       new_visit_date_temp=visit_date_temp,
       old_visit_date=old_visit_date )
 

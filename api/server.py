@@ -31,7 +31,7 @@ from .restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from .routes import POST_ROUTES
 from .shared.constants import itinerary_config_to_dict
 from .shared.typed_dict import to_dict_with_type
-from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from .wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from .zoo_hours.controllers.zoo_hours_controller import ZooHoursController
 from .zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 
@@ -174,23 +174,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          route( self )
          return
 
-      if self.path == '/get-wild-encounters':
-         data = self._read_json_body()
-
-         month = data.get( 'month' )
-         day = data.get( 'day' )
-         year = data.get( 'year' )
-
-         wild_encounters = WildEncounterController.get_available_wild_encounters(
-            month=month,
-            day=day,
-            year=year )
-
-         response = { "wild_encounters": [ wild_encounter.to_dict() for wild_encounter in wild_encounters ] }
-         self._write_json( response )
-
-
-      elif self.path == '/search':
+      if self.path == '/search':
          data = self._read_json_body()
 
          query = ( data.get( 'query' ) or '' ).strip()
@@ -327,7 +311,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             wild_encounters_json = [
                to_dict_with_type( wild_encounter, 'wildEncounter' )
                for wild_encounter in (
-                  WildEncounterController.get_wild_encounters_matching_query(
+                  WildEncounterCoordinator.get_wild_encounters_matching_query(
                      query=query,
                      month=month,
                      day=day,
@@ -613,130 +597,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
          if not success:
             response[ 'error' ] = 'Could not accept itinerary changes.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/get-wild-encounter-names':
-         wild_encounters = WildEncounterController.get_wild_encounter_names()
-
-         response = { "wild_encounters": wild_encounters }
-         self._write_json( response )
-
-
-      elif self.path == '/get-wild-encounter-occurrences':
-         data = self._read_json_body()
-
-         wild_encounter = data.get( 'wildEncounter' )
-
-         occurrences = WildEncounterController.get_wild_encounter_occurrences(
-            wild_encounter_name=wild_encounter )
-
-         response = {
-            'occurrences': [ occurrence.to_dict() for occurrence in occurrences ],
-            'wildEncounter': wild_encounter
-         }
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-wild-encounter-schedule':
-         data = self._read_json_body()
-
-         wild_encounter = data.get( 'wildEncounter' )
-         schedule_start_date = data.get( 'startDate' )
-         schedule_end_date = data.get( 'endDate' )
-         encounter_time = data.get( 'time' )
-
-         monday = data.get( 'monday' )
-         tuesday = data.get( 'tuesday' )
-         wednesday = data.get( 'wednesday' )
-         thursday = data.get( 'thursday' )
-         friday = data.get( 'friday' )
-         saturday = data.get( 'saturday' )
-         sunday = data.get( 'sunday' )
-
-         message = data.get( 'message' )
-
-         success = WildEncounterController.set_wild_encounter_schedule(
-            wild_encounter_name=wild_encounter,
-            start_date=schedule_start_date,
-            end_date=schedule_end_date,
-            encounter_time=encounter_time,
-            monday=monday,
-            tuesday=tuesday,
-            wednesday=wednesday,
-            thursday=thursday,
-            friday=friday,
-            saturday=saturday,
-            sunday=sunday,
-            message=message )
-
-         response = {
-            'success': success,
-            'wildEncounter': wild_encounter,
-            'startDate': schedule_start_date,
-            'endDate': schedule_end_date,
-            'time': encounter_time,
-            'monday': monday,
-            'tuesday': tuesday,
-            'wednesday': wednesday,
-            'thursday': thursday,
-            'friday': friday,
-            'saturday': saturday,
-            'sunday': sunday,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set schedule for "{ wild_encounter }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/end-wild-encounter-schedule':
-         data = self._read_json_body()
-
-         wild_encounter = data.get( 'wildEncounter' )
-         schedule_end_date = data.get( 'endDate' )
-
-         success = WildEncounterController.end_wild_encounter_schedule(
-            wild_encounter_name=wild_encounter,
-            schedule_end_date=schedule_end_date )
-
-         response = {
-            'success': success,
-            'wildEncounter': wild_encounter,
-            'endDate': schedule_end_date
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not end schedule for "{ wild_encounter }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/cancel-wild-encounter-occurrence':
-         data = self._read_json_body()
-
-         wild_encounter = data.get( 'wildEncounter' )
-         date = data.get( 'date' )
-         time = data.get( 'time' )
-
-         success = WildEncounterController.cancel_wild_encounter_occurrence(
-            wild_encounter_name=wild_encounter,
-            date=date,
-            time=time )
-
-         response = {
-            'success': success,
-            'wildEncounter': wild_encounter,
-            'date': date,
-            'time': time
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not cancel "{ wild_encounter }" on { date } at { time }.'
 
          self._write_json( response )
 

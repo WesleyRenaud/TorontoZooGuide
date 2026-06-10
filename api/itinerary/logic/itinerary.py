@@ -11,7 +11,7 @@ from ...models import Itinerary
 from ...models import ItineraryEvent
 from ...models import WildEncounter
 from ...types import DateInput, ScheduleTimeKey
-from ...wild_encounters.controllers.wild_encounter_controller import WildEncounterController
+from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
 def empty_itinerary() -> Itinerary:
@@ -52,7 +52,7 @@ def build_current_itinerary(
       animal_coordinator: type[ AnimalCoordinator ],
       attraction_coordinator: type[ AttractionCoordinator ],
       guardians_coordinator: type[ GuardiansCoordinator ],
-      wild_encounter_controller: type[ WildEncounterController ],
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None = None ) -> Itinerary:
 
    if saved_itinerary.is_empty():
@@ -78,7 +78,7 @@ def build_current_itinerary(
    guardians_talks = guardians_coordinator.get_guardians_talks_for_saved_itinerary(
       list( saved_itinerary.guardians_talk_rows ) )
 
-   wild_encounters = wild_encounter_controller.get_wild_encounters_for_saved_itinerary(
+   wild_encounters = wild_encounter_coordinator.get_wild_encounters_for_saved_itinerary(
       list( saved_itinerary.wild_encounter_rows ) )
 
    events = [
