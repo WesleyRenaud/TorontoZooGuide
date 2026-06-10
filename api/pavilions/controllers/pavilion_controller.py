@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class PavilionController():
-
-
    @staticmethod
    def get_pavilions( handler: JsonRequestHandler ) -> None:
       pavilions = PavilionCoordinator.get_pavilions()

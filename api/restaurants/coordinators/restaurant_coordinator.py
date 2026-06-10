@@ -20,8 +20,6 @@ from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class RestaurantCoordinator():
-
-
    @classmethod
    def get_restaurant_names( cls ) -> list[ str ]:
       return fetch_restaurant_names( get_connection() )

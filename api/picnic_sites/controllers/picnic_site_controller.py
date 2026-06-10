@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class PicnicSiteController():
-
-
    @staticmethod
    def get_picnic_sites( handler: JsonRequestHandler ) -> None:
       picnic_sites = PicnicSiteCoordinator.get_picnic_sites()

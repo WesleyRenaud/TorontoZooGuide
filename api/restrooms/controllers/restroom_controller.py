@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class RestroomController():
-
-
    @staticmethod
    def get_restrooms( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()

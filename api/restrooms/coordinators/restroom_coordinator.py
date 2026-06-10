@@ -18,8 +18,6 @@ from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class RestroomCoordinator():
-
-
    @classmethod
    def get_restroom_names( cls ) -> list[ str ]:
       return fetch_restroom_names( get_connection() )

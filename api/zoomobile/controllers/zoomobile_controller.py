@@ -26,8 +26,6 @@ from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class ZoomobileController():
-
-
    @classmethod
    def get_zoomobile_station_names( cls ) -> list[ str ]:
       return fetch_zoomobile_station_names( get_connection() )

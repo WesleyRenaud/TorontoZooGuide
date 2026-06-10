@@ -20,8 +20,6 @@ from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class ExhibitCoordinator():
-
-
    @classmethod
    def get_exhibits_in_region( cls, region: str ) -> list[ str ]:
       return fetch_exhibit_names_in_region(

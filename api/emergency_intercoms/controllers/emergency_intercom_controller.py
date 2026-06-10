@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class EmergencyIntercomController():
-
-
    @staticmethod
    def get_emergency_intercoms( handler: JsonRequestHandler ) -> None:
       emergency_intercoms = EmergencyIntercomCoordinator.get_emergency_intercoms()

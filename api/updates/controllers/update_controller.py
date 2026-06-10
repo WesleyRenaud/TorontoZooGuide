@@ -16,8 +16,6 @@ from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class UpdateController():
-
-
    @classmethod
    def get_updates_for_visit_date(
          cls,

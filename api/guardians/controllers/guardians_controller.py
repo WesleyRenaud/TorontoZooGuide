@@ -31,8 +31,6 @@ from ...types import DateInput, DateKey, MonthInput, VisitDay, VisitYear
 
 
 class GuardiansController():
-
-
    @classmethod
    def get_guardians_talk_locations( cls ) -> list[ str ]:
       return fetch_guardians_talk_locations( get_connection() )

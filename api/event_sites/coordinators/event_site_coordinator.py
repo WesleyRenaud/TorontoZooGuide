@@ -6,8 +6,6 @@ from ...request_connection import get_connection
 
 
 class EventSiteCoordinator():
-
-
    @classmethod
    def get_event_sites( cls ) -> list[ EventSite ]:
       return fetch_event_sites( get_connection() )

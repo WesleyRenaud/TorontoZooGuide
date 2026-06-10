@@ -26,8 +26,6 @@ from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class AttractionCoordinator():
-
-
    @classmethod
    def get_attraction_names( cls ) -> list[ str ]:
       return fetch_attraction_names( get_connection() )

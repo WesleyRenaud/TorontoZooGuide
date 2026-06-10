@@ -7,8 +7,6 @@ from ...shared.typed_dict import to_dict_with_type
 
 
 class AnimalController():
-
-
    @staticmethod
    def get_visible_animals( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()

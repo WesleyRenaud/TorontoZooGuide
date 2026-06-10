@@ -20,8 +20,6 @@ from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class GiftShopCoordinator():
-
-
    @classmethod
    def get_gift_shop_names( cls ) -> list[ str ]:
       return fetch_gift_shop_names( get_connection() )
