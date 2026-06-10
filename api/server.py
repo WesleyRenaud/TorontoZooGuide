@@ -16,18 +16,13 @@ from urllib.parse import unquote, urlparse
 from . import connection
 from .animals.coordinators.animal_coordinator import AnimalCoordinator
 from .attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from .defibrillators.controllers.defibrillator_controller import DefibrillatorController
-from .emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
-from .event_sites.controllers.event_site_controller import EventSiteController
 from .giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from .guardians.controllers.guardians_controller import GuardiansController
-from .guest_services.controllers.guest_service_controller import GuestServiceController
 from .itinerary.controllers.itinerary_controller import ItineraryController
 from .itinerary.logic.itinerary_result_response import itinerary_result_to_dict
 from .itinerary.logic.itinerary_result_response import itinerary_time_set_result_to_dict
 from .itinerary.logic.itinerary_result_response import suppress_itinerary_warning_result_to_dict
 from .pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
-from .picnic_sites.controllers.picnic_site_controller import PicnicSiteController
 from .request_connection import clear_connection
 from .request_connection import get_connection
 from .request_connection import set_connection
@@ -231,41 +226,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             year=year )
 
          response = { "wild_encounters": [ wild_encounter.to_dict() for wild_encounter in wild_encounters ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-defibrillators':
-         defibrillators = DefibrillatorController.get_defibrillators()
-
-         response = { "defibrillators": [ defibrillator.to_dict() for defibrillator in defibrillators ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-emergency-intercoms':
-         emergency_intercoms = EmergencyIntercomController.get_emergency_intercoms()
-
-         response = { "emergency_intercoms": [ emergency_intercom.to_dict() for emergency_intercom in emergency_intercoms ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-guest-services':
-         guest_services = GuestServiceController.get_guest_services()
-
-         response = { "guest_services": [ guest_service.to_dict() for guest_service in guest_services ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-picnic-sites':
-         picnic_sites = PicnicSiteController.get_picnic_sites()
-
-         response = { "picnic_sites": [ picnic_site.to_dict() for picnic_site in picnic_sites ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-event-sites':
-         event_sites = EventSiteController.get_event_sites()
-
-         response = { "event_sites": [ event_site.to_dict() for event_site in event_sites ] }
          self._write_json( response )
 
 

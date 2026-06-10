@@ -1,13 +1,18 @@
 from __future__ import annotations
 
-from ..data_access.emergency_intercom import fetch_emergency_intercoms
-from ...models import EmergencyIntercom
-from ...request_connection import get_connection
+from ..coordinators.emergency_intercom_coordinator import EmergencyIntercomCoordinator
+from ...json_handler import JsonRequestHandler
 
 
 class EmergencyIntercomController():
 
 
-   @classmethod
-   def get_emergency_intercoms( cls ) -> list[ EmergencyIntercom ]:
-      return fetch_emergency_intercoms( get_connection() )
+   @staticmethod
+   def get_emergency_intercoms( handler: JsonRequestHandler ) -> None:
+      emergency_intercoms = EmergencyIntercomCoordinator.get_emergency_intercoms()
+
+      handler._write_json( {
+         'emergency_intercoms': [
+            emergency_intercom.to_dict() for emergency_intercom in emergency_intercoms
+         ],
+      } )

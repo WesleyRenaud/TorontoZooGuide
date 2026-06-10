@@ -1,13 +1,16 @@
 from __future__ import annotations
 
-from ..data_access.event_site import fetch_event_sites
-from ...models import EventSite
-from ...request_connection import get_connection
+from ..coordinators.event_site_coordinator import EventSiteCoordinator
+from ...json_handler import JsonRequestHandler
 
 
 class EventSiteController():
 
 
-   @classmethod
-   def get_event_sites( cls ) -> list[ EventSite ]:
-      return fetch_event_sites( get_connection() )
+   @staticmethod
+   def get_event_sites( handler: JsonRequestHandler ) -> None:
+      event_sites = EventSiteCoordinator.get_event_sites()
+
+      handler._write_json( {
+         'event_sites': [ event_site.to_dict() for event_site in event_sites ],
+      } )
