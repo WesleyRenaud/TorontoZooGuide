@@ -33,7 +33,7 @@ from .request_connection import clear_connection
 from .request_connection import get_connection
 from .request_connection import set_connection
 from .restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
-from .restrooms.controllers.restroom_controller import RestroomController
+from .restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from .routes import POST_ROUTES
 from .shared.constants import itinerary_config_to_dict
 from .shared.typed_dict import to_dict_with_type
@@ -181,25 +181,7 @@ class MyHandler( BaseHTTPRequestHandler ):
          route( self )
          return
 
-      if self.path == '/get-restrooms':
-         data = self._read_json_body()
-
-         month = data.get( 'month' )
-         day = data.get( 'day' )
-         year = data.get( 'year' )
-         include_closed_restrooms = data.get( 'includeClosedRestrooms' ) or False
-
-         restrooms = RestroomController.get_restrooms(
-            day=day,
-            month=month,
-            year=year,
-            include_closed_restrooms=include_closed_restrooms )
-
-         response = { "restrooms": [ restroom.to_dict() for restroom in restrooms ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-attractions':
+      if self.path == '/get-attractions':
          data = self._read_json_body()
 
          month = data.get( 'month' )
@@ -412,7 +394,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             restrooms_json = [
                to_dict_with_type( restroom, 'restroom' )
                for restroom in (
-                  RestroomController.get_restrooms_matching_query(
+                  RestroomCoordinator.get_restrooms_matching_query(
                      query=query,
                      day=day,
                      month=month,
@@ -765,13 +747,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          self._write_json( response )
 
 
-      elif self.path == '/get-restroom-names':
-         restrooms = RestroomController.get_restroom_names()
-
-         response = { "restrooms": restrooms }
-         self._write_json( response )
-
-
       elif self.path == '/get-attraction-names':
          attractions = AttractionController.get_attraction_names()
 
@@ -855,106 +830,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          updates = UpdateController.get_unexpired_updates()
 
          response = { 'updates': [ update.to_dict() for update in updates ] }
-         self._write_json( response )
-
-
-      elif self.path == '/set-restroom-closed':
-         data = self._read_json_body()
-
-         restroom = data.get( 'restroom' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-         message = data.get( 'message' )
-
-         success = RestroomController.set_restroom_as_closed(
-            restroom=restroom,
-            start_date=start_date,
-            end_date=end_date,
-            message=message )
-
-         response = {
-            'success': success,
-            'restroom': restroom,
-            'startDate': start_date,
-            'endDate': end_date,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set "{ restroom }" as closed.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-restroom-open':
-         data = self._read_json_body()
-
-         restroom = data.get( 'restroom' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-
-         success = RestroomController.set_restroom_as_open(
-            restroom=restroom,
-            start_date=start_date,
-            end_date=end_date )
-
-         response = {
-            'success': success,
-            'restroom': restroom,
-            'startDate': start_date,
-            'endDate': end_date
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set "{ restroom }" as open.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/set-restroom-alert':
-         data = self._read_json_body()
-
-         restroom = data.get( 'restroom' )
-         alert_start_date = data.get( 'alertStartDate' )
-         alert_end_date = data.get( 'alertEndDate' )
-         message = data.get( 'message' )
-
-         success = RestroomController.set_restroom_alert(
-            restroom=restroom,
-            alert_start_date=alert_start_date,
-            alert_end_date=alert_end_date,
-            message=message )
-
-         response = {
-            'success': success,
-            'restroom': restroom,
-            'alertStartDate': alert_start_date,
-            'alertEndDate': alert_end_date,
-            'message': message
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not set alert for "{ restroom }".'
-
-         self._write_json( response )
-
-
-      elif self.path == '/remove-restroom-alert':
-         data = self._read_json_body()
-
-         restroom = data.get( 'restroom' )
-
-         success = RestroomController.remove_restroom_alert(
-            restroom=restroom )
-
-         response = {
-            'success': success,
-            'restroom': restroom
-         }
-
-         if not success:
-            response[ 'error' ] = f'Could not remove alert for "{ restroom }".'
-
          self._write_json( response )
 
 
