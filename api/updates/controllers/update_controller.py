@@ -1,97 +1,118 @@
 from __future__ import annotations
 
-from ..data_access.update import edit_update_record
-from ..data_access.update import fetch_updates
-from ..data_access.update import insert_update
-from ..data_access.update import update_end_date
-from ..logic.update import filter_updates_started_on_or_before
-from ..logic.update_creation import build_update_create_input
-from ..logic.update_editing import build_update_edit_input
-from ..logic.update_ending import build_update_end_input
-from ...models import Update
-from ...request_connection import get_connection
-from ...shared.calendar_dates import CalendarDates
-from ...shared.date_values import DateValues
-from ...types import DateInput, MonthInput, VisitDay, VisitYear
+from ..coordinators.update_coordinator import UpdateCoordinator
+from ...json_handler import JsonRequestHandler
 
 
 class UpdateController():
-   @classmethod
-   def get_updates_for_visit_date(
-         cls,
-         month: MonthInput,
-         day: VisitDay,
-         year: VisitYear ) -> list[ Update ]:
-      target_date = CalendarDates.visit_target_date(
-         month=month,
-         day=day,
-         year=year )
+   @staticmethod
+   def get_updates( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
 
-      updates = fetch_updates( get_connection(), target_date )
+      updates = UpdateCoordinator.get_updates_for_visit_date(
+         month=data.get( 'month' ),
+         day=data.get( 'day' ),
+         year=data.get( 'year' ) )
 
-      return filter_updates_started_on_or_before(
-         updates,
-         target_date )
+      handler._write_json( {
+         'updates': [ update.to_dict() for update in updates ],
+      } )
 
 
-   @classmethod
-   def get_unexpired_updates( cls ) -> list[ Update ]:
-      as_of_date = DateValues.today_date_key()
+   @staticmethod
+   def get_active_update_options( handler: JsonRequestHandler ) -> None:
+      updates = UpdateCoordinator.get_unexpired_updates()
 
-      return fetch_updates( get_connection(), as_of_date )
+      handler._write_json( {
+         'updates': [ update.to_dict() for update in updates ],
+      } )
 
 
-   @classmethod
-   def create_update(
-         cls,
-         title: str,
-         description: str,
-         update_type: str,
-         start_date: DateInput,
-         end_date: DateInput ) -> bool:
-      update = build_update_create_input(
+   @staticmethod
+   def create_update( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      title = data.get( 'title' )
+      description = data.get( 'description' )
+      update_type = data.get( 'type' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+
+      success = UpdateCoordinator.create_update(
          title=title,
          description=description,
          update_type=update_type,
          start_date=start_date,
          end_date=end_date )
 
-      return insert_update(
-         get_connection(),
-         update=update )
+      response = {
+         'success': success,
+         'title': title,
+         'description': description,
+         'type': update_type,
+         'startDate': start_date,
+         'endDate': end_date,
+      }
+
+      if not success:
+         response[ 'error' ] = 'Could not create update.'
+
+      handler._write_json( response )
 
 
-   @classmethod
-   def end_update(
-         cls,
-         title: str,
-         start_date: DateInput,
-         end_date: DateInput ) -> bool:
-      update = build_update_end_input(
+   @staticmethod
+   def end_update( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      title = data.get( 'title' )
+      start_date = data.get( 'startDate' )
+      end_date = data.get( 'endDate' )
+
+      success = UpdateCoordinator.end_update(
          title=title,
          start_date=start_date,
          end_date=end_date )
 
-      return update_end_date(
-         get_connection(),
-         update=update )
+      response = {
+         'success': success,
+         'title': title,
+         'startDate': start_date,
+         'endDate': end_date,
+      }
+
+      if not success:
+         response[ 'error' ] = 'Could not end update.'
+
+      handler._write_json( response )
 
 
-   @classmethod
-   def edit_update(
-         cls,
-         title: str,
-         start_date: DateInput,
-         description: str,
-         update_type: str,
-         end_date: DateInput ) -> bool:
-      update = build_update_edit_input(
+   @staticmethod
+   def edit_update( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      title = data.get( 'title' )
+      start_date = data.get( 'startDate' )
+      description = data.get( 'description' )
+      update_type = data.get( 'type' )
+      end_date = data.get( 'endDate' )
+
+      success = UpdateCoordinator.edit_update(
          title=title,
          start_date=start_date,
          description=description,
          update_type=update_type,
          end_date=end_date )
 
-      return edit_update_record(
-         get_connection(),
-         update=update )
+      response = {
+         'success': success,
+         'title': title,
+         'startDate': start_date,
+         'description': description,
+         'type': update_type,
+         'endDate': end_date,
+      }
+
+      if not success:
+         response[ 'error' ] = 'Could not edit update.'
+
+      handler._write_json( response )
