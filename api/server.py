@@ -31,7 +31,6 @@ from .restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from .routes import POST_ROUTES
 from .shared.constants import itinerary_config_to_dict
 from .shared.typed_dict import to_dict_with_type
-from .updates.controllers.update_controller import UpdateController
 from .wild_encounters.controllers.wild_encounter_controller import WildEncounterController
 from .zoo_hours.controllers.zoo_hours_controller import ZooHoursController
 from .zoomobile.controllers.zoomobile_controller import ZoomobileController
@@ -226,22 +225,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             year=year )
 
          response = { "wild_encounters": [ wild_encounter.to_dict() for wild_encounter in wild_encounters ] }
-         self._write_json( response )
-
-
-      elif self.path == '/get-updates':
-         data = self._read_json_body()
-
-         month = data.get( 'month' )
-         day = data.get( 'day' )
-         year = data.get( 'year' )
-
-         updates = UpdateController.get_updates_for_visit_date(
-            month=month,
-            day=day,
-            year=year )
-
-         response = { "updates": [ update.to_dict() for update in updates ] }
          self._write_json( response )
 
 
@@ -740,100 +723,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             'occurrences': [ occurrence.to_dict() for occurrence in occurrences ],
             'wildEncounter': wild_encounter
          }
-
-         self._write_json( response )
-
-
-      elif self.path == '/get-active-update-options':
-         updates = UpdateController.get_unexpired_updates()
-
-         response = { 'updates': [ update.to_dict() for update in updates ] }
-         self._write_json( response )
-
-
-      elif self.path == '/create-update':
-         data = self._read_json_body()
-
-         title = data.get( 'title' )
-         description = data.get( 'description' )
-         update_type = data.get( 'type' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-
-         success = UpdateController.create_update(
-            title=title,
-            description=description,
-            update_type=update_type,
-            start_date=start_date,
-            end_date=end_date )
-
-         response = {
-            'success': success,
-            'title': title,
-            'description': description,
-            'type': update_type,
-            'startDate': start_date,
-            'endDate': end_date
-         }
-
-         if not success:
-            response[ 'error' ] = 'Could not create update.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/end-update':
-         data = self._read_json_body()
-
-         title = data.get( 'title' )
-         start_date = data.get( 'startDate' )
-         end_date = data.get( 'endDate' )
-
-         success = UpdateController.end_update(
-            title=title,
-            start_date=start_date,
-            end_date=end_date )
-
-         response = {
-            'success': success,
-            'title': title,
-            'startDate': start_date,
-            'endDate': end_date
-         }
-
-         if not success:
-            response[ 'error' ] = 'Could not end update.'
-
-         self._write_json( response )
-
-
-      elif self.path == '/edit-update':
-         data = self._read_json_body()
-
-         title = data.get( 'title' )
-         start_date = data.get( 'startDate' )
-         description = data.get( 'description' )
-         update_type = data.get( 'type' )
-         end_date = data.get( 'endDate' )
-
-         success = UpdateController.edit_update(
-            title=title,
-            start_date=start_date,
-            description=description,
-            update_type=update_type,
-            end_date=end_date )
-
-         response = {
-            'success': success,
-            'title': title,
-            'startDate': start_date,
-            'description': description,
-            'type': update_type,
-            'endDate': end_date
-         }
-
-         if not success:
-            response[ 'error' ] = 'Could not edit update.'
 
          self._write_json( response )
 
