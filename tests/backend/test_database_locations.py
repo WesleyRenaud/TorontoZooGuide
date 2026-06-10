@@ -10,10 +10,10 @@ from api.attractions.data_access.attraction import fetch_attraction_schedule_ove
 from api.attractions.data_access.attraction import fetch_attraction_schedule_records
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
 from api.attractions.logic.attraction import get_active_attraction_schedule_status
-from api.defibrillators.controllers.defibrillator_controller import DefibrillatorController
+from api.defibrillators.coordinators.defibrillator_coordinator import DefibrillatorCoordinator
 from api.drinking_fountains.coordinators.drinking_fountain_coordinator import DrinkingFountainCoordinator
-from api.emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
-from api.event_sites.controllers.event_site_controller import EventSiteController
+from api.emergency_intercoms.coordinators.emergency_intercom_coordinator import EmergencyIntercomCoordinator
+from api.event_sites.coordinators.event_site_coordinator import EventSiteCoordinator
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_override_records
@@ -21,9 +21,9 @@ from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_records
 from api.giftshops.data_access.gift_shop_schedule_record import GiftShopScheduleRecord
 from api.giftshops.logic.gift_shop import get_active_gift_shop_schedule_status
 from api.guardians.controllers.guardians_controller import GuardiansController
-from api.guest_services.controllers.guest_service_controller import GuestServiceController
+from api.guest_services.coordinators.guest_service_coordinator import GuestServiceCoordinator
 from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
-from api.picnic_sites.controllers.picnic_site_controller import PicnicSiteController
+from api.picnic_sites.coordinators.picnic_site_coordinator import PicnicSiteCoordinator
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_override_records
 from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_records
@@ -166,7 +166,7 @@ def test_region_and_static_location_queries( db: DbControllers ) -> None:
 
 
 def test_defibrillators_have_coordinates( db: DbControllers ) -> None:
-   defibrillators = DefibrillatorController.get_defibrillators()
+   defibrillators = DefibrillatorCoordinator.get_defibrillators()
 
    assert len( defibrillators ) > 0
    assert all( 0 <= defibrillator.x_coord <= 100 for defibrillator in defibrillators )
@@ -174,7 +174,7 @@ def test_defibrillators_have_coordinates( db: DbControllers ) -> None:
 
 
 def test_emergency_intercoms_have_coordinates( db: DbControllers ) -> None:
-   emergency_intercoms = EmergencyIntercomController.get_emergency_intercoms()
+   emergency_intercoms = EmergencyIntercomCoordinator.get_emergency_intercoms()
 
    assert len( emergency_intercoms ) > 0
    assert all( 0 <= emergency_intercom.x_coord <= 100 for emergency_intercom in emergency_intercoms )
@@ -182,7 +182,7 @@ def test_emergency_intercoms_have_coordinates( db: DbControllers ) -> None:
 
 
 def test_guest_services_have_types_and_coordinates( db: DbControllers, cursor: Cursor ) -> None:
-   guest_services = GuestServiceController.get_guest_services()
+   guest_services = GuestServiceCoordinator.get_guest_services()
    service_types = { service.service_type for service in guest_services }
    primary_key_columns = cursor.execute(
       """ SELECT
@@ -208,7 +208,7 @@ def test_guest_services_have_types_and_coordinates( db: DbControllers, cursor: C
 
 
 def test_picnic_sites_have_coordinates( db: DbControllers ) -> None:
-   picnic_sites = PicnicSiteController.get_picnic_sites()
+   picnic_sites = PicnicSiteCoordinator.get_picnic_sites()
 
    assert len( picnic_sites ) > 0
    assert all( 0 <= picnic_site.x_coord <= 100 for picnic_site in picnic_sites )
@@ -216,7 +216,7 @@ def test_picnic_sites_have_coordinates( db: DbControllers ) -> None:
 
 
 def test_event_sites_have_names_and_coordinates( db: DbControllers ) -> None:
-   event_sites = EventSiteController.get_event_sites()
+   event_sites = EventSiteCoordinator.get_event_sites()
    event_site_names = { event_site.name for event_site in event_sites }
 
    assert event_site_names == {

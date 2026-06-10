@@ -1,13 +1,16 @@
 from __future__ import annotations
 
-from ..data_access.guest_service import fetch_guest_services
-from ...models import GuestService
-from ...request_connection import get_connection
+from ..coordinators.guest_service_coordinator import GuestServiceCoordinator
+from ...json_handler import JsonRequestHandler
 
 
 class GuestServiceController():
 
 
-   @classmethod
-   def get_guest_services( cls ) -> list[ GuestService ]:
-      return fetch_guest_services( get_connection() )
+   @staticmethod
+   def get_guest_services( handler: JsonRequestHandler ) -> None:
+      guest_services = GuestServiceCoordinator.get_guest_services()
+
+      handler._write_json( {
+         'guest_services': [ guest_service.to_dict() for guest_service in guest_services ],
+      } )

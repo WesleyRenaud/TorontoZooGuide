@@ -9,9 +9,13 @@ import pytest
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
+from api.defibrillators.coordinators.defibrillator_coordinator import DefibrillatorCoordinator
 from api.drinking_fountains.coordinators.drinking_fountain_coordinator import DrinkingFountainCoordinator
+from api.emergency_intercoms.coordinators.emergency_intercom_coordinator import EmergencyIntercomCoordinator
+from api.event_sites.coordinators.event_site_coordinator import EventSiteCoordinator
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
+from api.guest_services.coordinators.guest_service_coordinator import GuestServiceCoordinator
 from api.itinerary.logic.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.logic.itinerary_time_set_result import ItineraryTimeSetResult
 from api.itinerary.logic.suppress_itinerary_warning import SuppressItineraryWarningResult
@@ -38,6 +42,7 @@ from api.models import ZooHours
 from api.models import ZoomobileStation
 from api.models.zoomobile_route import ZoomobileRoute
 from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
+from api.picnic_sites.coordinators.picnic_site_coordinator import PicnicSiteCoordinator
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 import api.server as server
@@ -577,11 +582,11 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
       server.GuardiansController,
       server.WildEncounterController,
       DrinkingFountainCoordinator,
-      server.DefibrillatorController,
-      server.EmergencyIntercomController,
-      server.GuestServiceController,
-      server.PicnicSiteController,
-      server.EventSiteController,
+      DefibrillatorCoordinator,
+      EmergencyIntercomCoordinator,
+      GuestServiceCoordinator,
+      PicnicSiteCoordinator,
+      EventSiteCoordinator,
       server.UpdateController,
       server.ItineraryController,
       server.ZooHoursController,

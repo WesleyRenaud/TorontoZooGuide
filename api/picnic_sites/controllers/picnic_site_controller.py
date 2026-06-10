@@ -1,13 +1,16 @@
 from __future__ import annotations
 
-from ..data_access.picnic_site import fetch_picnic_sites
-from ...models import PicnicSite
-from ...request_connection import get_connection
+from ..coordinators.picnic_site_coordinator import PicnicSiteCoordinator
+from ...json_handler import JsonRequestHandler
 
 
 class PicnicSiteController():
 
 
-   @classmethod
-   def get_picnic_sites( cls ) -> list[ PicnicSite ]:
-      return fetch_picnic_sites( get_connection() )
+   @staticmethod
+   def get_picnic_sites( handler: JsonRequestHandler ) -> None:
+      picnic_sites = PicnicSiteCoordinator.get_picnic_sites()
+
+      handler._write_json( {
+         'picnic_sites': [ picnic_site.to_dict() for picnic_site in picnic_sites ],
+      } )
