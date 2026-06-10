@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class AttractionController():
-
-
    @staticmethod
    def get_attractions( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()

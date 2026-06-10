@@ -27,8 +27,6 @@ from ...types import DateInput, DateKey, MonthInput, VisitDay, VisitYear
 
 
 class WildEncounterController():
-
-
    @classmethod
    def get_wild_encounter_names( cls ) -> list[ str ]:
       return fetch_wild_encounter_names( get_connection() )

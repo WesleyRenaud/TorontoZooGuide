@@ -6,8 +6,6 @@ from ...request_connection import get_connection
 
 
 class GuestServiceCoordinator():
-
-
    @classmethod
    def get_guest_services( cls ) -> list[ GuestService ]:
       return fetch_guest_services( get_connection() )

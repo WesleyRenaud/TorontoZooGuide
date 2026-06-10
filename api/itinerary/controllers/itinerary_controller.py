@@ -36,8 +36,6 @@ from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
 
 class ItineraryController():
-
-
    @classmethod
    def _current_itinerary( cls, conn: Connection ) -> Itinerary:
       return build_current_itinerary(

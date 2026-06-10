@@ -18,8 +18,6 @@ from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
 class DrinkingFountainCoordinator():
-
-
    @classmethod
    def get_drinking_fountains(
          cls,

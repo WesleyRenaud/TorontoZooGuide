@@ -7,8 +7,6 @@ from ...request_connection import get_connection
 
 
 class PavilionCoordinator():
-
-
    @classmethod
    def get_pavilions( cls ) -> list[ Pavilion ]:
       return fetch_pavilions( get_connection() )

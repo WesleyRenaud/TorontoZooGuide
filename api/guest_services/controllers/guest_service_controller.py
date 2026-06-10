@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class GuestServiceController():
-
-
    @staticmethod
    def get_guest_services( handler: JsonRequestHandler ) -> None:
       guest_services = GuestServiceCoordinator.get_guest_services()

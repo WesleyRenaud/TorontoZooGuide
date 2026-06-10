@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class GiftShopController():
-
-
    @staticmethod
    def get_gift_shops( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()

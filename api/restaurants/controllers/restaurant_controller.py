@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class RestaurantController():
-
-
    @staticmethod
    def get_restaurants( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()

@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class DrinkingFountainController():
-
-
    @staticmethod
    def get_drinking_fountains( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()

@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class ExhibitController():
-
-
    @staticmethod
    def get_exhibits_in_region( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()

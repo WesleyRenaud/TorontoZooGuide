@@ -9,8 +9,6 @@ from ...types import MonthInput, VisitDay, VisitYear
 
 
 class ZooHoursController():
-
-
    @classmethod
    def get_zoo_hours(
          cls,

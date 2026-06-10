@@ -25,8 +25,6 @@ from ...types import DateInput, MonthInput, VisitDay, VisitMonth, VisitYear
 
 
 class AnimalCoordinator():
-
-
    @classmethod
    def get_animals_viewable_on_day(
          cls,

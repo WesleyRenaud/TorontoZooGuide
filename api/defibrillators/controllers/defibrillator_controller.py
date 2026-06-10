@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class DefibrillatorController():
-
-
    @staticmethod
    def get_defibrillators( handler: JsonRequestHandler ) -> None:
       defibrillators = DefibrillatorCoordinator.get_defibrillators()

@@ -6,8 +6,6 @@ from ...request_connection import get_connection
 
 
 class PicnicSiteCoordinator():
-
-
    @classmethod
    def get_picnic_sites( cls ) -> list[ PicnicSite ]:
       return fetch_picnic_sites( get_connection() )

@@ -5,8 +5,6 @@ from ...json_handler import JsonRequestHandler
 
 
 class EventSiteController():
-
-
    @staticmethod
    def get_event_sites( handler: JsonRequestHandler ) -> None:
       event_sites = EventSiteCoordinator.get_event_sites()
