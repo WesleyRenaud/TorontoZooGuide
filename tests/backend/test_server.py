@@ -35,6 +35,7 @@ from api.models import ZooHours
 from api.models import ZoomobileStation
 from api.models.zoomobile_route import ZoomobileRoute
 from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
+from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 import api.server as server
 from api.shared.constants import itinerary_config_to_dict
 from api.shared.enums import AnimalViewingScope
@@ -564,7 +565,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
       AnimalCoordinator,
       ExhibitCoordinator,
       PavilionCoordinator,
-      server.RestaurantController,
+      RestaurantCoordinator,
       server.RestroomController,
       server.GiftShopController,
       server.AttractionController,

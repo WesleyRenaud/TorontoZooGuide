@@ -12,7 +12,7 @@ from api.models.animal import Animal
 from api.models.attraction import Attraction
 from api.models.gift_shop import GiftShop
 from api.models.restaurant import Restaurant
-from api.restaurants.controllers.restaurant_controller import RestaurantController
+from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.shared.enums import AnimalViewingScope
 from api.types import Cursor
 from api.updates.controllers.update_controller import UpdateController
@@ -75,7 +75,7 @@ def get_animal_status_scopes(
 
 
 def get_restaurant( db: DbControllers, name: str ) -> Restaurant:
-   restaurants = RestaurantController.get_restaurants(
+   restaurants = RestaurantCoordinator.get_restaurants(
       day=15,
       month='June',
       year=2026,
@@ -336,7 +336,7 @@ def test_set_restaurant_closed_and_opening_schedule_changes_restaurant_results(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert RestaurantController.set_restaurant_as_closed( 'Africa Restaurant', '2026-06-01', '2026-06-30', '' )
+   assert RestaurantCoordinator.set_restaurant_as_closed( 'Africa Restaurant', '2026-06-01', '2026-06-30', '' )
 
    restaurant = get_restaurant( db, 'Africa Restaurant' )
 
@@ -345,10 +345,10 @@ def test_set_restaurant_closed_and_opening_schedule_changes_restaurant_results(
    assert restaurant.closed_message == 'The Africa Restaurant is temporarily closed.'
    assert all(
       item.name != 'Africa Restaurant'
-      for item in RestaurantController.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=False )
+      for item in RestaurantCoordinator.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=False )
    )
 
-   assert RestaurantController.set_restaurant_opening_schedule(
+   assert RestaurantCoordinator.set_restaurant_opening_schedule(
       restaurant='Africa Restaurant',
       start_date='2026-06-01',
       end_date='',
