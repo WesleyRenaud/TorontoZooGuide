@@ -24,7 +24,7 @@ from api.guardians.controllers.guardians_controller import GuardiansController
 from api.guest_services.controllers.guest_service_controller import GuestServiceController
 from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from api.picnic_sites.controllers.picnic_site_controller import PicnicSiteController
-from api.restaurants.controllers.restaurant_controller import RestaurantController
+from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_override_records
 from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_records
 from api.restaurants.data_access.restaurant_schedule_record import RestaurantScheduleRecord
@@ -49,7 +49,7 @@ def apply_amenity_opening_schedule(
       setter_name: str,
       schedule: dict[ str, object ] ) -> bool:
    if setter_name == 'set_restaurant_opening_schedule':
-      return RestaurantController.set_restaurant_opening_schedule( **schedule )
+      return RestaurantCoordinator.set_restaurant_opening_schedule( **schedule )
 
    if setter_name == 'set_gift_shop_opening_schedule':
       return GiftShopController.set_gift_shop_opening_schedule( **schedule )
@@ -347,7 +347,7 @@ def test_restaurant_schedule_controls_open_and_closed_results(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
-   assert RestaurantController.set_restaurant_opening_schedule(
+   assert RestaurantCoordinator.set_restaurant_opening_schedule(
       restaurant='Africa Restaurant',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -362,8 +362,8 @@ def test_restaurant_schedule_controls_open_and_closed_results(
       message='Closed for testing.'
    )
 
-   open_only = RestaurantController.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=False )
-   with_closed = RestaurantController.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=True )
+   open_only = RestaurantCoordinator.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=False )
+   with_closed = RestaurantCoordinator.get_restaurants( day=15, month='June', year=2026, include_closed_restaurants=True )
 
    assert all( restaurant.name != 'Africa Restaurant' for restaurant in open_only )
    restaurant = next( item for item in with_closed if item.name == 'Africa Restaurant' )
@@ -581,7 +581,7 @@ def test_attraction_opening_schedule_rejects_overlapping_date_ranges( db: DbCont
    'setter, item_kw, item_name',
    [
       (
-         RestaurantController.set_restaurant_opening_schedule,
+         RestaurantCoordinator.set_restaurant_opening_schedule,
          'restaurant',
          'Africa Restaurant'
       ),
@@ -633,7 +633,7 @@ def test_restaurant_and_gift_shop_opening_schedules_reject_overlapping_date_rang
    'controller, item_kw, item_name, records_fetcher, record_name_attr',
    [
       (
-         RestaurantController,
+         RestaurantCoordinator,
          'restaurant',
          'Africa Restaurant',
          fetch_restaurant_schedule_records,
@@ -718,7 +718,7 @@ def test_opening_schedule_can_replace_overlapping_schedules(
    'controller, item_kw, item_name, records_fetcher, record_name_attr',
    [
       (
-         RestaurantController,
+         RestaurantCoordinator,
          'restaurant',
          'Africa Restaurant',
          fetch_restaurant_schedule_records,
@@ -878,7 +878,7 @@ def test_attraction_closure_override_takes_precedence_over_opening_schedule( db:
 
 
 def test_restaurant_closure_override_takes_precedence_over_opening_schedule( db: DbControllers ) -> None:
-   assert RestaurantController.set_restaurant_opening_schedule(
+   assert RestaurantCoordinator.set_restaurant_opening_schedule(
       restaurant='Africa Restaurant',
       start_date='2026-06-01',
       end_date='2026-06-30',
@@ -893,7 +893,7 @@ def test_restaurant_closure_override_takes_precedence_over_opening_schedule( db:
       message='Open for June.'
    )
 
-   assert RestaurantController.set_restaurant_closure_override(
+   assert RestaurantCoordinator.set_restaurant_closure_override(
       restaurant='Africa Restaurant',
       start_date='2026-06-20',
       end_date='2026-06-21',
@@ -922,7 +922,7 @@ def test_restaurant_closure_override_takes_precedence_over_opening_schedule( db:
    ]
 
    closed_restaurant = next(
-      restaurant for restaurant in RestaurantController.get_restaurants(
+      restaurant for restaurant in RestaurantCoordinator.get_restaurants(
          day=20,
          month='June',
          year=2026,
@@ -930,7 +930,7 @@ def test_restaurant_closure_override_takes_precedence_over_opening_schedule( db:
       if restaurant.name == 'Africa Restaurant'
    )
    open_restaurant = next(
-      restaurant for restaurant in RestaurantController.get_restaurants(
+      restaurant for restaurant in RestaurantCoordinator.get_restaurants(
          day=22,
          month='June',
          year=2026,
@@ -1426,7 +1426,7 @@ def test_wild_encounter_occurrences_cover_all_weekdays_and_cancellations(
 def test_search_helpers_filter_case_insensitively( db: DbControllers ) -> None:
    assert [
       restaurant.name
-      for restaurant in RestaurantController.get_restaurants_matching_query( 'AFRICA', 15, 'June', 2026, True )
+      for restaurant in RestaurantCoordinator.get_restaurants_matching_query( 'AFRICA', 15, 'June', 2026, True )
    ] == [ 'Africa Restaurant' ]
 
    assert [
