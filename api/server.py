@@ -32,7 +32,6 @@ from .routes import POST_ROUTES
 from .shared.constants import itinerary_config_to_dict
 from .shared.typed_dict import to_dict_with_type
 from .wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from .zoo_hours.controllers.zoo_hours_controller import ZooHoursController
 from .zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 
 
@@ -538,24 +537,6 @@ class MyHandler( BaseHTTPRequestHandler ):
          response = {
             'itinerary': itinerary.to_dict(),
             'itinerary_config': itinerary_config_to_dict( get_connection() ),
-         }
-
-         self._write_json( response )
-
-
-      elif self.path == '/get-zoo-hours':
-         data = self._read_json_body()
-
-         day = data.get( 'day' )
-         month = data.get( 'month' )
-         year = data.get( 'year' )
-         hours = ZooHoursController.get_zoo_hours(
-            day=day,
-            month=month,
-            year=year )
-
-         response = {
-            'hours': hours.to_dict() if hours is not None else None,
          }
 
          self._write_json( response )

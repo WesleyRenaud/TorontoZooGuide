@@ -52,6 +52,7 @@ from api.shared.enums import AnimalViewingScope
 from api.types import Connection
 from api.updates.coordinators.update_coordinator import UpdateCoordinator
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
+from api.zoo_hours.coordinators.zoo_hours_coordinator import ZooHoursCoordinator
 from api.zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 from conftest import FakeHandler
 
@@ -593,7 +594,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
       EventSiteCoordinator,
       UpdateCoordinator,
       server.ItineraryController,
-      server.ZooHoursController,
+      ZooHoursCoordinator,
    ]
 
    for controller_class in controller_classes:
