@@ -11,7 +11,7 @@ from api.attractions.data_access.attraction import fetch_attraction_schedule_rec
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
 from api.attractions.logic.attraction import get_active_attraction_schedule_status
 from api.defibrillators.controllers.defibrillator_controller import DefibrillatorController
-from api.drinking_fountains.controllers.drinking_fountain_controller import DrinkingFountainController
+from api.drinking_fountains.coordinators.drinking_fountain_coordinator import DrinkingFountainCoordinator
 from api.emergency_intercoms.controllers.emergency_intercom_controller import EmergencyIntercomController
 from api.event_sites.controllers.event_site_controller import EventSiteController
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
@@ -154,7 +154,7 @@ def test_region_and_static_location_queries( db: DbControllers ) -> None:
       restroom.title: restroom
       for restroom in RestroomCoordinator.get_restrooms( day=15, month='June', year=2026 )
    }
-   drinking_fountains = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
+   drinking_fountains = DrinkingFountainCoordinator.get_drinking_fountains( day=15, month='June', year=2026 )
 
    assert pavilions[ 'African Rainforest Pavilion' ].region == 'Africa'
    assert 'Entrance Restroom' in restrooms
@@ -234,9 +234,9 @@ def test_event_sites_have_names_and_coordinates( db: DbControllers ) -> None:
 def test_drinking_fountain_seasonal_fallback_controls_open_and_closed_results(
       db: DbControllers,
       cursor: Cursor ) -> None:
-   summer_fountains = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
-   winter_fountains = DrinkingFountainController.get_drinking_fountains( day=15, month='January', year=2026 )
-   transition_fountains = DrinkingFountainController.get_drinking_fountains( day=30, month='April', year=2026 )
+   summer_fountains = DrinkingFountainCoordinator.get_drinking_fountains( day=15, month='June', year=2026 )
+   winter_fountains = DrinkingFountainCoordinator.get_drinking_fountains( day=15, month='January', year=2026 )
+   transition_fountains = DrinkingFountainCoordinator.get_drinking_fountains( day=30, month='April', year=2026 )
    seasonal_rows = cursor.execute(
       """ SELECT
              MONTH,
@@ -289,19 +289,19 @@ def test_drinking_fountain_status_controls_global_open_and_closed_results(
       cursor: Cursor ) -> None:
    default_message = 'The drinking fountains are closed for the season.'
 
-   fountains = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
+   fountains = DrinkingFountainCoordinator.get_drinking_fountains( day=15, month='June', year=2026 )
 
    assert len( fountains ) > 0
    assert all( fountain.is_closed is False for fountain in fountains )
    assert all( fountain.closed_message is None for fountain in fountains )
 
-   assert DrinkingFountainController.set_drinking_fountains_as_closed(
+   assert DrinkingFountainCoordinator.set_drinking_fountains_as_closed(
       start_date='2026-06-01',
       end_date='2026-06-30',
       message='Closed for testing.' )
 
-   closed = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
-   outside_schedule = DrinkingFountainController.get_drinking_fountains( day=1, month='July', year=2026 )
+   closed = DrinkingFountainCoordinator.get_drinking_fountains( day=15, month='June', year=2026 )
+   outside_schedule = DrinkingFountainCoordinator.get_drinking_fountains( day=1, month='July', year=2026 )
    status_rows = cursor.execute(
       """ SELECT
              IS_CLOSED,
@@ -324,19 +324,19 @@ def test_drinking_fountain_status_controls_global_open_and_closed_results(
    assert all( fountain.likelihood == 0.0 for fountain in closed )
    assert all( fountain.is_closed is False for fountain in outside_schedule )
 
-   assert DrinkingFountainController.set_drinking_fountains_as_open(
+   assert DrinkingFountainCoordinator.set_drinking_fountains_as_open(
       start_date='2026-06-15',
       end_date=None )
 
-   reopened = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
+   reopened = DrinkingFountainCoordinator.get_drinking_fountains( day=15, month='June', year=2026 )
 
    assert all( fountain.is_closed is False for fountain in reopened )
    assert all( fountain.closed_message is None for fountain in reopened )
    assert all( fountain.likelihood == 1.0 for fountain in reopened )
 
-   assert DrinkingFountainController.set_drinking_fountains_as_closed( message='' )
+   assert DrinkingFountainCoordinator.set_drinking_fountains_as_closed( message='' )
 
-   default_closed = DrinkingFountainController.get_drinking_fountains( day=15, month='June', year=2026 )
+   default_closed = DrinkingFountainCoordinator.get_drinking_fountains( day=15, month='June', year=2026 )
 
    assert all( fountain.is_closed is True for fountain in default_closed )
    assert all( fountain.closed_message == default_message for fountain in default_closed )

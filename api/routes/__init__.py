@@ -1,5 +1,6 @@
 from ..animals.routes import ANIMAL_ROUTES
 from ..attractions.routes import ATTRACTION_ROUTES
+from ..drinking_fountains.routes import DRINKING_FOUNTAIN_ROUTES
 from ..exhibits.routes import EXHIBIT_ROUTES
 from ..giftshops.routes import GIFT_SHOP_ROUTES
 from ..pavilions.routes import PAVILION_ROUTES
@@ -10,6 +11,7 @@ from ..restrooms.routes import RESTROOM_ROUTES
 
 register_post_routes( ANIMAL_ROUTES )
 register_post_routes( ATTRACTION_ROUTES )
+register_post_routes( DRINKING_FOUNTAIN_ROUTES )
 register_post_routes( EXHIBIT_ROUTES )
 register_post_routes( PAVILION_ROUTES )
 register_post_routes( RESTAURANT_ROUTES )
