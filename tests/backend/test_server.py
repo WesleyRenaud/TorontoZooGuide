@@ -50,6 +50,7 @@ from api.shared.constants import itinerary_config_to_dict
 from api.shared.enums import AnimalViewingScope
 from api.types import Connection
 from api.updates.coordinators.update_coordinator import UpdateCoordinator
+from api.zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 from conftest import FakeHandler
 
 
@@ -579,7 +580,7 @@ def stub_controllers( monkeypatch: pytest.MonkeyPatch ) -> type[ StubZooControll
       RestroomCoordinator,
       GiftShopCoordinator,
       AttractionCoordinator,
-      server.ZoomobileController,
+      ZoomobileCoordinator,
       server.GuardiansController,
       server.WildEncounterController,
       DrinkingFountainCoordinator,
