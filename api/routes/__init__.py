@@ -8,6 +8,7 @@ from ..exhibits.routes import EXHIBIT_ROUTES
 from ..giftshops.routes import GIFT_SHOP_ROUTES
 from ..guardians.routes import GUARDIANS_ROUTES
 from ..guest_services.routes import GUEST_SERVICE_ROUTES
+from ..itinerary.routes import ITINERARY_ROUTES
 from ..pavilions.routes import PAVILION_ROUTES
 from ..picnic_sites.routes import PICNIC_SITE_ROUTES
 from .registry import POST_ROUTES
@@ -27,6 +28,7 @@ register_post_routes( EMERGENCY_INTERCOM_ROUTES )
 register_post_routes( EVENT_SITE_ROUTES )
 register_post_routes( EXHIBIT_ROUTES )
 register_post_routes( GIFT_SHOP_ROUTES )
+register_post_routes( ITINERARY_ROUTES )
 register_post_routes( GUARDIANS_ROUTES )
 register_post_routes( GUEST_SERVICE_ROUTES )
 register_post_routes( PAVILION_ROUTES )

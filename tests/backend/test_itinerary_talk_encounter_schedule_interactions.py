@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from api.itinerary.controllers.itinerary_controller import ItineraryController
+from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -70,7 +70,7 @@ def _set_itinerary_with_animal_scheduled_at_1400(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -79,7 +79,7 @@ def _set_itinerary_with_animal_scheduled_at_1400(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='14:00',
@@ -93,7 +93,7 @@ def test_set_itinerary_blocks_talk_and_encounter_conflict_before_unschedule_warn
    _set_itinerary_with_animal_scheduled_at_1400(
       freeze_database_today=freeze_database_today )
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -130,7 +130,7 @@ def test_set_itinerary_returns_guardians_unschedule_after_talk_encounter_conflic
    _set_itinerary_with_animal_scheduled_at_1400(
       freeze_database_today=freeze_database_today )
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -164,7 +164,7 @@ def test_set_itinerary_returns_wild_encounter_warning_after_talk_encounter_confl
    _set_itinerary_with_animal_scheduled_at_1400(
       freeze_database_today=freeze_database_today )
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -198,7 +198,7 @@ def test_set_itinerary_saves_talk_after_conflict_and_unschedule_confirmations(
    _set_itinerary_with_animal_scheduled_at_1400(
       freeze_database_today=freeze_database_today )
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -267,7 +267,7 @@ def _set_itinerary_with_turtle_talk_and_lion_at_1430(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -276,12 +276,12 @@ def _set_itinerary_with_turtle_talk_and_lion_at_1430(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='guardians_talks',
       key=TURTLE_TALK,
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='14:30',
@@ -296,7 +296,7 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
    _set_itinerary_with_turtle_talk_and_lion_at_1430(
       freeze_database_today=freeze_database_today )
 
-   conflict = ItineraryController.set_itinerary(
+   conflict = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -312,7 +312,7 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
       RHINO_ENCOUNTER,
    }
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -350,7 +350,7 @@ def test_set_itinerary_empty_animals_removes_lion_after_conflict_resolved(
    _set_itinerary_with_turtle_talk_and_lion_at_1430(
       freeze_database_today=freeze_database_today )
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[],
@@ -373,7 +373,7 @@ def test_set_itinerary_blocks_talk_encounter_conflict_when_no_other_items_overla
    _set_schedules_at_1400()
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from api.connection import close_connection
 from api.connection import open_connection
-from api.itinerary.controllers.itinerary_controller import ItineraryController
+from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.logic.bulk_schedule_animals import has_itinerary_schedule_times
@@ -103,7 +103,7 @@ def test_bulk_schedule_animals_schedules_in_exhibit_order(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       animals=[
          LION_ITINERARY_ENTRY,
@@ -115,7 +115,7 @@ def test_bulk_schedule_animals_schedules_in_exhibit_order(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryController.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert result.success
    assert result.status == ItineraryErrorType.SUCCESS
@@ -139,7 +139,7 @@ def test_bulk_schedule_animals_skips_already_scheduled_animals(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:00',
       animals=[
@@ -152,12 +152,12 @@ def test_bulk_schedule_animals_skips_already_scheduled_animals(
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key='African Lion||Africa Savanna',
    ).success
 
-   result = ItineraryController.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert result.success
    assert result.reasons == ()
@@ -180,7 +180,7 @@ def test_bulk_schedule_animals_warns_when_all_animals_are_already_scheduled(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:00',
       animals=[
@@ -193,16 +193,16 @@ def test_bulk_schedule_animals_warns_when_all_animals_are_already_scheduled(
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key='African Lion||Africa Savanna',
    ).success
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key='African Penguin||Africa Savanna',
    ).success
 
-   result = ItineraryController.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert not result.success
    assert result.status == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED
@@ -219,7 +219,7 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:30',
       departure_time='09:35',
@@ -234,7 +234,7 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
       wild_encounters=[],
    ).success
 
-   result = ItineraryController.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert result.success
    assert len( result.reasons ) == 1
@@ -272,7 +272,7 @@ def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:30',
       departure_time='09:35',
@@ -287,7 +287,7 @@ def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
       wild_encounters=[],
    ).success
 
-   result = ItineraryController.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert result.success
    assert len( result.reasons ) == 1
@@ -315,7 +315,7 @@ def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
 
 def test_bulk_schedule_animals_requires_visit_date(
       db: DbControllers ) -> None:
-   result = ItineraryController.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert not result.success
    assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
@@ -326,7 +326,7 @@ def test_bulk_schedule_animals_with_no_unscheduled_animals(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       animals=[],
       attractions=[],
@@ -334,7 +334,7 @@ def test_bulk_schedule_animals_with_no_unscheduled_animals(
       wild_encounters=[],
    ).success
 
-   result = ItineraryController.bulk_schedule_animals()
+   result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert result.success
    assert result.reasons == ()

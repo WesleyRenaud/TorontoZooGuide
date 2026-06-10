@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from api.itinerary.controllers.itinerary_controller import ItineraryController
+from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_status import is_itinerary_error_suppressed
 from api.itinerary.data_access.itinerary_status import is_itinerary_status_suppressable
 from api.itinerary.data_access.itinerary_status import suppress_itinerary_status
@@ -15,7 +15,7 @@ def test_suppress_short_visit_warning_skips_confirmation_prompt(
       db: DbControllers ) -> None:
    assert db.conn is not None
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -29,11 +29,11 @@ def test_suppress_short_visit_warning_skips_confirmation_prompt(
       db.conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
-   result = ItineraryController.set_arrival_time( '16:30' )
+   result = ItineraryCoordinator.set_arrival_time( '16:30' )
 
    assert result.success
 
-   itinerary = ItineraryController.get_itinerary()
+   itinerary = ItineraryCoordinator.get_itinerary()
    assert itinerary.arrival_time == '16:30'
 
 
@@ -58,7 +58,7 @@ def test_suppress_itinerary_warning_persists_preference(
       db: DbControllers ) -> None:
    assert db.conn is not None
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -68,7 +68,7 @@ def test_suppress_itinerary_warning_persists_preference(
       wild_encounters=[],
    ).success
 
-   result = ItineraryController.suppress_itinerary_warning(
+   result = ItineraryCoordinator.suppress_itinerary_warning(
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE.value )
 
    assert result.success
@@ -81,7 +81,7 @@ def test_suppress_itinerary_warning_rejects_non_suppressable_type(
       db: DbControllers ) -> None:
    assert db.conn is not None
 
-   result = ItineraryController.suppress_itinerary_warning(
+   result = ItineraryCoordinator.suppress_itinerary_warning(
       ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS.value )
 
    assert not result.success
@@ -98,7 +98,7 @@ def test_clear_itinerary_leaves_error_suppressions(
       db.conn,
       ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE )
 
-   assert ItineraryController.clear_itinerary()
+   assert ItineraryCoordinator.clear_itinerary()
 
    assert is_itinerary_error_suppressed(
       db.conn,

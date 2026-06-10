@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from api.itinerary.controllers.itinerary_controller import ItineraryController
+from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from conftest import DbControllers
 
@@ -27,7 +27,7 @@ def _set_base_itinerary( db: DbControllers ) -> None:
       message=None,
    )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='17:00',
@@ -50,7 +50,7 @@ def _set_base_itinerary( db: DbControllers ) -> None:
 def test_remove_itinerary_animal_deletes_row( db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryController.remove_itinerary_item( 'animals', ANIMAL_KEY ).success
+   assert ItineraryCoordinator.remove_itinerary_item( 'animals', ANIMAL_KEY ).success
 
    saved = fetch_saved_itinerary( db.conn )
 
@@ -62,7 +62,7 @@ def test_remove_itinerary_animal_deletes_row( db: DbControllers ) -> None:
 def test_remove_itinerary_attraction_deletes_row( db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryController.remove_itinerary_item(
+   assert ItineraryCoordinator.remove_itinerary_item(
       'attractions',
       CAROUSEL ).success
 
@@ -74,7 +74,7 @@ def test_remove_itinerary_attraction_deletes_row( db: DbControllers ) -> None:
 def test_remove_itinerary_guardians_talk_deletes_row( db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryController.remove_itinerary_item(
+   assert ItineraryCoordinator.remove_itinerary_item(
       'guardians_talks',
       GUARDIANS_TALK ).success
 
@@ -86,7 +86,7 @@ def test_remove_itinerary_guardians_talk_deletes_row( db: DbControllers ) -> Non
 def test_remove_itinerary_wild_encounter_deletes_row( db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryController.remove_itinerary_item(
+   assert ItineraryCoordinator.remove_itinerary_item(
       'wild_encounters',
       AFRICAN_RAINFOREST ).success
 
@@ -100,13 +100,13 @@ def test_remove_itinerary_wild_encounter_deletes_row( db: DbControllers ) -> Non
 def test_remove_itinerary_event_deletes_row( db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryController.schedule_itinerary_item( 'lunch', '' ).success
+   assert ItineraryCoordinator.schedule_itinerary_item( 'lunch', '' ).success
 
    saved = fetch_saved_itinerary( db.conn )
 
    assert len( saved.event_rows ) == 1
 
-   assert ItineraryController.remove_itinerary_item( 'lunch', '' ).success
+   assert ItineraryCoordinator.remove_itinerary_item( 'lunch', '' ).success
 
    saved = fetch_saved_itinerary( db.conn )
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from api.itinerary.controllers.itinerary_controller import ItineraryController
+from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.logic.parse_schedule_item_request import parse_schedule_item_request
@@ -122,7 +122,7 @@ def test_schedule_itinerary_animal_uses_open_time_without_arrival(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
@@ -131,7 +131,7 @@ def test_schedule_itinerary_animal_uses_open_time_without_arrival(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
@@ -146,7 +146,7 @@ def test_schedule_itinerary_animal_uses_arrival_time_when_set(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -156,7 +156,7 @@ def test_schedule_itinerary_animal_uses_arrival_time_when_set(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
@@ -170,7 +170,7 @@ def test_date_change_unschedules_animal_before_new_admission_time(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:00',
       departure_time='17:00',
@@ -181,14 +181,14 @@ def test_date_change_unschedules_animal_before_new_admission_time(
       confirming_early_admission=True,
    ).success
 
-   scheduled = ItineraryController.schedule_itinerary_item(
+   scheduled = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
    assert scheduled.success
    assert scheduled.itinerary.animals[ 0 ].start_time == '09:00'
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-22',
       arrival_time='09:00',
       departure_time='17:00',
@@ -209,7 +209,7 @@ def test_date_change_unschedules_animal_after_new_closing_time(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:30',
       departure_time='19:00',
@@ -220,7 +220,7 @@ def test_date_change_unschedules_animal_after_new_closing_time(
       confirming_early_admission=True,
    ).success
 
-   scheduled = ItineraryController.schedule_itinerary_item(
+   scheduled = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='18:30' )
@@ -228,7 +228,7 @@ def test_date_change_unschedules_animal_after_new_closing_time(
    assert scheduled.success
    assert scheduled.itinerary.animals[ 0 ].start_time == '18:30'
 
-   result = ItineraryController.set_itinerary(
+   result = ItineraryCoordinator.set_itinerary(
       date='2026-06-22',
       arrival_time='09:30',
       departure_time='19:00',
@@ -249,7 +249,7 @@ def test_schedule_itinerary_animal_skips_existing_scheduled_slot(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       animals=[ LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY ],
@@ -259,12 +259,12 @@ def test_schedule_itinerary_animal_skips_existing_scheduled_slot(
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=PENGUIN_KEY )
 
@@ -290,7 +290,7 @@ def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
       ( 0.5, 'African Lion', 'Africa Savanna' ) )
    db.conn.commit()
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -300,7 +300,7 @@ def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
@@ -317,7 +317,7 @@ def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
       ( 8, 'African Lion', 'Africa Savanna' ) )
    db.conn.commit()
 
-   refreshed_itinerary = ItineraryController.get_itinerary()
+   refreshed_itinerary = ItineraryCoordinator.get_itinerary()
 
    assert refreshed_itinerary.animals[ 0 ].start_time == '09:30'
    assert refreshed_itinerary.animals[ 0 ].end_time == '09:30:30'
@@ -328,7 +328,7 @@ def test_schedule_itinerary_animal_rejects_unavailable_requested_start_time(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       animals=[ LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY ],
@@ -338,12 +338,12 @@ def test_schedule_itinerary_animal_rejects_unavailable_requested_start_time(
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
    ).success
 
-   rejected = ItineraryController.schedule_itinerary_item(
+   rejected = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=PENGUIN_KEY,
       start_time='09:30',
@@ -365,7 +365,7 @@ def test_schedule_itinerary_animal_rejects_conflicting_noon_start_time(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       animals=[ LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY ],
@@ -374,13 +374,13 @@ def test_schedule_itinerary_animal_rejects_conflicting_noon_start_time(
       wild_encounters=[],
    ).success
 
-   assert ItineraryController.schedule_itinerary_item(
+   assert ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='12:00 PM',
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=PENGUIN_KEY,
       start_time='12:00 PM',
@@ -402,7 +402,7 @@ def test_schedule_itinerary_event_uses_default_duration(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       animals=[],
@@ -411,7 +411,7 @@ def test_schedule_itinerary_event_uses_default_duration(
       wild_encounters=[],
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type=ItineraryEventType.LUNCH.value,
       key='' )
 
@@ -427,7 +427,7 @@ def test_schedule_itinerary_item_returns_no_available_slot(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
       departure_time='09:35',
@@ -438,7 +438,7 @@ def test_schedule_itinerary_item_returns_no_available_slot(
       confirming_short_visit=True,
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
@@ -451,7 +451,7 @@ def test_schedule_itinerary_animal_requires_existing_itinerary_row(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       animals=[],
       attractions=[],
@@ -459,7 +459,7 @@ def test_schedule_itinerary_animal_requires_existing_itinerary_row(
       wild_encounters=[],
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
@@ -473,7 +473,7 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_confirmed(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       animals=[],
       attractions=[],
@@ -481,7 +481,7 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_confirmed(
       wild_encounters=[],
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       confirming_schedule_item_not_on_itinerary=True )
@@ -503,7 +503,7 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_warning_suppressed(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       animals=[],
       attractions=[],
@@ -511,10 +511,10 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_warning_suppressed(
       wild_encounters=[],
    ).success
 
-   ItineraryController.suppress_itinerary_warning(
+   ItineraryCoordinator.suppress_itinerary_warning(
       ItineraryErrorType.ITEM_NOT_ON_ITINERARY.value )
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
@@ -536,7 +536,7 @@ def test_schedule_itinerary_animal_honors_requested_start_time(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -546,7 +546,7 @@ def test_schedule_itinerary_animal_honors_requested_start_time(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='10:00' )
@@ -561,7 +561,7 @@ def test_schedule_itinerary_animal_honors_requested_duration(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
@@ -571,7 +571,7 @@ def test_schedule_itinerary_animal_honors_requested_duration(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='10:00',
@@ -587,7 +587,7 @@ def test_schedule_itinerary_item_rejects_duration_without_time(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
 
-   assert ItineraryController.set_itinerary(
+   assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
@@ -595,7 +595,7 @@ def test_schedule_itinerary_item_rejects_duration_without_time(
       wild_encounters=[],
    ).success
 
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       duration_minutes=20 )
@@ -606,7 +606,7 @@ def test_schedule_itinerary_item_rejects_duration_without_time(
 
 def test_schedule_itinerary_item_requires_visit_date(
       db: DbControllers ) -> None:
-   result = ItineraryController.schedule_itinerary_item(
+   result = ItineraryCoordinator.schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
