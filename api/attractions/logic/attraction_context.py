@@ -1,13 +1,3 @@
-from __future__ import annotations
+from ...shared.opening_schedule_visit_context import OpeningScheduleVisitContext as AttractionContext
 
-from dataclasses import dataclass
-from datetime import date
-
-
-@dataclass( frozen=True )
-class AttractionContext:
-   normalized_month: int
-   normalized_day: int
-   target_date: date
-   weekday: int
-   is_weekend_or_holiday: bool
+__all__ = [ 'AttractionContext' ]

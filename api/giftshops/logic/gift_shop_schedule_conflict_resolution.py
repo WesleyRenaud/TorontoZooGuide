@@ -10,8 +10,6 @@ from .gift_shop_opening_schedule import GiftShopOpeningSchedule
 from ...shared.opening_schedule_conflict import save_opening_schedule_replacing_overlaps
 from ...shared.opening_schedule_conflict import save_opening_schedule_trimming_overlaps
 from ...shared.opening_schedule_conflict import trim_opening_schedule_conflict
-from ...shared.opening_schedule_dates import format_opening_schedule_date
-from ...shared.opening_schedule_dates import parse_opening_schedule_end_date
 from ...types import Connection
 
 
@@ -51,8 +49,6 @@ def trim_gift_shop_opening_schedule_conflict(
 
 
 __all__ = [
-   'format_opening_schedule_date',
-   'parse_opening_schedule_end_date',
    'save_gift_shop_opening_schedule_replacing_overlaps',
    'save_gift_shop_opening_schedule_trimming_overlaps',
    'trim_gift_shop_opening_schedule_conflict',

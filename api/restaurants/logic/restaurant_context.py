@@ -1,11 +1,3 @@
-from dataclasses import dataclass
-from datetime import date
+from ...shared.opening_schedule_visit_context import OpeningScheduleVisitContext as RestaurantContext
 
-
-@dataclass( frozen=True )
-class RestaurantContext:
-   normalized_month: int
-   normalized_day: int
-   target_date: date
-   weekday: int
-   is_weekend_or_holiday: bool
+__all__ = [ 'RestaurantContext' ]
