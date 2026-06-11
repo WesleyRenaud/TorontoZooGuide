@@ -44,7 +44,7 @@ function runNpmScript(script) {
 }
 
 function parseBackendCoverage(output) {
-   const matches = [...output.matchAll(/^TOTAL\s+\d+\s+\d+\s+(\d+%)/gm)];
+   const matches = [...output.matchAll(/^TOTAL\s+\d+\s+\d+\s+([\d.]+%)/gm)];
    const lastMatch = matches.at(-1);
 
    return parseCoveragePercent(lastMatch?.[1] ?? null);
