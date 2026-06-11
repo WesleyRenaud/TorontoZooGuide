@@ -1,54 +1,41 @@
 from __future__ import annotations
 
+from ..json_seed_loader import insert_json_records
+from ..json_seed_loader import load_json_records
+from ..json_seed_loader import seed_data_path
+from ..sql_loader import execute_sql_file
+from ..sql_loader import seed_sql_path
 from ...types import Cursor
 
-def create_table( cursor: Cursor ) -> None:
-   cursor.execute( 'DROP TABLE IF EXISTS EmergencyIntercom;' )
-   cursor.execute( ''' CREATE TABLE EmergencyIntercom
-                     (  X_COORD  FLOAT NOT NULL,
-                        Y_COORD  FLOAT NOT NULL,
-                        PRIMARY KEY (X_COORD, Y_COORD) ); ''' )
 
-
-emergency_intercoms = [
-   (
-      51.228,  # X coordinate on map
-      56.667   # Y coordinate on map
-   ),
-   (
-      45.700,  # X coordinate on map
-      68.533   # Y coordinate on map
-   ),
-   (
-      47.082,  # X coordinate on map
-      64.940   # Y coordinate on map
-   ),
-   (
-      41.132,  # X coordinate on map
-      77.714   # Y coordinate on map
-   ),
-   (
-      44.811,  # X coordinate on map
-      77.853   # Y coordinate on map
-   ),
-   (
-      72.217,  # X coordinate on map
-      69.166   # Y coordinate on map
-   ),
-   (
-      48.225,  # X coordinate on map
-      77.606   # Y coordinate on map
-   ),
-   (
-      69.416,  # X coordinate on map
-      48.717   # Y coordinate on map
-   ),
+RECORD_FIELDS = [
+   'x_coord',
+   'y_coord',
 ]
+
+DB_COLUMNS = [
+   'X_COORD',
+   'Y_COORD',
+]
+
+DATA_FILE = 'emergency_intercom.json'
+
+SQL_FILE = 'emergency_intercom.sql'
+
+
+def create_table( cursor: Cursor ) -> None:
+   execute_sql_file( cursor, seed_sql_path( SQL_FILE ) )
 
 
 def insert_rows( cursor: Cursor ) -> None:
-   cursor.executemany( ''' INSERT INTO EmergencyIntercom (
-                              X_COORD,
-                              Y_COORD
-                           )
-                           VALUES (?, ?) ''', emergency_intercoms )
+   insert_json_records(
+      cursor,
+      table='EmergencyIntercom',
+      columns=DB_COLUMNS,
+      fields=RECORD_FIELDS,
+      path=seed_data_path( DATA_FILE ) )
+
+
+emergency_intercoms = load_json_records(
+   seed_data_path( DATA_FILE ),
+   fields=RECORD_FIELDS )

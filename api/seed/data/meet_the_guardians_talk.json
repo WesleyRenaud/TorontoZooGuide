@@ -1,0 +1,128 @@
+[
+  {
+    "name": "Arctic Wolf",
+    "location": "Tundra Trek",
+    "x_coord": 75.246,
+    "y_coord": 55.427,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Komodo Dragon",
+    "location": "Australasia Pavilion",
+    "x_coord": 72.266,
+    "y_coord": 66.987,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Slender-Tailed Meerkat",
+    "location": "African Rainforest Pavilion",
+    "x_coord": 44.708,
+    "y_coord": 64.671,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Highland Cattle",
+    "location": "Eurasia Wilds",
+    "x_coord": 81.211,
+    "y_coord": 94.71,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Domestic Goat",
+    "location": "Goat World",
+    "x_coord": 65.363,
+    "y_coord": 73.687,
+    "maximum_duration": 30
+  },
+  {
+    "name": "North American River Otter",
+    "location": "Americas Pavilion",
+    "x_coord": 69.437,
+    "y_coord": 47.675,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Bactrian Camel",
+    "location": "Eurasia Wilds",
+    "x_coord": 82.038,
+    "y_coord": 84.526,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Nile Soft-Shelled Turtle",
+    "location": "African Rainforest Pavilion",
+    "x_coord": 43.724,
+    "y_coord": 65.371,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Snow Leopard",
+    "location": "Eurasia Wilds",
+    "x_coord": 85.478,
+    "y_coord": 75.529,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Spotted Hyena",
+    "location": "Africa Savanna",
+    "x_coord": 54.873,
+    "y_coord": 42.598,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Western Lowland Gorilla",
+    "location": "African Rainforest Pavilion",
+    "x_coord": 47.812,
+    "y_coord": 61.419,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Amur Tiger",
+    "location": "Eurasia Wilds",
+    "x_coord": 75.979,
+    "y_coord": 74.707,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Sumatran Orangutan",
+    "location": "Indo-Malaya Pavilion",
+    "x_coord": 45.806,
+    "y_coord": 74.345,
+    "maximum_duration": 30
+  },
+  {
+    "name": "New World Primates",
+    "location": "Americas Pavilion",
+    "x_coord": 68.239,
+    "y_coord": 50.929,
+    "maximum_duration": 30
+  },
+  {
+    "name": "White-Handed Gibbon",
+    "location": "Indo-Malaya Pavilion",
+    "x_coord": 46.297,
+    "y_coord": 73.699,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Northern Bald Eagle",
+    "location": "Tundra Trek",
+    "x_coord": 74.67,
+    "y_coord": 46.213,
+    "maximum_duration": 30
+  },
+  {
+    "name": "African Lion",
+    "location": "Africa Savanna",
+    "x_coord": 51.138,
+    "y_coord": 41.279,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Guardians of Plants Talk",
+    "location": "Greenhouse",
+    "x_coord": 56,
+    "y_coord": 15,
+    "maximum_duration": 30
+  }
+]

@@ -1,43 +1,41 @@
 from __future__ import annotations
 
+from ..json_seed_loader import insert_json_records
+from ..json_seed_loader import load_json_records
+from ..json_seed_loader import seed_data_path
+from ..sql_loader import execute_sql_file
+from ..sql_loader import seed_sql_path
 from ...types import Cursor
 
-def create_table( cursor: Cursor ) -> None:
-   cursor.execute( 'DROP TABLE IF EXISTS ItineraryEventDefault;' )
-   cursor.execute( ''' CREATE TABLE ItineraryEventDefault
-                     (  EVENT_TYPE                            TEXT        NOT NULL PRIMARY KEY,
-                        DEFAULT_ITINERARY_DURATION_MINUTES    INTEGER     NOT NULL ); ''' )
 
-itinerary_event_defaults = [
-   (
-      'breakfast',                                # Event type
-      20,                                         # Default itinerary duration (minutes)
-   ),
-   (
-      'lunch',                                    # Event type
-      40,                                         # Default itinerary duration (minutes)
-   ),
-   (
-      'dinner',                                   # Event type
-      40,                                         # Default itinerary duration (minutes)
-   ),
-   (
-      'snack',                                    # Event type
-      15,                                         # Default itinerary duration (minutes)
-   ),
-   (
-      'break',                                    # Event type
-      15,                                         # Default itinerary duration (minutes)
-   ),
-   (
-      'shopping',                                 # Event type
-      30,                                         # Default itinerary duration (minutes)
-   ),
+RECORD_FIELDS = [
+   'event_type',
+   'default_itinerary_duration_minutes',
 ]
 
+DB_COLUMNS = [
+   'EVENT_TYPE',
+   'DEFAULT_ITINERARY_DURATION_MINUTES',
+]
+
+DATA_FILE = 'itinerary_event_default.json'
+
+SQL_FILE = 'itinerary_event_default.sql'
+
+
+def create_table( cursor: Cursor ) -> None:
+   execute_sql_file( cursor, seed_sql_path( SQL_FILE ) )
+
+
 def insert_rows( cursor: Cursor ) -> None:
-   cursor.executemany( ''' INSERT INTO ItineraryEventDefault (
-                              EVENT_TYPE,
-                              DEFAULT_ITINERARY_DURATION_MINUTES
-                           )
-                           VALUES (?, ?) ''', itinerary_event_defaults )
+   insert_json_records(
+      cursor,
+      table='ItineraryEventDefault',
+      columns=DB_COLUMNS,
+      fields=RECORD_FIELDS,
+      path=seed_data_path( DATA_FILE ) )
+
+
+itinerary_event_defaults = load_json_records(
+   seed_data_path( DATA_FILE ),
+   fields=RECORD_FIELDS )

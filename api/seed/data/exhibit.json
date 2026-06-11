@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Australasia Pavilion",
+    "region": "Australasia"
+  },
+  {
+    "name": "Australasia Outdoor",
+    "region": "Australasia"
+  },
+  {
+    "name": "Eurasia Wilds",
+    "region": "Eurasia Wilds"
+  },
+  {
+    "name": "Tundra Trek",
+    "region": "Tundra Trek"
+  },
+  {
+    "name": "Americas Outdoor Mayan Temple Ruins",
+    "region": "Americas"
+  },
+  {
+    "name": "Americas Pavilion",
+    "region": "Americas"
+  },
+  {
+    "name": "Canadian Domain",
+    "region": "Canadian Domain"
+  },
+  {
+    "name": "Africa Savanna",
+    "region": "Africa"
+  },
+  {
+    "name": "African Rainforest Pavilion",
+    "region": "Africa"
+  },
+  {
+    "name": "Indo-Malaya Pavilion",
+    "region": "Indo-Malaya"
+  },
+  {
+    "name": "Indo-Malaya Outdoor",
+    "region": "Indo-Malaya"
+  },
+  {
+    "name": "Malayan Woods Pavilion",
+    "region": "Indo-Malaya"
+  },
+  {
+    "name": "Goat World",
+    "region": "Discovery Zone"
+  },
+  {
+    "name": "Kids Zoo",
+    "region": "Discovery Zone"
+  }
+]

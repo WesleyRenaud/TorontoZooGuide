@@ -1,0 +1,12 @@
+DROP TABLE IF EXISTS Restaurant;
+
+CREATE TABLE Restaurant
+(  NAME              VARCHAR(64) NOT NULL,
+   LOCATION          VARCHAR(64),
+   SUB_LOCATION      VARCHAR(64),
+   DESCRIPTION       TEXT        NOT NULL,
+   MENU_LINK         TEXT,
+   X_COORD           FLOAT       NOT NULL,
+   Y_COORD           FLOAT       NOT NULL,
+   FOREIGN KEY (LOCATION) REFERENCES Region(Name),
+   PRIMARY KEY (NAME) );

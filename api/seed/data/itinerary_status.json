@@ -1,0 +1,62 @@
+[
+  {
+    "status": "itineraryDateNotSet",
+    "is_suppressable": 0
+  },
+  {
+    "status": "timeOutOfBounds",
+    "is_suppressable": 0
+  },
+  {
+    "status": "timeOrderInvalid",
+    "is_suppressable": 0
+  },
+  {
+    "status": "saveFailed",
+    "is_suppressable": 0
+  },
+  {
+    "status": "arrivalDepartureTooClose",
+    "is_suppressable": 1
+  },
+  {
+    "status": "earlyAdmissionRequiresMembership",
+    "is_suppressable": 1
+  },
+  {
+    "status": "noAvailableSlot",
+    "is_suppressable": 0
+  },
+  {
+    "status": "requestedTimeNotAvailable",
+    "is_suppressable": 0
+  },
+  {
+    "status": "itemNotOnItinerary",
+    "is_suppressable": 1
+  },
+  {
+    "status": "guardiansTalkWillUnscheduleItems",
+    "is_suppressable": 0
+  },
+  {
+    "status": "wildEncounterWillUnscheduleItems",
+    "is_suppressable": 0
+  },
+  {
+    "status": "guardiansTalkWildEncounterTimeConflict",
+    "is_suppressable": 0
+  },
+  {
+    "status": "wildEncounterTimeConflict",
+    "is_suppressable": 0
+  },
+  {
+    "status": "bulkScheduleAnimalsNotEnoughTime",
+    "is_suppressable": 0
+  },
+  {
+    "status": "bulkScheduleAnimalsAlreadyScheduled",
+    "is_suppressable": 0
+  }
+]

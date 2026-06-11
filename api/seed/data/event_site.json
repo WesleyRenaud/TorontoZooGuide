@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Special Events Center",
+    "x_coord": 71.908,
+    "y_coord": 79.867
+  },
+  {
+    "name": "Wildlife Marquee",
+    "x_coord": 71.024,
+    "y_coord": 75.519
+  },
+  {
+    "name": "Conservation Clubhouse",
+    "x_coord": 70.698,
+    "y_coord": 81.363
+  },
+  {
+    "name": "Learning & Engagement Auditorium",
+    "x_coord": 61.957,
+    "y_coord": 71.829
+  },
+  {
+    "name": "Canopy Classroom",
+    "x_coord": 48.227,
+    "y_coord": 76.278
+  },
+  {
+    "name": "Serengeti Bush Camp",
+    "x_coord": 36.801,
+    "y_coord": 53.564
+  }
+]

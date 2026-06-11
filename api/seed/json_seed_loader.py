@@ -18,6 +18,31 @@ def seed_data_dir( dirname: str ) -> Path:
    return SEED_DATA_DIR / dirname
 
 
+def load_json_records(
+      path: Path,
+      *,
+      fields: list[ str ] ) -> list[ tuple[ Any, ... ] ]:
+   with path.open( encoding='utf-8' ) as seed_file:
+      records = json.load( seed_file )
+
+   if not isinstance( records, list ):
+      raise ValueError( f'Expected a JSON array in { path }.' )
+
+   rows: list[ tuple[ Any, ... ] ] = []
+
+   for index, record in enumerate( records ):
+      if not isinstance( record, dict ):
+         raise ValueError( f'Expected record { index } in { path } to be an object.' )
+
+      try:
+         rows.append( tuple( record[ field ] for field in fields ) )
+      except KeyError as error:
+         raise ValueError(
+            f'Missing { error } on record { index } in { path }.' ) from error
+
+   return rows
+
+
 def load_json_rows( path: Path ) -> list[ tuple[ Any, ... ] ]:
    with path.open( encoding='utf-8' ) as seed_file:
       rows = json.load( seed_file )
@@ -117,6 +142,20 @@ def insert_json_rows(
       table=table,
       columns=columns,
       rows=load_json_rows( path ) )
+
+
+def insert_json_records(
+      cursor: Cursor,
+      *,
+      table: str,
+      columns: list[ str ],
+      fields: list[ str ],
+      path: Path ) -> None:
+   insert_rows(
+      cursor,
+      table=table,
+      columns=columns,
+      rows=load_json_records( path, fields=fields ) )
 
 
 def insert_day_seasonal_availability_curve_directory(

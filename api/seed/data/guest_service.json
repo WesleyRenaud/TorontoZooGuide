@@ -1,0 +1,32 @@
+[
+  {
+    "service_type": "First Aid & Family Center",
+    "x_coord": 50.783,
+    "y_coord": 55.561
+  },
+  {
+    "service_type": "Information",
+    "x_coord": 72.294,
+    "y_coord": 57.641
+  },
+  {
+    "service_type": "Information",
+    "x_coord": 50.235,
+    "y_coord": 61.71
+  },
+  {
+    "service_type": "Information",
+    "x_coord": 58.73,
+    "y_coord": 78.782
+  },
+  {
+    "service_type": "Rentals & Accessibility",
+    "x_coord": 56.587,
+    "y_coord": 79.762
+  },
+  {
+    "service_type": "Wheelchairs",
+    "x_coord": 57.193,
+    "y_coord": 79.673
+  }
+]

@@ -1,134 +1,45 @@
 from __future__ import annotations
 
+from ..json_seed_loader import insert_json_records
+from ..json_seed_loader import load_json_records
+from ..json_seed_loader import seed_data_path
+from ..sql_loader import execute_sql_file
+from ..sql_loader import seed_sql_path
 from ...types import Cursor
 
-def create_table( cursor: Cursor ) -> None:
-   cursor.execute( 'DROP TABLE IF EXISTS WildEncounter;' )
-   cursor.execute( ''' CREATE TABLE WildEncounter
-                     (  NAME             TEXT    NOT NULL,
-                        MEETING_SPOT     TEXT    NOT NULL,
-                        LINK             TEXT    NOT NULL,
-                        MAXIMUM_DURATION INTEGER NOT NULL,
-                        FOREIGN KEY (MEETING_SPOT) REFERENCES WildEncounterMeetingSpot(NAME),
-                        PRIMARY KEY (NAME) ); ''' )
 
-wild_encounters = [
-   (
-      '''African Rainforest''',                                        # Name
-      '''Wild Encounter - Africa Meeting Spot''',                      # Meeting spot
-      '''https://www.torontozoo.com/tickets/weafricarainforest''',     # Link
-      45                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Ballin' with the Armadillos''',                               # Name
-      '''Wild Encounter - Discovery Zone Meeting Spot''',              # Meeting spot
-      '''https://www.torontozoo.com/tickets/wearmadillo''',            # Link
-      30                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Burrows & Caves''',                                           # Name
-      '''Wild Encounter - Africa Meeting Spot''',                      # Meeting spot
-      '''https://www.torontozoo.com/tickets/weburrows''',              # Link
-      60                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Highland Cattle''',                                           # Name
-      '''Wild Encounter - Eurasia Zoomobile Station Meeting Spot''',   # Meeting spot
-      '''https://www.torontozoo.com/tickets/wecows''',                 # Link
-      30                                                               # Maximum duration in minutes
-   ),
-   (
-      '''From Howls to Honks''',                                       # Name
-      '''Wild Encounter - Mayan Temple Meeting Spot''',                # Meeting spot
-      '''https://www.torontozoo.com/tickets/wearctic''',               # Link
-      30                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Kangaroo''',                                                  # Name
-      '''Wild Encounter - Eurasia Meeting Spot''',                     # Meeting spot
-      '''https://www.torontozoo.com/tickets/wekangaroo''',             # Link
-      45                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Scales & Tales of Americas''',                                # Name
-      '''Wild Encounter - First Nations Art Garden Meeting Spot''',    # Meeting spot
-      '''https://www.torontozoo.com/tickets/weamerica''',              # Link
-      45                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Sunrise in Sumatra''',                                        # Name
-      '''Wild Encounter - Zoo Front Entrance Gates Meeting Spot''',    # Meeting spot
-      '''https://www.torontozoo.com/tickets/wesumatra''',              # Link
-      60                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Animal Ambassadors: Keeper's Choice''',                       # Name
-      '''Wild Encounter - Discovery Zone Meeting Spot''',              # Meeting spot
-      '''https://www.torontozoo.com/tickets/weoutreach''',             # Link
-      # TO-DO: Update/verify maximum duration when this encounter returns
-      30                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Guardians of Snow Leopards''',                                # Name
-      '''Wild Encounter - Eurasia Meeting Spot''',                     # Meeting spot
-      '''https://www.torontozoo.com/tickets/wesnowleopard''',          # Link
-      40                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Guardians of White Rhinos''',                                 # Name
-      '''Wild Encounter - Penguin Meeting Spot''',                     # Meeting spot
-      '''https://www.torontozoo.com/tickets/wewhiterhino''',           # Link
-      45                                                               # Maximum duration in minutes
-   ),
-   (
-      '''The Tiny Tour''',                                             # Name
-      '''Wild Encounter - Discovery Zone Meeting Spot''',              # Meeting spot
-      '''https://www.torontozoo.com/tickets/wetiny''',                 # Link
-      30                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Capybara''',                                                  # Name
-      '''Wild Encounter - Mayan Temple Meeting Spot''',                # Meeting spot
-      '''https://www.torontozoo.com/tickets/wecapybara''',             # Link
-      30                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Guardians of Gorillas''',                                     # Name
-      '''Wild Encounter - Penguin Meeting Spot''',                     # Meeting spot
-      '''https://www.torontozoo.com/tickets/wegorilla''',              # Link
-      45                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Great Barrier Reef''',                                        # Name
-      '''Wild Encounter - Eurasia Meeting Spot''',                     # Meeting spot
-      '''https://www.torontozoo.com/tickets/wegbr''',                  # Link
-      20                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Mischevious Meerkats''',                                      # Name
-      '''Wild Encounter - Africa Meeting Spot''',                      # Meeting spot
-      '''https://www.torontozoo.com/tickets/wemeerkats''',             # Link
-      20                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Savanna Safari''',                                            # Name
-      '''Wild Encounter - Penguin Meeting Spot''',                     # Meeting spot
-      '''https://www.torontozoo.com/tickets/wesavannasafarI''',        # Link
-      60                                                               # Maximum duration in minutes
-   ),
-   (
-      '''Grizzly Bear''',                                              # Name
-      '''Wild Encounter - Canadian Domain Meeting Spot''',             # Meeting spot
-      '''https://www.torontozoo.com/tickets/wegrizzly''',              # Link
-      45                                                               # Maximum duration in minutes
-   )
+RECORD_FIELDS = [
+   'name',
+   'meeting_spot',
+   'link',
+   'maximum_duration',
 ]
 
+DB_COLUMNS = [
+   'NAME',
+   'MEETING_SPOT',
+   'LINK',
+   'MAXIMUM_DURATION',
+]
+
+DATA_FILE = 'wild_encounter.json'
+
+SQL_FILE = 'wild_encounter.sql'
+
+
+def create_table( cursor: Cursor ) -> None:
+   execute_sql_file( cursor, seed_sql_path( SQL_FILE ) )
+
+
 def insert_rows( cursor: Cursor ) -> None:
-   cursor.executemany( ''' INSERT INTO WildEncounter (
-                              NAME,
-                              MEETING_SPOT,
-                              LINK,
-                              MAXIMUM_DURATION
-                           ) 
-                           VALUES (?, ?, ?, ?) ''', wild_encounters )
+   insert_json_records(
+      cursor,
+      table='WildEncounter',
+      columns=DB_COLUMNS,
+      fields=RECORD_FIELDS,
+      path=seed_data_path( DATA_FILE ) )
+
+
+wild_encounters = load_json_records(
+   seed_data_path( DATA_FILE ),
+   fields=RECORD_FIELDS )

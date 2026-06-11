@@ -1,0 +1,102 @@
+[
+  {
+    "name": "Zoomobile",
+    "free_with_admission": 0,
+    "description": "All Aboard for a Wild Ride! Climb aboard the Zoomobile for a fun ride through your Toronto Zoo!",
+    "info_link": "https://www.torontozoo.com/tickets/zoomobile",
+    "hyperlink_text": "PRICING & DETAILS",
+    "x_coord": 56.068,
+    "y_coord": 83.343,
+    "default_itinerary_duration_minutes": 30
+  },
+  {
+    "name": "Conservation Carousel",
+    "free_with_admission": 0,
+    "description": "Carousels are timeless and fun for all ages! Hop on and choose a unique animal seat.",
+    "info_link": "https://www.torontozoo.com/tickets/carousel",
+    "hyperlink_text": "TICKETS & DETAILS",
+    "x_coord": 58.475,
+    "y_coord": 75.904,
+    "default_itinerary_duration_minutes": 15
+  },
+  {
+    "name": "Greenhouse",
+    "free_with_admission": 1,
+    "description": "Take a self-guided tour of our Greenhouse, full of plants from around the world.",
+    "info_link": "https://www.torontozoo.com/tz/greenhouse",
+    "hyperlink_text": "LEARN MORE",
+    "x_coord": 82.835,
+    "y_coord": 54.277,
+    "default_itinerary_duration_minutes": 15
+  },
+  {
+    "name": "Wildlife Health & Science Centre",
+    "free_with_admission": 1,
+    "description": "Step inside one of the most advanced wildlife health and science facilities in Canada.",
+    "info_link": "https://www.torontozoo.com/whsc",
+    "hyperlink_text": "LEARN MORE",
+    "x_coord": 84.459,
+    "y_coord": 50.743,
+    "default_itinerary_duration_minutes": 10
+  },
+  {
+    "name": "Kangaroo Walk-Thru",
+    "free_with_admission": 1,
+    "description": "Walk among the kangaroos!",
+    "info_link": "https://www.torontozoo.com/tz/kangaroo",
+    "hyperlink_text": "LEARN MORE",
+    "x_coord": 74.985,
+    "y_coord": 70.331,
+    "default_itinerary_duration_minutes": 10
+  },
+  {
+    "name": "Virtual Reality (VR) Theatre!",
+    "free_with_admission": 0,
+    "description": "An interactive adventure! This fully immersive technology will transport you from Scarborough to various locations around          the world. Three Shows to Choose From!",
+    "info_link": "https://www.torontozoo.com/tickets/wildexplorer",
+    "hyperlink_text": "PRICING & DETAILS",
+    "x_coord": 71.786,
+    "y_coord": 59.947,
+    "default_itinerary_duration_minutes": 20
+  },
+  {
+    "name": "TundraAir Ride",
+    "free_with_admission": 0,
+    "description": "Soar through the air at speeds of 48km/hr over the Tundra Trek on the TundraAir Ride.",
+    "info_link": "https://www.torontozoo.com/tz/tundraair",
+    "hyperlink_text": "PRICING & DETAILS",
+    "x_coord": 75.152,
+    "y_coord": 60.212,
+    "default_itinerary_duration_minutes": 15
+  },
+  {
+    "name": "Gorilla Climb Ropes Course",
+    "free_with_admission": 0,
+    "description": "Hang out like the gorilla troop do! Swing, crawl and balance on 26 elements almost 33 feet high!",
+    "info_link": "https://www.torontozoo.com/tz/gorillaclimb",
+    "hyperlink_text": "PRICING & DETAILS",
+    "x_coord": 50.023,
+    "y_coord": 58.884,
+    "default_itinerary_duration_minutes": 40
+  },
+  {
+    "name": "Splash Island",
+    "free_with_admission": 1,
+    "description": "Cool off at our 2-acre splash pad, filled with water-spouting animals.",
+    "info_link": "https://www.torontozoo.com/tz/splash",
+    "hyperlink_text": "LEARN MORE",
+    "x_coord": 67.797,
+    "y_coord": 72.648,
+    "default_itinerary_duration_minutes": 60
+  },
+  {
+    "name": "Face Painting, Caricatures and Henna!",
+    "free_with_admission": 0,
+    "description": "Transform into your favorite animal with our talented face painters and caricature artists!",
+    "info_link": "https://www.torontozoo.com/tz/facepainting",
+    "hyperlink_text": "LEARN MORE",
+    "x_coord": 73.669,
+    "y_coord": 59.054,
+    "default_itinerary_duration_minutes": 20
+  }
+]

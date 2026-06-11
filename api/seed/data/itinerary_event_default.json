@@ -1,0 +1,26 @@
+[
+  {
+    "event_type": "breakfast",
+    "default_itinerary_duration_minutes": 20
+  },
+  {
+    "event_type": "lunch",
+    "default_itinerary_duration_minutes": 40
+  },
+  {
+    "event_type": "dinner",
+    "default_itinerary_duration_minutes": 40
+  },
+  {
+    "event_type": "snack",
+    "default_itinerary_duration_minutes": 15
+  },
+  {
+    "event_type": "break",
+    "default_itinerary_duration_minutes": 15
+  },
+  {
+    "event_type": "shopping",
+    "default_itinerary_duration_minutes": 30
+  }
+]

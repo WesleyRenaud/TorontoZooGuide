@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS GiftShop;
+
+CREATE TABLE GiftShop
+(  NAME              VARCHAR(64) NOT NULL,
+   LOCATION          VARCHAR(64) NOT NULL,
+   DESCRIPTION       TEXT        NOT NULL,
+   X_COORD           FLOAT       NOT NULL,
+   Y_COORD           FLOAT       NOT NULL,
+   PRIMARY KEY (NAME) );
