@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Wild Encounter - Penguin Meeting Spot",
+    "x_coord": 53.338,
+    "y_coord": 47.237
+  },
+  {
+    "name": "Wild Encounter - Africa Meeting Spot",
+    "x_coord": 40.044,
+    "y_coord": 69
+  },
+  {
+    "name": "Wild Encounter - Discovery Zone Meeting Spot",
+    "x_coord": 65.885,
+    "y_coord": 77.803
+  },
+  {
+    "name": "Wild Encounter - Eurasia Meeting Spot",
+    "x_coord": 77.23,
+    "y_coord": 63.73
+  },
+  {
+    "name": "Wild Encounter - Mayan Temple Meeting Spot",
+    "x_coord": 75.819,
+    "y_coord": 42.75
+  },
+  {
+    "name": "Wild Encounter - Eurasia Zoomobile Station Meeting Spot",
+    "x_coord": 75.943,
+    "y_coord": 90.577
+  },
+  {
+    "name": "Wild Encounter - Zoo Front Entrance Gates Meeting Spot",
+    "x_coord": 59.812,
+    "y_coord": 85.689
+  },
+  {
+    "name": "Wild Encounter - First Nations Art Garden Meeting Spot",
+    "x_coord": 70.329,
+    "y_coord": 53.162
+  },
+  {
+    "name": "Wild Encounter - Canadian Domain Meeting Spot",
+    "x_coord": 35.584,
+    "y_coord": 20.07
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "title": "Entrance Restroom",
+    "x_coord": 57.418,
+    "y_coord": 84.787
+  },
+  {
+    "title": "Africa Restaurant Restroom",
+    "x_coord": 52.751,
+    "y_coord": 59.47
+  },
+  {
+    "title": "Simba Safari Lodge Restroom",
+    "x_coord": 38.27,
+    "y_coord": 51.794
+  },
+  {
+    "title": "Canadian Domain Zoomobile Stop Restroom",
+    "x_coord": 36.066,
+    "y_coord": 25.484
+  },
+  {
+    "title": "Canadian Domain Restroom",
+    "x_coord": 17.865,
+    "y_coord": 13.699
+  },
+  {
+    "title": "Caribou Café Restroom",
+    "x_coord": 72.594,
+    "y_coord": 54.25
+  },
+  {
+    "title": "Eurasia Restroom",
+    "x_coord": 77.472,
+    "y_coord": 69.345
+  },
+  {
+    "title": "Splash Island Restroom",
+    "x_coord": 67.201,
+    "y_coord": 75.854
+  },
+  {
+    "title": "Zootique Restroom",
+    "x_coord": 62.467,
+    "y_coord": 72.934
+  },
+  {
+    "title": "African Rainforest Restroom",
+    "x_coord": 46.313,
+    "y_coord": 68.117
+  }
+]

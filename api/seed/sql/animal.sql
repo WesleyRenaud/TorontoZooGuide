@@ -1,0 +1,16 @@
+DROP TABLE IF EXISTS Animal;
+
+CREATE TABLE Animal
+(  SPECIES                       VARCHAR(64) NOT NULL,
+   LATIN_NAME                    VARCHAR(64),
+   MIN_TEMPERATURE               INTEGER,
+   GENERAL_VIEWING_TIPS          TEXT,
+   SEASONAL_VIEWING_TIPS         TEXT,
+   IDENTIFICATION                TEXT,
+   HABITAT_AND_RANGE             TEXT,
+   DIET_AND_FEEDING              TEXT,
+   BEHAVIOUR_AND_SOCIAL_LIFE     TEXT,
+   ADAPTATIONS                   TEXT,
+   REPRODUCTION_AND_LIFE_CYCLE   TEXT,
+   ANIMALS_AT_THE_ZOO            TEXT,
+   PRIMARY KEY (SPECIES) );

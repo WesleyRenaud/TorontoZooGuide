@@ -1,0 +1,110 @@
+[
+  {
+    "name": "African Rainforest",
+    "meeting_spot": "Wild Encounter - Africa Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/weafricarainforest",
+    "maximum_duration": 45
+  },
+  {
+    "name": "Ballin' with the Armadillos",
+    "meeting_spot": "Wild Encounter - Discovery Zone Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wearmadillo",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Burrows & Caves",
+    "meeting_spot": "Wild Encounter - Africa Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/weburrows",
+    "maximum_duration": 60
+  },
+  {
+    "name": "Highland Cattle",
+    "meeting_spot": "Wild Encounter - Eurasia Zoomobile Station Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wecows",
+    "maximum_duration": 30
+  },
+  {
+    "name": "From Howls to Honks",
+    "meeting_spot": "Wild Encounter - Mayan Temple Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wearctic",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Kangaroo",
+    "meeting_spot": "Wild Encounter - Eurasia Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wekangaroo",
+    "maximum_duration": 45
+  },
+  {
+    "name": "Scales & Tales of Americas",
+    "meeting_spot": "Wild Encounter - First Nations Art Garden Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/weamerica",
+    "maximum_duration": 45
+  },
+  {
+    "name": "Sunrise in Sumatra",
+    "meeting_spot": "Wild Encounter - Zoo Front Entrance Gates Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wesumatra",
+    "maximum_duration": 60
+  },
+  {
+    "name": "Animal Ambassadors: Keeper's Choice",
+    "meeting_spot": "Wild Encounter - Discovery Zone Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/weoutreach",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Guardians of Snow Leopards",
+    "meeting_spot": "Wild Encounter - Eurasia Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wesnowleopard",
+    "maximum_duration": 40
+  },
+  {
+    "name": "Guardians of White Rhinos",
+    "meeting_spot": "Wild Encounter - Penguin Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wewhiterhino",
+    "maximum_duration": 45
+  },
+  {
+    "name": "The Tiny Tour",
+    "meeting_spot": "Wild Encounter - Discovery Zone Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wetiny",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Capybara",
+    "meeting_spot": "Wild Encounter - Mayan Temple Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wecapybara",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Guardians of Gorillas",
+    "meeting_spot": "Wild Encounter - Penguin Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wegorilla",
+    "maximum_duration": 45
+  },
+  {
+    "name": "Great Barrier Reef",
+    "meeting_spot": "Wild Encounter - Eurasia Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wegbr",
+    "maximum_duration": 20
+  },
+  {
+    "name": "Mischevious Meerkats",
+    "meeting_spot": "Wild Encounter - Africa Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wemeerkats",
+    "maximum_duration": 20
+  },
+  {
+    "name": "Savanna Safari",
+    "meeting_spot": "Wild Encounter - Penguin Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wesavannasafarI",
+    "maximum_duration": 60
+  },
+  {
+    "name": "Grizzly Bear",
+    "meeting_spot": "Wild Encounter - Canadian Domain Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wegrizzly",
+    "maximum_duration": 45
+  }
+]

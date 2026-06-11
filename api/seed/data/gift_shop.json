@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Zootique",
+    "location": "Learning & Engagement Centre",
+    "description": "Our largest main boutique with the widest variety of souvenirs, toys, plush, apparel, books, jewelry, and more! Something          for everyone, from every region of the Zoo.",
+    "x_coord": 61.894,
+    "y_coord": 73.443
+  },
+  {
+    "name": "Courtyard Kiosk",
+    "location": "Front Courtyard",
+    "description": "This green pod is a quick stop shop in the main front courtyard for all your Zoo necessities! \n          Located beside our Conservation Carousel.",
+    "x_coord": 57.492,
+    "y_coord": 78.41
+  },
+  {
+    "name": "Eurasia Wilds Outpost",
+    "location": "Eurasia Wilds",
+    "description": "Located by our endangered Amur Tiger exhibit, this indoor shop offers a variety of tiger themed souvenirs and gifts, as          well as your other favourite Eurasian species!",
+    "x_coord": 78.41,
+    "y_coord": 71.053
+  },
+  {
+    "name": "Savanna Shop",
+    "location": "Africa Savanna",
+    "description": "An indoor gift shop located by the Africa Zoomobile station. Souvenirs, toys, plush, apparel, and exclusive African gifts          to remember some of your favourite species found in the African Savanna.",
+    "x_coord": 56.47,
+    "y_coord": 37.199
+  },
+  {
+    "name": "Twiga Market",
+    "location": "Africa Savanna",
+    "description": "A breezy outdoor market located directly in front of our Giraffe exhibit. Specializing in Giraffe, Hippo, and Gorilla          themed souvenirs and gifts.",
+    "x_coord": 41.501,
+    "y_coord": 69.603
+  }
+]

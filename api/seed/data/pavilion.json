@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Australasia Pavilion",
+    "region": "Australasia",
+    "description": "Explore a variety of flora and fauna from Oceania and Southeast Asia. Birdwatch for species like cockatoos, Victoria          crowned pigeons, and the elusive tawny frogmouth. Venture through the jungle to find a variety of species of reptiles and          invertebrates, most notably the Komodo dragons. Stop by the Southern hairy-nosed wombats, and then exit through the Great          Barrier Reef exhibit where you can spot lionfish, seahorses, jellyfish, and much more.",
+    "x_coord": 74.183,
+    "y_coord": 65.2
+  },
+  {
+    "name": "Americas Pavilion",
+    "region": "Americas",
+    "description": "View species in a variety of habitats from all across the Americas. Begin with the tropical birds and primates of South          America. Next venture through a number of aquatic habitats, and into the everglades wing where you can spot a number of          invertebrates and the American Alligators. Move through the Costa Rican wing, and enjoy the playful river otters. Finally          see a variety of North American reptiles, including the native Blanding's turtle.",
+    "x_coord": 67.517,
+    "y_coord": 49.129
+  },
+  {
+    "name": "African Rainforest Pavilion",
+    "region": "Africa",
+    "description": "Experience Africa's breathtaking rainforests as this pavilion provides a home to a wide range of Africa's most stunning          species. Watch intelligent gorillas, playful lemurs, charismatic pygmy hippos, and so much more.",
+    "x_coord": 45.746,
+    "y_coord": 66.798
+  },
+  {
+    "name": "Indo-Malaya Pavilion",
+    "region": "Indo-Malaya",
+    "description": "Walk through this expansive pavilion which captures the beauty and scale of the beautiful Indonesian rainforest pavilions.          Watch orangutans and gibbons swing through the tree canopy, listen to the calls of the tropical birds, and watch a number          of species of reptile scurry across the forest floor.",
+    "x_coord": 47.56,
+    "y_coord": 75.43
+  },
+  {
+    "name": "Malayan Woods Pavilion",
+    "region": "Indo-Malaya",
+    "description": "Come in and spot the clouded leopards and experience the forests of Malaysian as you walk through this pavilion.",
+    "x_coord": 51.28,
+    "y_coord": 81.497
+  },
+  {
+    "name": "Greater One-Horned Rhinoceros Pavilion",
+    "region": "Indo-Malaya",
+    "description": "Enter this building to perhaps catch of glimpse of the greater one-horned rhinoceros or babirusa.",
+    "x_coord": 53.275,
+    "y_coord": 82.823
+  }
+]

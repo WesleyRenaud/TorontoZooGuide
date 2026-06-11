@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Main Zoomobile Station",
+    "on_winter_route": 1,
+    "description": "This stop is right beside the entrance and exit to the zoo. Located next door is the Peacock Café. This is also the closest          stop to Indo-Malaya where you can see Sumatran orangutans, white-handed gibbons, greater one-horned rhinos, clouded          leopards, and so much more.",
+    "x_coord": 56.992,
+    "y_coord": 80.918
+  },
+  {
+    "name": "Canadian Domain Zoomobile Station",
+    "on_winter_route": 0,
+    "description": "This stop gives you direct access to the Canadian Domain, home to raccoons, bald eagles, wood bison, cougars, and grizzly          bears. Please note that this station is located at the top of the domain hill, and if you wish to venture down to see the          Canadian animals you will have to come back up the hill on foot.",
+    "x_coord": 35.293,
+    "y_coord": 26.083
+  },
+  {
+    "name": "Africa Zoomobile Station",
+    "on_winter_route": 0,
+    "description": "This stop drops you off at the back of the Africa Savanna section of the zoo home to hyenas, African penguins, lions,          cheetahs, zebras, rhinos, hippos, giraffes, and more! If you move through the savanna you will reach the African Rainforest          Pavilion which is home to Western lowland gorillas, pygmy hippos, ring-tailed lemurs, to name a few.",
+    "x_coord": 56.186,
+    "y_coord": 35.325
+  },
+  {
+    "name": "Tundra Zoomobile Station",
+    "on_winter_route": 1,
+    "description": "This stop drops you off just behind the Tundra Trek exhibit. The Tundra Trek is home to polar bears, arctic wolves, and          caribou. During the warmer months, via the tundra trek you can also access the Mayan Temple Ruins, which is home to          capybaras, flamingoes, and spider monkeys. Across from Tundra zoomobile station are the greenhouse and wildlife health          center, which are available for guests to walk through, free with admission, year-round. This stop is also the closest          access point to the Americas and Australasia pavilions.",
+    "x_coord": 80.191,
+    "y_coord": 56.422
+  },
+  {
+    "name": "Eurasia Zoomobile Station",
+    "on_winter_route": 1,
+    "description": "This station is located right in the middle of the Eurasia Wilds loop. In Eurasia you can find Amur tigers, snow leopards,          red pandas, camels, highland cows, and more. Between this station and the tundra station you will also pass through the          Eurasia Wilds drive-thru where you can get face-to-face with Asian wild horses, West Caucasian turs, and yaks.",
+    "x_coord": 75.145,
+    "y_coord": 88.373
+  }
+]

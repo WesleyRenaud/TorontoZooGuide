@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS ItineraryStatus;
+
+CREATE TABLE ItineraryStatus
+(  STATUS             TEXT NOT NULL PRIMARY KEY,
+   IS_SUPPRESSABLE    BOOL NOT NULL );

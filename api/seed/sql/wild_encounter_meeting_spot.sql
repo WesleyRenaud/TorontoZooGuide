@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS WildEncounterMeetingSpot;
+
+CREATE TABLE WildEncounterMeetingSpot
+(  NAME     TEXT  NOT NULL,
+   X_COORD  FLOAT NOT NULL,
+   Y_COORD  FLOAT NOT NULL,
+   PRIMARY KEY (NAME) );

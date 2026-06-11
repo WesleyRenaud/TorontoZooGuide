@@ -1,0 +1,137 @@
+[
+  {
+    "name": "Peacock Café",
+    "location": "Front Courtyard",
+    "sub_location": null,
+    "description": "Enjoy Tim Hortons fresh coffee, hot and cold beverages, breakfast sandwiches, pastries and more.",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/peacockcafemenu.pdf",
+    "x_coord": 57.079,
+    "y_coord": 83.618
+  },
+  {
+    "name": "Africa Restaurant",
+    "location": "Africa",
+    "sub_location": null,
+    "description": "Enjoy a variety of cuisine including Pizza Pizza, Smokes Poutinerie (seasonal), and our very own Zoo Grill. *Fully Licensed.       ",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/Africa%20Menu%202025.pdf?",
+    "x_coord": 53.383,
+    "y_coord": 57.213
+  },
+  {
+    "name": "BeaverTails Trailer",
+    "location": "Front Courtyard",
+    "sub_location": null,
+    "description": "Iconic hand-stretched pastries, creating delicious memories since 1978.",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/BeavertailsMenu.pdf",
+    "x_coord": 60.179,
+    "y_coord": 74.959
+  },
+  {
+    "name": "Americas Pretzel Bar",
+    "location": "Americas",
+    "sub_location": null,
+    "description": "Serving warm Jumbo pretzels, assorted Craft beers, wine, seltzers, soft drinks, ice cream, and snacks",
+    "menu_link": null,
+    "x_coord": 69.49,
+    "y_coord": 56.634
+  },
+  {
+    "name": "Caribou Café",
+    "location": "Tundra Trek",
+    "sub_location": null,
+    "description": "Located next to the arctic wolves, enjoy a variety of options including Zoo Grill, and Pizza Pizza! *Fully Licensed.",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/Caribou%20Cafe%20Menu%202025.pdf?",
+    "x_coord": 71.91,
+    "y_coord": 56.193
+  },
+  {
+    "name": "BeaverTails Lodge",
+    "location": "Tundra Trek",
+    "sub_location": null,
+    "description": "Delicious whole-wheat deep fried pastry with a variety of toppings plus cold drinks.",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/BeavertailsMenu.pdf",
+    "x_coord": 78.454,
+    "y_coord": 56.532
+  },
+  {
+    "name": "Thorntree Café",
+    "location": "Africa",
+    "sub_location": null,
+    "description": "Come hang out for bubble tea and smoothies at Palgong Tea near the Masai giraffes!",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf",
+    "x_coord": 41.323,
+    "y_coord": 67.206
+  },
+  {
+    "name": "Eurasia Pizza Pizza",
+    "location": "Eurasia Wilds",
+    "sub_location": null,
+    "description": "Enjoy a hot slice of Pizza Pizza or order a whole pizza for the whole family!",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/Eurasia%20pizza%20pizza%20menu%202025.pdf",
+    "x_coord": 78.302,
+    "y_coord": 72.147
+  },
+  {
+    "name": "Souvlaki Bros",
+    "location": "Africa",
+    "sub_location": "Africa Restaurant",
+    "description": "Enjoy Chicken Souvlaki, Falafel, Greek Salad, Wraps and Churros!",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/Souvlaki%20Bros%20Menu.pdf",
+    "x_coord": 53.202,
+    "y_coord": 58.399
+  },
+  {
+    "name": "Caribou Café Palgong",
+    "location": "Tundra Trek",
+    "sub_location": null,
+    "description": "Located next to the arctic wolves, outside of Caribou Café!",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/Palgong-Menu.pdf",
+    "x_coord": 71.344,
+    "y_coord": 56.601
+  },
+  {
+    "name": "Tundra Tacos",
+    "location": "Tundra Trek",
+    "sub_location": null,
+    "description": "Traditional tacos, venison tacos and churros, corn dogs, and fries, beer, wine, soft drinks  and seltzers, There is something          for everyone!",
+    "menu_link": null,
+    "x_coord": 72.858,
+    "y_coord": 56.303
+  },
+  {
+    "name": "Savanna Snack Bar",
+    "location": "Africa Savanna",
+    "sub_location": null,
+    "description": "Snacks, Beverages, Ice cream, Beer, Wine, and Pizza Pizza!",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/Toronto%20Zoo%20Savana%20Hut%20Menu%20Spring%202025.pdf",
+    "x_coord": 56.812,
+    "y_coord": 38.413
+  },
+  {
+    "name": "Simba Safari Lodge",
+    "location": "Africa Savanna",
+    "sub_location": null,
+    "description": "Located overlooking the white rhinos, enjoy a variety of drinks, snacks, burgers, hot dogs, salads, poutine and chicken.          *Fully Licensed.",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/Simba%20Menu%202025.pdf?",
+    "x_coord": 37.786,
+    "y_coord": 50.566
+  },
+  {
+    "name": "Smokes Poutinerie Trailer",
+    "location": "Front Courtyard",
+    "sub_location": null,
+    "description": "Enjoy a variety of poutine creations.",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/Smokes-Front-Courtyard-Menu.pdf",
+    "x_coord": 60.694,
+    "y_coord": 74.56
+  },
+  {
+    "name": "Wolf's Den",
+    "location": "Tundra Trek",
+    "sub_location": null,
+    "description": "Grab a quick beverage or snack including coffee and tea.",
+    "menu_link": "https://www.torontozoo.com/!/pdfs/food/Express%20Menu%202025.pdf",
+    "x_coord": 79.073,
+    "y_coord": 56.207
+  }
+]

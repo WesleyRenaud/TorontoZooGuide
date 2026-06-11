@@ -1,77 +1,41 @@
 from __future__ import annotations
 
+from ..json_seed_loader import insert_json_records
+from ..json_seed_loader import load_json_records
+from ..json_seed_loader import seed_data_path
+from ..sql_loader import execute_sql_file
+from ..sql_loader import seed_sql_path
 from ...types import Cursor
 
-def create_table( cursor: Cursor ) -> None:
-   cursor.execute( 'DROP TABLE IF EXISTS Exhibit;' )
-   cursor.execute( ''' CREATE TABLE Exhibit
-                     (  NAME              VARCHAR(64) NOT NULL,
-                        REGION            VARCHAR(64) NOT NULL,
-                        FOREIGN KEY (REGION) REFERENCES Region(Name),
-                        PRIMARY KEY (NAME) ); ''' )
 
-exhibits = [
-   (
-      'Australasia Pavilion',
-      'Australasia',
-   ),
-   (
-      'Australasia Outdoor',
-      'Australasia',
-   ),
-   (
-      'Eurasia Wilds',
-      'Eurasia Wilds',
-   ),
-   (
-      'Tundra Trek',
-      'Tundra Trek',
-   ),
-   (
-      'Americas Outdoor Mayan Temple Ruins',
-      'Americas',
-   ),
-   (
-      'Americas Pavilion',
-      'Americas',
-   ),
-   (
-      'Canadian Domain',
-      'Canadian Domain',
-   ),
-   (
-      'Africa Savanna',
-      'Africa',
-   ),
-   (
-      'African Rainforest Pavilion',
-      'Africa',
-   ),
-   (
-      'Indo-Malaya Pavilion',
-      'Indo-Malaya',
-   ),
-   (
-      'Indo-Malaya Outdoor',
-      'Indo-Malaya',
-   ),
-   (
-      'Malayan Woods Pavilion',
-      'Indo-Malaya',
-   ),
-   (
-      'Goat World',
-      'Discovery Zone',
-   ),
-   (
-      'Kids Zoo',
-      'Discovery Zone',
-   ),
+RECORD_FIELDS = [
+   'name',
+   'region',
 ]
 
+DB_COLUMNS = [
+   'NAME',
+   'REGION',
+]
+
+DATA_FILE = 'exhibit.json'
+
+SQL_FILE = 'exhibit.sql'
+
+
+def create_table( cursor: Cursor ) -> None:
+   execute_sql_file( cursor, seed_sql_path( SQL_FILE ) )
+
+
 def insert_rows( cursor: Cursor ) -> None:
-   cursor.executemany( ''' INSERT INTO Exhibit (
-                              NAME,
-                              REGION
-                           ) 
-                           VALUES (?, ?) ''', exhibits )
+   insert_json_records(
+      cursor,
+      table='Exhibit',
+      columns=DB_COLUMNS,
+      fields=RECORD_FIELDS,
+      path=seed_data_path( DATA_FILE ) )
+
+
+exhibits = load_json_records(
+   seed_data_path( DATA_FILE ),
+   fields=RECORD_FIELDS )

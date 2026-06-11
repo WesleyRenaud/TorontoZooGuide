@@ -1,79 +1,41 @@
 from __future__ import annotations
 
+from ..json_seed_loader import insert_json_records
+from ..json_seed_loader import load_json_records
+from ..json_seed_loader import seed_data_path
+from ..sql_loader import execute_sql_file
+from ..sql_loader import seed_sql_path
 from ...types import Cursor
 
-def create_table( cursor: Cursor ) -> None:
-   cursor.execute( 'DROP TABLE IF EXISTS ItineraryStatus;' )
-   cursor.execute( ''' CREATE TABLE ItineraryStatus
-                     (  STATUS             TEXT NOT NULL PRIMARY KEY,
-                        IS_SUPPRESSABLE    BOOL NOT NULL ); ''' )
 
-itinerary_statuses = [
-   (
-      'itineraryDateNotSet',                          # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'timeOutOfBounds',                              # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'timeOrderInvalid',                             # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'saveFailed',                                   # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'arrivalDepartureTooClose',                     # Status
-      1,                                              # Is suppressable
-   ),
-   (
-      'earlyAdmissionRequiresMembership',             # Status
-      1,                                              # Is suppressable
-   ),
-   (
-      'noAvailableSlot',                              # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'requestedTimeNotAvailable',                    # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'itemNotOnItinerary',                           # Status
-      1,                                              # Is suppressable
-   ),
-   (
-      'guardiansTalkWillUnscheduleItems',             # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'wildEncounterWillUnscheduleItems',             # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'guardiansTalkWildEncounterTimeConflict',       # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'wildEncounterTimeConflict',                    # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'bulkScheduleAnimalsNotEnoughTime',             # Status
-      0,                                              # Is suppressable
-   ),
-   (
-      'bulkScheduleAnimalsAlreadyScheduled',          # Status
-      0,                                              # Is suppressable
-   ),
+RECORD_FIELDS = [
+   'status',
+   'is_suppressable',
 ]
 
+DB_COLUMNS = [
+   'STATUS',
+   'IS_SUPPRESSABLE',
+]
+
+DATA_FILE = 'itinerary_status.json'
+
+SQL_FILE = 'itinerary_status.sql'
+
+
+def create_table( cursor: Cursor ) -> None:
+   execute_sql_file( cursor, seed_sql_path( SQL_FILE ) )
+
+
 def insert_rows( cursor: Cursor ) -> None:
-   cursor.executemany( ''' INSERT INTO ItineraryStatus (
-                              STATUS,
-                              IS_SUPPRESSABLE
-                           )
-                           VALUES (?, ?) ''', itinerary_statuses )
+   insert_json_records(
+      cursor,
+      table='ItineraryStatus',
+      columns=DB_COLUMNS,
+      fields=RECORD_FIELDS,
+      path=seed_data_path( DATA_FILE ) )
+
+
+itinerary_statuses = load_json_records(
+   seed_data_path( DATA_FILE ),
+   fields=RECORD_FIELDS )
