@@ -41,6 +41,9 @@ class MyHandler( JsonHandlerMixin, StaticFileHandlerMixin, BaseHTTPRequestHandle
 
       if route is not None:
          route( self )
+         return
+
+      self.send_error( 404, "Not Found" )
 
 
 def run_server( port: int = DEFAULT_PORT ) -> None:
