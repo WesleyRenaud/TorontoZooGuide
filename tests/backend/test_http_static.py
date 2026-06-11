@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from http_support import make_handler
 import pytest
 
 import api.server as server
@@ -108,3 +109,11 @@ def test_get_unknown_route_returns_404() -> None:
    missing.send_error = lambda code, message=None: missing.errors.append( ( code, message ) )
    server.MyHandler.do_GET( missing )
    assert missing.errors == [ ( 404, 'Not Found' ) ]
+
+
+def test_post_unknown_route_returns_404() -> None:
+   handler = make_handler( '/unknown-post-route' )
+
+   server.MyHandler.do_POST( handler )
+
+   assert handler.errors == [ ( 404, 'Not Found' ) ]
