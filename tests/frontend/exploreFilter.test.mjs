@@ -58,11 +58,21 @@ function createExploreTypeFilterDom({
    multiSelect.appendChild(dropdown);
    multiSelect.appendChild(chipContainer);
    multiSelect.classList.toggle = (className, shouldAdd) => {
+      if (shouldAdd === undefined) {
+         if (multiSelect.classList.contains(className)) {
+            multiSelect.classList.remove(className);
+         }
+         else {
+            multiSelect.classList.add(className);
+         }
+         return;
+      }
+
       if (shouldAdd) {
          multiSelect.classList.add(className);
       }
       else {
-         multiSelect.classList.delete(className);
+         multiSelect.classList.remove(className);
       }
    };
 
@@ -194,6 +204,43 @@ test('initExploreTypeFilter tracks checkbox selection and zoomobile route', () =
       assert.deepEqual(filter.getSelectedTypes(), ['restaurant', 'zoomobileRoute']);
       assert.deepEqual(changeCalls, ['changed', 'changed']);
       assert.equal(chipContainer.children[0].textContent, 'Restaurants');
+   }
+   finally {
+      teardownDocument();
+   }
+});
+
+test('initExploreTypeFilter toggles dropdown open state and closes on outside click', () => {
+   installTestWindow();
+   installDocument();
+
+   const documentListeners = {};
+   const originalAddEventListener = document.addEventListener;
+
+   document.addEventListener = (eventName, handler) => {
+      documentListeners[eventName] = handler;
+      originalAddEventListener(eventName, handler);
+   };
+
+   const { multiSelect, button } = createExploreTypeFilterDom({
+      selected: ['animal'],
+   });
+
+   try {
+      initExploreTypeFilter({
+         multiSelect,
+         getZoomobileRoute: () => 'none',
+      });
+
+      assert.equal(multiSelect.classList.contains('open'), false);
+
+      button.listeners.click?.({
+         stopPropagation() {},
+      });
+      assert.equal(multiSelect.classList.contains('open'), true);
+
+      documentListeners.click?.();
+      assert.equal(multiSelect.classList.contains('open'), false);
    }
    finally {
       teardownDocument();

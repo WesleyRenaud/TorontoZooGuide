@@ -42,6 +42,9 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
          add(value) {
             classes.add(value);
          },
+         remove(value) {
+            classes.delete(value);
+         },
          toggle(value, shouldAdd) {
             if (shouldAdd) {
                classes.add(value);
