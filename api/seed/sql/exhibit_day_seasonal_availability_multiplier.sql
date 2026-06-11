@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS ExhibitDaySeasonalViewabilityMultiplier;
+DROP TABLE IF EXISTS ExhibitDaySeasonalAvailabilityMultiplier;
+
+CREATE TABLE ExhibitDaySeasonalAvailabilityMultiplier
+(  EXHIBIT   VARCHAR(64) NOT NULL,
+   MONTH     INTEGER     NOT NULL CHECK (MONTH BETWEEN 1 AND 12),
+   DAY       INTEGER     NOT NULL CHECK (DAY BETWEEN 1 AND 31),
+   VALUE     FLOAT       NOT NULL CHECK (VALUE BETWEEN 0.0 AND 1.0),
+   FOREIGN KEY (EXHIBIT) REFERENCES Exhibit(NAME),
+   PRIMARY KEY (EXHIBIT, MONTH, DAY) );
