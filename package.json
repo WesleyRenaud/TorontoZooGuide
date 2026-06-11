@@ -7,7 +7,7 @@
       "clean": "node tools/cleanBuildArtifacts.js",
       "coverage": "node tools/coverageSummary.js",
       "coverage:js": "node --test --test-concurrency=1 --experimental-test-coverage --test-coverage-include='scripts/**/*.js' tests/frontend/frontend.test.mjs",
-      "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/backend --cov=api.connection --cov=api.server --cov=api.seed --cov-report=term-missing:skip-covered --cov-precision=2",
+      "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/backend --cov=api --cov-report=term-missing:skip-covered --cov-precision=2",
       "clear:itinerary": "python3 -m api.seed.clear_user_itinerary_data",
       "clear:itinerary-config": "python3 -m api.seed.clear_user_itinerary_config",
       "lint": "node tools/lint/mapSvgIntegrity.js && npm run lint:js && npm run lint:py",

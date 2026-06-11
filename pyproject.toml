@@ -1,3 +1,13 @@
+[tool.coverage.run]
+omit = [
+   "api/__main__.py",
+   "api/seed/clear_user_itinerary_config.py",
+   "api/seed/clear_user_itinerary_data.py",
+   "api/seed/create_schema.py",
+   "api/seed/seed_data.py",
+   "api/seed/migrations/runner.py",
+]
+
 [tool.ruff]
 target-version = "py311"
 exclude = [
