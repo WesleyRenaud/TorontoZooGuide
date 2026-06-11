@@ -6,6 +6,31 @@ from datetime import date
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from conftest import DbControllers
 
+def test_guardians_talk_lookup_queries_return_seed_data( db: DbControllers ) -> None:
+   assert GuardiansCoordinator.get_guardians_talk_locations() == [
+      'Africa Savanna',
+      'African Rainforest Pavilion',
+      'Americas Pavilion',
+      'Australasia Pavilion',
+      'Eurasia Wilds',
+      'Goat World',
+      'Greenhouse',
+      'Indo-Malaya Pavilion',
+      'Tundra Trek',
+   ]
+
+   assert 'Komodo Dragon' in GuardiansCoordinator.get_guardians_talk_names()
+   assert GuardiansCoordinator.get_guardians_talk_names_at_location(
+      'Australasia Pavilion' ) == [ 'Komodo Dragon' ]
+
+   details = GuardiansCoordinator.get_guardians_talk_details()
+
+   assert any( talk.name == 'Komodo Dragon' for talk in details )
+   assert any(
+      talk.name == 'Komodo Dragon' and talk.location == 'Australasia Pavilion'
+      for talk in details )
+
+
 def test_guardians_talk_schedule_and_cancellation(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
