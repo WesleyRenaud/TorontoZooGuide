@@ -7,14 +7,15 @@ from ..data_access.restaurant_schedule_override_record import RestaurantSchedule
 from ..data_access.restaurant_schedule_record import RestaurantScheduleRecord
 from ...models import Restaurant
 from .restaurant_context import RestaurantContext
-from ...shared.calendar_dates import CalendarDates
 from ...shared.enums import ScheduleStatus
+from ...shared.opening_schedule_seasonal_multiplier import get_day_seasonal_availability_multiplier
 from ...shared.opening_schedule_status import calculate_seasonal_likelihood
 from ...shared.opening_schedule_status import get_active_opening_schedule_status
 from ...shared.opening_schedule_status import get_active_schedule_override_status
 from ...shared.opening_schedule_status import group_records_by_name
 from ...shared.opening_schedule_status import is_open_on_weekday
 from ...shared.opening_schedule_status import resolve_amenity_likelihood_and_message
+from ...shared.opening_schedule_visit_context import resolve_opening_schedule_visit_context
 from ...types import MonthInput, SeasonalMultiplier, VisitDay, VisitYear
 
 
@@ -22,21 +23,10 @@ def resolve_restaurant_context(
       day: VisitDay,
       month: MonthInput,
       year: VisitYear ) -> RestaurantContext:
-   target_date = CalendarDates.visit_target_date(
-      month=month,
+   return resolve_opening_schedule_visit_context(
       day=day,
+      month=month,
       year=year )
-   weekday = target_date.weekday()
-   is_weekend_or_holiday = (
-      weekday >= 5
-      or CalendarDates.is_holiday( d=target_date ) )
-
-   return RestaurantContext(
-      normalized_month=target_date.month,
-      normalized_day=target_date.day,
-      target_date=target_date,
-      weekday=weekday,
-      is_weekend_or_holiday=is_weekend_or_holiday )
 
 
 def calculate_restaurant_likelihood(
@@ -85,11 +75,10 @@ def get_active_restaurant_schedule_override_status(
 def get_restaurant_day_seasonal_availability_multiplier(
       restaurant_record: RestaurantRecord,
       context: RestaurantContext ) -> SeasonalMultiplier:
-
-   if context.is_weekend_or_holiday:
-      return restaurant_record.weekend_holiday_multiplier
-
-   return restaurant_record.weekday_multiplier
+   return get_day_seasonal_availability_multiplier(
+      weekday_multiplier=restaurant_record.weekday_multiplier,
+      weekend_holiday_multiplier=restaurant_record.weekend_holiday_multiplier,
+      is_weekend_or_holiday=context.is_weekend_or_holiday )
 
 
 def build_restaurant(
