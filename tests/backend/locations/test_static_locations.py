@@ -71,6 +71,9 @@ def test_region_and_static_location_queries( db: DbControllers ) -> None:
    drinking_fountains = DrinkingFountainCoordinator.get_drinking_fountains( day=15, month='June', year=2026 )
 
    assert pavilions[ 'African Rainforest Pavilion' ].region == 'Africa'
+   restroom_names = RestroomCoordinator.get_restroom_names()
+
+   assert 'Entrance Restroom' in restroom_names
    assert 'Entrance Restroom' in restrooms
    assert 'Africa Restaurant Restroom' in restrooms
    assert len( drinking_fountains ) > 0
