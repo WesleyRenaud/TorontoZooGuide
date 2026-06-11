@@ -66,6 +66,11 @@ class SharedStrings:
          return f'The { name } is not scheduled to be open today.'
 
 
+      @staticmethod
+      def likely_not_open_on_day( name: str ) -> str:
+         return f'The { name } is most likely not open on this day.'
+
+
    class DrinkingFountains:
       @staticmethod
       def closed_for_season() -> str:

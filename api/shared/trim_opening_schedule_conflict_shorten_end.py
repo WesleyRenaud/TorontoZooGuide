@@ -1,0 +1,35 @@
+from __future__ import annotations
+
+from collections.abc import Callable
+from datetime import date
+from datetime import timedelta
+
+from .opening_schedule_conflict_record import TConflict
+from .opening_schedule_dates import format_opening_schedule_date
+from ..types import Connection
+
+
+def try_trim_opening_schedule_conflict_shorten_end(
+      conn: Connection,
+      conflict: TConflict,
+      *,
+      conflict_start_date: date,
+      conflict_end_date: date,
+      new_start_date: date,
+      new_end_date: date,
+      conflict_start_attr: str,
+      update_dates: Callable,
+) -> bool:
+   if not (
+         conflict_start_date < new_start_date
+         and conflict_end_date <= new_end_date ):
+      return False
+
+   update_dates(
+      conn,
+      conflict,
+      start_date=getattr( conflict, conflict_start_attr ),
+      end_date=format_opening_schedule_date(
+         new_start_date - timedelta( days=1 ) ) )
+
+   return True
