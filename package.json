@@ -10,7 +10,7 @@
       "coverage:py": "COVERAGE_FILE=/tmp/tzg-python-coverage python3 -m pytest tests/backend --cov=api.connection --cov=api.server --cov=api.seed --cov-report=term-missing",
       "clear:itinerary": "python3 -m api.seed.clear_user_itinerary_data",
       "clear:itinerary-config": "python3 -m api.seed.clear_user_itinerary_config",
-      "lint": "npm run lint:js && npm run lint:py",
+      "lint": "node tools/lint/mapSvgIntegrity.js && npm run lint:js && npm run lint:py",
       "lint:js": "node tools/lint/jsFilenameStyle.js && node tools/lint/jsImportStyle.js && eslint scripts && echo 'All checks passed!'",
       "lint:py": "python3 tools/lint/pythonImportStyle.py && python3 tools/lint/pythonHouseStyle.py && ruff check .",
       "migrate": "python3 -m api.seed.migrations.runner",
