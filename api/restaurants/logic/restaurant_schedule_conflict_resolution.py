@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from datetime import date
-from datetime import timedelta
-
 from ..data_access.restaurant_schedule import delete_restaurant_opening_schedule
 from ..data_access.restaurant_schedule import fetch_restaurant_opening_schedule_conflicts
 from ..data_access.restaurant_schedule import insert_copied_restaurant_opening_schedule
@@ -10,95 +7,53 @@ from ..data_access.restaurant_schedule import insert_or_update_restaurant_openin
 from ..data_access.restaurant_schedule import update_restaurant_opening_schedule_dates
 from ..data_access.restaurant_schedule_record import RestaurantScheduleRecord
 from .restaurant_opening_schedule import RestaurantOpeningSchedule
-from ...shared.date_values import DateValues
-from ...types import Connection, DateInput, DateKey
+from ...shared.opening_schedule_conflict import save_opening_schedule_replacing_overlaps
+from ...shared.opening_schedule_conflict import save_opening_schedule_trimming_overlaps
+from ...shared.opening_schedule_conflict import trim_opening_schedule_conflict
+from ...shared.opening_schedule_dates import format_opening_schedule_date
+from ...shared.opening_schedule_dates import parse_opening_schedule_end_date
+from ...types import Connection
 
 
 def save_restaurant_opening_schedule_replacing_overlaps(
       conn: Connection,
       schedule: RestaurantOpeningSchedule ) -> bool:
-   conflicts = fetch_restaurant_opening_schedule_conflicts( conn, schedule )
-
-   for conflict in conflicts:
-      delete_restaurant_opening_schedule( conn, conflict )
-
-   insert_or_update_restaurant_opening_schedule( conn, schedule )
-   conn.commit()
-   return True
+   return save_opening_schedule_replacing_overlaps(
+      conn,
+      schedule,
+      fetch_conflicts=fetch_restaurant_opening_schedule_conflicts,
+      delete_conflict=delete_restaurant_opening_schedule,
+      insert_or_update=insert_or_update_restaurant_opening_schedule )
 
 
 def save_restaurant_opening_schedule_trimming_overlaps(
       conn: Connection,
       schedule: RestaurantOpeningSchedule ) -> bool:
-   conflicts = fetch_restaurant_opening_schedule_conflicts( conn, schedule )
-
-   for conflict in conflicts:
-      trim_restaurant_opening_schedule_conflict( conn, conflict, schedule )
-
-   insert_or_update_restaurant_opening_schedule( conn, schedule )
-   conn.commit()
-   return True
+   return save_opening_schedule_trimming_overlaps(
+      conn,
+      schedule,
+      fetch_conflicts=fetch_restaurant_opening_schedule_conflicts,
+      trim_conflict=trim_restaurant_opening_schedule_conflict,
+      insert_or_update=insert_or_update_restaurant_opening_schedule )
 
 
 def trim_restaurant_opening_schedule_conflict(
       conn: Connection,
       conflict: RestaurantScheduleRecord,
       schedule: RestaurantOpeningSchedule ) -> None:
-   new_start_date = DateValues.parse_date_value( schedule.start_date )
-   new_end_date = parse_opening_schedule_end_date( schedule.end_date )
-   conflict_start_date = DateValues.parse_date_value( conflict.schedule_start_date )
-   conflict_end_date = parse_opening_schedule_end_date(
-      conflict.schedule_end_date )
-
-   if conflict_start_date >= new_start_date and conflict_end_date <= new_end_date:
-      delete_restaurant_opening_schedule( conn, conflict )
-      return
-
-   if conflict_start_date < new_start_date and conflict_end_date <= new_end_date:
-      update_restaurant_opening_schedule_dates(
-         conn,
-         conflict,
-         start_date=conflict.schedule_start_date,
-         end_date=format_opening_schedule_date(
-            new_start_date - timedelta( days=1 ) ) )
-      return
-
-   if conflict_start_date >= new_start_date and conflict_end_date > new_end_date:
-      update_restaurant_opening_schedule_dates(
-         conn,
-         conflict,
-         start_date=format_opening_schedule_date(
-            new_end_date + timedelta( days=1 ) ),
-         end_date=conflict.schedule_end_date )
-      return
-
-   update_restaurant_opening_schedule_dates(
+   trim_opening_schedule_conflict(
       conn,
       conflict,
-      start_date=conflict.schedule_start_date,
-      end_date=format_opening_schedule_date(
-         new_start_date - timedelta( days=1 ) ) )
-
-   if new_end_date == date.max:
-      return
-
-   insert_copied_restaurant_opening_schedule(
-      conn,
-      conflict,
-      start_date=format_opening_schedule_date(
-         new_end_date + timedelta( days=1 ) ),
-      end_date=conflict.schedule_end_date )
+      schedule,
+      delete_conflict=delete_restaurant_opening_schedule,
+      update_dates=update_restaurant_opening_schedule_dates,
+      insert_copy=insert_copied_restaurant_opening_schedule )
 
 
-def parse_opening_schedule_end_date( value: DateInput ) -> date:
-   if value == None:
-      return date.max
-
-   return DateValues.parse_date_value( value )
-
-
-def format_opening_schedule_date( value: date ) -> DateKey | None:
-   if value == date.max:
-      return None
-
-   return value.isoformat()
+__all__ = [
+   'format_opening_schedule_date',
+   'parse_opening_schedule_end_date',
+   'save_restaurant_opening_schedule_replacing_overlaps',
+   'save_restaurant_opening_schedule_trimming_overlaps',
+   'trim_restaurant_opening_schedule_conflict',
+]

@@ -8,8 +8,13 @@ from ..data_access.attraction_schedule_override_record import AttractionSchedule
 from ..data_access.attraction_schedule_record import AttractionScheduleRecord
 from ...models import Attraction
 from ...shared.calendar_dates import CalendarDates
-from ...shared.date_values import DateValues
 from ...shared.enums import ScheduleStatus
+from ...shared.opening_schedule_status import calculate_seasonal_likelihood
+from ...shared.opening_schedule_status import get_active_opening_schedule_status
+from ...shared.opening_schedule_status import get_active_schedule_override_status
+from ...shared.opening_schedule_status import group_records_by_name
+from ...shared.opening_schedule_status import is_open_on_weekday
+from ...shared.opening_schedule_status import resolve_amenity_likelihood_and_message
 from ...shared.strings import SharedStrings
 from ...types import MonthInput, SeasonalMultiplier, VisitDay, VisitYear
 
@@ -37,59 +42,27 @@ def resolve_attraction_context(
 
 def calculate_attraction_likelihood(
       day_seasonal_availability_multiplier: SeasonalMultiplier ) -> int:
-   seasonal_multiplier = (
-      day_seasonal_availability_multiplier
-      if day_seasonal_availability_multiplier is not None
-      else 1.0
-   )
-   likelihood = max( 0.0, min( seasonal_multiplier, 1.0 ) )
-
-   return max( round( likelihood * 100 ), 0 )
+   return calculate_seasonal_likelihood( day_seasonal_availability_multiplier )
 
 
 def group_attraction_schedule_records_by_name(
       schedule_records: list[ AttractionScheduleRecord ] ) -> dict[ str, list[ AttractionScheduleRecord ] ]:
-   schedule_records_by_attraction: dict[ str, list[ AttractionScheduleRecord ] ] = {}
-
-   for schedule_record in schedule_records:
-      if schedule_record.attraction not in schedule_records_by_attraction:
-         schedule_records_by_attraction[ schedule_record.attraction ] = []
-
-      schedule_records_by_attraction[ schedule_record.attraction ].append( schedule_record )
-
-   return schedule_records_by_attraction
+   return group_records_by_name( schedule_records, lambda record: record.attraction )
 
 
 def group_attraction_schedule_override_records_by_name(
       override_records: list[ AttractionScheduleOverrideRecord ] ) -> dict[ str, list[ AttractionScheduleOverrideRecord ] ]:
-   override_records_by_attraction: dict[ str, list[ AttractionScheduleOverrideRecord ] ] = {}
-
-   for override_record in override_records:
-      if override_record.attraction not in override_records_by_attraction:
-         override_records_by_attraction[ override_record.attraction ] = []
-
-      override_records_by_attraction[ override_record.attraction ].append( override_record )
-
-   return override_records_by_attraction
+   return group_records_by_name( override_records, lambda record: record.attraction )
 
 
 def is_attraction_open_on_day(
       schedule_record: AttractionScheduleRecord,
       weekday: int,
       is_holiday: bool ) -> bool:
-   weekday_values = [
-      schedule_record.monday,
-      schedule_record.tuesday,
-      schedule_record.wednesday,
-      schedule_record.thursday,
-      schedule_record.friday,
-      schedule_record.saturday,
-      schedule_record.sunday,
-   ]
-
-   return (
-      bool( weekday_values[ weekday ] )
-      or ( schedule_record.holidays_only and is_holiday ) )
+   return is_open_on_weekday(
+      schedule_record=schedule_record,
+      weekday=weekday,
+      is_holiday=is_holiday )
 
 
 def build_closed_attraction_schedule_message(
@@ -109,53 +82,21 @@ def get_active_attraction_schedule_status(
       attraction_name: str,
       target_date: date,
       weekday: int ) -> tuple[ ScheduleStatus, str | None ]:
-
-   if len( schedule_records ) == 0:
-      return ScheduleStatus.UNKNOWN, None
-
-   for schedule_record in schedule_records:
-      is_active = DateValues.is_date_in_range(
-         target_date=target_date,
-         start_date_value=schedule_record.schedule_start_date,
-         end_date_value=schedule_record.schedule_end_date )
-
-      if not is_active:
-         continue
-
-      is_holiday = CalendarDates.is_holiday( d=target_date )
-
-      if is_attraction_open_on_day(
-            schedule_record=schedule_record,
-            weekday=weekday,
-            is_holiday=is_holiday ):
-         return ScheduleStatus.OPEN, None
-
-      return ScheduleStatus.CLOSED, build_closed_attraction_schedule_message(
+   return get_active_opening_schedule_status(
+      schedule_records=schedule_records,
+      target_date=target_date,
+      weekday=weekday,
+      build_closed_message=lambda schedule_record: build_closed_attraction_schedule_message(
          attraction_name=attraction_name,
-         schedule_record=schedule_record )
-
-   return ScheduleStatus.UNKNOWN, None
+         schedule_record=schedule_record ) )
 
 
 def get_active_attraction_schedule_override_status(
       override_records: list[ AttractionScheduleOverrideRecord ],
       target_date: date ) -> tuple[ ScheduleStatus, str | None ]:
-
-   for override_record in override_records:
-      is_active = DateValues.is_date_in_range(
-         target_date=target_date,
-         start_date_value=override_record.override_start_date,
-         end_date_value=override_record.override_end_date )
-
-      if not is_active:
-         continue
-
-      if override_record.is_closed:
-         return ScheduleStatus.CLOSED, override_record.override_message
-
-      return ScheduleStatus.OPEN, None
-
-   return ScheduleStatus.UNKNOWN, None
+   return get_active_schedule_override_status(
+      override_records=override_records,
+      target_date=target_date )
 
 
 def get_attraction_day_seasonal_availability_multiplier(
@@ -174,47 +115,29 @@ def get_attraction_likelihood_and_message_for_date(
       schedule_override_records: list[ AttractionScheduleOverrideRecord ],
       target_date: date ) -> tuple[ int, str | None ]:
 
-   weekday = target_date.weekday()
-   is_weekend_or_holiday = (
-      weekday >= 5
-      or CalendarDates.is_holiday( d=target_date ) )
-   likelihood = 100
-   closed_message = None
-
-   override_status, override_message = get_active_attraction_schedule_override_status(
-      override_records=[
-         override_record
-         for override_record in schedule_override_records
-         if override_record.attraction == attraction_record.name
-      ],
-      target_date=target_date )
-
-   if override_status == ScheduleStatus.CLOSED:
-      return 0, override_message
-
-   schedule_status, schedule_message = get_active_attraction_schedule_status(
+   return resolve_amenity_likelihood_and_message(
+      name=attraction_record.name,
       schedule_records=[
          schedule_record
          for schedule_record in schedule_records
          if schedule_record.attraction == attraction_record.name
       ],
-      attraction_name=attraction_record.name,
+      override_records=[
+         override_record
+         for override_record in schedule_override_records
+         if override_record.attraction == attraction_record.name
+      ],
       target_date=target_date,
-      weekday=weekday )
-
-   if schedule_status == ScheduleStatus.CLOSED:
-      likelihood = 0
-      closed_message = schedule_message
-   elif schedule_status == ScheduleStatus.UNKNOWN:
-      likelihood = calculate_attraction_likelihood(
-         get_attraction_day_seasonal_availability_multiplier(
-            attraction_record=attraction_record,
-            is_weekend_or_holiday=is_weekend_or_holiday ) )
-
-      if likelihood == 0:
-         closed_message = SharedStrings.Attractions.likely_not_operating( attraction_record.name )
-
-   return likelihood, closed_message
+      weekday=target_date.weekday(),
+      seasonal_multiplier=get_attraction_day_seasonal_availability_multiplier(
+         attraction_record=attraction_record,
+         is_weekend_or_holiday=(
+            target_date.weekday() >= 5
+            or CalendarDates.is_holiday( d=target_date ) ) ),
+      build_closed_schedule_message=lambda schedule_record: build_closed_attraction_schedule_message(
+         attraction_name=attraction_record.name,
+         schedule_record=schedule_record ),
+      likely_closed_message=SharedStrings.Attractions.likely_not_operating )
 
 
 def build_attraction(
