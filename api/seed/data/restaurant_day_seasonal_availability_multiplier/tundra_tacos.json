@@ -1,0 +1,2201 @@
+{
+  "restaurant": "Tundra Tacos",
+  "days": [
+    {
+      "month": 1,
+      "day": 1,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 2,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 3,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 4,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 5,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 6,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 7,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 8,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 9,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 10,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 11,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 12,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 13,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 14,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 15,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 16,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 17,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 18,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 19,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 20,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 21,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 22,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 23,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 24,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 25,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 26,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 27,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 28,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 29,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 30,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 1,
+      "day": 31,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 1,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 2,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 3,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 4,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 5,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 6,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 7,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 8,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 9,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 10,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 11,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 12,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 13,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 14,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 15,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 16,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 17,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 18,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 19,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 20,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 21,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 22,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 23,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 24,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 25,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 26,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 27,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 28,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 2,
+      "day": 29,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 1,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 2,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 3,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 4,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 5,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 6,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 7,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 8,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 9,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 10,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 11,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 12,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 13,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 14,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 15,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 16,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 17,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 18,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 19,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 20,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 21,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 22,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 23,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 24,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 25,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 26,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 27,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 28,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 29,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 30,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 3,
+      "day": 31,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 1,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 2,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 3,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 4,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 5,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 6,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 7,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 8,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 9,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 10,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 11,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 12,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 13,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 14,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 15,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 16,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 17,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 18,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 19,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 20,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 21,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 22,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 23,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 24,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 25,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 26,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 27,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 28,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 29,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 4,
+      "day": 30,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 5,
+      "day": 1,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 5,
+      "day": 2,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 5,
+      "day": 3,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 5,
+      "day": 4,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 5,
+      "day": 5,
+      "weekday": 0.0,
+      "weekend_holiday": 0.027
+    },
+    {
+      "month": 5,
+      "day": 6,
+      "weekday": 0.0,
+      "weekend_holiday": 0.054
+    },
+    {
+      "month": 5,
+      "day": 7,
+      "weekday": 0.0,
+      "weekend_holiday": 0.081
+    },
+    {
+      "month": 5,
+      "day": 8,
+      "weekday": 0.0,
+      "weekend_holiday": 0.108
+    },
+    {
+      "month": 5,
+      "day": 9,
+      "weekday": 0.0,
+      "weekend_holiday": 0.135
+    },
+    {
+      "month": 5,
+      "day": 10,
+      "weekday": 0.0,
+      "weekend_holiday": 0.162
+    },
+    {
+      "month": 5,
+      "day": 11,
+      "weekday": 0.0,
+      "weekend_holiday": 0.189
+    },
+    {
+      "month": 5,
+      "day": 12,
+      "weekday": 0.0,
+      "weekend_holiday": 0.216
+    },
+    {
+      "month": 5,
+      "day": 13,
+      "weekday": 0.0,
+      "weekend_holiday": 0.243
+    },
+    {
+      "month": 5,
+      "day": 14,
+      "weekday": 0.0,
+      "weekend_holiday": 0.27
+    },
+    {
+      "month": 5,
+      "day": 15,
+      "weekday": 0.0,
+      "weekend_holiday": 0.297
+    },
+    {
+      "month": 5,
+      "day": 16,
+      "weekday": 0.0,
+      "weekend_holiday": 0.324
+    },
+    {
+      "month": 5,
+      "day": 17,
+      "weekday": 0.0,
+      "weekend_holiday": 0.351
+    },
+    {
+      "month": 5,
+      "day": 18,
+      "weekday": 0.0,
+      "weekend_holiday": 0.378
+    },
+    {
+      "month": 5,
+      "day": 19,
+      "weekday": 0.0,
+      "weekend_holiday": 0.405
+    },
+    {
+      "month": 5,
+      "day": 20,
+      "weekday": 0.0,
+      "weekend_holiday": 0.432
+    },
+    {
+      "month": 5,
+      "day": 21,
+      "weekday": 0.028,
+      "weekend_holiday": 0.459
+    },
+    {
+      "month": 5,
+      "day": 22,
+      "weekday": 0.056,
+      "weekend_holiday": 0.486
+    },
+    {
+      "month": 5,
+      "day": 23,
+      "weekday": 0.083,
+      "weekend_holiday": 0.514
+    },
+    {
+      "month": 5,
+      "day": 24,
+      "weekday": 0.111,
+      "weekend_holiday": 0.541
+    },
+    {
+      "month": 5,
+      "day": 25,
+      "weekday": 0.139,
+      "weekend_holiday": 0.568
+    },
+    {
+      "month": 5,
+      "day": 26,
+      "weekday": 0.167,
+      "weekend_holiday": 0.595
+    },
+    {
+      "month": 5,
+      "day": 27,
+      "weekday": 0.194,
+      "weekend_holiday": 0.622
+    },
+    {
+      "month": 5,
+      "day": 28,
+      "weekday": 0.222,
+      "weekend_holiday": 0.649
+    },
+    {
+      "month": 5,
+      "day": 29,
+      "weekday": 0.25,
+      "weekend_holiday": 0.676
+    },
+    {
+      "month": 5,
+      "day": 30,
+      "weekday": 0.278,
+      "weekend_holiday": 0.703
+    },
+    {
+      "month": 5,
+      "day": 31,
+      "weekday": 0.306,
+      "weekend_holiday": 0.73
+    },
+    {
+      "month": 6,
+      "day": 1,
+      "weekday": 0.333,
+      "weekend_holiday": 0.757
+    },
+    {
+      "month": 6,
+      "day": 2,
+      "weekday": 0.361,
+      "weekend_holiday": 0.784
+    },
+    {
+      "month": 6,
+      "day": 3,
+      "weekday": 0.389,
+      "weekend_holiday": 0.811
+    },
+    {
+      "month": 6,
+      "day": 4,
+      "weekday": 0.417,
+      "weekend_holiday": 0.838
+    },
+    {
+      "month": 6,
+      "day": 5,
+      "weekday": 0.444,
+      "weekend_holiday": 0.865
+    },
+    {
+      "month": 6,
+      "day": 6,
+      "weekday": 0.472,
+      "weekend_holiday": 0.892
+    },
+    {
+      "month": 6,
+      "day": 7,
+      "weekday": 0.5,
+      "weekend_holiday": 0.919
+    },
+    {
+      "month": 6,
+      "day": 8,
+      "weekday": 0.528,
+      "weekend_holiday": 0.946
+    },
+    {
+      "month": 6,
+      "day": 9,
+      "weekday": 0.556,
+      "weekend_holiday": 0.973
+    },
+    {
+      "month": 6,
+      "day": 10,
+      "weekday": 0.583,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 11,
+      "weekday": 0.611,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 12,
+      "weekday": 0.639,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 13,
+      "weekday": 0.667,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 14,
+      "weekday": 0.694,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 15,
+      "weekday": 0.722,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 16,
+      "weekday": 0.75,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 17,
+      "weekday": 0.778,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 18,
+      "weekday": 0.806,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 19,
+      "weekday": 0.833,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 20,
+      "weekday": 0.861,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 21,
+      "weekday": 0.889,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 22,
+      "weekday": 0.917,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 23,
+      "weekday": 0.944,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 24,
+      "weekday": 0.972,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 25,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 26,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 27,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 28,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 29,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 6,
+      "day": 30,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 1,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 2,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 3,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 4,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 5,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 6,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 7,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 8,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 9,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 10,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 11,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 12,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 13,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 14,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 15,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 16,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 17,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 18,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 19,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 20,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 21,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 22,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 23,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 24,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 25,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 26,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 27,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 28,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 29,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 30,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 7,
+      "day": 31,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 1,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 2,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 3,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 4,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 5,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 6,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 7,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 8,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 9,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 10,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 11,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 12,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 13,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 14,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 15,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 16,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 17,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 18,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 19,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 20,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 21,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 22,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 23,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 24,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 25,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 26,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 27,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 28,
+      "weekday": 1.0,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 29,
+      "weekday": 0.944,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 30,
+      "weekday": 0.889,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 8,
+      "day": 31,
+      "weekday": 0.833,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 9,
+      "day": 1,
+      "weekday": 0.778,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 9,
+      "day": 2,
+      "weekday": 0.722,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 9,
+      "day": 3,
+      "weekday": 0.667,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 9,
+      "day": 4,
+      "weekday": 0.611,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 9,
+      "day": 5,
+      "weekday": 0.556,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 9,
+      "day": 6,
+      "weekday": 0.5,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 9,
+      "day": 7,
+      "weekday": 0.444,
+      "weekend_holiday": 1.0
+    },
+    {
+      "month": 9,
+      "day": 8,
+      "weekday": 0.389,
+      "weekend_holiday": 0.962
+    },
+    {
+      "month": 9,
+      "day": 9,
+      "weekday": 0.333,
+      "weekend_holiday": 0.923
+    },
+    {
+      "month": 9,
+      "day": 10,
+      "weekday": 0.278,
+      "weekend_holiday": 0.885
+    },
+    {
+      "month": 9,
+      "day": 11,
+      "weekday": 0.222,
+      "weekend_holiday": 0.846
+    },
+    {
+      "month": 9,
+      "day": 12,
+      "weekday": 0.167,
+      "weekend_holiday": 0.808
+    },
+    {
+      "month": 9,
+      "day": 13,
+      "weekday": 0.111,
+      "weekend_holiday": 0.769
+    },
+    {
+      "month": 9,
+      "day": 14,
+      "weekday": 0.056,
+      "weekend_holiday": 0.731
+    },
+    {
+      "month": 9,
+      "day": 15,
+      "weekday": 0.0,
+      "weekend_holiday": 0.692
+    },
+    {
+      "month": 9,
+      "day": 16,
+      "weekday": 0.0,
+      "weekend_holiday": 0.654
+    },
+    {
+      "month": 9,
+      "day": 17,
+      "weekday": 0.0,
+      "weekend_holiday": 0.615
+    },
+    {
+      "month": 9,
+      "day": 18,
+      "weekday": 0.0,
+      "weekend_holiday": 0.577
+    },
+    {
+      "month": 9,
+      "day": 19,
+      "weekday": 0.0,
+      "weekend_holiday": 0.538
+    },
+    {
+      "month": 9,
+      "day": 20,
+      "weekday": 0.0,
+      "weekend_holiday": 0.5
+    },
+    {
+      "month": 9,
+      "day": 21,
+      "weekday": 0.0,
+      "weekend_holiday": 0.462
+    },
+    {
+      "month": 9,
+      "day": 22,
+      "weekday": 0.0,
+      "weekend_holiday": 0.423
+    },
+    {
+      "month": 9,
+      "day": 23,
+      "weekday": 0.0,
+      "weekend_holiday": 0.385
+    },
+    {
+      "month": 9,
+      "day": 24,
+      "weekday": 0.0,
+      "weekend_holiday": 0.346
+    },
+    {
+      "month": 9,
+      "day": 25,
+      "weekday": 0.0,
+      "weekend_holiday": 0.308
+    },
+    {
+      "month": 9,
+      "day": 26,
+      "weekday": 0.0,
+      "weekend_holiday": 0.269
+    },
+    {
+      "month": 9,
+      "day": 27,
+      "weekday": 0.0,
+      "weekend_holiday": 0.231
+    },
+    {
+      "month": 9,
+      "day": 28,
+      "weekday": 0.0,
+      "weekend_holiday": 0.192
+    },
+    {
+      "month": 9,
+      "day": 29,
+      "weekday": 0.0,
+      "weekend_holiday": 0.154
+    },
+    {
+      "month": 9,
+      "day": 30,
+      "weekday": 0.0,
+      "weekend_holiday": 0.115
+    },
+    {
+      "month": 10,
+      "day": 1,
+      "weekday": 0.0,
+      "weekend_holiday": 0.077
+    },
+    {
+      "month": 10,
+      "day": 2,
+      "weekday": 0.0,
+      "weekend_holiday": 0.038
+    },
+    {
+      "month": 10,
+      "day": 3,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 4,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 5,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 6,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 7,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 8,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 9,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 10,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 11,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 12,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 13,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 14,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 15,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 16,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 17,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 18,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 19,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 20,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 21,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 22,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 23,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 24,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 25,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 26,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 27,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 28,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 29,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 30,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 10,
+      "day": 31,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 1,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 2,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 3,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 4,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 5,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 6,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 7,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 8,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 9,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 10,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 11,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 12,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 13,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 14,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 15,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 16,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 17,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 18,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 19,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 20,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 21,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 22,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 23,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 24,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 25,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 26,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 27,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 28,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 29,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 11,
+      "day": 30,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 1,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 2,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 3,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 4,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 5,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 6,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 7,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 8,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 9,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 10,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 11,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 12,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 13,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 14,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 15,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 16,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 17,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 18,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 19,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 20,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 21,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 22,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 23,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 24,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 25,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 26,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 27,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 28,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 29,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 30,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    },
+    {
+      "month": 12,
+      "day": 31,
+      "weekday": 0.0,
+      "weekend_holiday": 0.0
+    }
+  ]
+}
