@@ -2,10 +2,15 @@ from __future__ import annotations
 
 from .gift_shop_opening_schedule import GiftShopOpeningSchedule
 from .gift_shop_schedule_override import GiftShopScheduleOverride
-from ...shared.build_closed_opening_schedule_fields import build_closed_opening_schedule_fields
-from ...shared.build_closure_override_fields import build_closure_override_fields
-from ...shared.build_opening_schedule_weekday_fields import build_opening_schedule_weekday_fields
+from ...shared.build_amenity_status_builders import AmenityStatusBuilders
 from ...types import DateInput
+
+
+_builders = AmenityStatusBuilders(
+   name_field='gift_shop',
+   opening_schedule_class=GiftShopOpeningSchedule,
+   schedule_override_class=GiftShopScheduleOverride,
+)
 
 
 def build_gift_shop_closed_schedule(
@@ -13,25 +18,7 @@ def build_gift_shop_closed_schedule(
       start_date: DateInput,
       end_date: DateInput,
       message: str ) -> GiftShopOpeningSchedule:
-   fields = build_closed_opening_schedule_fields(
-      name=gift_shop,
-      start_date=start_date,
-      end_date=end_date,
-      message=message )
-
-   return GiftShopOpeningSchedule(
-      gift_shop=gift_shop,
-      start_date=fields.start_date,
-      end_date=fields.end_date,
-      monday=fields.monday,
-      tuesday=fields.tuesday,
-      wednesday=fields.wednesday,
-      thursday=fields.thursday,
-      friday=fields.friday,
-      saturday=fields.saturday,
-      sunday=fields.sunday,
-      holidays_only=fields.holidays_only,
-      message=fields.message )
+   return _builders.build_closed_schedule( gift_shop, start_date, end_date, message )
 
 
 def build_gift_shop_opening_schedule(
@@ -47,33 +34,19 @@ def build_gift_shop_opening_schedule(
       sunday: bool,
       holidays_only: bool,
       message: str ) -> GiftShopOpeningSchedule:
-   fields = build_opening_schedule_weekday_fields(
-      name=gift_shop,
-      start_date=start_date,
-      end_date=end_date,
-      monday=monday,
-      tuesday=tuesday,
-      wednesday=wednesday,
-      thursday=thursday,
-      friday=friday,
-      saturday=saturday,
-      sunday=sunday,
-      holidays_only=holidays_only,
-      message=message )
-
-   return GiftShopOpeningSchedule(
-      gift_shop=gift_shop,
-      start_date=fields.start_date,
-      end_date=fields.end_date,
-      monday=fields.monday,
-      tuesday=fields.tuesday,
-      wednesday=fields.wednesday,
-      thursday=fields.thursday,
-      friday=fields.friday,
-      saturday=fields.saturday,
-      sunday=fields.sunday,
-      holidays_only=fields.holidays_only,
-      message=fields.message )
+   return _builders.build_opening_schedule(
+      gift_shop,
+      start_date,
+      end_date,
+      monday,
+      tuesday,
+      wednesday,
+      thursday,
+      friday,
+      saturday,
+      sunday,
+      holidays_only,
+      message )
 
 
 def build_gift_shop_closure_override(
@@ -81,15 +54,11 @@ def build_gift_shop_closure_override(
       start_date: DateInput,
       end_date: DateInput,
       message: str ) -> GiftShopScheduleOverride:
-   fields = build_closure_override_fields(
-      name=gift_shop,
-      start_date=start_date,
-      end_date=end_date,
-      message=message )
+   return _builders.build_closure_override( gift_shop, start_date, end_date, message )
 
-   return GiftShopScheduleOverride(
-      gift_shop=gift_shop,
-      start_date=fields.start_date,
-      end_date=fields.end_date,
-      is_closed=fields.is_closed,
-      message=fields.message )
+
+__all__ = [
+   'build_gift_shop_closed_schedule',
+   'build_gift_shop_opening_schedule',
+   'build_gift_shop_closure_override',
+]
