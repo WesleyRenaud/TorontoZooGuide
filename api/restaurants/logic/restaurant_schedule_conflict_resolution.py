@@ -5,47 +5,20 @@ from ..data_access.restaurant_schedule import fetch_restaurant_opening_schedule_
 from ..data_access.restaurant_schedule import insert_copied_restaurant_opening_schedule
 from ..data_access.restaurant_schedule import insert_or_update_restaurant_opening_schedule
 from ..data_access.restaurant_schedule import update_restaurant_opening_schedule_dates
-from ..data_access.restaurant_schedule_record import RestaurantScheduleRecord
-from .restaurant_opening_schedule import RestaurantOpeningSchedule
-from ...shared.opening_schedule_conflict import save_opening_schedule_replacing_overlaps
-from ...shared.opening_schedule_conflict import save_opening_schedule_trimming_overlaps
-from ...shared.opening_schedule_conflict import trim_opening_schedule_conflict
-from ...types import Connection
+from ...shared.build_opening_schedule_conflict_resolution import OpeningScheduleConflictResolution
 
 
-def save_restaurant_opening_schedule_replacing_overlaps(
-      conn: Connection,
-      schedule: RestaurantOpeningSchedule ) -> bool:
-   return save_opening_schedule_replacing_overlaps(
-      conn,
-      schedule,
-      fetch_conflicts=fetch_restaurant_opening_schedule_conflicts,
-      delete_conflict=delete_restaurant_opening_schedule,
-      insert_or_update=insert_or_update_restaurant_opening_schedule )
+_resolution = OpeningScheduleConflictResolution(
+   fetch_conflicts=fetch_restaurant_opening_schedule_conflicts,
+   delete_conflict=delete_restaurant_opening_schedule,
+   insert_or_update=insert_or_update_restaurant_opening_schedule,
+   update_dates=update_restaurant_opening_schedule_dates,
+   insert_copy=insert_copied_restaurant_opening_schedule,
+)
 
-
-def save_restaurant_opening_schedule_trimming_overlaps(
-      conn: Connection,
-      schedule: RestaurantOpeningSchedule ) -> bool:
-   return save_opening_schedule_trimming_overlaps(
-      conn,
-      schedule,
-      fetch_conflicts=fetch_restaurant_opening_schedule_conflicts,
-      trim_conflict=trim_restaurant_opening_schedule_conflict,
-      insert_or_update=insert_or_update_restaurant_opening_schedule )
-
-
-def trim_restaurant_opening_schedule_conflict(
-      conn: Connection,
-      conflict: RestaurantScheduleRecord,
-      schedule: RestaurantOpeningSchedule ) -> None:
-   trim_opening_schedule_conflict(
-      conn,
-      conflict,
-      schedule,
-      delete_conflict=delete_restaurant_opening_schedule,
-      update_dates=update_restaurant_opening_schedule_dates,
-      insert_copy=insert_copied_restaurant_opening_schedule )
+save_restaurant_opening_schedule_replacing_overlaps = _resolution.save_replacing_overlaps
+save_restaurant_opening_schedule_trimming_overlaps = _resolution.save_trimming_overlaps
+trim_restaurant_opening_schedule_conflict = _resolution.trim_conflict
 
 
 __all__ = [
