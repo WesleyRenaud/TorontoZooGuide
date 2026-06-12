@@ -1,12 +1,23 @@
 from __future__ import annotations
 
-from ..json_seed_loader import insert_animal_day_seasonal_viewability_curve_directory
-from ..json_seed_loader import load_animal_day_seasonal_viewability_curve_directory
+from ..json_seed_loader import insert_day_curve_directory
+from ..json_seed_loader import load_day_curve_directory
 from ..json_seed_loader import seed_data_dir
 from ..sql_loader import execute_sql_file
 from ..sql_loader import seed_sql_path
 from ...types import Cursor
 
+
+ENTITY_FIELDS = ( 'species', 'exhibit' )
+DAY_FIELDS = ( 'month', 'day', 'value' )
+
+DB_COLUMNS = [
+   'SPECIES',
+   'EXHIBIT',
+   'MONTH',
+   'DAY',
+   'VALUE',
+]
 
 ANIMAL_DAY_SEASONAL_VIEWABILITY_MULTIPLIER_DATA = (
    'animal_day_seasonal_viewability_multiplier'
@@ -24,12 +35,16 @@ def create_table( cursor: Cursor ) -> None:
 
 
 def insert_rows( cursor: Cursor ) -> None:
-   insert_animal_day_seasonal_viewability_curve_directory(
+   insert_day_curve_directory(
       cursor,
       table='AnimalDaySeasonalViewabilityMultiplier',
-      directory=seed_data_dir( ANIMAL_DAY_SEASONAL_VIEWABILITY_MULTIPLIER_DATA ) )
+      columns=DB_COLUMNS,
+      directory=seed_data_dir( ANIMAL_DAY_SEASONAL_VIEWABILITY_MULTIPLIER_DATA ),
+      entity_fields=ENTITY_FIELDS,
+      day_fields=DAY_FIELDS )
 
 
-animal_day_seasonal_viewability_multipliers = (
-   load_animal_day_seasonal_viewability_curve_directory(
-      seed_data_dir( ANIMAL_DAY_SEASONAL_VIEWABILITY_MULTIPLIER_DATA ) ) )
+animal_day_seasonal_viewability_multipliers = load_day_curve_directory(
+   seed_data_dir( ANIMAL_DAY_SEASONAL_VIEWABILITY_MULTIPLIER_DATA ),
+   entity_fields=ENTITY_FIELDS,
+   day_fields=DAY_FIELDS )

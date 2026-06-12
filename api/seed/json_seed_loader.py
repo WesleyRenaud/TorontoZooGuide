@@ -53,21 +53,41 @@ def load_json_rows( path: Path ) -> list[ tuple[ Any, ... ] ]:
    return [ tuple( row ) for row in rows ]
 
 
-def load_day_seasonal_availability_curve_file(
-      path: Path,
-      *,
-      entity_field: str ) -> list[ tuple[ Any, ... ] ]:
+def _load_day_curve_payload( path: Path ) -> dict[ str, Any ]:
    with path.open( encoding='utf-8' ) as seed_file:
       payload = json.load( seed_file )
 
    if not isinstance( payload, dict ):
       raise ValueError( f'Expected a JSON object in { path }.' )
 
-   entity_name = payload.get( entity_field )
-   days = payload.get( 'days' )
+   return payload
 
-   if not isinstance( entity_name, str ) or not entity_name:
-      raise ValueError( f'Expected a non-empty { entity_field } string in { path }.' )
+
+def _entity_values(
+      path: Path,
+      payload: dict[ str, Any ],
+      entity_fields: tuple[ str, ... ] ) -> tuple[ Any, ... ]:
+   values: list[ Any ] = []
+
+   for field in entity_fields:
+      value = payload.get( field )
+
+      if not isinstance( value, str ) or not value:
+         raise ValueError( f'Expected a non-empty { field } string in { path }.' )
+
+      values.append( value )
+
+   return tuple( values )
+
+
+def load_day_curve_file(
+      path: Path,
+      *,
+      entity_fields: tuple[ str, ... ] = (),
+      day_fields: tuple[ str, ... ] ) -> list[ tuple[ Any, ... ] ]:
+   payload = _load_day_curve_payload( path )
+   entity_values = _entity_values( path, payload, entity_fields )
+   days = payload.get( 'days' )
 
    if not isinstance( days, list ):
       raise ValueError( f'Expected a days array in { path }.' )
@@ -79,30 +99,28 @@ def load_day_seasonal_availability_curve_file(
          raise ValueError( f'Expected day { index } in { path } to be an object.' )
 
       try:
-         rows.append( (
-            entity_name,
-            day[ 'month' ],
-            day[ 'day' ],
-            day[ 'weekday' ],
-            day[ 'weekend_holiday' ],
-         ) )
+         day_values = tuple( day[ field ] for field in day_fields )
       except KeyError as error:
          raise ValueError(
             f'Missing { error } on day { index } in { path }.' ) from error
 
+      rows.append( entity_values + day_values )
+
    return rows
 
 
-def load_day_seasonal_availability_curve_directory(
+def load_day_curve_directory(
       directory: Path,
       *,
-      entity_field: str ) -> list[ tuple[ Any, ... ] ]:
+      entity_fields: tuple[ str, ... ] = (),
+      day_fields: tuple[ str, ... ] ) -> list[ tuple[ Any, ... ] ]:
    rows: list[ tuple[ Any, ... ] ] = []
 
    for path in sorted( directory.glob( '*.json' ) ):
-      rows.extend( load_day_seasonal_availability_curve_file(
+      rows.extend( load_day_curve_file(
          path,
-         entity_field=entity_field ) )
+         entity_fields=entity_fields,
+         day_fields=day_fields ) )
 
    return rows
 
@@ -158,210 +176,37 @@ def insert_json_records(
       rows=load_json_records( path, fields=fields ) )
 
 
-def insert_day_seasonal_availability_curve_directory(
+def insert_day_curve_file(
       cursor: Cursor,
       *,
       table: str,
-      entity_column: str,
-      entity_field: str,
-      directory: Path ) -> None:
+      columns: list[ str ],
+      path: Path,
+      entity_fields: tuple[ str, ... ] = (),
+      day_fields: tuple[ str, ... ] ) -> None:
    insert_rows(
       cursor,
       table=table,
-      columns=[
-         entity_column,
-         'MONTH',
-         'DAY',
-         'WEEKDAY_VALUE',
-         'WEEKEND_HOLIDAY_VALUE',
-      ],
-      rows=load_day_seasonal_availability_curve_directory(
-         directory,
-         entity_field=entity_field ) )
-
-
-def load_day_seasonal_value_curve_file( path: Path, *, entity_field: str ) -> list[ tuple[ Any, ... ] ]:
-   with path.open( encoding='utf-8' ) as seed_file:
-      payload = json.load( seed_file )
-
-   if not isinstance( payload, dict ):
-      raise ValueError( f'Expected a JSON object in { path }.' )
-
-   entity_name = payload.get( entity_field )
-   days = payload.get( 'days' )
-
-   if not isinstance( entity_name, str ) or not entity_name:
-      raise ValueError( f'Expected a non-empty { entity_field } string in { path }.' )
-
-   if not isinstance( days, list ):
-      raise ValueError( f'Expected a days array in { path }.' )
-
-   rows: list[ tuple[ Any, ... ] ] = []
-
-   for index, day in enumerate( days ):
-      if not isinstance( day, dict ):
-         raise ValueError( f'Expected day { index } in { path } to be an object.' )
-
-      try:
-         rows.append( (
-            entity_name,
-            day[ 'month' ],
-            day[ 'day' ],
-            day[ 'value' ],
-         ) )
-      except KeyError as error:
-         raise ValueError(
-            f'Missing { error } on day { index } in { path }.' ) from error
-
-   return rows
-
-
-def load_day_seasonal_value_curve_directory(
-      directory: Path,
-      *,
-      entity_field: str ) -> list[ tuple[ Any, ... ] ]:
-   rows: list[ tuple[ Any, ... ] ] = []
-
-   for path in sorted( directory.glob( '*.json' ) ):
-      rows.extend( load_day_seasonal_value_curve_file(
+      columns=columns,
+      rows=load_day_curve_file(
          path,
-         entity_field=entity_field ) )
+         entity_fields=entity_fields,
+         day_fields=day_fields ) )
 
-   return rows
 
-
-def insert_day_seasonal_value_curve_directory(
+def insert_day_curve_directory(
       cursor: Cursor,
       *,
       table: str,
-      entity_column: str,
-      entity_field: str,
-      directory: Path ) -> None:
+      columns: list[ str ],
+      directory: Path,
+      entity_fields: tuple[ str, ... ] = (),
+      day_fields: tuple[ str, ... ] ) -> None:
    insert_rows(
       cursor,
       table=table,
-      columns=[
-         entity_column,
-         'MONTH',
-         'DAY',
-         'VALUE',
-      ],
-      rows=load_day_seasonal_value_curve_directory(
+      columns=columns,
+      rows=load_day_curve_directory(
          directory,
-         entity_field=entity_field ) )
-
-
-def load_animal_day_seasonal_viewability_curve_file( path: Path ) -> list[ tuple[ Any, ... ] ]:
-   with path.open( encoding='utf-8' ) as seed_file:
-      payload = json.load( seed_file )
-
-   if not isinstance( payload, dict ):
-      raise ValueError( f'Expected a JSON object in { path }.' )
-
-   species = payload.get( 'species' )
-   exhibit = payload.get( 'exhibit' )
-   days = payload.get( 'days' )
-
-   if not isinstance( species, str ) or not species:
-      raise ValueError( f'Expected a non-empty species string in { path }.' )
-
-   if not isinstance( exhibit, str ) or not exhibit:
-      raise ValueError( f'Expected a non-empty exhibit string in { path }.' )
-
-   if not isinstance( days, list ):
-      raise ValueError( f'Expected a days array in { path }.' )
-
-   rows: list[ tuple[ Any, ... ] ] = []
-
-   for index, day in enumerate( days ):
-      if not isinstance( day, dict ):
-         raise ValueError( f'Expected day { index } in { path } to be an object.' )
-
-      try:
-         rows.append( (
-            species,
-            exhibit,
-            day[ 'month' ],
-            day[ 'day' ],
-            day[ 'value' ],
-         ) )
-      except KeyError as error:
-         raise ValueError(
-            f'Missing { error } on day { index } in { path }.' ) from error
-
-   return rows
-
-
-def load_animal_day_seasonal_viewability_curve_directory(
-      directory: Path ) -> list[ tuple[ Any, ... ] ]:
-   rows: list[ tuple[ Any, ... ] ] = []
-
-   for path in sorted( directory.glob( '*.json' ) ):
-      rows.extend( load_animal_day_seasonal_viewability_curve_file( path ) )
-
-   return rows
-
-
-def insert_animal_day_seasonal_viewability_curve_directory(
-      cursor: Cursor,
-      *,
-      table: str,
-      directory: Path ) -> None:
-   insert_rows(
-      cursor,
-      table=table,
-      columns=[
-         'SPECIES',
-         'EXHIBIT',
-         'MONTH',
-         'DAY',
-         'VALUE',
-      ],
-      rows=load_animal_day_seasonal_viewability_curve_directory( directory ) )
-
-
-def load_drinking_fountain_day_seasonal_curve_file( path: Path ) -> list[ tuple[ Any, ... ] ]:
-   with path.open( encoding='utf-8' ) as seed_file:
-      payload = json.load( seed_file )
-
-   if not isinstance( payload, dict ):
-      raise ValueError( f'Expected a JSON object in { path }.' )
-
-   days = payload.get( 'days' )
-
-   if not isinstance( days, list ):
-      raise ValueError( f'Expected a days array in { path }.' )
-
-   rows: list[ tuple[ Any, ... ] ] = []
-
-   for index, day in enumerate( days ):
-      if not isinstance( day, dict ):
-         raise ValueError( f'Expected day { index } in { path } to be an object.' )
-
-      try:
-         rows.append( (
-            day[ 'month' ],
-            day[ 'day' ],
-            day[ 'likelihood' ],
-         ) )
-      except KeyError as error:
-         raise ValueError(
-            f'Missing { error } on day { index } in { path }.' ) from error
-
-   return rows
-
-
-def insert_drinking_fountain_day_seasonal_curve_file(
-      cursor: Cursor,
-      *,
-      table: str,
-      path: Path ) -> None:
-   insert_rows(
-      cursor,
-      table=table,
-      columns=[
-         'MONTH',
-         'DAY',
-         'LIKELIHOOD',
-      ],
-      rows=load_drinking_fountain_day_seasonal_curve_file( path ) )
+         entity_fields=entity_fields,
+         day_fields=day_fields ) )
