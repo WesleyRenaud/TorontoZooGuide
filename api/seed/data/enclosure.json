@@ -1470,6 +1470,13 @@
     "default_itinerary_duration_minutes": 5
   },
   {
+    "species": "Asian Brown Tortoise",
+    "exhibit": "Indo-Malaya Outdoor",
+    "seasonal_viewing_summary": "Outdoor: May-Oct",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 1
+  },
+  {
     "species": "Babirusa",
     "exhibit": "Indo-Malaya Outdoor",
     "seasonal_viewing_summary": "Outdoor: Apr-Nov, Indoor: Nov-Mar",

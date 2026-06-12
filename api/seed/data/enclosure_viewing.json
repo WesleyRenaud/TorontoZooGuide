@@ -1888,6 +1888,14 @@
     "y_coord": 78.506
   },
   {
+    "species": "Asian Brown Tortoise",
+    "exhibit": "Indo-Malaya Outdoor",
+    "enclosure_type": "Outdoor",
+    "seasonally_off_display_message": "The Asian brown tortoise can most likely be seen inside the Indo-Malaya Pavilion on this day due to cooler weather.",
+    "x_coord": 54.631,
+    "y_coord": 83.101
+  },
+  {
     "species": "Babirusa",
     "exhibit": "Indo-Malaya Outdoor",
     "enclosure_type": "Outdoor",
