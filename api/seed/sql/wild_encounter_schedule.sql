@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS WildEncounterSchedule
+(  WILD_ENCOUNTER         VARCHAR(64) NOT NULL,
+   SCHEDULE_START_DATE    DATE        NOT NULL,
+   SCHEDULE_END_DATE      DATE,
+   MONDAY                 BOOL        NOT NULL DEFAULT 0,
+   TUESDAY                BOOL        NOT NULL DEFAULT 0,
+   WEDNESDAY              BOOL        NOT NULL DEFAULT 0,
+   THURSDAY               BOOL        NOT NULL DEFAULT 0,
+   FRIDAY                 BOOL        NOT NULL DEFAULT 0,
+   SATURDAY               BOOL        NOT NULL DEFAULT 0,
+   SUNDAY                 BOOL        NOT NULL DEFAULT 0,
+   ENCOUNTER_TIME         TEXT        NOT NULL,
+   SCHEDULE_MESSAGE       TEXT,
+   PRIMARY KEY (WILD_ENCOUNTER),
+   FOREIGN KEY (WILD_ENCOUNTER) REFERENCES WildEncounter(NAME) );

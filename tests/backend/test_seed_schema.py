@@ -3,6 +3,9 @@ from __future__ import annotations
 import sqlite3
 
 from api.seed import data
+from api.seed.migrations.runner import ensure_migration_table
+from api.seed.migrations.runner import migration_files
+from api.seed.migrations.runner import run_migrations_on_cursor
 from api.seed.schema import create_schema
 from api.seed.user_itinerary_data import clear_user_itinerary_data
 from api.types import Cursor, Row
@@ -130,7 +133,7 @@ def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:
    conn.close()
 
 
-def test_create_schema_migrates_partial_dynamic_tables() -> None:
+def test_migrations_upgrade_partial_runtime_tables() -> None:
    conn = sqlite3.connect( ':memory:' )
    cursor = conn.cursor()
 
@@ -165,6 +168,16 @@ def test_create_schema_migrates_partial_dynamic_tables() -> None:
    for table, columns in partial_tables.items():
       cursor.execute( f'CREATE TABLE { table } ( { columns } );' )
 
+   ensure_migration_table( cursor )
+
+   for migration_file in migration_files():
+      if migration_file.name < '011_runtime_schema_column_additions.sql':
+         cursor.execute(
+            'INSERT INTO SchemaMigration ( MIGRATION_NAME ) VALUES ( ? );',
+            ( migration_file.name, ),
+         )
+
+   run_migrations_on_cursor( cursor )
    create_schema( cursor )
 
    expected_columns = {

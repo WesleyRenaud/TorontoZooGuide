@@ -1,33 +1,62 @@
 from . import animal
 from . import animal_day_seasonal_viewability_multiplier
+from . import animal_status
+from . import animal_viewing_alert
+from . import animal_visibility_schedule
+from . import app_setting
 from . import attraction
 from . import attraction_day_seasonal_availability_multiplier
+from . import attraction_opening_schedule
+from . import attraction_schedule_override
 from . import defibrillator
 from . import drinking_fountain
 from . import drinking_fountain_day_seasonal_availability_multiplier
+from . import drinking_fountain_status
 from . import emergency_intercom
 from . import enclosure
 from . import enclosure_viewing
 from . import event_site
 from . import exhibit
 from . import exhibit_day_seasonal_availability_multiplier
+from . import exhibit_status
 from . import gift_shop
 from . import gift_shop_day_seasonal_availability_multiplier
+from . import gift_shop_opening_schedule
+from . import gift_shop_schedule_override
+from . import guardians_talk_cancellation
+from . import guardians_talk_schedule
 from . import guest_service
+from . import itinerary_animal
+from . import itinerary_attraction
+from . import itinerary_date
+from . import itinerary_event
 from . import itinerary_event_default
+from . import itinerary_guardians_talk
 from . import itinerary_status
+from . import itinerary_status_suppression
+from . import itinerary_wild_encounter
+from . import legacy_table_drops
 from . import meet_the_guardians_talk
 from . import pavilion
 from . import picnic_site
 from . import region
 from . import restaurant
 from . import restaurant_day_seasonal_availability_multiplier
+from . import restaurant_opening_schedule
+from . import restaurant_schedule_override
 from . import restroom
+from . import restroom_alert
+from . import restroom_status
 from . import wild_encounter
+from . import wild_encounter_cancellation
 from . import wild_encounter_meeting_spot
+from . import wild_encounter_schedule
 from . import zoo_hours
+from . import zoo_update
 from . import zoomobile_day_route
+from . import zoomobile_route_schedule
 from . import zoomobile_station
+from . import zoomobile_station_status
 
 
 static_tables = [
@@ -61,4 +90,36 @@ static_tables = [
    picnic_site,
    event_site,
    zoo_hours,
+]
+
+runtime_tables = [
+   legacy_table_drops,
+   animal_status,
+   animal_visibility_schedule,
+   animal_viewing_alert,
+   exhibit_status,
+   restroom_status,
+   restroom_alert,
+   zoo_update,
+   restaurant_opening_schedule,
+   restaurant_schedule_override,
+   gift_shop_opening_schedule,
+   gift_shop_schedule_override,
+   app_setting,
+   attraction_opening_schedule,
+   attraction_schedule_override,
+   zoomobile_route_schedule,
+   zoomobile_station_status,
+   guardians_talk_schedule,
+   guardians_talk_cancellation,
+   wild_encounter_schedule,
+   wild_encounter_cancellation,
+   drinking_fountain_status,
+   itinerary_status_suppression,
+   itinerary_date,
+   itinerary_animal,
+   itinerary_attraction,
+   itinerary_guardians_talk,
+   itinerary_wild_encounter,
+   itinerary_event,
 ]
