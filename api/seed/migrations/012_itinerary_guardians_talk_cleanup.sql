@@ -1,0 +1,3 @@
+DELETE FROM ItineraryGuardiansTalk
+   WHERE START_TIME IS NULL
+      OR END_TIME IS NULL;

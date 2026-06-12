@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS ZoomobileRouteSchedule
+(  SCHEDULE_START_DATE   DATE        NOT NULL,
+   SCHEDULE_END_DATE     DATE,
+   ROUTE                 VARCHAR(16) NOT NULL CHECK (ROUTE IN ('summer', 'winter')),
+   PRIMARY KEY (SCHEDULE_START_DATE) );
