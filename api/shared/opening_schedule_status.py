@@ -5,7 +5,7 @@ from datetime import date
 from typing import TypeVar
 
 from .calendar_dates import CalendarDates
-from .date_values import DateValues
+from .calendar_dates import DateValues
 from .enums import ScheduleStatus
 from .opening_schedule_record import OpeningScheduleRecord
 from .schedule_override_record import ScheduleOverrideRecord

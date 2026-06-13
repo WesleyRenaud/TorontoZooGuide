@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from ...shared.calendar_dates import DateValues
 from ...shared.constants import SCHEDULE_SLOT_STEP_SECONDS
-from ...shared.date_values import DateValues
 from .time_block import time_blocks_overlap
 from .time_block import TimeBlock
 from ...types import ScheduleTimeKey

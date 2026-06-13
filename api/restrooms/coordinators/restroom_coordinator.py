@@ -13,7 +13,7 @@ from ..logic.restroom_status import build_restroom_closed_status
 from ..logic.restrooms_matching_query import build_restrooms_matching_query
 from ...models import Restroom
 from ...request_connection import get_connection
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 

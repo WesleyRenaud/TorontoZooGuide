@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .animal_limited_viewing_schedule import AnimalLimitedViewingSchedule
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 

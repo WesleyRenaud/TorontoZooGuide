@@ -4,7 +4,7 @@ from ...models import GuardiansTalk
 from ...models import GuardiansTalkDiff
 from ...models import WildEncounter
 from ...models import WildEncounterDiff
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import ScheduleTimeKey
 
 

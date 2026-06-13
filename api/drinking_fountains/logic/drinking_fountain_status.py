@@ -5,7 +5,7 @@ from datetime import date
 from ..data_access.drinking_fountain_status_record import DrinkingFountainStatusRecord
 from .drinking_fountain_closed_status import DrinkingFountainClosedStatus
 from .drinking_fountain_open_status import DrinkingFountainOpenStatus
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 

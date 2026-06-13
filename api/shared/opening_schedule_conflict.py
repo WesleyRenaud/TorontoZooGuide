@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from .date_values import DateValues
+from .calendar_dates import DateValues
 from .opening_schedule_conflict_record import TConflict
 from .opening_schedule_dates import parse_opening_schedule_end_date
 from .opening_schedule_input import TSchedule

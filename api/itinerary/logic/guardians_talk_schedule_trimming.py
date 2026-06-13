@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
 from ...types import ScheduledItem, ScheduleTimeKey
 

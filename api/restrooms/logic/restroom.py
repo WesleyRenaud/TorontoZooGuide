@@ -6,7 +6,7 @@ from ..data_access.restroom_record import RestroomRecord
 from ...models import Restroom
 from .restroom_context import RestroomContext
 from ...shared.calendar_dates import CalendarDates
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import MonthInput, VisitDay, VisitYear
 
 

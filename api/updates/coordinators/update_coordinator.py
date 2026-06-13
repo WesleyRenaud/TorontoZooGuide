@@ -11,7 +11,7 @@ from ..logic.update_ending import build_update_end_input
 from ...models import Update
 from ...request_connection import get_connection
 from ...shared.calendar_dates import CalendarDates
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 

@@ -8,7 +8,7 @@ from ..data_access.saved_itinerary import SavedItinerary
 from .itinerary_adjustment import ItineraryAdjustment
 from .itinerary_adjustment import ItineraryAdjustmentType
 from .itinerary_arrival_time_validation import earliest_arrival_time
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import Connection
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord

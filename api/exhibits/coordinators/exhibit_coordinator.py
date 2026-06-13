@@ -15,7 +15,7 @@ from ...models import Region
 from ...models import RegionWithExhibits
 from ...request_connection import get_connection
 from ...shared.calendar_dates import CalendarDates
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 

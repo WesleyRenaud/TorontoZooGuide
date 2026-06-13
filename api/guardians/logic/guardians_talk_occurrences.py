@@ -6,7 +6,7 @@ from ..data_access.guardians_talk_cancellation_record import GuardiansTalkCancel
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
 from .guardians_talk_weekday_time import guardians_talk_time_for_weekday
 from ...models import ScheduledOccurrence
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 
 
 def build_guardians_talk_occurrences(

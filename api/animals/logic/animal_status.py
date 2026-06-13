@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .animal_off_display_status import AnimalOffDisplayStatus
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.enums import AnimalViewingScope
 from ...shared.strings import SharedStrings
 from ...types import DateInput

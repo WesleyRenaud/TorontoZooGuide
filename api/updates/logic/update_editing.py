@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import DateInput, DateKey
 from .update_edit_input import UpdateEditInput
 from .update_type import normalize_update_type

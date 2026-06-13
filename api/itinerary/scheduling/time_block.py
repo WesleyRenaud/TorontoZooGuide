@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ...models import Itinerary
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import ScheduleTimeKey
 
 

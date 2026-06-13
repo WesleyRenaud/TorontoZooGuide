@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.duration_values import normalize_duration_minutes
 from ...shared.enums import ItineraryErrorType
 from ...types import DurationInput

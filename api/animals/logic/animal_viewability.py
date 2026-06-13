@@ -6,7 +6,7 @@ from .animal_viewability_context import AnimalViewabilityContext
 from ..data_access.animal_viewability_record import AnimalViewabilityRecord
 from ...models import Animal
 from ...shared.calendar_dates import CalendarDates
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.enums import ScheduleStatus
 from ...shared.weather import Weather
 from ...types import MonthInput, VisitDay, VisitYear

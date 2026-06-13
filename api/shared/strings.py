@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from .date_values import DateValues
+from .calendar_dates import DateValues
 
 
 class SharedStrings:

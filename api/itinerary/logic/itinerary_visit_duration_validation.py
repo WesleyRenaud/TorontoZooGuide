@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from ...shared.calendar_dates import DateValues
 from ...shared.constants import MIN_ITINERARY_VISIT_DURATION_MINUTES
-from ...shared.date_values import DateValues
 from ...types import ScheduleTimeKey
 
 

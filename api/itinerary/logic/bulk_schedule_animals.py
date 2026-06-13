@@ -18,7 +18,7 @@ from ..scheduling.resolve_schedule_slot import resolve_schedule_slot
 from ..scheduling.time_block import collect_time_blocks_from_itinerary
 from ..scheduling.time_block import time_block_from_schedule_times
 from ..scheduling.time_block import TimeBlock
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection
 from ...types import Cursor

@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from ...models import Update
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import DateKey
 
 

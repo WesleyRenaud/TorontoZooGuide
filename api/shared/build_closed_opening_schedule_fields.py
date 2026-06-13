@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .date_values import DateValues
+from .calendar_dates import DateValues
 from .opening_schedule_weekday_fields import OpeningScheduleWeekdayFields
 from .strings import SharedStrings
 from ..types import DateInput

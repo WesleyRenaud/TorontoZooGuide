@@ -5,7 +5,7 @@ from datetime import date, datetime
 
 import pytest
 
-from api.shared.date_values import DateValues
+from api.shared.calendar_dates import DateValues
 from api.shared.duration_values import normalize_duration_minutes
 from api.shared.duration_values import normalize_duration_seconds
 from api.types import DateInput, DateKey

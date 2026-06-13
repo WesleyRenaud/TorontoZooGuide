@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 from .wild_encounter_schedule_end_input import WildEncounterScheduleEndInput

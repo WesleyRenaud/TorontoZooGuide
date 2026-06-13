@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .itinerary_date_record import ItineraryDateRecord
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import Row
 
 

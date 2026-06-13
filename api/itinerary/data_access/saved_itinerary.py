@@ -8,7 +8,7 @@ from .itinerary_attraction_record import ItineraryAttractionRecord
 from .itinerary_event_record import ItineraryEventRecord
 from .itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from .itinerary_wild_encounter_record import ItineraryWildEncounterRecord
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import DateInput, ScheduleTimeKey
 
 
