@@ -16,7 +16,19 @@ from ..logic.restaurant_status import build_restaurant_opening_schedule
 from ..logic.restaurants_matching_query import build_restaurants_matching_query
 from ...models import Restaurant
 from ...request_connection import get_connection
+from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
+
+
+_mutations = AmenityCoordinatorMutations(
+   build_closed_schedule=build_restaurant_closed_schedule,
+   build_opening_schedule=build_restaurant_opening_schedule,
+   build_closure_override=build_restaurant_closure_override,
+   save_opening_schedule=save_restaurant_opening_schedule,
+   save_schedule_override=save_restaurant_schedule_override,
+   save_replacing_overlaps=save_restaurant_opening_schedule_replacing_overlaps,
+   save_trimming_overlaps=save_restaurant_opening_schedule_trimming_overlaps,
+)
 
 
 class RestaurantCoordinator():
@@ -79,15 +91,7 @@ class RestaurantCoordinator():
          start_date: DateInput,
          end_date: DateInput,
          message: str ) -> bool:
-      schedule = build_restaurant_closed_schedule(
-         restaurant=restaurant,
-         start_date=start_date,
-         end_date=end_date,
-         message=message )
-
-      return save_restaurant_opening_schedule(
-         get_connection(),
-         schedule=schedule )
+      return _mutations.set_as_closed( restaurant, start_date, end_date, message )
 
 
    @classmethod
@@ -97,15 +101,7 @@ class RestaurantCoordinator():
          start_date: DateInput,
          end_date: DateInput,
          message: str ) -> bool:
-      override = build_restaurant_closure_override(
-         restaurant=restaurant,
-         start_date=start_date,
-         end_date=end_date,
-         message=message )
-
-      return save_restaurant_schedule_override(
-         get_connection(),
-         override=override )
+      return _mutations.set_closure_override( restaurant, start_date, end_date, message )
 
 
    @classmethod
@@ -123,23 +119,19 @@ class RestaurantCoordinator():
          sunday: bool,
          holidays_only: bool,
          message: str ) -> bool:
-      schedule = build_restaurant_opening_schedule(
-         restaurant=restaurant,
-         start_date=start_date,
-         end_date=end_date,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         holidays_only=holidays_only,
-         message=message )
-
-      return save_restaurant_opening_schedule(
-         get_connection(),
-         schedule=schedule )
+      return _mutations.set_opening_schedule(
+         restaurant,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
 
 
    @classmethod
@@ -157,23 +149,19 @@ class RestaurantCoordinator():
          sunday: bool,
          holidays_only: bool,
          message: str ) -> bool:
-      schedule = build_restaurant_opening_schedule(
-         restaurant=restaurant,
-         start_date=start_date,
-         end_date=end_date,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         holidays_only=holidays_only,
-         message=message )
-
-      return save_restaurant_opening_schedule_replacing_overlaps(
-         get_connection(),
-         schedule=schedule )
+      return _mutations.replace_opening_schedule_overlaps(
+         restaurant,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
 
 
    @classmethod
@@ -191,20 +179,16 @@ class RestaurantCoordinator():
          sunday: bool,
          holidays_only: bool,
          message: str ) -> bool:
-      schedule = build_restaurant_opening_schedule(
-         restaurant=restaurant,
-         start_date=start_date,
-         end_date=end_date,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         holidays_only=holidays_only,
-         message=message )
-
-      return save_restaurant_opening_schedule_trimming_overlaps(
-         get_connection(),
-         schedule=schedule )
+      return _mutations.trim_opening_schedule_overlaps(
+         restaurant,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
