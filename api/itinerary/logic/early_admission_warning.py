@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..data_access.itinerary_status import is_itinerary_error_suppressed
 from .itinerary_suppressed_warnings import append_suppressed_warning
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, ScheduleTimeKey
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord

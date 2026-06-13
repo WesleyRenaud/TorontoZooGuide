@@ -8,7 +8,7 @@ from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.itinerary_event import ItineraryEvent
 from ...models.wild_encounter_diff import WildEncounterDiff
 from .schedule_itinerary_item import insert_itinerary_guardians_talk
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import Connection, Cursor, ScheduleTimeKey
 from .validated_itinerary import ValidatedItinerary
 

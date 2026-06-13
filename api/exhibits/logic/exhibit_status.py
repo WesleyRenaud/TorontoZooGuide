@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .exhibit_closed_status import ExhibitClosedStatus
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 

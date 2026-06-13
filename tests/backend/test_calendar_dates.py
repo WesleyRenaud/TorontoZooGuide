@@ -6,8 +6,8 @@ from typing import Any
 
 import pytest
 
+import api.shared.calendar_dates as calendar_dates
 from api.shared.calendar_dates import CalendarDates
-import api.shared.date_values as date_values
 from api.types import MonthInput
 from api.types import VisitMonth
 
@@ -136,7 +136,7 @@ def test_resolve_visit_calendar_year_none_uses_module_datetime( monkeypatch: pyt
       def now( cls, tz: datetime.tzinfo | None = None ) -> datetime:
          return datetime( 2032, 3, 1, 0, 0, 0 )
 
-   monkeypatch.setattr( date_values, 'datetime', Fixed )
+   monkeypatch.setattr( calendar_dates, 'datetime', Fixed )
    assert CalendarDates.resolve_visit_calendar_year( None ) == 2032
 
 

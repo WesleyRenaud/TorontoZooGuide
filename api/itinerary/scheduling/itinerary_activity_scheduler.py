@@ -6,7 +6,7 @@ from ...models import GuardiansTalk
 from ...models import Itinerary
 from ...models import ItineraryEvent
 from ...models import WildEncounter
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryEventType
 from ...types import ScheduleTimeKey
 

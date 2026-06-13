@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ...models.itinerary_event import ItineraryEvent
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...types import Cursor, ScheduleTimeKey
 
 

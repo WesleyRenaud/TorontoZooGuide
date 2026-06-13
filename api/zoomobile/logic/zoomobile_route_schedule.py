@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.enums.zoomobile_route import ZoomobileRouteId
 from ...types import DateInput
 from .zoomobile_current_route_schedule import ZoomobileCurrentRouteSchedule

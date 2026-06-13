@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
 from .zoomobile_station_closed_status import ZoomobileStationClosedStatus

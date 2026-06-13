@@ -28,7 +28,7 @@ from ..logic.short_visit_warning import short_visit_warning_is_required
 from ..logic.suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...models import Itinerary
 from ...request_connection import get_connection
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, DateInput, DurationInput, TimeInput
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .itinerary_schedule_time_order_validation import departure_follows_arrival
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import ScheduleTimeKey
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord

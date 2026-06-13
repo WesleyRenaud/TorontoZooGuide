@@ -10,7 +10,7 @@ from ..data_access.unschedule_itinerary_item import clear_itinerary_attraction_s
 from ..data_access.unschedule_itinerary_item import clear_itinerary_guardians_talk_schedule
 from ..data_access.unschedule_itinerary_item import clear_itinerary_wild_encounter_schedule
 from ..data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryEventType
 from ...types import Connection, ScheduleTimeKey
 

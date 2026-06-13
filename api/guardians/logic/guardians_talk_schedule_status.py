@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
 from .guardians_talk_schedule_input import GuardiansTalkScheduleInput
-from ...shared.date_values import DateValues
+from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput, ScheduleTimeKey
 
