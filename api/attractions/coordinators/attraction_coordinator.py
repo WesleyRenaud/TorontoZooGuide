@@ -22,7 +22,19 @@ from ..logic.attractions_matching_query import build_attractions_matching_query
 from ..logic.itinerary_attractions import build_itinerary_attractions
 from ...models import Attraction
 from ...request_connection import get_connection
+from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
+
+
+_mutations = AmenityCoordinatorMutations(
+   build_closed_schedule=build_attraction_closed_schedule,
+   build_opening_schedule=build_attraction_opening_schedule,
+   build_closure_override=build_attraction_closure_override,
+   save_opening_schedule=save_attraction_opening_schedule,
+   save_schedule_override=save_attraction_schedule_override,
+   save_replacing_overlaps=save_attraction_opening_schedule_replacing_overlaps,
+   save_trimming_overlaps=save_attraction_opening_schedule_trimming_overlaps,
+)
 
 
 class AttractionCoordinator():
@@ -130,83 +142,7 @@ class AttractionCoordinator():
          start_date: DateInput,
          end_date: DateInput,
          message: str ) -> bool:
-      schedule = build_attraction_closed_schedule(
-         attraction=attraction,
-         start_date=start_date,
-         end_date=end_date,
-         message=message )
-
-      return save_attraction_opening_schedule(
-         get_connection(),
-         schedule=schedule )
-
-
-   @classmethod
-   def replace_attraction_opening_schedule_overlaps(
-         cls,
-         attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         monday: bool,
-         tuesday: bool,
-         wednesday: bool,
-         thursday: bool,
-         friday: bool,
-         saturday: bool,
-         sunday: bool,
-         holidays_only: bool,
-         message: str ) -> bool:
-      schedule = build_attraction_opening_schedule(
-         attraction=attraction,
-         start_date=start_date,
-         end_date=end_date,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         holidays_only=holidays_only,
-         message=message )
-
-      return save_attraction_opening_schedule_replacing_overlaps(
-         get_connection(),
-         schedule=schedule )
-
-
-   @classmethod
-   def trim_attraction_opening_schedule_overlaps(
-         cls,
-         attraction: str,
-         start_date: DateInput,
-         end_date: DateInput,
-         monday: bool,
-         tuesday: bool,
-         wednesday: bool,
-         thursday: bool,
-         friday: bool,
-         saturday: bool,
-         sunday: bool,
-         holidays_only: bool,
-         message: str ) -> bool:
-      schedule = build_attraction_opening_schedule(
-         attraction=attraction,
-         start_date=start_date,
-         end_date=end_date,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         holidays_only=holidays_only,
-         message=message )
-
-      return save_attraction_opening_schedule_trimming_overlaps(
-         get_connection(),
-         schedule=schedule )
+      return _mutations.set_as_closed( attraction, start_date, end_date, message )
 
 
    @classmethod
@@ -216,15 +152,7 @@ class AttractionCoordinator():
          start_date: DateInput,
          end_date: DateInput,
          message: str ) -> bool:
-      override = build_attraction_closure_override(
-         attraction=attraction,
-         start_date=start_date,
-         end_date=end_date,
-         message=message )
-
-      return save_attraction_schedule_override(
-         get_connection(),
-         override=override )
+      return _mutations.set_closure_override( attraction, start_date, end_date, message )
 
 
    @classmethod
@@ -242,20 +170,76 @@ class AttractionCoordinator():
          sunday: bool,
          holidays_only: bool,
          message: str ) -> bool:
-      schedule = build_attraction_opening_schedule(
-         attraction=attraction,
-         start_date=start_date,
-         end_date=end_date,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         holidays_only=holidays_only,
-         message=message )
+      return _mutations.set_opening_schedule(
+         attraction,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
 
-      return save_attraction_opening_schedule(
-         get_connection(),
-         schedule=schedule )
+
+   @classmethod
+   def replace_attraction_opening_schedule_overlaps(
+         cls,
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return _mutations.replace_opening_schedule_overlaps(
+         attraction,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
+
+
+   @classmethod
+   def trim_attraction_opening_schedule_overlaps(
+         cls,
+         attraction: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday: bool,
+         tuesday: bool,
+         wednesday: bool,
+         thursday: bool,
+         friday: bool,
+         saturday: bool,
+         sunday: bool,
+         holidays_only: bool,
+         message: str ) -> bool:
+      return _mutations.trim_opening_schedule_overlaps(
+         attraction,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )

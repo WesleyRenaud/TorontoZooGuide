@@ -16,7 +16,19 @@ from ..logic.gift_shop_status import build_gift_shop_opening_schedule
 from ..logic.gift_shops_matching_query import build_gift_shops_matching_query
 from ...models import GiftShop
 from ...request_connection import get_connection
+from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
+
+
+_mutations = AmenityCoordinatorMutations(
+   build_closed_schedule=build_gift_shop_closed_schedule,
+   build_opening_schedule=build_gift_shop_opening_schedule,
+   build_closure_override=build_gift_shop_closure_override,
+   save_opening_schedule=save_gift_shop_opening_schedule,
+   save_schedule_override=save_gift_shop_schedule_override,
+   save_replacing_overlaps=save_gift_shop_opening_schedule_replacing_overlaps,
+   save_trimming_overlaps=save_gift_shop_opening_schedule_trimming_overlaps,
+)
 
 
 class GiftShopCoordinator():
@@ -78,15 +90,7 @@ class GiftShopCoordinator():
          start_date: DateInput,
          end_date: DateInput,
          message: str ) -> bool:
-      schedule = build_gift_shop_closed_schedule(
-         gift_shop=gift_shop,
-         start_date=start_date,
-         end_date=end_date,
-         message=message )
-
-      return save_gift_shop_opening_schedule(
-         get_connection(),
-         schedule=schedule )
+      return _mutations.set_as_closed( gift_shop, start_date, end_date, message )
 
 
    @classmethod
@@ -96,15 +100,7 @@ class GiftShopCoordinator():
          start_date: DateInput,
          end_date: DateInput,
          message: str ) -> bool:
-      override = build_gift_shop_closure_override(
-         gift_shop=gift_shop,
-         start_date=start_date,
-         end_date=end_date,
-         message=message )
-
-      return save_gift_shop_schedule_override(
-         get_connection(),
-         override=override )
+      return _mutations.set_closure_override( gift_shop, start_date, end_date, message )
 
 
    @classmethod
@@ -122,23 +118,19 @@ class GiftShopCoordinator():
          sunday: bool,
          holidays_only: bool,
          message: str ) -> bool:
-      schedule = build_gift_shop_opening_schedule(
-         gift_shop=gift_shop,
-         start_date=start_date,
-         end_date=end_date,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         holidays_only=holidays_only,
-         message=message )
-
-      return save_gift_shop_opening_schedule(
-         get_connection(),
-         schedule=schedule )
+      return _mutations.set_opening_schedule(
+         gift_shop,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
 
 
    @classmethod
@@ -156,23 +148,19 @@ class GiftShopCoordinator():
          sunday: bool,
          holidays_only: bool,
          message: str ) -> bool:
-      schedule = build_gift_shop_opening_schedule(
-         gift_shop=gift_shop,
-         start_date=start_date,
-         end_date=end_date,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         holidays_only=holidays_only,
-         message=message )
-
-      return save_gift_shop_opening_schedule_replacing_overlaps(
-         get_connection(),
-         schedule=schedule )
+      return _mutations.replace_opening_schedule_overlaps(
+         gift_shop,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
 
 
    @classmethod
@@ -190,20 +178,16 @@ class GiftShopCoordinator():
          sunday: bool,
          holidays_only: bool,
          message: str ) -> bool:
-      schedule = build_gift_shop_opening_schedule(
-         gift_shop=gift_shop,
-         start_date=start_date,
-         end_date=end_date,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         holidays_only=holidays_only,
-         message=message )
-
-      return save_gift_shop_opening_schedule_trimming_overlaps(
-         get_connection(),
-         schedule=schedule )
+      return _mutations.trim_opening_schedule_overlaps(
+         gift_shop,
+         start_date,
+         end_date,
+         monday,
+         tuesday,
+         wednesday,
+         thursday,
+         friday,
+         saturday,
+         sunday,
+         holidays_only,
+         message )
