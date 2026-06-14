@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..logic.zoomobile_current_route_schedule import ZoomobileCurrentRouteSchedule
+from ..scheduling.zoomobile_current_route_schedule import ZoomobileCurrentRouteSchedule
 from ...types import Connection
 
 

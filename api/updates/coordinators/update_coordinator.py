@@ -4,11 +4,11 @@ from ..data_access.update import edit_update_record
 from ..data_access.update import fetch_updates
 from ..data_access.update import insert_update
 from ..data_access.update import update_end_date
-from ..logic.update import filter_updates_started_on_or_before
-from ..logic.update_creation import build_update_create_input
-from ..logic.update_editing import build_update_edit_input
-from ..logic.update_ending import build_update_end_input
+from ..domain.update import filter_updates_started_on_or_before
 from ...models import Update
+from ..operations.update_creation import build_update_create_input
+from ..operations.update_editing import build_update_edit_input
+from ..operations.update_ending import build_update_end_input
 from ...request_connection import get_connection
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues

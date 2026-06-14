@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from ..domain.update_type import normalize_update_type
+from ..inputs.update_create_input import UpdateCreateInput
 from ...shared.calendar_dates import DateValues
 from ...types import DateInput
-from .update_create_input import UpdateCreateInput
-from .update_type import normalize_update_type
 
 
 def build_update_create_input(
