@@ -6,17 +6,17 @@ from ..data_access.restaurant import fetch_restaurant_schedule_override_records
 from ..data_access.restaurant import fetch_restaurant_schedule_records
 from ..data_access.restaurant_schedule import save_restaurant_opening_schedule
 from ..data_access.restaurant_schedule import save_restaurant_schedule_override
-from ..logic.restaurant import build_restaurants
-from ..logic.restaurant import resolve_restaurant_context
-from ..logic.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_replacing_overlaps
-from ..logic.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_trimming_overlaps
-from ..logic.restaurant_status import build_restaurant_closed_schedule
-from ..logic.restaurant_status import build_restaurant_closure_override
-from ..logic.restaurant_status import build_restaurant_opening_schedule
-from ..logic.restaurants_matching_query import build_restaurants_matching_query
+from ..domain.restaurant import build_restaurants
+from ..domain.restaurant import resolve_restaurant_context
 from ...models import Restaurant
 from ...request_connection import get_connection
+from ..scheduling.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_replacing_overlaps
+from ..scheduling.restaurant_schedule_conflict_resolution import save_restaurant_opening_schedule_trimming_overlaps
+from ..search.restaurants_matching_query import build_restaurants_matching_query
 from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ..status.restaurant_status import build_restaurant_closed_schedule
+from ..status.restaurant_status import build_restaurant_closure_override
+from ..status.restaurant_status import build_restaurant_opening_schedule
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 

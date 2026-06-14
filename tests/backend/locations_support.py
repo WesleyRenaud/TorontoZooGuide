@@ -13,7 +13,7 @@ from api.giftshops.logic.gift_shop import get_active_gift_shop_schedule_status
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restaurants.data_access.restaurant import fetch_restaurant_schedule_records
 from api.restaurants.data_access.restaurant_schedule_record import RestaurantScheduleRecord
-from api.restaurants.logic.restaurant import get_active_restaurant_schedule_status
+from api.restaurants.domain.restaurant import get_active_restaurant_schedule_status
 from api.shared.enums import ScheduleStatus
 from conftest import DbControllers
 
