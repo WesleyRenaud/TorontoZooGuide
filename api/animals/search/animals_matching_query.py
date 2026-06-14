@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from ...models import Animal
+from ...shared.name_matching_query import normalize_search_key
 
 
 def species_exhibit_key_from_values( species: str, exhibit: str ) -> tuple[ str, str ]:
    return (
-      ( species or '' ).strip().lower(),
-      ( exhibit or '' ).strip().lower(),
+      normalize_search_key( species ),
+      normalize_search_key( exhibit ),
    )
 
 

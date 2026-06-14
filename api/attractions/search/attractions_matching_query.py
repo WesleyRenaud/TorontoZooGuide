@@ -1,28 +1,28 @@
 from __future__ import annotations
 
 from ...models import Attraction
+from ...shared.name_matching_query import build_matching_query
+from ...shared.name_matching_query import filter_items_matching_query
+from ...shared.name_matching_query import normalize_search_key
 
 
 def attraction_name_key( attraction: Attraction ) -> str:
-   return ( attraction.name or '' ).strip().lower()
+   return normalize_search_key( attraction.name )
 
 
 def filter_attractions_matching_query(
       attractions: list[ Attraction ],
       query: str ) -> list[ Attraction ]:
-   if not query:
-      return list( attractions )
-
-   query_lower = query.strip().lower()
-   return [
-      attraction for attraction in attractions
-      if query_lower in attraction_name_key( attraction )
-   ]
+   return filter_items_matching_query(
+      attractions,
+      query,
+      attraction_name_key )
 
 
 def build_attractions_matching_query(
       attractions: list[ Attraction ],
       query: str ) -> list[ Attraction ]:
-   return filter_attractions_matching_query(
+   return build_matching_query(
       attractions,
-      query )
+      query,
+      attraction_name_key )
