@@ -9,20 +9,20 @@ from ..data_access.attraction import fetch_attraction_schedule_override_records
 from ..data_access.attraction import fetch_attraction_schedule_records
 from ..data_access.attraction_schedule import save_attraction_opening_schedule
 from ..data_access.attraction_schedule import save_attraction_schedule_override
+from ..domain.attraction import build_attractions
+from ..domain.attraction import get_attraction_likelihood_and_message_for_date
+from ..domain.attraction import resolve_attraction_context
 from ...itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
-from ..logic.attraction import build_attractions
-from ..logic.attraction import get_attraction_likelihood_and_message_for_date
-from ..logic.attraction import resolve_attraction_context
-from ..logic.attraction_schedule_conflict_resolution import save_attraction_opening_schedule_replacing_overlaps
-from ..logic.attraction_schedule_conflict_resolution import save_attraction_opening_schedule_trimming_overlaps
-from ..logic.attraction_status import build_attraction_closed_schedule
-from ..logic.attraction_status import build_attraction_closure_override
-from ..logic.attraction_status import build_attraction_opening_schedule
-from ..logic.attractions_matching_query import build_attractions_matching_query
-from ..logic.itinerary_attractions import build_itinerary_attractions
+from ..itinerary.itinerary_attractions import build_itinerary_attractions
 from ...models import Attraction
 from ...request_connection import get_connection
+from ..scheduling.attraction_schedule_conflict_resolution import save_attraction_opening_schedule_replacing_overlaps
+from ..scheduling.attraction_schedule_conflict_resolution import save_attraction_opening_schedule_trimming_overlaps
+from ..search.attractions_matching_query import build_attractions_matching_query
 from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ..status.attraction_status import build_attraction_closed_schedule
+from ..status.attraction_status import build_attraction_closure_override
+from ..status.attraction_status import build_attraction_opening_schedule
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
