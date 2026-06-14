@@ -5,11 +5,11 @@ from dataclasses import replace
 from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.saved_itinerary import SavedItinerary
-from .itinerary_adjustment import ItineraryAdjustment
-from .itinerary_adjustment import ItineraryAdjustmentType
-from .itinerary_arrival_time_validation import earliest_arrival_time
+from ..logic.itinerary_adjustment import ItineraryAdjustment
+from ..logic.itinerary_adjustment import ItineraryAdjustmentType
 from ...shared.calendar_dates import DateValues
 from ...types import Connection
+from ..validation.itinerary_arrival_time_validation import earliest_arrival_time
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 from ...zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 

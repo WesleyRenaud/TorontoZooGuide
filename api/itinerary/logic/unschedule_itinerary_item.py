@@ -5,8 +5,8 @@ from ..data_access.unschedule_itinerary_item import clear_itinerary_attraction_s
 from ..data_access.unschedule_itinerary_item import clear_itinerary_guardians_talk_schedule
 from ..data_access.unschedule_itinerary_item import clear_itinerary_wild_encounter_schedule
 from ..data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
-from .itinerary_save_result import ItinerarySaveResult
 from ...models import Itinerary
+from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.items.parse_schedule_item_request import parse_schedule_item_request
 from ..scheduling.items.parse_schedule_item_request import ParsedScheduleItemRequest
 from ...shared.enums import ItineraryErrorType

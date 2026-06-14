@@ -13,8 +13,8 @@ from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...logic.itinerary import build_current_itinerary
-from ...logic.itinerary_result_reason import ItineraryResultReason
-from ...logic.itinerary_save_result import ItinerarySaveResult
+from ...results.itinerary_result_reason import ItineraryResultReason
+from ...results.itinerary_save_result import ItinerarySaveResult
 from ....shared.duration_values import duration_minutes_to_seconds
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection

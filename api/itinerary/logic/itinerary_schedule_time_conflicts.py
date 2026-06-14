@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from .itinerary_save_result import ItinerarySaveResult
 from ...models import Itinerary
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
+from ..results.itinerary_save_result import ItinerarySaveResult
 from ...shared.enums import ItineraryErrorType
 from .wild_encounter_time_conflicts import find_schedule_time_conflict_issues
 

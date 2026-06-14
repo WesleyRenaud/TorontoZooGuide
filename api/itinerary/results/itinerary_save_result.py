@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .itinerary_adjustment import ItineraryAdjustment
 from .itinerary_result_reason import ItineraryResultReason
+from ..logic.itinerary_adjustment import ItineraryAdjustment
 from ...models import Itinerary
 from ...shared.enums import ItineraryErrorType
 

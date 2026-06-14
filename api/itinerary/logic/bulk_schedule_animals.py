@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from .bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
 from .bulk_schedule_exhibit_order import bulk_schedule_exhibit_rank
 from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
@@ -10,8 +9,8 @@ from ..data_access.itinerary_default_duration import fetch_enclosure_default_dur
 from ..data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .itinerary import build_current_itinerary
-from .itinerary_result_reason import ItineraryResultReason
-from .itinerary_save_result import ItinerarySaveResult
+from ..results.itinerary_result_reason import ItineraryResultReason
+from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.core.resolve_schedule_slot import resolve_schedule_slot
 from ..scheduling.core.time_block import collect_time_blocks_from_itinerary
 from ..scheduling.core.time_block import time_block_from_schedule_times
@@ -23,6 +22,7 @@ from ...shared.enums import ItineraryErrorType
 from ...types import Connection
 from ...types import Cursor
 from ...types import ScheduleTimeKey
+from ..warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 

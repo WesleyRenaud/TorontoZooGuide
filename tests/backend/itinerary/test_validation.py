@@ -13,8 +13,8 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.data_access.itinerary_animal_save_carryover import itinerary_animal_save_carryover
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
-from api.itinerary.logic.itinerary_validation import validate_itinerary_animals
-from api.itinerary.logic.itinerary_validation import validate_itinerary_attractions
+from api.itinerary.validation.itinerary_validation import validate_itinerary_animals
+from api.itinerary.validation.itinerary_validation import validate_itinerary_attractions
 from api.models import GuardiansTalk
 from api.models import WildEncounter
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator

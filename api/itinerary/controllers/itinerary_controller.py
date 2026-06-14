@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from ..coordinators.itinerary_coordinator import ItineraryCoordinator
 from ...json_handler import JsonRequestHandler
-from ..logic.itinerary_result_response import itinerary_result_to_dict
-from ..logic.itinerary_result_response import itinerary_time_set_result_to_dict
-from ..logic.itinerary_result_response import suppress_itinerary_warning_result_to_dict
 from ...request_connection import get_connection
+from ..results.itinerary_result_response import itinerary_result_to_dict
+from ..results.itinerary_result_response import itinerary_time_set_result_to_dict
+from ..results.itinerary_result_response import suppress_itinerary_warning_result_to_dict
 from ...shared.constants import itinerary_config_to_dict
 
 
