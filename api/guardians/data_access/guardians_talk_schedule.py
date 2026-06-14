@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from ...types import Connection, DateKey
 
 if TYPE_CHECKING:
-   from ..logic.guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
-   from ..logic.guardians_talk_schedule_input import GuardiansTalkScheduleInput
+   from ..scheduling.guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
+   from ..scheduling.guardians_talk_schedule_input import GuardiansTalkScheduleInput
 
 from .guardians_talk_cancellation_mapper import map_guardians_talk_cancellation_records
 from .guardians_talk_schedule_mapper import map_guardians_talk_schedule_record

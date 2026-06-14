@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
-from api.guardians.logic.guardians_talks_matching_query import build_guardians_talks_matching_query
+from api.guardians.search.guardians_talks_matching_query import build_guardians_talks_matching_query
 from api.models import GuardiansTalk
 from api.models import Pavilion
 from api.models import Restroom

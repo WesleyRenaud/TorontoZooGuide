@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .guardians_talk_schedule import find_guardians_talk_on_day_schedule
 from ...itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from ...itinerary.scheduling import schedule_guardians_talk_for_itinerary
 from ...models import GuardiansTalk
 from ...models import GuardiansTalkDiff
+from ..scheduling.guardians_talk_schedule import find_guardians_talk_on_day_schedule
 from ...types import ScheduleTimeKey
 
 
