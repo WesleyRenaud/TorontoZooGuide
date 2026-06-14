@@ -10,19 +10,19 @@ from ..data_access.itinerary_save_input_mapper import map_animal_inputs
 from ..data_access.itinerary_save_input_mapper import map_named_strings
 from ..data_access.itinerary_time import set_itinerary_arrival_time
 from ..data_access.itinerary_time import set_itinerary_departure_time
+from ..domain.itinerary import build_current_itinerary
+from ..domain.itinerary_visit_window import clear_schedules_outside_visit_window
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from ..logic import bulk_schedule_animals as bulk_schedule_animals_logic
-from ..logic import remove_itinerary_item as remove_itinerary_item_logic
-from ..logic import set_itinerary as set_itinerary_logic
-from ..logic import suppress_itinerary_warning as suppress_itinerary_warning_logic
-from ..logic import unschedule_itinerary_item as unschedule_itinerary_item_logic
-from ..logic.itinerary import build_current_itinerary
-from ..logic.itinerary_visit_window import clear_schedules_outside_visit_window
-from ..logic.suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...models import Itinerary
+from ..operations import remove_itinerary_item as remove_itinerary_item_logic
+from ..operations import set_itinerary as set_itinerary_logic
+from ..operations import suppress_itinerary_warning as suppress_itinerary_warning_logic
+from ..operations import unschedule_itinerary_item as unschedule_itinerary_item_logic
+from ..operations.suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...request_connection import get_connection
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..results.itinerary_time_set_result import ItineraryTimeSetResult
+from ..scheduling.bulk import bulk_schedule_animals as bulk_schedule_animals_logic
 from ..scheduling.items import schedule_itinerary_item as schedule_itinerary_item_logic
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType

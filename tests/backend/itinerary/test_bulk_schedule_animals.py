@@ -9,10 +9,10 @@ from api.connection import open_connection
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from api.itinerary.logic.bulk_schedule_animals import has_itinerary_schedule_times
-from api.itinerary.logic.bulk_schedule_animals import is_itinerary_animal_unscheduled
-from api.itinerary.logic.bulk_schedule_animals import sort_animals_for_bulk_schedule
-from api.itinerary.logic.bulk_schedule_exhibit_order import bulk_schedule_exhibit_rank
+from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from api.itinerary.scheduling.bulk.bulk_schedule_animals import is_itinerary_animal_unscheduled
+from api.itinerary.scheduling.bulk.bulk_schedule_animals import sort_animals_for_bulk_schedule
+from api.itinerary.scheduling.bulk.bulk_schedule_exhibit_order import bulk_schedule_exhibit_rank
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
 from conftest import DbControllers

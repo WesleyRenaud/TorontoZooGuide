@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from ..data_access.itinerary_name_key import itinerary_name_key
-from ..data_access.saved_itinerary import SavedItinerary
-from ..data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
-from ..data_access.unschedule_itinerary_item import clear_itinerary_attraction_schedule
-from ..data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
-from ..data_access.validated_itinerary import ValidatedItinerary
-from ...models.wild_encounter_diff import WildEncounterDiff
-from ..scheduling.core.time_block import time_block_from_schedule_times
-from ..scheduling.core.time_block import time_blocks_overlap
-from ..scheduling.core.time_block import TimeBlock
-from ...types import Cursor
-from ...types import ScheduleTimeKey
+from ..core.time_block import time_block_from_schedule_times
+from ..core.time_block import time_blocks_overlap
+from ..core.time_block import TimeBlock
+from ...data_access.itinerary_name_key import itinerary_name_key
+from ...data_access.saved_itinerary import SavedItinerary
+from ...data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
+from ...data_access.unschedule_itinerary_item import clear_itinerary_attraction_schedule
+from ...data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
+from ...data_access.validated_itinerary import ValidatedItinerary
+from ....models.wild_encounter_diff import WildEncounterDiff
+from ....types import Cursor
+from ....types import ScheduleTimeKey
 
 
 def wild_encounter_time_blocks(

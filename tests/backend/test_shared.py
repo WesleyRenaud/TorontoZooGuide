@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from api.itinerary.logic.itinerary_adjustment import ItineraryAdjustmentType
+from api.itinerary.domain.itinerary_adjustment import ItineraryAdjustmentType
 from api.itinerary.scheduling import ItineraryActivityScheduler
 from api.models import Animal
 from api.models import Attraction
