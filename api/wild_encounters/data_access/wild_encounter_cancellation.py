@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from ...types import Connection
 
 if TYPE_CHECKING:
-   from ..logic.wild_encounter_cancellation_input import WildEncounterCancellationInput
+   from ..cancellations.wild_encounter_cancellation_input import WildEncounterCancellationInput
 
 
 def save_wild_encounter_cancellation(

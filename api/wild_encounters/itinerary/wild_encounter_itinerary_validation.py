@@ -4,7 +4,7 @@ from ...itinerary.data_access.itinerary_wild_encounter_record import ItineraryWi
 from ...itinerary.scheduling import schedule_wild_encounter_for_itinerary
 from ...models import WildEncounter
 from ...models import WildEncounterDiff
-from .wild_encounter_schedule import find_wild_encounter_on_day_schedule
+from ..scheduling.wild_encounter_schedule import find_wild_encounter_on_day_schedule
 
 
 def build_wild_encounter_diff_for_visit_day(
