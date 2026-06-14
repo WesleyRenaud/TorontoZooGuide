@@ -6,23 +6,24 @@ from typing import Any
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
+from ..conflicts.itinerary_schedule_time_conflicts import schedule_time_conflict_warning
+from ..conflicts.itinerary_unschedule_confirmations import apply_confirmed_itinerary_unschedule_changes
+from ..conflicts.itinerary_unschedule_confirmations import find_itinerary_unschedule_requirements
+from ..conflicts.itinerary_unschedule_confirmations import ItineraryUnscheduleRequirements
+from ..conflicts.itinerary_unschedule_confirmations import unschedule_confirmation_warning
+from ..conflicts.wild_encounter_time_conflicts import find_schedule_time_conflict_issues
 from ..data_access.clear_itinerary import clear_itinerary
 from ..data_access.itinerary import fetch_saved_itinerary
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.save_itinerary import save_validated_itinerary
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
+from ..domain.itinerary import build_current_itinerary
+from ..domain.itinerary_adjustment import ItineraryAdjustment
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from .guardians_talk_schedule_trimming import apply_guardians_talk_trimming
-from .itinerary import build_current_itinerary
-from .itinerary_schedule_time_conflicts import schedule_time_conflict_warning
-from .itinerary_unschedule_confirmations import apply_confirmed_itinerary_unschedule_changes
-from .itinerary_unschedule_confirmations import find_itinerary_unschedule_requirements
-from .itinerary_unschedule_confirmations import ItineraryUnscheduleRequirements
-from .itinerary_unschedule_confirmations import unschedule_confirmation_warning
-from ..logic.itinerary_adjustment import ItineraryAdjustment
 from ...models import Itinerary
 from ..results.itinerary_save_result import ItinerarySaveResult
+from ..scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection
 from ..validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
@@ -31,7 +32,6 @@ from ..validation.itinerary_validation import validate_itinerary_for_save
 from ..warnings.early_admission_warning import early_admission_warning_is_required
 from ..warnings.itinerary_suppressed_warnings import with_suppressed_warnings
 from ..warnings.short_visit_warning import short_visit_warning_is_required
-from .wild_encounter_time_conflicts import find_schedule_time_conflict_issues
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 

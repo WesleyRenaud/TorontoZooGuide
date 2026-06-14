@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
-from ..logic.wild_encounter_unschedule_items import newly_added_active_wild_encounters
-from ..logic.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
 from ...models.wild_encounter_diff import WildEncounterDiff
 from ..results.itinerary_result_reason import ItineraryResultReason
 from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
+from ..scheduling.unscheduling.wild_encounter_unschedule_items import newly_added_active_wild_encounters
+from ..scheduling.unscheduling.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
 from ...shared.enums import ItineraryErrorType
 
 

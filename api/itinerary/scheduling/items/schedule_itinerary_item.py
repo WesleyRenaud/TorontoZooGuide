@@ -13,10 +13,6 @@ from ...data_access.schedule_itinerary_item import insert_itinerary_event_schedu
 from ...data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
 from ...data_access.schedule_itinerary_item import insert_itinerary_wild_encounter
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from ...logic.guardians_talk_unschedule_items import clear_saved_schedules_overlapping_guardians_talks
-from ...logic.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
-from ...logic.wild_encounter_unschedule_items import clear_saved_schedules_overlapping_wild_encounters
-from ...logic.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
 from ....models.guardians_talk_diff import GuardiansTalkDiff
 from ....models.itinerary_event import ItineraryEvent
 from ....models.wild_encounter_diff import WildEncounterDiff
@@ -39,6 +35,10 @@ from ....types import Cursor
 from ....types import DurationInput
 from ....types import ScheduleTimeKey
 from ....types import TimeInput
+from ..unscheduling.guardians_talk_unschedule_items import clear_saved_schedules_overlapping_guardians_talks
+from ..unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
+from ..unscheduling.wild_encounter_unschedule_items import clear_saved_schedules_overlapping_wild_encounters
+from ..unscheduling.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
 from ...warnings.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
 from ...warnings.wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
