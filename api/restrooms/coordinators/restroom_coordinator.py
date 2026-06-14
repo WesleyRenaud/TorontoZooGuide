@@ -6,14 +6,14 @@ from ..data_access.restroom_alert import delete_restroom_alert
 from ..data_access.restroom_alert import save_restroom_alert
 from ..data_access.restroom_status import save_restroom_closed_status
 from ..data_access.restroom_status import save_restroom_open_status
-from ..logic.restroom import build_restrooms
-from ..logic.restroom import resolve_restroom_context
-from ..logic.restroom_alert_builder import build_restroom_alert
-from ..logic.restroom_status import build_restroom_closed_status
-from ..logic.restrooms_matching_query import build_restrooms_matching_query
+from ..domain.restroom import build_restrooms
+from ..domain.restroom import resolve_restroom_context
 from ...models import Restroom
 from ...request_connection import get_connection
+from ..search.restrooms_matching_query import build_restrooms_matching_query
 from ...shared.calendar_dates import DateValues
+from ..status.restroom_alert_builder import build_restroom_alert
+from ..status.restroom_status import build_restroom_closed_status
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 

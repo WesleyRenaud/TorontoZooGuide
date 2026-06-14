@@ -5,15 +5,15 @@ from ..data_access.drinking_fountain_status import fetch_drinking_fountain_seaso
 from ..data_access.drinking_fountain_status import fetch_drinking_fountain_status_record
 from ..data_access.drinking_fountain_status import save_drinking_fountain_closed_status
 from ..data_access.drinking_fountain_status import save_drinking_fountain_open_status
-from ..logic.drinking_fountain import build_drinking_fountains
-from ..logic.drinking_fountain_status import build_drinking_fountain_closed_status
-from ..logic.drinking_fountain_status import build_drinking_fountain_open_status
-from ..logic.drinking_fountain_status import build_drinking_fountain_seasonal_status
-from ..logic.drinking_fountain_status import build_drinking_fountain_status
-from ..logic.drinking_fountain_status import drinking_fountain_status_applies_to_date
+from ..domain.drinking_fountain import build_drinking_fountains
 from ...models import DrinkingFountain
 from ...request_connection import get_connection
 from ...shared.calendar_dates import CalendarDates
+from ..status.drinking_fountain_status import build_drinking_fountain_closed_status
+from ..status.drinking_fountain_status import build_drinking_fountain_open_status
+from ..status.drinking_fountain_status import build_drinking_fountain_seasonal_status
+from ..status.drinking_fountain_status import build_drinking_fountain_status
+from ..status.drinking_fountain_status import drinking_fountain_status_applies_to_date
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 
