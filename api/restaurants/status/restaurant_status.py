@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .restaurant_opening_schedule import RestaurantOpeningSchedule
-from .restaurant_schedule_override import RestaurantScheduleOverride
+from ..scheduling.restaurant_opening_schedule import RestaurantOpeningSchedule
+from ..scheduling.restaurant_schedule_override import RestaurantScheduleOverride
 from ...shared.build_amenity_status_builders import AmenityStatusBuilders
 from ...types import DateInput
 

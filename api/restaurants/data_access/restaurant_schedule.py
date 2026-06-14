@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ..logic.restaurant_opening_schedule import RestaurantOpeningSchedule
-from ..logic.restaurant_schedule_override import RestaurantScheduleOverride
 from .restaurant_schedule_record import RestaurantScheduleRecord
+from ..scheduling.restaurant_opening_schedule import RestaurantOpeningSchedule
+from ..scheduling.restaurant_schedule_override import RestaurantScheduleOverride
 from ...shared.constants import OPEN_ENDED_SQL_DATE
 from ...types import Connection, DateKey
 
