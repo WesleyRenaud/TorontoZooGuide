@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from ..inputs.update_end_input import UpdateEndInput
 from ...shared.calendar_dates import DateValues
 from ...types import DateInput, DateKey
-from .update_end_input import UpdateEndInput
 
 
 def build_update_end_input(

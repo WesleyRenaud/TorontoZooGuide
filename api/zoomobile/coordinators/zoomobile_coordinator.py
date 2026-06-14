@@ -10,18 +10,18 @@ from ..data_access.zoomobile_station import fetch_zoomobile_station_records
 from ..data_access.zoomobile_station import fetch_zoomobile_station_status_records
 from ..data_access.zoomobile_station_status import save_zoomobile_station_closed_status
 from ..data_access.zoomobile_station_status import save_zoomobile_station_open_status
-from ..logic.zoomobile_route import build_zoomobile_route_response
-from ..logic.zoomobile_route import is_valid_zoomobile_route
-from ..logic.zoomobile_route import resolve_requested_zoomobile_route
-from ..logic.zoomobile_route import resolve_zoomobile_route_context
-from ..logic.zoomobile_route_schedule import build_current_zoomobile_route_schedule
-from ..logic.zoomobile_station import build_zoomobile_stations
-from ..logic.zoomobile_station import resolve_zoomobile_station_context
-from ..logic.zoomobile_station_status import build_zoomobile_station_closed_status
-from ..logic.zoomobile_stations_matching_query import build_zoomobile_stations_matching_query
+from ..domain.zoomobile_route import build_zoomobile_route_response
+from ..domain.zoomobile_route import is_valid_zoomobile_route
+from ..domain.zoomobile_route import resolve_requested_zoomobile_route
+from ..domain.zoomobile_route import resolve_zoomobile_route_context
+from ..domain.zoomobile_station import build_zoomobile_stations
+from ..domain.zoomobile_station import resolve_zoomobile_station_context
 from ...models import ZoomobileRoute
 from ...models import ZoomobileStation
 from ...request_connection import get_connection
+from ..scheduling.zoomobile_route_schedule import build_current_zoomobile_route_schedule
+from ..search.zoomobile_stations_matching_query import build_zoomobile_stations_matching_query
+from ..status.zoomobile_station_status import build_zoomobile_station_closed_status
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 

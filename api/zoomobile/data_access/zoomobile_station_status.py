@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..logic.zoomobile_station_closed_status import ZoomobileStationClosedStatus
+from ..status.zoomobile_station_closed_status import ZoomobileStationClosedStatus
 from ...types import Connection
 
 
