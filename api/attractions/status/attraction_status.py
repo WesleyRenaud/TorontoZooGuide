@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .attraction_opening_schedule import AttractionOpeningSchedule
-from .attraction_schedule_override import AttractionScheduleOverride
+from ..scheduling.attraction_opening_schedule import AttractionOpeningSchedule
+from ..scheduling.attraction_schedule_override import AttractionScheduleOverride
 from ...shared.build_amenity_status_builders import AmenityStatusBuilders
 from ...types import DateInput
 

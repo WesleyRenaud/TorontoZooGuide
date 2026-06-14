@@ -5,7 +5,7 @@ from datetime import date
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.attractions.data_access.attraction import fetch_attraction_schedule_records
 from api.attractions.data_access.attraction_schedule_record import AttractionScheduleRecord
-from api.attractions.logic.attraction import get_active_attraction_schedule_status
+from api.attractions.domain.attraction import get_active_attraction_schedule_status
 from api.giftshops.coordinators.gift_shop_coordinator import GiftShopCoordinator
 from api.giftshops.data_access.gift_shop import fetch_gift_shop_schedule_records
 from api.giftshops.data_access.gift_shop_schedule_record import GiftShopScheduleRecord

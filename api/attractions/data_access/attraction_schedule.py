@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from .attraction_schedule_record import AttractionScheduleRecord
-from ..logic.attraction_opening_schedule import AttractionOpeningSchedule
-from ..logic.attraction_schedule_override import AttractionScheduleOverride
+from ..scheduling.attraction_opening_schedule import AttractionOpeningSchedule
+from ..scheduling.attraction_schedule_override import AttractionScheduleOverride
 from ...shared.constants import OPEN_ENDED_SQL_DATE
 from ...types import Connection, DateKey
 
