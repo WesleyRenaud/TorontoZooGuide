@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from ..cancellations.guardians_talk_cancellation_status import build_guardians_talk_cancellation
 from ..data_access.guardians_talk import fetch_guardians_talk_locations
 from ..data_access.guardians_talk import fetch_guardians_talk_names
 from ..data_access.guardians_talk import fetch_guardians_talk_names_at_location
@@ -13,19 +14,18 @@ from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_records
 from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule
 from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule_end
+from ..domain.guardians_talk import build_guardians_talk_details
 from ...itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
-from ..logic.guardians_talk import build_guardians_talk_details
-from ..logic.guardians_talk_cancellation_status import build_guardians_talk_cancellation
-from ..logic.guardians_talk_occurrences import build_guardians_talk_occurrences
-from ..logic.guardians_talk_schedule import build_guardians_talk_schedule_for_target_date
-from ..logic.guardians_talk_schedule import find_guardians_talk_on_day_schedule
-from ..logic.guardians_talk_schedule_status import build_guardians_talk_schedule
-from ..logic.guardians_talk_schedule_status import build_guardians_talk_schedule_end
-from ..logic.guardians_talks_matching_query import build_guardians_talks_matching_query
-from ..logic.itinerary_guardians_talks import build_itinerary_guardians_talks
+from ..itinerary.itinerary_guardians_talks import build_itinerary_guardians_talks
 from ...models import GuardiansTalk
 from ...models import ScheduledOccurrence
 from ...request_connection import get_connection
+from ..scheduling.guardians_talk_occurrences import build_guardians_talk_occurrences
+from ..scheduling.guardians_talk_schedule import build_guardians_talk_schedule_for_target_date
+from ..scheduling.guardians_talk_schedule import find_guardians_talk_on_day_schedule
+from ..scheduling.guardians_talk_schedule_status import build_guardians_talk_schedule
+from ..scheduling.guardians_talk_schedule_status import build_guardians_talk_schedule_end
+from ..search.guardians_talks_matching_query import build_guardians_talks_matching_query
 from ...shared.calendar_dates import CalendarDates
 from ...types import DateInput, DateKey, MonthInput, VisitDay, VisitYear
 

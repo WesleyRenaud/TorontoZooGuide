@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from ..data_access.guardians_talk_schedule_record import GuardiansTalkScheduleRecord
-from .guardians_talk_name_filter import GuardiansTalkNameFilter
+from ..domain.guardians_talk_name_filter import GuardiansTalkNameFilter
 from .guardians_talk_weekday_time import guardians_talk_time_for_weekday
 from ...models import GuardiansTalk
 from ...shared.calendar_dates import DateValues

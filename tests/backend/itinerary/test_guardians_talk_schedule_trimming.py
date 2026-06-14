@@ -1,4 +1,4 @@
-from api.guardians.logic.guardians_talk_itinerary_validation import build_guardians_talk_diff_for_visit_day
+from api.guardians.itinerary.guardians_talk_itinerary_validation import build_guardians_talk_diff_for_visit_day
 from api.itinerary.scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from api.models import GuardiansTalk
 from api.models import WildEncounter
