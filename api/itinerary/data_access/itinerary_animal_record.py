@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...animals.logic.animals_matching_query import species_exhibit_key_from_values
+from ...animals.search.animals_matching_query import species_exhibit_key_from_values
 from ...types import ScheduleTimeKey
 
 

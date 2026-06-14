@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .animals_matching_query import filter_animals_by_species_exhibit_keys
-from .animals_matching_query import sort_animals_by_species_and_exhibit
-from .animals_matching_query import species_exhibit_key
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...models import Animal
+from ..search.animals_matching_query import filter_animals_by_species_exhibit_keys
+from ..search.animals_matching_query import sort_animals_by_species_and_exhibit
+from ..search.animals_matching_query import species_exhibit_key
 
 
 def apply_itinerary_animal_old_likelihood(

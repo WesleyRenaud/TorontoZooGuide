@@ -3,11 +3,11 @@ from __future__ import annotations
 from datetime import date
 
 from api.animals.data_access.animal_viewability_record import AnimalViewabilityRecord
-from api.animals.logic.animal_viewability import calculate_animal_likelihood
-from api.animals.logic.animal_viewability import get_active_exhibit_status
-from api.animals.logic.animal_viewability import get_active_limited_viewing_status
-from api.animals.logic.animal_viewability import get_active_off_display_status
-from api.animals.logic.animal_viewability import get_active_viewing_alert_status
+from api.animals.domain.animal_viewability import calculate_animal_likelihood
+from api.animals.domain.animal_viewability import get_active_exhibit_status
+from api.animals.domain.animal_viewability import get_active_limited_viewing_status
+from api.animals.domain.animal_viewability import get_active_off_display_status
+from api.animals.domain.animal_viewability import get_active_viewing_alert_status
 from api.shared.enums import ScheduleStatus
 
 
