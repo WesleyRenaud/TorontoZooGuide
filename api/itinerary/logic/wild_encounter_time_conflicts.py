@@ -4,7 +4,7 @@ from .itinerary_result_reason import ItineraryResultReason
 from .itinerary_save_issue_item import ItinerarySaveIssueItem
 from ...models.guardians_talk_diff import GuardiansTalkDiff
 from ...models.wild_encounter_diff import WildEncounterDiff
-from ..scheduling.time_block import time_block_from_schedule_times
+from ..scheduling.core.time_block import time_block_from_schedule_times
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import ScheduledItem

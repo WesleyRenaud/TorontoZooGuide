@@ -7,9 +7,9 @@ from ..data_access.unschedule_itinerary_item import clear_itinerary_attraction_s
 from ..data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ...models.wild_encounter_diff import WildEncounterDiff
-from ..scheduling.time_block import time_block_from_schedule_times
-from ..scheduling.time_block import time_blocks_overlap
-from ..scheduling.time_block import TimeBlock
+from ..scheduling.core.time_block import time_block_from_schedule_times
+from ..scheduling.core.time_block import time_blocks_overlap
+from ..scheduling.core.time_block import TimeBlock
 from ...types import Cursor
 from ...types import ScheduleTimeKey
 

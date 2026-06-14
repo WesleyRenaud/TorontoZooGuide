@@ -13,7 +13,6 @@ from ..data_access.itinerary_time import set_itinerary_departure_time
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..logic import bulk_schedule_animals as bulk_schedule_animals_logic
 from ..logic import remove_itinerary_item as remove_itinerary_item_logic
-from ..logic import schedule_itinerary_item as schedule_itinerary_item_logic
 from ..logic import set_itinerary as set_itinerary_logic
 from ..logic import suppress_itinerary_warning as suppress_itinerary_warning_logic
 from ..logic import unschedule_itinerary_item as unschedule_itinerary_item_logic
@@ -28,6 +27,7 @@ from ..logic.short_visit_warning import short_visit_warning_is_required
 from ..logic.suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...models import Itinerary
 from ...request_connection import get_connection
+from ..scheduling.items import schedule_itinerary_item as schedule_itinerary_item_logic
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, DateInput, DurationInput, TimeInput

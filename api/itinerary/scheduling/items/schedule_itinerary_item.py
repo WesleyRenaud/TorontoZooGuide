@@ -2,22 +2,27 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...animals.coordinators.animal_coordinator import AnimalCoordinator
-from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from ..data_access.itinerary import fetch_saved_itinerary
-from ..data_access.itinerary_default_duration import fetch_event_default_duration_seconds
-from ..data_access.saved_itinerary import SavedItinerary
-from ..data_access.schedule_itinerary_item import insert_itinerary_event_schedule
-from ..data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
-from ..data_access.schedule_itinerary_item import insert_itinerary_wild_encounter
-from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from .guardians_talk_unschedule_items import clear_saved_schedules_overlapping_guardians_talks
-from .guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
-from .guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
-from .itinerary_save_result import ItinerarySaveResult
-from ...models.guardians_talk_diff import GuardiansTalkDiff
-from ...models.itinerary_event import ItineraryEvent
-from ...models.wild_encounter_diff import WildEncounterDiff
+from ....animals.coordinators.animal_coordinator import AnimalCoordinator
+from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
+from ..core.scheduled_occurrence import schedule_guardians_talk_for_itinerary
+from ..core.scheduled_occurrence import schedule_wild_encounter_for_itinerary
+from ...data_access.itinerary import fetch_saved_itinerary
+from ...data_access.itinerary_default_duration import fetch_event_default_duration_seconds
+from ...data_access.saved_itinerary import SavedItinerary
+from ...data_access.schedule_itinerary_item import insert_itinerary_event_schedule
+from ...data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
+from ...data_access.schedule_itinerary_item import insert_itinerary_wild_encounter
+from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from ...logic.guardians_talk_unschedule_items import clear_saved_schedules_overlapping_guardians_talks
+from ...logic.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
+from ...logic.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
+from ...logic.itinerary_save_result import ItinerarySaveResult
+from ...logic.wild_encounter_unschedule_items import clear_saved_schedules_overlapping_wild_encounters
+from ...logic.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
+from ...logic.wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
+from ....models.guardians_talk_diff import GuardiansTalkDiff
+from ....models.itinerary_event import ItineraryEvent
+from ....models.wild_encounter_diff import WildEncounterDiff
 from .parse_schedule_item_request import parse_schedule_item_request
 from .parse_schedule_time_options import parse_schedule_time_options
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
@@ -28,20 +33,15 @@ from .schedule_itinerary_helpers import effective_duration_seconds
 from .schedule_itinerary_helpers import resolve_schedule_window
 from .schedule_itinerary_helpers import resolve_slot_times
 from .schedule_listed_itinerary_item import schedule_listed_itinerary_item
-from ..scheduling.scheduled_occurrence import schedule_guardians_talk_for_itinerary
-from ..scheduling.scheduled_occurrence import schedule_wild_encounter_for_itinerary
-from ...shared.enums import ItineraryErrorType
-from ...shared.enums import ItineraryEventType
-from ...shared.enums import ScheduleItemKind
-from ...types import Connection
-from ...types import Cursor
-from ...types import DurationInput
-from ...types import ScheduleTimeKey
-from ...types import TimeInput
-from .wild_encounter_unschedule_items import clear_saved_schedules_overlapping_wild_encounters
-from .wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
-from .wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
-from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
+from ....shared.enums import ItineraryErrorType
+from ....shared.enums import ItineraryEventType
+from ....shared.enums import ScheduleItemKind
+from ....types import Connection
+from ....types import Cursor
+from ....types import DurationInput
+from ....types import ScheduleTimeKey
+from ....types import TimeInput
+from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
 def _schedule_itinerary_event(

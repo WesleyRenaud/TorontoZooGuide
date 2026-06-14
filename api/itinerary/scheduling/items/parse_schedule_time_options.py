@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...shared.calendar_dates import DateValues
-from ...shared.duration_values import normalize_duration_minutes
-from ...shared.enums import ItineraryErrorType
-from ...types import DurationInput
-from ...types import ScheduleTimeKey
-from ...types import TimeInput
+from ....shared.calendar_dates import DateValues
+from ....shared.duration_values import normalize_duration_minutes
+from ....shared.enums import ItineraryErrorType
+from ....types import DurationInput
+from ....types import ScheduleTimeKey
+from ....types import TimeInput
 
 
 @dataclass( frozen=True )
