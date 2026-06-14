@@ -1,0 +1,269 @@
+from __future__ import annotations
+
+from collections.abc import Callable
+from datetime import date
+
+from support import ANIMAL_KEY
+from support import LION_ITINERARY_ENTRY
+from support import PENGUIN_ITINERARY_ENTRY
+from support import PENGUIN_KEY
+
+from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from conftest import DbControllers
+
+
+def test_schedule_itinerary_animal_uses_open_time_without_arrival(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY )
+
+   assert result.success
+   assert len( result.itinerary.animals ) == 1
+   assert result.itinerary.animals[ 0 ].start_time == '09:30'
+   assert result.itinerary.animals[ 0 ].end_time == '09:38'
+
+
+def test_schedule_itinerary_animal_uses_arrival_time_when_set(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY )
+
+   assert result.success
+   assert result.itinerary.animals[ 0 ].start_time == '09:00'
+   assert result.itinerary.animals[ 0 ].end_time == '09:08'
+
+
+def test_date_change_unschedules_animal_before_new_admission_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   scheduled = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY )
+
+   assert scheduled.success
+   assert scheduled.itinerary.animals[ 0 ].start_time == '09:00'
+
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-22',
+      arrival_time='09:00',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   )
+
+   assert result.success
+   assert result.itinerary.arrival_time == '09:30'
+   assert result.itinerary.animals[ 0 ].start_time is None
+   assert result.itinerary.animals[ 0 ].end_time is None
+
+
+def test_date_change_unschedules_animal_after_new_closing_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:30',
+      departure_time='19:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   scheduled = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='18:30' )
+
+   assert scheduled.success
+   assert scheduled.itinerary.animals[ 0 ].start_time == '18:30'
+
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-22',
+      arrival_time='09:30',
+      departure_time='19:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   )
+
+   assert result.success
+   assert result.itinerary.departure_time == '18:00'
+   assert result.itinerary.animals[ 0 ].start_time is None
+   assert result.itinerary.animals[ 0 ].end_time is None
+
+
+def test_schedule_itinerary_animal_skips_existing_scheduled_slot(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      animals=[ LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   assert ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+   ).success
+
+   result = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=PENGUIN_KEY )
+
+   assert result.success
+   scheduled = next(
+      animal for animal in result.itinerary.animals
+      if animal.species == 'African Penguin'
+   )
+
+   assert scheduled.start_time == '09:38'
+
+
+def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   db.conn.execute(
+      """   UPDATE Enclosure
+            SET DEFAULT_ITINERARY_DURATION_MINUTES = ?
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?;
+      """,
+      ( 0.5, 'African Lion', 'Africa Savanna' ) )
+   db.conn.commit()
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY )
+
+   assert result.success
+   assert result.itinerary.animals[ 0 ].start_time == '09:30'
+   assert result.itinerary.animals[ 0 ].end_time == '09:30:30'
+
+   db.conn.execute(
+      """   UPDATE Enclosure
+            SET DEFAULT_ITINERARY_DURATION_MINUTES = ?
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?;
+      """,
+      ( 8, 'African Lion', 'Africa Savanna' ) )
+   db.conn.commit()
+
+   refreshed_itinerary = ItineraryCoordinator.get_itinerary()
+
+   assert refreshed_itinerary.animals[ 0 ].start_time == '09:30'
+   assert refreshed_itinerary.animals[ 0 ].end_time == '09:30:30'
+
+
+def test_schedule_itinerary_animal_honors_requested_start_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='10:00' )
+
+   assert result.success
+   assert result.itinerary.animals[ 0 ].start_time == '10:00'
+   assert result.itinerary.animals[ 0 ].end_time == '10:08'
+
+
+def test_schedule_itinerary_animal_honors_requested_duration(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='10:00',
+      duration_minutes=20 )
+
+   assert result.success
+   assert result.itinerary.animals[ 0 ].start_time == '10:00'
+   assert result.itinerary.animals[ 0 ].end_time == '10:20'
