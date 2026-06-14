@@ -12,8 +12,8 @@ from support import WILD_ENCOUNTER
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_itinerary_date
-from api.itinerary.logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
-from api.itinerary.logic.itinerary_schedule_time_order_validation import departure_follows_arrival
+from api.itinerary.validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
+from api.itinerary.validation.itinerary_schedule_time_order_validation import departure_follows_arrival
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItineraryEventType
 from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record

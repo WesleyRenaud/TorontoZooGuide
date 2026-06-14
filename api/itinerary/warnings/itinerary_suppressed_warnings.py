@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import replace
 
 from ..data_access.itinerary_status import is_itinerary_error_suppressed
-from .itinerary_save_result import ItinerarySaveResult
-from .itinerary_time_set_result import ItineraryTimeSetResult
+from ..results.itinerary_save_result import ItinerarySaveResult
+from ..results.itinerary_time_set_result import ItineraryTimeSetResult
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection
 

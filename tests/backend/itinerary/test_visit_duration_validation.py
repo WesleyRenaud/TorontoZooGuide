@@ -1,4 +1,4 @@
-from api.itinerary.logic.itinerary_visit_duration_validation import itinerary_visit_is_shorter_than_minimum
+from api.itinerary.validation.itinerary_visit_duration_validation import itinerary_visit_is_shorter_than_minimum
 
 
 def test_itinerary_visit_is_shorter_than_minimum() -> None:

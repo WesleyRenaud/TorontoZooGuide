@@ -15,17 +15,15 @@ from ...data_access.schedule_itinerary_item import insert_itinerary_wild_encount
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...logic.guardians_talk_unschedule_items import clear_saved_schedules_overlapping_guardians_talks
 from ...logic.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
-from ...logic.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
-from ...logic.itinerary_save_result import ItinerarySaveResult
 from ...logic.wild_encounter_unschedule_items import clear_saved_schedules_overlapping_wild_encounters
 from ...logic.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
-from ...logic.wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
 from ....models.guardians_talk_diff import GuardiansTalkDiff
 from ....models.itinerary_event import ItineraryEvent
 from ....models.wild_encounter_diff import WildEncounterDiff
 from .parse_schedule_item_request import parse_schedule_item_request
 from .parse_schedule_time_options import parse_schedule_time_options
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
+from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_itinerary_helpers import build_itinerary_context
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
@@ -41,6 +39,8 @@ from ....types import Cursor
 from ....types import DurationInput
 from ....types import ScheduleTimeKey
 from ....types import TimeInput
+from ...warnings.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
+from ...warnings.wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 

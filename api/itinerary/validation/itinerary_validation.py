@@ -19,8 +19,8 @@ from ..data_access.itinerary_wild_encounter_record import ItineraryWildEncounter
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians.logic.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
-from .itinerary_visit_window import cleared_schedule_times_for_visit_window
-from .itinerary_visit_window import schedule_time_occurs_outside_visit_window
+from ..logic.itinerary_visit_window import cleared_schedule_times_for_visit_window
+from ..logic.itinerary_visit_window import schedule_time_occurs_outside_visit_window
 from ...models import AnimalDiff
 from ...models import AttractionDiff
 from ...models import GuardiansTalkDiff

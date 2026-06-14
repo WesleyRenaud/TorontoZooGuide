@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from ..data_access.itinerary_animal_record import ItineraryAnimalRecord
-from .itinerary_result_reason import ItineraryResultReason
-from .itinerary_save_issue_item import ItinerarySaveIssueItem
+from ..results.itinerary_result_reason import ItineraryResultReason
+from ..results.itinerary_save_issue_item import ItinerarySaveIssueItem
 from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ItinerarySaveIssueItemType
 

@@ -16,21 +16,21 @@ from ..logic import remove_itinerary_item as remove_itinerary_item_logic
 from ..logic import set_itinerary as set_itinerary_logic
 from ..logic import suppress_itinerary_warning as suppress_itinerary_warning_logic
 from ..logic import unschedule_itinerary_item as unschedule_itinerary_item_logic
-from ..logic.early_admission_warning import early_admission_warning_is_required
 from ..logic.itinerary import build_current_itinerary
-from ..logic.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
-from ..logic.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
-from ..logic.itinerary_save_result import ItinerarySaveResult
-from ..logic.itinerary_time_set_result import ItineraryTimeSetResult
 from ..logic.itinerary_visit_window import clear_schedules_outside_visit_window
-from ..logic.short_visit_warning import short_visit_warning_is_required
 from ..logic.suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...models import Itinerary
 from ...request_connection import get_connection
+from ..results.itinerary_save_result import ItinerarySaveResult
+from ..results.itinerary_time_set_result import ItineraryTimeSetResult
 from ..scheduling.items import schedule_itinerary_item as schedule_itinerary_item_logic
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, DateInput, DurationInput, TimeInput
+from ..validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
+from ..validation.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
+from ..warnings.early_admission_warning import early_admission_warning_is_required
+from ..warnings.short_visit_warning import short_visit_warning_is_required
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 

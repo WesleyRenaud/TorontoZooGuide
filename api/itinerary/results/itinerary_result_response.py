@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_time_set_result import ItineraryTimeSetResult
+from ..logic.suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...shared.constants import itinerary_config_to_dict
-from .suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...types import Connection
 
 

@@ -13,12 +13,9 @@ from ...data_access.schedule_itinerary_item import insert_itinerary_animal_sched
 from ...data_access.schedule_itinerary_item import insert_itinerary_attraction_schedule
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
-from ...logic.itinerary_save_result import ItinerarySaveResult
-from ...logic.itinerary_suppressed_warnings import with_suppressed_warnings
-from ...logic.schedule_item_not_on_itinerary_warning import saved_itinerary_has_schedule_item
-from ...logic.schedule_item_not_on_itinerary_warning import schedule_item_not_on_itinerary_warning_is_required
 from .parse_schedule_item_request import ParsedScheduleItemRequest
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
+from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
 from .schedule_itinerary_helpers import effective_duration_seconds
@@ -29,6 +26,9 @@ from ....shared.enums import ScheduleItemKind
 from ....types import Connection
 from ....types import Cursor
 from ....types import ScheduleTimeKey
+from ...warnings.itinerary_suppressed_warnings import with_suppressed_warnings
+from ...warnings.schedule_item_not_on_itinerary_warning import saved_itinerary_has_schedule_item
+from ...warnings.schedule_item_not_on_itinerary_warning import schedule_item_not_on_itinerary_warning_is_required
 
 
 @dataclass( frozen=True )

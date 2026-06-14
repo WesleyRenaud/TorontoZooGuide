@@ -10,8 +10,8 @@ from ..data_access.itinerary_animal_input import ItineraryAnimalInput
 from ..data_access.itinerary_save_input import ItinerarySaveInput
 from ..data_access.itinerary_save_input_mapper import map_itinerary_save_input
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_time_adjustments import adjust_set_itinerary_for_restrictive_hours
+from ..results.itinerary_save_result import ItinerarySaveResult
 from .set_itinerary_flow import check_set_itinerary_save_warnings
 from .set_itinerary_flow import commit_set_itinerary
 from .set_itinerary_flow import itinerary_controller_kwargs

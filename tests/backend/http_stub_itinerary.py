@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from api.itinerary.logic.itinerary_save_result import ItinerarySaveResult
-from api.itinerary.logic.itinerary_time_set_result import ItineraryTimeSetResult
 from api.itinerary.logic.suppress_itinerary_warning import SuppressItineraryWarningResult
+from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
+from api.itinerary.results.itinerary_time_set_result import ItineraryTimeSetResult
 from api.models import Itinerary
 
 class ItineraryStubMixin:
