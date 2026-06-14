@@ -1,6 +1,6 @@
-from api.itinerary.logic.parse_schedule_time_options import parse_schedule_time_options
-from api.itinerary.scheduling.resolve_schedule_slot import resolve_schedule_slot
-from api.itinerary.scheduling.time_block import TimeBlock
+from api.itinerary.scheduling.core.resolve_schedule_slot import resolve_schedule_slot
+from api.itinerary.scheduling.core.time_block import TimeBlock
+from api.itinerary.scheduling.items.parse_schedule_time_options import parse_schedule_time_options
 from api.shared.enums import ItineraryErrorType
 
 ANCHOR_SECONDS = 9 * 3600 + 30 * 60

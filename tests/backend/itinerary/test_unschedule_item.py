@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
-from api.itinerary.logic.parse_schedule_item_request import parse_schedule_item_request
+from api.itinerary.scheduling.items.parse_schedule_item_request import parse_schedule_item_request
 from api.shared.enums import ScheduleItemKind
 from conftest import DbControllers
 

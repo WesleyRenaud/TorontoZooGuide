@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...shared.enums import ItineraryEventType
-from ...shared.enums import ScheduleItemKind
+from ....shared.enums import ItineraryEventType
+from ....shared.enums import ScheduleItemKind
 
 SCHEDULE_ITEM_ANIMAL_KEY_SEPARATOR = '||'
 

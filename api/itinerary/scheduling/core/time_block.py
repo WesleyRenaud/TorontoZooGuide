@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...models import Itinerary
-from ...shared.calendar_dates import DateValues
-from ...types import ScheduleTimeKey
+from ....models import Itinerary
+from ....shared.calendar_dates import DateValues
+from ....types import ScheduleTimeKey
 
 
 @dataclass( frozen=True )

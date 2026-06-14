@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from .find_next_available_slot import find_next_available_slot
-from ...shared.calendar_dates import DateValues
+from ....shared.calendar_dates import DateValues
 from .time_block import time_blocks_overlap
 from .time_block import TimeBlock
-from ...types import ScheduleTimeKey
+from ....types import ScheduleTimeKey
 
 
 def resolve_schedule_slot(

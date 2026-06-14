@@ -4,11 +4,11 @@ from datetime import date
 
 from support import ANIMAL_KEY
 
-from api.itinerary.logic.parse_schedule_item_request import parse_schedule_item_request
-from api.itinerary.scheduling.find_next_available_slot import find_next_available_slot
-from api.itinerary.scheduling.scheduling_anchor import scheduling_anchor_seconds
-from api.itinerary.scheduling.time_block import time_blocks_overlap
-from api.itinerary.scheduling.time_block import TimeBlock
+from api.itinerary.scheduling.core.find_next_available_slot import find_next_available_slot
+from api.itinerary.scheduling.core.scheduling_anchor import scheduling_anchor_seconds
+from api.itinerary.scheduling.core.time_block import time_blocks_overlap
+from api.itinerary.scheduling.core.time_block import TimeBlock
+from api.itinerary.scheduling.items.parse_schedule_item_request import parse_schedule_item_request
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ScheduleItemKind
 from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record

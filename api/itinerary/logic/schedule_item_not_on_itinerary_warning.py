@@ -4,7 +4,7 @@ from ...animals.logic.animals_matching_query import species_exhibit_key_from_val
 from ..data_access.itinerary_status import is_itinerary_error_suppressed
 from ..data_access.saved_itinerary import SavedItinerary
 from .itinerary_suppressed_warnings import append_suppressed_warning
-from .parse_schedule_item_request import ParsedScheduleItemRequest
+from ..scheduling.items.parse_schedule_item_request import ParsedScheduleItemRequest
 from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ScheduleItemKind
 from ...types import Connection

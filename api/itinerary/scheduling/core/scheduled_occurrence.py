@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ...models import GuardiansTalk
-from ...models import GuardiansTalkDiff
-from ...models import WildEncounter
-from ...models import WildEncounterDiff
-from ...shared.calendar_dates import DateValues
-from ...types import ScheduleTimeKey
+from ....models import GuardiansTalk
+from ....models import GuardiansTalkDiff
+from ....models import WildEncounter
+from ....models import WildEncounterDiff
+from ....shared.calendar_dates import DateValues
+from ....types import ScheduleTimeKey
 
 
 def schedule_guardians_talk_for_itinerary(
