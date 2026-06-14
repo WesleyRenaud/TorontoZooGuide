@@ -3,11 +3,11 @@ from __future__ import annotations
 from datetime import date
 
 from ..data_access.wild_encounter_schedule_record import WildEncounterScheduleRecord
+from ..domain.wild_encounter_name_filter import WildEncounterNameFilter
 from ...models import WildEncounter
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
-from .wild_encounter_name_filter import WildEncounterNameFilter
 
 
 def find_wild_encounter_on_day_schedule(

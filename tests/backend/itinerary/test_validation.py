@@ -18,7 +18,7 @@ from api.itinerary.validation.itinerary_validation import validate_itinerary_att
 from api.models import GuardiansTalk
 from api.models import WildEncounter
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from api.wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
+from api.wild_encounters.itinerary.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
 from conftest import DbControllers
 
 def test_validate_animals_removes_unavailable_entries(

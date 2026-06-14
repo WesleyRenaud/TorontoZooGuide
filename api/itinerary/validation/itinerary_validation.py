@@ -29,7 +29,7 @@ from ...models.itinerary_event import ItineraryEvent
 from ...shared.enums import ItineraryEventType
 from ...types import Connection, DateKey, ScheduleTimeKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
-from ...wild_encounters.logic.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
+from ...wild_encounters.itinerary.wild_encounter_itinerary_validation import validate_wild_encounters_for_itinerary
 
 
 def validate_itinerary_animals(

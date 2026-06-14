@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from ...types import Connection, DateKey
 
 if TYPE_CHECKING:
-   from ..logic.wild_encounter_schedule_end_input import WildEncounterScheduleEndInput
-   from ..logic.wild_encounter_schedule_input import WildEncounterScheduleInput
+   from ..scheduling.wild_encounter_schedule_end_input import WildEncounterScheduleEndInput
+   from ..scheduling.wild_encounter_schedule_input import WildEncounterScheduleInput
 
 from .wild_encounter_cancellation_mapper import map_wild_encounter_cancellation_records
 from .wild_encounter_cancellation_record import WildEncounterCancellationRecord
