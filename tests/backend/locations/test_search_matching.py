@@ -7,7 +7,7 @@ from api.models import GuardiansTalk
 from api.models import Pavilion
 from api.models import Restroom
 from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
-from api.pavilions.logic.pavilions_matching_query import build_pavilions_matching_query
+from api.pavilions.search.pavilions_matching_query import build_pavilions_matching_query
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
 from api.restrooms.logic.restrooms_matching_query import build_restrooms_matching_query
