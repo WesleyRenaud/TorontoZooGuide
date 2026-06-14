@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..data_access.zoo_hours import fetch_zoo_hours_record
-from ..logic.zoo_hours import build_zoo_hours
+from ..domain.zoo_hours import build_zoo_hours
 from ...models import ZooHours
 from ...request_connection import get_connection
 from ...shared.calendar_dates import CalendarDates
