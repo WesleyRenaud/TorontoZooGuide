@@ -12,8 +12,8 @@ from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .itinerary import build_current_itinerary
 from .itinerary_result_reason import ItineraryResultReason
 from .itinerary_save_result import ItinerarySaveResult
-from .schedule_itinerary_item import _itinerary_controller_kwargs
-from .schedule_itinerary_item import _resolve_schedule_window
+from .schedule_itinerary_helpers import build_itinerary_context
+from .schedule_itinerary_helpers import resolve_schedule_window
 from ..scheduling.resolve_schedule_slot import resolve_schedule_slot
 from ..scheduling.time_block import collect_time_blocks_from_itinerary
 from ..scheduling.time_block import time_block_from_schedule_times
@@ -59,7 +59,7 @@ def bulk_schedule_animals(
       guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None = None ) -> ItinerarySaveResult:
-   itinerary_controller_kwargs = _itinerary_controller_kwargs(
+   itinerary_context = build_itinerary_context(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
       guardians_coordinator=guardians_coordinator,
@@ -67,10 +67,10 @@ def bulk_schedule_animals(
       visit_date_temp=visit_date_temp )
 
    saved_itinerary = fetch_saved_itinerary( conn )
-   window = _resolve_schedule_window(
+   window = resolve_schedule_window(
       conn,
       saved_itinerary,
-      **itinerary_controller_kwargs )
+      **itinerary_context )
 
    if isinstance( window, ItinerarySaveResult ):
       return window
@@ -78,7 +78,7 @@ def bulk_schedule_animals(
    anchor_seconds, day_end_seconds = window
    itinerary = build_current_itinerary(
       saved_itinerary,
-      **itinerary_controller_kwargs )
+      **itinerary_context )
    blockers = collect_time_blocks_from_itinerary( itinerary )
 
    unscheduled_animals = sort_animals_for_bulk_schedule( [
@@ -98,7 +98,7 @@ def bulk_schedule_animals(
          status=status,
          itinerary=build_current_itinerary(
             fetch_saved_itinerary( conn ),
-            **itinerary_controller_kwargs ) )
+            **itinerary_context ) )
 
    remaining_animals = _schedule_animals_in_order(
       conn,
@@ -120,7 +120,7 @@ def bulk_schedule_animals(
       reasons=reasons,
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
-         **itinerary_controller_kwargs ) )
+         **itinerary_context ) )
 
 
 def _schedule_animals_in_order(
