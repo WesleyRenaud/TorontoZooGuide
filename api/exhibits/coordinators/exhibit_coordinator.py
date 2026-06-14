@@ -7,15 +7,15 @@ from ..data_access.exhibit import fetch_region_exhibit_rows
 from ..data_access.exhibit_closure import fetch_exhibit_closure_records
 from ..data_access.exhibit_closure import save_exhibit_closed_status
 from ..data_access.exhibit_closure import save_exhibit_open_status
-from ..logic.exhibit import build_region_options
-from ..logic.exhibit_closure import exhibit_names_closed_on_visit_date
-from ..logic.exhibit_status import build_exhibit_closed_status
-from ..logic.regions_with_exhibits import build_regions_with_exhibits
+from ..domain.exhibit import build_region_options
+from ..domain.regions_with_exhibits import build_regions_with_exhibits
 from ...models import Region
 from ...models import RegionWithExhibits
 from ...request_connection import get_connection
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
+from ..status.exhibit_closure import exhibit_names_closed_on_visit_date
+from ..status.exhibit_status import build_exhibit_closed_status
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 

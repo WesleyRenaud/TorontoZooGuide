@@ -10,7 +10,7 @@ from api.pavilions.coordinators.pavilion_coordinator import PavilionCoordinator
 from api.pavilions.search.pavilions_matching_query import build_pavilions_matching_query
 from api.restaurants.coordinators.restaurant_coordinator import RestaurantCoordinator
 from api.restrooms.coordinators.restroom_coordinator import RestroomCoordinator
-from api.restrooms.logic.restrooms_matching_query import build_restrooms_matching_query
+from api.restrooms.search.restrooms_matching_query import build_restrooms_matching_query
 from api.zoomobile.coordinators.zoomobile_coordinator import ZoomobileCoordinator
 from conftest import DbControllers
 
