@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...animals.logic.animals_matching_query import species_exhibit_key_from_values
+from ...animals.search.animals_matching_query import species_exhibit_key_from_values
 from ..data_access.itinerary_status import is_itinerary_error_suppressed
 from ..data_access.saved_itinerary import SavedItinerary
 from .itinerary_suppressed_warnings import append_suppressed_warning

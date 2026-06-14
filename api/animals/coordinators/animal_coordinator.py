@@ -10,17 +10,17 @@ from ..data_access.animal_viewing_alert import save_animal_viewing_alert
 from ..data_access.animal_viewing_scope import fetch_animal_viewing_scopes
 from ..data_access.animal_visibility_schedule import delete_animal_visibility_schedule
 from ..data_access.animal_visibility_schedule import save_animal_limited_viewing_schedule
+from ..domain.animal_viewability import build_viewable_animals_on_day
+from ..domain.animal_viewability import resolve_animal_viewability_context
 from ...itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ..logic.animal_status import build_animal_off_display_status
-from ..logic.animal_viewability import build_viewable_animals_on_day
-from ..logic.animal_viewability import resolve_animal_viewability_context
-from ..logic.animal_viewing_alert_builder import build_animal_viewing_alert
-from ..logic.animal_visibility_schedule import build_animal_limited_viewing_schedule
-from ..logic.animals_matching_query import build_animals_matching_query
-from ..logic.itinerary_animals import build_itinerary_animals
+from ..itinerary.itinerary_animals import build_itinerary_animals
 from ...models import Animal
 from ...request_connection import get_connection
+from ..scheduling.animal_visibility_schedule import build_animal_limited_viewing_schedule
+from ..search.animals_matching_query import build_animals_matching_query
 from ...shared.enums import AnimalViewingScope
+from ..status.animal_status import build_animal_off_display_status
+from ..status.animal_viewing_alert_builder import build_animal_viewing_alert
 from ...types import DateInput, MonthInput, VisitDay, VisitMonth, VisitYear
 
 

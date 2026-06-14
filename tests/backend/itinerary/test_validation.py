@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
-from api.animals.logic.itinerary_animals import build_itinerary_animals
+from api.animals.itinerary.itinerary_animals import build_itinerary_animals
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.guardians.itinerary.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary

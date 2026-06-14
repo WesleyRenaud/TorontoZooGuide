@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
-from ...animals.logic.animals_matching_query import species_exhibit_key_from_values
+from ...animals.search.animals_matching_query import species_exhibit_key_from_values
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..conflicts.itinerary_time_adjustments import adjust_set_itinerary_for_restrictive_hours
 from ..data_access.itinerary import fetch_itinerary_date
