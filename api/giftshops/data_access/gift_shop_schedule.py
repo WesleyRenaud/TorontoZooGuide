@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from .gift_shop_schedule_record import GiftShopScheduleRecord
-from ..logic.gift_shop_opening_schedule import GiftShopOpeningSchedule
-from ..logic.gift_shop_schedule_override import GiftShopScheduleOverride
+from ..scheduling.gift_shop_opening_schedule import GiftShopOpeningSchedule
+from ..scheduling.gift_shop_schedule_override import GiftShopScheduleOverride
 from ...shared.constants import OPEN_ENDED_SQL_DATE
 from ...types import Connection, DateKey
 

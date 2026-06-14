@@ -5,7 +5,7 @@ from collections.abc import Callable
 import pytest
 
 from api.attractions.logic.attraction import calculate_attraction_likelihood
-from api.giftshops.logic.gift_shop import calculate_gift_shop_likelihood
+from api.giftshops.domain.gift_shop import calculate_gift_shop_likelihood
 from api.restaurants.domain.restaurant import calculate_restaurant_likelihood
 from api.types import SeasonalMultiplier
 

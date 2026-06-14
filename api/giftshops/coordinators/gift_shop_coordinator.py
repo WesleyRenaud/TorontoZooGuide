@@ -6,17 +6,17 @@ from ..data_access.gift_shop import fetch_gift_shop_schedule_override_records
 from ..data_access.gift_shop import fetch_gift_shop_schedule_records
 from ..data_access.gift_shop_schedule import save_gift_shop_opening_schedule
 from ..data_access.gift_shop_schedule import save_gift_shop_schedule_override
-from ..logic.gift_shop import build_gift_shops
-from ..logic.gift_shop import resolve_gift_shop_context
-from ..logic.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_replacing_overlaps
-from ..logic.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_trimming_overlaps
-from ..logic.gift_shop_status import build_gift_shop_closed_schedule
-from ..logic.gift_shop_status import build_gift_shop_closure_override
-from ..logic.gift_shop_status import build_gift_shop_opening_schedule
-from ..logic.gift_shops_matching_query import build_gift_shops_matching_query
+from ..domain.gift_shop import build_gift_shops
+from ..domain.gift_shop import resolve_gift_shop_context
 from ...models import GiftShop
 from ...request_connection import get_connection
+from ..scheduling.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_replacing_overlaps
+from ..scheduling.gift_shop_schedule_conflict_resolution import save_gift_shop_opening_schedule_trimming_overlaps
+from ..search.gift_shops_matching_query import build_gift_shops_matching_query
 from ...shared.build_amenity_coordinator_mutations import AmenityCoordinatorMutations
+from ..status.gift_shop_status import build_gift_shop_closed_schedule
+from ..status.gift_shop_status import build_gift_shop_closure_override
+from ..status.gift_shop_status import build_gift_shop_opening_schedule
 from ...types import DateInput, MonthInput, VisitDay, VisitYear
 
 

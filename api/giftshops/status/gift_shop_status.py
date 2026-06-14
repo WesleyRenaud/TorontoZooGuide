@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .gift_shop_opening_schedule import GiftShopOpeningSchedule
-from .gift_shop_schedule_override import GiftShopScheduleOverride
+from ..scheduling.gift_shop_opening_schedule import GiftShopOpeningSchedule
+from ..scheduling.gift_shop_schedule_override import GiftShopScheduleOverride
 from ...shared.build_amenity_status_builders import AmenityStatusBuilders
 from ...types import DateInput
 
