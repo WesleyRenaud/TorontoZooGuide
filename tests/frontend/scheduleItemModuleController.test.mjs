@@ -252,3 +252,95 @@ test('applyPreselectedRow seeds the type, search input, and selected row', () =>
    assert.equal(refs.searchInput.value, 'Tiger');
    assert.equal(controller.canScheduleSelection(), true);
 });
+
+test('displaySearchResults selects a row and infers the module type from the row kind', () => {
+   const refs = createRefs({ selection: '' });
+   let onSelectRow = null;
+   const controller = createController({
+      refs,
+      deps: {
+         renderSearchResults: ({ onSelectRow: selectRow, selectedRowId }) => {
+            onSelectRow = selectRow;
+            refs.resultsEl.selectedRowId = selectedRowId;
+         },
+      },
+   });
+
+   controller.displaySearchResults([ANIMAL_ROW]);
+   onSelectRow?.(ANIMAL_ROW, 'Tiger||Savanna');
+
+   assert.equal(refs.typeSelect.value, ScheduleItemKind.ANIMAL.itemType);
+   assert.equal(refs.resultsEl.selectedRowId, 'Tiger||Savanna');
+   assert.equal(controller.canScheduleSelection(), true);
+   assert.equal(refs.scheduleButton.disabled, false);
+});
+
+test('displaySearchResults clears the selection when the same row is chosen again', () => {
+   const refs = createRefs({ selection: ScheduleItemKind.ANIMAL.itemType });
+   let onSelectRow = null;
+   const controller = createController({
+      refs,
+      deps: {
+         renderSearchResults: ({ onSelectRow: selectRow }) => {
+            onSelectRow = selectRow;
+         },
+      },
+   });
+
+   controller.displaySearchResults([ANIMAL_ROW]);
+   onSelectRow?.(ANIMAL_ROW, 'Tiger||Savanna');
+   onSelectRow?.(ANIMAL_ROW, 'Tiger||Savanna');
+
+   assert.equal(controller.canScheduleSelection(), false);
+   assert.equal(refs.scheduleButton.disabled, true);
+});
+
+test('handleTypeSelectChange clears the search input and resets time fields', () => {
+   const refs = createRefs({
+      selection: ScheduleItemKind.ANIMAL.itemType,
+      searchValue: 'tiger',
+   });
+   let resetCount = 0;
+   const controller = createController({
+      refs,
+      scheduleTimeFields: {
+         reset: () => {
+            resetCount += 1;
+         },
+      },
+   });
+
+   controller.handleTypeSelectChange();
+
+   assert.equal(refs.searchInput.value, '');
+   assert.equal(resetCount, 1);
+   assert.equal(controller.canScheduleSelection(), false);
+});
+
+test('handleOnlyItineraryItemsChange re-filters cached search rows', () => {
+   const refs = createRefs({
+      selection: ScheduleItemKind.ANIMAL.itemType,
+   });
+   const renderedRows = [];
+   const controller = createController({
+      refs,
+      deps: {
+         renderSearchResults: ({ rows }) => {
+            renderedRows.push(rows);
+         },
+      },
+   });
+
+   controller.displaySearchResults([
+      ANIMAL_ROW,
+      {
+         species: 'Giant Panda',
+         exhibit: 'Bamboo',
+         scheduleItemKind: 'animals',
+      },
+   ]);
+   refs.onlyItineraryItemsCheckbox.checked = true;
+   controller.handleOnlyItineraryItemsChange();
+
+   assert.deepEqual(renderedRows.at(-1), [ANIMAL_ROW]);
+});

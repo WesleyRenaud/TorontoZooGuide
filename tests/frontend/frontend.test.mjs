@@ -29,6 +29,7 @@ import './itineraryPanelViewUrl.test.mjs';
 import './itineraryPanelViews.test.mjs';
 import './itineraryPanelScheduleHandlers.test.mjs';
 import './renderPanel.test.mjs';
+import './itineraryPanelContent.test.mjs';
 import './scheduleItemSearch.test.mjs';
 import './scheduleItemEventLabels.test.mjs';
 import './bulkScheduleAnimalsNotEnoughTimeConfirmation.test.mjs';

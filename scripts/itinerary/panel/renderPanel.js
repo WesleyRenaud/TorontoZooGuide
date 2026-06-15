@@ -14,10 +14,15 @@ import { resolveEffectiveItineraryHoursDateIso } from '../visitDateEarliest.js';
 
 let latestRenderToken = 0;
 
-export async function clearStoredItinerary() {
+export async function clearStoredItinerary(deps = {}) {
+   const {
+      clearSavedItinerary = clearItinerary,
+      clearDraftStorage = clearItineraryDraftStorage,
+   } = deps;
+
    try {
-      await clearItinerary();
-      clearItineraryDraftStorage();
+      await clearSavedItinerary();
+      clearDraftStorage();
    }
    catch (err) {
       console.error('Failed to clear itinerary:', err);
