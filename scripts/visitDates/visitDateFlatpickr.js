@@ -17,13 +17,16 @@ export function initVisitDateFlatpickr(
       onChange = null,
       onReady = null,
       onClose = null,
+      initFlatpickr: initFlatpickrFn = initFlatpickr,
+      getTodayFn = getToday,
+      getMaxDateFn = getMaxDate,
    } = {}
 ) {
    if (!inputEl) return null;
 
    inputEl.setAttribute('readonly', 'true');
 
-   const floor = earliestNoon ?? getToday();
+   const floor = earliestNoon ?? getTodayFn();
 
    const safeDefault = clampToAllowedVisitDate(
       defaultDate || new Date(),
@@ -31,11 +34,11 @@ export function initVisitDateFlatpickr(
       floor
    );
 
-   const fp = initFlatpickr(inputEl, {
+   const fp = initFlatpickrFn(inputEl, {
       defaultDate: safeDefault,
       dateFormat: 'Y-m-d',
       minDate: floor,
-      maxDate: getMaxDate(daysAhead),
+      maxDate: getMaxDateFn(daysAhead),
       clickOpens,
       allowInput: false,
       monthSelectorType: 'static',
