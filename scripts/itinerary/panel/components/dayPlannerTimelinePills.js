@@ -1,11 +1,11 @@
 import { getPointPillStripPlacementBand } from '../dayPlannerTimelineMetrics.js';
+import { el } from '../dom.js';
+import { normalizeVisitBoundaryEventTypes } from '../../itineraryEventTypes.js';
 import {
    makeBoundaryMarker,
    makeOpenPill,
-   makeScheduledPill,
-} from './dayPlannerTimePill.js';
-import { el } from '../dom.js';
-import { normalizeVisitBoundaryEventTypes } from '../../itineraryEventTypes.js';
+} from './openTimelinePill.js';
+import { makeScheduledPill } from './scheduledTimelinePill.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import {
    isScheduleItemModuleItemType,
