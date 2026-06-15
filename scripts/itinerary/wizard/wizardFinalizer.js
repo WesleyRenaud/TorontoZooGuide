@@ -1,9 +1,7 @@
 import { normalizeItineraryDraft } from '../draftStorage.js';
 import { syncItineraryAnimalDraftFromItinerary } from '../draftStorage.js';
-import {
-   isItineraryEmpty,
-   saveItinerary,
-} from '../itineraryService.js';
+import { isItineraryEmpty } from '../itineraryService.js';
+import { saveItinerary } from '../itineraryServiceSave.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
 import {
    confirmSaveIssuesConflictSelection,
