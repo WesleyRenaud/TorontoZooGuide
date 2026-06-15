@@ -28,6 +28,7 @@ import './wizardStepDraftSync.test.mjs';
 import './wizardController.test.mjs';
 import './wizardFinalizeDecisions.test.mjs';
 import './wizardFinalizer.test.mjs';
+import './wizardSaveIssuesPopup.test.mjs';
 import './wizardState.test.mjs';
 import './wildEncounterConflictResolution.test.mjs';
 import './scheduleConflictCompatibility.test.mjs';

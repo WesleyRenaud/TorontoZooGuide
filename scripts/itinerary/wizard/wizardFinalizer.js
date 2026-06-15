@@ -2,18 +2,14 @@ import { normalizeItineraryDraft } from '../draftStorage.js';
 import { syncItineraryAnimalDraftFromItinerary } from '../draftStorage.js';
 import { saveItinerary } from '../itineraryServiceSave.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
-import {
-   confirmSaveIssuesConflictSelection,
-   createSaveIssuesContent,
-} from '../panel/scheduleTimeConflictConfirmation.js';
 import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
 import { APP_STRINGS } from '../../strings.js';
-import { buildItineraryWithSelectedConflictResolutions } from './wildEncounterConflictResolution.js';
 import {
    shouldBlockEmptyFinish,
    shouldShowSaveIssuesPopup,
 } from './wizardFinalizeDecisions.js';
 import { showItineraryWizardPopup } from './wizardPopup.js';
+import { showWizardSaveIssuesPopup } from './wizardSaveIssuesPopup.js';
 
 const EMPTY_SELECTION_POPUP_CONFIG = Object.freeze({
    title: APP_STRINGS.itinerary.noItemsSelected.title,
@@ -33,62 +29,6 @@ function showEmptySelectionPopup(mountEl, showWizardPopup = showItineraryWizardP
    showWizardPopup({
       mountEl,
       ...EMPTY_SELECTION_POPUP_CONFIG,
-   });
-}
-
-function showSaveIssuesPopup(
-   savedItinerary,
-   {
-      showNoticePopup = showItineraryNoticePopup,
-      showProceedConfirmation = showSaveIssuesProceedConfirmation,
-      saveFinalItinerary,
-   } = {}
-) {
-   const issues = savedItinerary.saveIssues;
-
-   if (!issues.length) {
-      return;
-   }
-
-   const {
-      content,
-      conflictGroups,
-   } = createSaveIssuesContent(issues);
-
-   showNoticePopup({
-      title: APP_STRINGS.itinerary.confirmation.saveIssuesTitle,
-      bodyContent: content,
-      buttonText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
-      showCloseButton: true,
-      onClose: ({ close } = {}) => {
-         showProceedConfirmation({
-            title: APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle,
-            message: APP_STRINGS.itinerary.confirmation
-               .proceedWithoutConflictSelectionMessage,
-            onConfirm: close,
-         });
-      },
-      onConfirm: async ({ close } = {}) => {
-         const resolved = await confirmSaveIssuesConflictSelection(
-            conflictGroups,
-            async (selectedConflictItems) => {
-               await saveFinalItinerary(
-                  buildItineraryWithSelectedConflictResolutions(
-                     savedItinerary,
-                     selectedConflictItems
-                  ),
-                  { overridingConflictingGuardiansTalks: true },
-               );
-               close();
-            }
-         );
-
-         if (!resolved) {
-            return false;
-         }
-
-         return true;
-      },
    });
 }
 
@@ -114,6 +54,7 @@ export async function finalizeItineraryWizard(
       showWizardPopup = showItineraryWizardPopup,
       showNoticePopup = showItineraryNoticePopup,
       showProceedConfirmation = showSaveIssuesProceedConfirmation,
+      showSaveIssuesPopup = showWizardSaveIssuesPopup,
       shouldBlockEmpty = shouldBlockEmptyFinish,
       shouldShowSaveIssues = shouldShowSaveIssuesPopup,
    } = deps;

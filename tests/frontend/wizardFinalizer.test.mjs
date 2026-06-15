@@ -123,7 +123,7 @@ test.describe('finalizeItineraryWizard', () => {
 
    test('opens the save-issues notice when the backend returns issues', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
-      const noticeCalls = [];
+      const saveIssuesCalls = [];
       const savedItinerary = {
          date: '2026-06-15',
          animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
@@ -140,18 +140,15 @@ test.describe('finalizeItineraryWizard', () => {
                shouldShowSaveIssues: () => true,
                saveItineraryFn: async () => savedItinerary,
                syncAnimalDraft: () => {},
-               showNoticePopup: (config) => {
-                  noticeCalls.push(config);
+               showSaveIssuesPopup: (itinerary, options) => {
+                  saveIssuesCalls.push({ itinerary, options });
                },
-               showProceedConfirmation: () => {},
             },
          }
       );
 
-      assert.equal(noticeCalls.length, 1);
-      assert.equal(
-         noticeCalls[0].title,
-         APP_STRINGS.itinerary.confirmation.saveIssuesTitle
-      );
+      assert.equal(saveIssuesCalls.length, 1);
+      assert.deepEqual(saveIssuesCalls[0].itinerary, savedItinerary);
+      assert.equal(typeof saveIssuesCalls[0].options.saveFinalItinerary, 'function');
    });
 });
