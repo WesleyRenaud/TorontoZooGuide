@@ -3,10 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from support import ANIMAL_KEY
-from support import LION_ITINERARY_ENTRY
-from support import PENGUIN_ITINERARY_ENTRY
-from support import PENGUIN_KEY
+from itinerary.support import ANIMAL_KEY, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from conftest import DbControllers
