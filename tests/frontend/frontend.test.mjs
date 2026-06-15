@@ -64,6 +64,8 @@ import './scheduledPillOverlap.test.mjs';
 import './scheduledPillLayoutUnits.test.mjs';
 import './scheduledPillRenderPlan.test.mjs';
 import './dayPlannerScheduledItems.test.mjs';
+import './dayPlannerTimelinePillPlacement.test.mjs';
+import './dayPlannerTimelinePillAppend.test.mjs';
 import './scheduledPillPresentation.test.mjs';
 import './scheduledTimelinePill.test.mjs';
 import './openTimelinePill.test.mjs';

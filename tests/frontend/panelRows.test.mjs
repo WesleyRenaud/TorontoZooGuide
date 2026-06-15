@@ -24,7 +24,7 @@ import {
 import {
    computeStripHorizontalOffsetIndex,
    computeTimelineHorizontalOffsetIndex,
-} from '../../scripts/itinerary/panel/components/dayPlannerTimelinePills.js';
+} from '../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js';
 import {
    formatClockTime,
    formatISODateFull,
