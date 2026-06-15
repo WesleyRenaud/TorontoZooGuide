@@ -5,7 +5,7 @@ import {
    TIMELINE_SLOT_HEIGHT_PX,
 } from '../../../scripts/shared/constants.js';
 import { createDomNode } from './domNodeMock.mjs';
-import { querySelectorInNode } from './domSelectorMock.mjs';
+import { queryNodes, querySelectorInNode } from './domSelectorMock.mjs';
 
 export { createDomNode };
 
@@ -52,7 +52,23 @@ export function installDocument() {
       querySelector: (selector) => (
          querySelectorInNode(body, selector)
          ?? querySelectorInNode(itineraryPanel, selector)
+         ?? querySelectorInNode(itineraryFlow, selector)
       ),
+      querySelectorAll: (selector) => {
+         const matches = [];
+         const seen = new Set();
+
+         for (const root of [body, itineraryPanel, itineraryFlow]) {
+            for (const node of queryNodes(root, selector)) {
+               if (!seen.has(node)) {
+                  seen.add(node);
+                  matches.push(node);
+               }
+            }
+         }
+
+         return matches;
+      },
    };
 }
 

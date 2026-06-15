@@ -176,7 +176,11 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
 
          listeners.click?.(event);
       },
-      remove() {},
+      remove() {
+         const parent = node.parentElement ?? node.parent;
+
+         parent?.removeChild?.(node);
+      },
       setAttribute(name, value) {
          attributes[name] = value;
          node[name] = value;

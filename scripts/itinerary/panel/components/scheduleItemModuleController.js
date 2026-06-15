@@ -347,6 +347,7 @@ export function createScheduleItemModuleController({
       displaySearchResults,
       handleSchedule,
       handleOnlyItineraryItemsChange,
+      handleSearchInput,
       handleTypeSelectChange,
       initialize,
       runSearch,

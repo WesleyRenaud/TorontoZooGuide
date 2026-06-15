@@ -115,6 +115,14 @@ test.describe('renderItineraryPanelInto', () => {
       assert.equal(buildCount, 1);
       assert.equal(bodyEl.querySelectorAll('.render-marker').length, 1);
    });
+
+   test('renderItineraryPanelInto returns early without a body element', async () => {
+      await renderItineraryPanelInto(null, {
+         loadItinerary: async () => {
+            throw new Error('should not load');
+         },
+      });
+   });
 });
 
 test.describe('clearStoredItinerary', () => {

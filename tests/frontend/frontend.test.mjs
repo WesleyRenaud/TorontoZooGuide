@@ -83,5 +83,7 @@ import './removedItemsPopupAdjustmentSpecs.test.mjs';
 import './removedItemsPopupKeepButtonState.test.mjs';
 import './removedItemsPopupSectionSpecs.test.mjs';
 import './removedItemsPopupContent.test.mjs';
+import './removedItemsPopup.test.mjs';
+import './scheduleTimeConflictConfirmation.test.mjs';
 import './panelRows.test.mjs';
 import './strings.test.mjs';
