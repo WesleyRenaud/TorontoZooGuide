@@ -13,8 +13,8 @@ import {
    makeDayPlannerPreview,
    makeItineraryPanelViews,
 } from './components/dayPlanner.js';
-import { showScheduleItemModule } from './components/scheduleItemModule.js';
 import { makeSection } from './components/section.js';
+import { showScheduleItemModule } from './components/showScheduleItemModule.js';
 import { clearItineraryDraftStorage } from '../draftStorage.js';
 import { removeAnimalFromItineraryAnimalDraft } from '../draftStorage.js';
 import { requiresRemoveItineraryItemConfirmation } from '../itineraryEventTypes.js';
