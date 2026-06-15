@@ -62,6 +62,7 @@ import './scheduledPillPresentation.test.mjs';
 import './scheduledTimelinePill.test.mjs';
 import './openTimelinePill.test.mjs';
 import './itineraryPillMenu.test.mjs';
+import './dayPlannerTimelineMetrics.test.mjs';
 import './scheduleItemKeys.test.mjs';
 import './scheduleItemKind.test.mjs';
 import './saveIssuesProceedConfirmation.test.mjs';
