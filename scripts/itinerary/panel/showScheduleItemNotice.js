@@ -2,13 +2,17 @@ import { showItineraryNoticePopup } from './components/noticePopup.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
 import { APP_STRINGS } from '../../strings.js';
 
-export function showScheduleItemNotice(message = '') {
+export function showScheduleItemNotice(message = '', deps = {}) {
+   const {
+      showNoticePopup = showItineraryNoticePopup,
+      getMountEl = getItineraryPanelMountEl,
+   } = deps;
    const strings = APP_STRINGS.itinerary;
 
-   showItineraryNoticePopup({
+   showNoticePopup({
       title: strings.scheduleItem.errorTitle,
       message,
       buttonText: strings.noItemsSelected.button,
-      mountEl: getItineraryPanelMountEl() ?? document.body,
+      mountEl: getMountEl() ?? document.body,
    });
 }

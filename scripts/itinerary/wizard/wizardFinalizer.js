@@ -1,6 +1,5 @@
 import { normalizeItineraryDraft } from '../draftStorage.js';
 import { syncItineraryAnimalDraftFromItinerary } from '../draftStorage.js';
-import { isItineraryEmpty } from '../itineraryService.js';
 import { saveItinerary } from '../itineraryServiceSave.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
 import {
@@ -10,6 +9,10 @@ import {
 import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
 import { APP_STRINGS } from '../../strings.js';
 import { buildItineraryWithSelectedConflictResolutions } from './wildEncounterConflictResolution.js';
+import {
+   shouldBlockEmptyFinish,
+   shouldShowSaveIssuesPopup,
+} from './wizardFinalizeDecisions.js';
 import { showItineraryWizardPopup } from './wizardPopup.js';
 
 const EMPTY_SELECTION_POPUP_CONFIG = Object.freeze({
@@ -22,22 +25,25 @@ function clearWizardMount(mountEl) {
    mountEl?.replaceChildren();
 }
 
-function createFinalItineraryDraft(draft = {}) {
-   return normalizeItineraryDraft(draft);
+function createFinalItineraryDraft(draft = {}, normalizeDraft = normalizeItineraryDraft) {
+   return normalizeDraft(draft);
 }
 
-function shouldBlockEmptyFinish(finalItinerary, allowEmpty = false) {
-   return !allowEmpty && isItineraryEmpty(finalItinerary);
-}
-
-function showEmptySelectionPopup(mountEl) {
-   showItineraryWizardPopup({
+function showEmptySelectionPopup(mountEl, showWizardPopup = showItineraryWizardPopup) {
+   showWizardPopup({
       mountEl,
       ...EMPTY_SELECTION_POPUP_CONFIG,
    });
 }
 
-function showSaveIssuesPopup(savedItinerary) {
+function showSaveIssuesPopup(
+   savedItinerary,
+   {
+      showNoticePopup = showItineraryNoticePopup,
+      showProceedConfirmation = showSaveIssuesProceedConfirmation,
+      saveFinalItinerary,
+   } = {}
+) {
    const issues = savedItinerary.saveIssues;
 
    if (!issues.length) {
@@ -49,13 +55,13 @@ function showSaveIssuesPopup(savedItinerary) {
       conflictGroups,
    } = createSaveIssuesContent(issues);
 
-   showItineraryNoticePopup({
+   showNoticePopup({
       title: APP_STRINGS.itinerary.confirmation.saveIssuesTitle,
       bodyContent: content,
       buttonText: APP_STRINGS.itinerary.confirmation.saveIssuesButton,
       showCloseButton: true,
       onClose: ({ close } = {}) => {
-         showSaveIssuesProceedConfirmation({
+         showProceedConfirmation({
             title: APP_STRINGS.itinerary.confirmation.closeSaveIssuesTitle,
             message: APP_STRINGS.itinerary.confirmation
                .proceedWithoutConflictSelectionMessage,
@@ -89,8 +95,9 @@ function showSaveIssuesPopup(savedItinerary) {
 function saveFinalItinerary(
    finalItinerary,
    { overridingConflictingGuardiansTalks = false } = {},
+   saveItineraryFn = saveItinerary,
 ) {
-   return saveItinerary(finalItinerary, {
+   return saveItineraryFn(finalItinerary, {
       overridingConflictingGuardiansTalks,
    });
 }
@@ -98,22 +105,37 @@ function saveFinalItinerary(
 export async function finalizeItineraryWizard(
    draft = {},
    mountEl,
-   { onDone, allowEmpty = false } = {},
+   { onDone, allowEmpty = false, deps = {} } = {},
 ) {
-   const finalItinerary = createFinalItineraryDraft(draft);
+   const {
+      normalizeDraft = normalizeItineraryDraft,
+      saveItineraryFn = saveItinerary,
+      syncAnimalDraft = syncItineraryAnimalDraftFromItinerary,
+      showWizardPopup = showItineraryWizardPopup,
+      showNoticePopup = showItineraryNoticePopup,
+      showProceedConfirmation = showSaveIssuesProceedConfirmation,
+      shouldBlockEmpty = shouldBlockEmptyFinish,
+      shouldShowSaveIssues = shouldShowSaveIssuesPopup,
+   } = deps;
 
-   if (shouldBlockEmptyFinish(finalItinerary, allowEmpty)) {
-      showEmptySelectionPopup(mountEl);
+   const finalItinerary = createFinalItineraryDraft(draft, normalizeDraft);
+
+   if (shouldBlockEmpty(finalItinerary, allowEmpty)) {
+      showEmptySelectionPopup(mountEl, showWizardPopup);
       return null;
    }
 
    let savedItinerary;
 
    try {
-      savedItinerary = await saveFinalItinerary(finalItinerary);
+      savedItinerary = await saveFinalItinerary(
+         finalItinerary,
+         {},
+         saveItineraryFn,
+      );
    }
    catch (error) {
-      showItineraryWizardPopup({
+      showWizardPopup({
          mountEl,
          title: APP_STRINGS.itinerary.errors.generic,
          message: error?.message || APP_STRINGS.itinerary.errors.generic,
@@ -122,10 +144,18 @@ export async function finalizeItineraryWizard(
       return null;
    }
 
-   syncItineraryAnimalDraftFromItinerary(savedItinerary);
+   syncAnimalDraft(savedItinerary);
 
-   if (savedItinerary.saveIssues?.length) {
-      showSaveIssuesPopup(savedItinerary);
+   if (shouldShowSaveIssues(savedItinerary)) {
+      showSaveIssuesPopup(savedItinerary, {
+         showNoticePopup,
+         showProceedConfirmation,
+         saveFinalItinerary: (itinerary, options) => saveFinalItinerary(
+            itinerary,
+            options,
+            saveItineraryFn,
+         ),
+      });
    }
 
    clearWizardMount(mountEl);
