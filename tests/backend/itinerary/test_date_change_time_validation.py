@@ -1,14 +1,6 @@
 from __future__ import annotations
 
-from support import CAROUSEL
-from support import CHEETAH_ITINERARY_ENTRY
-from support import CHEETAH_KEY
-from support import GUARDIANS_TALK
-from support import guardians_talk_save_entry
-from support import LION_ITINERARY_ENTRY
-from support import LION_KEY
-from support import set_wild_encounter_schedule
-from support import WILD_ENCOUNTER
+from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, set_wild_encounter_schedule, WILD_ENCOUNTER
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.shared.enums import ItineraryErrorType

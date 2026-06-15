@@ -3,11 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from support import ANIMAL_KEY
-from support import LION_ITINERARY_ENTRY
-from support import PENGUIN_ITINERARY_ENTRY
-from support import PENGUIN_KEY
-from support import saved_animal_row
+from itinerary.support import ANIMAL_KEY, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, saved_animal_row
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.shared.enums import ItineraryErrorType

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from support import ANIMAL_KEY
+from itinerary.support import ANIMAL_KEY
 
 from api.itinerary.scheduling.core.find_next_available_slot import find_next_available_slot
 from api.itinerary.scheduling.core.scheduling_anchor import scheduling_anchor_seconds
