@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import {
    setItineraryArrivalTime,
    setItineraryDepartureTime,
-} from '../../scripts/itinerary/itineraryService.js';
+} from '../../scripts/itinerary/itineraryServiceTime.js';
 import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';
 

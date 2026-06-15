@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { saveItinerary } from '../../scripts/itinerary/itineraryService.js';
+import { saveItinerary } from '../../scripts/itinerary/itineraryServiceSave.js';
 import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
 import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';

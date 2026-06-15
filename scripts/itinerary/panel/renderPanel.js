@@ -28,9 +28,11 @@ import {
    getItinerary,
    getZooHours,
    isItineraryEmpty,
+} from '../itineraryService.js';
+import {
    setItineraryArrivalTime,
    setItineraryDepartureTime,
-} from '../itineraryService.js';
+} from '../itineraryServiceTime.js';
 import { showRemoveItineraryItemConfirmation } from './removeItineraryItemConfirmation.js';
 import { buildSchedulableEventTypes } from './scheduleItemTypes.js';
 import { buildSectionConfigs } from './sectionConfigs.js';
