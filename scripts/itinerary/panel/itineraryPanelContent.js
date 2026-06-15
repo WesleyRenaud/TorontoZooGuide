@@ -107,6 +107,8 @@ export function buildItineraryPanelContent(
       createSection = makeSection,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
       onAfterClear = null,
+      setArrivalTime = setItineraryArrivalTime,
+      setDepartureTime = setItineraryDepartureTime,
    } = deps;
 
    const fragment = document.createDocumentFragment();
@@ -148,11 +150,11 @@ export function buildItineraryPanelContent(
       itinerary,
       {
          onArrivalTimeChange: async (arrivalTime) => {
-            await setItineraryArrivalTime(arrivalTime);
+            await setArrivalTime(arrivalTime);
             await onPanelRefresh?.();
          },
          onDepartureTimeChange: async (departureTime) => {
-            await setItineraryDepartureTime(departureTime);
+            await setDepartureTime(departureTime);
             await onPanelRefresh?.();
          },
       },

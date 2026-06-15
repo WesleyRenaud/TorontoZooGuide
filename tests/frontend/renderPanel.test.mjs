@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { renderItineraryPanelInto } from '../../scripts/itinerary/panel/renderPanel.js';
+import { renderItineraryPanelInto, clearStoredItinerary } from '../../scripts/itinerary/panel/renderPanel.js';
 import { resetActiveItineraryPanelView } from '../../scripts/itinerary/panel/itineraryPanelViewState.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
@@ -114,5 +114,50 @@ test.describe('renderItineraryPanelInto', () => {
 
       assert.equal(buildCount, 1);
       assert.equal(bodyEl.querySelectorAll('.render-marker').length, 1);
+   });
+});
+
+test.describe('clearStoredItinerary', () => {
+   test('clears the saved itinerary and draft storage', async () => {
+      let cleared = false;
+      let draftCleared = false;
+
+      await clearStoredItinerary({
+         clearSavedItinerary: async () => {
+            cleared = true;
+         },
+         clearDraftStorage: () => {
+            draftCleared = true;
+         },
+      });
+
+      assert.equal(cleared, true);
+      assert.equal(draftCleared, true);
+   });
+
+   test('logs and swallows errors when clearing the itinerary fails', async () => {
+      const errors = [];
+      const originalConsoleError = console.error;
+
+      console.error = (...args) => {
+         errors.push(args);
+      };
+
+      try {
+         await clearStoredItinerary({
+            clearSavedItinerary: async () => {
+               throw new Error('clear failed');
+            },
+            clearDraftStorage: () => {
+               throw new Error('should not run');
+            },
+         });
+      }
+      finally {
+         console.error = originalConsoleError;
+      }
+
+      assert.equal(errors.length, 1);
+      assert.match(String(errors[0][0]), /Failed to clear itinerary/);
    });
 });
