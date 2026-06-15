@@ -1,64 +1,31 @@
 import { syncItineraryAnimalDraftFromItinerary } from '../draftStorage.js';
 import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
-import { createItineraryAnimalSelectorController } from '../../itinerary/selectors/animalSelector.js';
-import { createItineraryAttractionSelectorController } from '../../itinerary/selectors/attractionSelector.js';
 import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
-import { createItineraryGuardiansTalkSelectorController } from '../../itinerary/selectors/guardiansTalkSelector.js';
-import { createItineraryRegionSelectorController } from '../../itinerary/selectors/regionSelector.js';
-import { createItineraryWildEncounterSelectorController } from '../../itinerary/selectors/wildEncounterSelector.js';
 import { getItinerary } from '../itineraryService.js';
 import { createItineraryWizardState } from './state.js';
 import { APP_STRINGS } from '../../strings.js';
 import { resolveEarliestSelectableVisitDateNoon } from '../visitDateEarliest.js';
-import { toISODate } from '../../visitDates/visitDateRules.js';
 import { buildWizardDraft } from './wizardDraft.js';
 import { finalizeItineraryWizard } from './wizardFinalizer.js';
+import {
+   buildSelectionStepHandlers,
+   resolveWizardStartStep,
+   WIZARD_DEFAULT_START_STEP,
+   WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY,
+} from './wizardStepConfigs.js';
+import {
+   isWizardDateStep,
+   resolveDateStepDraftUpdate,
+   shouldSyncSelectionStepDraft,
+} from './wizardStepDraftSync.js';
 
-const DEFAULT_START_STEP = 'date';
+async function loadDefaultSelectionStepConfigs() {
+   const { buildWizardSelectionStepConfigs } = await import(
+      './wizardSelectionStepFactories.js'
+   );
 
-const SELECTION_STEP_CONFIGS = Object.freeze([
-   {
-      stepKey: 'wildEncounters',
-      selectionKey: 'wildEncounters',
-      factory: createItineraryWildEncounterSelectorController,
-      prevStepKey: 'guardiansTalks',
-   },
-   {
-      stepKey: 'guardiansTalks',
-      selectionKey: 'guardiansTalks',
-      factory: createItineraryGuardiansTalkSelectorController,
-      prevStepKey: 'attractions',
-      nextStepKey: 'wildEncounters',
-   },
-   {
-      stepKey: 'attractions',
-      selectionKey: 'attractions',
-      factory: createItineraryAttractionSelectorController,
-      prevStepKey: 'animals',
-      nextStepKey: 'guardiansTalks',
-   },
-   {
-      stepKey: 'animals',
-      selectionKey: 'animals',
-      factory: createItineraryAnimalSelectorController,
-      prevStepKey: 'regions',
-      nextStepKey: 'attractions',
-   },
-   {
-      stepKey: 'regions',
-      selectionKey: 'animals',
-      factory: createItineraryRegionSelectorController,
-      prevStepKey: 'date',
-      nextStepKey: 'animals',
-      preserveOnInvalid: true,
-   },
-]);
-
-const SELECTION_STEP_CONFIGS_BY_KEY = Object.freeze(
-   Object.fromEntries(
-      SELECTION_STEP_CONFIGS.map((config) => [config.stepKey, config])
-   )
-);
+   return buildWizardSelectionStepConfigs();
+}
 
 function clearWizard(mountEl) {
    mountEl?.replaceChildren();
@@ -69,62 +36,42 @@ function closeWizard(mountEl, onDone) {
    onDone?.();
 }
 
-function buildSelectionStepHandlers({
-   selectionKey,
-   preserveOnInvalid = false,
-   wizardState,
-   updateSelection,
-   showNextStep = null,
-   finish,
-} = {}) {
-   return {
-      onNext: showNextStep
-         ? (value) => {
-            updateSelection(selectionKey, value, { preserveOnInvalid });
-            showNextStep();
-         }
-         : undefined,
-      onFinish: (value) => {
-         updateSelection(selectionKey, value, { preserveOnInvalid });
-         void finish({ [selectionKey]: wizardState[selectionKey] });
-      },
-   };
-}
-
-function resolveStartStep(startAt) {
-   if (startAt === DEFAULT_START_STEP) {
-      return DEFAULT_START_STEP;
-   }
-
-   return Object.prototype.hasOwnProperty.call(
-      SELECTION_STEP_CONFIGS_BY_KEY,
-      startAt
-   )
-      ? startAt
-      : DEFAULT_START_STEP;
-}
-
 export async function openItineraryWizard({
    mountEl,
-   startAt = DEFAULT_START_STEP,
+   startAt = WIZARD_DEFAULT_START_STEP,
    onDone,
+   deps = {},
 } = {}) {
+   const {
+      loadItinerary = getItinerary,
+      resolveEarliestVisitDate = resolveEarliestSelectableVisitDateNoon,
+      createWizardState = createItineraryWizardState,
+      createDateStepController = createItineraryDateSelectorController,
+      finalizeWizard = finalizeItineraryWizard,
+      showConfirmPopup = showItineraryConfirmPopup,
+      syncAnimalDraft = syncItineraryAnimalDraftFromItinerary,
+      selectionStepConfigs = null,
+   } = deps;
+
    if (!mountEl) {
       return;
    }
 
-   const existing = await getItinerary();
+   const resolvedSelectionStepConfigs = selectionStepConfigs
+      ?? await loadDefaultSelectionStepConfigs();
+
+   const existing = await loadItinerary();
 
    if (existing?.isActive) {
-      syncItineraryAnimalDraftFromItinerary(existing);
+      syncAnimalDraft(existing);
    }
 
-   const earliestVisitNoon = await resolveEarliestSelectableVisitDateNoon();
-   const wizard = createItineraryWizardState(existing ?? {});
+   const earliestVisitNoon = await resolveEarliestVisitDate();
+   const wizard = createWizardState(existing ?? {});
    const { state: wizardState } = wizard;
 
    const wizardSteps = {};
-   let activeStepKey = DEFAULT_START_STEP;
+   let activeStepKey = WIZARD_DEFAULT_START_STEP;
 
    function showStep(stepKey) {
       activeStepKey = stepKey;
@@ -141,7 +88,7 @@ export async function openItineraryWizard({
    }
 
    function finish(override = {}, options = {}) {
-      return finalizeItineraryWizard(
+      return finalizeWizard(
          buildWizardDraft(wizardState, override),
          mountEl,
          {
@@ -161,36 +108,26 @@ export async function openItineraryWizard({
    }
 
    function syncDateStepDraft() {
-      const currentDate = wizardSteps.date?.getDate?.();
+      const nextDate = resolveDateStepDraftUpdate({
+         currentDate: wizardSteps.date?.getDate?.(),
+         wizardDate: wizardState.date,
+      });
 
-      if (!(currentDate instanceof Date) || !Number.isFinite(currentDate.getTime())) {
+      if (!nextDate) {
          return;
       }
 
-      const date = toISODate(currentDate);
-
-      if (!date || wizardState.date === date) {
-         return;
-      }
-
-      applyWizardDate(date);
+      applyWizardDate(nextDate);
    }
 
    async function syncSelectionStepDraft(stepKey) {
-      const activeConfig = SELECTION_STEP_CONFIGS_BY_KEY[stepKey];
+      const activeConfig = WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY[stepKey];
       const activeController = wizardSteps[stepKey];
 
-      if (
-         !activeConfig
-         || typeof activeController?.getSelectionSnapshot !== 'function'
-      ) {
-         return;
-      }
-
-      if (
-         typeof activeController.shouldSkipClosingSelectionSync === 'function'
-         && activeController.shouldSkipClosingSelectionSync()
-      ) {
+      if (!shouldSyncSelectionStepDraft({
+         stepConfig: activeConfig,
+         stepController: activeController,
+      })) {
          return;
       }
 
@@ -202,7 +139,7 @@ export async function openItineraryWizard({
    }
 
    async function syncActiveStepDraft() {
-      if (activeStepKey === DEFAULT_START_STEP) {
+      if (isWizardDateStep(activeStepKey)) {
          syncDateStepDraft();
          return;
       }
@@ -218,7 +155,7 @@ export async function openItineraryWizard({
          return;
       }
 
-      showItineraryConfirmPopup({
+      showConfirmPopup({
          title: APP_STRINGS.itinerary.confirmation.saveChangesTitle,
          message: APP_STRINGS.itinerary.confirmation.saveChangesMessage,
          confirmText: APP_STRINGS.actions.save,
@@ -255,7 +192,7 @@ export async function openItineraryWizard({
       });
    }
 
-   SELECTION_STEP_CONFIGS.forEach(createSelectionStepController);
+   resolvedSelectionStepConfigs.forEach(createSelectionStepController);
 
    function handleDateNext(date) {
       applyWizardDate(date);
@@ -267,7 +204,7 @@ export async function openItineraryWizard({
       await finish({ date }, { allowEmpty: true });
    }
 
-   wizardSteps.date = createItineraryDateSelectorController({
+   wizardSteps.date = createDateStepController({
       mountEl,
       earliestSelectableDate: earliestVisitNoon,
       onClose: handleClose,
@@ -275,5 +212,5 @@ export async function openItineraryWizard({
       onFinish: handleDateFinish,
    });
 
-   return showStep(resolveStartStep(startAt));
+   return showStep(resolveWizardStartStep(startAt));
 }

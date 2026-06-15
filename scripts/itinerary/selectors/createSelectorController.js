@@ -1,132 +1,16 @@
-import { searchItineraryItems } from '../../api/searchApi.js';
 import {
    createDefaultSelectorRowLeftRenderer,
    renderSelectorResults,
 } from './base/resultRenderer.js';
 import { createSelectorSelectionState } from './base/selectionState.js';
-import { buildSelectorShell } from './base/shell.js';
+import {
+   buildSelectionFingerprint,
+   defaultMigrateSelected,
+   validateSelectorConfig,
+} from './selectorControllerConfig.js';
+import { createSelectorElements } from './selectorControllerElements.js';
+import { createSelectorSearchRunner } from './selectorSearchRunner.js';
 import { APP_STRINGS } from '../../strings.js';
-
-const SEARCH_DEBOUNCE_MS = 250;
-
-function debounce(fn, delay = 250) {
-   let timeoutId = null;
-
-   return (...args) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => fn(...args), delay);
-   };
-}
-
-function defaultMigrate(items) {
-   return items;
-}
-
-function buildSelectionFingerprint(items = []) {
-   return items
-      .map((item) => String(item.id).trim())
-      .filter(Boolean)
-      .sort((left, right) => left.localeCompare(right, undefined, { sensitivity: 'base' }))
-      .join('\0');
-}
-
-function validateSelectorConfig({
-   storageKey,
-   getId,
-   extractRows,
-} = {}) {
-   if (!storageKey) {
-      throw new Error('createItinerarySelectorController: storageKey is required');
-   }
-
-   if (typeof getId !== 'function') {
-      throw new Error('createItinerarySelectorController: getId(row) is required');
-   }
-
-   if (typeof extractRows !== 'function') {
-      throw new Error('createItinerarySelectorController: extractRows(response) is required');
-   }
-}
-
-function createSelectorElements({
-   topTitle,
-   h1,
-   subtitle,
-   hideNextButton,
-} = {}) {
-   const shell = buildSelectorShell({
-      topTitle,
-      h1,
-      subtitle,
-      hideNextButton,
-   });
-
-   return {
-      rootEl: shell.root,
-      bodyEl: shell.bodyEl,
-      inputEl: shell.inputEl,
-      resultsEl: shell.resultsEl,
-      prevButtonEl: shell.prevButton,
-      nextButtonEl: shell.nextButton,
-      finishButtonEl: shell.finishButton,
-      closeButtonEl: shell.closeButton,
-   };
-}
-
-function createSelectorSearchRunner({
-   searchEndpoint,
-   buildSearchPayload,
-   extractRows,
-   getContext,
-   getQuery,
-   onRows,
-} = {}) {
-   let latestSearchRequestId = 0;
-
-   async function fetchRows(query) {
-      const context = typeof getContext === 'function'
-         ? await getContext()
-         : {};
-
-      const response = await searchItineraryItems(searchEndpoint, {
-         ...buildSearchPayload(query),
-         ...context,
-      });
-
-      return extractRows(response);
-   }
-
-   async function runCurrentQuery() {
-      const requestId = ++latestSearchRequestId;
-      const query = getQuery()?.trim() ?? '';
-
-      try {
-         const rows = await fetchRows(query);
-
-         if (requestId !== latestSearchRequestId) {
-            return;
-         }
-
-         onRows(rows);
-      }
-      catch {
-         if (requestId !== latestSearchRequestId) {
-            return;
-         }
-
-         onRows([]);
-      }
-   }
-
-   const scheduleCurrentQuery = debounce(() => {
-      void runCurrentQuery();
-   }, SEARCH_DEBOUNCE_MS);
-
-   return {
-      runCurrentQuery,
-      scheduleCurrentQuery,
-   };
-}
 
 export function createItinerarySelectorController({
    mountEl,
@@ -138,7 +22,7 @@ export function createItinerarySelectorController({
    hideNextButton = false,
 
    storageKey,
-   migrateSelected = defaultMigrate,
+   migrateSelected = defaultMigrateSelected,
 
    searchEndpoint = '/search',
    buildSearchPayload = query => ({ query }),
@@ -164,7 +48,14 @@ export function createItinerarySelectorController({
    renderExtraControls = null,
 
    onBeforeToggleAdd = null,
+
+   deps = {},
 } = {}) {
+   const {
+      buildElements = createSelectorElements,
+      createSearchRunner = createSelectorSearchRunner,
+   } = deps;
+
    validateSelectorConfig({
       storageKey,
       getId,
@@ -210,7 +101,7 @@ export function createItinerarySelectorController({
       });
    }
 
-   const searchRunner = createSelectorSearchRunner({
+   const searchRunner = createSearchRunner({
       searchEndpoint,
       buildSearchPayload,
       extractRows,
@@ -271,7 +162,7 @@ export function createItinerarySelectorController({
          return;
       }
 
-      elements = createSelectorElements({
+      elements = buildElements({
          topTitle,
          h1,
          subtitle,
