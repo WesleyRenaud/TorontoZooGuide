@@ -20,10 +20,10 @@ import {
    buildMarkersByAnchorSlot,
    resolveTimelinePillLabel,
 } from '../dayPlannerTimelineMarkers.js';
-import { planScheduledPillRenderGroupsByAnchor } from './dayPlannerTimelinePillOverlap.js';
 import { appendItineraryTimeMarkers } from './dayPlannerTimelinePills.js';
 import { el } from '../dom.js';
 import { formatISODateFull } from '../format.js';
+import { planScheduledPillRenderGroupsByAnchor } from './scheduledPillRenderPlan.js';
 import {
    makeScheduleActionsBar,
    makeScheduleItemButton,

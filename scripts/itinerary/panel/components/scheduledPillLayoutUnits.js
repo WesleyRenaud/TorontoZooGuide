@@ -1,135 +1,11 @@
 import { computeMarkerOffsetFraction } from '../dayPlannerTimelineMarkers.js';
 import {
-   MAX_TIMELINE_PILL_COLUMNS,
-   MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS,
-   TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
-   TIMELINE_POINT_PILL_HEIGHT_PX,
-   TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_HEIGHT_PX,
-   TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_MINUTES,
-   TIMELINE_SLOT_HEIGHT_PX,
-   TIMELINE_SLOT_MINUTES,
-} from '../../../shared/constants.js';
+   formatScheduledPillGroupLabel,
+   getScheduledItemEndMinutes,
+   getScheduledPillMinDisplayMinutes,
+} from './scheduledPillOverlap.js';
+import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import { isScheduleItemModuleItemType } from '../../../shared/enums/scheduleItemKind.js';
-
-export {
-   MAX_TIMELINE_PILL_COLUMNS,
-   MAX_TIMELINE_PILL_INDIVIDUAL_COLUMNS,
-};
-
-export function getScheduledPillMinDisplayMinutes() {
-   return TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_MINUTES;
-}
-
-function minutesPerSlotFromHeightPx(heightPx) {
-   return (heightPx / TIMELINE_SLOT_HEIGHT_PX) * TIMELINE_SLOT_MINUTES;
-}
-
-export function getScheduledItemTimeRange(scheduledItem = {}) {
-   const startMinutes = Number(scheduledItem.startMinutes);
-   const endMinutes = getScheduledItemEndMinutes(scheduledItem);
-
-   return {
-      startMinutes,
-      endMinutes,
-   };
-}
-
-export function getScheduledItemEndMinutes(scheduledItem = {}) {
-   const endMinutes = Number(scheduledItem.endMinutes);
-
-   return Number.isFinite(endMinutes) ? endMinutes : Number.NaN;
-}
-
-export function getScheduledPillVisualBand(scheduledItem = {}) {
-   const clusteredItems = scheduledItem.clusterItems ?? scheduledItem.summaryItems;
-
-   if (clusteredItems?.length) {
-      const bands = clusteredItems.map((item) => (
-         getScheduledPillVisualBand(item)
-      ));
-
-      return {
-         startMinutes: Math.min(...bands.map((band) => band.startMinutes)),
-         endMinutes: Math.max(...bands.map((band) => band.endMinutes)),
-      };
-   }
-
-   const { startMinutes } = getScheduledItemTimeRange(scheduledItem);
-   const scheduledDurationMinutes = Number(scheduledItem.maximumDuration);
-   const visualStartMinutes = startMinutes - minutesPerSlotFromHeightPx(
-      TIMELINE_PILL_STRIP_TOP_OFFSET_PX
-   );
-   const minimumHeightPx = scheduledItem.isPointPillBlocker
-      ? TIMELINE_POINT_PILL_HEIGHT_PX
-      : TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_HEIGHT_PX;
-   const visualDurationMinutes = Math.max(
-      minutesPerSlotFromHeightPx(minimumHeightPx),
-      scheduledDurationMinutes
-   );
-
-   return {
-      startMinutes: visualStartMinutes,
-      endMinutes: visualStartMinutes + visualDurationMinutes,
-   };
-}
-
-export function doScheduledTimeRangesOverlap(leftRange = {}, rightRange = {}) {
-   return (
-      leftRange.startMinutes < rightRange.endMinutes
-      && rightRange.startMinutes < leftRange.endMinutes
-   );
-}
-
-export function scheduledPillsOverlapInDefaultPosition(
-   leftItem = {},
-   rightItem = {}
-) {
-   return doScheduledTimeRangesOverlap(
-      getScheduledPillVisualBand(leftItem),
-      getScheduledPillVisualBand(rightItem)
-   );
-}
-
-export function computeFirstFreeHorizontalOffsetIndex(
-   placedItems = [],
-   candidateItem = {},
-   {
-      minColumn = 0,
-      maxColumn = MAX_TIMELINE_PILL_COLUMNS - 1,
-   } = {}
-) {
-   const blockedColumns = new Set();
-
-   for (const placedItem of placedItems) {
-      if (!scheduledPillsOverlapInDefaultPosition(placedItem, candidateItem)) {
-         continue;
-      }
-
-      blockedColumns.add(placedItem.horizontalOffsetIndex ?? 0);
-   }
-
-   for (let column = minColumn; column <= maxColumn; column += 1) {
-      if (!blockedColumns.has(column)) {
-         return column;
-      }
-   }
-
-   return maxColumn + 1;
-}
-
-export function formatScheduledPillGroupLabel(items = []) {
-   if (!items.length) {
-      return '';
-   }
-
-   const firstLabel = String(items[0]?.label || '').trim();
-
-   if (items.length === 1) {
-      return firstLabel;
-   }
-
-   return `${firstLabel} + ${items.length - 1}`;
-}
 
 function compareScheduledItemsForLayout(leftItem = {}, rightItem = {}) {
    const startDelta = leftItem.startMinutes - rightItem.startMinutes;
@@ -141,14 +17,7 @@ function compareScheduledItemsForLayout(leftItem = {}, rightItem = {}) {
    return String(leftItem.label || '').localeCompare(String(rightItem.label || ''));
 }
 
-function appendRenderGroup(groupsByAnchor, anchorSlotMinutes, renderGroup) {
-   const groups = groupsByAnchor.get(anchorSlotMinutes) ?? [];
-
-   groups.push(renderGroup);
-   groupsByAnchor.set(anchorSlotMinutes, groups);
-}
-
-function getLayoutUnitItems(scheduledItem = {}) {
+export function getLayoutUnitItems(scheduledItem = {}) {
    return scheduledItem.clusterItems
       ?? scheduledItem.summaryItems
       ?? [scheduledItem];
@@ -363,39 +232,6 @@ function absorbHeadOrphanLayoutUnits(
    ];
 }
 
-function normalizeLayoutUnitsForDisplay(
-   layoutUnits = [],
-   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
-) {
-   let normalizedUnits = [...layoutUnits];
-   let changed = true;
-
-   while (changed) {
-      const previousUnits = normalizedUnits;
-
-      normalizedUnits = mergeConsecutiveUnderMinDisplayLayoutUnits(
-         absorbTailOrphanLayoutUnits(
-            absorbHeadOrphanLayoutUnits(normalizedUnits, minDisplayMinutes),
-            minDisplayMinutes
-         ),
-         minDisplayMinutes
-      );
-      const underMinMergeResult = mergeUnderMinDisplayLayoutUnits(
-         normalizedUnits,
-         minDisplayMinutes
-      );
-
-      normalizedUnits = underMinMergeResult.layoutUnits;
-      changed = normalizedUnits.length !== previousUnits.length
-         || normalizedUnits.some((layoutUnit, index) => (
-            layoutUnit !== previousUnits[index]
-         ))
-         || underMinMergeResult.changed;
-   }
-
-   return normalizedUnits;
-}
-
 function isTailOrphanLayoutUnit(
    layoutUnit = {},
    minDisplayMinutes = getScheduledPillMinDisplayMinutes()
@@ -445,7 +281,40 @@ function absorbTailOrphanLayoutUnits(
    ];
 }
 
-function getLayoutUnitSlotContext(layoutUnit = {}) {
+export function normalizeLayoutUnitsForDisplay(
+   layoutUnits = [],
+   minDisplayMinutes = getScheduledPillMinDisplayMinutes()
+) {
+   let normalizedUnits = [...layoutUnits];
+   let changed = true;
+
+   while (changed) {
+      const previousUnits = normalizedUnits;
+
+      normalizedUnits = mergeConsecutiveUnderMinDisplayLayoutUnits(
+         absorbTailOrphanLayoutUnits(
+            absorbHeadOrphanLayoutUnits(normalizedUnits, minDisplayMinutes),
+            minDisplayMinutes
+         ),
+         minDisplayMinutes
+      );
+      const underMinMergeResult = mergeUnderMinDisplayLayoutUnits(
+         normalizedUnits,
+         minDisplayMinutes
+      );
+
+      normalizedUnits = underMinMergeResult.layoutUnits;
+      changed = normalizedUnits.length !== previousUnits.length
+         || normalizedUnits.some((layoutUnit, index) => (
+            layoutUnit !== previousUnits[index]
+         ))
+         || underMinMergeResult.changed;
+   }
+
+   return normalizedUnits;
+}
+
+export function getLayoutUnitSlotContext(layoutUnit = {}) {
    const items = getLayoutUnitItems(layoutUnit);
    const anchorSlotMinutes = layoutUnit.anchorSlotMinutes
       ?? items[0]?.anchorSlotMinutes;
@@ -467,7 +336,7 @@ function getLayoutUnitSlotContext(layoutUnit = {}) {
    };
 }
 
-function getLayoutUnitScheduleOffsetFraction(layoutUnit = {}) {
+export function getLayoutUnitScheduleOffsetFraction(layoutUnit = {}) {
    const items = getLayoutUnitItems(layoutUnit);
    const { anchorSlotMinutes, slotEndMinutes } = getLayoutUnitSlotContext(layoutUnit);
    const startMinutes = Math.min(...items.map((item) => item.startMinutes));
@@ -566,86 +435,3 @@ export function clusterScheduledItemsByDuration(
 
 /** @deprecated Use clusterShortScheduledItemsForDisplay */
 export const clusterScheduledItemsByStartTimeProximity = clusterScheduledItemsByDuration;
-
-function buildRenderGroup(layoutUnit, horizontalOffsetIndex) {
-   const items = getLayoutUnitItems(layoutUnit);
-   const { slotSpanMinutes } = getLayoutUnitSlotContext(layoutUnit);
-   const startMinutes = Math.min(...items.map((item) => item.startMinutes));
-   const endMinutes = Math.max(...items.map(getScheduledItemEndMinutes));
-   const wallDurationMinutes = endMinutes - startMinutes;
-   const minDisplayMinutes = getScheduledPillMinDisplayMinutes();
-   const grouped = items.length > 1;
-   const visualBand = getScheduledPillVisualBand({
-      summaryItems: items,
-   });
-
-   return {
-      items,
-      offsetFraction: getLayoutUnitScheduleOffsetFraction(layoutUnit),
-      slotSpanMinutes,
-      horizontalOffsetIndex,
-      durationMinutes: wallDurationMinutes,
-      displayDurationMinutes: Math.max(wallDurationMinutes, minDisplayMinutes),
-      visualStartMinutes: visualBand.startMinutes,
-      visualEndMinutes: visualBand.endMinutes,
-      label: grouped
-         ? formatScheduledPillGroupLabel(items)
-         : undefined,
-   };
-}
-
-function compareRenderGroupsForDisplay(leftGroup = {}, rightGroup = {}) {
-   const offsetDelta = (leftGroup.offsetFraction ?? 0) - (
-      rightGroup.offsetFraction ?? 0
-   );
-
-   if (offsetDelta !== 0) {
-      return offsetDelta;
-   }
-
-   return (leftGroup.horizontalOffsetIndex ?? 0) - (
-      rightGroup.horizontalOffsetIndex ?? 0
-   );
-}
-
-export function planScheduledPillRenderGroupsByAnchor(
-   scheduledItems = [],
-   _pointPillMarkers = []
-) {
-   const itemsByAnchor = new Map();
-
-   scheduledItems.forEach((scheduledItem) => {
-      const anchorItems = itemsByAnchor.get(scheduledItem.anchorSlotMinutes) ?? [];
-
-      anchorItems.push(scheduledItem);
-      itemsByAnchor.set(scheduledItem.anchorSlotMinutes, anchorItems);
-   });
-
-   const groupsByAnchor = new Map();
-   const minDisplayMinutes = getScheduledPillMinDisplayMinutes();
-   const sortedAnchorSlots = [...itemsByAnchor.keys()].sort((left, right) => (
-      left - right
-   ));
-
-   sortedAnchorSlots.forEach((anchorSlotMinutes) => {
-      const anchorItems = itemsByAnchor.get(anchorSlotMinutes) ?? [];
-      const layoutUnits = normalizeLayoutUnitsForDisplay(
-         clusterShortScheduledItemsForDisplay(anchorItems),
-         minDisplayMinutes
-      ).sort(compareScheduledItemsForLayout);
-
-      layoutUnits.forEach((layoutUnit) => {
-         appendRenderGroup(
-            groupsByAnchor,
-            anchorSlotMinutes,
-            buildRenderGroup(layoutUnit, 0)
-         );
-      });
-   });
-
-   groupsByAnchor.forEach((groups) => {
-      groups.sort(compareRenderGroupsForDisplay);
-   });
-
-   return groupsByAnchor;
-}
