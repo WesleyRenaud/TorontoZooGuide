@@ -50,6 +50,7 @@ export async function openItineraryWizard({
       finalizeWizard = finalizeItineraryWizard,
       showConfirmPopup = showItineraryConfirmPopup,
       syncAnimalDraft = syncItineraryAnimalDraftFromItinerary,
+      loadSelectionStepConfigs = loadDefaultSelectionStepConfigs,
       selectionStepConfigs = null,
    } = deps;
 
@@ -58,7 +59,7 @@ export async function openItineraryWizard({
    }
 
    const resolvedSelectionStepConfigs = selectionStepConfigs
-      ?? await loadDefaultSelectionStepConfigs();
+      ?? await loadSelectionStepConfigs();
 
    const existing = await loadItinerary();
 
