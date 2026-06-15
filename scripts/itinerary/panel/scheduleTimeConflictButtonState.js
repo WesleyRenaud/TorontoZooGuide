@@ -1,0 +1,49 @@
+import { APP_STRINGS } from '../../strings.js';
+import {
+   canSelectConflictItem,
+   conflictItemRequiresTrimOverride,
+   isConflictItemSelected,
+} from '../wizard/scheduleConflictCompatibility.js';
+
+export function getConflictSelectionButtonState(
+   selection,
+   item,
+   strings = APP_STRINGS
+) {
+   const selected = isConflictItemSelected(selection, item);
+   const selectable = canSelectConflictItem(selection, item);
+   const requiresTrimOverride = conflictItemRequiresTrimOverride(selection, item);
+   const aria = strings.itinerary.aria;
+
+   return {
+      selected,
+      selectable,
+      requiresTrimOverride,
+      disabled: !selected && !selectable,
+      textContent: selected
+         ? strings.itinerary.actions.remove
+         : strings.itinerary.actions.addSymbol,
+      ariaLabel: selected
+         ? (
+            requiresTrimOverride
+               ? aria.removeFromItineraryWithScheduleOverride
+               : aria.removeFromItinerary
+         )
+         : (
+            requiresTrimOverride
+               ? aria.addToItineraryWithScheduleOverride
+               : aria.addToItinerary
+         ),
+   };
+}
+
+export function applyConflictSelectionButtonState(button, state) {
+   button.disabled = state.disabled;
+   button.classList.toggle('is-added', state.selected);
+   button.classList.toggle(
+      'requires-trim-override',
+      state.requiresTrimOverride
+   );
+   button.textContent = state.textContent;
+   button.setAttribute('aria-label', state.ariaLabel);
+}
