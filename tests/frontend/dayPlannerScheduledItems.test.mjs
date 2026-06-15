@@ -5,7 +5,7 @@ import { buildScheduledItemRowsContext, buildScheduledItinerary } from '../../sc
 import {
    resolveGroupedScheduledPillOptions,
    resolveScheduledPillOptions,
-} from '../../scripts/itinerary/panel/components/dayPlannerTimelinePills.js';
+} from '../../scripts/itinerary/panel/components/dayPlannerScheduledPillOptions.js';
 import { makeScheduledItem } from './helpers/scheduledPillTestSetup.mjs';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 

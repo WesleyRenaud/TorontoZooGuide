@@ -1,8 +1,8 @@
 import {
-   appendScheduledDurationPill,
    resolveGroupedScheduledPillOptions,
    resolveScheduledPillOptions,
-} from './dayPlannerTimelinePills.js';
+} from './dayPlannerScheduledPillOptions.js';
+import { appendScheduledDurationPill } from './dayPlannerTimelinePillAppend.js';
 import { el } from '../dom.js';
 import { openAnimalSpeciesOverlay } from '../../../overlays/speciesOverlay.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
@@ -171,4 +171,4 @@ export function appendScheduledItems(
 export {
    computeSpanHorizontalOffsetIndex,
    computeTimelineHorizontalOffsetIndex,
-} from './dayPlannerTimelinePills.js';
+} from './dayPlannerTimelinePillPlacement.js';

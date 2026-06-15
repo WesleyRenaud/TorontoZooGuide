@@ -20,7 +20,7 @@ import {
    buildMarkersByAnchorSlot,
    resolveTimelinePillLabel,
 } from '../dayPlannerTimelineMarkers.js';
-import { appendItineraryTimeMarkers } from './dayPlannerTimelinePills.js';
+import { appendItineraryTimeMarkers } from './dayPlannerTimelinePillAppend.js';
 import { el } from '../dom.js';
 import { formatISODateFull } from '../format.js';
 import { planScheduledPillRenderGroupsByAnchor } from './scheduledPillRenderPlan.js';
