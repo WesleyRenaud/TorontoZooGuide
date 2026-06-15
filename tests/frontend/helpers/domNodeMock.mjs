@@ -169,7 +169,12 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
          listeners[eventName] = handler;
       },
       click() {
-         listeners.click?.();
+         const event = {
+            preventDefault() {},
+            stopPropagation() {},
+         };
+
+         listeners.click?.(event);
       },
       remove() {},
       setAttribute(name, value) {

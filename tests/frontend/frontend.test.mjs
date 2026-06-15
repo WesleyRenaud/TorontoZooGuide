@@ -60,6 +60,8 @@ import './scheduledPillRenderPlan.test.mjs';
 import './dayPlannerScheduledItems.test.mjs';
 import './scheduledPillPresentation.test.mjs';
 import './scheduledTimelinePill.test.mjs';
+import './openTimelinePill.test.mjs';
+import './itineraryPillMenu.test.mjs';
 import './scheduleItemKeys.test.mjs';
 import './scheduleItemKind.test.mjs';
 import './saveIssuesProceedConfirmation.test.mjs';
