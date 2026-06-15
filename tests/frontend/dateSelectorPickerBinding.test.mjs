@@ -1,0 +1,65 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import { createDatePickerBinding } from '../../scripts/itinerary/selectors/dateSelectorPickerBinding.js';
+import { createDomNode } from './helpers/domNodeMock.mjs';
+
+function makeNoonDate(year, monthIndex, day) {
+   return new Date(year, monthIndex, day, 12, 0, 0, 0);
+}
+
+const floor = makeNoonDate(2026, 5, 15);
+
+test('createDatePickerBinding wires flatpickr callbacks into the selection model', () => {
+   const inputEl = createDomNode('input', 'itin-date-input');
+   const syncedDates = [];
+   let currentDate = floor;
+   const flatpickrCalls = [];
+
+   const binding = createDatePickerBinding({
+      inputEl,
+      getDate: () => currentDate,
+      setDate: (date, { updateInput = true } = {}) => {
+         currentDate = date;
+
+         if (updateInput) {
+            syncedDates.push(date);
+         }
+
+         return true;
+      },
+      syncInputValue: (date) => {
+         syncedDates.push(date);
+      },
+      earliestDateFloor: floor,
+      getTodayFn: () => floor,
+      daysAhead: 2,
+      initFlatpickr: (_input, options) => {
+         const instance = {
+            input: _input,
+            close() {
+               flatpickrCalls.push('close');
+            },
+            set(property, value) {
+               flatpickrCalls.push(`${property}:${value}`);
+            },
+            setDate() {},
+         };
+
+         options.onReady(floor, '2026-06-15', instance);
+         options.onChange(makeNoonDate(2026, 5, 16), '2026-06-16', instance);
+         options.onClose();
+
+         return instance;
+      },
+   });
+
+   binding.init();
+   binding.syncBounds();
+   binding.close();
+
+   assert.equal(currentDate.getDate(), 16);
+   assert.match(inputEl.value, /June 16, 2026/);
+   assert.equal(syncedDates.length, 3);
+   assert.ok(flatpickrCalls.includes('close'));
+});

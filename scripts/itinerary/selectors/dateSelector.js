@@ -1,286 +1,11 @@
 import {
-   getStoredItineraryDate,
-   setStoredItineraryDate,
-} from '../draftStorage.js';
+   createDateSelectionModel,
+   formatVisitDateLong,
+} from './dateSelectionModel.js';
+import { createDatePickerBinding } from './dateSelectorPickerBinding.js';
+import { buildDateSelectorView } from './dateSelectorView.js';
 import { APP_STRINGS } from '../../strings.js';
-import { initVisitDateFlatpickr } from '../../visitDates/visitDateFlatpickr.js';
-import {
-   clampToAllowedVisitDate,
-   DEFAULT_DAYS_AHEAD,
-   getMaxDate,
-   getToday,
-   isAfterMaxDate,
-   normalizeDate,
-   toISODate,
-} from '../../visitDates/visitDateRules.js';
-
-function formatLong(d) {
-   return d.toLocaleDateString(undefined, {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-   });
-}
-
-function readSavedDateFromStorage() {
-   const iso = getStoredItineraryDate();
-
-   if (!iso) {
-      return null;
-   }
-
-   const savedDate = new Date(`${iso}T12:00:00`);
-   return Number.isFinite(savedDate.getTime()) ? savedDate : null;
-}
-
-function createDateSelectionModel({
-   initialDate = null,
-   syncInputValue = () => {},
-   earliestDateFloor = null,
-} = {}) {
-   const floor = earliestDateFloor ?? getToday();
-   let currentDate = null;
-
-   function persistDate(date) {
-      setStoredItineraryDate(toISODate(date));
-   }
-
-   function isSelectableVisitDate(date) {
-      if (!date) {
-         return false;
-      }
-
-      const candidate = normalizeDate(date);
-
-      if (!candidate) {
-         return false;
-      }
-
-      if (candidate < floor) {
-         return false;
-      }
-
-      if (isAfterMaxDate(candidate, DEFAULT_DAYS_AHEAD)) {
-         return false;
-      }
-
-      return true;
-   }
-
-   function setDate(date, { updateInput = true, persist = false } = {}) {
-      const normalized = normalizeDate(date);
-
-      if (!isSelectableVisitDate(normalized)) {
-         return false;
-      }
-
-      currentDate = normalized;
-
-      if (updateInput) {
-         syncInputValue(normalized);
-      }
-
-      if (persist) {
-         persistDate(normalized);
-      }
-
-      return true;
-   }
-
-   function buildCurrentDatePayload() {
-      if (!isSelectableVisitDate(currentDate)) {
-         return null;
-      }
-
-      return {
-         date: toISODate(currentDate),
-         dateObj: currentDate,
-      };
-   }
-
-   function persistCurrentDate() {
-      if (!setDate(currentDate, { persist: true, updateInput: true })) {
-         return null;
-      }
-
-      return buildCurrentDatePayload();
-   }
-
-   function getDisplayDate() {
-      const savedDate = readSavedDateFromStorage();
-      const selectedDate = initialDate || savedDate || floor;
-
-      return clampToAllowedVisitDate(selectedDate, DEFAULT_DAYS_AHEAD, floor);
-   }
-
-   function getDate() {
-      return currentDate;
-   }
-
-   return {
-      getDate,
-      setDate,
-      persistCurrentDate,
-      getDisplayDate,
-   };
-}
-
-function createButton({
-   className,
-   text,
-   ariaLabel = null,
-} = {}) {
-   const button = document.createElement('button');
-   button.className = className;
-   button.type = 'button';
-   button.textContent = text;
-
-   if (ariaLabel) {
-      button.setAttribute('aria-label', ariaLabel);
-   }
-
-   return button;
-}
-
-function buildDateSelectorView() {
-   const root = document.createElement('div');
-   root.className = 'itin-overlay';
-
-   const card = document.createElement('section');
-   card.className = 'itin-card';
-   card.setAttribute('role', 'dialog');
-   card.setAttribute('aria-modal', 'true');
-   card.setAttribute('aria-label', APP_STRINGS.itinerary.selectors.builderTitle);
-
-   const topbar = document.createElement('div');
-   topbar.className = 'itin-card-topbar itin-card-topbar-with-close';
-
-   const topTitle = document.createElement('div');
-   topTitle.className = 'itin-top-title';
-   topTitle.textContent = APP_STRINGS.itinerary.selectors.builderTitle;
-
-   const closeButtonEl = createButton({
-      className: 'itin-close',
-      text: APP_STRINGS.common.closeSymbol,
-      ariaLabel: APP_STRINGS.itinerary.aria.closeBuilder,
-   });
-
-   topbar.append(topTitle, closeButtonEl);
-
-   const body = document.createElement('div');
-   body.className = 'itin-card-body';
-
-   const heading = document.createElement('h1');
-   heading.className = 'itin-h1';
-   heading.textContent = APP_STRINGS.itinerary.selectors.titleDate;
-
-   const subtitle = document.createElement('p');
-   subtitle.className = 'itin-subtitle';
-   subtitle.textContent = APP_STRINGS.itinerary.selectors.visitDateSubtitle;
-
-   const fieldLabel = document.createElement('div');
-   fieldLabel.className = 'itin-field-label';
-   fieldLabel.textContent = APP_STRINGS.itinerary.selectors.visitDate;
-
-   const inputEl = document.createElement('input');
-   inputEl.className = 'itin-date-input';
-   inputEl.type = 'text';
-   inputEl.inputMode = 'none';
-   inputEl.autocomplete = 'off';
-   inputEl.readOnly = true;
-
-   body.append(heading, subtitle, fieldLabel, inputEl);
-
-   const actions = document.createElement('div');
-   actions.className = 'itin-card-actions';
-
-   const actionsRight = document.createElement('div');
-   actionsRight.className = 'itin-actions-right';
-
-   const nextButtonEl = createButton({
-      className: 'itin-next',
-      text: APP_STRINGS.itinerary.actions.next,
-   });
-
-   const finishButtonEl = createButton({
-      className: 'itin-next itin-finish',
-      text: APP_STRINGS.itinerary.actions.finish,
-   });
-
-   actionsRight.append(nextButtonEl, finishButtonEl);
-   actions.append(actionsRight);
-   card.append(topbar, body, actions);
-   root.appendChild(card);
-
-   return {
-      root,
-      inputEl,
-      nextButtonEl,
-      finishButtonEl,
-      closeButtonEl,
-   };
-}
-
-function createDatePickerBinding({
-   inputEl,
-   getDate,
-   setDate,
-   syncInputValue,
-   earliestDateFloor = null,
-} = {}) {
-   const floor = earliestDateFloor ?? getToday();
-   let flatpickrInstance = null;
-
-   function applyPickerDate(date, instance) {
-      setDate(date, { updateInput: true, persist: false });
-      instance.input.value = formatLong(date);
-   }
-
-   function close() {
-      flatpickrInstance?.close();
-      inputEl?.blur();
-   }
-
-   function syncBounds() {
-      const currentDate = getDate();
-
-      if (!flatpickrInstance || !currentDate) {
-         return;
-      }
-
-      flatpickrInstance.set('minDate', floor);
-      flatpickrInstance.set('maxDate', getMaxDate(DEFAULT_DAYS_AHEAD));
-      flatpickrInstance.setDate(currentDate, false);
-      syncInputValue(currentDate);
-      close();
-   }
-
-   function init() {
-      flatpickrInstance = initVisitDateFlatpickr(inputEl, {
-         defaultDate: getDate() || floor,
-         earliestNoon: floor,
-         clickOpens: true,
-         onReady: (safeDate, _isoDate, instance) => {
-            applyPickerDate(safeDate, instance);
-         },
-         onChange: (safeDate, _isoDate, instance) => {
-            applyPickerDate(safeDate, instance);
-            instance.close();
-            inputEl?.blur();
-         },
-         onClose: () => {
-            inputEl?.blur();
-         },
-      });
-   }
-
-   return {
-      init,
-      close,
-      syncBounds,
-   };
-}
+import { getToday } from '../../visitDates/visitDateRules.js';
 
 export function createItineraryDateSelectorController({
    mountEl,
@@ -289,24 +14,32 @@ export function createItineraryDateSelectorController({
    onSave,
    onFinish,
    onClose,
+   deps = {},
 } = {}) {
+   const {
+      buildView = buildDateSelectorView,
+      createPicker = createDatePickerBinding,
+      getTodayFn = getToday,
+   } = deps;
+
    let elements = null;
    let picker = null;
 
-   const earliestFloor = earliestSelectableDate ?? getToday();
+   const earliestFloor = earliestSelectableDate ?? getTodayFn();
 
    function syncInputValue(date = model.getDate()) {
       if (!elements?.inputEl) {
          return;
       }
 
-      elements.inputEl.value = date ? formatLong(date) : '';
+      elements.inputEl.value = date ? formatVisitDateLong(date) : '';
    }
 
    const model = createDateSelectionModel({
       initialDate,
       syncInputValue,
       earliestDateFloor: earliestFloor,
+      getTodayFn,
    });
 
    function commitDateSelection(callback) {
@@ -340,14 +73,15 @@ export function createItineraryDateSelectorController({
          return;
       }
 
-      elements = buildDateSelectorView();
+      elements = buildView(APP_STRINGS);
       bindDomEvents();
-      picker = createDatePickerBinding({
+      picker = createPicker({
          inputEl: elements.inputEl,
          getDate: model.getDate,
          setDate: model.setDate,
          syncInputValue,
          earliestDateFloor: earliestFloor,
+         getTodayFn,
       });
       picker.init();
    }
