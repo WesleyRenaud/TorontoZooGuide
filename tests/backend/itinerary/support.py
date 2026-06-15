@@ -31,6 +31,10 @@ CHEETAH_ITINERARY_ENTRY = {
    'species': 'Cheetah',
    'exhibit': 'Africa Savanna',
 }
+CHEETAH_INDO_MALAYA_ITINERARY_ENTRY = {
+   'species': 'Cheetah',
+   'exhibit': 'Indo-Malaya Outdoor',
+}
 
 
 def guardians_talk_save_entry(
