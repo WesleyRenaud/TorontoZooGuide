@@ -1,14 +1,22 @@
 import { suppressItineraryWarningRequest } from '../api/itineraryApi.js';
 import { isItinerarySuccess } from './itineraryErrorTypes.js';
 
-export async function persistItineraryWarningSuppression(warningType) {
+export async function persistItineraryWarningSuppression(
+   warningType,
+   deps = {}
+) {
+   const {
+      suppressWarning = suppressItineraryWarningRequest,
+      isSuccess = isItinerarySuccess,
+   } = deps;
+
    if (!warningType) {
       return;
    }
 
-   const result = await suppressItineraryWarningRequest(warningType);
+   const result = await suppressWarning(warningType);
 
-   if (!isItinerarySuccess(result.errorType)) {
+   if (!isSuccess(result.errorType)) {
       throw new Error('Could not save itinerary warning preference.');
    }
 

@@ -15,20 +15,29 @@ import {
  * First calendar day the visitor may pick as a visit date: normally today at local noon,
  * or tomorrow at local noon when local time is at or after today's zoo closeTime.
  */
-export async function resolveEarliestSelectableVisitDateNoon() {
-   const todayIso = toISODate(getToday());
+export async function resolveEarliestSelectableVisitDateNoon(deps = {}) {
+   const {
+      getTodayFn = getToday,
+      getZooHoursFn = getZooHours,
+      isPastClose = isLocalTimeAtOrPastZooClose,
+      addDays = addLocalCalendarDays,
+      toIso = toISODate,
+   } = deps;
+
+   const today = getTodayFn();
+   const todayIso = toIso(today);
 
    try {
-      const hours = await getZooHours(todayIso);
+      const hours = await getZooHoursFn(todayIso);
 
-      if (hours?.closeTime && isLocalTimeAtOrPastZooClose(hours.closeTime)) {
-         return addLocalCalendarDays(getToday(), 1);
+      if (hours?.closeTime && isPastClose(hours.closeTime)) {
+         return addDays(today, 1);
       }
    } catch {
       /* ignore network / parse errors; fall back to today */
    }
 
-   return getToday();
+   return today;
 }
 
 /**
@@ -36,18 +45,27 @@ export async function resolveEarliestSelectableVisitDateNoon() {
  * itinerary date when present, else the locally stored draft date, else the same
  * post-close-aware default as the map date picker and wizard date floor.
  */
-export async function resolveEffectiveItineraryHoursDateIso(itinerary) {
+export async function resolveEffectiveItineraryHoursDateIso(
+   itinerary,
+   deps = {}
+) {
+   const {
+      getStoredDate = getStoredItineraryDate,
+      resolveEarliest = resolveEarliestSelectableVisitDateNoon,
+      toIso = toISODate,
+   } = deps;
+
    const fromItin = typeof itinerary?.date === 'string' && itinerary.date.trim();
 
    if (fromItin) {
       return fromItin;
    }
 
-   const stored = getStoredItineraryDate()?.trim?.();
+   const stored = getStoredDate()?.trim?.();
 
    if (stored) {
       return stored;
    }
 
-   return toISODate(await resolveEarliestSelectableVisitDateNoon());
+   return toIso(await resolveEarliest(deps));
 }
