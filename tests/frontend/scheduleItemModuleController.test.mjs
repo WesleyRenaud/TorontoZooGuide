@@ -3,6 +3,7 @@ import { afterEach, beforeEach, test } from 'node:test';
 
 import { createScheduleItemModuleController } from '../../scripts/itinerary/panel/components/scheduleItemModuleController.js';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
+import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 
 const EVENT_TYPES = ['lunch', 'break'];
@@ -343,4 +344,289 @@ test('handleOnlyItineraryItemsChange re-filters cached search rows', () => {
    controller.handleOnlyItineraryItemsChange();
 
    assert.deepEqual(renderedRows.at(-1), [ANIMAL_ROW]);
+});
+
+test('renderSearchResultsForRows clears results when search is disabled', () => {
+   const refs = createRefs({ selection: 'lunch' });
+   refs.resultsEl.appendChild(createDomNode('div', 'existing-result'));
+   const controller = createController({ refs });
+
+   controller.displaySearchResults([ANIMAL_ROW]);
+
+   assert.equal(refs.resultsEl.children.length, 0);
+});
+
+test('runSearch clears results when search is disabled or the query is blank', async () => {
+   const refs = createRefs({ selection: 'lunch', searchValue: 'tiger' });
+   refs.resultsEl.appendChild(createDomNode('div', 'existing-result'));
+   const controller = createController({ refs });
+
+   await controller.runSearch();
+
+   assert.equal(refs.resultsEl.children.length, 0);
+
+   refs.typeSelect.value = ScheduleItemKind.ANIMAL.itemType;
+   refs.searchInput.value = '';
+   await controller.runSearch();
+
+   assert.equal(refs.resultsEl.children.length, 0);
+});
+
+test('runSearch swallows search failures and clears visible rows', async () => {
+   const refs = createRefs({
+      selection: ScheduleItemKind.ANIMAL.itemType,
+      searchValue: 'tiger',
+   });
+   const renderedRows = [];
+   const controller = createController({
+      refs,
+      deps: {
+         getSearchContext: async () => ({}),
+         searchItineraryItems: async () => {
+            throw new Error('search failed');
+         },
+         renderSearchResults: ({ rows }) => {
+            renderedRows.push(rows);
+         },
+      },
+   });
+
+   await controller.runSearch();
+
+   assert.deepEqual(renderedRows, [[]]);
+});
+
+test('handleSchedule shows resolved error notices and generic failures', async () => {
+   const refs = createRefs({ selection: 'lunch' });
+   const notices = [];
+   const controller = createController({
+      refs,
+      scheduleTimeFields: {
+         hasDurationWithoutTime: () => false,
+         getScheduleTimeOptions: () => ({}),
+      },
+      deps: {
+         scheduleSelectedItem: async () => ({ errorType: 'validationError' }),
+         itinerarySuccess: () => false,
+         requiresNotOnItineraryConfirmation: () => false,
+         resolveErrorMessage: () => 'Validation failed',
+         showNotice: (message) => {
+            notices.push(message);
+         },
+      },
+   });
+
+   await controller.handleSchedule();
+
+   assert.deepEqual(notices, ['Validation failed']);
+
+   const failingController = createController({
+      refs,
+      scheduleTimeFields: {
+         hasDurationWithoutTime: () => false,
+         getScheduleTimeOptions: () => ({}),
+      },
+      deps: {
+         scheduleSelectedItem: async () => {
+            throw new Error('network');
+         },
+         showNotice: (message) => {
+            notices.push(message);
+         },
+      },
+   });
+
+   await failingController.handleSchedule();
+
+   assert.equal(notices.at(-1), APP_STRINGS.itinerary.errors.generic);
+});
+
+test('handleSchedule returns silently for not-on-itinerary confirmations', async () => {
+   const refs = createRefs({ selection: 'lunch' });
+   const notices = [];
+   const controller = createController({
+      refs,
+      scheduleTimeFields: {
+         hasDurationWithoutTime: () => false,
+         getScheduleTimeOptions: () => ({}),
+      },
+      deps: {
+         scheduleSelectedItem: async () => ({ errorType: 'notOnItinerary' }),
+         itinerarySuccess: () => false,
+         requiresNotOnItineraryConfirmation: () => true,
+         showNotice: (message) => {
+            notices.push(message);
+         },
+      },
+   });
+
+   await controller.handleSchedule();
+
+   assert.deepEqual(notices, []);
+});
+
+test('handleSchedule ignores duplicate submissions while one is in flight', async () => {
+   const refs = createRefs({ selection: 'lunch' });
+   let scheduleCalls = 0;
+   let resolveSchedule = null;
+   const controller = createController({
+      refs,
+      scheduleTimeFields: {
+         hasDurationWithoutTime: () => false,
+         getScheduleTimeOptions: () => ({}),
+      },
+      deps: {
+         scheduleSelectedItem: async () => {
+            scheduleCalls += 1;
+            await new Promise((resolve) => {
+               resolveSchedule = resolve;
+            });
+            return { errorType: 'success' };
+         },
+         itinerarySuccess: (errorType) => errorType === 'success',
+         requiresNotOnItineraryConfirmation: () => false,
+      },
+   });
+
+   const firstSchedule = controller.handleSchedule();
+   const secondSchedule = controller.handleSchedule();
+
+   resolveSchedule?.();
+   await Promise.all([firstSchedule, secondSchedule]);
+
+   assert.equal(scheduleCalls, 1);
+});
+
+test('handleSearchInput clears the selected row and triggers a search', () => {
+   const refs = createRefs({
+      selection: ScheduleItemKind.ANIMAL.itemType,
+      searchValue: 'tiger',
+   });
+   const searchCalls = [];
+   let onSelectRow = null;
+   const controller = createController({
+      refs,
+      deps: {
+         renderSearchResults: ({ onSelectRow: selectRow }) => {
+            onSelectRow = selectRow;
+         },
+      },
+   });
+
+   controller.displaySearchResults([ANIMAL_ROW]);
+   onSelectRow?.(ANIMAL_ROW, 'Tiger||Savanna');
+   controller.handleSearchInput(() => {
+      searchCalls.push('search');
+   });
+
+   assert.equal(controller.canScheduleSelection(), false);
+   assert.deepEqual(searchCalls, ['search']);
+});
+
+test('handleOnlyItineraryItemsChange runs a search when no rows are cached', async () => {
+   const refs = createRefs({
+      selection: ScheduleItemKind.ANIMAL.itemType,
+      searchValue: 'tiger',
+   });
+   const searchRequests = [];
+   const controller = createController({
+      refs,
+      deps: {
+         getSearchContext: async () => ({}),
+         searchItineraryItems: async (_url, payload) => {
+            searchRequests.push(payload);
+            return { animals: [ANIMAL_ROW] };
+         },
+         renderSearchResults: () => {},
+      },
+   });
+
+   refs.onlyItineraryItemsCheckbox.checked = true;
+   await controller.handleOnlyItineraryItemsChange();
+
+   assert.equal(searchRequests.length, 1);
+});
+
+test('initialize without a preselected row clears search results', () => {
+   const refs = createRefs({ selection: ScheduleItemKind.ANIMAL.itemType });
+   refs.resultsEl.appendChild(createDomNode('div', 'existing-result'));
+   const controller = createController({ refs });
+
+   controller.initialize();
+
+   assert.equal(refs.resultsEl.children.length, 0);
+   assert.equal(refs.scheduleButton.disabled, true);
+});
+
+test('bindEvents wires schedule and search input handlers', async () => {
+   const refs = createRefs({ selection: 'lunch' });
+   let dismissed = false;
+   const controller = createController({
+      refs,
+      scheduleTimeFields: {
+         hasDurationWithoutTime: () => false,
+         getScheduleTimeOptions: () => ({}),
+      },
+      deps: {
+         scheduleSelectedItem: async () => ({ errorType: 'success' }),
+         itinerarySuccess: (errorType) => errorType === 'success',
+         requiresNotOnItineraryConfirmation: () => false,
+      },
+   });
+
+   controller.bindEvents({
+      popup: {
+         dismiss: () => {
+            dismissed = true;
+         },
+      },
+      scheduleSearch: () => {},
+   });
+
+   refs.scheduleButton.click();
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   assert.equal(dismissed, true);
+
+   refs.typeSelect.value = ScheduleItemKind.ANIMAL.itemType;
+   refs.typeSelect.listeners.change?.();
+   refs.searchInput.listeners.input?.();
+
+   assert.equal(refs.searchInput.value, '');
+});
+
+test('displaySearchResults clears a selected row hidden by itinerary-only filtering', () => {
+   const refs = createRefs({
+      selection: ScheduleItemKind.ANIMAL.itemType,
+   });
+   let onSelectRow = null;
+   const controller = createController({
+      refs,
+      deps: {
+         renderSearchResults: ({ onSelectRow: selectRow }) => {
+            onSelectRow = selectRow;
+         },
+      },
+   });
+
+   controller.displaySearchResults([
+      ANIMAL_ROW,
+      {
+         species: 'Giant Panda',
+         exhibit: 'Bamboo',
+         scheduleItemKind: 'animals',
+      },
+   ]);
+   onSelectRow?.({
+      species: 'Giant Panda',
+      exhibit: 'Bamboo',
+      scheduleItemKind: 'animals',
+   }, 'Giant Panda||Bamboo');
+
+   refs.onlyItineraryItemsCheckbox.checked = true;
+   controller.handleOnlyItineraryItemsChange();
+
+   assert.equal(controller.canScheduleSelection(), false);
 });
