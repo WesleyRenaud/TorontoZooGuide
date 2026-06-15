@@ -195,6 +195,7 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
          return queryNodes(node, selector);
       },
       focus() {},
+      blur() {},
    };
 
    return node;
