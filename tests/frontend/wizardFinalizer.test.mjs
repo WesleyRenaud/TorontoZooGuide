@@ -1,25 +1,22 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { finalizeItineraryWizard } from '../../scripts/itinerary/wizard/wizardFinalizer.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 
 test.describe('finalizeItineraryWizard', () => {
-   beforeEach(() => {
-      globalThis.localStorage = createLocalStorageMock();
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      document.querySelector('.tzg-popup')?.__tzgPopupCleanup?.();
-      document.querySelector('.tzg-popup')?.remove();
-      teardownDocument();
-      delete globalThis.window;
-      delete globalThis.localStorage;
+   installDomTestHooks({
+      before: () => {
+         globalThis.localStorage = createLocalStorageMock();
+      },
+      after: () => {
+         document.querySelector('.tzg-popup')?.__tzgPopupCleanup?.();
+         document.querySelector('.tzg-popup')?.remove();
+         delete globalThis.localStorage;
+      },
    });
 
    test('shows the empty-selection popup when finish is blocked', async () => {

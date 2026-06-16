@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import {
    computeStripHorizontalOffsetIndex,
@@ -8,7 +8,7 @@ import {
    getOrCreatePointPillStrip,
 } from '../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 function makeTimelineGridLine() {
    const timeline = createDomNode('div', 'itinerary-day-timeline');
@@ -57,15 +57,7 @@ test('computeStripHorizontalOffsetIndex maps strip offsets into placement indexe
 });
 
 test.describe('timeline pill strip placement', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
-   });
+   installDomTestHooks();
 
    test('getOrCreatePointPillStrip reuses strips at the same offset', () => {
       const { gridLine } = makeTimelineGridLine();

@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { createItinerarySelectorController } from '../../scripts/itinerary/selectors/createSelectorController.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 
 function buildStubElements() {
@@ -20,16 +20,13 @@ function buildStubElements() {
 }
 
 test.describe('createItinerarySelectorController', () => {
-   beforeEach(() => {
-      globalThis.localStorage = createLocalStorageMock();
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
-      delete globalThis.localStorage;
+   installDomTestHooks({
+      before: () => {
+         globalThis.localStorage = createLocalStorageMock();
+      },
+      after: () => {
+         delete globalThis.localStorage;
+      },
    });
 
    test('show and hide manage the mount element and run an initial search', async () => {

@@ -1,0 +1,249 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+
+import {
+   TIMELINE_POINT_PILL_HEIGHT_PX,
+   TIMELINE_SLOT_HEIGHT_PX,
+} from '../../scripts/shared/constants.js';
+import {
+   areItineraryScheduleTimesOrdered,
+   buildArrivalTimeBounds,
+   buildDepartureTimeBounds,
+   buildHalfHourSlotStarts,
+   formatMinutesAsClockTime,
+   isArrivalTimeWithinBounds,
+   isDepartureTimeWithinBounds,
+   parseClockTimeMinutes,
+   resolveArrivalTimeValidationError,
+   resolveDepartureTimeValidationError,
+} from '../../scripts/itinerary/panel/dayPlannerSchedule.js';
+import {
+   buildMarkersByAnchorSlot,
+   computeMarkerOffsetFraction,
+   findTimelineAnchorSlot,
+} from '../../scripts/itinerary/panel/dayPlannerTimelineMarkers.js';
+import {
+   computeStripHorizontalOffsetIndex,
+   computeTimelineHorizontalOffsetIndex,
+} from '../../scripts/itinerary/panel/components/dayPlannerTimelinePillPlacement.js';
+import {
+   formatClockTime,
+   formatISODateFull,
+   formatISODateLong,
+   normalizeAnimal,
+   normalizeAttraction,
+   normalizeTalk,
+   normalizeWild,
+} from '../../scripts/itinerary/panel/format.js';
+import {
+   EMPTY_ITINERARY,
+   TEST_ITINERARY_CONFIG,
+   allTextFor,
+   boundaryMarkerByLabel,
+   boundaryMarkerStripByLabel,
+   createNode,
+   imageSrcFor,
+   installPanelRowsTestHooks,
+   textFor,
+   timelinePillTexts,
+   timelineScheduledPillTexts,
+} from './helpers/panelRowsTestSetup.mjs';
+
+test.describe('itinerary panel format and schedule', () => {
+   installPanelRowsTestHooks();
+
+   test('formats and normalizes itinerary panel item data', () => {
+      assert.match(formatISODateLong('2026-06-15'), /June 15, 2026/);
+      assert.equal(formatISODateLong('not-a-date'), '');
+      assert.equal(formatISODateFull('2026-06-20'), 'Saturday, June 20, 2026');
+      assert.equal(formatISODateFull('not-a-date', 'Fallback Date'), 'not-a-date');
+      assert.equal(formatClockTime('09:30'), '9:30 AM');
+      assert.equal(formatClockTime('09:30:30'), '9:30:30 AM');
+      assert.equal(formatClockTime('19:00'), '7:00 PM');
+      assert.equal(formatClockTime('', 'Fallback Time'), 'Fallback Time');
+      assert.equal(parseClockTimeMinutes('09:30'), 570);
+      assert.equal(parseClockTimeMinutes('09:30:30'), 570.5);
+      assert.equal(parseClockTimeMinutes('10:00 AM'), 600);
+      assert.equal(parseClockTimeMinutes('10:00:30 AM'), 600.5);
+      assert.equal(parseClockTimeMinutes('1:30 PM'), 810);
+      assert.equal(parseClockTimeMinutes('bad-time'), null);
+      assert.equal(formatMinutesAsClockTime(1140), '7:00 PM');
+      assert.deepEqual(buildArrivalTimeBounds({
+         earlyAdmissionTime: '09:00',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+      }), {
+         minMinutes: 540,
+         maxMinutes: 1080,
+         minScheduleTime: '09:00',
+         maxScheduleTime: '18:00',
+         minClockTime: '9:00 AM',
+         maxClockTime: '6:00 PM',
+      });
+      assert.deepEqual(buildArrivalTimeBounds({
+         openTime: '09:30',
+         lastAdmissionTime: '17:00',
+      }), {
+         minMinutes: 570,
+         maxMinutes: 1020,
+         minScheduleTime: '09:30',
+         maxScheduleTime: '17:00',
+         minClockTime: '9:30 AM',
+         maxClockTime: '5:00 PM',
+      });
+      assert.equal(isArrivalTimeWithinBounds('9:00 AM', buildArrivalTimeBounds({
+         earlyAdmissionTime: '09:00',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+      })), true);
+      assert.equal(isArrivalTimeWithinBounds('8:45 AM', buildArrivalTimeBounds({
+         earlyAdmissionTime: '09:00',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+      })), false);
+      assert.equal(isArrivalTimeWithinBounds('6:00 PM', buildArrivalTimeBounds({
+         earlyAdmissionTime: '09:00',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+      })), true);
+      assert.equal(isArrivalTimeWithinBounds('6:15 PM', buildArrivalTimeBounds({
+         earlyAdmissionTime: '09:00',
+         openTime: '09:30',
+         lastAdmissionTime: '18:00',
+      })), false);
+      assert.equal(isArrivalTimeWithinBounds('', buildArrivalTimeBounds({
+         openTime: '09:30',
+         lastAdmissionTime: '17:00',
+      })), true);
+      assert.deepEqual(buildDepartureTimeBounds({
+         openTime: '09:30',
+         closeTime: '18:00',
+      }), {
+         minMinutes: 570,
+         maxMinutes: 1080,
+         minScheduleTime: '09:30',
+         maxScheduleTime: '18:00',
+         minClockTime: '9:30 AM',
+         maxClockTime: '6:00 PM',
+      });
+      assert.equal(isDepartureTimeWithinBounds('9:30 AM', buildDepartureTimeBounds({
+         openTime: '09:30',
+         closeTime: '18:00',
+      })), true);
+      assert.equal(isDepartureTimeWithinBounds('9:00 AM', buildDepartureTimeBounds({
+         earlyAdmissionTime: '09:00',
+         openTime: '09:30',
+         closeTime: '19:00',
+      })), false);
+      assert.equal(isDepartureTimeWithinBounds('6:00 PM', buildDepartureTimeBounds({
+         openTime: '09:30',
+         closeTime: '18:00',
+      })), true);
+      assert.equal(isDepartureTimeWithinBounds('6:15 PM', buildDepartureTimeBounds({
+         openTime: '09:30',
+         closeTime: '18:00',
+      })), false);
+      assert.equal(isDepartureTimeWithinBounds('', buildDepartureTimeBounds({
+         openTime: '09:30',
+         closeTime: '18:00',
+      })), true);
+      assert.equal(areItineraryScheduleTimesOrdered('9:30 AM', '5:00 PM'), true);
+      assert.equal(areItineraryScheduleTimesOrdered('5:00 PM', '5:00 PM'), false);
+      assert.equal(areItineraryScheduleTimesOrdered('5:15 PM', '5:00 PM'), false);
+      assert.equal(areItineraryScheduleTimesOrdered('', '5:00 PM'), true);
+      assert.equal(resolveDepartureTimeValidationError(
+         '9:30 AM',
+         buildDepartureTimeBounds({ openTime: '09:30', closeTime: '18:00' }),
+         '9:30 AM',
+         {
+            departureTimeInvalid: 'hours',
+            departureTimeAfterArrivalInvalid: 'order',
+         }
+      ), 'order');
+      assert.equal(resolveArrivalTimeValidationError(
+         '5:00 PM',
+         buildArrivalTimeBounds({
+            openTime: '09:30',
+            lastAdmissionTime: '17:00',
+         }),
+         '5:00 PM',
+         {
+            arrivalTimeInvalid: 'hours',
+            arrivalTimeBeforeDepartureInvalid: 'order',
+         }
+      ), 'order');
+      assert.deepEqual(buildHalfHourSlotStarts(570, 720), [
+         570,
+         600,
+         630,
+         660,
+         690,
+      ]);
+      assert.deepEqual(normalizeAnimal({
+         species: '  African Lion  ',
+         exhibit: '  Africa Savanna  ',
+         likelihoodBefore: '0.9',
+         likelihoodAfter: '60',
+      }), {
+         species: 'African Lion',
+         exhibit: 'Africa Savanna',
+         link: null,
+         removalReason: null,
+         likelihoodBefore: 0.9,
+         likelihoodAfter: 60,
+      });
+      assert.equal(normalizeAttraction({
+         name: '  Conservation Carousel  ',
+         info_link: '  https://www.torontozoo.com/tickets/carousel  ',
+      }).infoLink, 'https://www.torontozoo.com/tickets/carousel');
+      assert.equal(normalizeTalk({ name: '  Amur Tiger  ' }).name, 'Amur Tiger');
+      assert.equal(normalizeWild({ name: '  African Rainforest  ' }).name, 'African Rainforest');
+   });
+   
+   test('timeline markers anchor to the preceding half-hour slot', () => {
+      const slotStarts = buildHalfHourSlotStarts(570, 1140);
+      const markersByAnchor = buildMarkersByAnchorSlot(
+         [
+            {
+               startMinutes: parseClockTimeMinutes('11:35'),
+               label: 'Arrival',
+               kind: TEST_ITINERARY_CONFIG.visitBoundaryEventTypes.arrival,
+            },
+         ],
+         slotStarts,
+         1140
+      );
+   
+      assert.equal(findTimelineAnchorSlot(parseClockTimeMinutes('11:35'), slotStarts), 690);
+      assert.equal(computeMarkerOffsetFraction(695, 690, 720), 1 / 6);
+      assert.deepEqual(markersByAnchor.get(690), [{
+         label: 'Arrival',
+         offsetFraction: 1 / 6,
+         kind: 'arrival',
+      }]);
+   });
+   test('computeStripHorizontalOffsetIndex shifts later overlapping strips', () => {
+      const pointPillVerticalSpanFraction = (
+         TIMELINE_POINT_PILL_HEIGHT_PX / TIMELINE_SLOT_HEIGHT_PX
+      );
+   
+      assert.equal(
+         computeStripHorizontalOffsetIndex([], 0.5, pointPillVerticalSpanFraction),
+         0
+      );
+      assert.equal(computeStripHorizontalOffsetIndex([
+         { offsetFraction: 0.5, horizontalOffsetIndex: 0 },
+      ], 0.67, pointPillVerticalSpanFraction), 1);
+      assert.equal(computeStripHorizontalOffsetIndex([
+         { offsetFraction: 0.5, horizontalOffsetIndex: 0 },
+         { offsetFraction: 0.67, horizontalOffsetIndex: 1 },
+      ], 0.6, pointPillVerticalSpanFraction), 2);
+   });
+   
+   test('computeTimelineHorizontalOffsetIndex shifts later overlapping placements', () => {
+      assert.equal(computeTimelineHorizontalOffsetIndex([], 0.5, 0.5), 0);
+      assert.equal(computeTimelineHorizontalOffsetIndex([
+         { offsetFraction: 0.5, durationFraction: 0.5, horizontalOffsetIndex: 0 },
+      ], 0.67, 0.5), 1);
+   });
+});

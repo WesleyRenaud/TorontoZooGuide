@@ -1,21 +1,16 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { makeActionsBar } from '../../scripts/itinerary/panel/components/actionsBar.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 test.describe('makeActionsBar', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
-      document.querySelector('.tzg-confirm')?.remove();
-      teardownDocument();
-      delete globalThis.window;
+   installDomTestHooks({
+      after: () => {
+         document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
+         document.querySelector('.tzg-confirm')?.remove();
+      },
    });
 
    test('dispatches edit itinerary when the edit button is clicked', () => {

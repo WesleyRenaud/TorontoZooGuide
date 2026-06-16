@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import {
    appendItineraryTimeMarkers,
@@ -7,7 +7,7 @@ import {
    appendTimelinePill,
 } from '../../scripts/itinerary/panel/components/dayPlannerTimelinePillAppend.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 function makeTimelineGridLine() {
    const timeline = createDomNode('div', 'itinerary-day-timeline');
@@ -19,15 +19,7 @@ function makeTimelineGridLine() {
 }
 
 test.describe('dayPlannerTimelinePillAppend', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
-   });
+   installDomTestHooks();
 
    test('appendTimelinePill adds an open pill to a point strip', () => {
       const { gridLine } = makeTimelineGridLine();

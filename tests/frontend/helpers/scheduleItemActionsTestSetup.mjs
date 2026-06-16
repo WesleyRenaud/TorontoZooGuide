@@ -1,14 +1,5 @@
-import {
-   afterEach,
-   beforeEach,
-} from 'node:test';
-
 import { updateItineraryErrorTypesFromConfig } from '../../../scripts/itinerary/itineraryErrorTypes.js';
-import {
-   installDocument,
-   installTestWindow,
-   teardownDocument,
-} from './domMock.mjs';
+import { installDomTestHooks } from './domTestSetup.mjs';
 
 export const MOCK_ERROR_TYPES = Object.freeze({
    SUCCESS: 'success',
@@ -24,18 +15,15 @@ export const MOCK_ERROR_TYPES = Object.freeze({
 export { mockJsonResponse } from './fetchMock.mjs';
 
 export function installScheduleItemActionsTestHooks() {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-      updateItineraryErrorTypesFromConfig({
-         errorTypes: MOCK_ERROR_TYPES,
-         suppressedErrorTypes: [],
-      });
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.fetch;
-      delete globalThis.window;
+   installDomTestHooks({
+      before: () => {
+         updateItineraryErrorTypesFromConfig({
+            errorTypes: MOCK_ERROR_TYPES,
+            suppressedErrorTypes: [],
+         });
+      },
+      after: () => {
+         delete globalThis.fetch;
+      },
    });
 }

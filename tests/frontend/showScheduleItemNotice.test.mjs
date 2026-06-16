@@ -1,21 +1,16 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { showScheduleItemNotice } from '../../scripts/itinerary/panel/showScheduleItemNotice.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 test.describe('showScheduleItemNotice', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      document.querySelector('.tzg-notice')?.__tzgPopupCleanup?.();
-      document.querySelector('.tzg-notice')?.remove();
-      teardownDocument();
-      delete globalThis.window;
+   installDomTestHooks({
+      after: () => {
+         document.querySelector('.tzg-notice')?.__tzgPopupCleanup?.();
+         document.querySelector('.tzg-notice')?.remove();
+      },
    });
 
    test('shows a notice popup on the itinerary panel mount element', () => {
