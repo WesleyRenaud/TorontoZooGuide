@@ -12,15 +12,15 @@ const TIME_PICKER_OPTIONS = {
    time_24hr: false,
 };
 
-function initDatePicker(inputEl, options = {}) {
-   return initFlatpickr(inputEl, {
+function initDatePicker(inputEl, options = {}, initFlatpickrFn = initFlatpickr) {
+   return initFlatpickrFn(inputEl, {
       ...DATE_PICKER_OPTIONS,
       ...options,
    });
 }
 
-export function initTimePicker(inputEl, options = {}) {
-   return initFlatpickr(inputEl, {
+export function initTimePicker(inputEl, options = {}, initFlatpickrFn = initFlatpickr) {
+   return initFlatpickrFn(inputEl, {
       ...TIME_PICKER_OPTIONS,
       ...options,
    });
@@ -52,15 +52,16 @@ export function initDateRangePickers(
    endDateEl,
    {
       minDate = 'today',
+      initFlatpickrFn = initFlatpickr,
    } = {}
 ) {
    const startPicker = initDatePicker(startDateEl, {
       minDate,
-   });
+   }, initFlatpickrFn);
 
    const endPicker = initDatePicker(endDateEl, {
       minDate,
-   });
+   }, initFlatpickrFn);
 
    bindEndDateMinDate(startDateEl, endPicker, {
       emptyMinDate: minDate,
@@ -76,15 +77,18 @@ export function initScheduleDateTimePickers(
    startDateEl,
    endDateEl,
    dailyStartTimeEl,
-   dailyEndTimeEl
+   dailyEndTimeEl,
+   {
+      initFlatpickrFn = initFlatpickr,
+   } = {}
 ) {
-   const startDatePicker = initDatePicker(startDateEl);
+   const startDatePicker = initDatePicker(startDateEl, {}, initFlatpickrFn);
 
-   const endDatePicker = initDatePicker(endDateEl);
+   const endDatePicker = initDatePicker(endDateEl, {}, initFlatpickrFn);
 
-   const dailyStartTimePicker = initTimePicker(dailyStartTimeEl);
+   const dailyStartTimePicker = initTimePicker(dailyStartTimeEl, {}, initFlatpickrFn);
 
-   const dailyEndTimePicker = initTimePicker(dailyEndTimeEl);
+   const dailyEndTimePicker = initTimePicker(dailyEndTimeEl, {}, initFlatpickrFn);
 
    bindEndDateMinDate(startDateEl, endDatePicker);
 

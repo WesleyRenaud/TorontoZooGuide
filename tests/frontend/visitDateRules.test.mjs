@@ -19,6 +19,9 @@ import {
    parseZooClockTimeMinutes,
    toISODate,
 } from '../../scripts/visitDates/visitDateRules.js';
+import { makeNoonDate } from './helpers/visitDateMock.mjs';
+
+const referenceToday = makeNoonDate(2026, 5, 15);
 
 test('parses a valid visit date at local noon', () => {
    const visitDate = parseLocalDate('2026-06-15');
@@ -68,6 +71,23 @@ test('normalizes and validates visit date range boundaries', () => {
    assert.equal(isWithinNextNDays(toISODate(tomorrow), 2), true);
    assert.equal(isWithinNextNDays(toISODate(afterMax), 2), false);
    assert.equal(isWithinNextNDays('bad-date', 2), false);
+});
+
+test('validates visit date range boundaries against a reference today', () => {
+   const yesterday = makeNoonDate(2026, 5, 14);
+   const tomorrow = makeNoonDate(2026, 5, 16);
+   const afterMax = makeNoonDate(2026, 5, 18);
+
+   assert.equal(isBeforeToday(yesterday, referenceToday), true);
+   assert.equal(isBeforeToday(tomorrow, referenceToday), false);
+   assert.equal(isAfterMaxDate(afterMax, 2, referenceToday), true);
+   assert.equal(isAfterMaxDate(tomorrow, 2, referenceToday), false);
+   assert.equal(isWithinNextNDays('2026-06-16', 2, referenceToday), true);
+   assert.equal(isWithinNextNDays('2026-06-18', 2, referenceToday), false);
+   assert.equal(
+      toISODate(getMaxDate(2, referenceToday)),
+      '2026-06-17'
+   );
 });
 
 test('clamps visit dates to the allowed range', () => {
