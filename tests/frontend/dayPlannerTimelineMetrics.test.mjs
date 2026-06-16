@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import {
    TIMELINE_PILL_STRIP_TOP_OFFSET_PX,
@@ -21,7 +21,7 @@ import {
    measurePointPillStripTopOffsetPx,
 } from '../../scripts/itinerary/panel/dayPlannerTimelineMetrics.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 function makeTimelineGridLine() {
    const timeline = createDomNode('div', 'itinerary-day-timeline');
@@ -134,14 +134,7 @@ test('computePointPillVerticalSpanFraction returns pill height relative to slot 
 });
 
 test.describe('day planner timeline measurements', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      teardownDocument();
-   });
+   installDomTestHooks();
 
    test('getTimelineSlotHeightPx reads the timeline slot height from CSS variables', () => {
       const { gridLine } = makeTimelineGridLine();

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import {
    buildRemovedItemsPopupSections,
@@ -8,7 +8,7 @@ import {
 import { updateItineraryAdjustmentTypesFromConfig } from '../../scripts/itinerary/itineraryAdjustmentTypes.js';
 import { buildSpeciesExhibitKey } from '../../scripts/itinerary/speciesExhibitKey.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 test('hasRemovedItemsPopupContent is re-exported from the content module', () => {
    assert.equal(
@@ -22,20 +22,15 @@ test('hasRemovedItemsPopupContent is re-exported from the content module', () =>
 });
 
 test.describe('removedItemsPopupContent', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-      updateItineraryAdjustmentTypesFromConfig({
-         adjustmentTypes: {
-            ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
-            DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
-         },
-      });
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
+   installDomTestHooks({
+      before: () => {
+         updateItineraryAdjustmentTypesFromConfig({
+            adjustmentTypes: {
+               ARRIVAL_TIME_ADJUSTED: 'arrivalTimeAdjusted',
+               DEPARTURE_TIME_ADJUSTED: 'departureTimeAdjusted',
+            },
+         });
+      },
    });
 
    test('buildRemovedItemsPopupSections renders adjustment and unscheduled sections', () => {

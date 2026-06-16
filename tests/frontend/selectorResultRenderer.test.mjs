@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test } from 'node:test';
 
 import {
    createDefaultSelectorRowLeftRenderer,
@@ -8,14 +8,13 @@ import {
    renderSelectorResults,
 } from '../../scripts/itinerary/selectors/base/resultRenderer.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 
-test('createSelectorThumb renders placeholder and image error fallback', () => {
-   installTestWindow();
-   installDocument();
+test.describe('selector result renderer', () => {
+   installDomTestHooks();
 
-   try {
+   test('createSelectorThumb renders placeholder and image error fallback', () => {
       const placeholder = createSelectorThumb();
       assert.equal(placeholder.className, 'itin-animal-thumb is-placeholder');
       assert.equal(placeholder.children.length, 0);
@@ -32,17 +31,9 @@ test('createSelectorThumb renders placeholder and image error fallback', () => {
 
       img.listeners.error?.();
       assert.equal(thumb.classList.contains('is-placeholder'), true);
-   }
-   finally {
-      teardownDocument();
-   }
-});
+   });
 
-test('createSelectorTextColumn renders subtitle and info link', () => {
-   installTestWindow();
-   installDocument();
-
-   try {
+   test('createSelectorTextColumn renders subtitle and info link', () => {
       const column = createSelectorTextColumn({
          title: 'Conservation Carousel',
          subtitle: 'Free With Admission',
@@ -61,17 +52,9 @@ test('createSelectorTextColumn renders subtitle and info link', () => {
          column.querySelector('.tooltip-link')?.textContent,
          APP_STRINGS.common.moreInfo
       );
-   }
-   finally {
-      teardownDocument();
-   }
-});
+   });
 
-test('renderSelectorResults renders rows and toggles selection state', () => {
-   installTestWindow();
-   installDocument();
-
-   try {
+   test('renderSelectorResults renders rows and toggles selection state', () => {
       const resultsEl = createDomNode('div', 'animal-results');
       const toggled = [];
       const selectedIds = new Set();
@@ -114,17 +97,9 @@ test('renderSelectorResults renders rows and toggles selection state', () => {
       assert.deepEqual(toggled, ['lion']);
       assert.equal(firstButton?.textContent, APP_STRINGS.itinerary.actions.remove);
       assert.equal(firstButton?.classList.contains('is-added'), true);
-   }
-   finally {
-      teardownDocument();
-   }
-});
+   });
 
-test('renderSelectorResults uses onBeforeToggleAdd before adding a row', () => {
-   installTestWindow();
-   installDocument();
-
-   try {
+   test('renderSelectorResults uses onBeforeToggleAdd before adding a row', () => {
       const resultsEl = createDomNode('div', 'animal-results');
       const proceedCalls = [];
 
@@ -154,17 +129,9 @@ test('renderSelectorResults uses onBeforeToggleAdd before adding a row', () => {
       });
 
       assert.deepEqual(proceedCalls, ['confirmed', 'toggled']);
-   }
-   finally {
-      teardownDocument();
-   }
-});
+   });
 
-test('renderSelectorResults renders empty state when there are no rows', () => {
-   installTestWindow();
-   installDocument();
-
-   try {
+   test('renderSelectorResults renders empty state when there are no rows', () => {
       const resultsEl = createDomNode('div', 'animal-results');
 
       renderSelectorResults({
@@ -180,8 +147,5 @@ test('renderSelectorResults renders empty state when there are no rows', () => {
       assert.equal(resultsEl.children.length, 1);
       assert.equal(resultsEl.children[0].className, 'itin-empty');
       assert.equal(resultsEl.children[0].textContent, 'No animals found');
-   }
-   finally {
-      teardownDocument();
-   }
+   });
 });

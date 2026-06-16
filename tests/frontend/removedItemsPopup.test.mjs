@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { showRemovedItemsPopup } from '../../scripts/itinerary/panel/components/removedItemsPopup.js';
 import { buildSpeciesExhibitKey } from '../../scripts/itinerary/speciesExhibitKey.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 const removedAnimal = {
    species: 'African Lion',
@@ -24,15 +24,7 @@ function clickOverlay(overlay) {
 }
 
 test.describe('showRemovedItemsPopup', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
-   });
+   installDomTestHooks();
 
    test('returns early without a mount element or popup content', () => {
       const mount = createDomNode('div');

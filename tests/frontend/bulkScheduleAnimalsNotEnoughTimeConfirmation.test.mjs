@@ -7,7 +7,8 @@ import {
    showBulkScheduleAnimalsNotEnoughTimeNotice,
 } from '../../scripts/itinerary/panel/bulkScheduleAnimalsNotEnoughTimeConfirmation.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { cleanupNoticePopup } from './helpers/confirmPopupTestSetup.mjs';
 
 test('hasBulkScheduleAnimalsNotEnoughTimeIssue detects backend issue type', () => {
    assert.equal(hasBulkScheduleAnimalsNotEnoughTimeIssue([]), false);
@@ -23,11 +24,14 @@ test('hasBulkScheduleAnimalsNotEnoughTimeIssue detects backend issue type', () =
    );
 });
 
-test('showBulkScheduleAnimalsNotEnoughTimeNotice uses accept-only notice popup', () => {
-   installTestWindow();
-   installDocument();
+test.describe('bulkScheduleAnimalsNotEnoughTimeConfirmation', () => {
+   installDomTestHooks({
+      after: () => {
+         cleanupNoticePopup();
+      },
+   });
 
-   try {
+   test('showBulkScheduleAnimalsNotEnoughTimeNotice uses accept-only notice popup', () => {
       const confirmCalls = [];
 
       showBulkScheduleAnimalsNotEnoughTimeNotice({
@@ -53,10 +57,5 @@ test('showBulkScheduleAnimalsNotEnoughTimeNotice uses accept-only notice popup',
       okButton?.click();
 
       assert.deepEqual(confirmCalls, ['confirmed']);
-   }
-   finally {
-      document.querySelector('.tzg-notice')?.__tzgPopupCleanup?.();
-      document.querySelector('.tzg-notice')?.remove();
-      teardownDocument();
-   }
+   });
 });

@@ -3,19 +3,14 @@ import test from 'node:test';
 
 import { showScheduleItemModule } from '../../scripts/itinerary/panel/components/showScheduleItemModule.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 test.describe('showScheduleItemModule', () => {
-   test.beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   test.afterEach(() => {
-      document.querySelector('.schedule-item-module')?.__tzgPopupCleanup?.();
-      document.querySelector('.schedule-item-module')?.remove?.();
-      teardownDocument();
-      delete globalThis.window;
+   installDomTestHooks({
+      after: () => {
+         document.querySelector('.schedule-item-module')?.__tzgPopupCleanup?.();
+         document.querySelector('.schedule-item-module')?.remove?.();
+      },
    });
 
    test('mounts the schedule popup with form fields', () => {

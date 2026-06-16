@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { createItineraryDateSelectorController } from '../../scripts/itinerary/selectors/dateSelector.js';
 import { buildDateSelectorView } from '../../scripts/itinerary/selectors/dateSelectorView.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
-
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 import { makeNoonDate } from './helpers/visitDateMock.mjs';
 
 const floor = makeNoonDate(2026, 5, 15);
@@ -20,14 +20,13 @@ function createStubPicker() {
 }
 
 test.describe('dateSelector', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
+   installDomTestHooks({
+      before: () => {
+         globalThis.localStorage = createLocalStorageMock();
+      },
+      after: () => {
+         delete globalThis.localStorage;
+      },
    });
 
    test('buildDateSelectorView renders the visit-date selector shell', () => {

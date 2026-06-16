@@ -7,7 +7,7 @@ import {
 } from '../../scripts/search/exploreFilter.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 function createCheckboxOption({ value, label, checked = false }) {
    const labelEl = createDomNode('label');
@@ -120,11 +120,10 @@ test('buildExploreSearchIncludeFlags includes zoomobile stations when a route is
    );
 });
 
-test('initExploreTypeFilter returns fallback state when type filter is missing', () => {
-   installTestWindow();
-   installDocument();
+test.describe('initExploreTypeFilter DOM integration', () => {
+   installDomTestHooks();
 
-   try {
+   test('initExploreTypeFilter returns fallback state when type filter is missing', () => {
       const filter = initExploreTypeFilter({
          multiSelect: null,
       });
@@ -141,17 +140,9 @@ test('initExploreTypeFilter returns fallback state when type filter is missing',
          includeWildEncounters: false,
          includeZoomobileStations: false,
       });
-   }
-   finally {
-      teardownDocument();
-   }
-});
+   });
 
-test('initExploreTypeFilter tracks checkbox selection and zoomobile route', () => {
-   installTestWindow();
-   installDocument();
-
-   try {
+   test('initExploreTypeFilter tracks checkbox selection and zoomobile route', () => {
       const changeCalls = [];
       const animalsUncheckedCalls = [];
       const { multiSelect, checkboxes, chipContainer } = createExploreTypeFilterDom({
@@ -204,29 +195,21 @@ test('initExploreTypeFilter tracks checkbox selection and zoomobile route', () =
       assert.deepEqual(filter.getSelectedTypes(), ['restaurant', 'zoomobileRoute']);
       assert.deepEqual(changeCalls, ['changed', 'changed']);
       assert.equal(chipContainer.children[0].textContent, 'Restaurants');
-   }
-   finally {
-      teardownDocument();
-   }
-});
-
-test('initExploreTypeFilter toggles dropdown open state and closes on outside click', () => {
-   installTestWindow();
-   installDocument();
-
-   const documentListeners = {};
-   const originalAddEventListener = document.addEventListener;
-
-   document.addEventListener = (eventName, handler) => {
-      documentListeners[eventName] = handler;
-      originalAddEventListener(eventName, handler);
-   };
-
-   const { multiSelect, button } = createExploreTypeFilterDom({
-      selected: ['animal'],
    });
 
-   try {
+   test('initExploreTypeFilter toggles dropdown open state and closes on outside click', () => {
+      const documentListeners = {};
+      const originalAddEventListener = document.addEventListener;
+
+      document.addEventListener = (eventName, handler) => {
+         documentListeners[eventName] = handler;
+         originalAddEventListener(eventName, handler);
+      };
+
+      const { multiSelect, button } = createExploreTypeFilterDom({
+         selected: ['animal'],
+      });
+
       initExploreTypeFilter({
          multiSelect,
          getZoomobileRoute: () => 'none',
@@ -241,8 +224,5 @@ test('initExploreTypeFilter toggles dropdown open state and closes on outside cl
 
       documentListeners.click?.();
       assert.equal(multiSelect.classList.contains('open'), false);
-   }
-   finally {
-      teardownDocument();
-   }
+   });
 });

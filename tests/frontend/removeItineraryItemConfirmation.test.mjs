@@ -3,13 +3,17 @@ import { test } from 'node:test';
 
 import { showRemoveItineraryItemConfirmation } from '../../scripts/itinerary/panel/removeItineraryItemConfirmation.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { cleanupConfirmPopup } from './helpers/confirmPopupTestSetup.mjs';
 
-test('showRemoveItineraryItemConfirmation uses confirm popup without do-not-show-again', () => {
-   installTestWindow();
-   installDocument();
+test.describe('removeItineraryItemConfirmation', () => {
+   installDomTestHooks({
+      after: () => {
+         cleanupConfirmPopup();
+      },
+   });
 
-   try {
+   test('showRemoveItineraryItemConfirmation uses confirm popup without do-not-show-again', () => {
       const confirmCalls = [];
 
       showRemoveItineraryItemConfirmation({
@@ -33,10 +37,5 @@ test('showRemoveItineraryItemConfirmation uses confirm popup without do-not-show
       confirmButton?.click();
 
       assert.deepEqual(confirmCalls, ['confirmed']);
-   }
-   finally {
-      document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
-      document.querySelector('.tzg-confirm')?.remove();
-      teardownDocument();
-   }
+   });
 });

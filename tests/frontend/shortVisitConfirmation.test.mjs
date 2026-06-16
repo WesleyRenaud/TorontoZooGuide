@@ -1,15 +1,19 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test } from 'node:test';
 
 import { showShortVisitConfirmation } from '../../scripts/itinerary/panel/shortVisitConfirmation.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { cleanupConfirmPopup } from './helpers/confirmPopupTestSetup.mjs';
 
-test('showShortVisitConfirmation uses do-not-show-again confirm popup on itinerary panel', () => {
-   installTestWindow();
-   installDocument();
+test.describe('shortVisitConfirmation', () => {
+   installDomTestHooks({
+      after: () => {
+         cleanupConfirmPopup();
+      },
+   });
 
-   try {
+   test('showShortVisitConfirmation uses do-not-show-again confirm popup on itinerary panel', () => {
       const confirmCalls = [];
       const cancelCalls = [];
 
@@ -39,10 +43,5 @@ test('showShortVisitConfirmation uses do-not-show-again confirm popup on itinera
 
       assert.deepEqual(cancelCalls, ['cancelled']);
       assert.deepEqual(confirmCalls, ['confirmed']);
-   }
-   finally {
-      document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
-      document.querySelector('.tzg-confirm')?.remove();
-      teardownDocument();
-   }
+   });
 });

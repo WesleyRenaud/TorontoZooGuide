@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import {
@@ -8,7 +8,7 @@ import {
 } from '../../scripts/itinerary/panel/scheduleTimeConflictResolution.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createConflictSelection } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 const firstEncounter = {
    name: 'From Howls to Honks',
@@ -155,16 +155,11 @@ test('resolveScheduleTimeConflictSelection resolves immediately when every group
 });
 
 test.describe('createScheduleTimeConflictResolutionConfirmations', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
-      document.querySelector('.tzg-confirm')?.remove();
-      teardownDocument();
-      delete globalThis.window;
+   installDomTestHooks({
+      after: () => {
+         document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
+         document.querySelector('.tzg-confirm')?.remove();
+      },
    });
 
    test('showProceedWithoutSelection uses a no-op confirm handler by default', () => {
