@@ -2,20 +2,7 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import { createItineraryWizardState } from '../../scripts/itinerary/wizard/state.js';
-
-function createLocalStorageMock() {
-   const values = new Map();
-
-   return {
-      getItem: (key) => values.get(key) ?? null,
-      setItem: (key, value) => {
-         values.set(key, String(value));
-      },
-      removeItem: (key) => {
-         values.delete(key);
-      },
-   };
-}
+import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 
 beforeEach(() => {
    globalThis.localStorage = createLocalStorageMock();

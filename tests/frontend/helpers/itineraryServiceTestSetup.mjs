@@ -3,26 +3,13 @@ import {
    beforeEach,
 } from 'node:test';
 
+import { createLocalStorageMock } from './localStorageMock.mjs';
 import { updateItineraryErrorTypesFromConfig } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import {
    installDocument,
    installTestWindow,
    teardownDocument,
 } from './domMock.mjs';
-
-function createLocalStorageMock() {
-   const values = new Map();
-
-   return {
-      getItem: (key) => values.get(key) ?? null,
-      setItem: (key, value) => {
-         values.set(key, String(value));
-      },
-      removeItem: (key) => {
-         values.delete(key);
-      },
-   };
-}
 
 export function installItineraryServiceTestHooks() {
    beforeEach(() => {

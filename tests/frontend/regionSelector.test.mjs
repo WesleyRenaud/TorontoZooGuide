@@ -13,20 +13,7 @@ import {
    installTestWindow,
    teardownDocument,
 } from './helpers/domMock.mjs';
-
-function createLocalStorageMock() {
-   const values = new Map();
-
-   return {
-      getItem: (key) => values.get(key) ?? null,
-      setItem: (key, value) => {
-         values.set(key, String(value));
-      },
-      removeItem: (key) => {
-         values.delete(key);
-      },
-   };
-}
+import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 
 function findChoiceButton(root, { action, exhibitName = '', regionName = '' } = {}) {
    const stack = [root];

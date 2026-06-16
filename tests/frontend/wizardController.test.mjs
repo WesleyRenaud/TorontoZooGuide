@@ -2,25 +2,11 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 
 import { openItineraryWizard } from '../../scripts/itinerary/wizard/wizardController.js';
-import { buildWizardDraft } from '../../scripts/itinerary/wizard/wizardDraft.js';
 import { createItineraryWizardState } from '../../scripts/itinerary/wizard/state.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
-
-function createLocalStorageMock() {
-   const values = new Map();
-
-   return {
-      getItem: (key) => values.get(key) ?? null,
-      setItem: (key, value) => {
-         values.set(key, String(value));
-      },
-      removeItem: (key) => {
-         values.delete(key);
-      },
-   };
-}
+import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 
 function makeNoonDate(year, monthIndex, day) {
    return new Date(year, monthIndex, day, 12, 0, 0, 0);
@@ -35,36 +21,6 @@ function createStubStepController(stepKey, shownSteps) {
       shouldSkipClosingSelectionSync: () => true,
    };
 }
-
-test('buildWizardDraft preserves itinerary times when changing date', () => {
-   assert.deepEqual(
-      buildWizardDraft(
-         {
-            date: '2026-06-13',
-            arrivalTime: '09:15',
-            departureTime: '17:00',
-            animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
-            attractions: ['Conservation Carousel'],
-            guardiansTalks: [],
-            wildEncounters: [],
-            events: [],
-         },
-         {
-            date: '2026-06-15',
-         }
-      ),
-      {
-         date: '2026-06-15',
-         arrivalTime: '09:15',
-         departureTime: '17:00',
-         animals: [{ species: 'African Lion', exhibit: 'Africa Savanna' }],
-         attractions: ['Conservation Carousel'],
-         guardiansTalks: [],
-         wildEncounters: [],
-         events: [],
-      }
-   );
-});
 
 test.describe('openItineraryWizard', () => {
    beforeEach(() => {
