@@ -10,17 +10,9 @@ import {
    hasActiveItinerary,
 } from '../../scripts/itinerary/itineraryService.js';
 import { installItineraryServiceTestHooks } from './helpers/itineraryServiceTestSetup.mjs';
+import { mockJsonResponse } from './helpers/fetchMock.mjs';
 
 installItineraryServiceTestHooks();
-
-function mockJsonResponse(body) {
-   return {
-      ok: true,
-      status: 200,
-      statusText: 'OK',
-      text: async () => JSON.stringify(body),
-   };
-}
 
 test('getItinerary normalizes saved itinerary responses', async () => {
    globalThis.fetch = async (url) => {

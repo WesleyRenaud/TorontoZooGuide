@@ -9,6 +9,7 @@ import {
    normalizeVisitBoundaryEventTypes,
    requiresRemoveItineraryItemConfirmation,
 } from '../../scripts/itinerary/itineraryEventTypes.js';
+import { mockJsonResponse } from './helpers/fetchMock.mjs';
 
 const BACKEND_ITINERARY_CONFIG = {
    animal_visibility_change_threshold: 20,
@@ -35,15 +36,6 @@ const BACKEND_ITINERARY_CONFIG = {
 afterEach(() => {
    delete globalThis.fetch;
 });
-
-function mockJsonResponse(payload) {
-   return {
-      ok: true,
-      status: 200,
-      statusText: 'OK',
-      text: async () => JSON.stringify(payload),
-   };
-}
 
 test('getItineraryRequest maps visit boundary event types from backend config', async () => {
    globalThis.fetch = async () => mockJsonResponse({

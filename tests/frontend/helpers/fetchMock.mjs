@@ -1,9 +1,20 @@
-export function mockJsonResponse(payload) {
+export function mockJsonResponse(
+   payload,
+   { ok = true, status = 200, statusText = 'OK' } = {}
+) {
    return {
-      ok: true,
-      status: 200,
-      statusText: 'OK',
+      ok,
+      status,
+      statusText,
       text: async () => JSON.stringify(payload),
+   };
+}
+
+export function mockFetchJsonResponse(body) {
+   return {
+      async json() {
+         return body;
+      },
    };
 }
 
