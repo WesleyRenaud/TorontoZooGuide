@@ -2,19 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { fetchWeatherTempForDate } from '../../scripts/api/weatherApi.js';
+import { mockFetchJsonResponse } from './helpers/fetchMock.mjs';
 import {
    addLocalCalendarDays,
    getToday,
    toISODate,
 } from '../../scripts/visitDates/visitDateRules.js';
-
-function mockJsonResponse(body) {
-   return {
-      async json() {
-         return body;
-      },
-   };
-}
 
 test('fetches current temperature for today', async () => {
    const today = toISODate(getToday());
@@ -23,7 +16,7 @@ test('fetches current temperature for today', async () => {
 
    globalThis.fetch = async (url) => {
       urls.push(String(url));
-      return mockJsonResponse({
+      return mockFetchJsonResponse({
          main: {
             temp: 18.5,
          },
@@ -46,7 +39,7 @@ test('fetches averaged forecast temperature for future dates', async () => {
 
    globalThis.fetch = async (url) => {
       urls.push(String(url));
-      return mockJsonResponse({
+      return mockFetchJsonResponse({
          list: [
             { dt_txt: `${tomorrow} 09:00:00`, main: { temp: 10 } },
             { dt_txt: `${tomorrow} 12:00:00`, main: { temp: 20 } },

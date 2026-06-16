@@ -15,6 +15,7 @@ import {
    setItineraryRequest,
    suppressItineraryWarningRequest,
 } from '../../scripts/api/itineraryApi.js';
+import { mockJsonResponse } from './helpers/fetchMock.mjs';
 
 const MOCK_ITINERARY_ERROR_TYPES = Object.freeze({
    SUCCESS: 'success',
@@ -75,15 +76,6 @@ function mockItineraryConfigResponse(overrides = {}) {
          itinerary_statuses: overrides.statuses ?? [],
          suppressed_error_types: overrides.suppressedErrorTypes ?? [],
       },
-   };
-}
-
-function mockJsonResponse(payload, { ok = true, status = 200, statusText = 'OK' } = {}) {
-   return {
-      ok,
-      status,
-      statusText,
-      text: async () => JSON.stringify(payload),
    };
 }
 
