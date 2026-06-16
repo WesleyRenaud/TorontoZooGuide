@@ -5,6 +5,7 @@ import { createRegionSelectorState } from '../../scripts/itinerary/selectors/reg
 import { ANIMALS_KEY, DATE_KEY, SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
 import { removeAnimalFromItineraryAnimalDraft } from '../../scripts/itinerary/draftStorage.js';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
+import { createFetchMock } from './helpers/fetchMock.mjs';
 
 beforeEach(() => {
    globalThis.localStorage = createLocalStorageMock();
@@ -18,20 +19,16 @@ afterEach(() => {
 test('getAnimalsByExhibit receives month and day from stored visit date', async () => {
    localStorage.setItem(DATE_KEY, '2026-08-12');
 
-   globalThis.fetch = async (url, options) => {
-      assert.equal(url, '/get-animals-by-exhibit');
-      const body = JSON.parse(options.body);
-      assert.equal(body.month, 'AUG');
-      assert.equal(body.day, 12);
-      assert.ok(Array.isArray(body.exhibitsToInclude));
+   globalThis.fetch = createFetchMock({
+      '/get-animals-by-exhibit': (_url, options) => {
+         const body = JSON.parse(options.body);
+         assert.equal(body.month, 'AUG');
+         assert.equal(body.day, 12);
+         assert.ok(Array.isArray(body.exhibitsToInclude));
 
-      return {
-         ok: true,
-         status: 200,
-         statusText: 'OK',
-         text: async () => '{"animals":[]}',
-      };
-   };
+         return { animals: [] };
+      },
+   });
 
    const state = createRegionSelectorState();
    state.setRegions([{ name: 'R1', exhibits: ['E1'] }]);

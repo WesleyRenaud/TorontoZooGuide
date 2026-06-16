@@ -21,14 +21,7 @@ export const MOCK_ERROR_TYPES = Object.freeze({
    BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED: 'bulkScheduleAnimalsAlreadyScheduled',
 });
 
-export function mockJsonResponse(payload) {
-   return {
-      ok: true,
-      status: 200,
-      statusText: 'OK',
-      text: async () => JSON.stringify(payload),
-   };
-}
+export { mockJsonResponse } from './fetchMock.mjs';
 
 export function installScheduleItemActionsTestHooks() {
    beforeEach(() => {

@@ -10,9 +10,7 @@ import {
    toISODate,
 } from '../../scripts/visitDates/visitDateRules.js';
 
-function makeNoonDate(year, monthIndex, day) {
-   return new Date(year, monthIndex, day, 12, 0, 0, 0);
-}
+import { makeNoonDate } from './helpers/visitDateMock.mjs';
 
 const floor = makeNoonDate(2026, 5, 15);
 
