@@ -1928,4 +1928,104 @@ test.describe('itinerary panel rows', () => {
       );
    });
 
+   test('buildAnimalRows omits schedule actions for already-scheduled animals', () => {
+      const scheduleCalls = [];
+      const [row] = buildAnimalRows([
+         {
+            species: 'African Lion',
+            exhibit: 'Africa Savanna',
+            start_time: '1:00 PM',
+            end_time: '1:30 PM',
+         },
+      ], {
+         onScheduleItem: (pick) => {
+            scheduleCalls.push(pick);
+         },
+         onUnscheduleItem: () => {},
+      });
+      const buttonLabels = [...row.querySelectorAll('.itin-panel-item-action-btn')]
+         .map((button) => button.textContent);
+
+      assert.equal(buttonLabels.includes('Schedule'), false);
+      assert.equal(scheduleCalls.length, 0);
+   });
+
+   test('buildAnimalRows omits unschedule actions for unscheduled animals', () => {
+      const [row] = buildAnimalRows([
+         {
+            species: 'Giant Panda',
+            exhibit: 'Eurasia Wilds',
+         },
+      ], {
+         onUnscheduleItem: () => {},
+      });
+      const buttonLabels = [...row.querySelectorAll('.itin-panel-item-action-btn')]
+         .map((button) => button.textContent);
+
+      assert.equal(buttonLabels.includes('Unschedule'), false);
+   });
+
+   test('buildAttractionRows omits row actions when the attraction id is blank', () => {
+      const [row] = buildAttractionRows([
+         {
+            name: '   ',
+            start_time: '1:00 PM',
+            end_time: '1:30 PM',
+         },
+      ], {
+         onUnscheduleItem: () => {},
+         onRemoveItem: () => {},
+      });
+
+      assert.equal(row.querySelectorAll('.itin-panel-item-action-btn').length, 0);
+   });
+
+   test('buildGuardiansRows omits remove action when the talk name is blank', () => {
+      const removeCalls = [];
+      const [row] = buildGuardiansRows([
+         {
+            name: '   ',
+            location: 'Eurasia Wilds',
+         },
+      ], {
+         onRemoveItem: (request) => {
+            removeCalls.push(request);
+         },
+      });
+
+      assert.equal(row.querySelectorAll('.itin-panel-item-action-btn').length, 0);
+      assert.equal(removeCalls.length, 0);
+   });
+
+   test('buildAnimalRows omits image src when asset path segments are invalid', () => {
+      const [row] = buildAnimalRows([
+         {
+            species: '!!!',
+            exhibit: 'Africa Savanna',
+         },
+      ]);
+
+      assert.equal(imageSrcFor(row), '');
+   });
+
+   test('buildAttractionRows renders a more-info link when infoLink is present', () => {
+      const opened = [];
+
+      globalThis.window.open = (url) => {
+         opened.push(url);
+      };
+
+      const [row] = buildAttractionRows([
+         {
+            name: 'Conservation Carousel',
+            info_link: 'https://www.torontozoo.com/tickets/carousel',
+         },
+      ]);
+      const link = row.querySelector('.itin-panel-link');
+
+      assert.ok(link);
+      link.click();
+      assert.deepEqual(opened, ['https://www.torontozoo.com/tickets/carousel']);
+   });
+
 });
