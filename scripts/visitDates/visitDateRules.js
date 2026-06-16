@@ -241,9 +241,11 @@ export function addLocalCalendarDays(localNoonDate, deltaDays) {
 export function clampToAllowedVisitDate(
    d,
    daysAhead = DEFAULT_DAYS_AHEAD,
-   earliestNoon = null
+   earliestNoon = null,
+   referenceToday = null
 ) {
-   const { today: calendarToday, maxDate } = createAllowedVisitDateRange(daysAhead);
+   const calendarToday = normalizeDate(referenceToday) ?? getToday();
+   const maxDate = addLocalCalendarDays(calendarToday, daysAhead);
    const floor = normalizeDate(earliestNoon) ?? calendarToday;
    const normalized = normalizeDate(d);
 

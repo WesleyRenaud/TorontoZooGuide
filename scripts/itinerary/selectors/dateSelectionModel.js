@@ -3,10 +3,10 @@ import {
    setStoredItineraryDate,
 } from '../draftStorage.js';
 import {
+   addLocalCalendarDays,
    clampToAllowedVisitDate,
    DEFAULT_DAYS_AHEAD,
    getToday,
-   isAfterMaxDate,
    normalizeDate,
    toISODate,
 } from '../../visitDates/visitDateRules.js';
@@ -65,7 +65,7 @@ export function createDateSelectionModel({
          return false;
       }
 
-      if (isAfterMaxDate(candidate, daysAhead)) {
+      if (candidate > addLocalCalendarDays(getTodayFn(), daysAhead)) {
          return false;
       }
 
@@ -115,7 +115,7 @@ export function createDateSelectionModel({
       const savedDate = readSavedItineraryVisitDate(getStoredDate);
       const selectedDate = initialDate || savedDate || floor;
 
-      return clampToAllowedVisitDate(selectedDate, daysAhead, floor);
+      return clampToAllowedVisitDate(selectedDate, daysAhead, floor, getTodayFn());
    }
 
    function getDate() {
