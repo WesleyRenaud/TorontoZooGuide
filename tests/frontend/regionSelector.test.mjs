@@ -14,56 +14,11 @@ import {
    teardownDocument,
 } from './helpers/domMock.mjs';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
-
-function findChoiceButton(root, { action, exhibitName = '', regionName = '' } = {}) {
-   const stack = [root];
-
-   while (stack.length > 0) {
-      const node = stack.shift();
-
-      if (
-         node.dataset?.action === action
-         && (!exhibitName || node.dataset.exhibit === exhibitName)
-         && (!regionName || node.dataset.region === regionName)
-      ) {
-         return node;
-      }
-
-      stack.push(...(node.children ?? []));
-   }
-
-   return null;
-}
-
-function clickExhibitToggle(resultsEl, exhibitName) {
-   const button = findChoiceButton(resultsEl, {
-      action: 'toggle-exhibit',
-      exhibitName,
-   });
-
-   assert.ok(button, `Expected exhibit toggle for ${exhibitName}`);
-
-   dispatchResultsClick(resultsEl, button);
-}
-
-function clickRegionToggle(resultsEl, regionName) {
-   const button = findChoiceButton(resultsEl, {
-      action: 'toggle-region',
-      regionName,
-   });
-
-   assert.ok(button, `Expected region toggle for ${regionName}`);
-
-   dispatchResultsClick(resultsEl, button);
-}
-
-function dispatchResultsClick(resultsEl, button) {
-   resultsEl.listeners.click({
-      target: button,
-      preventDefault() {},
-      stopPropagation() {},
-   });
-}
+import {
+   clickExhibitToggle,
+   clickRegionToggle,
+} from './helpers/regionSelectorDom.mjs';
+import { mockRegionSelectorFetch } from './helpers/fetchMock.mjs';
 
 async function flushAsyncWork() {
    await new Promise((resolve) => {
@@ -72,33 +27,6 @@ async function flushAsyncWork() {
    await new Promise((resolve) => {
       setImmediate(resolve);
    });
-}
-
-function mockRegionSelectorFetch({
-   regions = [{ name: 'Africa', exhibits: ['Africa Savanna'] }],
-   animals = [],
-} = {}) {
-   globalThis.fetch = async (url) => {
-      if (url === '/get-exhibits-by-region') {
-         return {
-            ok: true,
-            status: 200,
-            statusText: 'OK',
-            text: async () => JSON.stringify({ regions }),
-         };
-      }
-
-      if (url === '/get-animals-by-exhibit') {
-         return {
-            ok: true,
-            status: 200,
-            statusText: 'OK',
-            text: async () => JSON.stringify({ animals }),
-         };
-      }
-
-      throw new Error(`Unexpected fetch url: ${url}`);
-   };
 }
 
 beforeEach(() => {
@@ -175,7 +103,7 @@ test('region selector rebuilds animals after re-selecting an exhibit in the UI',
       JSON.stringify(['Africa Savanna'])
    );
 
-   mockRegionSelectorFetch({
+   globalThis.fetch = mockRegionSelectorFetch({
       animals: [
          { species: 'African Lion', exhibit: 'Africa Savanna' },
          { species: 'African Penguin', exhibit: 'Africa Savanna' },

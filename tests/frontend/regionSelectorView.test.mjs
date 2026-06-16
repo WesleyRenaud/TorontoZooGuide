@@ -7,15 +7,8 @@ import {
 } from '../../scripts/itinerary/selectors/regionSelector/view.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
+import { dispatchResultsClick } from './helpers/regionSelectorDom.mjs';
 import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
-
-function dispatchResultsClick(resultsEl, button) {
-   resultsEl.listeners.click({
-      target: button,
-      preventDefault() {},
-      stopPropagation() {},
-   });
-}
 
 test.describe('region selector view', () => {
    beforeEach(() => {

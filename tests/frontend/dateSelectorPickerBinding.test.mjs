@@ -3,17 +3,16 @@ import test from 'node:test';
 
 import { createDatePickerBinding } from '../../scripts/itinerary/selectors/dateSelectorPickerBinding.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-
-function makeNoonDate(year, monthIndex, day) {
-   return new Date(year, monthIndex, day, 12, 0, 0, 0);
-}
+import { makeNoonDate } from './helpers/visitDateMock.mjs';
 
 const floor = makeNoonDate(2026, 5, 15);
+const maxDate = makeNoonDate(2026, 5, 17);
 
 test('createDatePickerBinding wires flatpickr callbacks into the selection model', () => {
    const inputEl = createDomNode('input', 'itin-date-input');
    const syncedDates = [];
    let currentDate = floor;
+   let syncedMaxDate = null;
    const flatpickrCalls = [];
 
    const binding = createDatePickerBinding({
@@ -33,6 +32,7 @@ test('createDatePickerBinding wires flatpickr callbacks into the selection model
       },
       earliestDateFloor: floor,
       getTodayFn: () => floor,
+      getMaxDateFn: () => maxDate,
       daysAhead: 2,
       initFlatpickr: (_input, options) => {
          const instance = {
@@ -41,6 +41,10 @@ test('createDatePickerBinding wires flatpickr callbacks into the selection model
                flatpickrCalls.push('close');
             },
             set(property, value) {
+               if (property === 'maxDate') {
+                  syncedMaxDate = value;
+               }
+
                flatpickrCalls.push(`${property}:${value}`);
             },
             setDate() {},
@@ -61,5 +65,6 @@ test('createDatePickerBinding wires flatpickr callbacks into the selection model
    assert.equal(currentDate.getDate(), 16);
    assert.match(inputEl.value, /June 16, 2026/);
    assert.equal(syncedDates.length, 3);
+   assert.equal(syncedMaxDate, maxDate);
    assert.ok(flatpickrCalls.includes('close'));
 });

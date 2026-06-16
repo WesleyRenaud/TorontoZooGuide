@@ -6,9 +6,7 @@ import {
    resolveEffectiveItineraryHoursDateIso,
 } from '../../scripts/itinerary/visitDateEarliest.js';
 
-function makeNoonDate(year, monthIndex, day) {
-   return new Date(year, monthIndex, day, 12, 0, 0, 0);
-}
+import { makeNoonDate } from './helpers/visitDateMock.mjs';
 
 const today = makeNoonDate(2026, 5, 15);
 const tomorrow = makeNoonDate(2026, 5, 16);

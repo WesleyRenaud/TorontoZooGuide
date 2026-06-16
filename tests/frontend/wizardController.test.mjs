@@ -7,10 +7,7 @@ import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
-
-function makeNoonDate(year, monthIndex, day) {
-   return new Date(year, monthIndex, day, 12, 0, 0, 0);
-}
+import { makeNoonDate } from './helpers/visitDateMock.mjs';
 
 function createStubStepController(stepKey, shownSteps) {
    return {

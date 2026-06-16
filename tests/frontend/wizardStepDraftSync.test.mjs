@@ -6,10 +6,7 @@ import {
    resolveDateStepDraftUpdate,
    shouldSyncSelectionStepDraft,
 } from '../../scripts/itinerary/wizard/wizardStepDraftSync.js';
-
-function makeNoonDate(year, monthIndex, day) {
-   return new Date(year, monthIndex, day, 12, 0, 0, 0);
-}
+import { makeNoonDate } from './helpers/visitDateMock.mjs';
 
 test('resolveDateStepDraftUpdate returns null for invalid or unchanged dates', () => {
    assert.equal(

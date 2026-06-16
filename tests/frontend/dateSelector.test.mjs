@@ -7,9 +7,7 @@ import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
 
-function makeNoonDate(year, monthIndex, day) {
-   return new Date(year, monthIndex, day, 12, 0, 0, 0);
-}
+import { makeNoonDate } from './helpers/visitDateMock.mjs';
 
 const floor = makeNoonDate(2026, 5, 15);
 

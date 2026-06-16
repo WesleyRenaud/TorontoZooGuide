@@ -3,11 +3,8 @@ import { afterEach, beforeEach, test } from 'node:test';
 
 import { initVisitDateFlatpickr } from '../../scripts/visitDates/visitDateFlatpickr.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
+import { makeNoonDate } from './helpers/visitDateMock.mjs';
 import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
-
-function makeNoonDate(year, monthIndex, day) {
-   return new Date(year, monthIndex, day, 12, 0, 0, 0);
-}
 
 const floor = makeNoonDate(2026, 5, 15);
 
