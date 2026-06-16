@@ -1,8 +1,8 @@
 # Toronto Zoo Guide
 
-Version 1.2.0
+Version 1.3.0
 
-Toronto Zoo Guide is a customer-facing web app designed to help guests plan and navigate a day at the Toronto Zoo. Version 1.2.0 focuses on four core experiences:
+Toronto Zoo Guide is a customer-facing web app designed to help guests plan and navigate a day at the Toronto Zoo. Version 1.3.0 focuses on four core experiences:
 
 - an interactive map for live exploration of the zoo grounds
 - date-based updates for guest-facing notices and closures
@@ -13,18 +13,19 @@ This README covers the guest-facing functionality in those areas. It intentional
 
 For release history, see [CHANGELOG.md](CHANGELOG.md).
 
-## Version 1.2.0 Highlights
+## Version 1.3.0 Highlights
 
-Version 1.2.0 expands the date-aware planning experience.
+Version 1.3.0 turns the itinerary day planner into a full visit scheduling experience.
 
 Highlights include:
 
-- an itinerary day planner that places saved items into a schedule-aware view
-- scheduled Meet the Guardians talks and Wild Encounters in itinerary planning
-- support for talks with different times on different weekdays
-- post-close map and itinerary date behavior based on live zoo hours
-- current-day weather handling for animal visibility on the map
-- more precise opening schedules and closure overrides for attractions, restaurants, and gift shops
+- list and day planner panel views with URL state for reviewing a saved plan by section or by time
+- arrival and departure times with zoo-hours validation, early-admission support, and short-visit warnings
+- timeline scheduling for animals, attractions, Meet the Guardians talks, and Wild Encounters
+- schedule, unschedule, and remove controls with confirmation dialogs and conflict warnings
+- animal name links in itinerary and map search results, plus richer search-result images
+- improved itinerary validation and diff handling for changed dates, reduced visibility, and removed items
+- partial indoor-only or outdoor-only exhibit closure support for more precise availability
 
 ## What the App Helps Visitors Do
 
@@ -169,7 +170,8 @@ Search behavior includes:
 
 - live search as the visitor types
 - support for multiple content types, based on the current filter settings
-- result cards with a title and a short subtitle
+- result cards with a title, thumbnail image, and a short subtitle animal names
+- that link into the species overlay when the result is an animal
 - a `View on Map` action for each result
 
 If the visitor clicks `View on Map`, the app refreshes the visible layers if needed and then centers attention on the selected result.
@@ -383,7 +385,7 @@ The visitor can move forward step by step, go back, or finish early once they ar
 
 The first step asks the visitor to choose a visit date.
 
-Date behavior in version 1.2.0 includes:
+Date behavior in version 1.3.0 includes:
 
 - calendar-based selection
 - no manual text entry required
@@ -462,19 +464,53 @@ Each result can include:
 
 This makes it possible for visitors to include special experiences alongside standard exhibit visits.
 
-### Day planner view
+### List and day planner views
 
-Saved itineraries include a day planner view that arranges scheduled items around zoo hours.
+Saved itineraries can be reviewed in two panel views:
 
-The day planner can show:
+- `List` for the sectioned summary of animals, attractions, talks, and encounters
+- `Day Planner` for a time-based visit plan
 
-- early admission and regular opening context when available
+The active view is reflected in the page URL so visitors can return directly to the view they prefer.
+
+### Day planner scheduling
+
+The day planner arranges scheduled items around zoo hours and the visitor's chosen visit window.
+
+At the top of the day planner, the visitor can set:
+
+- an arrival time
+- a departure time
+
+These inputs are validated against zoo hours, early admission when available, and each other. The app can warn when arrival and departure are unusually close together or when a short visit alert applies.
+
+The day planner timeline can show:
+
+- arrival and departure markers
 - scheduled Meet the Guardians talks
 - scheduled Wild Encounters
-- selected animals and attractions that do not have fixed times
-- empty sections when there are no scheduled or unscheduled items
+- scheduled animals and attractions
+- generic timed events (i.e. 'Lunch')
+- multi-item timeline pills with navigation when more than one item shares the same time band
 
-This gives the visitor a more practical view of when fixed-time experiences happen during the visit.
+Below the timeline, the day planner also includes:
+
+- a scheduled items summary with estimated start times sorted chronologically
+- unscheduled sections for animals and attractions that are saved in the itinerary but not yet placed on the timeline
+
+### Scheduling, unscheduling, and removing items
+
+From the day planner, the visitor can:
+
+- schedule unscheduled animals and attractions, including with specific times
+- unschedule scheduled animals, attractions, talks, and encounters
+- remove items from the saved itinerary after confirmation
+- clear arrival or departure times
+- open edit actions for scheduled talks and encounters
+
+Scheduling uses backend validation so the app can reject invalid times, warn when an action would unschedule other items, and adjust items that fall outside the visit window when the visit date or bounds change.
+
+Animal and attraction names in itinerary list and day planner views link into the species overlay or related detail experience where applicable.
 
 ### Finishing and saving an itinerary
 
@@ -507,6 +543,9 @@ When the visit date changes, the app re-checks the existing itinerary against th
 - retain items that are still valid
 - detect animals with reduced projected visibility
 - detect animals with improved projected visibility
+- remove animals with decreased projected visibility automatically when appropriate
+- allow the visitor to override zero-likelihood animals instead of removing them immediately
+- unschedule or adjust items that no longer fit the visit window
 
 This is important because availability can vary by season, daily schedules, and closures.
 
@@ -534,8 +573,9 @@ The saved panel includes:
 - an `Edit Itinerary` button
 - a `Clear` button with confirmation
 - a visit date card
-- separate sections for Animals, Attractions, Meet the Guardians, and Wild Encounters
-- access to a schedule-oriented day planner view
+- a toggle between `List` and `Day Planner` views
+- separate sections for Animals, Attractions, Meet the Guardians, and Wild Encounters in list view
+- a schedule-oriented day planner view with arrival, departure, timeline, scheduled, and unscheduled sections
 
 Each section shows a count and supports section editing.
 
@@ -562,10 +602,10 @@ Depending on the item type, cards can show:
 - exhibit names
 - location details
 - meeting spots
-- times
+- times and estimated schedule times
 - pricing labels
 - availability alerts
-- direct `More Info` links
+- linked titles for animals and Wild Encounters where applicable
 
 Animal cards may also show projected visibility changes or date-related unavailability messages.
 
@@ -610,10 +650,11 @@ The current release is especially focused on:
 
 - helping guests discover what is available on a given day
 - surfacing important date-based updates in the Explore panel
-- making fixed-time talks and encounters easier to plan around
-- connecting species education with navigation
-- keeping planning practical through availability checks and visibility guidance
-- making saved plans easy to review and revise
+- building a visit plan around arrival, departure, and scheduled activities
+- making fixed-time talks and encounters easier to schedule, adjust, and review on a timeline
+- connecting species education with navigation through animal links and overlays
+- keeping planning practical through availability checks, conflict warnings, and visibility guidance
+- making saved plans easy to review in both list and day planner views
 
 ## Customer-Facing Summary
 
