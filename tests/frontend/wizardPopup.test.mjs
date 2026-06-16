@@ -1,21 +1,16 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { showItineraryWizardPopup } from '../../scripts/itinerary/wizard/wizardPopup.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 test.describe('showItineraryWizardPopup', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      document.querySelector('.tzg-popup')?.__tzgPopupCleanup?.();
-      document.querySelector('.tzg-popup')?.remove();
-      teardownDocument();
-      delete globalThis.window;
+   installDomTestHooks({
+      after: () => {
+         document.querySelector('.tzg-popup')?.__tzgPopupCleanup?.();
+         document.querySelector('.tzg-popup')?.remove();
+      },
    });
 
    test('no-ops when mountEl is missing', () => {

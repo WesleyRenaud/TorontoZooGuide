@@ -9,7 +9,7 @@ import {
 } from '../../scripts/itinerary/panel/itineraryPanelContent.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 const ZOO_HOURS = {
    open: '09:00',
@@ -70,15 +70,7 @@ function captureDayPlannerOptions(deps = {}) {
 }
 
 test.describe('itineraryPanelContent', () => {
-   test.beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   test.afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
-   });
+   installDomTestHooks();
 
    test('destroyRenderedPanelChildren runs child cleanup hooks', () => {
       const bodyEl = createDomNode('div', 'side-panel-body');

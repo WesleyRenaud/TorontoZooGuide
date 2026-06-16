@@ -1,20 +1,12 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { createSelectorElements } from '../../scripts/itinerary/selectors/selectorControllerElements.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 test.describe('createSelectorElements', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
-   });
+   installDomTestHooks();
 
    test('builds the selector shell and maps element references', () => {
       const elements = createSelectorElements({

@@ -4,7 +4,7 @@ import test from 'node:test';
 import { renderItineraryPanelInto, clearStoredItinerary } from '../../scripts/itinerary/panel/renderPanel.js';
 import { resetActiveItineraryPanelView } from '../../scripts/itinerary/panel/itineraryPanelViewState.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 const ZOO_HOURS = {
    open: '09:00',
@@ -27,15 +27,10 @@ const POPULATED_ITINERARY = {
 };
 
 test.describe('renderItineraryPanelInto', () => {
-   test.beforeEach(() => {
-      installTestWindow();
-      installDocument();
-      resetActiveItineraryPanelView('list');
-   });
-
-   test.afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
+   installDomTestHooks({
+      before: () => {
+         resetActiveItineraryPanelView('list');
+      },
    });
 
    test('renders build-only content for an empty itinerary', async () => {

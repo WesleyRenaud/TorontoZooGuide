@@ -1,23 +1,15 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { initVisitDateFlatpickr } from '../../scripts/visitDates/visitDateFlatpickr.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { makeNoonDate } from './helpers/visitDateMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 const floor = makeNoonDate(2026, 5, 15);
 
 test.describe('initVisitDateFlatpickr', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
-   });
+   installDomTestHooks();
 
    test('returns null when the input element is missing', () => {
       assert.equal(initVisitDateFlatpickr(null), null);

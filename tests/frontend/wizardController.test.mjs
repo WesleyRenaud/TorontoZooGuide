@@ -1,35 +1,26 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { openItineraryWizard } from '../../scripts/itinerary/wizard/wizardController.js';
 import { createItineraryWizardState } from '../../scripts/itinerary/wizard/state.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 import { makeNoonDate } from './helpers/visitDateMock.mjs';
-
-function createStubStepController(stepKey, shownSteps) {
-   return {
-      show() {
-         shownSteps.push(stepKey);
-      },
-      getSelectionSnapshot: async () => [],
-      shouldSkipClosingSelectionSync: () => true,
-   };
-}
+import {
+   createStubStepController,
+   syncedSelection,
+} from './helpers/wizardTestFixtures.mjs';
 
 test.describe('openItineraryWizard', () => {
-   beforeEach(() => {
-      globalThis.localStorage = createLocalStorageMock();
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
-      delete globalThis.localStorage;
+   installDomTestHooks({
+      before: () => {
+         globalThis.localStorage = createLocalStorageMock();
+      },
+      after: () => {
+         delete globalThis.localStorage;
+      },
    });
 
    test('no-ops when mountEl is missing', async () => {
@@ -734,6 +725,3 @@ test.describe('openItineraryWizard', () => {
    });
 });
 
-function syncedSelection() {
-   return [{ species: 'African Lion', exhibit: 'Africa Savanna' }];
-}
