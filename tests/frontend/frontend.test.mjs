@@ -14,6 +14,7 @@ import './visitDateEarliest.test.mjs';
 import './visitDateFlatpickr.test.mjs';
 import './weatherApi.test.mjs';
 import './assetNormalization.test.mjs';
+import './detailImageSrc.test.mjs';
 import './likelihood.test.mjs';
 import './itineraryShape.test.mjs';
 import './persistItineraryWarningSuppression.test.mjs';
