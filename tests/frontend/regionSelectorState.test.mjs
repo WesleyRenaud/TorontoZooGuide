@@ -4,20 +4,7 @@ import { afterEach, beforeEach, test } from 'node:test';
 import { createRegionSelectorState } from '../../scripts/itinerary/selectors/regionSelector/state.js';
 import { ANIMALS_KEY, DATE_KEY, SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
 import { removeAnimalFromItineraryAnimalDraft } from '../../scripts/itinerary/draftStorage.js';
-
-function createLocalStorageMock() {
-   const values = new Map();
-
-   return {
-      getItem: (key) => values.get(key) ?? null,
-      setItem: (key, value) => {
-         values.set(key, String(value));
-      },
-      removeItem: (key) => {
-         values.delete(key);
-      },
-   };
-}
+import { createLocalStorageMock } from './helpers/localStorageMock.mjs';
 
 beforeEach(() => {
    globalThis.localStorage = createLocalStorageMock();

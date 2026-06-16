@@ -31,7 +31,8 @@ export function initVisitDateFlatpickr(
    const safeDefault = clampToAllowedVisitDate(
       defaultDate || new Date(),
       daysAhead,
-      floor
+      floor,
+      getTodayFn()
    );
 
    const fp = initFlatpickrFn(inputEl, {
@@ -44,7 +45,7 @@ export function initVisitDateFlatpickr(
       monthSelectorType: 'static',
       onReady: (selectedDates, dateStr, instance) => {
          const selected = selectedDates?.[0] || safeDefault;
-         const safeDate = clampToAllowedVisitDate(selected, daysAhead, floor);
+         const safeDate = clampToAllowedVisitDate(selected, daysAhead, floor, getTodayFn());
 
          instance.setDate(safeDate, false);
 
@@ -52,7 +53,7 @@ export function initVisitDateFlatpickr(
       },
       onChange: (selectedDates, dateStr, instance) => {
          const selected = selectedDates?.[0] || safeDefault;
-         const safeDate = clampToAllowedVisitDate(selected, daysAhead, floor);
+         const safeDate = clampToAllowedVisitDate(selected, daysAhead, floor, getTodayFn());
 
          instance.setDate(safeDate, false);
 

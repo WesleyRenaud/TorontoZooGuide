@@ -29,6 +29,7 @@ import './selectionState.test.mjs';
 import './wizardStepConfigs.test.mjs';
 import './wizardStepDraftSync.test.mjs';
 import './wizardController.test.mjs';
+import './wizardDraft.test.mjs';
 import './wizardFinalizeDecisions.test.mjs';
 import './wizardFinalizer.test.mjs';
 import './wizardSaveIssuesPopup.test.mjs';
