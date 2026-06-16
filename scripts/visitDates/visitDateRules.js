@@ -25,8 +25,11 @@ function matchesDateParts(date, {
       && date.getDate() === day;
 }
 
-function createAllowedVisitDateRange(daysAhead = DEFAULT_DAYS_AHEAD) {
-   const today = getToday();
+function createAllowedVisitDateRange(
+   daysAhead = DEFAULT_DAYS_AHEAD,
+   referenceToday = null
+) {
+   const today = normalizeDate(referenceToday) ?? getToday();
    const maxDate = new Date(today);
 
    maxDate.setDate(today.getDate() + daysAhead);
@@ -68,14 +71,15 @@ export function parseLocalDate(dateStr) {
    return parsed;
 }
 
-export function isWithinNextNDays(dateStr, n) {
+export function isWithinNextNDays(dateStr, n, referenceToday = null) {
    const target = normalizeDate(parseLocalDate(dateStr));
 
    if (!target) {
       return false;
    }
 
-   const diffDays = (target - getToday()) / MS_PER_DAY;
+   const today = normalizeDate(referenceToday) ?? getToday();
+   const diffDays = (target - today) / MS_PER_DAY;
    return diffDays >= 0 && diffDays <= n;
 }
 
@@ -127,8 +131,8 @@ export function getToday() {
    );
 }
 
-export function getMaxDate(daysAhead = DEFAULT_DAYS_AHEAD) {
-   return createAllowedVisitDateRange(daysAhead).maxDate;
+export function getMaxDate(daysAhead = DEFAULT_DAYS_AHEAD, referenceToday = null) {
+   return createAllowedVisitDateRange(daysAhead, referenceToday).maxDate;
 }
 
 export function normalizeDate(d) {
@@ -143,24 +147,30 @@ export function normalizeDate(d) {
    );
 }
 
-export function isBeforeToday(d) {
+export function isBeforeToday(d, referenceToday = null) {
    const candidate = normalizeDate(d);
 
    if (!candidate) {
       return false;
    }
 
-   return candidate < getToday();
+   const today = normalizeDate(referenceToday) ?? getToday();
+
+   return candidate < today;
 }
 
-export function isAfterMaxDate(d, daysAhead = DEFAULT_DAYS_AHEAD) {
+export function isAfterMaxDate(
+   d,
+   daysAhead = DEFAULT_DAYS_AHEAD,
+   referenceToday = null
+) {
    const candidate = normalizeDate(d);
 
    if (!candidate) {
       return false;
    }
 
-   return candidate > getMaxDate(daysAhead);
+   return candidate > getMaxDate(daysAhead, referenceToday);
 }
 
 /**

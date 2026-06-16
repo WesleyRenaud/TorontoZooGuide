@@ -1,8 +1,8 @@
 import { initFlatpickr } from '../datePickers/flatpickr.js';
 import {
+   addLocalCalendarDays,
    clampToAllowedVisitDate,
    DEFAULT_DAYS_AHEAD,
-   getMaxDate,
    getToday,
    toISODate,
 } from './visitDateRules.js';
@@ -19,7 +19,7 @@ export function initVisitDateFlatpickr(
       onClose = null,
       initFlatpickr: initFlatpickrFn = initFlatpickr,
       getTodayFn = getToday,
-      getMaxDateFn = getMaxDate,
+      getMaxDateFn = null,
    } = {}
 ) {
    if (!inputEl) return null;
@@ -27,6 +27,8 @@ export function initVisitDateFlatpickr(
    inputEl.setAttribute('readonly', 'true');
 
    const floor = earliestNoon ?? getTodayFn();
+   const resolveMaxDate = getMaxDateFn
+      ?? ((ahead) => addLocalCalendarDays(getTodayFn(), ahead));
 
    const safeDefault = clampToAllowedVisitDate(
       defaultDate || new Date(),
@@ -39,7 +41,7 @@ export function initVisitDateFlatpickr(
       defaultDate: safeDefault,
       dateFormat: 'Y-m-d',
       minDate: floor,
-      maxDate: getMaxDateFn(daysAhead),
+      maxDate: resolveMaxDate(daysAhead),
       clickOpens,
       allowInput: false,
       monthSelectorType: 'static',
