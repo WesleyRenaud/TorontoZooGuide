@@ -1,15 +1,34 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test } from 'node:test';
 
 import { showScheduleOverrideSelectionConfirmation } from '../../scripts/itinerary/wizard/scheduleOverrideSelectionConfirmation.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { cleanupConfirmPopup } from './helpers/confirmPopupTestSetup.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
-test('showScheduleOverrideSelectionConfirmation uses schedule override confirm popup', () => {
-   installTestWindow();
-   installDocument();
+test('schedule override selection confirmation copy is defined', () => {
+   assert.equal(
+      APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionTitle,
+      'Adjust Activity Times?'
+   );
+   assert.match(
+      APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionMessage,
+      /overlap in time/
+   );
+   assert.match(
+      APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionMessage,
+      /Wild Encounters taking priority/
+   );
+});
 
-   try {
+test.describe('showScheduleOverrideSelectionConfirmation', () => {
+   installDomTestHooks({
+      after: () => {
+         cleanupConfirmPopup();
+      },
+   });
+
+   test('showScheduleOverrideSelectionConfirmation uses schedule override confirm popup', () => {
       const confirmCalls = [];
 
       showScheduleOverrideSelectionConfirmation({
@@ -33,25 +52,5 @@ test('showScheduleOverrideSelectionConfirmation uses schedule override confirm p
       confirmButton?.click();
 
       assert.deepEqual(confirmCalls, ['confirmed']);
-   }
-   finally {
-      document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
-      document.querySelector('.tzg-confirm')?.remove();
-      teardownDocument();
-   }
-});
-
-test('schedule override selection confirmation copy is defined', () => {
-   assert.equal(
-      APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionTitle,
-      'Adjust Activity Times?'
-   );
-   assert.match(
-      APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionMessage,
-      /overlap in time/
-   );
-   assert.match(
-      APP_STRINGS.itinerary.confirmation.scheduleOverrideSelectionMessage,
-      /Wild Encounters taking priority/
-   );
+   });
 });

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { makeScheduleItemTimeFields } from '../../scripts/itinerary/panel/components/scheduleItemTimeFields.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 function getTimeInput(fields) {
    const timeField = fields.fields[0];
@@ -12,15 +12,10 @@ function getTimeInput(fields) {
    ));
 }
 
-beforeEach(() => {
-   installTestWindow();
-   installDocument();
-});
-
-afterEach(() => {
-   teardownDocument();
-   delete globalThis.fetch;
-   delete globalThis.window;
+installDomTestHooks({
+   after: () => {
+      delete globalThis.fetch;
+   },
 });
 
 test('makeScheduleItemTimeFields reads input value when submitting', () => {

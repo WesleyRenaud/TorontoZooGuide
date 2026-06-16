@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import {
@@ -8,7 +8,7 @@ import {
    WILD_ENCOUNTER_TIME_CONFLICT,
 } from '../../scripts/itinerary/panel/scheduleTimeConflictContent.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 const firstEncounter = {
    name: 'From Howls to Honks',
@@ -47,15 +47,7 @@ test('buildConflictItemImageSrc maps wild encounters and guardians talks to deta
 });
 
 test.describe('scheduleTimeConflictContent', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      teardownDocument();
-      delete globalThis.window;
-   });
+   installDomTestHooks();
 
    test('createSaveIssuesContent ignores non-wild-encounter issues', () => {
       const { content, conflictGroups } = createSaveIssuesContent([

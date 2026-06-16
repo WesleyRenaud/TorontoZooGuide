@@ -1,15 +1,19 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test } from 'node:test';
 
 import { showSaveIssuesProceedConfirmation } from '../../scripts/itinerary/wizard/saveIssuesProceedConfirmation.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { cleanupConfirmPopup } from './helpers/confirmPopupTestSetup.mjs';
 
-test('showSaveIssuesProceedConfirmation uses proceed-anyway confirm popup', () => {
-   installTestWindow();
-   installDocument();
+test.describe('saveIssuesProceedConfirmation', () => {
+   installDomTestHooks({
+      after: () => {
+         cleanupConfirmPopup();
+      },
+   });
 
-   try {
+   test('showSaveIssuesProceedConfirmation uses proceed-anyway confirm popup', () => {
       const confirmCalls = [];
 
       showSaveIssuesProceedConfirmation({
@@ -37,10 +41,5 @@ test('showSaveIssuesProceedConfirmation uses proceed-anyway confirm popup', () =
       confirmButton?.click();
 
       assert.deepEqual(confirmCalls, ['confirmed']);
-   }
-   finally {
-      document.querySelector('.tzg-confirm')?.__tzgPopupCleanup?.();
-      document.querySelector('.tzg-confirm')?.remove();
-      teardownDocument();
-   }
+   });
 });

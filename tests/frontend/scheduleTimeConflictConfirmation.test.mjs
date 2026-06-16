@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, test } from 'node:test';
+import { test } from 'node:test';
 
 import {
    confirmSaveIssuesConflictSelection,
@@ -9,7 +9,7 @@ import {
 import { createConflictSelection } from '../../scripts/itinerary/wizard/scheduleConflictCompatibility.js';
 import { ItinerarySaveIssueItemType } from '../../scripts/shared/enums/itinerarySaveIssueItemType.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
-import { installDocument, installTestWindow, teardownDocument } from './helpers/domMock.mjs';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
 const firstEncounter = {
    name: 'From Howls to Honks',
@@ -38,15 +38,10 @@ function cleanupPopups() {
 }
 
 test.describe('scheduleTimeConflictConfirmation', () => {
-   beforeEach(() => {
-      installTestWindow();
-      installDocument();
-   });
-
-   afterEach(() => {
-      cleanupPopups();
-      teardownDocument();
-      delete globalThis.window;
+   installDomTestHooks({
+      after: () => {
+         cleanupPopups();
+      },
    });
 
    test('showScheduleTimeConflictConfirmation renders the save issues notice popup', () => {
