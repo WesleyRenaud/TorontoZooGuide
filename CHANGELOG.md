@@ -1,5 +1,45 @@
 # Changelog
 
+## Release 1.3.0
+
+Release 1.3.0 covers the git history after `a03eb45 Merge pull request #203 from WesleyRenaud/release/1.2` through `9b137b7 Merge pull request #670 from WesleyRenaud/refactoring/pre-release-test-hygiene`.
+
+### Itinerary day planner and scheduling
+
+- Expanded the day planner from a read-only schedule summary into a full visit timeline with arrival and departure times, zoo-hours validation, early-admission handling, and short-visit warnings.
+- Added backend activity scheduling with default times for animals, attractions, and generic events, plus schedule, unschedule, and remove-item flows.
+- Added timeline pills for scheduled Meet the Guardians talks, Wild Encounters, animals, attractions, arrival, and departure, including multi-event pills with navigation arrows.
+- Added list and day planner panel views with URL state so visitors can switch between a sectioned summary and a time-based plan.
+- Added schedule and unschedule controls with time inputs, three-dot menus, clear buttons, confirmation dialogs, and edit actions for scheduled talks and encounters.
+- Added bulk primitive animal scheduling, warnings when scheduling one item would unschedule others, and a lightweight validate flow when setting arrival or departure times.
+- Added animal name links in itinerary list and day planner views, chronologically sorted scheduled items with estimated start times, and improved timeline layout and controls.
+- Improved Wild Encounter and Meet the Guardians conflict handling, including smart selection, partially conflicting talks and encounters, grouped conflict pages, and end times in itinerary views.
+- Fixed many day planner edge cases around timeline rendering, pill overlap, validation, diff view behavior, builder persistence, date changes, and duplicate exhibit handling.
+
+### Itinerary validation and diff flow
+
+- Added override support for zero-likelihood animals during itinerary validation.
+- Automatically removed animals with decreased projected visibility during diff/update flows.
+- Added dialogs and warnings for early-admission removal, arrival times during admission, and items unscheduled because they fall outside visit bounds.
+- Fixed diff view likelihood display, refresh behavior, new-itinerary prompts, and indoor-viewing decrease messaging.
+
+### Map, search, and guest-facing availability
+
+- Added thumbnail images to map search results and animal links in map search and itinerary views.
+- Fixed Zoomobile route search errors and replaced separate Wild Encounter `More Info` links with title links where appropriate.
+- Added partial indoor-only or outdoor-only exhibit closure support in console operations, affecting animal availability calculations.
+- Added data updates for Savanna Barn, Tundra Tacos, otter notices, tortoise moves, Wolfs Den, seasonal savanna bird curves, map label placement, and current guest updates and closures.
+
+### Backend architecture and maintainability
+
+- Split the monolithic server into route registration, static file serving, HTML helpers, and slimmer request handling.
+- Refactored read endpoints across amenities, itinerary, search, zoo hours, guardians talks, wild encounters, and Zoomobile into controller/data-access modules.
+- Restructured API itinerary folders, dissolved legacy logic folders into feature-specific modules, and consolidated amenity scheduling helpers.
+- Migrated seed data from Python table modules into JSON with shared loaders and deduplicated schedule/status builders.
+- Split frontend itinerary modules for day planner timeline rendering, schedule-item flows, wizard lifecycle, panel rendering, and itinerary service dispatch.
+- Added injectable clock and date helpers for visit-date pickers, flatpickr initialization, and visit-date boundary rules.
+- Expanded frontend and backend test coverage with shared DOM and fetch test helpers, split test suites, map SVG validation, and pre-release test hygiene.
+
 ## Release 1.2.0
 
 Release 1.2.0 covers the git history after `2f3fdea Merge pull request #53 from WesleyRenaud/release/1.1` through `6ec3d06 Merge pull request #201 from WesleyRenaud/improvement/add-python-import-ordering-rule`.
