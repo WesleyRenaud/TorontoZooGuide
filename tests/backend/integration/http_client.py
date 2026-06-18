@@ -8,7 +8,7 @@ from http_support_handler import response_json
 import api.server as server
 
 
-def post_itinerary_route(
+def post_route(
       path: str,
       body: dict[ str, Any ] | None = None,
 ) -> tuple[ int, dict[ str, Any ] ]:
