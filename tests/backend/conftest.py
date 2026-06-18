@@ -12,6 +12,7 @@ from typing import Any
 
 import pytest
 
+from api import connection
 from api.connection import close_connection
 from api.connection import open_connection
 from api.request_connection import clear_connection
@@ -60,6 +61,19 @@ def controllers( db_path: Path ) -> Generator[ DbControllers, None, None ]:
 @pytest.fixture
 def db( controllers: DbControllers ) -> DbControllers:
    return controllers
+
+
+@pytest.fixture
+def integration_db( db_path: Path, monkeypatch: pytest.MonkeyPatch ) -> Path:
+   test_db_path = str( db_path )
+
+   def open_test_connection( db_path_arg: str = 'animals.db' ) -> Connection:
+      conn = sqlite3.connect( test_db_path )
+      conn.row_factory = sqlite3.Row
+      return conn
+
+   monkeypatch.setattr( connection, 'open_connection', open_test_connection )
+   return db_path
 
 
 @pytest.fixture
