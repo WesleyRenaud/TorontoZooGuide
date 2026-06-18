@@ -4,8 +4,8 @@ from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 
-from http_client import post_itinerary_route
-from itinerary.support import ANIMAL_KEY, CAROUSEL, LION_ITINERARY_ENTRY
+from http_client import post_route
+from itinerary.support import ANIMAL_KEY, CAROUSEL, CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, LION_ITINERARY_ENTRY
 
 
 def _find_animal( itinerary: dict[ str, object ], *, species: str, exhibit: str ) -> dict[ str, object ]:
@@ -24,7 +24,7 @@ def test_set_get_and_clear_itinerary_via_http(
 ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   status, set_response = post_itinerary_route(
+   status, set_response = post_route(
       '/set-itinerary',
       {
          'date': '2026-06-15',
@@ -42,7 +42,7 @@ def test_set_get_and_clear_itinerary_via_http(
    assert set_response[ 'status' ] == 'success'
    assert set_response[ 'reasons' ] == []
 
-   status, get_response = post_itinerary_route( '/get-itinerary', {} )
+   status, get_response = post_route( '/get-itinerary', {} )
 
    assert status == 200
    itinerary = get_response[ 'itinerary' ]
@@ -58,12 +58,12 @@ def test_set_get_and_clear_itinerary_via_http(
       CAROUSEL,
    ]
 
-   status, clear_response = post_itinerary_route( '/clear-itinerary', {} )
+   status, clear_response = post_route( '/clear-itinerary', {} )
 
    assert status == 200
    assert clear_response[ 'success' ] is True
 
-   status, empty_response = post_itinerary_route( '/get-itinerary-date', {} )
+   status, empty_response = post_route( '/get-itinerary-date', {} )
 
    assert status == 200
    assert empty_response[ 'date' ] is None
@@ -75,7 +75,7 @@ def test_schedule_and_unschedule_animal_via_http(
 ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   status, set_response = post_itinerary_route(
+   status, set_response = post_route(
       '/set-itinerary',
       {
          'date': '2026-06-15',
@@ -91,7 +91,7 @@ def test_schedule_and_unschedule_animal_via_http(
    assert status == 200
    assert set_response[ 'status' ] == 'success'
 
-   status, schedule_response = post_itinerary_route(
+   status, schedule_response = post_route(
       '/schedule-itinerary-item',
       {
          'itemType': 'animals',
@@ -110,7 +110,7 @@ def test_schedule_and_unschedule_animal_via_http(
    assert scheduled_lion[ 'start_time' ] == '14:00'
    assert scheduled_lion[ 'end_time' ] is not None
 
-   status, unschedule_response = post_itinerary_route(
+   status, unschedule_response = post_route(
       '/unschedule-itinerary-item',
       {
          'itemType': 'animals',
@@ -121,7 +121,7 @@ def test_schedule_and_unschedule_animal_via_http(
    assert status == 200
    assert unschedule_response[ 'status' ] == 'success'
 
-   status, get_response = post_itinerary_route( '/get-itinerary', {} )
+   status, get_response = post_route( '/get-itinerary', {} )
 
    assert status == 200
    unscheduled_lion = _find_animal(
@@ -139,7 +139,7 @@ def test_set_arrival_time_via_http(
 ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   status, set_response = post_itinerary_route(
+   status, set_response = post_route(
       '/set-itinerary',
       {
          'date': '2026-06-15',
@@ -154,7 +154,7 @@ def test_set_arrival_time_via_http(
    assert status == 200
    assert set_response[ 'status' ] == 'success'
 
-   status, arrival_response = post_itinerary_route(
+   status, arrival_response = post_route(
       '/set-itinerary-arrival-time',
       { 'arrivalTime': '09:45' },
    )
@@ -163,7 +163,7 @@ def test_set_arrival_time_via_http(
    assert arrival_response[ 'status' ] == 'success'
    assert arrival_response[ 'arrivalTime' ] == '09:45'
 
-   status, get_response = post_itinerary_route( '/get-itinerary', {} )
+   status, get_response = post_route( '/get-itinerary', {} )
 
    assert status == 200
    assert get_response[ 'itinerary' ][ 'arrival_time' ] == '09:45'
@@ -175,7 +175,7 @@ def test_remove_item_from_itinerary_via_http(
 ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
-   status, set_response = post_itinerary_route(
+   status, set_response = post_route(
       '/set-itinerary',
       {
          'date': '2026-06-15',
@@ -190,7 +190,7 @@ def test_remove_item_from_itinerary_via_http(
    assert status == 200
    assert set_response[ 'status' ] == 'success'
 
-   status, remove_response = post_itinerary_route(
+   status, remove_response = post_route(
       '/remove-item-from-itinerary',
       {
          'itemType': 'attractions',
@@ -201,7 +201,7 @@ def test_remove_item_from_itinerary_via_http(
    assert status == 200
    assert remove_response[ 'status' ] == 'success'
 
-   status, get_response = post_itinerary_route( '/get-itinerary', {} )
+   status, get_response = post_route( '/get-itinerary', {} )
 
    assert status == 200
    assert get_response[ 'itinerary' ][ 'attractions' ] == []
@@ -211,7 +211,7 @@ def test_remove_item_from_itinerary_via_http(
 def test_date_change_adjusts_arrival_time_via_http(
       integration_db: Path,
 ) -> None:
-   status, initial_response = post_itinerary_route(
+   status, initial_response = post_route(
       '/set-itinerary',
       {
          'date': '2026-06-20',
@@ -228,7 +228,7 @@ def test_date_change_adjusts_arrival_time_via_http(
    assert status == 200
    assert initial_response[ 'status' ] == 'success'
 
-   status, date_change_response = post_itinerary_route(
+   status, date_change_response = post_route(
       '/set-itinerary',
       {
          'date': '2026-06-22',
@@ -253,4 +253,119 @@ def test_date_change_adjusts_arrival_time_via_http(
          'value': '09:30',
          'reason': 'arrivalOutsideAdmissionHours',
       },
+   ]
+
+
+def test_bulk_schedule_animals_via_http(
+      integration_db: Path,
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   status, set_response = post_route(
+      '/set-itinerary',
+      {
+         'date': '2026-06-20',
+         'animals': [
+            LION_ITINERARY_ENTRY,
+            CHEETAH_INDO_MALAYA_ITINERARY_ENTRY,
+         ],
+         'attractions': [],
+         'guardiansTalks': [],
+         'wildEncounters': [],
+         'confirmingEarlyAdmission': True,
+      },
+   )
+
+   assert status == 200
+   assert set_response[ 'status' ] == 'success'
+
+   status, bulk_response = post_route( '/bulk-schedule-animals', {} )
+
+   assert status == 200
+   assert bulk_response[ 'status' ] == 'success'
+
+   cheetah = _find_animal(
+      bulk_response[ 'itinerary' ],
+      species='Cheetah',
+      exhibit='Indo-Malaya Outdoor',
+   )
+   lion = _find_animal(
+      bulk_response[ 'itinerary' ],
+      species='African Lion',
+      exhibit='Africa Savanna',
+   )
+
+   assert cheetah[ 'start_time' ] == '09:30'
+   assert lion[ 'start_time' ] == '09:35'
+   assert cheetah[ 'end_time' ] is not None
+   assert lion[ 'end_time' ] is not None
+
+
+def test_set_departure_time_via_http(
+      integration_db: Path,
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   status, set_response = post_route(
+      '/set-itinerary',
+      {
+         'date': '2026-06-15',
+         'departureTime': '17:00',
+         'animals': [ LION_ITINERARY_ENTRY ],
+         'attractions': [],
+         'guardiansTalks': [],
+         'wildEncounters': [],
+         'confirmingEarlyAdmission': True,
+      },
+   )
+
+   assert status == 200
+   assert set_response[ 'status' ] == 'success'
+
+   status, departure_response = post_route(
+      '/set-itinerary-departure-time',
+      { 'departureTime': '16:30' },
+   )
+
+   assert status == 200
+   assert departure_response[ 'status' ] == 'success'
+   assert departure_response[ 'departureTime' ] == '16:30'
+
+   status, get_response = post_route( '/get-itinerary', {} )
+
+   assert status == 200
+   assert get_response[ 'itinerary' ][ 'departure_time' ] == '16:30'
+
+
+def test_accept_itinerary_via_http(
+      integration_db: Path,
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   status, set_response = post_route(
+      '/set-itinerary',
+      {
+         'date': '2026-06-15',
+         'animals': [ LION_ITINERARY_ENTRY ],
+         'attractions': [ CAROUSEL ],
+         'guardiansTalks': [],
+         'wildEncounters': [],
+         'confirmingEarlyAdmission': True,
+      },
+   )
+
+   assert status == 200
+   assert set_response[ 'status' ] == 'success'
+
+   status, accept_response = post_route( '/accept-itinerary', {} )
+
+   assert status == 200
+   assert accept_response[ 'success' ] is True
+   assert accept_response[ 'itinerary' ][ 'date' ] == '2026-06-15'
+   assert len( accept_response[ 'itinerary' ][ 'animals' ] ) == 1
+   assert [ attraction[ 'name' ] for attraction in accept_response[ 'itinerary' ][ 'attractions' ] ] == [
+      CAROUSEL,
    ]
