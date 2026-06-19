@@ -10,11 +10,15 @@ def test_guardians_talk_lookup_queries_return_seed_data( db: DbControllers ) -> 
    assert GuardiansCoordinator.get_guardians_talk_locations() == [
       'Africa Savanna',
       'African Rainforest Pavilion',
+      'Americas Outdoor Mayan Temple Ruins',
       'Americas Pavilion',
+      'Australasia Outdoor',
       'Australasia Pavilion',
+      'Canadian Domain',
       'Eurasia Wilds',
       'Goat World',
       'Greenhouse',
+      'Indo-Malaya Outdoor',
       'Indo-Malaya Pavilion',
       'Tundra Trek',
    ]

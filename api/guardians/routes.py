@@ -13,6 +13,12 @@ GUARDIANS_ROUTES: dict[ str, PostRouteHandler ] = {
    ),
    '/get-guardians-talk-occurrences': GuardiansController.get_guardians_talk_occurrences,
    '/set-guardians-talk-schedule': GuardiansController.set_guardians_talk_schedule,
+   '/replace-guardians-talk-schedule-overlaps': (
+      GuardiansController.replace_guardians_talk_schedule_overlaps
+   ),
+   '/trim-guardians-talk-schedule-overlaps': (
+      GuardiansController.trim_guardians_talk_schedule_overlaps
+   ),
    '/end-guardians-talk-schedule': GuardiansController.end_guardians_talk_schedule,
    '/cancel-guardians-talk-occurrence': GuardiansController.cancel_guardians_talk_occurrence,
 }

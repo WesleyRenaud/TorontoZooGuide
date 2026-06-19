@@ -27,6 +27,29 @@ def find_guardians_talk_on_day_schedule(
    return None
 
 
+def active_guardians_talk_schedule_records_for_date(
+      records: list[ GuardiansTalkScheduleRecord ],
+      target_date: date ) -> list[ GuardiansTalkScheduleRecord ]:
+   active_by_talk: dict[ tuple[ str, str ], GuardiansTalkScheduleRecord ] = {}
+
+   for record in records:
+      if not DateValues.is_date_in_range(
+            target_date=target_date,
+            start_date_value=record.schedule_start_date,
+            end_date_value=record.schedule_end_date ):
+         continue
+
+      talk_key = ( record.name, record.location )
+      existing = active_by_talk.get( talk_key )
+
+      if (
+            existing is None
+            or record.schedule_start_date > existing.schedule_start_date ):
+         active_by_talk[ talk_key ] = record
+
+   return list( active_by_talk.values() )
+
+
 def build_guardians_talk_schedule_for_target_date(
       records: list[ GuardiansTalkScheduleRecord ],
       target_date: date,
@@ -40,7 +63,9 @@ def build_guardians_talk_schedule_for_target_date(
 
    guardians_talks: list[ GuardiansTalk ] = []
 
-   for record in records:
+   for record in active_guardians_talk_schedule_records_for_date(
+         records,
+         target_date ):
       name = record.name
       location = record.location
       talk_time = guardians_talk_time_for_weekday(
@@ -65,7 +90,7 @@ def build_guardians_talk_schedule_for_target_date(
          else False
       )
 
-      is_available = date_range_ok and weekday_ok and not is_cancelled
+      is_available = weekday_ok and not is_cancelled
 
       if not is_available:
          if not date_range_ok:

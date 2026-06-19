@@ -1,5 +1,15 @@
-import { setGuardiansTalkSchedule } from '../../../api/consoleOperationsApi.js';
 import {
+   replaceGuardiansTalkScheduleOverlaps,
+   setGuardiansTalkSchedule,
+   trimGuardiansTalkScheduleOverlaps,
+} from '../../../api/consoleOperationsApi.js';
+import {
+   OPENING_SCHEDULE_OVERLAP_RESOLUTION,
+   resultHasOpeningScheduleOverlap,
+} from '../../forms/openingScheduleOverlap.js';
+import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
+import {
+   hasCheckedField,
    hideConsolePanel,
    resetFormFields,
    validateOptionalDateRange,
@@ -26,6 +36,13 @@ export function createGuardiansTalkScheduleController({
    sameTimeEveryDayModeEl,
    weekdayTimesModeEl,
    dailyTimeEl,
+   mondayEl,
+   tuesdayEl,
+   wednesdayEl,
+   thursdayEl,
+   fridayEl,
+   saturdayEl,
+   sundayEl,
    mondayTimeEl,
    tuesdayTimeEl,
    wednesdayTimeEl,
@@ -37,6 +54,16 @@ export function createGuardiansTalkScheduleController({
    activatePanel,
    talkLocationFilterController = null,
 } = {}) {
+   const dayCheckboxEls = [
+      mondayEl,
+      tuesdayEl,
+      wednesdayEl,
+      thursdayEl,
+      fridayEl,
+      saturdayEl,
+      sundayEl,
+   ];
+
    const timeFieldEls = [
       mondayTimeEl,
       tuesdayTimeEl,
@@ -96,6 +123,7 @@ export function createGuardiansTalkScheduleController({
       const sameTimeEveryDay = isSameTimeEveryDayMode();
 
       setFieldVisible(dailyTimeEl, sameTimeEveryDay);
+      setFieldVisible(dayCheckboxEls[0], sameTimeEveryDay);
       timeFieldEls.forEach(fieldEl => setFieldVisible(fieldEl, !sameTimeEveryDay));
    }
 
@@ -115,7 +143,7 @@ export function createGuardiansTalkScheduleController({
 
    function resetForm() {
       resetFormFields(fieldEls);
-      resetFormFields([locationEl]);
+      resetFormFields([locationEl, ...dayCheckboxEls]);
       if (sameTimeEveryDayModeEl) {
          sameTimeEveryDayModeEl.checked = true;
       }
@@ -123,22 +151,29 @@ export function createGuardiansTalkScheduleController({
       syncTimeModeFields();
    }
 
-   function getFormValues() {
-      const dailyTime = getOptionalFieldValue(dailyTimeEl);
-      const sameTimeEveryDay = isSameTimeEveryDayMode();
+   function getWeekdayTime(dayCheckboxEl, weekdayTimeEl) {
+      if (isSameTimeEveryDayMode()) {
+         return dayCheckboxEl?.checked
+            ? getOptionalFieldValue(dailyTimeEl)
+            : null;
+      }
 
+      return getOptionalFieldValue(weekdayTimeEl);
+   }
+
+   function getFormValues() {
       return {
          talk: getFieldValue(talkNameEl),
          location: getFieldValue(locationEl),
          startDate: getFieldValue(startDateEl),
          endDate: getFieldValue(endDateEl),
-         mondayTime: sameTimeEveryDay ? dailyTime : getOptionalFieldValue(mondayTimeEl),
-         tuesdayTime: sameTimeEveryDay ? dailyTime : getOptionalFieldValue(tuesdayTimeEl),
-         wednesdayTime: sameTimeEveryDay ? dailyTime : getOptionalFieldValue(wednesdayTimeEl),
-         thursdayTime: sameTimeEveryDay ? dailyTime : getOptionalFieldValue(thursdayTimeEl),
-         fridayTime: sameTimeEveryDay ? dailyTime : getOptionalFieldValue(fridayTimeEl),
-         saturdayTime: sameTimeEveryDay ? dailyTime : getOptionalFieldValue(saturdayTimeEl),
-         sundayTime: sameTimeEveryDay ? dailyTime : getOptionalFieldValue(sundayTimeEl),
+         mondayTime: getWeekdayTime(mondayEl, mondayTimeEl),
+         tuesdayTime: getWeekdayTime(tuesdayEl, tuesdayTimeEl),
+         wednesdayTime: getWeekdayTime(wednesdayEl, wednesdayTimeEl),
+         thursdayTime: getWeekdayTime(thursdayEl, thursdayTimeEl),
+         fridayTime: getWeekdayTime(fridayEl, fridayTimeEl),
+         saturdayTime: getWeekdayTime(saturdayEl, saturdayTimeEl),
+         sundayTime: getWeekdayTime(sundayEl, sundayTimeEl),
          message: getFieldValue(messageEl),
       };
    }
@@ -154,6 +189,10 @@ export function createGuardiansTalkScheduleController({
 
       if (isSameTimeEveryDayMode() && !getFieldValue(dailyTimeEl)) {
          return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkTime);
+      }
+
+      if (isSameTimeEveryDayMode() && !hasCheckedField(dayCheckboxEls)) {
+         return APP_STRINGS.validation.oneDay;
       }
 
       if (!isSameTimeEveryDayMode() && !hasScheduledWeekday()) {
@@ -221,10 +260,58 @@ export function createGuardiansTalkScheduleController({
                'is-success'
             );
             resetForm();
+            return;
          }
-         else {
-            setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
+
+         if (resultHasOpeningScheduleOverlap(result)) {
+            const resolution = await showOpeningScheduleOverlapDialog();
+
+            if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
+               const resolvedResult = await replaceGuardiansTalkScheduleOverlaps(formValues);
+
+               if (resolvedResult?.success) {
+                  setStatus(
+                     statusEl,
+                     APP_STRINGS.status.guardiansTalkScheduleSaved(resolvedResult),
+                     'is-success'
+                  );
+                  resetForm();
+                  return;
+               }
+
+               setStatus(
+                  statusEl,
+                  resolvedResult?.error || APP_STRINGS.common.genericFailed,
+                  'is-error'
+               );
+               return;
+            }
+
+            if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
+               const resolvedResult = await trimGuardiansTalkScheduleOverlaps(formValues);
+
+               if (resolvedResult?.success) {
+                  setStatus(
+                     statusEl,
+                     APP_STRINGS.status.guardiansTalkScheduleSaved(resolvedResult),
+                     'is-success'
+                  );
+                  resetForm();
+                  return;
+               }
+
+               setStatus(
+                  statusEl,
+                  resolvedResult?.error || APP_STRINGS.common.genericFailed,
+                  'is-error'
+               );
+               return;
+            }
+
+            return;
          }
+
+         setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
       }
       catch(err) {
          setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');

@@ -207,6 +207,7 @@ const CONSOLE_OPERATION_REF_CONFIG = {
       schedule: {
          operationName: 'guardiansTalkSchedule',
          includeDateRange: true,
+         includeWeekdaySchedule: true,
          fieldSuffixes: {
             locationEl: 'Location',
             talkNameEl: 'TalkName',

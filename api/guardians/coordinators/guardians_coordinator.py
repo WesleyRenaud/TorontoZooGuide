@@ -10,8 +10,8 @@ from ..data_access.guardians_talk import fetch_meet_the_guardians_talk_records
 from ..data_access.guardians_talk_cancellation import save_guardians_talk_cancellation
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_cancellation_records
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_occurrence_is_cancelled
-from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_record_for_occurrences
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_records
+from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_records_for_talk
 from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule
 from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule_end
 from ..domain.guardians_talk import build_guardians_talk_details
@@ -23,6 +23,8 @@ from ...request_connection import get_connection
 from ..scheduling.guardians_talk_occurrences import build_guardians_talk_occurrences
 from ..scheduling.guardians_talk_schedule import build_guardians_talk_schedule_for_target_date
 from ..scheduling.guardians_talk_schedule import find_guardians_talk_on_day_schedule
+from ..scheduling.guardians_talk_schedule_conflict_resolution import save_guardians_talk_schedule_replacing_overlaps
+from ..scheduling.guardians_talk_schedule_conflict_resolution import save_guardians_talk_schedule_trimming_overlaps
 from ..scheduling.guardians_talk_schedule_status import build_guardians_talk_schedule
 from ..scheduling.guardians_talk_schedule_status import build_guardians_talk_schedule_end
 from ..search.guardians_talks_matching_query import build_guardians_talks_matching_query
@@ -54,7 +56,7 @@ class GuardiansCoordinator():
          talk: str,
          location: str,
          days_ahead: int = 60 ) -> list[ ScheduledOccurrence ]:
-      schedule_record = fetch_guardians_talk_schedule_record_for_occurrences(
+      schedule_records = fetch_guardians_talk_schedule_records_for_talk(
          get_connection(),
          talk_name=talk,
          location=location )
@@ -63,10 +65,18 @@ class GuardiansCoordinator():
          talk_name=talk,
          location=location )
 
-      return build_guardians_talk_occurrences(
-         schedule_record=schedule_record,
-         cancellation_records=cancellation_records,
-         days_ahead=days_ahead )
+      occurrences: list[ ScheduledOccurrence ] = []
+
+      for schedule_record in schedule_records:
+         occurrences.extend(
+            build_guardians_talk_occurrences(
+               schedule_record=schedule_record,
+               cancellation_records=cancellation_records,
+               days_ahead=days_ahead ) )
+
+      return sorted(
+         occurrences,
+         key=lambda occurrence: ( occurrence.date, occurrence.time ) )
 
 
    @classmethod
@@ -110,6 +120,74 @@ class GuardiansCoordinator():
          message=message )
 
       return save_guardians_talk_schedule(
+         get_connection(),
+         schedule=schedule )
+
+
+   @classmethod
+   def replace_guardians_talk_schedule_overlaps(
+         cls,
+         talk: str,
+         location: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday_time: str | None,
+         tuesday_time: str | None,
+         wednesday_time: str | None,
+         thursday_time: str | None,
+         friday_time: str | None,
+         saturday_time: str | None,
+         sunday_time: str | None,
+         message: str ) -> bool:
+      schedule = build_guardians_talk_schedule(
+         talk=talk,
+         location=location,
+         start_date=start_date,
+         end_date=end_date,
+         monday_time=monday_time,
+         tuesday_time=tuesday_time,
+         wednesday_time=wednesday_time,
+         thursday_time=thursday_time,
+         friday_time=friday_time,
+         saturday_time=saturday_time,
+         sunday_time=sunday_time,
+         message=message )
+
+      return save_guardians_talk_schedule_replacing_overlaps(
+         get_connection(),
+         schedule=schedule )
+
+
+   @classmethod
+   def trim_guardians_talk_schedule_overlaps(
+         cls,
+         talk: str,
+         location: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         monday_time: str | None,
+         tuesday_time: str | None,
+         wednesday_time: str | None,
+         thursday_time: str | None,
+         friday_time: str | None,
+         saturday_time: str | None,
+         sunday_time: str | None,
+         message: str ) -> bool:
+      schedule = build_guardians_talk_schedule(
+         talk=talk,
+         location=location,
+         start_date=start_date,
+         end_date=end_date,
+         monday_time=monday_time,
+         tuesday_time=tuesday_time,
+         wednesday_time=wednesday_time,
+         thursday_time=thursday_time,
+         friday_time=friday_time,
+         saturday_time=saturday_time,
+         sunday_time=sunday_time,
+         message=message )
+
+      return save_guardians_talk_schedule_trimming_overlaps(
          get_connection(),
          schedule=schedule )
 

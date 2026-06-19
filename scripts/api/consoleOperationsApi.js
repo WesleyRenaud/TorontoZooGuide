@@ -184,6 +184,14 @@ export function setGuardiansTalkSchedule(payload) {
    return postJson('/set-guardians-talk-schedule', payload);
 }
 
+export function replaceGuardiansTalkScheduleOverlaps(payload) {
+   return postJson('/replace-guardians-talk-schedule-overlaps', payload);
+}
+
+export function trimGuardiansTalkScheduleOverlaps(payload) {
+   return postJson('/trim-guardians-talk-schedule-overlaps', payload);
+}
+
 export function endGuardiansTalkSchedule(payload) {
    return postJson('/end-guardians-talk-schedule', payload);
 }

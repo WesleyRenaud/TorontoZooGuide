@@ -40,7 +40,7 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results(
    assert GuardiansCoordinator.set_guardians_talk_schedule(
       talk='African Lion',
       location='Africa Savanna',
-      start_date='2026-06-01',
+      start_date='2026-06-15',
       end_date='2026-06-30',
       monday_time='10:00',
       tuesday_time=None,
