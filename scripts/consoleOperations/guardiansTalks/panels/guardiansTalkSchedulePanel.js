@@ -1,6 +1,7 @@
 import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
+   createCheckboxGridField,
    createDateField,
    createDateRangeFields,
    createPanelShell,
@@ -9,6 +10,21 @@ import {
    createStatus,
    createTextareaField,
 } from '../../templates/fragments.js';
+
+function createWeekdayCheckboxField() {
+   return createCheckboxGridField({
+      label: APP_STRINGS.labels.occursOnTheseDays,
+      options: [
+         { id: 'guardiansTalkScheduleMonday', label: APP_STRINGS.schedule.dayLabels.monday },
+         { id: 'guardiansTalkScheduleTuesday', label: APP_STRINGS.schedule.dayLabels.tuesday },
+         { id: 'guardiansTalkScheduleWednesday', label: APP_STRINGS.schedule.dayLabels.wednesday },
+         { id: 'guardiansTalkScheduleThursday', label: APP_STRINGS.schedule.dayLabels.thursday },
+         { id: 'guardiansTalkScheduleFriday', label: APP_STRINGS.schedule.dayLabels.friday },
+         { id: 'guardiansTalkScheduleSaturday', label: APP_STRINGS.schedule.dayLabels.saturday },
+         { id: 'guardiansTalkScheduleSunday', label: APP_STRINGS.schedule.dayLabels.sunday },
+      ],
+   });
+}
 
 function createWeekdayTimeField(dayKey) {
    const dayLabel = APP_STRINGS.schedule.dayLabels[dayKey];
@@ -60,6 +76,7 @@ export function createGuardiansTalkSchedulePanel() {
             endDateId: 'guardiansTalkScheduleEndDate',
             endHelpText: APP_STRINGS.help.continueUntilScheduleEnded,
          }),
+         createWeekdayCheckboxField(),
          createTimeModeField(),
          createDateField({
             label: APP_STRINGS.labels.talkTimeEveryDay,

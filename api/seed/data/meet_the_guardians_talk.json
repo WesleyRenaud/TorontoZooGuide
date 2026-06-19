@@ -86,8 +86,8 @@
   {
     "name": "Sumatran Orangutan",
     "location": "Indo-Malaya Pavilion",
-    "x_coord": 45.806,
-    "y_coord": 74.345,
+    "x_coord": 43.961,
+    "y_coord": 78.314,
     "maximum_duration": 30
   },
   {
@@ -123,6 +123,118 @@
     "location": "Greenhouse",
     "x_coord": 56,
     "y_coord": 15,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Masai Giraffe",
+    "location": "Africa Savanna",
+    "x_coord": 40.308,
+    "y_coord": 69.286,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Wood Bison",
+    "location": "Canadian Domain",
+    "x_coord": 21.006,
+    "y_coord": 19.386,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Southern White Rhinoceros",
+    "location": "Africa Savanna",
+    "x_coord": 41.144,
+    "y_coord": 51.717,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Black-Handed Spider Monkey",
+    "location": "Americas Outdoor Mayan Temple Ruins",
+    "x_coord": 78.027,
+    "y_coord": 34.806,
+    "maximum_duration": 30
+  },
+  {
+    "name": "African Penguin",
+    "location": "Africa Savanna",
+    "x_coord": 50.952,
+    "y_coord": 48.839,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Caribou",
+    "location": "Tundra Trek",
+    "x_coord": 76.643,
+    "y_coord": 44.414,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Capybara",
+    "location": "Americas Outdoor Mayan Temple Ruins",
+    "x_coord": 76.268,
+    "y_coord": 40.110,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Grevy's Zebra",
+    "location": "Africa Savanna",
+    "x_coord": 45.693,
+    "y_coord": 40.491,
+    "maximum_duration": 30
+  },
+  {
+    "name": "River Hippopotamus",
+    "location": "Africa Savanna",
+    "x_coord": 38.705,
+    "y_coord": 67.356,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Western Grey Kangaroo",
+    "location": "Australasia Outdoor",
+    "x_coord": 74.771,
+    "y_coord": 69.317,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Cougar",
+    "location": "Canadian Domain",
+    "x_coord": 27.509,
+    "y_coord": 5.882,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Greater Kudu",
+    "location": "Africa Savanna",
+    "x_coord": 41.329,
+    "y_coord": 53.734,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Northern Bald Eagle",
+    "location": "Canadian Domain",
+    "x_coord": 21.587,
+    "y_coord": 14.117,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Babirusa",
+    "location": "Indo-Malaya Outdoor",
+    "x_coord": 54.145,
+    "y_coord": 82.451,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Cheetah",
+    "location": "Africa Savanna",
+    "x_coord": 42.404,
+    "y_coord": 41.711,
+    "maximum_duration": 30
+  },
+  {
+    "name": "Aldabra Tortoise",
+    "location": "African Rainforest Pavilion",
+    "x_coord": 47.678,
+    "y_coord": 66.931,
     "maximum_duration": 30
   }
 ]
