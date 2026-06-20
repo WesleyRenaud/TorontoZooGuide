@@ -38,6 +38,15 @@ function getPanelIdFromUrl(location = getDefaultLocation()) {
    ) ?? '';
 }
 
+export function clearConsoleMenuButtonSelection(doc = document) {
+   doc
+      .querySelectorAll('.console-operations-menu-btn')
+      .forEach(button => {
+         button.classList.remove('active');
+         button.removeAttribute('aria-current');
+      });
+}
+
 export function clearConsolePanelUrlParam(options = {}) {
    updateConsolePanelUrl('', options);
 }
@@ -61,10 +70,16 @@ export function createConsolePanelNavigator(
       doc
          .querySelectorAll('.console-operations-menu-btn')
          .forEach(button => {
-            button.classList.toggle(
-               'active',
-               button.dataset.panelTarget === panelEl?.id
-            );
+            const isActive = button.dataset.panelTarget === panelEl?.id;
+
+            button.classList.toggle('active', isActive);
+
+            if (isActive) {
+               button.setAttribute('aria-current', 'page');
+            }
+            else {
+               button.removeAttribute('aria-current');
+            }
          });
    }
 
@@ -73,9 +88,7 @@ export function createConsolePanelNavigator(
          .querySelectorAll('.console-operations-panel')
          .forEach(panel => panel.classList.remove('active'));
 
-      doc
-         .querySelectorAll('.console-operations-menu-btn')
-         .forEach(button => button.classList.remove('active'));
+      clearConsoleMenuButtonSelection(doc);
 
       clearConsolePanelUrlParam(urlOptions);
    }

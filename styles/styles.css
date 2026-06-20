@@ -4545,6 +4545,21 @@ nav ul li a:hover {
    box-shadow: 0 20px 42px rgba(0,0,0,0.24);
 }
 
+.console-operations-menu-btn.active {
+   background-color: #9ccc65;
+   box-shadow:
+      0 16px 34px rgba(0,0,0,0.18),
+      inset 0 0 0 4px rgba(255, 255, 255, 0.45);
+}
+
+.console-operations-menu-btn.active:hover {
+   background-color: #aed581;
+   transform: translateY(-2px);
+   box-shadow:
+      0 20px 42px rgba(0,0,0,0.24),
+      inset 0 0 0 4px rgba(255, 255, 255, 0.55);
+}
+
 .console-operations-menu-btn-number {
    flex: 0 0 auto;
    width: 82px;
