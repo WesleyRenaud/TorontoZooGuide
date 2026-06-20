@@ -12,6 +12,9 @@ export const REQUIRED_FRAGMENTS = [
    'id="image39_2_6"',
    'id="zoomobile-route-winter"',
    'id="zoomobile-route-summer"',
+   'id="walk-graph" style="display: none;"',
+   'id="walk-graph-path"',
+   'stroke="black" fill="none"/>',
    '</defs>',
 ];
 
