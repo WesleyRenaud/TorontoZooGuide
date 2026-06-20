@@ -40,6 +40,17 @@ function createButton(panelId) {
       },
       classList: createClassList(),
       clickCount: 0,
+      ariaCurrent: undefined,
+      setAttribute(name, value) {
+         if (name === 'aria-current') {
+            this.ariaCurrent = value;
+         }
+      },
+      removeAttribute(name) {
+         if (name === 'aria-current') {
+            this.ariaCurrent = undefined;
+         }
+      },
       click() {
          this.clickCount += 1;
       },
@@ -99,6 +110,8 @@ test('console panel navigator writes activated panel to the url and restores by 
    );
    assert.equal(giftShopPanel.classList.contains('active'), true);
    assert.equal(giftShopButton.classList.contains('active'), true);
+   assert.equal(giftShopButton.ariaCurrent, 'page');
+   assert.equal(restaurantButton.ariaCurrent, undefined);
 
    navigator.restorePanelFromUrl();
 
