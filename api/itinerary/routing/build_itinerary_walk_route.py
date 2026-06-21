@@ -16,6 +16,7 @@ from ...walk_graph.representative_walk_node import representative_walk_node_id_f
 from ...walk_graph.shortest_path import shortest_path_node_ids
 from .walk_route_leg import WalkRouteLeg
 from .walk_route_point import WalkRoutePoint
+from .walk_route_polyline import append_walk_route_leg_node_ids
 
 
 def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
@@ -62,7 +63,7 @@ def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
             from_schedule_item_kind=route_stops[ -1 ].schedule_item_kind,
             to_schedule_item_kind=next_stop.schedule_item_kind,
             node_ids=tuple( leg_node_ids ) ) )
-      _append_leg_route_node_ids( route_node_ids, leg_node_ids )
+      append_walk_route_leg_node_ids( route_node_ids, leg_node_ids )
       route_stops.append(
          ItineraryWalkRouteStop.from_itinerary_stop(
             next_stop,
@@ -119,22 +120,6 @@ def _walk_graph_nodes_by_id(
       str( node[ 'id' ] ): node
       for node in walk_graph[ 'nodes' ]
    }
-
-
-def _append_route_node_id(
-      route_node_ids: list[ str ],
-      node_id: str ) -> None:
-   if route_node_ids and route_node_ids[ -1 ] == node_id:
-      return
-
-   route_node_ids.append( node_id )
-
-
-def _append_leg_route_node_ids(
-      route_node_ids: list[ str ],
-      leg_node_ids: list[ str ] ) -> None:
-   for node_id in leg_node_ids:
-      _append_route_node_id( route_node_ids, node_id )
 
 
 def _walk_route_points_from_node_ids(

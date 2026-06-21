@@ -6,6 +6,7 @@ from ..itinerary.data_access.clear_itinerary import clear_itinerary_date
 from ..itinerary.data_access.clear_itinerary import clear_itinerary_events
 from ..itinerary.data_access.clear_itinerary import clear_itinerary_guardians_talks
 from ..itinerary.data_access.clear_itinerary import clear_itinerary_wild_encounters
+from ..itinerary.data_access.clear_itinerary_walk_route import clear_itinerary_walk_route
 from ..types import Cursor
 
 
@@ -15,4 +16,5 @@ def clear_user_itinerary_data( cursor: Cursor ) -> None:
    clear_itinerary_guardians_talks( cursor )
    clear_itinerary_wild_encounters( cursor )
    clear_itinerary_events( cursor )
+   clear_itinerary_walk_route( cursor )
    clear_itinerary_date( cursor )

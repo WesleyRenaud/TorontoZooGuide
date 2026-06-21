@@ -106,6 +106,49 @@ def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:
             VALUES ( 'lunch', '12:00', '12:30' );
       """
    )
+   cursor.execute(
+      """   INSERT INTO ItineraryWalkRouteStop (
+               STOP_SEQUENCE,
+               SCHEDULE_ITEM_KIND,
+               ITEM_KEY,
+               WALK_NODE_ID
+            )
+            VALUES ( 0, 'entrance', 'entrance', '1' );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO ItineraryWalkRoutePoint (
+               POINT_SEQUENCE,
+               WALK_NODE_ID,
+               X,
+               Y,
+               X_PX,
+               Y_PX
+            )
+            VALUES ( 0, '1', 0.1, 0.2, 100.0, 200.0 );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO ItineraryWalkRouteLeg (
+               LEG_SEQUENCE,
+               FROM_ITEM_KEY,
+               TO_ITEM_KEY,
+               FROM_SCHEDULE_ITEM_KIND,
+               TO_SCHEDULE_ITEM_KIND,
+               FROM_POINT_SEQUENCE,
+               TO_POINT_SEQUENCE
+            )
+            VALUES (
+               0,
+               'entrance',
+               'African Lion||Africa Savanna',
+               'entrance',
+               'animal',
+               0,
+               0
+            );
+      """
+   )
 
    clear_user_itinerary_data( cursor )
 
@@ -115,6 +158,9 @@ def test_clear_user_itinerary_data_removes_saved_itinerary_rows() -> None:
    assert table_count( cursor, 'ItineraryGuardiansTalk' ) == 0
    assert table_count( cursor, 'ItineraryWildEncounter' ) == 0
    assert table_count( cursor, 'ItineraryEvent' ) == 0
+   assert table_count( cursor, 'ItineraryWalkRouteStop' ) == 0
+   assert table_count( cursor, 'ItineraryWalkRoutePoint' ) == 0
+   assert table_count( cursor, 'ItineraryWalkRouteLeg' ) == 0
 
    conn.close()
 

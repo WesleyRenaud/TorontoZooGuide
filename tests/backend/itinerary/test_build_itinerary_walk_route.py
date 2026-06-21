@@ -13,6 +13,8 @@ from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_wal
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
 from api.itinerary.routing.order_itinerary_stops_for_walk_route import order_itinerary_stops_for_walk_route
 from api.itinerary.routing.resolve_itinerary_stops import resolve_itinerary_stops
+from api.itinerary.routing.walk_route_polyline import inclusive_point_slices_for_walk_route_legs
+from api.itinerary.routing.walk_route_polyline import walk_route_node_ids_for_point_slice
 from api.shared.enums import ScheduleItemKind
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
@@ -178,3 +180,38 @@ def test_build_itinerary_walk_route_concatenates_legs_at_shared_node_once(
       point.node_id
       for point in walk_route.points
    ].count( joined_node_id ) == 1
+
+
+def test_inclusive_point_slices_for_walk_route_legs_match_polyline(
+      db: DbControllers ) -> None:
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[
+         CHEETAH_INDO_MALAYA_ITINERARY_ENTRY,
+         LION_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+   assert ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=CHEETAH_INDO_MALAYA_KEY,
+      start_time='10:00',
+   ).success
+   assert ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=LION_KEY,
+      start_time='11:00',
+   ).success
+
+   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+
+   for leg, ( from_point_sequence, to_point_sequence ) in zip(
+         walk_route.legs,
+         inclusive_point_slices_for_walk_route_legs( walk_route.legs ) ):
+      assert walk_route_node_ids_for_point_slice(
+         walk_route.points,
+         from_point_sequence=from_point_sequence,
+         to_point_sequence=to_point_sequence ) == leg.node_ids
