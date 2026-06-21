@@ -4,6 +4,22 @@ from ...shared.enums import ItineraryEventType
 from ...types import Cursor
 
 
+def clear_all_itinerary_animal_schedules( cur: Cursor ) -> None:
+   cur.execute(
+      """   UPDATE ItineraryAnimal
+            SET START_TIME = NULL,
+                END_TIME = NULL;
+         """ )
+
+
+def clear_all_itinerary_attraction_schedules( cur: Cursor ) -> None:
+   cur.execute(
+      """   UPDATE ItineraryAttraction
+            SET START_TIME = NULL,
+                END_TIME = NULL;
+         """ )
+
+
 def clear_itinerary_animal_schedule(
       cur: Cursor,
       *,

@@ -7,6 +7,7 @@ from ..conflicts.wild_encounter_time_conflicts import find_schedule_time_conflic
 from ..data_access.clear_itinerary import clear_itinerary
 from ..data_access.save_itinerary import save_validated_itinerary
 from ..results.itinerary_save_result import ItinerarySaveResult
+from ..scheduling.reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
 from ..scheduling.unscheduling.guardians_talk_schedule_trimming import apply_guardians_talk_trimming
 from .set_itinerary_context import build_set_itinerary_current_itinerary
 from .set_itinerary_context import SetItineraryContext
@@ -48,6 +49,18 @@ def commit_set_itinerary(
       context.conn,
       context.save_input.date,
       validated_itinerary )
+
+   if context.unschedule_requirements.encounters:
+      reschedule_result = reschedule_itinerary_items_after_fixed_time_activity_add(
+         context.conn,
+         **context.itinerary_controller_kwargs )
+
+      return ItinerarySaveResult(
+         status=reschedule_result.status,
+         reasons=reschedule_result.reasons,
+         adjustments=context.adjustments,
+         suppressed_warnings=context.suppressed_warnings,
+         itinerary=reschedule_result.itinerary )
 
    return ItinerarySaveResult(
       adjustments=context.adjustments,

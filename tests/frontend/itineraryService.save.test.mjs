@@ -201,6 +201,7 @@ test('saveItinerary confirms before saving a wild encounter that unschedules ite
                items: [{
                   name: 'African Rainforest',
                   item_type: 'wildEncounter',
+                  start_time: '14:00',
                }],
             }],
             itinerary_config: itineraryConfig,
@@ -231,7 +232,7 @@ test('saveItinerary confirms before saving a wild encounter that unschedules ite
 
    assert.match(
       popupMessage?.textContent ?? '',
-      /Adding these Wild Encounters: African Rainforest will unschedule other items/
+      /Adding African Rainforest will put a .* encounter on your day and update your walking route\. Your items will be rescheduled around it\./
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();
