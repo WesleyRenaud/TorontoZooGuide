@@ -27,6 +27,7 @@ import { planScheduledPillRenderGroupsByAnchor } from './scheduledPillRenderPlan
 import {
    makeScheduleActionsBar,
    makeScheduleItemButton,
+   runScheduleItemButtonAction,
 } from './scheduleItemButton.js';
 import { makeSection } from './section.js';
 import {
@@ -112,13 +113,20 @@ function appendScheduleActionButtons(
    }
 
    if (typeof onBulkScheduleAnimalsClick === 'function') {
-      buttons.push(
-         makeScheduleItemButton({
-            label: strings.bulkScheduleAnimalsButton,
-            onClick: onBulkScheduleAnimalsClick,
-            variant: 'secondary',
-         })
-      );
+      const bulkScheduleButton = makeScheduleItemButton({
+         label: strings.bulkScheduleAnimalsButton,
+         variant: 'secondary',
+      });
+
+      bulkScheduleButton.addEventListener('click', () => {
+         void runScheduleItemButtonAction(
+            bulkScheduleButton,
+            onBulkScheduleAnimalsClick,
+            strings.bulkScheduleAnimalsButtonBusy
+         );
+      });
+
+      buttons.push(bulkScheduleButton);
    }
 
    if (buttons.length > 0) {
@@ -175,6 +183,7 @@ export function makeDayPlannerPreview(
    const root = el('div', 'itinerary-day-planner-content');
    const section = el('section', 'itinerary-day-module');
    const header = el('div', 'itinerary-day-module-header');
+   const headerAside = el('div', 'itinerary-day-module-header-aside');
    const titleWrap = el('div');
    const title = el('h3', '', strings.title);
    const date = formatISODateFull(hours.date, strings.date);
@@ -185,9 +194,10 @@ export function makeDayPlannerPreview(
 
    titleWrap.appendChild(title);
    header.appendChild(titleWrap);
-   header.appendChild(
+   headerAside.appendChild(
       makeDayPlannerControls(date, itinerary, timeHandlers, strings, hours)
    );
+   header.appendChild(headerAside);
 
    const earlyAdmissionMinutes = parseClockTimeMinutes(hours.earlyAdmissionTime);
    const openMinutes = parseClockTimeMinutes(hours.openTime);
@@ -224,13 +234,12 @@ export function makeDayPlannerPreview(
    );
 
    if (timelineSlotStarts.length === 0) {
-      section.appendChild(header);
-
-      appendScheduleActionButtons(section, {
+      appendScheduleActionButtons(headerAside, {
          onScheduleItemClick,
          onBulkScheduleAnimalsClick,
          strings,
       });
+      section.appendChild(header);
 
       section.appendChild(makeUnavailableMessage(strings.hoursUnavailable));
       root.appendChild(section);
@@ -273,13 +282,12 @@ export function makeDayPlannerPreview(
       );
    });
 
-   section.appendChild(header);
-
-   appendScheduleActionButtons(section, {
+   appendScheduleActionButtons(headerAside, {
       onScheduleItemClick,
       onBulkScheduleAnimalsClick,
       strings,
    });
+   section.appendChild(header);
 
    section.appendChild(timeline);
    root.appendChild(section);
