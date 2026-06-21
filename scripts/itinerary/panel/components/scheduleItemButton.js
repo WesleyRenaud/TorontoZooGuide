@@ -1,5 +1,39 @@
 import { el } from '../dom.js';
 
+export function setScheduleItemButtonBusy(
+   button,
+   isBusy,
+   busyLabel = 'Scheduling…'
+) {
+   if (!button.dataset.defaultLabel) {
+      button.dataset.defaultLabel = button.textContent;
+   }
+
+   button.disabled = isBusy;
+   button.setAttribute('aria-busy', isBusy ? 'true' : 'false');
+   button.classList.toggle('is-busy', isBusy);
+   button.textContent = isBusy ? busyLabel : button.dataset.defaultLabel;
+}
+
+export async function runScheduleItemButtonAction(
+   button,
+   action,
+   busyLabel = 'Scheduling…'
+) {
+   if (button.disabled) {
+      return;
+   }
+
+   setScheduleItemButtonBusy(button, true, busyLabel);
+
+   try {
+      await action();
+   }
+   finally {
+      setScheduleItemButtonBusy(button, false);
+   }
+}
+
 export function makeScheduleItemButton({
    label = 'Schedule item',
    onClick = null,
@@ -7,6 +41,7 @@ export function makeScheduleItemButton({
 } = {}) {
    const button = el('button', 'itinerary-day-schedule-item-btn', label);
    button.type = 'button';
+   button.dataset.defaultLabel = label;
 
    if (variant === 'secondary') {
       button.classList.add('itinerary-day-schedule-item-btn--secondary');

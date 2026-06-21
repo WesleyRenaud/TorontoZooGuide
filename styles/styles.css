@@ -1865,13 +1865,23 @@ nav ul li a:hover {
    box-shadow: none;
 }
 
+.itinerary-day-module-header-aside {
+   flex: 0 0 auto;
+   display: flex;
+   flex-direction: column;
+   gap: 18px;
+   width: min(720px, 100%);
+   max-width: 100%;
+}
+
 .itinerary-day-module-controls {
    flex: 0 0 auto;
    display: grid;
    grid-template-columns: max-content minmax(280px, 1fr);
    column-gap: 22px;
    row-gap: 22px;
-   width: min(720px, 100%);
+   width: 100%;
+   box-sizing: border-box;
    padding: 38px 44px 44px 44px;
    border-radius: 8px;
    background: #5e9600;
@@ -1886,16 +1896,16 @@ nav ul li a:hover {
 
 .itinerary-day-schedule-actions {
    display: flex;
-   flex-wrap: wrap;
-   justify-content: flex-end;
+   flex-wrap: nowrap;
    align-items: stretch;
    gap: 18px;
-   padding: 0 4px 34px 4px;
-   border-bottom: 3px solid rgba(94, 150, 0, 0.18);
+   width: 100%;
+   box-sizing: border-box;
 }
 
 .itinerary-day-schedule-item-btn {
-   flex: 0 1 auto;
+   flex: 1 1 0;
+   min-width: 0;
    padding: 18px 32px;
    border: none;
    border-radius: 18px;
@@ -1905,6 +1915,7 @@ nav ul li a:hover {
    font-size: 2rem;
    font-weight: 900;
    line-height: 1.15;
+   text-align: center;
    cursor: pointer;
    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
    transition: transform 0.15s ease,
@@ -1931,6 +1942,34 @@ nav ul li a:hover {
    background-color: #ffffff;
    transform: translateY(-2px);
    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+}
+
+.itinerary-day-schedule-item-btn:disabled,
+.itinerary-day-schedule-item-btn.is-busy {
+   cursor: wait;
+   opacity: 0.82;
+   transform: none;
+   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+   box-sizing: border-box;
+}
+
+.itinerary-day-schedule-item-btn.is-busy::before {
+   content: '';
+   display: inline-block;
+   width: 0.95em;
+   height: 0.95em;
+   margin-right: 0.45em;
+   border: 0.14em solid currentColor;
+   border-top-color: transparent;
+   border-radius: 50%;
+   vertical-align: -0.08em;
+   animation: tzg-schedule-btn-spin 0.8s linear infinite;
+}
+
+@keyframes tzg-schedule-btn-spin {
+   to {
+      transform: rotate(360deg);
+   }
 }
 
 .schedule-item-module .itin-overlay {

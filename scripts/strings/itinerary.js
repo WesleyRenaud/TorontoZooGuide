@@ -156,6 +156,7 @@ export const itinerary = {
       unscheduledTitle: 'Unscheduled Items',
       scheduleItemButton: 'Schedule an item',
       bulkScheduleAnimalsButton: 'Schedule all animals',
+      bulkScheduleAnimalsButtonBusy: 'Scheduling…',
    },
    scheduleItem: {
       title: 'Schedule item',
