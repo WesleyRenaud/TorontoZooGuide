@@ -3,42 +3,41 @@ from __future__ import annotations
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
 from api.itinerary.scheduling.bulk.bulk_schedule_animals import is_itinerary_animal_unscheduled
-from api.itinerary.scheduling.bulk.bulk_schedule_animals import sort_animals_for_bulk_schedule
-from api.itinerary.scheduling.bulk.bulk_schedule_exhibit_order import bulk_schedule_exhibit_rank
+from api.itinerary.scheduling.bulk.bulk_schedule_walk_order import sort_animals_for_bulk_schedule
+from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 
 
-def test_sort_animals_for_bulk_schedule_orders_by_exhibit_then_species() -> None:
-   animals = sort_animals_for_bulk_schedule( [
-      ItineraryAnimalRecord(
-         species='African Lion',
-         exhibit='Africa Savanna',
-         old_likelihood=None,
-         new_likelihood=100,
-      ),
-      ItineraryAnimalRecord(
-         species='Cheetah',
-         exhibit='Indo-Malaya Outdoor',
-         old_likelihood=None,
-         new_likelihood=100,
-      ),
-      ItineraryAnimalRecord(
-         species='African Penguin',
-         exhibit='Africa Savanna',
-         old_likelihood=None,
-         new_likelihood=100,
-      ),
-   ] )
+def test_sort_animals_for_bulk_schedule_orders_by_walk_distance_from_entrance() -> None:
+   graph = load_walk_graph()
+   animals = sort_animals_for_bulk_schedule(
+      graph,
+      [
+         ItineraryAnimalRecord(
+            species='African Lion',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+         ),
+         ItineraryAnimalRecord(
+            species='Cheetah',
+            exhibit='Indo-Malaya Outdoor',
+            old_likelihood=None,
+            new_likelihood=100,
+         ),
+         ItineraryAnimalRecord(
+            species='African Penguin',
+            exhibit='Africa Savanna',
+            old_likelihood=None,
+            new_likelihood=100,
+         ),
+      ],
+      start_node_id=str( graph[ 'entrance_node_id' ] ) )
 
    assert [ ( animal.species, animal.exhibit ) for animal in animals ] == [
       ( 'Cheetah', 'Indo-Malaya Outdoor' ),
-      ( 'African Lion', 'Africa Savanna' ),
       ( 'African Penguin', 'Africa Savanna' ),
+      ( 'African Lion', 'Africa Savanna' ),
    ]
-
-
-def test_bulk_schedule_exhibit_rank_orders_americas_pavilion_before_mayan_temple() -> None:
-   assert bulk_schedule_exhibit_rank( 'Americas Pavilion' ) < bulk_schedule_exhibit_rank(
-      'Americas Outdoor Mayan Temple Ruins' )
 
 
 def test_is_itinerary_animal_unscheduled() -> None:

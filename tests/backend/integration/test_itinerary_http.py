@@ -298,8 +298,8 @@ def test_bulk_schedule_animals_via_http(
 
    assert cheetah[ 'start_time' ] == '09:30'
    assert lion[ 'start_time' ] == '09:35'
-   assert cheetah[ 'end_time' ] is not None
-   assert lion[ 'end_time' ] is not None
+   assert cheetah[ 'end_time' ] == '09:35'
+   assert lion[ 'end_time' ] == '09:43'
 
 
 def test_set_departure_time_via_http(

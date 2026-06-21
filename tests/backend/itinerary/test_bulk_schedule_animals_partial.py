@@ -44,8 +44,8 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
       result.reasons[ 0 ].code
       == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME )
    assert [ item.name for item in result.reasons[ 0 ].items ] == [
-      'African Lion',
       'African Penguin',
+      'African Lion',
    ]
    assert [ item.location for item in result.reasons[ 0 ].items ] == [
       'Africa Savanna',

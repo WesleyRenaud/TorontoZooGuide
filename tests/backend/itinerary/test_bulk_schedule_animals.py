@@ -11,7 +11,7 @@ from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 
 
-def test_bulk_schedule_animals_schedules_in_exhibit_order(
+def test_bulk_schedule_animals_schedules_in_walk_order(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -42,9 +42,9 @@ def test_bulk_schedule_animals_schedules_in_exhibit_order(
       if animal.species == 'African Lion' )
 
    assert cheetah.start_time == '09:30'
+   assert cheetah.end_time == '09:35'
    assert lion.start_time == '09:35'
-   assert cheetah.end_time is not None
-   assert lion.end_time is not None
+   assert lion.end_time == '09:43'
 
 
 def test_bulk_schedule_animals_skips_already_scheduled_animals(
