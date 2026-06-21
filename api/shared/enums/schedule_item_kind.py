@@ -6,6 +6,7 @@ _ITEM_TYPE_BY_KIND: dict[ 'ScheduleItemKind', str ] = {}
 
 
 class ScheduleItemKind( str, Enum ):
+   ENTRANCE = 'entrance'
    ANIMAL = 'animal'
    ATTRACTION = 'attraction'
    EVENT = 'event'

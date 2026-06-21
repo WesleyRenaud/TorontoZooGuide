@@ -1,0 +1,308 @@
+[
+  {
+    "kind": "guardians_talk",
+    "name": "African Lion",
+    "location": "Africa Savanna",
+    "x": 51.138,
+    "y": 41.279,
+    "walk_node_id": "v-0436",
+    "snap_distance_px": 30.894
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "African Penguin",
+    "location": "Africa Savanna",
+    "x": 50.952,
+    "y": 48.839,
+    "walk_node_id": "v-0650",
+    "snap_distance_px": 9.355
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Aldabra Tortoise",
+    "location": "African Rainforest Pavilion",
+    "x": 47.678,
+    "y": 66.931,
+    "walk_node_id": "v-0281",
+    "snap_distance_px": 8.753
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Amur Tiger",
+    "location": "Eurasia Wilds",
+    "x": 75.979,
+    "y": 74.707,
+    "walk_node_id": "v-1061",
+    "snap_distance_px": 39.474
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Arctic Wolf",
+    "location": "Tundra Trek",
+    "x": 75.246,
+    "y": 55.427,
+    "walk_node_id": "v-0796",
+    "snap_distance_px": 15.427
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Babirusa",
+    "location": "Indo-Malaya Outdoor",
+    "x": 54.145,
+    "y": 82.451,
+    "walk_node_id": "v-0078",
+    "snap_distance_px": 18.804
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Bactrian Camel",
+    "location": "Eurasia Wilds",
+    "x": 82.038,
+    "y": 84.526,
+    "walk_node_id": "v-0988",
+    "snap_distance_px": 23.595
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Black-Handed Spider Monkey",
+    "location": "Americas Outdoor Mayan Temple Ruins",
+    "x": 78.027,
+    "y": 34.806,
+    "walk_node_id": "v-0860",
+    "snap_distance_px": 12.116
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Capybara",
+    "location": "Americas Outdoor Mayan Temple Ruins",
+    "x": 76.268,
+    "y": 40.11,
+    "walk_node_id": "v-0872",
+    "snap_distance_px": 18.343
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Caribou",
+    "location": "Tundra Trek",
+    "x": 76.643,
+    "y": 44.414,
+    "walk_node_id": "v-0829",
+    "snap_distance_px": 9.085
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Cheetah",
+    "location": "Africa Savanna",
+    "x": 42.404,
+    "y": 41.711,
+    "walk_node_id": "v-0404",
+    "snap_distance_px": 16.764
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Cougar",
+    "location": "Canadian Domain",
+    "x": 27.509,
+    "y": 5.882,
+    "walk_node_id": "v-0578",
+    "snap_distance_px": 37.777
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Domestic Goat",
+    "location": "Goat World",
+    "x": 65.363,
+    "y": 73.687,
+    "walk_node_id": "v-1209",
+    "snap_distance_px": 20.253
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Greater Kudu",
+    "location": "Africa Savanna",
+    "x": 41.329,
+    "y": 53.734,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 7.25
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Grevy's Zebra",
+    "location": "Africa Savanna",
+    "x": 45.693,
+    "y": 40.491,
+    "walk_node_id": "v-0415",
+    "snap_distance_px": 8.881
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Guardians of Plants Talk",
+    "location": "Greenhouse",
+    "x": 56.0,
+    "y": 15.0,
+    "walk_node_id": "v-0463",
+    "snap_distance_px": 373.059
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Highland Cattle",
+    "location": "Eurasia Wilds",
+    "x": 81.211,
+    "y": 94.71,
+    "walk_node_id": "v-1016",
+    "snap_distance_px": 61.46
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Komodo Dragon",
+    "location": "Australasia Pavilion",
+    "x": 72.266,
+    "y": 66.987,
+    "walk_node_id": "v-1136",
+    "snap_distance_px": 7.019
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Masai Giraffe",
+    "location": "Africa Savanna",
+    "x": 40.308,
+    "y": 69.286,
+    "walk_node_id": "v-0303",
+    "snap_distance_px": 20.945
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "New World Primates",
+    "location": "Americas Pavilion",
+    "x": 68.239,
+    "y": 50.929,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 61.781
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Nile Soft-Shelled Turtle",
+    "location": "African Rainforest Pavilion",
+    "x": 43.724,
+    "y": 65.371,
+    "walk_node_id": "v-0260",
+    "snap_distance_px": 8.099
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "North American River Otter",
+    "location": "Americas Pavilion",
+    "x": 69.437,
+    "y": 47.675,
+    "walk_node_id": "v-0735",
+    "snap_distance_px": 14.054
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Northern Bald Eagle",
+    "location": "Canadian Domain",
+    "x": 21.587,
+    "y": 14.117,
+    "walk_node_id": "v-0558",
+    "snap_distance_px": 3.53
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Northern Bald Eagle",
+    "location": "Tundra Trek",
+    "x": 74.67,
+    "y": 46.213,
+    "walk_node_id": "v-0835",
+    "snap_distance_px": 14.791
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "River Hippopotamus",
+    "location": "Africa Savanna",
+    "x": 38.705,
+    "y": 67.356,
+    "walk_node_id": "v-0321",
+    "snap_distance_px": 21.246
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Slender-Tailed Meerkat",
+    "location": "African Rainforest Pavilion",
+    "x": 44.708,
+    "y": 64.671,
+    "walk_node_id": "v-0261",
+    "snap_distance_px": 25.74
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Snow Leopard",
+    "location": "Eurasia Wilds",
+    "x": 85.478,
+    "y": 75.529,
+    "walk_node_id": "v-0955",
+    "snap_distance_px": 41.274
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Southern White Rhinoceros",
+    "location": "Africa Savanna",
+    "x": 41.144,
+    "y": 51.717,
+    "walk_node_id": "v-0363",
+    "snap_distance_px": 6.599
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Spotted Hyena",
+    "location": "Africa Savanna",
+    "x": 54.873,
+    "y": 42.598,
+    "walk_node_id": "v-0491",
+    "snap_distance_px": 27.81
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Sumatran Orangutan",
+    "location": "Indo-Malaya Pavilion",
+    "x": 43.961,
+    "y": 78.314,
+    "walk_node_id": "v-0138",
+    "snap_distance_px": 10.826
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Western Grey Kangaroo",
+    "location": "Australasia Outdoor",
+    "x": 74.771,
+    "y": 69.317,
+    "walk_node_id": "v-1103",
+    "snap_distance_px": 23.412
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Western Lowland Gorilla",
+    "location": "African Rainforest Pavilion",
+    "x": 47.812,
+    "y": 61.419,
+    "walk_node_id": "v-0248",
+    "snap_distance_px": 14.348
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "White-Handed Gibbon",
+    "location": "Indo-Malaya Pavilion",
+    "x": 46.297,
+    "y": 73.699,
+    "walk_node_id": "v-0151",
+    "snap_distance_px": 47.072
+  },
+  {
+    "kind": "guardians_talk",
+    "name": "Wood Bison",
+    "location": "Canadian Domain",
+    "x": 21.006,
+    "y": 19.386,
+    "walk_node_id": "v-0547",
+    "snap_distance_px": 21.322
+  }
+]

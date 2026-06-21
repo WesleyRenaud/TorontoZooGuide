@@ -1,4 +1,7 @@
 export const ScheduleItemKind = Object.freeze({
+   ENTRANCE: Object.freeze({
+      kind: 'entrance',
+   }),
    ANIMAL: Object.freeze({
       kind: 'animal',
       itemType: 'animals',

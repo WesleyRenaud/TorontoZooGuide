@@ -1,0 +1,92 @@
+[
+  {
+    "kind": "attraction",
+    "name": "Conservation Carousel",
+    "location": "",
+    "x": 58.475,
+    "y": 75.904,
+    "walk_node_id": "v-1198",
+    "snap_distance_px": 23.501
+  },
+  {
+    "kind": "attraction",
+    "name": "Face Painting, Caricatures and Henna!",
+    "location": "",
+    "x": 73.669,
+    "y": 59.054,
+    "walk_node_id": "v-1122",
+    "snap_distance_px": 13.813
+  },
+  {
+    "kind": "attraction",
+    "name": "Gorilla Climb Ropes Course",
+    "location": "",
+    "x": 50.023,
+    "y": 58.884,
+    "walk_node_id": "v-0231",
+    "snap_distance_px": 24.985
+  },
+  {
+    "kind": "attraction",
+    "name": "Greenhouse",
+    "location": "",
+    "x": 82.835,
+    "y": 54.277,
+    "walk_node_id": "v-0889",
+    "snap_distance_px": 42.116
+  },
+  {
+    "kind": "attraction",
+    "name": "Kangaroo Walk-Thru",
+    "location": "",
+    "x": 74.985,
+    "y": 70.331,
+    "walk_node_id": "v-1102",
+    "snap_distance_px": 45.341
+  },
+  {
+    "kind": "attraction",
+    "name": "Splash Island",
+    "location": "",
+    "x": 67.797,
+    "y": 72.648,
+    "walk_node_id": "v-1197",
+    "snap_distance_px": 82.357
+  },
+  {
+    "kind": "attraction",
+    "name": "TundraAir Ride",
+    "location": "",
+    "x": 75.152,
+    "y": 60.212,
+    "walk_node_id": "v-1119",
+    "snap_distance_px": 47.352
+  },
+  {
+    "kind": "attraction",
+    "name": "Virtual Reality (VR) Theatre!",
+    "location": "",
+    "x": 71.786,
+    "y": 59.947,
+    "walk_node_id": "v-0754",
+    "snap_distance_px": 41.864
+  },
+  {
+    "kind": "attraction",
+    "name": "Wildlife Health & Science Centre",
+    "location": "",
+    "x": 84.459,
+    "y": 50.743,
+    "walk_node_id": "v-0894",
+    "snap_distance_px": 42.889
+  },
+  {
+    "kind": "attraction",
+    "name": "Zoomobile",
+    "location": "",
+    "x": 56.068,
+    "y": 83.343,
+    "walk_node_id": "v-0031",
+    "snap_distance_px": 87.513
+  }
+]
