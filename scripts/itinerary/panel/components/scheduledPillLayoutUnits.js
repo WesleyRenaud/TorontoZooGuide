@@ -3,6 +3,7 @@ import {
    formatScheduledPillGroupLabel,
    getScheduledItemEndMinutes,
    getScheduledPillMinDisplayMinutes,
+   sortScheduledItemsForGroupDisplay,
 } from './scheduledPillOverlap.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import { isScheduleItemModuleItemType } from '../../../shared/enums/scheduleItemKind.js';
@@ -55,8 +56,10 @@ function canMergeCarouselLayoutUnits(leftUnit = {}, rightUnit = {}) {
 }
 
 function mergeLayoutUnits(leftUnit = {}, rightUnit = {}) {
-   const items = [...getLayoutUnitItems(leftUnit), ...getLayoutUnitItems(rightUnit)]
-      .sort(compareScheduledItemsForLayout);
+   const items = sortScheduledItemsForGroupDisplay([
+      ...getLayoutUnitItems(leftUnit),
+      ...getLayoutUnitItems(rightUnit),
+   ]);
 
    if (items.length === 1) {
       return items[0];
@@ -349,10 +352,11 @@ export function getLayoutUnitScheduleOffsetFraction(layoutUnit = {}) {
 }
 
 function buildClusterLayoutItem(items = []) {
+   const displayItems = sortScheduledItemsForGroupDisplay(items);
    const startMinutes = Math.min(...items.map((item) => item.startMinutes));
    const endMinutes = Math.max(...items.map(getScheduledItemEndMinutes));
    const layoutUnit = {
-      clusterItems: items,
+      clusterItems: displayItems,
       startMinutes,
       endMinutes,
       maximumDuration: endMinutes - startMinutes,
@@ -360,7 +364,7 @@ function buildClusterLayoutItem(items = []) {
       slotEndMinutes: items.find((item) => (
          Number.isFinite(item.slotEndMinutes)
       ))?.slotEndMinutes,
-      label: formatScheduledPillGroupLabel(items),
+      label: formatScheduledPillGroupLabel(displayItems),
    };
 
    return {

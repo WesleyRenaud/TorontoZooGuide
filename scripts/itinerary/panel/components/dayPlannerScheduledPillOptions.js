@@ -1,3 +1,4 @@
+import { sortScheduledItemsForGroupDisplay } from './scheduledPillOverlap.js';
 import {
    isScheduleItemModuleItemType,
    ScheduleItemKind,
@@ -99,7 +100,7 @@ export function buildGroupedScheduledPillItems(
    strings = {},
    resolveItemLabelClick = () => null
 ) {
-   return scheduledItems.map((scheduledItem) => ({
+   return sortScheduledItemsForGroupDisplay(scheduledItems).map((scheduledItem) => ({
       label: scheduledItem.label,
       startTime: scheduledItem.item?.start_time ?? '',
       endTime: scheduledItem.item?.end_time ?? '',
