@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
-from .bulk_schedule_exhibit_order import bulk_schedule_exhibit_rank
+from .bulk_schedule_start_state import BulkScheduleStartState
+from .bulk_schedule_walk_order import representative_walk_node_id
+from .bulk_schedule_walk_order import sort_animals_for_bulk_schedule
 from ..core.resolve_schedule_slot import resolve_schedule_slot
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ..core.time_block import time_block_from_schedule_times
@@ -22,6 +24,8 @@ from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ....types import Cursor
 from ....types import ScheduleTimeKey
+from ....walk_graph.data_access.load_walk_graph import load_walk_graph
+from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
@@ -38,17 +42,6 @@ def is_itinerary_animal_unscheduled( animal_row: ItineraryAnimalRecord ) -> bool
    return not has_itinerary_schedule_times(
       animal_row.start_time,
       animal_row.end_time )
-
-
-def sort_animals_for_bulk_schedule(
-      animal_rows: list[ ItineraryAnimalRecord ] ) -> list[ ItineraryAnimalRecord ]:
-   return sorted(
-      animal_rows,
-      key=lambda animal_row: (
-         bulk_schedule_exhibit_rank( animal_row.exhibit ),
-         animal_row.exhibit.lower(),
-         animal_row.species.lower(),
-      ) )
 
 
 def bulk_schedule_animals(
@@ -80,12 +73,20 @@ def bulk_schedule_animals(
       saved_itinerary,
       **itinerary_context )
    blockers = collect_time_blocks_from_itinerary( itinerary )
+   walk_graph = load_walk_graph()
+   start_state = _bulk_schedule_start_state(
+      walk_graph,
+      saved_itinerary.animal_rows,
+      anchor_seconds )
 
-   unscheduled_animals = sort_animals_for_bulk_schedule( [
-      animal_row
-      for animal_row in saved_itinerary.animal_rows
-      if is_itinerary_animal_unscheduled( animal_row )
-   ] )
+   unscheduled_animals = sort_animals_for_bulk_schedule(
+      walk_graph,
+      [
+         animal_row
+         for animal_row in saved_itinerary.animal_rows
+         if is_itinerary_animal_unscheduled( animal_row )
+      ],
+      start_node_id=start_state.start_node_id )
 
    if not unscheduled_animals:
       status = (
@@ -104,7 +105,7 @@ def bulk_schedule_animals(
       conn,
       unscheduled_animals,
       blockers=blockers,
-      anchor_seconds=anchor_seconds,
+      anchor_seconds=start_state.schedule_anchor_seconds,
       day_end_seconds=day_end_seconds )
 
    reasons: tuple[ ItineraryResultReason, ... ] = ()
@@ -121,6 +122,42 @@ def bulk_schedule_animals(
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
          **itinerary_context ) )
+
+
+def _bulk_schedule_start_state(
+      walk_graph: WalkGraph,
+      animal_rows: list[ ItineraryAnimalRecord ],
+      anchor_seconds: int ) -> BulkScheduleStartState:
+   entrance_node_id = str( walk_graph[ 'entrance_node_id' ] )
+   scheduled_rows = [
+      animal_row
+      for animal_row in animal_rows
+      if has_itinerary_schedule_times(
+         animal_row.start_time,
+         animal_row.end_time )
+   ]
+
+   if not scheduled_rows:
+      return BulkScheduleStartState(
+         start_node_id=entrance_node_id,
+         schedule_anchor_seconds=anchor_seconds )
+
+   last_scheduled_row = max(
+      scheduled_rows,
+      key=lambda animal_row: DateValues.time_value_in_seconds(
+         animal_row.end_time ) or -1 )
+
+   start_node_id = representative_walk_node_id(
+      walk_graph,
+      entrance_node_id,
+      last_scheduled_row.species,
+      last_scheduled_row.exhibit ) or entrance_node_id
+   last_end_seconds = DateValues.time_value_in_seconds(
+      last_scheduled_row.end_time ) or anchor_seconds
+
+   return BulkScheduleStartState(
+      start_node_id=start_node_id,
+      schedule_anchor_seconds=max( anchor_seconds, last_end_seconds ) )
 
 
 def _schedule_animals_in_order(
