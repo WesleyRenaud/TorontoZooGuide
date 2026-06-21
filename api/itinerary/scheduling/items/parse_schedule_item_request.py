@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from ...animal_item_key import parse_animal_schedule_item_key
 from ....shared.enums import ItineraryEventType
 from ....shared.enums import ScheduleItemKind
-
-SCHEDULE_ITEM_ANIMAL_KEY_SEPARATOR = '||'
 
 
 @dataclass( frozen=True )
@@ -17,21 +16,6 @@ class ParsedScheduleItemRequest:
    event_type: ItineraryEventType | None = None
    talk_name: str | None = None
    wild_encounter_name: str | None = None
-
-
-def _parse_animal_key( key: str ) -> tuple[ str, str ] | None:
-   parts = key.split( SCHEDULE_ITEM_ANIMAL_KEY_SEPARATOR, 1 )
-
-   if len( parts ) != 2:
-      return None
-
-   species = parts[ 0 ].strip()
-   exhibit = parts[ 1 ].strip()
-
-   if not species or not exhibit:
-      return None
-
-   return species, exhibit
 
 
 def parse_schedule_item_request(
@@ -66,7 +50,7 @@ def parse_schedule_item_request(
          event_type=event_type )
 
    if item_kind == ScheduleItemKind.ANIMAL:
-      animal_key = _parse_animal_key( normalized_key )
+      animal_key = parse_animal_schedule_item_key( normalized_key )
 
       if animal_key is None:
          return None

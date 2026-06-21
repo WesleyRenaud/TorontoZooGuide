@@ -15,6 +15,10 @@ from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 from conftest import DbControllers
 
 
+def test_schedule_item_kind_normalizes_entrance() -> None:
+   assert ScheduleItemKind.normalize( 'entrance' ) == ScheduleItemKind.ENTRANCE
+
+
 def test_schedule_item_kind_from_item_type_accepts_module_types() -> None:
    assert ScheduleItemKind.from_item_type( 'animals' ) == ScheduleItemKind.ANIMAL
    assert ScheduleItemKind.from_item_type( 'attractions' ) == ScheduleItemKind.ATTRACTION

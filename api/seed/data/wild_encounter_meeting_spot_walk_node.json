@@ -1,0 +1,83 @@
+[
+  {
+    "kind": "wild_encounter_meeting_spot",
+    "name": "Wild Encounter - Africa Meeting Spot",
+    "location": "",
+    "x": 40.044,
+    "y": 69.0,
+    "walk_node_id": "v-0304",
+    "snap_distance_px": 18.391
+  },
+  {
+    "kind": "wild_encounter_meeting_spot",
+    "name": "Wild Encounter - Canadian Domain Meeting Spot",
+    "location": "",
+    "x": 35.584,
+    "y": 20.07,
+    "walk_node_id": "v-0611",
+    "snap_distance_px": 49.132
+  },
+  {
+    "kind": "wild_encounter_meeting_spot",
+    "name": "Wild Encounter - Discovery Zone Meeting Spot",
+    "location": "",
+    "x": 65.885,
+    "y": 77.803,
+    "walk_node_id": "v-1189",
+    "snap_distance_px": 28.102
+  },
+  {
+    "kind": "wild_encounter_meeting_spot",
+    "name": "Wild Encounter - Eurasia Meeting Spot",
+    "location": "",
+    "x": 77.23,
+    "y": 63.73,
+    "walk_node_id": "v-0905",
+    "snap_distance_px": 5.272
+  },
+  {
+    "kind": "wild_encounter_meeting_spot",
+    "name": "Wild Encounter - Eurasia Zoomobile Station Meeting Spot",
+    "location": "",
+    "x": 75.943,
+    "y": 90.577,
+    "walk_node_id": "v-1008",
+    "snap_distance_px": 28.875
+  },
+  {
+    "kind": "wild_encounter_meeting_spot",
+    "name": "Wild Encounter - First Nations Art Garden Meeting Spot",
+    "location": "",
+    "x": 70.329,
+    "y": 53.162,
+    "walk_node_id": "v-0732",
+    "snap_distance_px": 20.676
+  },
+  {
+    "kind": "wild_encounter_meeting_spot",
+    "name": "Wild Encounter - Mayan Temple Meeting Spot",
+    "location": "",
+    "x": 75.819,
+    "y": 42.75,
+    "walk_node_id": "v-0825",
+    "snap_distance_px": 19.974
+  },
+  {
+    "kind": "wild_encounter_meeting_spot",
+    "name": "Wild Encounter - Penguin Meeting Spot",
+    "location": "",
+    "x": 53.338,
+    "y": 47.237,
+    "walk_node_id": "v-0644",
+    "snap_distance_px": 22.149
+  },
+  {
+    "kind": "wild_encounter_meeting_spot",
+    "name": "Wild Encounter - Zoo Front Entrance Gates Meeting Spot",
+    "location": "",
+    "x": 59.812,
+    "y": 85.689,
+    "walk_node_id": "v-0009",
+    "snap_distance_px": 7.558
+  }
+]
