@@ -2,6 +2,7 @@
   {
     "species": "African Clawed Frog",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -10,6 +11,7 @@
   {
     "species": "African Lion",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 51.162,
     "y": 39.787,
     "walk_node_id": "v-0434",
@@ -18,6 +20,7 @@
   {
     "species": "African Penguin",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 51.001,
     "y": 50.458,
     "walk_node_id": "v-0652",
@@ -26,6 +29,7 @@
   {
     "species": "African Penguin",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Indoor",
     "x": 51.954,
     "y": 49.237,
     "walk_node_id": "v-0647",
@@ -34,6 +38,7 @@
   {
     "species": "African Spoonbill",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 44.546,
     "y": 66.138,
     "walk_node_id": "v-0258",
@@ -42,6 +47,7 @@
   {
     "species": "African Spurred Tortoise",
     "exhibit": "Kids Zoo",
+    "enclosure_type": "Outdoor",
     "x": 66.827,
     "y": 80.627,
     "walk_node_id": "v-1184",
@@ -50,6 +56,7 @@
   {
     "species": "Aldabra Tortoise",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 43.103,
     "y": 67.078,
     "walk_node_id": "v-0269",
@@ -58,6 +65,7 @@
   {
     "species": "Aldabra Tortoise",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 47.091,
     "y": 66.261,
     "walk_node_id": "v-0281",
@@ -66,6 +74,7 @@
   {
     "species": "American Alligator",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -74,6 +83,7 @@
   {
     "species": "American Eel",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -82,6 +92,7 @@
   {
     "species": "American Flamingo",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "enclosure_type": "Outdoor",
     "x": 77.471,
     "y": 38.008,
     "walk_node_id": "v-0869",
@@ -90,6 +101,7 @@
   {
     "species": "American Lobster",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -98,6 +110,7 @@
   {
     "species": "Amur Tiger",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 76.076,
     "y": 76.176,
     "walk_node_id": "v-1043",
@@ -106,6 +119,7 @@
   {
     "species": "Arctic Wolf",
     "exhibit": "Tundra Trek",
+    "enclosure_type": "Outdoor",
     "x": 75.673,
     "y": 53.208,
     "walk_node_id": "v-0797",
@@ -114,6 +128,7 @@
   {
     "species": "Asian Brown Tortoise",
     "exhibit": "Indo-Malaya Outdoor",
+    "enclosure_type": "Outdoor",
     "x": 54.631,
     "y": 83.101,
     "walk_node_id": "v-0078",
@@ -122,6 +137,7 @@
   {
     "species": "Asian Brown Tortoise",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -130,6 +146,7 @@
   {
     "species": "Asian Giant Millipede",
     "exhibit": "Malayan Woods Pavilion",
+    "enclosure_type": "Indoor",
     "x": 50.177,
     "y": 81.571,
     "walk_node_id": "v-0097",
@@ -138,6 +155,7 @@
   {
     "species": "Asian Wild Horse",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 83.172,
     "y": 65.82,
     "walk_node_id": "v-0923",
@@ -146,6 +164,7 @@
   {
     "species": "Asian Wild Horse",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 91.461,
     "y": 85.732,
     "walk_node_id": "v-0977",
@@ -154,6 +173,7 @@
   {
     "species": "Axolotl",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -162,6 +182,7 @@
   {
     "species": "Babirusa",
     "exhibit": "Indo-Malaya Outdoor",
+    "enclosure_type": "Outdoor",
     "x": 54.631,
     "y": 83.101,
     "walk_node_id": "v-0078",
@@ -170,6 +191,7 @@
   {
     "species": "Babirusa",
     "exhibit": "Indo-Malaya Outdoor",
+    "enclosure_type": "Indoor",
     "x": 53.679,
     "y": 84.485,
     "walk_node_id": "v-0079",
@@ -178,6 +200,7 @@
   {
     "species": "Bactrian Camel",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 85.339,
     "y": 84.538,
     "walk_node_id": "v-0981",
@@ -186,6 +209,7 @@
   {
     "species": "Bactrian Camel",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 81.436,
     "y": 83.418,
     "walk_node_id": "v-0989",
@@ -194,6 +218,7 @@
   {
     "species": "Bark Scorpion",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -202,6 +227,7 @@
   {
     "species": "Bighead Carp",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -210,6 +236,7 @@
   {
     "species": "Black Carp",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -218,6 +245,7 @@
   {
     "species": "Black Crake",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -226,6 +254,7 @@
   {
     "species": "Black Tree Monitor",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -234,6 +263,7 @@
   {
     "species": "Black-Breasted Leaf Turtle",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -242,6 +272,7 @@
   {
     "species": "Black-Footed Ferret",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -250,6 +281,7 @@
   {
     "species": "Black-Handed Spider Monkey",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "enclosure_type": "Outdoor",
     "x": 77.016,
     "y": 35.154,
     "walk_node_id": "v-0856",
@@ -258,6 +290,7 @@
   {
     "species": "Black-Throated Laughing Thrush",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -266,6 +299,7 @@
   {
     "species": "Black-Widow Spider",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -274,6 +308,7 @@
   {
     "species": "Blanding's Turtle",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -282,6 +317,7 @@
   {
     "species": "Blue And Yellow Macaw",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -290,6 +326,7 @@
   {
     "species": "Blue Poison Dart Frog",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -298,6 +335,7 @@
   {
     "species": "Blue-Bellied Roller",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -306,6 +344,7 @@
   {
     "species": "Blue-Girdled Angelfish",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -314,6 +353,7 @@
   {
     "species": "Boa Constrictor",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -322,6 +362,7 @@
   {
     "species": "Brazilian Giant Cockroach",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -330,6 +371,7 @@
   {
     "species": "Brazilian Salmon Pink Bird-Eating Tarantula",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -338,6 +380,7 @@
   {
     "species": "Brush-Tailed Bettong",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -346,6 +389,7 @@
   {
     "species": "Burmese Star Tortoise",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -354,6 +398,7 @@
   {
     "species": "Butterfly Goodeid",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -362,6 +407,7 @@
   {
     "species": "Capybara",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "enclosure_type": "Outdoor",
     "x": 76.108,
     "y": 37.753,
     "walk_node_id": "v-0851",
@@ -370,6 +416,7 @@
   {
     "species": "Caribou",
     "exhibit": "Tundra Trek",
+    "enclosure_type": "Outdoor",
     "x": 77.744,
     "y": 43.772,
     "walk_node_id": "v-0830",
@@ -378,6 +425,7 @@
   {
     "species": "Cattle Egret",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -386,6 +434,7 @@
   {
     "species": "Cheetah",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 42.194,
     "y": 40.492,
     "walk_node_id": "v-0404",
@@ -394,6 +443,7 @@
   {
     "species": "Cheetah",
     "exhibit": "Indo-Malaya Outdoor",
+    "enclosure_type": "Outdoor",
     "x": 49.295,
     "y": 71.958,
     "walk_node_id": "v-0226",
@@ -402,6 +452,7 @@
   {
     "species": "Clouded Leopard",
     "exhibit": "Malayan Woods Pavilion",
+    "enclosure_type": "Indoor",
     "x": 50.177,
     "y": 81.571,
     "walk_node_id": "v-0097",
@@ -410,6 +461,7 @@
   {
     "species": "Clown Triggerfish",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -418,6 +470,7 @@
   {
     "species": "Common Eland",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 50.618,
     "y": 44.872,
     "walk_node_id": "v-0440",
@@ -426,6 +479,7 @@
   {
     "species": "Common Raven",
     "exhibit": "Kids Zoo",
+    "enclosure_type": "Outdoor",
     "x": 66.827,
     "y": 80.627,
     "walk_node_id": "v-1184",
@@ -434,6 +488,7 @@
   {
     "species": "Concave Casqued Hornbill",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -442,6 +497,7 @@
   {
     "species": "Cougar",
     "exhibit": "Canadian Domain",
+    "enclosure_type": "Outdoor",
     "x": 26.885,
     "y": 7.094,
     "walk_node_id": "v-0578",
@@ -450,6 +506,7 @@
   {
     "species": "Crested Pigeon",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -458,6 +515,7 @@
   {
     "species": "Crested Tinamou",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -466,6 +524,7 @@
   {
     "species": "Crested Wood Partridge",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -474,6 +533,7 @@
   {
     "species": "Crimson Rosella",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -482,6 +542,7 @@
   {
     "species": "Crocodile Lizard",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -490,6 +551,7 @@
   {
     "species": "Crocodile Newt",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -498,6 +560,7 @@
   {
     "species": "Cuvier's Smooth-Fronted Caiman",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -506,6 +569,7 @@
   {
     "species": "Demoiselle Crane",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 72.925,
     "y": 64.81,
     "walk_node_id": "v-1131",
@@ -514,6 +578,7 @@
   {
     "species": "Desert Grassland Whiptail",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -522,6 +587,7 @@
   {
     "species": "Domestic Goat",
     "exhibit": "Goat World",
+    "enclosure_type": "Outdoor",
     "x": 64.786,
     "y": 72.611,
     "walk_node_id": "v-1209",
@@ -530,6 +596,7 @@
   {
     "species": "Domestic Yak",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 90.495,
     "y": 90.868,
     "walk_node_id": "v-0979",
@@ -538,6 +605,7 @@
   {
     "species": "Dyeing Poison Dart Frog",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -546,6 +614,7 @@
   {
     "species": "Eastern Loggerhead Shrike",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -554,6 +623,7 @@
   {
     "species": "Eastern Lubber Grasshopper",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -562,6 +632,7 @@
   {
     "species": "Eastern Rosella",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -570,6 +641,7 @@
   {
     "species": "Edward's Pheasant",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -578,6 +650,7 @@
   {
     "species": "Emerald Tree Boa",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -586,6 +659,7 @@
   {
     "species": "Eurasian Eagle Owl",
     "exhibit": "Kids Zoo",
+    "enclosure_type": "Outdoor",
     "x": 66.827,
     "y": 80.627,
     "walk_node_id": "v-1184",
@@ -594,6 +668,7 @@
   {
     "species": "Eyelash Viper",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -602,6 +677,7 @@
   {
     "species": "Ferocious Water Bug",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -610,6 +686,7 @@
   {
     "species": "Flame Angelfish",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -618,6 +695,7 @@
   {
     "species": "Fly River Turtle",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -626,6 +704,7 @@
   {
     "species": "Gaboon Viper",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 43.103,
     "y": 67.078,
     "walk_node_id": "v-0269",
@@ -634,6 +713,7 @@
   {
     "species": "Galah",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -642,6 +722,7 @@
   {
     "species": "Giant Gourami",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -650,6 +731,7 @@
   {
     "species": "Giant Gourami",
     "exhibit": "Malayan Woods Pavilion",
+    "enclosure_type": "Indoor",
     "x": 50.177,
     "y": 81.571,
     "walk_node_id": "v-0097",
@@ -658,6 +740,7 @@
   {
     "species": "Golden Lion Tamarin",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -666,6 +749,7 @@
   {
     "species": "Golden Lion Tamarin",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 69.119,
     "y": 51.599,
     "walk_node_id": "v-0742",
@@ -674,6 +758,7 @@
   {
     "species": "Gooty Sapphire Ornamental Tarantula",
     "exhibit": "Malayan Woods Pavilion",
+    "enclosure_type": "Indoor",
     "x": 50.177,
     "y": 81.571,
     "walk_node_id": "v-0097",
@@ -682,6 +767,7 @@
   {
     "species": "Grass Carp",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -690,6 +776,7 @@
   {
     "species": "Great Horned Owl",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -698,6 +785,7 @@
   {
     "species": "Great Horned Owl",
     "exhibit": "Kids Zoo",
+    "enclosure_type": "Outdoor",
     "x": 66.827,
     "y": 80.627,
     "walk_node_id": "v-1184",
@@ -706,6 +794,7 @@
   {
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 43.612,
     "y": 62.754,
     "walk_node_id": "v-0263",
@@ -714,6 +803,7 @@
   {
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 40.544,
     "y": 58.662,
     "walk_node_id": "v-0339",
@@ -722,6 +812,7 @@
   {
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 41.389,
     "y": 55.434,
     "walk_node_id": "v-0359",
@@ -730,6 +821,7 @@
   {
     "species": "Greater One-Horned Rhinoceros",
     "exhibit": "Indo-Malaya Outdoor",
+    "enclosure_type": "Outdoor",
     "x": 52.485,
     "y": 85.012,
     "walk_node_id": "v-0087",
@@ -738,6 +830,7 @@
   {
     "species": "Greater One-Horned Rhinoceros",
     "exhibit": "Indo-Malaya Outdoor",
+    "enclosure_type": "Indoor",
     "x": 53.679,
     "y": 84.485,
     "walk_node_id": "v-0079",
@@ -746,6 +839,7 @@
   {
     "species": "Green And Black Poison Dart Frog",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -754,6 +848,7 @@
   {
     "species": "Green Crested Basilisk",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -762,6 +857,7 @@
   {
     "species": "Green Surf Anemone",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -770,6 +866,7 @@
   {
     "species": "Green Tree Python",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -778,6 +875,7 @@
   {
     "species": "Green-Winged Dove",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -786,6 +884,7 @@
   {
     "species": "Green-Winged Macaw",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -794,6 +893,7 @@
   {
     "species": "Grevy's Zebra",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 46.194,
     "y": 41.967,
     "walk_node_id": "v-0416",
@@ -802,6 +902,7 @@
   {
     "species": "Grevy's Zebra",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 51.664,
     "y": 29.598,
     "walk_node_id": "v-0457",
@@ -810,6 +911,7 @@
   {
     "species": "Grey-Necked Crowned Crane",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 43.103,
     "y": 67.078,
     "walk_node_id": "v-0269",
@@ -818,6 +920,7 @@
   {
     "species": "Grizzly Bear",
     "exhibit": "Canadian Domain",
+    "enclosure_type": "Outdoor",
     "x": 22.896,
     "y": 4.714,
     "walk_node_id": "v-0623",
@@ -826,6 +929,7 @@
   {
     "species": "Guatemalan Beaded Lizard",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -834,6 +938,7 @@
   {
     "species": "Guinea Pig",
     "exhibit": "Kids Zoo",
+    "enclosure_type": "Indoor",
     "x": 66.827,
     "y": 80.627,
     "walk_node_id": "v-1184",
@@ -842,6 +947,7 @@
   {
     "species": "Hamerkop",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -850,6 +956,7 @@
   {
     "species": "Hamilton's Pond Turtle",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -858,6 +965,7 @@
   {
     "species": "Harris's Hawk",
     "exhibit": "Kids Zoo",
+    "enclosure_type": "Outdoor",
     "x": 66.827,
     "y": 80.627,
     "walk_node_id": "v-1184",
@@ -866,6 +974,7 @@
   {
     "species": "Highland Cattle",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 82.525,
     "y": 95.269,
     "walk_node_id": "v-1018",
@@ -874,6 +983,7 @@
   {
     "species": "Indian Peafowl",
     "exhibit": "Indo-Malaya Outdoor",
+    "enclosure_type": "Outdoor",
     "x": 52.643,
     "y": 78.68,
     "walk_node_id": "v-0068",
@@ -882,6 +992,7 @@
   {
     "species": "Iridescent Shark Catfish",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -890,6 +1001,7 @@
   {
     "species": "Jamaican Boa",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -898,6 +1010,7 @@
   {
     "species": "Komodo Dragon",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -906,6 +1019,7 @@
   {
     "species": "Kookaburra",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -914,6 +1028,7 @@
   {
     "species": "Kookaburra",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 72.925,
     "y": 64.81,
     "walk_node_id": "v-1131",
@@ -922,6 +1037,7 @@
   {
     "species": "Lake Malawi Cichlids",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -930,6 +1046,7 @@
   {
     "species": "Lau Banded Iguana",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -938,6 +1055,7 @@
   {
     "species": "Lau Banded Iguana",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -946,6 +1064,7 @@
   {
     "species": "Leather Sea Star",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -954,6 +1073,7 @@
   {
     "species": "Lemur Leaf Frog",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -962,6 +1082,7 @@
   {
     "species": "Leopard Ctenopoma",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -970,6 +1091,7 @@
   {
     "species": "Lesser Snow Goose",
     "exhibit": "Tundra Trek",
+    "enclosure_type": "Outdoor",
     "x": 72.064,
     "y": 51.575,
     "walk_node_id": "v-0803",
@@ -978,6 +1100,7 @@
   {
     "species": "Lionfish",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -986,6 +1109,7 @@
   {
     "species": "Live Coral Reefs",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -994,6 +1118,7 @@
   {
     "species": "Longnose Butterflyfish",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1002,6 +1127,7 @@
   {
     "species": "Longnose Dace",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1010,6 +1136,7 @@
   {
     "species": "Luzon Bleeding-Heart Dove",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1018,6 +1145,7 @@
   {
     "species": "MacLeay's Spectres",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1026,6 +1154,7 @@
   {
     "species": "Malagasy Rainbowfish",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1034,6 +1163,7 @@
   {
     "species": "Malayan Bonytongue",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1042,6 +1172,7 @@
   {
     "species": "Malayan Walking Stick",
     "exhibit": "Malayan Woods Pavilion",
+    "enclosure_type": "Indoor",
     "x": 50.177,
     "y": 81.571,
     "walk_node_id": "v-0097",
@@ -1050,6 +1181,7 @@
   {
     "species": "Malaysian Painted Turtle",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1058,6 +1190,7 @@
   {
     "species": "Malaysian Stick Insect Jungle Wood Nymph",
     "exhibit": "Malayan Woods Pavilion",
+    "enclosure_type": "Indoor",
     "x": 50.177,
     "y": 81.571,
     "walk_node_id": "v-0097",
@@ -1066,6 +1199,7 @@
   {
     "species": "Mantella (Poison Frog)",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1074,6 +1208,7 @@
   {
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 43.612,
     "y": 62.754,
     "walk_node_id": "v-0263",
@@ -1082,6 +1217,7 @@
   {
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 40.544,
     "y": 58.662,
     "walk_node_id": "v-0339",
@@ -1090,6 +1226,7 @@
   {
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 41.389,
     "y": 55.434,
     "walk_node_id": "v-0359",
@@ -1098,6 +1235,7 @@
   {
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 43.38,
     "y": 43.353,
     "walk_node_id": "v-0406",
@@ -1106,6 +1244,7 @@
   {
     "species": "Marabou Stork",
     "exhibit": "Kids Zoo",
+    "enclosure_type": "Outdoor",
     "x": 66.827,
     "y": 80.627,
     "walk_node_id": "v-1184",
@@ -1114,6 +1253,7 @@
   {
     "species": "Masai Giraffe",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 39.885,
     "y": 70.927,
     "walk_node_id": "v-0300",
@@ -1122,6 +1262,7 @@
   {
     "species": "Masai Giraffe",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Indoor",
     "x": 42.35,
     "y": 71.366,
     "walk_node_id": "v-0298",
@@ -1130,6 +1271,7 @@
   {
     "species": "Massasauga Rattlesnake",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1138,6 +1280,7 @@
   {
     "species": "Mekong Barb",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1146,6 +1289,7 @@
   {
     "species": "Mexican Blind Cavefish",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1154,6 +1298,7 @@
   {
     "species": "Midland Painted Turtle",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1162,6 +1307,7 @@
   {
     "species": "Mimic Surgeonfish",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1170,6 +1316,7 @@
   {
     "species": "Monocled Cobra",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1178,6 +1325,7 @@
   {
     "species": "Moon Jellyfish",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1186,6 +1334,7 @@
   {
     "species": "Mouflon",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 79.357,
     "y": 69.972,
     "walk_node_id": "v-0930",
@@ -1194,6 +1343,7 @@
   {
     "species": "Naked Mole Rat",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1202,6 +1352,7 @@
   {
     "species": "Ngege",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1210,6 +1361,7 @@
   {
     "species": "Nicobar Pigeon",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1218,6 +1370,7 @@
   {
     "species": "Nicobar Pigeon",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1226,6 +1379,7 @@
   {
     "species": "Nile Soft-Shelled Turtle",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 44.546,
     "y": 66.138,
     "walk_node_id": "v-0258",
@@ -1234,6 +1388,7 @@
   {
     "species": "North American River Otter",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1242,6 +1397,7 @@
   {
     "species": "North American River Otter",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 68.706,
     "y": 47.561,
     "walk_node_id": "v-0734",
@@ -1250,6 +1406,7 @@
   {
     "species": "Northern Bald Eagle",
     "exhibit": "Canadian Domain",
+    "enclosure_type": "Outdoor",
     "x": 22.226,
     "y": 14.269,
     "walk_node_id": "v-0559",
@@ -1258,6 +1415,7 @@
   {
     "species": "Northern Bald Eagle",
     "exhibit": "Tundra Trek",
+    "enclosure_type": "Outdoor",
     "x": 73.885,
     "y": 46.811,
     "walk_node_id": "v-0836",
@@ -1266,6 +1424,7 @@
   {
     "species": "Olive Baboon",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 46.381,
     "y": 37.671,
     "walk_node_id": "v-0421",
@@ -1274,6 +1433,7 @@
   {
     "species": "Opal-Rumped Tanager",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1282,6 +1442,7 @@
   {
     "species": "Ostrich",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 49.056,
     "y": 36.903,
     "walk_node_id": "v-0426",
@@ -1290,6 +1451,7 @@
   {
     "species": "Painted Anemone",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1298,6 +1460,7 @@
   {
     "species": "Palawan Peacock-Pheasant",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1306,6 +1469,7 @@
   {
     "species": "Panamanian Golden Frog",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1314,6 +1478,7 @@
   {
     "species": "Pennant Coral Fish",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1322,6 +1487,7 @@
   {
     "species": "Pied Imperial Pigeon",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1330,6 +1496,7 @@
   {
     "species": "Plumose Anemone",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1338,6 +1505,7 @@
   {
     "species": "Plush-Crested Jay",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1346,6 +1514,7 @@
   {
     "species": "Polar Bear",
     "exhibit": "Tundra Trek",
+    "enclosure_type": "Outdoor",
     "x": 78.289,
     "y": 51.1,
     "walk_node_id": "v-0845",
@@ -1354,6 +1523,7 @@
   {
     "species": "Pot-Bellied Seahorse",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1362,6 +1532,7 @@
   {
     "species": "Puerto Rican Crested Toad",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1370,6 +1541,7 @@
   {
     "species": "Pumpkinseed Sunfish",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1378,6 +1550,7 @@
   {
     "species": "Pygmy Hippopotamus",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 44.546,
     "y": 66.138,
     "walk_node_id": "v-0258",
@@ -1386,6 +1559,7 @@
   {
     "species": "Rabbit",
     "exhibit": "Kids Zoo",
+    "enclosure_type": "Outdoor",
     "x": 66.827,
     "y": 80.627,
     "walk_node_id": "v-1184",
@@ -1394,6 +1568,7 @@
   {
     "species": "Raccoon",
     "exhibit": "Canadian Domain",
+    "enclosure_type": "Outdoor",
     "x": 30.393,
     "y": 17.759,
     "walk_node_id": "v-0597",
@@ -1402,6 +1577,7 @@
   {
     "species": "Radiated Tortoise",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 44.546,
     "y": 66.138,
     "walk_node_id": "v-0258",
@@ -1410,6 +1586,7 @@
   {
     "species": "Red Claw Yabby",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1418,6 +1595,7 @@
   {
     "species": "Red Island Bird-Eating Tarantula",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1426,6 +1604,7 @@
   {
     "species": "Red Panda",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 52.186,
     "y": 42.034,
     "walk_node_id": "v-0439",
@@ -1434,6 +1613,7 @@
   {
     "species": "Red River Hog",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 44.591,
     "y": 68.531,
     "walk_node_id": "v-0275",
@@ -1442,6 +1622,7 @@
   {
     "species": "Red-Bellied Short-Necked Turtle",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1450,6 +1631,7 @@
   {
     "species": "Red-Crested Finch",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1458,6 +1640,7 @@
   {
     "species": "Red-Legged Seriema",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "enclosure_type": "Outdoor",
     "x": 78.017,
     "y": 36.228,
     "walk_node_id": "v-0861",
@@ -1466,6 +1649,7 @@
   {
     "species": "Red-Lined Torpedo Barb",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1474,6 +1658,7 @@
   {
     "species": "Red-Tailed Black Cockatoo",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1482,6 +1667,7 @@
   {
     "species": "Red-Tailed Green Ratsnake",
     "exhibit": "Malayan Woods Pavilion",
+    "enclosure_type": "Indoor",
     "x": 50.177,
     "y": 81.571,
     "walk_node_id": "v-0097",
@@ -1490,6 +1676,7 @@
   {
     "species": "Reticulate Gila Monster",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1498,6 +1685,7 @@
   {
     "species": "Reticulated Python",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1506,6 +1694,7 @@
   {
     "species": "Ring-Tailed Lemur",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 43.103,
     "y": 67.078,
     "walk_node_id": "v-0269",
@@ -1514,6 +1703,7 @@
   {
     "species": "River Hippopotamus",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 37.731,
     "y": 68.101,
     "walk_node_id": "v-0321",
@@ -1522,6 +1712,7 @@
   {
     "species": "Round Goby",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1530,6 +1721,7 @@
   {
     "species": "Royal Python",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 43.103,
     "y": 67.078,
     "walk_node_id": "v-0269",
@@ -1538,6 +1730,7 @@
   {
     "species": "Rufous-Collared Sparrow",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1546,6 +1739,7 @@
   {
     "species": "Sacred Ibis",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 44.546,
     "y": 66.138,
     "walk_node_id": "v-0258",
@@ -1554,6 +1748,7 @@
   {
     "species": "San-Esteban Island Chuckwalla",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1562,6 +1757,7 @@
   {
     "species": "Short-Beaked Echidna",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1570,6 +1766,7 @@
   {
     "species": "Slender-Tailed Meerkat",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1578,6 +1775,7 @@
   {
     "species": "Snapping Turtle",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1586,6 +1784,7 @@
   {
     "species": "Snow Leopard",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 86.033,
     "y": 76.673,
     "walk_node_id": "v-0968",
@@ -1594,6 +1793,7 @@
   {
     "species": "Solomon Island Leaf Frog",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1602,6 +1802,7 @@
   {
     "species": "Solomon Island Monkey-Tailed Skink",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1610,6 +1811,7 @@
   {
     "species": "South African Crested Porcupine",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1618,6 +1820,7 @@
   {
     "species": "South African Shelduck",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 44.546,
     "y": 66.138,
     "walk_node_id": "v-0258",
@@ -1626,6 +1829,7 @@
   {
     "species": "Southern Ground Hornbill",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 43.612,
     "y": 62.754,
     "walk_node_id": "v-0263",
@@ -1634,6 +1838,7 @@
   {
     "species": "Southern Ground Hornbill",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 40.544,
     "y": 58.662,
     "walk_node_id": "v-0339",
@@ -1642,6 +1847,7 @@
   {
     "species": "Southern Ground Hornbill",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 41.389,
     "y": 55.434,
     "walk_node_id": "v-0359",
@@ -1650,6 +1856,7 @@
   {
     "species": "Southern Hairy-Nosed Wombat",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1658,6 +1865,7 @@
   {
     "species": "Southern Hairy-Nosed Wombat",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 73.888,
     "y": 67.181,
     "walk_node_id": "v-1107",
@@ -1666,6 +1874,7 @@
   {
     "species": "Southern White Rhinoceros",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 41.57,
     "y": 50.29,
     "walk_node_id": "v-0363",
@@ -1674,6 +1883,7 @@
   {
     "species": "Speckled Mousebird",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1682,6 +1892,7 @@
   {
     "species": "Spider Tortoise",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1690,6 +1901,7 @@
   {
     "species": "Spiny Turtle",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1698,6 +1910,7 @@
   {
     "species": "Spot Prawn",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1706,6 +1919,7 @@
   {
     "species": "Spotted Hyena",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 53.96,
     "y": 42.207,
     "walk_node_id": "v-0493",
@@ -1714,6 +1928,7 @@
   {
     "species": "Spotted River Stingray",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1722,6 +1937,7 @@
   {
     "species": "Spotted Turtle",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1730,6 +1946,7 @@
   {
     "species": "Steller's Sea Eagle",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 86.73,
     "y": 79.365,
     "walk_node_id": "v-0971",
@@ -1738,6 +1955,7 @@
   {
     "species": "Stimson's Python",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1746,6 +1964,7 @@
   {
     "species": "Straw Coloured Fruit Bat",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 44.546,
     "y": 66.138,
     "walk_node_id": "v-0258",
@@ -1754,6 +1973,7 @@
   {
     "species": "Sumatran Orangutan",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1762,6 +1982,7 @@
   {
     "species": "Sumatran Orangutan",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 42.963,
     "y": 78.506,
     "walk_node_id": "v-0141",
@@ -1770,6 +1991,7 @@
   {
     "species": "Tawny Frogmouth",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1778,6 +2000,7 @@
   {
     "species": "Tentacled Snake",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1786,6 +2009,7 @@
   {
     "species": "Thorny Devil Stick Insect",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1794,6 +2018,7 @@
   {
     "species": "Threadfin Butterflyfish",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1802,6 +2027,7 @@
   {
     "species": "Timber Rattlesnake",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1810,6 +2036,7 @@
   {
     "species": "Tinfoil Barb",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1818,6 +2045,7 @@
   {
     "species": "Tomato Frog",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1826,6 +2054,7 @@
   {
     "species": "Tomistoma",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1834,6 +2063,7 @@
   {
     "species": "Tri-Coloured Shark",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -1842,6 +2072,7 @@
   {
     "species": "Turkey Vulture",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "enclosure_type": "Outdoor",
     "x": 78.017,
     "y": 36.228,
     "walk_node_id": "v-0861",
@@ -1850,6 +2081,7 @@
   {
     "species": "Turquoise Tanager",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1858,6 +2090,7 @@
   {
     "species": "Two-Toed Sloth",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1866,6 +2099,7 @@
   {
     "species": "Two-Toed Sloth",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 69.119,
     "y": 51.599,
     "walk_node_id": "v-0742",
@@ -1874,6 +2108,7 @@
   {
     "species": "Veiled Chameleon",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1882,6 +2117,7 @@
   {
     "species": "Victoria Crowned Pigeon",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1890,6 +2126,7 @@
   {
     "species": "Violaceous Plantain Eater",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1898,6 +2135,7 @@
   {
     "species": "Warthog",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 41.363,
     "y": 64.056,
     "walk_node_id": "v-0312",
@@ -1906,6 +2144,7 @@
   {
     "species": "Watusi Cattle",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 55.34,
     "y": 45.331,
     "walk_node_id": "v-0492",
@@ -1914,6 +2153,7 @@
   {
     "species": "West African Dwarf Crocodile",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 45.865,
     "y": 64.211,
     "walk_node_id": "v-0255",
@@ -1922,6 +2162,7 @@
   {
     "species": "West Caucasian Tur",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 85.24,
     "y": 72.803,
     "walk_node_id": "v-0955",
@@ -1930,6 +2171,7 @@
   {
     "species": "West Caucasian Tur",
     "exhibit": "Eurasia Wilds",
+    "enclosure_type": "Outdoor",
     "x": 88.224,
     "y": 93.671,
     "walk_node_id": "v-1023",
@@ -1938,6 +2180,7 @@
   {
     "species": "Western Blacknose Dace",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -1946,6 +2189,7 @@
   {
     "species": "Western Grey Kangaroo",
     "exhibit": "Australasia Outdoor",
+    "enclosure_type": "Outdoor",
     "x": 75.357,
     "y": 72.167,
     "walk_node_id": "v-1061",
@@ -1954,6 +2198,7 @@
   {
     "species": "Western Lowland Gorilla",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Indoor",
     "x": 47.487,
     "y": 62.703,
     "walk_node_id": "v-0247",
@@ -1962,6 +2207,7 @@
   {
     "species": "Western Lowland Gorilla",
     "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 48.951,
     "y": 59.856,
     "walk_node_id": "v-0229",
@@ -1970,6 +2216,7 @@
   {
     "species": "White's Tree Frog",
     "exhibit": "Australasia Pavilion",
+    "enclosure_type": "Indoor",
     "x": 72.869,
     "y": 67.782,
     "walk_node_id": "v-1139",
@@ -1978,6 +2225,7 @@
   {
     "species": "White-Breasted Cormorant",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 51.001,
     "y": 50.458,
     "walk_node_id": "v-0652",
@@ -1986,6 +2234,7 @@
   {
     "species": "White-Breasted Cormorant",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Indoor",
     "x": 51.954,
     "y": 49.237,
     "walk_node_id": "v-0647",
@@ -1994,6 +2243,7 @@
   {
     "species": "White-Faced Saki",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -2002,6 +2252,7 @@
   {
     "species": "White-Faced Saki",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Outdoor",
     "x": 69.119,
     "y": 51.599,
     "walk_node_id": "v-0742",
@@ -2010,6 +2261,7 @@
   {
     "species": "White-Handed Gibbon",
     "exhibit": "Indo-Malaya Pavilion",
+    "enclosure_type": "Indoor",
     "x": 46.391,
     "y": 75.269,
     "walk_node_id": "v-0127",
@@ -2018,6 +2270,7 @@
   {
     "species": "White-Headed Vulture",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 43.612,
     "y": 62.754,
     "walk_node_id": "v-0263",
@@ -2026,6 +2279,7 @@
   {
     "species": "White-Headed Vulture",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 40.544,
     "y": 58.662,
     "walk_node_id": "v-0339",
@@ -2034,6 +2288,7 @@
   {
     "species": "White-Headed Vulture",
     "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 41.389,
     "y": 55.434,
     "walk_node_id": "v-0359",
@@ -2042,6 +2297,7 @@
   {
     "species": "Wood Bison",
     "exhibit": "Canadian Domain",
+    "enclosure_type": "Outdoor",
     "x": 28.482,
     "y": 4.141,
     "walk_node_id": "v-0579",
@@ -2050,6 +2306,7 @@
   {
     "species": "Wood Bison",
     "exhibit": "Canadian Domain",
+    "enclosure_type": "Outdoor",
     "x": 20.453,
     "y": 21.249,
     "walk_node_id": "v-0545",
@@ -2058,6 +2315,7 @@
   {
     "species": "Wrinkled Hornbill",
     "exhibit": "Malayan Woods Pavilion",
+    "enclosure_type": "Indoor",
     "x": 50.177,
     "y": 81.571,
     "walk_node_id": "v-0097",
@@ -2066,6 +2324,7 @@
   {
     "species": "Yellow-Banded Poison Dart Frog",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
@@ -2074,6 +2333,7 @@
   {
     "species": "Zebra Finch",
     "exhibit": "Americas Pavilion",
+    "enclosure_type": "Indoor",
     "x": 68.663,
     "y": 49.679,
     "walk_node_id": "v-0745",
