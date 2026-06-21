@@ -1,0 +1,2082 @@
+[
+  {
+    "species": "African Clawed Frog",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "African Lion",
+    "exhibit": "Africa Savanna",
+    "x": 51.162,
+    "y": 39.787,
+    "walk_node_id": "v-0434",
+    "snap_distance_px": 57.046
+  },
+  {
+    "species": "African Penguin",
+    "exhibit": "Africa Savanna",
+    "x": 51.001,
+    "y": 50.458,
+    "walk_node_id": "v-0652",
+    "snap_distance_px": 34.943
+  },
+  {
+    "species": "African Penguin",
+    "exhibit": "Africa Savanna",
+    "x": 51.954,
+    "y": 49.237,
+    "walk_node_id": "v-0647",
+    "snap_distance_px": 29.49
+  },
+  {
+    "species": "African Spoonbill",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 44.546,
+    "y": 66.138,
+    "walk_node_id": "v-0258",
+    "snap_distance_px": 6.537
+  },
+  {
+    "species": "African Spurred Tortoise",
+    "exhibit": "Kids Zoo",
+    "x": 66.827,
+    "y": 80.627,
+    "walk_node_id": "v-1184",
+    "snap_distance_px": 9.013
+  },
+  {
+    "species": "Aldabra Tortoise",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 43.103,
+    "y": 67.078,
+    "walk_node_id": "v-0269",
+    "snap_distance_px": 11.382
+  },
+  {
+    "species": "Aldabra Tortoise",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 47.091,
+    "y": 66.261,
+    "walk_node_id": "v-0281",
+    "snap_distance_px": 28.028
+  },
+  {
+    "species": "American Alligator",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "American Eel",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "American Flamingo",
+    "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "x": 77.471,
+    "y": 38.008,
+    "walk_node_id": "v-0869",
+    "snap_distance_px": 45.19
+  },
+  {
+    "species": "American Lobster",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Amur Tiger",
+    "exhibit": "Eurasia Wilds",
+    "x": 76.076,
+    "y": 76.176,
+    "walk_node_id": "v-1043",
+    "snap_distance_px": 62.61
+  },
+  {
+    "species": "Arctic Wolf",
+    "exhibit": "Tundra Trek",
+    "x": 75.673,
+    "y": 53.208,
+    "walk_node_id": "v-0797",
+    "snap_distance_px": 62.635
+  },
+  {
+    "species": "Asian Brown Tortoise",
+    "exhibit": "Indo-Malaya Outdoor",
+    "x": 54.631,
+    "y": 83.101,
+    "walk_node_id": "v-0078",
+    "snap_distance_px": 44.19
+  },
+  {
+    "species": "Asian Brown Tortoise",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Asian Giant Millipede",
+    "exhibit": "Malayan Woods Pavilion",
+    "x": 50.177,
+    "y": 81.571,
+    "walk_node_id": "v-0097",
+    "snap_distance_px": 26.626
+  },
+  {
+    "species": "Asian Wild Horse",
+    "exhibit": "Eurasia Wilds",
+    "x": 83.172,
+    "y": 65.82,
+    "walk_node_id": "v-0923",
+    "snap_distance_px": 107.603
+  },
+  {
+    "species": "Asian Wild Horse",
+    "exhibit": "Eurasia Wilds",
+    "x": 91.461,
+    "y": 85.732,
+    "walk_node_id": "v-0977",
+    "snap_distance_px": 182.646
+  },
+  {
+    "species": "Axolotl",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Babirusa",
+    "exhibit": "Indo-Malaya Outdoor",
+    "x": 54.631,
+    "y": 83.101,
+    "walk_node_id": "v-0078",
+    "snap_distance_px": 44.19
+  },
+  {
+    "species": "Babirusa",
+    "exhibit": "Indo-Malaya Outdoor",
+    "x": 53.679,
+    "y": 84.485,
+    "walk_node_id": "v-0079",
+    "snap_distance_px": 67.179
+  },
+  {
+    "species": "Bactrian Camel",
+    "exhibit": "Eurasia Wilds",
+    "x": 85.339,
+    "y": 84.538,
+    "walk_node_id": "v-0981",
+    "snap_distance_px": 50.298
+  },
+  {
+    "species": "Bactrian Camel",
+    "exhibit": "Eurasia Wilds",
+    "x": 81.436,
+    "y": 83.418,
+    "walk_node_id": "v-0989",
+    "snap_distance_px": 12.207
+  },
+  {
+    "species": "Bark Scorpion",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Bighead Carp",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Black Carp",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Black Crake",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Black Tree Monitor",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Black-Breasted Leaf Turtle",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Black-Footed Ferret",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Black-Handed Spider Monkey",
+    "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "x": 77.016,
+    "y": 35.154,
+    "walk_node_id": "v-0856",
+    "snap_distance_px": 26.512
+  },
+  {
+    "species": "Black-Throated Laughing Thrush",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Black-Widow Spider",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Blanding's Turtle",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Blue And Yellow Macaw",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Blue Poison Dart Frog",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Blue-Bellied Roller",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Blue-Girdled Angelfish",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Boa Constrictor",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Brazilian Giant Cockroach",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Brazilian Salmon Pink Bird-Eating Tarantula",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Brush-Tailed Bettong",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Burmese Star Tortoise",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Butterfly Goodeid",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Capybara",
+    "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "x": 76.108,
+    "y": 37.753,
+    "walk_node_id": "v-0851",
+    "snap_distance_px": 55.632
+  },
+  {
+    "species": "Caribou",
+    "exhibit": "Tundra Trek",
+    "x": 77.744,
+    "y": 43.772,
+    "walk_node_id": "v-0830",
+    "snap_distance_px": 54.62
+  },
+  {
+    "species": "Cattle Egret",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Cheetah",
+    "exhibit": "Africa Savanna",
+    "x": 42.194,
+    "y": 40.492,
+    "walk_node_id": "v-0404",
+    "snap_distance_px": 50.295
+  },
+  {
+    "species": "Cheetah",
+    "exhibit": "Indo-Malaya Outdoor",
+    "x": 49.295,
+    "y": 71.958,
+    "walk_node_id": "v-0226",
+    "snap_distance_px": 16.524
+  },
+  {
+    "species": "Clouded Leopard",
+    "exhibit": "Malayan Woods Pavilion",
+    "x": 50.177,
+    "y": 81.571,
+    "walk_node_id": "v-0097",
+    "snap_distance_px": 26.626
+  },
+  {
+    "species": "Clown Triggerfish",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Common Eland",
+    "exhibit": "Africa Savanna",
+    "x": 50.618,
+    "y": 44.872,
+    "walk_node_id": "v-0440",
+    "snap_distance_px": 49.594
+  },
+  {
+    "species": "Common Raven",
+    "exhibit": "Kids Zoo",
+    "x": 66.827,
+    "y": 80.627,
+    "walk_node_id": "v-1184",
+    "snap_distance_px": 9.013
+  },
+  {
+    "species": "Concave Casqued Hornbill",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Cougar",
+    "exhibit": "Canadian Domain",
+    "x": 26.885,
+    "y": 7.094,
+    "walk_node_id": "v-0578",
+    "snap_distance_px": 3.526
+  },
+  {
+    "species": "Crested Pigeon",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Crested Tinamou",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Crested Wood Partridge",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Crimson Rosella",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Crocodile Lizard",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Crocodile Newt",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Cuvier's Smooth-Fronted Caiman",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Demoiselle Crane",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.925,
+    "y": 64.81,
+    "walk_node_id": "v-1131",
+    "snap_distance_px": 34.579
+  },
+  {
+    "species": "Desert Grassland Whiptail",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Domestic Goat",
+    "exhibit": "Goat World",
+    "x": 64.786,
+    "y": 72.611,
+    "walk_node_id": "v-1209",
+    "snap_distance_px": 17.267
+  },
+  {
+    "species": "Domestic Yak",
+    "exhibit": "Eurasia Wilds",
+    "x": 90.495,
+    "y": 90.868,
+    "walk_node_id": "v-0979",
+    "snap_distance_px": 210.019
+  },
+  {
+    "species": "Dyeing Poison Dart Frog",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Eastern Loggerhead Shrike",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Eastern Lubber Grasshopper",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Eastern Rosella",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Edward's Pheasant",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Emerald Tree Boa",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Eurasian Eagle Owl",
+    "exhibit": "Kids Zoo",
+    "x": 66.827,
+    "y": 80.627,
+    "walk_node_id": "v-1184",
+    "snap_distance_px": 9.013
+  },
+  {
+    "species": "Eyelash Viper",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Ferocious Water Bug",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Flame Angelfish",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Fly River Turtle",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Gaboon Viper",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 43.103,
+    "y": 67.078,
+    "walk_node_id": "v-0269",
+    "snap_distance_px": 11.382
+  },
+  {
+    "species": "Galah",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Giant Gourami",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Giant Gourami",
+    "exhibit": "Malayan Woods Pavilion",
+    "x": 50.177,
+    "y": 81.571,
+    "walk_node_id": "v-0097",
+    "snap_distance_px": 26.626
+  },
+  {
+    "species": "Golden Lion Tamarin",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Golden Lion Tamarin",
+    "exhibit": "Americas Pavilion",
+    "x": 69.119,
+    "y": 51.599,
+    "walk_node_id": "v-0742",
+    "snap_distance_px": 39.359
+  },
+  {
+    "species": "Gooty Sapphire Ornamental Tarantula",
+    "exhibit": "Malayan Woods Pavilion",
+    "x": 50.177,
+    "y": 81.571,
+    "walk_node_id": "v-0097",
+    "snap_distance_px": 26.626
+  },
+  {
+    "species": "Grass Carp",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Great Horned Owl",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Great Horned Owl",
+    "exhibit": "Kids Zoo",
+    "x": 66.827,
+    "y": 80.627,
+    "walk_node_id": "v-1184",
+    "snap_distance_px": 9.013
+  },
+  {
+    "species": "Greater Kudu",
+    "exhibit": "Africa Savanna",
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
+  },
+  {
+    "species": "Greater Kudu",
+    "exhibit": "Africa Savanna",
+    "x": 40.544,
+    "y": 58.662,
+    "walk_node_id": "v-0339",
+    "snap_distance_px": 40.008
+  },
+  {
+    "species": "Greater Kudu",
+    "exhibit": "Africa Savanna",
+    "x": 41.389,
+    "y": 55.434,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 51.566
+  },
+  {
+    "species": "Greater One-Horned Rhinoceros",
+    "exhibit": "Indo-Malaya Outdoor",
+    "x": 52.485,
+    "y": 85.012,
+    "walk_node_id": "v-0087",
+    "snap_distance_px": 69.001
+  },
+  {
+    "species": "Greater One-Horned Rhinoceros",
+    "exhibit": "Indo-Malaya Outdoor",
+    "x": 53.679,
+    "y": 84.485,
+    "walk_node_id": "v-0079",
+    "snap_distance_px": 67.179
+  },
+  {
+    "species": "Green And Black Poison Dart Frog",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Green Crested Basilisk",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Green Surf Anemone",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Green Tree Python",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Green-Winged Dove",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Green-Winged Macaw",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Grevy's Zebra",
+    "exhibit": "Africa Savanna",
+    "x": 46.194,
+    "y": 41.967,
+    "walk_node_id": "v-0416",
+    "snap_distance_px": 36.582
+  },
+  {
+    "species": "Grevy's Zebra",
+    "exhibit": "Africa Savanna",
+    "x": 51.664,
+    "y": 29.598,
+    "walk_node_id": "v-0457",
+    "snap_distance_px": 30.123
+  },
+  {
+    "species": "Grey-Necked Crowned Crane",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 43.103,
+    "y": 67.078,
+    "walk_node_id": "v-0269",
+    "snap_distance_px": 11.382
+  },
+  {
+    "species": "Grizzly Bear",
+    "exhibit": "Canadian Domain",
+    "x": 22.896,
+    "y": 4.714,
+    "walk_node_id": "v-0623",
+    "snap_distance_px": 68.15
+  },
+  {
+    "species": "Guatemalan Beaded Lizard",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Guinea Pig",
+    "exhibit": "Kids Zoo",
+    "x": 66.827,
+    "y": 80.627,
+    "walk_node_id": "v-1184",
+    "snap_distance_px": 9.013
+  },
+  {
+    "species": "Hamerkop",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Hamilton's Pond Turtle",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Harris's Hawk",
+    "exhibit": "Kids Zoo",
+    "x": 66.827,
+    "y": 80.627,
+    "walk_node_id": "v-1184",
+    "snap_distance_px": 9.013
+  },
+  {
+    "species": "Highland Cattle",
+    "exhibit": "Eurasia Wilds",
+    "x": 82.525,
+    "y": 95.269,
+    "walk_node_id": "v-1018",
+    "snap_distance_px": 93.071
+  },
+  {
+    "species": "Indian Peafowl",
+    "exhibit": "Indo-Malaya Outdoor",
+    "x": 52.643,
+    "y": 78.68,
+    "walk_node_id": "v-0068",
+    "snap_distance_px": 6.222
+  },
+  {
+    "species": "Iridescent Shark Catfish",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Jamaican Boa",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Komodo Dragon",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Kookaburra",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Kookaburra",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.925,
+    "y": 64.81,
+    "walk_node_id": "v-1131",
+    "snap_distance_px": 34.579
+  },
+  {
+    "species": "Lake Malawi Cichlids",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Lau Banded Iguana",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Lau Banded Iguana",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Leather Sea Star",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Lemur Leaf Frog",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Leopard Ctenopoma",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Lesser Snow Goose",
+    "exhibit": "Tundra Trek",
+    "x": 72.064,
+    "y": 51.575,
+    "walk_node_id": "v-0803",
+    "snap_distance_px": 43.268
+  },
+  {
+    "species": "Lionfish",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Live Coral Reefs",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Longnose Butterflyfish",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Longnose Dace",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Luzon Bleeding-Heart Dove",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "MacLeay's Spectres",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Malagasy Rainbowfish",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Malayan Bonytongue",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Malayan Walking Stick",
+    "exhibit": "Malayan Woods Pavilion",
+    "x": 50.177,
+    "y": 81.571,
+    "walk_node_id": "v-0097",
+    "snap_distance_px": 26.626
+  },
+  {
+    "species": "Malaysian Painted Turtle",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Malaysian Stick Insect Jungle Wood Nymph",
+    "exhibit": "Malayan Woods Pavilion",
+    "x": 50.177,
+    "y": 81.571,
+    "walk_node_id": "v-0097",
+    "snap_distance_px": 26.626
+  },
+  {
+    "species": "Mantella (Poison Frog)",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Marabou Stork",
+    "exhibit": "Africa Savanna",
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
+  },
+  {
+    "species": "Marabou Stork",
+    "exhibit": "Africa Savanna",
+    "x": 40.544,
+    "y": 58.662,
+    "walk_node_id": "v-0339",
+    "snap_distance_px": 40.008
+  },
+  {
+    "species": "Marabou Stork",
+    "exhibit": "Africa Savanna",
+    "x": 41.389,
+    "y": 55.434,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 51.566
+  },
+  {
+    "species": "Marabou Stork",
+    "exhibit": "Africa Savanna",
+    "x": 43.38,
+    "y": 43.353,
+    "walk_node_id": "v-0406",
+    "snap_distance_px": 36.486
+  },
+  {
+    "species": "Marabou Stork",
+    "exhibit": "Kids Zoo",
+    "x": 66.827,
+    "y": 80.627,
+    "walk_node_id": "v-1184",
+    "snap_distance_px": 9.013
+  },
+  {
+    "species": "Masai Giraffe",
+    "exhibit": "Africa Savanna",
+    "x": 39.885,
+    "y": 70.927,
+    "walk_node_id": "v-0300",
+    "snap_distance_px": 64.829
+  },
+  {
+    "species": "Masai Giraffe",
+    "exhibit": "Africa Savanna",
+    "x": 42.35,
+    "y": 71.366,
+    "walk_node_id": "v-0298",
+    "snap_distance_px": 42.814
+  },
+  {
+    "species": "Massasauga Rattlesnake",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Mekong Barb",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Mexican Blind Cavefish",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Midland Painted Turtle",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Mimic Surgeonfish",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Monocled Cobra",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Moon Jellyfish",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Mouflon",
+    "exhibit": "Eurasia Wilds",
+    "x": 79.357,
+    "y": 69.972,
+    "walk_node_id": "v-0930",
+    "snap_distance_px": 55.521
+  },
+  {
+    "species": "Naked Mole Rat",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Ngege",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Nicobar Pigeon",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Nicobar Pigeon",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Nile Soft-Shelled Turtle",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 44.546,
+    "y": 66.138,
+    "walk_node_id": "v-0258",
+    "snap_distance_px": 6.537
+  },
+  {
+    "species": "North American River Otter",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "North American River Otter",
+    "exhibit": "Americas Pavilion",
+    "x": 68.706,
+    "y": 47.561,
+    "walk_node_id": "v-0734",
+    "snap_distance_px": 41.317
+  },
+  {
+    "species": "Northern Bald Eagle",
+    "exhibit": "Canadian Domain",
+    "x": 22.226,
+    "y": 14.269,
+    "walk_node_id": "v-0559",
+    "snap_distance_px": 26.021
+  },
+  {
+    "species": "Northern Bald Eagle",
+    "exhibit": "Tundra Trek",
+    "x": 73.885,
+    "y": 46.811,
+    "walk_node_id": "v-0836",
+    "snap_distance_px": 37.125
+  },
+  {
+    "species": "Olive Baboon",
+    "exhibit": "Africa Savanna",
+    "x": 46.381,
+    "y": 37.671,
+    "walk_node_id": "v-0421",
+    "snap_distance_px": 52.218
+  },
+  {
+    "species": "Opal-Rumped Tanager",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Ostrich",
+    "exhibit": "Africa Savanna",
+    "x": 49.056,
+    "y": 36.903,
+    "walk_node_id": "v-0426",
+    "snap_distance_px": 58.509
+  },
+  {
+    "species": "Painted Anemone",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Palawan Peacock-Pheasant",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Panamanian Golden Frog",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Pennant Coral Fish",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Pied Imperial Pigeon",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Plumose Anemone",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Plush-Crested Jay",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Polar Bear",
+    "exhibit": "Tundra Trek",
+    "x": 78.289,
+    "y": 51.1,
+    "walk_node_id": "v-0845",
+    "snap_distance_px": 42.58
+  },
+  {
+    "species": "Pot-Bellied Seahorse",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Puerto Rican Crested Toad",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Pumpkinseed Sunfish",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Pygmy Hippopotamus",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 44.546,
+    "y": 66.138,
+    "walk_node_id": "v-0258",
+    "snap_distance_px": 6.537
+  },
+  {
+    "species": "Rabbit",
+    "exhibit": "Kids Zoo",
+    "x": 66.827,
+    "y": 80.627,
+    "walk_node_id": "v-1184",
+    "snap_distance_px": 9.013
+  },
+  {
+    "species": "Raccoon",
+    "exhibit": "Canadian Domain",
+    "x": 30.393,
+    "y": 17.759,
+    "walk_node_id": "v-0597",
+    "snap_distance_px": 22.326
+  },
+  {
+    "species": "Radiated Tortoise",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 44.546,
+    "y": 66.138,
+    "walk_node_id": "v-0258",
+    "snap_distance_px": 6.537
+  },
+  {
+    "species": "Red Claw Yabby",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Red Island Bird-Eating Tarantula",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Red Panda",
+    "exhibit": "Africa Savanna",
+    "x": 52.186,
+    "y": 42.034,
+    "walk_node_id": "v-0439",
+    "snap_distance_px": 49.404
+  },
+  {
+    "species": "Red River Hog",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 44.591,
+    "y": 68.531,
+    "walk_node_id": "v-0275",
+    "snap_distance_px": 14.088
+  },
+  {
+    "species": "Red-Bellied Short-Necked Turtle",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Red-Crested Finch",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Red-Legged Seriema",
+    "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "x": 78.017,
+    "y": 36.228,
+    "walk_node_id": "v-0861",
+    "snap_distance_px": 23.988
+  },
+  {
+    "species": "Red-Lined Torpedo Barb",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Red-Tailed Black Cockatoo",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Red-Tailed Green Ratsnake",
+    "exhibit": "Malayan Woods Pavilion",
+    "x": 50.177,
+    "y": 81.571,
+    "walk_node_id": "v-0097",
+    "snap_distance_px": 26.626
+  },
+  {
+    "species": "Reticulate Gila Monster",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Reticulated Python",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Ring-Tailed Lemur",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 43.103,
+    "y": 67.078,
+    "walk_node_id": "v-0269",
+    "snap_distance_px": 11.382
+  },
+  {
+    "species": "River Hippopotamus",
+    "exhibit": "Africa Savanna",
+    "x": 37.731,
+    "y": 68.101,
+    "walk_node_id": "v-0321",
+    "snap_distance_px": 58.716
+  },
+  {
+    "species": "Round Goby",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Royal Python",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 43.103,
+    "y": 67.078,
+    "walk_node_id": "v-0269",
+    "snap_distance_px": 11.382
+  },
+  {
+    "species": "Rufous-Collared Sparrow",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Sacred Ibis",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 44.546,
+    "y": 66.138,
+    "walk_node_id": "v-0258",
+    "snap_distance_px": 6.537
+  },
+  {
+    "species": "San-Esteban Island Chuckwalla",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Short-Beaked Echidna",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Slender-Tailed Meerkat",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Snapping Turtle",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Snow Leopard",
+    "exhibit": "Eurasia Wilds",
+    "x": 86.033,
+    "y": 76.673,
+    "walk_node_id": "v-0968",
+    "snap_distance_px": 49.471
+  },
+  {
+    "species": "Solomon Island Leaf Frog",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Solomon Island Monkey-Tailed Skink",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "South African Crested Porcupine",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "South African Shelduck",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 44.546,
+    "y": 66.138,
+    "walk_node_id": "v-0258",
+    "snap_distance_px": 6.537
+  },
+  {
+    "species": "Southern Ground Hornbill",
+    "exhibit": "Africa Savanna",
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
+  },
+  {
+    "species": "Southern Ground Hornbill",
+    "exhibit": "Africa Savanna",
+    "x": 40.544,
+    "y": 58.662,
+    "walk_node_id": "v-0339",
+    "snap_distance_px": 40.008
+  },
+  {
+    "species": "Southern Ground Hornbill",
+    "exhibit": "Africa Savanna",
+    "x": 41.389,
+    "y": 55.434,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 51.566
+  },
+  {
+    "species": "Southern Hairy-Nosed Wombat",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Southern Hairy-Nosed Wombat",
+    "exhibit": "Australasia Pavilion",
+    "x": 73.888,
+    "y": 67.181,
+    "walk_node_id": "v-1107",
+    "snap_distance_px": 24.677
+  },
+  {
+    "species": "Southern White Rhinoceros",
+    "exhibit": "Africa Savanna",
+    "x": 41.57,
+    "y": 50.29,
+    "walk_node_id": "v-0363",
+    "snap_distance_px": 41.706
+  },
+  {
+    "species": "Speckled Mousebird",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Spider Tortoise",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Spiny Turtle",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Spot Prawn",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Spotted Hyena",
+    "exhibit": "Africa Savanna",
+    "x": 53.96,
+    "y": 42.207,
+    "walk_node_id": "v-0493",
+    "snap_distance_px": 51.273
+  },
+  {
+    "species": "Spotted River Stingray",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Spotted Turtle",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Steller's Sea Eagle",
+    "exhibit": "Eurasia Wilds",
+    "x": 86.73,
+    "y": 79.365,
+    "walk_node_id": "v-0971",
+    "snap_distance_px": 23.624
+  },
+  {
+    "species": "Stimson's Python",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Straw Coloured Fruit Bat",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 44.546,
+    "y": 66.138,
+    "walk_node_id": "v-0258",
+    "snap_distance_px": 6.537
+  },
+  {
+    "species": "Sumatran Orangutan",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Sumatran Orangutan",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 42.963,
+    "y": 78.506,
+    "walk_node_id": "v-0141",
+    "snap_distance_px": 5.674
+  },
+  {
+    "species": "Tawny Frogmouth",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Tentacled Snake",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Thorny Devil Stick Insect",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Threadfin Butterflyfish",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Timber Rattlesnake",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Tinfoil Barb",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Tomato Frog",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Tomistoma",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Tri-Coloured Shark",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "Turkey Vulture",
+    "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "x": 78.017,
+    "y": 36.228,
+    "walk_node_id": "v-0861",
+    "snap_distance_px": 23.988
+  },
+  {
+    "species": "Turquoise Tanager",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Two-Toed Sloth",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Two-Toed Sloth",
+    "exhibit": "Americas Pavilion",
+    "x": 69.119,
+    "y": 51.599,
+    "walk_node_id": "v-0742",
+    "snap_distance_px": 39.359
+  },
+  {
+    "species": "Veiled Chameleon",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Victoria Crowned Pigeon",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "Violaceous Plantain Eater",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "Warthog",
+    "exhibit": "Africa Savanna",
+    "x": 41.363,
+    "y": 64.056,
+    "walk_node_id": "v-0312",
+    "snap_distance_px": 31.311
+  },
+  {
+    "species": "Watusi Cattle",
+    "exhibit": "Africa Savanna",
+    "x": 55.34,
+    "y": 45.331,
+    "walk_node_id": "v-0492",
+    "snap_distance_px": 46.836
+  },
+  {
+    "species": "West African Dwarf Crocodile",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 45.865,
+    "y": 64.211,
+    "walk_node_id": "v-0255",
+    "snap_distance_px": 10.829
+  },
+  {
+    "species": "West Caucasian Tur",
+    "exhibit": "Eurasia Wilds",
+    "x": 85.24,
+    "y": 72.803,
+    "walk_node_id": "v-0955",
+    "snap_distance_px": 32.028
+  },
+  {
+    "species": "West Caucasian Tur",
+    "exhibit": "Eurasia Wilds",
+    "x": 88.224,
+    "y": 93.671,
+    "walk_node_id": "v-1023",
+    "snap_distance_px": 159.61
+  },
+  {
+    "species": "Western Blacknose Dace",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Western Grey Kangaroo",
+    "exhibit": "Australasia Outdoor",
+    "x": 75.357,
+    "y": 72.167,
+    "walk_node_id": "v-1061",
+    "snap_distance_px": 33.009
+  },
+  {
+    "species": "Western Lowland Gorilla",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 47.487,
+    "y": 62.703,
+    "walk_node_id": "v-0247",
+    "snap_distance_px": 42.23
+  },
+  {
+    "species": "Western Lowland Gorilla",
+    "exhibit": "African Rainforest Pavilion",
+    "x": 48.951,
+    "y": 59.856,
+    "walk_node_id": "v-0229",
+    "snap_distance_px": 35.41
+  },
+  {
+    "species": "White's Tree Frog",
+    "exhibit": "Australasia Pavilion",
+    "x": 72.869,
+    "y": 67.782,
+    "walk_node_id": "v-1139",
+    "snap_distance_px": 3.75
+  },
+  {
+    "species": "White-Breasted Cormorant",
+    "exhibit": "Africa Savanna",
+    "x": 51.001,
+    "y": 50.458,
+    "walk_node_id": "v-0652",
+    "snap_distance_px": 34.943
+  },
+  {
+    "species": "White-Breasted Cormorant",
+    "exhibit": "Africa Savanna",
+    "x": 51.954,
+    "y": 49.237,
+    "walk_node_id": "v-0647",
+    "snap_distance_px": 29.49
+  },
+  {
+    "species": "White-Faced Saki",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "White-Faced Saki",
+    "exhibit": "Americas Pavilion",
+    "x": 69.119,
+    "y": 51.599,
+    "walk_node_id": "v-0742",
+    "snap_distance_px": 39.359
+  },
+  {
+    "species": "White-Handed Gibbon",
+    "exhibit": "Indo-Malaya Pavilion",
+    "x": 46.391,
+    "y": 75.269,
+    "walk_node_id": "v-0127",
+    "snap_distance_px": 23.318
+  },
+  {
+    "species": "White-Headed Vulture",
+    "exhibit": "Africa Savanna",
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
+  },
+  {
+    "species": "White-Headed Vulture",
+    "exhibit": "Africa Savanna",
+    "x": 40.544,
+    "y": 58.662,
+    "walk_node_id": "v-0339",
+    "snap_distance_px": 40.008
+  },
+  {
+    "species": "White-Headed Vulture",
+    "exhibit": "Africa Savanna",
+    "x": 41.389,
+    "y": 55.434,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 51.566
+  },
+  {
+    "species": "Wood Bison",
+    "exhibit": "Canadian Domain",
+    "x": 28.482,
+    "y": 4.141,
+    "walk_node_id": "v-0579",
+    "snap_distance_px": 96.067
+  },
+  {
+    "species": "Wood Bison",
+    "exhibit": "Canadian Domain",
+    "x": 20.453,
+    "y": 21.249,
+    "walk_node_id": "v-0545",
+    "snap_distance_px": 26.648
+  },
+  {
+    "species": "Wrinkled Hornbill",
+    "exhibit": "Malayan Woods Pavilion",
+    "x": 50.177,
+    "y": 81.571,
+    "walk_node_id": "v-0097",
+    "snap_distance_px": 26.626
+  },
+  {
+    "species": "Yellow-Banded Poison Dart Frog",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  },
+  {
+    "species": "Zebra Finch",
+    "exhibit": "Americas Pavilion",
+    "x": 68.663,
+    "y": 49.679,
+    "walk_node_id": "v-0745",
+    "snap_distance_px": 31.471
+  }
+]
