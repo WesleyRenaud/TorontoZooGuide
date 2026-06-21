@@ -11,6 +11,7 @@ from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
 from .schedule_itinerary_helpers import effective_duration_seconds
+from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from .schedule_itinerary_helpers import resolve_schedule_window
 from .schedule_itinerary_helpers import resolve_slot_times
 from ....shared.enums import ItineraryErrorType
@@ -68,5 +69,7 @@ def schedule_itinerary_event(
 
    finally:
       cur.close()
+
+   persist_itinerary_walk_route( conn, **itinerary_context )
 
    return build_success_result( conn, **itinerary_context )

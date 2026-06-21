@@ -8,6 +8,7 @@ from .parse_schedule_item_request import ParsedScheduleItemRequest
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
+from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ....types import ScheduleTimeKey
@@ -73,5 +74,7 @@ def commit_listed_schedule(
 
    finally:
       cur.close()
+
+   persist_itinerary_walk_route( conn, **itinerary_context )
 
    return build_success_result( conn, **itinerary_context )
