@@ -29,7 +29,7 @@ def insert_itinerary_animal_schedule(
             exhibit,
             None,
             None,
-            True,
+            False,
             DateValues.normalize_itinerary_schedule_time( start_time ),
             DateValues.normalize_itinerary_schedule_time( end_time ),
          ),

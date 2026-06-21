@@ -31,6 +31,17 @@ export function dispatchItineraryUpdated(itinerary) {
    }));
 }
 
+export function dispatchScheduleItineraryItemResult(result) {
+   if (!result?.itinerary) {
+      return;
+   }
+
+   dispatchItineraryUpdated(normalizeItinerary({
+      ...result.itinerary,
+      itineraryConfig: result.itineraryConfig,
+   }));
+}
+
 async function fetchSavedItineraryVisitDate() {
    const { date } = await getItineraryDateRequest();
 

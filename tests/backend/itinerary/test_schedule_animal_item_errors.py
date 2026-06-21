@@ -183,7 +183,7 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_confirmed(
       exhibit=LION_ITINERARY_ENTRY[ 'exhibit' ] )
    assert saved_row.new_likelihood is None
    assert saved_row.old_likelihood is None
-   assert saved_row.is_added is True
+   assert saved_row.is_added is False
 
 
 def test_schedule_itinerary_animal_adds_and_schedules_when_warning_suppressed(
@@ -216,7 +216,7 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_warning_suppressed(
       species=LION_ITINERARY_ENTRY[ 'species' ],
       exhibit=LION_ITINERARY_ENTRY[ 'exhibit' ] )
    assert saved_row.new_likelihood is None
-   assert saved_row.is_added is True
+   assert saved_row.is_added is False
 
 
 def test_schedule_itinerary_item_rejects_duration_without_time(
