@@ -20,6 +20,34 @@ from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEnco
 from conftest import DbControllers
 
 
+def test_schedule_itinerary_item_persists_walk_route(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='10:00',
+   )
+
+   assert result.success
+
+   expected_route = build_itinerary_walk_route( result.itinerary )
+   persisted_route = fetch_itinerary_walk_route( db.conn )
+
+   assert walk_route_matches( expected_route, persisted_route )
+
+
 def test_bulk_schedule_animals_persists_walk_route(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:

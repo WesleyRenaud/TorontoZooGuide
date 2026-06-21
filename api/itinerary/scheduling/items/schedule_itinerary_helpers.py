@@ -67,6 +67,14 @@ def build_success_result(
          **itinerary_context ) )
 
 
+def persist_itinerary_walk_route(
+      conn: Connection,
+      **itinerary_context: Any ) -> None:
+   from ...routing.persist_itinerary_walk_route import rebuild_and_persist_itinerary_walk_route
+
+   rebuild_and_persist_itinerary_walk_route( conn, **itinerary_context )
+
+
 def resolve_schedule_window(
       conn: Connection,
       saved_itinerary: SavedItinerary,
