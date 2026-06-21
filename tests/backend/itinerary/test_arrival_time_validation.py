@@ -152,7 +152,7 @@ def test_set_arrival_time_unschedules_items_before_arrival(
       for animal in itinerary.animals
    ] == [
       ( 'African Lion', None, None ),
-      ( 'Cheetah', '10:30', '10:35' ),
+      ( 'Cheetah', None, None ),
    ]
    assert [
       ( attraction.name, attraction.start_time, attraction.end_time )

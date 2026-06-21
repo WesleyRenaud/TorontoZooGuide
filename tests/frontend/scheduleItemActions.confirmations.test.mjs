@@ -214,6 +214,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter'
             items: [{
                name: 'African Rainforest',
                item_type: 'wildEncounter',
+               start_time: '14:00',
             }],
          }],
       });
@@ -241,7 +242,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter'
    assert.ok(confirmButton);
    assert.match(
       popupMessage?.textContent ?? '',
-      /Adding these Wild Encounters: African Rainforest will unschedule other items/
+      /Adding African Rainforest will put a .* encounter on your day and update your walking route\. Your items will be rescheduled around it\./
    );
    confirmButton.click();
 

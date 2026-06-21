@@ -90,27 +90,9 @@ def saved_itinerary_has_overlap_with_wild_encounters(
    return False
 
 
-def apply_wild_encounter_unschedule_to_validated_itinerary(
+def _remove_events_overlapping_wild_encounters(
       validated_itinerary: ValidatedItinerary,
-      new_wild_encounters: list[ WildEncounterDiff ] ) -> ValidatedItinerary:
-   encounter_blocks = wild_encounter_time_blocks( new_wild_encounters )
-
-   for animal in validated_itinerary.animals:
-      if _schedule_overlaps_any_block(
-            animal.start_time,
-            animal.end_time,
-            encounter_blocks ):
-         animal.start_time = None
-         animal.end_time = None
-
-   for attraction in validated_itinerary.attractions:
-      if _schedule_overlaps_any_block(
-            attraction.start_time,
-            attraction.end_time,
-            encounter_blocks ):
-         attraction.start_time = None
-         attraction.end_time = None
-
+      encounter_blocks: list[ TimeBlock ] ) -> None:
    validated_itinerary.events[ : ] = [
       event
       for event in validated_itinerary.events
@@ -120,7 +102,33 @@ def apply_wild_encounter_unschedule_to_validated_itinerary(
             encounter_blocks )
    ]
 
+
+def prepare_validated_itinerary_for_wild_encounter_reschedule(
+      validated_itinerary: ValidatedItinerary,
+      new_wild_encounters: list[ WildEncounterDiff ] ) -> ValidatedItinerary:
+   encounter_blocks = wild_encounter_time_blocks( new_wild_encounters )
+
+   _remove_events_overlapping_wild_encounters(
+      validated_itinerary,
+      encounter_blocks )
+
+   for animal in validated_itinerary.animals:
+      animal.start_time = None
+      animal.end_time = None
+
+   for attraction in validated_itinerary.attractions:
+      attraction.start_time = None
+      attraction.end_time = None
+
    return validated_itinerary
+
+
+def apply_wild_encounter_unschedule_to_validated_itinerary(
+      validated_itinerary: ValidatedItinerary,
+      new_wild_encounters: list[ WildEncounterDiff ] ) -> ValidatedItinerary:
+   return prepare_validated_itinerary_for_wild_encounter_reschedule(
+      validated_itinerary,
+      new_wild_encounters )
 
 
 def clear_saved_schedules_overlapping_wild_encounters(

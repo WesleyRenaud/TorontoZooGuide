@@ -4,9 +4,11 @@ from collections.abc import Callable
 from datetime import date
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.data_access.fetch_itinerary_walk_route import fetch_itinerary_walk_route
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_status import suppress_itinerary_status
-from api.shared.enums import ItineraryErrorType
+from api.itinerary.data_access.itinerary_walk_route_helpers import walk_route_matches
+from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
@@ -120,8 +122,9 @@ def test_set_itinerary_unschedules_overlapping_items_when_wild_encounter_confirm
    lion = next(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Lion' )
-   assert lion.start_time is None
-   assert lion.end_time is None
+   assert lion.start_time is not None
+   assert lion.end_time is not None
+   assert lion.end_time <= '14:00'
 
 
 def test_schedule_wild_encounter_returns_warning_when_it_would_unschedule_items(
@@ -172,14 +175,40 @@ def test_schedule_wild_encounter_unschedules_overlapping_items_when_confirmed(
    lion = next(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Lion' )
-   assert lion.start_time is None
-   assert lion.end_time is None
+   assert lion.start_time is not None
+   assert lion.end_time is not None
+   assert lion.end_time <= '14:00'
 
    encounter = next(
       saved_encounter for saved_encounter in result.itinerary.wild_encounters
       if saved_encounter.name == WILD_ENCOUNTER )
    assert encounter.start_time == '14:00'
    assert encounter.end_time == '14:45'
+
+
+def test_confirmed_wild_encounter_reschedule_persists_walk_route(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   _set_wild_encounter_schedule()
+   _set_itinerary_with_scheduled_animal(
+      db,
+      freeze_database_today=freeze_database_today )
+
+   result = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='wild_encounters',
+      key=WILD_ENCOUNTER,
+      confirming_wild_encounter_unschedule=True,
+   )
+
+   assert result.success
+
+   expected_route = build_itinerary_walk_route( result.itinerary )
+   persisted_route = fetch_itinerary_walk_route( db.conn )
+
+   assert walk_route_matches( expected_route, persisted_route )
+   assert any(
+      stop.item_key == WILD_ENCOUNTER
+      for stop in persisted_route.stops )
 
 
 def test_wild_encounter_unschedule_warning_cannot_be_suppressed(

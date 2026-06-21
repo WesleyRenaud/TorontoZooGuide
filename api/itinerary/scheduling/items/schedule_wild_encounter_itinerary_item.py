@@ -7,12 +7,13 @@ from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_wild_encounter
 from ....models.wild_encounter_diff import WildEncounterDiff
+from ..reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
+from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
-from ..unscheduling.wild_encounter_unschedule_items import clear_saved_schedules_overlapping_wild_encounters
 from ..unscheduling.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
 from ...warnings.wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -43,20 +44,12 @@ def _wild_encounter_diff_for_saved_itinerary_day(
 def _insert_scheduled_wild_encounter(
       conn: Connection,
       *,
-      saved_itinerary: SavedItinerary,
       wild_encounter_name: str,
       wild_encounter_diff: WildEncounterDiff,
-      clear_overlapping_schedules: bool,
-      itinerary_context: dict[ str, Any ] ) -> ItinerarySaveResult:
+      itinerary_context: dict[ str, Any ] ) -> ItinerarySaveResult | None:
    cur = conn.cursor()
 
    try:
-      if clear_overlapping_schedules:
-         clear_saved_schedules_overlapping_wild_encounters(
-            cur,
-            saved_itinerary,
-            [ wild_encounter_diff ] )
-
       scheduled = insert_itinerary_wild_encounter(
          cur,
          wild_encounter_name=wild_encounter_name,
@@ -76,7 +69,7 @@ def _insert_scheduled_wild_encounter(
    finally:
       cur.close()
 
-   return build_success_result( conn, **itinerary_context )
+   return None
 
 
 def schedule_wild_encounter_itinerary_item(
@@ -120,11 +113,20 @@ def schedule_wild_encounter_itinerary_item(
          ),
          **itinerary_context )
 
-   return _insert_scheduled_wild_encounter(
+   insert_error = _insert_scheduled_wild_encounter(
       conn,
-      saved_itinerary=saved_itinerary,
       wild_encounter_name=wild_encounter_name,
       wild_encounter_diff=wild_encounter_diff,
-      clear_overlapping_schedules=(
-         has_overlap and confirming_wild_encounter_unschedule ),
       itinerary_context=itinerary_context )
+
+   if insert_error is not None:
+      return insert_error
+
+   if has_overlap and confirming_wild_encounter_unschedule:
+      return reschedule_itinerary_items_after_fixed_time_activity_add(
+         conn,
+         **itinerary_context )
+
+   persist_itinerary_walk_route( conn, **itinerary_context )
+
+   return build_success_result( conn, **itinerary_context )
