@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .clear_itinerary_walk_route import clear_itinerary_walk_route
 from ...types import Connection, Cursor
 
 
@@ -37,6 +38,7 @@ def clear_itinerary( conn: Connection ) -> bool:
       clear_itinerary_guardians_talks( cur )
       clear_itinerary_wild_encounters( cur )
       clear_itinerary_events( cur )
+      clear_itinerary_walk_route( cur )
 
       conn.commit()
 
