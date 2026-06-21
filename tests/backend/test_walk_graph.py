@@ -1,17 +1,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
-import json
 import math
-from pathlib import Path
 
-
-ROOT = Path( __file__ ).resolve().parents[ 2 ]
-WALK_GRAPH_PATH = ROOT / 'api' / 'seed' / 'data' / 'walk_graph.json'
-
-
-def load_walk_graph() -> dict[ str, object ]:
-   return json.loads( WALK_GRAPH_PATH.read_text( encoding='utf-8' ) )
+from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 
 
 def test_walk_graph_has_nodes_edges_and_entrance() -> None:
