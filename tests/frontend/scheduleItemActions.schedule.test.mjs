@@ -9,6 +9,43 @@ import {
 
 installScheduleItemActionsTestHooks();
 
+test('scheduleSelectedItineraryItem dispatches itineraryUpdated on success', async () => {
+   const events = [];
+
+   globalThis.window.dispatchEvent = (event) => {
+      if (event.type === 'tzg:itineraryUpdated') {
+         events.push(event.detail?.itinerary ?? null);
+      }
+
+      return true;
+   };
+
+   globalThis.fetch = async () => mockJsonResponse({
+      status: 'success',
+      reasons: [],
+      itinerary: {
+         date: '2026-06-15',
+         animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '10:00' }],
+         attractions: [],
+         guardians_talks: [],
+         wild_encounters: [],
+      },
+   });
+
+   const result = await scheduleSelectedItineraryItem(
+      { date: '2026-06-15', animals: [], attractions: [] },
+      'animals',
+      { species: 'Tiger', exhibit: 'Savanna', scheduleItemKind: 'animals' },
+      []
+   );
+
+   assert.equal(result.errorType, 'success');
+   assert.equal(events.length, 1);
+   assert.equal(events[0]?.date, '2026-06-15');
+   assert.equal(events[0]?.animals?.length, 1);
+   assert.equal(events[0]?.animals?.[0]?.species, 'Tiger');
+});
+
 test('scheduleSelectedItineraryItem schedules an event', async () => {
    const requests = [];
 

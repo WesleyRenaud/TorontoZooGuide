@@ -8,6 +8,7 @@ import {
    requiresScheduleItemNotOnItineraryConfirmation,
    requiresWildEncounterUnscheduleConfirmation,
 } from '../itineraryErrorTypes.js';
+import { dispatchScheduleItineraryItemResult } from '../itineraryService.js';
 import { persistItineraryWarningSuppression } from '../persistItineraryWarningSuppression.js';
 import { showScheduleItemNotOnItineraryConfirmation } from './scheduleItemNotOnItineraryConfirmation.js';
 import { showWildEncounterUnscheduleConfirmation } from './wildEncounterUnscheduleConfirmation.js';
@@ -76,6 +77,7 @@ export async function scheduleItineraryItemWithConfirmation(
    const initialResult = await scheduleItineraryItemRequest(request, confirmationOptions);
 
    if (isItinerarySuccess(initialResult.errorType)) {
+      dispatchScheduleItineraryItemResult(initialResult);
       return initialResult;
    }
 
