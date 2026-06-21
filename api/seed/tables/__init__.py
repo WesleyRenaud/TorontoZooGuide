@@ -34,6 +34,9 @@ from . import itinerary_event_default
 from . import itinerary_guardians_talk
 from . import itinerary_status
 from . import itinerary_status_suppression
+from . import itinerary_walk_route_leg
+from . import itinerary_walk_route_point
+from . import itinerary_walk_route_stop
 from . import itinerary_wild_encounter
 from . import legacy_table_drops
 from . import meet_the_guardians_talk
@@ -122,4 +125,7 @@ runtime_tables = [
    itinerary_guardians_talk,
    itinerary_wild_encounter,
    itinerary_event,
+   itinerary_walk_route_stop,
+   itinerary_walk_route_point,
+   itinerary_walk_route_leg,
 ]
