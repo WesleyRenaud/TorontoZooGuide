@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from datetime import date
+
 from itinerary.support import ANIMAL_KEY
 from itinerary.support import LION_ITINERARY_ENTRY
 
@@ -12,8 +15,34 @@ from api.itinerary.data_access.itinerary_walk_route_helpers import walk_route_ma
 from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.itinerary.routing.itinerary_walk_route import empty_itinerary_walk_route
 from api.itinerary.routing.persist_itinerary_walk_route import rebuild_and_persist_itinerary_walk_route
+from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
+
+
+def test_bulk_schedule_animals_persists_walk_route(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   assert result.status == ItineraryErrorType.SUCCESS
+
+   expected_route = build_itinerary_walk_route( result.itinerary )
+   persisted_route = fetch_itinerary_walk_route( db.conn )
+
+   assert walk_route_matches( expected_route, persisted_route )
 
 
 def test_fetch_itinerary_walk_route_returns_empty_when_unpersisted(

@@ -19,6 +19,7 @@ from ..items.schedule_itinerary_helpers import build_itinerary_context
 from ..items.schedule_itinerary_helpers import resolve_schedule_window
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
+from ...routing.persist_itinerary_walk_route import rebuild_and_persist_itinerary_walk_route
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
@@ -95,6 +96,8 @@ def bulk_schedule_animals(
          else ItineraryErrorType.SUCCESS
       )
 
+      _persist_itinerary_walk_route( conn, **itinerary_context )
+
       return ItinerarySaveResult(
          status=status,
          itinerary=build_current_itinerary(
@@ -115,6 +118,8 @@ def bulk_schedule_animals(
          build_bulk_schedule_animals_not_enough_time_issue(
             remaining_animals ),
       )
+
+   _persist_itinerary_walk_route( conn, **itinerary_context )
 
    return ItinerarySaveResult(
       status=ItineraryErrorType.SUCCESS,
@@ -237,3 +242,20 @@ def _persist_animal_schedule(
       exhibit=animal_row.exhibit,
       start_time=start_time,
       end_time=end_time )
+
+
+def _persist_itinerary_walk_route(
+      conn: Connection,
+      *,
+      animal_coordinator: type[ AnimalCoordinator ],
+      attraction_coordinator: type[ AttractionCoordinator ],
+      guardians_coordinator: type[ GuardiansCoordinator ],
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ],
+      visit_date_temp: float | None = None ) -> None:
+   rebuild_and_persist_itinerary_walk_route(
+      conn,
+      animal_coordinator=animal_coordinator,
+      attraction_coordinator=attraction_coordinator,
+      guardians_coordinator=guardians_coordinator,
+      wild_encounter_coordinator=wild_encounter_coordinator,
+      visit_date_temp=visit_date_temp )
