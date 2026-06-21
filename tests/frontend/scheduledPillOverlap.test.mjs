@@ -12,6 +12,7 @@ import {
    getScheduledPillVisualBand,
    MAX_TIMELINE_PILL_COLUMNS,
    scheduledPillsOverlapInDefaultPosition,
+   sortScheduledItemsForGroupDisplay,
 } from '../../scripts/itinerary/panel/components/scheduledPillOverlap.js';
 
 test('getScheduledItemEndMinutes uses parsed endMinutes from schedule times', () => {
@@ -138,5 +139,30 @@ test('formatScheduledPillGroupLabel matches map-style counted labels', () => {
          { label: 'Cheetah' },
       ]),
       'African Lion + 1'
+   );
+});
+
+test('formatScheduledPillGroupLabel prefers the longest visit duration', () => {
+   assert.equal(
+      formatScheduledPillGroupLabel([
+         { label: 'Lake Malawi Cichlid', maximumDuration: 2 },
+         { label: 'Masai Giraffe', maximumDuration: 30 },
+      ]),
+      'Masai Giraffe + 1'
+   );
+});
+
+test('sortScheduledItemsForGroupDisplay orders grouped animals by max duration', () => {
+   assert.deepEqual(
+      sortScheduledItemsForGroupDisplay([
+         { label: 'Lake Malawi Cichlid', maximumDuration: 2 },
+         { label: 'Masai Giraffe', maximumDuration: 30 },
+         { label: 'Red Panda', maximumDuration: 8 },
+      ]).map((item) => item.label),
+      [
+         'Masai Giraffe',
+         'Red Panda',
+         'Lake Malawi Cichlid',
+      ]
    );
 });

@@ -115,16 +115,49 @@ export function computeFirstFreeHorizontalOffsetIndex(
    return maxColumn + 1;
 }
 
+export function getScheduledItemMaximumDuration(scheduledItem = {}) {
+   const maximumDuration = Number(scheduledItem.maximumDuration);
+
+   if (Number.isFinite(maximumDuration) && maximumDuration > 0) {
+      return maximumDuration;
+   }
+
+   const endMinutes = getScheduledItemEndMinutes(scheduledItem);
+   const startMinutes = Number(scheduledItem.startMinutes);
+
+   if (Number.isFinite(endMinutes) && Number.isFinite(startMinutes)) {
+      return endMinutes - startMinutes;
+   }
+
+   return 0;
+}
+
+export function compareScheduledItemsForGroupDisplay(leftItem = {}, rightItem = {}) {
+   const durationDelta = getScheduledItemMaximumDuration(rightItem)
+      - getScheduledItemMaximumDuration(leftItem);
+
+   if (durationDelta !== 0) {
+      return durationDelta;
+   }
+
+   return String(leftItem.label || '').localeCompare(String(rightItem.label || ''));
+}
+
+export function sortScheduledItemsForGroupDisplay(items = []) {
+   return [...items].sort(compareScheduledItemsForGroupDisplay);
+}
+
 export function formatScheduledPillGroupLabel(items = []) {
    if (!items.length) {
       return '';
    }
 
-   const firstLabel = String(items[0]?.label || '').trim();
+   const sortedItems = sortScheduledItemsForGroupDisplay(items);
+   const firstLabel = String(sortedItems[0]?.label || '').trim();
 
-   if (items.length === 1) {
+   if (sortedItems.length === 1) {
       return firstLabel;
    }
 
-   return `${firstLabel} + ${items.length - 1}`;
+   return `${firstLabel} + ${sortedItems.length - 1}`;
 }

@@ -30,7 +30,7 @@ test('clusterShortScheduledItemsForDisplay pulls the next visit into an under-mi
    ]);
 
    assert.equal(clusteredItems.length, 2);
-   assert.equal(clusteredItems[0].label, 'Babirusa + 1');
+   assert.equal(clusteredItems[0].label, 'Cheetah + 1');
    assert.equal(clusteredItems[1].label, 'Greater One-Horned Rhinoceros');
 });
 
@@ -45,4 +45,21 @@ test('clusterShortScheduledItemsForDisplay keeps readable visits separate', () =
    assert.equal(clusteredItems[0].label, 'Babirusa');
    assert.equal(clusteredItems[1].label, 'Cheetah');
    assert.equal(clusteredItems[2].label, 'Red Panda');
+});
+
+test('clusterShortScheduledItemsForDisplay orders grouped animals by max duration', () => {
+   const clusteredItems = clusterShortScheduledItemsForDisplay([
+      makeScheduledItem('Lake Malawi Cichlid', 570, 2, 570),
+      makeScheduledItem('Masai Giraffe', 572, 8, 570),
+   ], 8);
+
+   assert.equal(clusteredItems.length, 1);
+   assert.equal(clusteredItems[0].label, 'Masai Giraffe + 1');
+   assert.deepEqual(
+      clusteredItems[0].clusterItems.map((item) => item.label),
+      [
+         'Masai Giraffe',
+         'Lake Malawi Cichlid',
+      ]
+   );
 });

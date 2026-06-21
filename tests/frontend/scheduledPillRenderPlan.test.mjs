@@ -60,8 +60,8 @@ test('planScheduledPillRenderGroupsByAnchor keeps consecutive time buckets visib
 
    assert.deepEqual(groupLabels, [
       'Eurasian Eagle Owl + 1',
-      'Guinea Pig + 2',
-      'Rabbit + 1',
+      'Marabou Stork + 2',
+      'American Flamingo + 1',
       'Black-Handed Spider Monkey',
       'Capybara',
       'Red-Legged Seriema + 1',
@@ -101,7 +101,7 @@ test('planScheduledPillRenderGroupsByAnchor merges gapped under-min clusters int
    ]).get(600) ?? [];
 
    assert.equal(groups.length, 1);
-   assert.equal(groups[0]?.label ?? groups[0]?.items[0]?.label, 'Black Carp + 3');
+   assert.equal(groups[0]?.label ?? groups[0]?.items[0]?.label, 'Crested Wood Partridge + 3');
    assert.equal(groups[0]?.durationMinutes, 6);
    assert.equal(groups[0]?.displayDurationMinutes, 6);
 });
