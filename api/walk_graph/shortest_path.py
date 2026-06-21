@@ -25,8 +25,11 @@ def build_walk_graph_adjacency( graph: WalkGraph ) -> WalkGraphAdjacency:
 
 def shortest_path_distances(
       graph: WalkGraph,
-      start_node_id: str ) -> dict[ str, float ]:
-   adjacency = build_walk_graph_adjacency( graph )
+      start_node_id: str,
+      *,
+      adjacency: WalkGraphAdjacency | None = None ) -> dict[ str, float ]:
+   if adjacency is None:
+      adjacency = build_walk_graph_adjacency( graph )
    distances: dict[ str, float ] = { start_node_id: 0.0 }
    queue: list[ tuple[ float, str ] ] = [ ( 0.0, start_node_id ) ]
 
