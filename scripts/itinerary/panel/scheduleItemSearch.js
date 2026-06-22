@@ -5,6 +5,7 @@ import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
 import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
 import {
+   isFixedTimeScheduleItemKind,
    ScheduleItemKind,
    scheduleItemKindFromItemType,
 } from '../../shared/enums/scheduleItemKind.js';
@@ -171,9 +172,13 @@ export function buildScheduleItemSearchPayload(moduleType, query = '') {
 
 export function buildItineraryScheduleItemRowIds(
       itinerary = {},
-      { unscheduledOnly = false } = {}) {
+      { unscheduledOnly = false, scheduledOnly = false } = {}) {
    const pickItems = (items) => {
       const list = normalizeItineraryItems(items);
+
+      if (scheduledOnly) {
+         return list.filter((item) => !isUnscheduledItineraryItem(item));
+      }
 
       return unscheduledOnly
          ? list.filter(isUnscheduledItineraryItem)
@@ -224,6 +229,49 @@ export function filterScheduleItemRowsToItinerary(
 
       return animalIds.has(getScheduleItemRowId(row));
    });
+}
+
+export function filterScheduleItemRowsExcludingScheduledOccurrences(
+      rows = [],
+      itinerary = {}) {
+   const {
+      guardiansTalkIds,
+      wildEncounterIds,
+   } = buildItineraryScheduleItemRowIds(itinerary, { scheduledOnly: true });
+
+   return rows.filter((row) => {
+      const kind = getScheduleItemRowKind(row);
+
+      if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
+         return !guardiansTalkIds.has(getScheduleItemRowId(row));
+      }
+
+      if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
+         return !wildEncounterIds.has(getScheduleItemRowId(row));
+      }
+
+      return true;
+   });
+}
+
+export function filterScheduleItemRowsForScheduleModule(
+      rows = [],
+      itinerary = {},
+      { onlyItineraryItemsEnabled = false } = {}) {
+   const rowsWithoutScheduledOccurrences = filterScheduleItemRowsExcludingScheduledOccurrences(
+      rows,
+      itinerary
+   );
+
+   if (!onlyItineraryItemsEnabled) {
+      return rowsWithoutScheduledOccurrences;
+   }
+
+   return filterScheduleItemRowsToItinerary(
+      rowsWithoutScheduledOccurrences,
+      itinerary,
+      { unscheduledOnly: true }
+   ).filter((row) => !isFixedTimeScheduleItemKind(getScheduleItemRowKind(row)));
 }
 
 export function extractScheduleItemSearchRows(moduleType, response = {}) {
