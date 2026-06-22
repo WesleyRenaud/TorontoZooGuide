@@ -1,6 +1,7 @@
 import { scheduleItineraryItemRequest } from '../../api/itineraryApi.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
+import { createItineraryConfirmationCancelledResult } from '../itineraryConfirmationResult.js';
 import {
    getItineraryErrorTypes,
    isItinerarySuccess,
@@ -64,7 +65,7 @@ function requestScheduleItemConfirmation({
             }
          },
          onCancel: () => {
-            resolve(initialResult);
+            resolve(createItineraryConfirmationCancelledResult(initialResult));
          },
       });
    });

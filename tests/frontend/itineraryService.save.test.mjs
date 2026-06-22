@@ -171,6 +171,59 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
    assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
 });
 
+test('saveItinerary returns null when guardians talk reschedule is cancelled', async () => {
+   const itineraryConfig = {
+      itinerary_error_types: {
+         SUCCESS: 'success',
+         GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',
+      },
+      suppressed_error_types: [],
+   };
+
+   globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: async () => JSON.stringify({
+         status: 'guardiansTalkWillUnscheduleItems',
+         reasons: [{
+            code: 'guardiansTalkWillUnscheduleItems',
+            items: [{
+               name: 'Arctic Wolf',
+               item_type: 'guardiansTalk',
+               start_time: '11:00',
+            }],
+         }],
+         itinerary_config: itineraryConfig,
+         itinerary: {
+            date: '2026-06-15',
+            animals: [],
+            attractions: [],
+            guardians_talks: [],
+            wild_encounters: [],
+         },
+      }),
+   });
+
+   const savePromise = saveItinerary({
+      date: '2026-06-15',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [{ name: 'Arctic Wolf' }],
+      wildEncounters: [],
+   });
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   document.querySelector('.tzg-popup-cancel')?.click();
+
+   const result = await savePromise;
+
+   assert.equal(result, null);
+});
+
 test('saveItinerary confirms before saving a wild encounter that unschedules items', async () => {
    const requests = [];
    const itineraryConfig = {

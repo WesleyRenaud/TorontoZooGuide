@@ -1,4 +1,5 @@
 import { searchItineraryItems } from '../../../api/searchApi.js';
+import { isItineraryConfirmationCancelled } from '../../itineraryConfirmationResult.js';
 import {
    isItinerarySuccess,
    requiresScheduleItemNotOnItineraryConfirmation,
@@ -261,6 +262,10 @@ export function createScheduleItemModuleController({
             eventTypes,
             scheduleOptions
          );
+
+         if (isItineraryConfirmationCancelled(result)) {
+            return;
+         }
 
          if (
             !itinerarySuccess(result.errorType)

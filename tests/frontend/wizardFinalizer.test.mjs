@@ -105,6 +105,32 @@ test.describe('finalizeItineraryWizard', () => {
       assert.equal(popupCalls[0].message, 'Save failed');
    });
 
+   test('returns null when save is cancelled from a confirmation', async () => {
+      const mountEl = createDomNode('div', 'wizard-mount');
+      const popupCalls = [];
+
+      const result = await finalizeItineraryWizard(
+         {
+            date: '2026-06-15',
+            guardiansTalks: [{ name: 'Arctic Wolf' }],
+         },
+         mountEl,
+         {
+            deps: {
+               normalizeDraft: (draft) => draft,
+               shouldBlockEmpty: () => false,
+               saveItineraryFn: async () => null,
+               showWizardPopup: (config) => {
+                  popupCalls.push(config);
+               },
+            },
+         }
+      );
+
+      assert.equal(result, null);
+      assert.equal(popupCalls.length, 0);
+   });
+
    test('opens the save-issues notice when the backend returns issues', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const saveIssuesCalls = [];

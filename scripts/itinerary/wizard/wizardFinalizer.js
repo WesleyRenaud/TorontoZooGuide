@@ -85,6 +85,10 @@ export async function finalizeItineraryWizard(
       return null;
    }
 
+   if (!savedItinerary) {
+      return null;
+   }
+
    syncAnimalDraft(savedItinerary);
 
    if (shouldShowSaveIssues(savedItinerary)) {
