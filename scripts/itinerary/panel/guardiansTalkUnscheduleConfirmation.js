@@ -1,5 +1,9 @@
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
+import {
+   formatClockTime,
+   normalizeText,
+} from './format.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE = 'guardiansTalkWillUnscheduleItems';
@@ -12,6 +16,29 @@ export function getGuardiansTalkNamesFromUnscheduleIssues(issues = []) {
          .filter(Boolean));
 }
 
+export function getPrimaryGuardiansTalkFromUnscheduleIssues(issues = []) {
+   const [talkName] = getGuardiansTalkNamesFromUnscheduleIssues(issues);
+
+   if (!talkName) {
+      return null;
+   }
+
+   const talkItem = issues
+      .filter((issue) => issue?.type === GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS_ISSUE)
+      .flatMap((issue) => issue.items ?? [])
+      .find((item) => (item?.name ?? '').trim() === talkName);
+
+   const talkTime = formatClockTime(
+      talkItem?.start_time ?? talkItem?.startTime
+   );
+
+   if (!talkTime) {
+      return { talkName };
+   }
+
+   return { talkName, talkTime };
+}
+
 export function showGuardiansTalkUnscheduleConfirmation({
    issues = [],
    onConfirm,
@@ -19,12 +46,24 @@ export function showGuardiansTalkUnscheduleConfirmation({
    mountEl = getItineraryOverlayMountEl() ?? document.body,
 } = {}) {
    const strings = APP_STRINGS.itinerary.confirmation;
-   const talkNames = getGuardiansTalkNamesFromUnscheduleIssues(issues);
+   const talk = getPrimaryGuardiansTalkFromUnscheduleIssues(issues);
+
+   if (!talk?.talkName) {
+      return;
+   }
+
+   const talkName = normalizeText(talk.talkName);
+   const message = talk.talkTime
+      ? strings.guardiansTalkRescheduleMessage(
+         talkName,
+         talk.talkTime
+      )
+      : strings.guardiansTalkRescheduleMessageWithoutTime(talkName);
 
    showItineraryConfirmPopup({
-      title: strings.guardiansTalkUnscheduleTitle,
-      message: strings.guardiansTalkUnscheduleMessage(talkNames.join(', ')),
-      confirmText: strings.guardiansTalkUnscheduleConfirm,
+      title: strings.guardiansTalkRescheduleTitle,
+      message,
+      confirmText: strings.updatePlanConfirm,
       cancelText: APP_STRINGS.itinerary.actions.cancel,
       mountEl,
       onConfirm,

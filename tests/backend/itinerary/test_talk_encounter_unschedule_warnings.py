@@ -104,8 +104,9 @@ def test_set_itinerary_saves_talk_after_conflict_and_unschedule_confirmations(
    lion = next(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Lion' )
-   assert lion.start_time is None
-   assert lion.end_time is None
+   assert lion.start_time is not None
+   assert lion.end_time is not None
+   assert lion.end_time <= '14:00'
    assert [ talk.name for talk in result.itinerary.guardians_talks ] == [ GUARDIANS_TALK ]
    assert not result.itinerary.wild_encounters
 
@@ -113,7 +114,8 @@ def test_set_itinerary_saves_talk_after_conflict_and_unschedule_confirmations(
    animal = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
-   assert animal.start_time is None
-   assert animal.end_time is None
+   assert animal.start_time is not None
+   assert animal.end_time is not None
+   assert animal.end_time <= '14:00'
    assert saved.guardians_talk_names() == [ GUARDIANS_TALK ]
    assert not saved.wild_encounter_names()

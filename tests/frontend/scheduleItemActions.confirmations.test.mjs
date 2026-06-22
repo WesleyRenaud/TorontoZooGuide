@@ -151,6 +151,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk'
             items: [{
                name: 'African Lion',
                item_type: 'guardiansTalk',
+               start_time: '10:00',
             }],
          }],
       });
@@ -178,7 +179,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk'
    assert.ok(confirmButton);
    assert.match(
       popupMessage?.textContent ?? '',
-      /Adding these Meet the Guardians Talks: African Lion will unschedule other items/
+      /Adding the African Lion guardians talk will put it at .* on your day and update your walking route\. Your items will be rescheduled around it\./
    );
    confirmButton.click();
 
@@ -242,7 +243,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter'
    assert.ok(confirmButton);
    assert.match(
       popupMessage?.textContent ?? '',
-      /Adding African Rainforest will put a .* encounter on your day and update your walking route\. Your items will be rescheduled around it\./
+      /Adding the African Rainforest wild encounter will put it at .* on your day and update your walking route\. Your items will be rescheduled around it\./
    );
    confirmButton.click();
 
