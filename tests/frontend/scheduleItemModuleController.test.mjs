@@ -296,6 +296,43 @@ test('displaySearchResults clears the selection when the same row is chosen agai
    assert.equal(refs.scheduleButton.disabled, true);
 });
 
+test('updateFieldVisibility disables time fields for selected talks and encounters', () => {
+   const refs = createRefs({ selection: ScheduleItemKind.GUARDIANS_TALK.itemType });
+   let fixedTimeMode = null;
+   let onSelectRow = null;
+   const talkRow = {
+      name: 'Amur Tiger',
+      start_time: '10:30',
+      maximum_duration: 30,
+      scheduleItemKind: 'guardians_talks',
+   };
+   const controller = createController({
+      refs,
+      scheduleTimeFields: {
+         setFixedTimeScheduleMode: (options) => {
+            fixedTimeMode = options;
+         },
+         reset: () => {
+            fixedTimeMode = { enabled: false };
+         },
+      },
+      deps: {
+         renderSearchResults: ({ onSelectRow: selectRow }) => {
+            onSelectRow = selectRow;
+         },
+      },
+   });
+
+   controller.displaySearchResults([talkRow]);
+   onSelectRow?.(talkRow, 'Amur Tiger');
+
+   assert.deepEqual(fixedTimeMode, { enabled: true });
+
+   controller.handleTypeSelectChange();
+
+   assert.deepEqual(fixedTimeMode, { enabled: false });
+});
+
 test('handleTypeSelectChange clears the search input and resets time fields', () => {
    const refs = createRefs({
       selection: ScheduleItemKind.ANIMAL.itemType,

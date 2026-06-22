@@ -26,6 +26,7 @@ import {
    isScheduleItemSearchEnabled,
    isScheduleItemTypeUnset,
 } from '../scheduleItemTypes.js';
+import { isFixedTimeScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 import { showScheduleItemNotice } from '../showScheduleItemNotice.js';
 import { APP_STRINGS } from '../../../strings.js';
 
@@ -92,6 +93,17 @@ export function createScheduleItemModuleController({
       return Boolean(onlyItineraryItemsCheckbox?.checked);
    }
 
+   function syncScheduleTimeFields() {
+      const fixedTimeSelected = Boolean(
+         selectedRow
+         && isFixedTimeScheduleItemKind(getScheduleItemRowKind(selectedRow))
+      );
+
+      scheduleTimeFields.setFixedTimeScheduleMode?.({
+         enabled: fixedTimeSelected,
+      });
+   }
+
    function updateFieldVisibility() {
       const selection = getSelection();
       const searchEnabled = isScheduleItemSearchEnabled(selection, eventTypes);
@@ -116,6 +128,8 @@ export function createScheduleItemModuleController({
       if (scheduleButton) {
          scheduleButton.disabled = isSubmitting || !canScheduleSelection();
       }
+
+      syncScheduleTimeFields();
    }
 
    function renderSearchResultsForRows(rows) {
