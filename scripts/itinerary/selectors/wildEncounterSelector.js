@@ -1,23 +1,16 @@
-import {
-   normalizeStoredLink,
-   normalizeStoredString,
-} from './base/storedSelection.js';
 import { createScheduledOccurrenceSelectorController } from './createScheduledOccurrenceSelector.js';
 import { APP_STRINGS } from '../../strings.js';
+import {
+   buildWildEncounterSelectionFields,
+   getWildEncounterId,
+   getWildEncounterLink,
+   getWildEncounterMeetingSpot,
+   getWildEncounterName,
+   getWildEncounterScheduleStart,
+   readWildEncounterStoredFields,
+} from './wildEncounterSelector/model.js';
 
 const STORAGE_KEY = 'tzg.itineraryWildEncounters';
-
-function getWildEncounterMeetingSpot(row) {
-   return row.meeting_spot ?? '';
-}
-
-function getWildEncounterScheduleStart(row) {
-   return normalizeStoredString(row?.start_time);
-}
-
-function getWildEncounterLink(row) {
-   return normalizeStoredLink(row?.link);
-}
 
 export function createItineraryWildEncounterSelectorController({
    mountEl,
@@ -42,6 +35,8 @@ export function createItineraryWildEncounterSelectorController({
       emptyText: APP_STRINGS.itinerary.emptyText.wildEncounters,
 
       primaryLabel: APP_STRINGS.itinerary.selectors.meetingSpot,
+      getName: getWildEncounterName,
+      getId: getWildEncounterId,
       getPrimaryValue: getWildEncounterMeetingSpot,
       getTimeOfDay: getWildEncounterScheduleStart,
       getLink: getWildEncounterLink,
@@ -50,15 +45,7 @@ export function createItineraryWildEncounterSelectorController({
          start_time: '',
          end_time: '',
       },
-      readStoredFields: (item) => ({
-         meeting_spot: normalizeStoredString(item.meeting_spot),
-         start_time: normalizeStoredString(item.start_time),
-         end_time: normalizeStoredString(item.end_time),
-      }),
-      buildSelectionFields: (row) => ({
-         meeting_spot: getWildEncounterMeetingSpot(row),
-         start_time: getWildEncounterScheduleStart(row),
-         end_time: normalizeStoredString(row?.end_time),
-      }),
+      readStoredFields: readWildEncounterStoredFields,
+      buildSelectionFields: buildWildEncounterSelectionFields,
    });
 }

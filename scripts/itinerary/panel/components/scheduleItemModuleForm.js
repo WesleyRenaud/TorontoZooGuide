@@ -13,6 +13,17 @@ import {
    getAttractionTitle,
 } from '../../selectors/attractionSelector/model.js';
 import { createDefaultSelectorRowLeftRenderer } from '../../selectors/base/resultRenderer.js';
+import {
+   buildGuardiansTalkImageSrc,
+   getGuardiansTalkSearchTitle,
+   getGuardiansTalkSubtitle,
+} from '../../selectors/guardiansTalkSelector/model.js';
+import {
+   buildWildEncounterImageSrc,
+   getWildEncounterLink,
+   getWildEncounterSearchTitle,
+   getWildEncounterSubtitle,
+} from '../../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
 function createFieldLabel(text) {
@@ -71,6 +82,24 @@ export function buildSearchRowRenderer(moduleType) {
          getSubtitle: getAnimalSubtitle,
          getImageSrc: buildAnimalImageSrc,
          getInfoLink: () => null,
+      });
+   }
+
+   if (moduleType === ScheduleItemKind.GUARDIANS_TALK.itemType) {
+      return createDefaultSelectorRowLeftRenderer({
+         getTitle: getGuardiansTalkSearchTitle,
+         getSubtitle: getGuardiansTalkSubtitle,
+         getImageSrc: buildGuardiansTalkImageSrc,
+         getInfoLink: () => null,
+      });
+   }
+
+   if (moduleType === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
+      return createDefaultSelectorRowLeftRenderer({
+         getTitle: getWildEncounterSearchTitle,
+         getSubtitle: getWildEncounterSubtitle,
+         getImageSrc: buildWildEncounterImageSrc,
+         getInfoLink: getWildEncounterLink,
       });
    }
 

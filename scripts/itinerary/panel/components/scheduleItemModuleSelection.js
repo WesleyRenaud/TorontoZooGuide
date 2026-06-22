@@ -11,6 +11,8 @@ import {
 } from '../scheduleItemTypes.js';
 import { getAnimalSpecies } from '../../selectors/animalSelector/model.js';
 import { getAttractionTitle } from '../../selectors/attractionSelector/model.js';
+import { getGuardiansTalkName } from '../../selectors/guardiansTalkSelector/model.js';
+import { getWildEncounterName } from '../../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
 export function canScheduleModuleSelection({
@@ -40,7 +42,9 @@ export function filterVisibleScheduleModuleRows({
       return rows;
    }
 
-   return filterScheduleItemRowsToItinerary(rows, itinerary);
+   return filterScheduleItemRowsToItinerary(rows, itinerary, {
+      unscheduledOnly: onlyItineraryItemsEnabled,
+   });
 }
 
 export function shouldClearSelectedScheduleRow({
@@ -55,24 +59,42 @@ export function shouldClearSelectedScheduleRow({
 }
 
 export function resolveScheduleModuleSearchLabel(row) {
-   if (getScheduleItemRowKind(row) === ScheduleItemKind.ATTRACTION.itemType) {
+   const kind = getScheduleItemRowKind(row);
+
+   if (kind === ScheduleItemKind.ATTRACTION.itemType) {
       return getAttractionTitle(row) || '';
+   }
+
+   if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
+      return getGuardiansTalkName(row) || '';
+   }
+
+   if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
+      return getWildEncounterName(row) || '';
    }
 
    return getAnimalSpecies(row) || '';
 }
 
 export function resolveScheduleModuleSearchRowRenderer({
-   selection = '',
    row,
    renderAnimalRowLeft,
    renderAttractionRowLeft,
+   renderGuardiansTalkRowLeft,
+   renderWildEncounterRowLeft,
 }) {
-   if (
-      selection === ScheduleItemKind.ATTRACTION.itemType
-      || getScheduleItemRowKind(row) === ScheduleItemKind.ATTRACTION.itemType
-   ) {
+   const kind = getScheduleItemRowKind(row);
+
+   if (kind === ScheduleItemKind.ATTRACTION.itemType) {
       return renderAttractionRowLeft(row);
+   }
+
+   if (kind === ScheduleItemKind.GUARDIANS_TALK.itemType) {
+      return renderGuardiansTalkRowLeft(row);
+   }
+
+   if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
+      return renderWildEncounterRowLeft(row);
    }
 
    return renderAnimalRowLeft(row);

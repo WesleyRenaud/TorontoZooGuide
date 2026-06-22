@@ -1,16 +1,15 @@
-import { normalizeStoredString } from './base/storedSelection.js';
 import { createScheduledOccurrenceSelectorController } from './createScheduledOccurrenceSelector.js';
+import {
+   buildGuardiansTalkSelectionFields,
+   getGuardiansTalkId,
+   getGuardiansTalkLocation,
+   getGuardiansTalkName,
+   getGuardiansTalkScheduleStart,
+   readGuardiansTalkStoredFields,
+} from './guardiansTalkSelector/model.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryGuardiansTalks';
-
-function getTalkLocation(row) {
-   return row.location ?? '';
-}
-
-function getTalkScheduleStart(row) {
-   return normalizeStoredString(row?.start_time);
-}
 
 export function createItineraryGuardiansTalkSelectorController({
    mountEl,
@@ -36,22 +35,16 @@ export function createItineraryGuardiansTalkSelectorController({
       emptyText: APP_STRINGS.itinerary.emptyText.guardiansTalks,
 
       primaryLabel: APP_STRINGS.labels.location,
-      getPrimaryValue: getTalkLocation,
-      getTimeOfDay: getTalkScheduleStart,
+      getName: getGuardiansTalkName,
+      getId: getGuardiansTalkId,
+      getPrimaryValue: getGuardiansTalkLocation,
+      getTimeOfDay: getGuardiansTalkScheduleStart,
       emptyStoredFields: {
          location: '',
          start_time: '',
          end_time: '',
       },
-      readStoredFields: (item) => ({
-         location: normalizeStoredString(item.location),
-         start_time: normalizeStoredString(item.start_time),
-         end_time: normalizeStoredString(item.end_time),
-      }),
-      buildSelectionFields: (row) => ({
-         location: getTalkLocation(row),
-         start_time: getTalkScheduleStart(row),
-         end_time: normalizeStoredString(row?.end_time),
-      }),
+      readStoredFields: readGuardiansTalkStoredFields,
+      buildSelectionFields: buildGuardiansTalkSelectionFields,
    });
 }

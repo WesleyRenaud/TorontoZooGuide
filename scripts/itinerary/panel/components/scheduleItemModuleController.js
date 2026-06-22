@@ -39,6 +39,8 @@ export function createScheduleItemModuleController({
    scheduleButton = null,
    renderAnimalRowLeft = () => null,
    renderAttractionRowLeft = () => null,
+   renderGuardiansTalkRowLeft = () => null,
+   renderWildEncounterRowLeft = () => null,
    onScheduled = null,
    deps = {},
 } = {}) {
@@ -131,10 +133,11 @@ export function createScheduleItemModuleController({
          getId: getScheduleItemRowId,
          selectedRowId,
          renderRowLeft: (row) => resolveScheduleModuleSearchRowRenderer({
-            selection,
             row,
             renderAnimalRowLeft,
             renderAttractionRowLeft,
+            renderGuardiansTalkRowLeft,
+            renderWildEncounterRowLeft,
          }),
          onSelectRow: (row, id) => {
             const isSameRow = id === selectedRowId;

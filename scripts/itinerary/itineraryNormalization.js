@@ -2,6 +2,7 @@ import {
    createEmptyItineraryDraft,
    isItineraryEmptyDraft,
    normalizeItineraryDraft,
+   normalizeItineraryItems,
 } from './itineraryShape.js';
 import { buildItineraryValidationState } from './itineraryValidation.js';
 
@@ -10,10 +11,6 @@ export function createEmptyItinerary() {
       ...createEmptyItineraryDraft(),
       isActive: false,
    };
-}
-
-function normalizeItineraryItems(items) {
-   return Array.isArray(items) ? items : [];
 }
 
 function normalizeItinerarySource(itinerary) {
