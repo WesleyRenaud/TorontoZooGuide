@@ -10,6 +10,14 @@ export const ScheduleItemKind = Object.freeze({
       kind: 'attraction',
       itemType: 'attractions',
    }),
+   GUARDIANS_TALK: Object.freeze({
+      kind: 'guardians_talk',
+      itemType: 'guardians_talks',
+   }),
+   WILD_ENCOUNTER: Object.freeze({
+      kind: 'wild_encounter',
+      itemType: 'wild_encounters',
+   }),
    EVENT: Object.freeze({
       kind: 'event',
    }),
@@ -18,6 +26,8 @@ export const ScheduleItemKind = Object.freeze({
 const ITEM_TYPE_BY_KIND = Object.freeze({
    [ScheduleItemKind.ANIMAL.kind]: ScheduleItemKind.ANIMAL.itemType,
    [ScheduleItemKind.ATTRACTION.kind]: ScheduleItemKind.ATTRACTION.itemType,
+   [ScheduleItemKind.GUARDIANS_TALK.kind]: ScheduleItemKind.GUARDIANS_TALK.itemType,
+   [ScheduleItemKind.WILD_ENCOUNTER.kind]: ScheduleItemKind.WILD_ENCOUNTER.itemType,
 });
 
 export function scheduleItemKindFromItemType(itemType) {
@@ -48,6 +58,8 @@ export function isScheduleItemModuleItemType(itemType) {
    return (
       normalized === ScheduleItemKind.ANIMAL.itemType
       || normalized === ScheduleItemKind.ATTRACTION.itemType
+      || normalized === ScheduleItemKind.GUARDIANS_TALK.itemType
+      || normalized === ScheduleItemKind.WILD_ENCOUNTER.itemType
    );
 }
 

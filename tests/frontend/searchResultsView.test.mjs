@@ -94,6 +94,7 @@ test('renderSearchResults links wild encounter titles when url is present', () =
    const img = findDescendant(row, 'itin-animal-thumb-img');
 
    assert.ok(title?.className.includes('species-link'));
+   assert.equal(title?.textContent, 'African Rainforest Wild Encounter');
    assert.equal(
       img?.src,
       '../images/details/wild-encounters/african-rainforest.png'
@@ -147,4 +148,14 @@ test('renderSearchResults shows thumbnails for named map detail image types', ()
          expectedImageSrcs[index]
       );
    });
+
+   const guardiansTalkTitle = findDescendant(
+      resultsEl.children[2],
+      'animal-result-species'
+   );
+
+   assert.equal(
+      guardiansTalkTitle?.textContent,
+      'Amur Tiger Meet The Guardians Talk'
+   );
 });

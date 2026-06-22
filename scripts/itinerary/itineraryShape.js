@@ -28,7 +28,7 @@ function normalizeItineraryTime(value) {
       : '';
 }
 
-function normalizeItineraryItems(items) {
+export function normalizeItineraryItems(items) {
    return Array.isArray(items)
       ? items
       : [];

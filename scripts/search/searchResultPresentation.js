@@ -1,6 +1,14 @@
 import { buildDetailImageSrc } from '../assets/detailImageSrc.js';
 import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { normalizeStoredLink } from '../itinerary/selectors/base/storedSelection.js';
+import {
+   getGuardiansTalkName,
+   getGuardiansTalkSearchTitle,
+} from '../itinerary/selectors/guardiansTalkSelector/model.js';
+import {
+   getWildEncounterName,
+   getWildEncounterSearchTitle,
+} from '../itinerary/selectors/wildEncounterSelector/model.js';
 import { APP_STRINGS } from '../strings.js';
 
 const SEARCH_DETAIL_IMAGE_BASE_PATH = '../images/details';
@@ -38,20 +46,22 @@ function buildNamedResultPresentation(fallbackTitle, getSubtitle) {
 }
 
 export const SEARCH_RESULT_PRESENTATIONS = {
-   wildEncounter: buildNamedResultPresentation(
-      APP_STRINGS.entityLabels.wildEncounter,
-      (row) => buildDetailSummary(
+   wildEncounter: {
+      getTitle: getWildEncounterSearchTitle,
+      getImageName: getWildEncounterName,
+      getSubtitle: (row) => buildDetailSummary(
          [row.meeting_spot, row.start_time],
          APP_STRINGS.entityLabels.wildEncounter
-      )
-   ),
-   guardiansTalk: buildNamedResultPresentation(
-      APP_STRINGS.entityLabels.guardiansTalk,
-      (row) => buildDetailSummary(
+      ),
+   },
+   guardiansTalk: {
+      getTitle: getGuardiansTalkSearchTitle,
+      getImageName: getGuardiansTalkName,
+      getSubtitle: (row) => buildDetailSummary(
          [row.location, row.start_time],
          APP_STRINGS.entityLabels.guardiansTalk
-      )
-   ),
+      ),
+   },
    zoomobileStation: buildNamedResultPresentation(
       APP_STRINGS.entityLabels.zoomobileStation,
       () => null
@@ -99,12 +109,14 @@ export function createSearchImageRowRenderer({
    getInfoLink = () => null,
    onTitleClick = null,
 } = {}) {
+   const getImageName = presentation.getImageName ?? presentation.getTitle;
+
    return createDefaultSelectorRowLeftRenderer({
       getTitle: presentation.getTitle,
       getSubtitle: presentation.getSubtitle,
       getImageSrc: (row) => buildSearchDetailImageSrc(
          imageDirectory,
-         presentation.getTitle(row)
+         getImageName(row)
       ),
       getInfoLink,
       onTitleClick,

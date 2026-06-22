@@ -39,5 +39,13 @@ export function buildScheduleItemTypeOptions(eventTypes = [], strings = {}) {
          value: ScheduleItemKind.ATTRACTION.itemType,
          label: APP_STRINGS.entityLabels.attraction,
       },
+      {
+         value: ScheduleItemKind.GUARDIANS_TALK.itemType,
+         label: APP_STRINGS.entityLabels.guardiansTalk,
+      },
+      {
+         value: ScheduleItemKind.WILD_ENCOUNTER.itemType,
+         label: APP_STRINGS.entityLabels.wildEncounter,
+      },
    ];
 }

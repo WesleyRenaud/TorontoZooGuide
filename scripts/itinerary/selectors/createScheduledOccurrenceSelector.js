@@ -1,4 +1,3 @@
-import { buildDetailImageSrc } from '../../assets/detailImageSrc.js';
 import {
    migrateStoredSelectionItems,
    normalizeStoredId,
@@ -7,32 +6,16 @@ import {
 } from './base/storedSelection.js';
 import { createItinerarySelectorController } from './createSelectorController.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
+import {
+   buildOccurrenceDetailImageSrc,
+   buildOccurrenceSubtitle,
+} from '../scheduledOccurrencePresentation.js';
 import { sortScheduledOccurrencesByStartTime } from '../scheduledOccurrenceSort.js';
 import { buildScheduledOccurrenceTimeRange } from '../scheduledOccurrenceTimeRange.js';
 import { APP_STRINGS } from '../../strings.js';
 
 function getOccurrenceName(row) {
    return row?.name ?? '';
-}
-
-function buildOccurrenceImageSrc(imageDirectory, name) {
-   return buildDetailImageSrc(imageDirectory, name, {
-      basePath: '../images/details',
-   });
-}
-
-function buildOccurrenceSubtitle({
-   primaryLabel,
-   primaryValue = '',
-   timeRange = '',
-} = {}) {
-   const primaryLine = primaryValue
-      ? `${primaryLabel}: ${primaryValue}`
-      : `${primaryLabel}: -`;
-
-   return timeRange
-      ? `${primaryLine}  •  Time: ${timeRange}`
-      : primaryLine;
 }
 
 function createStoredOccurrenceFromString(item, {
@@ -184,7 +167,7 @@ export function createScheduledOccurrenceSelectorController({
    buildSelectionFields,
 } = {}) {
    const buildImageSrc = (name) => (
-      buildOccurrenceImageSrc(imageDirectory, name)
+      buildOccurrenceDetailImageSrc(imageDirectory, name)
    );
 
    const migrateSelected = createOccurrenceMigration({
