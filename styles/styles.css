@@ -2167,9 +2167,16 @@ nav ul li a:hover {
 }
 
 .schedule-item-search-input:disabled,
+.schedule-item-time-field.is-disabled .schedule-item-time-input,
+.schedule-item-duration-field.is-disabled .schedule-item-duration-input,
+.schedule-item-time-input:disabled,
 .schedule-item-duration-input:disabled {
    opacity: 0.55;
    cursor: not-allowed;
+   background: rgba(235, 240, 228, 0.92);
+   border-color: rgba(94, 150, 0, 0.18);
+   box-shadow: none;
+   color: rgba(20, 35, 10, 0.42);
 }
 
 .schedule-item-module .itin-results {
