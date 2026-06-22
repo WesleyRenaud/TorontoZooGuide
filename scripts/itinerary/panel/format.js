@@ -4,7 +4,7 @@ function asObject(value) {
       : {};
 }
 
-function normalizeText(value) {
+export function normalizeText(value) {
    return typeof value === 'string'
       ? value.trim()
       : '';

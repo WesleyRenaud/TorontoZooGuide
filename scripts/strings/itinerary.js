@@ -81,14 +81,21 @@ export const itinerary = {
          'This item is not on your itinerary yet. Do you want to add it and schedule a time?'
       ),
       scheduleItemNotOnItineraryConfirm: 'Add to Schedule',
-      guardiansTalkUnscheduleTitle: 'Unschedule Conflicting Items?',
-      guardiansTalkUnscheduleMessage: talksList => `Adding these Meet the Guardians Talks: ${talksList} will unschedule other items that overlap their time. Do you want to continue?`,
-      guardiansTalkUnscheduleConfirm: 'Continue',
+      guardiansTalkRescheduleTitle: 'Add Guardians Talk?',
+      guardiansTalkRescheduleMessage: (talkName, talkTime) => (
+         `Adding the ${talkName} guardians talk will put it at ${talkTime} on your day and update your walking route. Your items will be rescheduled around it.`
+      ),
+      guardiansTalkRescheduleMessageWithoutTime: talkName => (
+         `Adding the ${talkName} guardians talk will add it to your day and update your walking route. Your items will be rescheduled around it.`
+      ),
+      updatePlanConfirm: 'Update Plan',
       wildEncounterRescheduleTitle: 'Add Wild Encounter?',
       wildEncounterRescheduleMessage: (encounterName, encounterTime) => (
-         `Adding ${encounterName} will put a ${encounterTime} encounter on your day and update your walking route. Your items will be rescheduled around it.`
+         `Adding the ${encounterName} wild encounter will put it at ${encounterTime} on your day and update your walking route. Your items will be rescheduled around it.`
       ),
-      wildEncounterRescheduleConfirm: 'Update Plan',
+      wildEncounterRescheduleMessageWithoutTime: encounterName => (
+         `Adding the ${encounterName} wild encounter will add it to your day and update your walking route. Your items will be rescheduled around it.`
+      ),
       removeItemTitle: 'Remove from Itinerary?',
       removeItemMessage: (
          'It will no longer appear in your day plan or itinerary lists. You can add it again later from the itinerary builder.'

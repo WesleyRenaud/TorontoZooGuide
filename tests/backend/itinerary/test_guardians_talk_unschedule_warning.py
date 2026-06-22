@@ -5,8 +5,11 @@ from datetime import date
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.data_access.fetch_itinerary_walk_route import fetch_itinerary_walk_route
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_status import suppress_itinerary_status
+from api.itinerary.data_access.itinerary_walk_route_helpers import walk_route_matches
+from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 
@@ -131,8 +134,9 @@ def test_set_itinerary_unschedules_overlapping_items_when_confirmed(
    lion = next(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Lion' )
-   assert lion.start_time is None
-   assert lion.end_time is None
+   assert lion.start_time is not None
+   assert lion.end_time is not None
+   assert lion.end_time <= '10:00'
 
 
 def test_schedule_guardians_talk_returns_warning_when_it_would_unschedule_items(
@@ -183,14 +187,40 @@ def test_schedule_guardians_talk_unschedules_overlapping_items_when_confirmed(
    lion = next(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Lion' )
-   assert lion.start_time is None
-   assert lion.end_time is None
+   assert lion.start_time is not None
+   assert lion.end_time is not None
+   assert lion.end_time <= '10:00'
 
    talk = next(
       saved_talk for saved_talk in result.itinerary.guardians_talks
       if saved_talk.name == GUARDIANS_TALK )
    assert talk.start_time == '10:00'
    assert talk.end_time == '10:30'
+
+
+def test_confirmed_guardians_talk_reschedule_persists_walk_route(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   _set_guardians_talk_schedule()
+   _set_itinerary_with_scheduled_animal(
+      db,
+      freeze_database_today=freeze_database_today )
+
+   result = ItineraryCoordinator.schedule_itinerary_item(
+      item_type='guardians_talks',
+      key=GUARDIANS_TALK,
+      confirming_guardians_talk_unschedule=True,
+   )
+
+   assert result.success
+
+   expected_route = build_itinerary_walk_route( result.itinerary )
+   persisted_route = fetch_itinerary_walk_route( db.conn )
+
+   assert walk_route_matches( expected_route, persisted_route )
+   assert any(
+      stop.item_key == GUARDIANS_TALK
+      for stop in persisted_route.stops )
 
 
 def test_guardians_talk_unschedule_warning_cannot_be_suppressed(

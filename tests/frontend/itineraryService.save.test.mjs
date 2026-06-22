@@ -124,6 +124,7 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
                items: [{
                   name: 'African Lion',
                   item_type: 'guardiansTalk',
+                  start_time: '10:00',
                }],
             }],
             itinerary_config: itineraryConfig,
@@ -154,7 +155,7 @@ test('saveItinerary confirms before saving a guardians talk that unschedules ite
 
    assert.match(
       popupMessage?.textContent ?? '',
-      /Adding these Meet the Guardians Talks: African Lion will unschedule other items/
+      /Adding the African Lion guardians talk will put it at .* on your day and update your walking route\. Your items will be rescheduled around it\./
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();
@@ -232,7 +233,7 @@ test('saveItinerary confirms before saving a wild encounter that unschedules ite
 
    assert.match(
       popupMessage?.textContent ?? '',
-      /Adding African Rainforest will put a .* encounter on your day and update your walking route\. Your items will be rescheduled around it\./
+      /Adding the African Rainforest wild encounter will put it at .* on your day and update your walking route\. Your items will be rescheduled around it\./
    );
 
    document.querySelector('.tzg-popup-confirm')?.click();

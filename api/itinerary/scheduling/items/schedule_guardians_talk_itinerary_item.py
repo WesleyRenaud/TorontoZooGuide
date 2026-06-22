@@ -8,12 +8,13 @@ from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ....models.guardians_talk_diff import GuardiansTalkDiff
+from ..reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
+from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
-from ..unscheduling.guardians_talk_unschedule_items import clear_saved_schedules_overlapping_guardians_talks
 from ..unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
 from ...warnings.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
 
@@ -43,25 +44,18 @@ def _guardians_talk_diff_for_saved_itinerary_day(
 def _insert_scheduled_guardians_talk(
       conn: Connection,
       *,
-      saved_itinerary: SavedItinerary,
       talk_name: str,
       guardians_talk_diff: GuardiansTalkDiff,
-      clear_overlapping_schedules: bool,
-      itinerary_context: dict[ str, Any ] ) -> ItinerarySaveResult:
+      itinerary_context: dict[ str, Any ] ) -> ItinerarySaveResult | None:
    cur = conn.cursor()
 
    try:
-      if clear_overlapping_schedules:
-         clear_saved_schedules_overlapping_guardians_talks(
-            cur,
-            saved_itinerary,
-            [ guardians_talk_diff ] )
-
       scheduled = insert_itinerary_guardians_talk(
          cur,
          talk_name=talk_name,
          start_time=guardians_talk_diff.start_time,
          end_time=guardians_talk_diff.end_time,
+         is_deleted=guardians_talk_diff.is_deleted,
       )
 
       if not scheduled:
@@ -75,7 +69,7 @@ def _insert_scheduled_guardians_talk(
    finally:
       cur.close()
 
-   return build_success_result( conn, **itinerary_context )
+   return None
 
 
 def schedule_guardians_talk_itinerary_item(
@@ -100,6 +94,12 @@ def schedule_guardians_talk_itinerary_item(
       talk_name,
       itinerary_context[ 'guardians_coordinator' ] )
 
+   if guardians_talk_diff.is_deleted:
+      return build_save_result(
+         conn,
+         ItineraryErrorType.SAVE_FAILED,
+         **itinerary_context )
+
    has_overlap = saved_itinerary_has_overlap_with_guardians_talks(
       saved_itinerary,
       [ guardians_talk_diff ] )
@@ -113,11 +113,20 @@ def schedule_guardians_talk_itinerary_item(
          ),
          **itinerary_context )
 
-   return _insert_scheduled_guardians_talk(
+   insert_error = _insert_scheduled_guardians_talk(
       conn,
-      saved_itinerary=saved_itinerary,
       talk_name=talk_name,
       guardians_talk_diff=guardians_talk_diff,
-      clear_overlapping_schedules=(
-         has_overlap and confirming_guardians_talk_unschedule ),
       itinerary_context=itinerary_context )
+
+   if insert_error is not None:
+      return insert_error
+
+   if has_overlap and confirming_guardians_talk_unschedule:
+      return reschedule_itinerary_items_after_fixed_time_activity_add(
+         conn,
+         **itinerary_context )
+
+   persist_itinerary_walk_route( conn, **itinerary_context )
+
+   return build_success_result( conn, **itinerary_context )

@@ -1,6 +1,9 @@
 import { showItineraryConfirmPopup } from './components/confirmPopup.js';
 import { getItineraryOverlayMountEl } from './components/popup.js';
-import { formatClockTime } from './format.js';
+import {
+   formatClockTime,
+   normalizeText,
+} from './format.js';
 import { APP_STRINGS } from '../../strings.js';
 
 const WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS_ISSUE = 'wildEncounterWillUnscheduleItems';
@@ -49,20 +52,18 @@ export function showWildEncounterUnscheduleConfirmation({
       return;
    }
 
+   const encounterName = normalizeText(encounter.encounterName);
    const message = encounter.encounterTime
       ? strings.wildEncounterRescheduleMessage(
-         encounter.encounterName,
+         encounterName,
          encounter.encounterTime
       )
-      : strings.wildEncounterRescheduleMessage(
-         encounter.encounterName,
-         'scheduled'
-      );
+      : strings.wildEncounterRescheduleMessageWithoutTime(encounterName);
 
    showItineraryConfirmPopup({
       title: strings.wildEncounterRescheduleTitle,
       message,
-      confirmText: strings.wildEncounterRescheduleConfirm,
+      confirmText: strings.updatePlanConfirm,
       cancelText: APP_STRINGS.itinerary.actions.cancel,
       mountEl,
       onConfirm,
