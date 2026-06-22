@@ -34,7 +34,6 @@ export function createItineraryGuardiansTalkSelectorController({
       subtitle: APP_STRINGS.itinerary.selectors.guardiansTalkSubtitle,
       emptyText: APP_STRINGS.itinerary.emptyText.guardiansTalks,
 
-      primaryLabel: APP_STRINGS.labels.location,
       getName: getGuardiansTalkName,
       getId: getGuardiansTalkId,
       getPrimaryValue: getGuardiansTalkLocation,

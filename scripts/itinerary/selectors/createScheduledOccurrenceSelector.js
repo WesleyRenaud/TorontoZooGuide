@@ -156,7 +156,6 @@ export function createScheduledOccurrenceSelectorController({
    heading,
    subtitle,
    emptyText,
-   primaryLabel,
    getName = getOccurrenceName,
    getId = getName,
    getPrimaryValue,
@@ -211,7 +210,6 @@ export function createScheduledOccurrenceSelectorController({
       getId,
       getTitle: (row) => getName(row) || defaultTitle,
       getSubtitle: (row) => buildOccurrenceSubtitle({
-         primaryLabel,
          primaryValue: getPrimaryValue(row),
          timeRange: buildScheduledOccurrenceTimeRange(row),
       }),
