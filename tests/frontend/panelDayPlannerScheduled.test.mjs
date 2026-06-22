@@ -77,9 +77,7 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('scheduled guardians talk renders as timeline pill with unschedule and remove menu', () => {
-      const unscheduleCalls = [];
-      const removeCalls = [];
+   test('scheduled guardians talk renders as timeline event card without pill menu', () => {
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-20',
@@ -102,40 +100,26 @@ test.describe('itinerary day planner preview scheduled', () => {
          {},
          {
             scheduleHandlers: {
-               onUnscheduleItineraryItem: (request) => {
-                  unscheduleCalls.push(request);
-               },
-               onRemoveItineraryItem: (request) => {
-                  removeCalls.push(request);
-               },
+               onUnscheduleItineraryItem: () => {},
+               onRemoveItineraryItem: () => {},
             },
          }
       );
-      const tigerPill = [...planner.querySelectorAll('.itinerary-day-scheduled-pill')].find((pill) => (
-         allTextFor(pill).includes('Amur Tiger')
+      const tigerEvent = [...planner.querySelectorAll('.itinerary-day-event')].find((event) => (
+         allTextFor(event).includes('Amur Tiger')
       ));
-      const menuItems = [
-         ...(tigerPill?.querySelectorAll('.itinerary-day-open-pill-menu-item') ?? []),
-      ];
 
-      assert.ok(tigerPill);
-      assert.ok(tigerPill.classList.contains('itinerary-day-scheduled-pill--with-menu'));
-      assert.deepEqual(
-         menuItems.map((button) => button.textContent),
-         ['Unschedule', 'Remove']
+      assert.ok(tigerEvent);
+      assert.ok(tigerEvent.querySelector('.itinerary-day-event-card'));
+      assert.match(allTextFor(tigerEvent), /Location: Eurasia Wilds/);
+      assert.match(
+         imageSrcFor(tigerEvent),
+         /images\/details\/guardians-talks\/amur-tiger\.png$/
       );
-
-      menuItems[0].click();
-      menuItems[1].click();
-
-      assert.deepEqual(unscheduleCalls, [{
-         itemType: 'guardians_talks',
-         key: 'Amur Tiger',
-      }]);
-      assert.deepEqual(removeCalls, [{
-         itemType: 'guardians_talks',
-         key: 'Amur Tiger',
-      }]);
+      assert.equal(
+         tigerEvent.querySelector('.itinerary-day-scheduled-pill--with-menu'),
+         null
+      );
    });
    
 

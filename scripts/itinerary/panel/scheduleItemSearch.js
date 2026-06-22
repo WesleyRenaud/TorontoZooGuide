@@ -4,7 +4,10 @@ import { getAnimalId } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
 import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
-import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
+import {
+   ScheduleItemKind,
+   scheduleItemKindFromItemType,
+} from '../../shared/enums/scheduleItemKind.js';
 
 function tagRows(rows = [], scheduleItemKind) {
    return rows.map((row) => ({
@@ -102,19 +105,19 @@ export function getScheduleItemRowId(row) {
 }
 
 export function getItineraryItemKey(itemType, item) {
-   const normalizedType = String(itemType).trim().toLowerCase();
+   const kind = scheduleItemKindFromItemType(itemType);
 
-   if (normalizedType === ScheduleItemKind.ANIMAL.itemType) {
+   if (kind === ScheduleItemKind.ANIMAL) {
       return getAnimalId(item);
    }
 
-   if (normalizedType === ScheduleItemKind.ATTRACTION.itemType) {
+   if (kind === ScheduleItemKind.ATTRACTION) {
       return getAttractionId(item);
    }
 
    if (
-      normalizedType === ScheduleItemKind.GUARDIANS_TALK.itemType
-      || normalizedType === ScheduleItemKind.WILD_ENCOUNTER.itemType
+      kind === ScheduleItemKind.GUARDIANS_TALK
+      || kind === ScheduleItemKind.WILD_ENCOUNTER
    ) {
       return String(item.name).trim();
    }
