@@ -7,8 +7,8 @@ import { el } from '../dom.js';
 import { openAnimalSpeciesOverlay } from '../../../overlays/speciesOverlay.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import {
-   isScheduleItemModuleItemType,
    ScheduleItemKind,
+   usesScheduledTimelineEventCard,
 } from '../../../shared/enums/scheduleItemKind.js';
 
 export function makeTimelineRow(timeLabel) {
@@ -59,7 +59,7 @@ function makeScheduledItemBlock(itemRow, maximumDuration, offsetFraction = 0) {
 function usesScheduledTimelineEventBlock(scheduledItem) {
    return Boolean(
       scheduledItem.row
-      && !isScheduleItemModuleItemType(scheduledItem.scheduleItemKind)
+      && usesScheduledTimelineEventCard(scheduledItem.scheduleItemKind)
    );
 }
 

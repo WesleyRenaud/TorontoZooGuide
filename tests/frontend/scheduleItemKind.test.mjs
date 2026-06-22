@@ -6,6 +6,7 @@ import {
    scheduleItemKindFromItemType,
    scheduleItemModuleItemTypeForKind,
    ScheduleItemKind,
+   usesScheduledTimelineEventCard,
 } from '../../scripts/shared/enums/scheduleItemKind.js';
 
 test('ScheduleItemKind pairs kind with API itemType', () => {
@@ -33,10 +34,34 @@ test('scheduleItemKindFromItemType accepts module and kind strings', () => {
 test('isScheduleItemModuleItemType recognizes module item types only', () => {
    assert.equal(isScheduleItemModuleItemType('animals'), true);
    assert.equal(isScheduleItemModuleItemType('attractions'), true);
+   assert.equal(isScheduleItemModuleItemType('guardians_talks'), true);
+   assert.equal(isScheduleItemModuleItemType('wild_encounters'), true);
    assert.equal(isScheduleItemModuleItemType('lunch'), false);
    assert.equal(isScheduleItemModuleItemType('animal'), false);
    assert.equal(isScheduleItemModuleItemType('  ANIMALS  '), true);
    assert.equal(isScheduleItemModuleItemType(null), false);
+});
+
+test('usesScheduledTimelineEventCard applies to guardians talks and wild encounters only', () => {
+   assert.equal(
+      usesScheduledTimelineEventCard(ScheduleItemKind.GUARDIANS_TALK.itemType),
+      true
+   );
+   assert.equal(
+      usesScheduledTimelineEventCard(ScheduleItemKind.GUARDIANS_TALK.kind),
+      true
+   );
+   assert.equal(
+      usesScheduledTimelineEventCard(ScheduleItemKind.WILD_ENCOUNTER.itemType),
+      true
+   );
+   assert.equal(
+      usesScheduledTimelineEventCard(ScheduleItemKind.WILD_ENCOUNTER.kind),
+      true
+   );
+   assert.equal(usesScheduledTimelineEventCard(ScheduleItemKind.ANIMAL.itemType), false);
+   assert.equal(usesScheduledTimelineEventCard(ScheduleItemKind.ATTRACTION.itemType), false);
+   assert.equal(usesScheduledTimelineEventCard('lunch'), false);
 });
 
 test('scheduleItemKindFromItemType returns null for unknown and blank values', () => {

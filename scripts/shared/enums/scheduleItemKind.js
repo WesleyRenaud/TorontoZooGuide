@@ -30,8 +30,12 @@ const ITEM_TYPE_BY_KIND = Object.freeze({
    [ScheduleItemKind.WILD_ENCOUNTER.kind]: ScheduleItemKind.WILD_ENCOUNTER.itemType,
 });
 
+function normalizeScheduleItemKindKey(value) {
+   return String(value ?? '').trim().toLowerCase();
+}
+
 export function scheduleItemKindFromItemType(itemType) {
-   const normalized = String(itemType ?? '').trim().toLowerCase();
+   const normalized = normalizeScheduleItemKindKey(itemType);
 
    if (!normalized) {
       return null;
@@ -53,7 +57,7 @@ export function scheduleItemKindFromItemType(itemType) {
 }
 
 export function isScheduleItemModuleItemType(itemType) {
-   const normalized = String(itemType ?? '').trim().toLowerCase();
+   const normalized = normalizeScheduleItemKindKey(itemType);
 
    return (
       normalized === ScheduleItemKind.ANIMAL.itemType
@@ -63,6 +67,15 @@ export function isScheduleItemModuleItemType(itemType) {
    );
 }
 
+export function usesScheduledTimelineEventCard(scheduleItemKind) {
+   const kind = scheduleItemKindFromItemType(scheduleItemKind);
+
+   return (
+      kind === ScheduleItemKind.GUARDIANS_TALK
+      || kind === ScheduleItemKind.WILD_ENCOUNTER
+   );
+}
+
 export function scheduleItemModuleItemTypeForKind(kind) {
-   return ITEM_TYPE_BY_KIND[String(kind ?? '').trim().toLowerCase()] ?? null;
+   return ITEM_TYPE_BY_KIND[normalizeScheduleItemKindKey(kind)] ?? null;
 }
