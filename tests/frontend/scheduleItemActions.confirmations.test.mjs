@@ -195,6 +195,43 @@ test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk'
    assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
 });
 
+test('scheduleSelectedItineraryItem returns cancelled when guardians talk reschedule is declined', async () => {
+   globalThis.fetch = async () => mockJsonResponse({
+      status: 'guardiansTalkWillUnscheduleItems',
+      reasons: [{
+         code: 'guardiansTalkWillUnscheduleItems',
+         items: [{
+            name: 'Arctic Wolf',
+            item_type: 'guardiansTalk',
+            start_time: '11:00',
+         }],
+      }],
+   });
+
+   const schedulePromise = scheduleSelectedItineraryItem(
+      {
+         date: '2026-06-15',
+         animals: [{ species: 'Tiger', exhibit: 'Savanna', start_time: '11:00' }],
+         attractions: [],
+         guardiansTalks: [{ name: 'Arctic Wolf' }],
+      },
+      'guardians_talks',
+      { name: 'Arctic Wolf', scheduleItemKind: 'guardians_talks' },
+      []
+   );
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   document.querySelector('.tzg-popup-cancel')?.click();
+
+   const result = await schedulePromise;
+
+   assert.equal(result.cancelled, true);
+   assert.equal(result.errorType, 'guardiansTalkWillUnscheduleItems');
+});
+
 test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter', async () => {
    const requests = [];
 

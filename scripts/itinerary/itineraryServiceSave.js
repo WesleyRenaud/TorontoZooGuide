@@ -54,10 +54,10 @@ function requestSetItineraryConfirmation({
             resolve(confirmedResult);
          },
          onCancel: () => {
-            resolve(createConfirmedSetItineraryResult(
-               initialResult,
+            resolve({
+               cancelled: true,
                diffBaseline,
-            ));
+            });
          },
       });
    });
@@ -150,10 +150,13 @@ export async function saveItinerary(
       overridingConflictingGuardiansTalks,
    };
 
-   const {
-      result,
-      diffBaseline,
-   } = await requestSetItineraryWithConfirmations(basePayload);
+   const confirmationResult = await requestSetItineraryWithConfirmations(basePayload);
+
+   if (confirmationResult.cancelled) {
+      return null;
+   }
+
+   const { result, diffBaseline } = confirmationResult;
 
    if (!isItinerarySuccess(result.errorType)) {
       throw new Error(resolveItineraryErrorMessage(result.errorType));
