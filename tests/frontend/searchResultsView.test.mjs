@@ -96,10 +96,40 @@ test('renderSearchResults links wild encounter titles when url is present', () =
    assert.ok(title?.className.includes('species-link'));
    assert.equal(title?.textContent, 'African Rainforest Wild Encounter');
    assert.equal(
+      findDescendant(row, 'animal-result-exhibit')?.textContent,
+      'Wild Encounter - Africa Meeting Spot'
+   );
+   assert.equal(
       img?.src,
       '../images/details/wild-encounters/african-rainforest.png'
    );
    assert.equal(findDescendant(row, 'tooltip-link'), null);
+});
+
+test('renderSearchResults formats wild encounter subtitles like schedule item search', () => {
+   installDocument();
+
+   const resultsEl = createDomNode('div', 'animal-search-results');
+
+   renderSearchResults(resultsEl, [
+      {
+         type: 'wildEncounter',
+         name: 'From Howls to Honks',
+         meeting_spot: 'Wild Encounter – Mayan Temple Meeting Spot',
+         start_time: '13:00',
+         end_time: '13:30',
+      },
+   ]);
+
+   const subtitle = findDescendant(
+      resultsEl.children[0],
+      'animal-result-exhibit'
+   );
+
+   assert.equal(
+      subtitle?.textContent,
+      'Wild Encounter – Mayan Temple Meeting Spot  •  1:00 PM - 1:30 PM'
+   );
 });
 
 test('renderSearchResults keeps text-only rows for restrooms', () => {
@@ -157,5 +187,9 @@ test('renderSearchResults shows thumbnails for named map detail image types', ()
    assert.equal(
       guardiansTalkTitle?.textContent,
       'Amur Tiger Meet The Guardians Talk'
+   );
+   assert.equal(
+      findDescendant(resultsEl.children[2], 'animal-result-exhibit')?.textContent,
+      'Eurasia Wilds'
    );
 });

@@ -11,15 +11,12 @@ export function buildOccurrenceDetailImageSrc(imageDirectory, name) {
 }
 
 export function buildOccurrenceSubtitle({
-   primaryLabel,
    primaryValue = '',
    timeRange = '',
 } = {}) {
-   const primaryLine = primaryValue
-      ? `${primaryLabel}: ${primaryValue}`
-      : `${primaryLabel}: -`;
+   const parts = [primaryValue, timeRange].filter(Boolean);
 
-   return timeRange
-      ? `${primaryLine}  •  Time: ${timeRange}`
-      : primaryLine;
+   return parts.length > 0
+      ? parts.join('  •  ')
+      : '-';
 }

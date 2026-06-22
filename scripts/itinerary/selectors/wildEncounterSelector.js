@@ -34,7 +34,6 @@ export function createItineraryWildEncounterSelectorController({
       subtitle: APP_STRINGS.itinerary.selectors.wildEncounterSubtitle,
       emptyText: APP_STRINGS.itinerary.emptyText.wildEncounters,
 
-      primaryLabel: APP_STRINGS.itinerary.selectors.meetingSpot,
       getName: getWildEncounterName,
       getId: getWildEncounterId,
       getPrimaryValue: getWildEncounterMeetingSpot,

@@ -47,7 +47,6 @@ export function getWildEncounterScheduleStart(row) {
 
 export function getWildEncounterSubtitle(row) {
    return buildOccurrenceSubtitle({
-      primaryLabel: APP_STRINGS.itinerary.selectors.meetingSpot,
       primaryValue: getWildEncounterMeetingSpot(row),
       timeRange: buildScheduledOccurrenceTimeRange(row),
    });

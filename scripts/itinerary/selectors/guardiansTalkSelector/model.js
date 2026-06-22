@@ -40,7 +40,6 @@ export function getGuardiansTalkScheduleStart(row) {
 
 export function getGuardiansTalkSubtitle(row) {
    return buildOccurrenceSubtitle({
-      primaryLabel: APP_STRINGS.labels.location,
       primaryValue: getGuardiansTalkLocation(row),
       timeRange: buildScheduledOccurrenceTimeRange(row),
    });

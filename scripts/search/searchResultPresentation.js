@@ -4,10 +4,12 @@ import { normalizeStoredLink } from '../itinerary/selectors/base/storedSelection
 import {
    getGuardiansTalkName,
    getGuardiansTalkSearchTitle,
+   getGuardiansTalkSubtitle,
 } from '../itinerary/selectors/guardiansTalkSelector/model.js';
 import {
    getWildEncounterName,
    getWildEncounterSearchTitle,
+   getWildEncounterSubtitle,
 } from '../itinerary/selectors/wildEncounterSelector/model.js';
 import { APP_STRINGS } from '../strings.js';
 
@@ -49,18 +51,12 @@ export const SEARCH_RESULT_PRESENTATIONS = {
    wildEncounter: {
       getTitle: getWildEncounterSearchTitle,
       getImageName: getWildEncounterName,
-      getSubtitle: (row) => buildDetailSummary(
-         [row.meeting_spot, row.start_time],
-         APP_STRINGS.entityLabels.wildEncounter
-      ),
+      getSubtitle: getWildEncounterSubtitle,
    },
    guardiansTalk: {
       getTitle: getGuardiansTalkSearchTitle,
       getImageName: getGuardiansTalkName,
-      getSubtitle: (row) => buildDetailSummary(
-         [row.location, row.start_time],
-         APP_STRINGS.entityLabels.guardiansTalk
-      ),
+      getSubtitle: getGuardiansTalkSubtitle,
    },
    zoomobileStation: buildNamedResultPresentation(
       APP_STRINGS.entityLabels.zoomobileStation,
