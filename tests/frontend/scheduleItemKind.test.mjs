@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+   isFixedTimeScheduleItemKind,
    isScheduleItemModuleItemType,
    scheduleItemKindFromItemType,
    scheduleItemModuleItemTypeForKind,
@@ -42,26 +43,41 @@ test('isScheduleItemModuleItemType recognizes module item types only', () => {
    assert.equal(isScheduleItemModuleItemType(null), false);
 });
 
-test('usesScheduledTimelineEventCard applies to guardians talks and wild encounters only', () => {
+test('isFixedTimeScheduleItemKind applies to guardians talks and wild encounters only', () => {
+   assert.equal(
+      isFixedTimeScheduleItemKind(ScheduleItemKind.GUARDIANS_TALK.itemType),
+      true
+   );
+   assert.equal(
+      isFixedTimeScheduleItemKind(ScheduleItemKind.GUARDIANS_TALK.kind),
+      true
+   );
+   assert.equal(
+      isFixedTimeScheduleItemKind(ScheduleItemKind.WILD_ENCOUNTER.itemType),
+      true
+   );
+   assert.equal(
+      isFixedTimeScheduleItemKind(ScheduleItemKind.WILD_ENCOUNTER.kind),
+      true
+   );
+   assert.equal(isFixedTimeScheduleItemKind(ScheduleItemKind.ANIMAL.itemType), false);
+   assert.equal(isFixedTimeScheduleItemKind(ScheduleItemKind.ATTRACTION.itemType), false);
+   assert.equal(isFixedTimeScheduleItemKind('lunch'), false);
+});
+
+test('usesScheduledTimelineEventCard delegates to isFixedTimeScheduleItemKind', () => {
    assert.equal(
       usesScheduledTimelineEventCard(ScheduleItemKind.GUARDIANS_TALK.itemType),
-      true
-   );
-   assert.equal(
-      usesScheduledTimelineEventCard(ScheduleItemKind.GUARDIANS_TALK.kind),
-      true
-   );
-   assert.equal(
-      usesScheduledTimelineEventCard(ScheduleItemKind.WILD_ENCOUNTER.itemType),
-      true
+      isFixedTimeScheduleItemKind(ScheduleItemKind.GUARDIANS_TALK.itemType)
    );
    assert.equal(
       usesScheduledTimelineEventCard(ScheduleItemKind.WILD_ENCOUNTER.kind),
-      true
+      isFixedTimeScheduleItemKind(ScheduleItemKind.WILD_ENCOUNTER.kind)
    );
-   assert.equal(usesScheduledTimelineEventCard(ScheduleItemKind.ANIMAL.itemType), false);
-   assert.equal(usesScheduledTimelineEventCard(ScheduleItemKind.ATTRACTION.itemType), false);
-   assert.equal(usesScheduledTimelineEventCard('lunch'), false);
+   assert.equal(
+      usesScheduledTimelineEventCard(ScheduleItemKind.ANIMAL.itemType),
+      isFixedTimeScheduleItemKind(ScheduleItemKind.ANIMAL.itemType)
+   );
 });
 
 test('scheduleItemKindFromItemType returns null for unknown and blank values', () => {

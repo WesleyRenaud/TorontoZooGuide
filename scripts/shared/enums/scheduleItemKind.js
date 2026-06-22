@@ -67,13 +67,17 @@ export function isScheduleItemModuleItemType(itemType) {
    );
 }
 
-export function usesScheduledTimelineEventCard(scheduleItemKind) {
-   const kind = scheduleItemKindFromItemType(scheduleItemKind);
+export function isFixedTimeScheduleItemKind(itemType) {
+   const kind = scheduleItemKindFromItemType(itemType);
 
    return (
       kind === ScheduleItemKind.GUARDIANS_TALK
       || kind === ScheduleItemKind.WILD_ENCOUNTER
    );
+}
+
+export function usesScheduledTimelineEventCard(scheduleItemKind) {
+   return isFixedTimeScheduleItemKind(scheduleItemKind);
 }
 
 export function scheduleItemModuleItemTypeForKind(kind) {

@@ -22,6 +22,16 @@ const ATTRACTION_ROW = {
    scheduleItemKind: 'attractions',
 };
 
+const GUARDIANS_TALK_ROW = {
+   name: 'Amur Tiger',
+   scheduleItemKind: 'guardians_talks',
+};
+
+const WILD_ENCOUNTER_ROW = {
+   name: 'African Rainforest',
+   scheduleItemKind: 'wild_encounters',
+};
+
 test('canScheduleModuleSelection requires a row for searchable kinds', () => {
    assert.equal(
       canScheduleModuleSelection({
@@ -80,6 +90,41 @@ test('filterVisibleScheduleModuleRows keeps itinerary rows when the filter is en
          onlyItineraryItemsEnabled: false,
       }),
       rows
+   );
+});
+
+test('filterVisibleScheduleModuleRows hides scheduled talks and encounters', () => {
+   const rows = [ANIMAL_ROW, GUARDIANS_TALK_ROW, WILD_ENCOUNTER_ROW];
+   const itinerary = {
+      animals: [],
+      guardiansTalks: [{ name: 'Amur Tiger', start_time: '1:30 PM' }],
+      wildEncounters: [{ name: 'African Rainforest', start_time: '2:00 PM' }],
+   };
+
+   assert.deepEqual(
+      filterVisibleScheduleModuleRows({
+         rows,
+         itinerary,
+         onlyItineraryItemsEnabled: false,
+      }),
+      [ANIMAL_ROW]
+   );
+});
+
+test('filterVisibleScheduleModuleRows never shows talks or encounters with the itinerary filter', () => {
+   const rows = [ANIMAL_ROW, GUARDIANS_TALK_ROW, WILD_ENCOUNTER_ROW];
+
+   assert.deepEqual(
+      filterVisibleScheduleModuleRows({
+         rows,
+         itinerary: {
+            animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
+            guardiansTalks: [{ name: 'Amur Tiger', start_time: '1:30 PM' }],
+            wildEncounters: [{ name: 'African Rainforest', start_time: '2:00 PM' }],
+         },
+         onlyItineraryItemsEnabled: true,
+      }),
+      [ANIMAL_ROW]
    );
 });
 

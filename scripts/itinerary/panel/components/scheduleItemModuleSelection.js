@@ -1,5 +1,5 @@
 import {
-   filterScheduleItemRowsToItinerary,
+   filterScheduleItemRowsForScheduleModule,
    getScheduleItemRowId,
    getScheduleItemRowKind,
    resolveEffectiveScheduleItemSelection,
@@ -38,12 +38,8 @@ export function filterVisibleScheduleModuleRows({
    itinerary = {},
    onlyItineraryItemsEnabled = false,
 } = {}) {
-   if (!onlyItineraryItemsEnabled) {
-      return rows;
-   }
-
-   return filterScheduleItemRowsToItinerary(rows, itinerary, {
-      unscheduledOnly: onlyItineraryItemsEnabled,
+   return filterScheduleItemRowsForScheduleModule(rows, itinerary, {
+      onlyItineraryItemsEnabled,
    });
 }
 
