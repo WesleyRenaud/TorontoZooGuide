@@ -17,6 +17,7 @@ from ...models import Itinerary
 from ..operations import remove_itinerary_item as remove_itinerary_item_logic
 from ..operations import set_itinerary as set_itinerary_logic
 from ..operations import suppress_itinerary_warning as suppress_itinerary_warning_logic
+from ..operations import unschedule_all_itinerary_items as unschedule_all_itinerary_items_logic
 from ..operations import unschedule_itinerary_item as unschedule_itinerary_item_logic
 from ..operations.suppress_itinerary_warning import SuppressItineraryWarningResult
 from ...request_connection import get_connection
@@ -167,6 +168,19 @@ class ItineraryCoordinator():
    @classmethod
    def clear_itinerary( cls ) -> bool:
       return clear_itinerary( get_connection() )
+
+
+   @classmethod
+   def unschedule_all_itinerary_items(
+         cls,
+         visit_date_temp: float | None = None ) -> ItinerarySaveResult:
+      return unschedule_all_itinerary_items_logic.unschedule_all_itinerary_items(
+         get_connection(),
+         animal_coordinator=AnimalCoordinator,
+         attraction_coordinator=AttractionCoordinator,
+         guardians_coordinator=GuardiansCoordinator,
+         wild_encounter_coordinator=WildEncounterCoordinator,
+         visit_date_temp=visit_date_temp )
 
 
    @classmethod

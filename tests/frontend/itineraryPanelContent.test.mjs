@@ -229,4 +229,47 @@ test.describe('itineraryPanelContent', () => {
       assert.deepEqual(departureCalls, ['17:00']);
       assert.equal(refreshed, 2);
    });
+
+   test('buildItineraryPanelContent unschedules all items after confirmation', async () => {
+      let unscheduled = false;
+      let refreshed = false;
+      const { deps, getPlannerOptions } = captureDayPlannerOptions({
+         unscheduleAll: async () => {
+            unscheduled = true;
+         },
+         showUnscheduleAllConfirmation: ({ onConfirm }) => {
+            void onConfirm?.();
+         },
+      });
+
+      buildItineraryPanelContent(
+         {
+            date: '2026-06-15',
+            animals: [{
+               species: 'Tiger',
+               exhibit: 'Savanna',
+               start_time: '10:00',
+               end_time: '10:30',
+            }],
+            attractions: [],
+            guardiansTalks: [],
+            wildEncounters: [],
+            itineraryConfig: ITINERARY_CONFIG,
+         },
+         ZOO_HOURS,
+         {
+            onPanelRefresh: async () => {
+               refreshed = true;
+            },
+            deps,
+         }
+      );
+
+      getPlannerOptions()?.onUnscheduleAllItemsClick?.();
+
+      await Promise.resolve();
+
+      assert.equal(unscheduled, true);
+      assert.equal(refreshed, true);
+   });
 });

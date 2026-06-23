@@ -121,6 +121,23 @@ class ItineraryController():
 
 
    @staticmethod
+   def unschedule_all_itinerary_items( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      temp = data.get( 'temp' )
+
+      save_result = ItineraryCoordinator.unschedule_all_itinerary_items(
+         visit_date_temp=temp )
+
+      response = itinerary_result_to_dict(
+         save_result,
+         conn=get_connection(),
+         include_config=True )
+
+      handler._write_json( response )
+
+
+   @staticmethod
    def unschedule_itinerary_item( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 

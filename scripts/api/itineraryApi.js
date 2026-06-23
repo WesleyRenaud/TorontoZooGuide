@@ -340,6 +340,11 @@ export async function bulkScheduleAnimalsRequest(temp) {
    return normalizeItineraryResponse(response);
 }
 
+export async function unscheduleAllItineraryItemsRequest(temp) {
+   const response = await postJson('/unschedule-all-itinerary-items', { temp });
+   return normalizeItineraryResponse(response);
+}
+
 export async function acceptItineraryRequest(
    temp,
    { animalsToKeep = [], attractionsToKeep = [] } = {}

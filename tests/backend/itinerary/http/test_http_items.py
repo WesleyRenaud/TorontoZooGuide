@@ -31,6 +31,31 @@ def test_unschedule_itinerary_item_endpoint(
    ]
 
 
+def test_unschedule_all_itinerary_items_endpoint(
+      stub_database: type[ StubZooControllers ] ) -> None:
+   handler = make_handler(
+      '/unschedule-all-itinerary-items',
+      {
+         'temp': True,
+      } )
+
+   server.MyHandler.do_POST( handler )
+
+   response = response_json( handler )
+   assert response[ 'status' ] == 'success'
+   assert response[ 'reasons' ] == []
+   assert response[ 'itinerary' ] is not None
+   assert response[ 'itinerary_config' ] is not None
+   assert StubZooControllers.instances[ 0 ].calls == [
+      (
+         'unschedule_all_itinerary_items',
+         {
+            'visit_date_temp': True,
+         },
+      ),
+   ]
+
+
 def test_remove_item_from_itinerary_endpoint(
       stub_database: type[ StubZooControllers ] ) -> None:
    handler = make_handler(

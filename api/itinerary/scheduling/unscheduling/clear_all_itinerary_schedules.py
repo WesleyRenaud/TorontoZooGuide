@@ -1,0 +1,21 @@
+from __future__ import annotations
+
+from ...data_access.clear_itinerary_walk_route import clear_itinerary_walk_route
+from ...data_access.unschedule_itinerary_item import clear_all_itinerary_animal_schedules
+from ...data_access.unschedule_itinerary_item import clear_all_itinerary_attraction_schedules
+from ...data_access.unschedule_itinerary_item import clear_all_scheduled_itinerary_events
+from ....types import Connection
+
+
+def clear_all_itinerary_schedules( conn: Connection ) -> None:
+   cur = conn.cursor()
+
+   try:
+      clear_all_itinerary_animal_schedules( cur )
+      clear_all_itinerary_attraction_schedules( cur )
+      clear_all_scheduled_itinerary_events( cur )
+      clear_itinerary_walk_route( cur )
+      conn.commit()
+
+   finally:
+      cur.close()

@@ -10,6 +10,7 @@ import {
    removeItemFromItineraryRequest,
    scheduleItineraryItemRequest,
    unscheduleItineraryItemRequest,
+   unscheduleAllItineraryItemsRequest,
    setItineraryArrivalTimeRequest,
    setItineraryDepartureTimeRequest,
    setItineraryRequest,
@@ -595,4 +596,31 @@ test('normalizes bulk schedule animals response', async () => {
    assert.equal(result.reasons[0].code, 'bulkScheduleAnimalsNotEnoughTime');
    assert.equal(result.itinerary.animals.length, 1);
    assert.equal(result.itinerary.animals[0].species, 'African Lion');
+});
+
+test('normalizes unschedule all itinerary items response', async () => {
+   globalThis.fetch = async (url, options) => {
+      assert.equal(url, '/unschedule-all-itinerary-items');
+      assert.deepEqual(JSON.parse(options.body), { temp: true });
+
+      return mockJsonResponse({
+         status: 'success',
+         itinerary: {
+            date: '2026-06-20',
+            arrival_time: '9:30 AM',
+            departure_time: '5:00 PM',
+            animals: [],
+            attractions: [],
+            guardians_talks: [],
+            wild_encounters: [],
+            events: [],
+         },
+         ...mockItineraryConfigResponse(),
+      });
+   };
+
+   const result = await unscheduleAllItineraryItemsRequest(true);
+
+   assert.equal(result.status, 'success');
+   assert.equal(result.itinerary.date, '2026-06-20');
 });
