@@ -1894,10 +1894,47 @@ nav ul li a:hover {
 }
 
 .itinerary-day-module-schedule-actions {
+   display: flex;
+   flex-direction: column;
    width: 100%;
    box-sizing: border-box;
    padding: 0 4px 42px 4px;
    border-bottom: 3px solid rgba(94, 150, 0, 0.18);
+}
+
+.itinerary-day-action-feedback-slot {
+   flex: 0 0 5.5rem;
+   width: 100%;
+   box-sizing: border-box;
+   margin-top: 14px;
+   display: flex;
+   align-items: center;
+}
+
+.itinerary-day-action-feedback {
+   width: 100%;
+   box-sizing: border-box;
+   padding: 12px 16px;
+   border-radius: 12px;
+   font-size: 1.85rem;
+   font-weight: 700;
+   line-height: 1.25;
+   opacity: 0;
+   transition: opacity 0.25s ease;
+}
+
+.itinerary-day-action-feedback.is-visible {
+   opacity: 1;
+}
+
+.itinerary-day-action-feedback.is-dismissing {
+   opacity: 0;
+}
+
+.itinerary-day-action-feedback--success {
+   color: #245a12;
+   background: rgba(94, 150, 0, 0.14);
+   border: 1px solid rgba(94, 150, 0, 0.28);
 }
 
 .itinerary-day-schedule-actions {
@@ -1912,6 +1949,11 @@ nav ul li a:hover {
 .itinerary-day-schedule-item-btn {
    flex: 1 1 0;
    min-width: 0;
+   position: relative;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   min-height: 5rem;
    padding: 18px 32px;
    border: none;
    border-radius: 18px;
@@ -1974,17 +2016,33 @@ nav ul li a:hover {
    box-sizing: border-box;
 }
 
+.itinerary-day-schedule-item-btn.is-busy {
+   color: transparent;
+}
+
 .itinerary-day-schedule-item-btn.is-busy::before {
    content: '';
-   display: inline-block;
+   position: absolute;
+   left: 50%;
+   top: 50%;
    width: 0.95em;
    height: 0.95em;
-   margin-right: 0.45em;
+   margin-left: -0.475em;
+   margin-top: -0.475em;
    border: 0.14em solid currentColor;
    border-top-color: transparent;
    border-radius: 50%;
-   vertical-align: -0.08em;
+   color: #ffffff;
    animation: tzg-schedule-btn-spin 0.8s linear infinite;
+}
+
+.itinerary-day-schedule-item-btn--secondary.is-busy::before,
+.itinerary-day-schedule-item-btn--destructive.is-busy::before {
+   color: rgba(20, 35, 10, 0.9);
+}
+
+.itinerary-day-schedule-item-btn--destructive.is-busy::before {
+   color: rgba(120, 35, 20, 0.92);
 }
 
 @keyframes tzg-schedule-btn-spin {
