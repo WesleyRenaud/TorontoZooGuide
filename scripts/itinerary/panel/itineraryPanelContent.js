@@ -17,7 +17,10 @@ import {
    openScheduleItemModule,
 } from './itineraryPanelScheduleHandlers.js';
 import { makeItineraryPanelViewShell } from './itineraryPanelViewState.js';
-import { bulkScheduleAnimals } from '../itineraryService.js';
+import {
+   bulkScheduleAnimals,
+   unscheduleAllItineraryItems,
+} from '../itineraryService.js';
 import {
    setItineraryArrivalTime,
    setItineraryDepartureTime,
@@ -51,6 +54,7 @@ function appendDayPlannerViewWithHours(
    const {
       openModule = openScheduleItemModule,
       bulkSchedule = bulkScheduleAnimals,
+      unscheduleAll = unscheduleAllItineraryItems,
       hasNotEnoughTimeIssue = hasBulkScheduleAnimalsNotEnoughTimeIssue,
       showNotEnoughTimeNotice = showBulkScheduleAnimalsNotEnoughTimeNotice,
       showUnscheduleAllConfirmation = showUnscheduleAllItineraryItemsConfirmation,
@@ -108,6 +112,19 @@ function appendDayPlannerViewWithHours(
          onUnscheduleAllItemsClick: () => {
             showUnscheduleAllConfirmation({
                mountEl: dayPlannerView,
+               onConfirm: async () => {
+                  try {
+                     await unscheduleAll();
+
+                     if (typeof onPanelRefresh === 'function') {
+                        await onPanelRefresh();
+                     }
+                  }
+                  catch (err) {
+                     console.error('Failed to unschedule all items:', err);
+                     showNotice(err?.message || genericErrorMessage);
+                  }
+               },
             });
          },
          scheduleHandlers,

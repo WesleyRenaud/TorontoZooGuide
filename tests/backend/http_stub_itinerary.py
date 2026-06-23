@@ -23,6 +23,11 @@ class ItineraryStubMixin:
          return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
 
+   def unschedule_all_itinerary_items( self, **kwargs: Any ) -> ItinerarySaveResult:
+         self.calls.append( ( 'unschedule_all_itinerary_items', kwargs ) )
+         return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
+
+
    def get_itinerary_date( self ) -> str:
          self.calls.append( ( 'get_itinerary_date', {} ) )
          return '2026-06-15'

@@ -20,6 +20,10 @@ def clear_all_itinerary_attraction_schedules( cur: Cursor ) -> None:
          """ )
 
 
+def clear_all_scheduled_itinerary_events( cur: Cursor ) -> None:
+   cur.execute( 'DELETE FROM ItineraryEvent;' )
+
+
 def clear_itinerary_animal_schedule(
       cur: Cursor,
       *,

@@ -133,6 +133,65 @@ def test_schedule_and_unschedule_animal_via_http(
    assert unscheduled_lion[ 'end_time' ] is None
 
 
+def test_unschedule_all_itinerary_items_via_http(
+      integration_db: Path,
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   status, set_response = post_route(
+      '/set-itinerary',
+      {
+         'date': '2026-06-15',
+         'arrivalTime': '09:30',
+         'departureTime': '17:00',
+         'animals': [ LION_ITINERARY_ENTRY ],
+         'attractions': [ CAROUSEL ],
+         'guardiansTalks': [],
+         'wildEncounters': [],
+         'confirmingEarlyAdmission': True,
+      },
+   )
+
+   assert status == 200
+   assert set_response[ 'status' ] == 'success'
+
+   status, schedule_response = post_route(
+      '/schedule-itinerary-item',
+      {
+         'itemType': 'animals',
+         'key': ANIMAL_KEY,
+         'startTime': '14:00',
+      },
+   )
+
+   assert status == 200
+   assert schedule_response[ 'status' ] == 'success'
+
+   status, unschedule_all_response = post_route(
+      '/unschedule-all-itinerary-items',
+      {},
+   )
+
+   assert status == 200
+   assert unschedule_all_response[ 'status' ] == 'success'
+
+   itinerary = unschedule_all_response[ 'itinerary' ]
+   lion = _find_animal(
+      itinerary,
+      species='African Lion',
+      exhibit='Africa Savanna',
+   )
+
+   assert lion[ 'start_time' ] is None
+   assert lion[ 'end_time' ] is None
+   assert itinerary[ 'arrival_time' ] == '09:30'
+   assert itinerary[ 'departure_time' ] == '17:00'
+   assert [ attraction[ 'name' ] for attraction in itinerary[ 'attractions' ] ] == [
+      CAROUSEL,
+   ]
+
+
 def test_set_arrival_time_via_http(
       integration_db: Path,
       freeze_database_today: Callable[ [ date ], None ],
