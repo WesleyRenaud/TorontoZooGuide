@@ -1,4 +1,5 @@
 import { makeDayPlannerControls } from './dayPlannerControls.js';
+import { hasScheduledItineraryItems } from '../dayPlannerPlanActions.js';
 import {
    buildHalfHourSlotStarts,
    formatMinutesAsClockTime,
@@ -94,10 +95,12 @@ function makeItemsListSection(
 }
 
 function appendScheduleActionButtons(
-   section,
+   container,
    {
       onScheduleItemClick = null,
-      onBulkScheduleAnimalsClick = null,
+      onRebuildScheduleClick = null,
+      onUnscheduleAllItemsClick = null,
+      showManagePlanActions = false,
       strings = {},
    } = {}
 ) {
@@ -112,25 +115,42 @@ function appendScheduleActionButtons(
       );
    }
 
-   if (typeof onBulkScheduleAnimalsClick === 'function') {
-      const bulkScheduleButton = makeScheduleItemButton({
-         label: strings.bulkScheduleAnimalsButton,
+   if (typeof onRebuildScheduleClick === 'function') {
+      const rebuildScheduleButton = makeScheduleItemButton({
+         label: strings.rebuildScheduleButton,
          variant: 'secondary',
       });
 
-      bulkScheduleButton.addEventListener('click', () => {
+      rebuildScheduleButton.addEventListener('click', () => {
          void runScheduleItemButtonAction(
-            bulkScheduleButton,
-            onBulkScheduleAnimalsClick,
-            strings.bulkScheduleAnimalsButtonBusy
+            rebuildScheduleButton,
+            onRebuildScheduleClick,
+            strings.rebuildScheduleButtonBusy
          );
       });
 
-      buttons.push(bulkScheduleButton);
+      buttons.push(rebuildScheduleButton);
+   }
+
+   if (showManagePlanActions && typeof onUnscheduleAllItemsClick === 'function') {
+      const unscheduleAllButton = makeScheduleItemButton({
+         label: strings.unscheduleAllButton,
+         variant: 'destructive',
+      });
+
+      unscheduleAllButton.addEventListener('click', () => {
+         void runScheduleItemButtonAction(
+            unscheduleAllButton,
+            onUnscheduleAllItemsClick,
+            strings.unscheduleAllButtonBusy
+         );
+      });
+
+      buttons.push(unscheduleAllButton);
    }
 
    if (buttons.length > 0) {
-      section.appendChild(makeScheduleActionsBar(buttons));
+      container.appendChild(makeScheduleActionsBar(buttons));
    }
 }
 
@@ -169,7 +189,8 @@ export function makeDayPlannerPreview(
    timeHandlers = {},
    {
       onScheduleItemClick = null,
-      onBulkScheduleAnimalsClick = null,
+      onRebuildScheduleClick = null,
+      onUnscheduleAllItemsClick = null,
       scheduleHandlers = {},
    } = {}
 ) {
@@ -184,6 +205,7 @@ export function makeDayPlannerPreview(
    const section = el('section', 'itinerary-day-module');
    const header = el('div', 'itinerary-day-module-header');
    const headerAside = el('div', 'itinerary-day-module-header-aside');
+   const scheduleActions = el('div', 'itinerary-day-module-schedule-actions');
    const titleWrap = el('div');
    const title = el('h3', '', strings.title);
    const date = formatISODateFull(hours.date, strings.date);
@@ -233,13 +255,22 @@ export function makeDayPlannerPreview(
       })
    );
 
+   const showManagePlanActions = hasScheduledItineraryItems(itinerary);
+   const scheduleActionOptions = {
+      onScheduleItemClick,
+      onRebuildScheduleClick,
+      onUnscheduleAllItemsClick,
+      showManagePlanActions,
+      strings,
+   };
+
    if (timelineSlotStarts.length === 0) {
-      appendScheduleActionButtons(headerAside, {
-         onScheduleItemClick,
-         onBulkScheduleAnimalsClick,
-         strings,
-      });
       section.appendChild(header);
+      appendScheduleActionButtons(scheduleActions, scheduleActionOptions);
+
+      if (scheduleActions.children.length > 0) {
+         section.appendChild(scheduleActions);
+      }
 
       section.appendChild(makeUnavailableMessage(strings.hoursUnavailable));
       root.appendChild(section);
@@ -282,12 +313,12 @@ export function makeDayPlannerPreview(
       );
    });
 
-   appendScheduleActionButtons(headerAside, {
-      onScheduleItemClick,
-      onBulkScheduleAnimalsClick,
-      strings,
-   });
+   appendScheduleActionButtons(scheduleActions, scheduleActionOptions);
    section.appendChild(header);
+
+   if (scheduleActions.children.length > 0) {
+      section.appendChild(scheduleActions);
+   }
 
    section.appendChild(timeline);
    root.appendChild(section);

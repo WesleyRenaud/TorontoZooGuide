@@ -8,6 +8,11 @@ import { makeDateCard } from './components/dateCard.js';
 import { makeDayPlannerPreview } from './components/dayPlanner.js';
 import { makeSection } from './components/section.js';
 import {
+   showRebuildScheduleConfirmation,
+   showUnscheduleAllItineraryItemsConfirmation,
+} from './dayPlannerPlanActionConfirmations.js';
+import { hasScheduledItineraryItems } from './dayPlannerPlanActions.js';
+import {
    buildItineraryPanelScheduleHandlers,
    openScheduleItemModule,
 } from './itineraryPanelScheduleHandlers.js';
@@ -48,6 +53,8 @@ function appendDayPlannerViewWithHours(
       bulkSchedule = bulkScheduleAnimals,
       hasNotEnoughTimeIssue = hasBulkScheduleAnimalsNotEnoughTimeIssue,
       showNotEnoughTimeNotice = showBulkScheduleAnimalsNotEnoughTimeNotice,
+      showUnscheduleAllConfirmation = showUnscheduleAllItineraryItemsConfirmation,
+      showRebuildConfirmation = showRebuildScheduleConfirmation,
       showNotice = showScheduleItemNotice,
       buildEventTypes = buildSchedulableEventTypes,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
@@ -69,22 +76,39 @@ function appendDayPlannerViewWithHours(
                onScheduled: onPanelRefresh,
             }, deps);
          },
-         onBulkScheduleAnimalsClick: async () => {
-            try {
-               const { issues } = await bulkSchedule();
+         onRebuildScheduleClick: async () => {
+            const runRebuildSchedule = async () => {
+               try {
+                  const { issues } = await bulkSchedule();
 
-               if (typeof onPanelRefresh === 'function') {
-                  await onPanelRefresh();
-               }
+                  if (typeof onPanelRefresh === 'function') {
+                     await onPanelRefresh();
+                  }
 
-               if (hasNotEnoughTimeIssue(issues)) {
-                  showNotEnoughTimeNotice();
+                  if (hasNotEnoughTimeIssue(issues)) {
+                     showNotEnoughTimeNotice();
+                  }
                }
+               catch (err) {
+                  console.error('Failed to rebuild schedule:', err);
+                  showNotice(err?.message || genericErrorMessage);
+               }
+            };
+
+            if (hasScheduledItineraryItems(itinerary)) {
+               showRebuildConfirmation({
+                  mountEl: dayPlannerView,
+                  onConfirm: runRebuildSchedule,
+               });
+               return;
             }
-            catch (err) {
-               console.error('Failed to bulk schedule animals:', err);
-               showNotice(err?.message || genericErrorMessage);
-            }
+
+            await runRebuildSchedule();
+         },
+         onUnscheduleAllItemsClick: () => {
+            showUnscheduleAllConfirmation({
+               mountEl: dayPlannerView,
+            });
          },
          scheduleHandlers,
       })

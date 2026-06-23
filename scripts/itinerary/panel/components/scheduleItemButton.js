@@ -47,6 +47,10 @@ export function makeScheduleItemButton({
       button.classList.add('itinerary-day-schedule-item-btn--secondary');
    }
 
+   if (variant === 'destructive') {
+      button.classList.add('itinerary-day-schedule-item-btn--destructive');
+   }
+
    if (typeof onClick === 'function') {
       button.addEventListener('click', onClick);
    }
