@@ -230,15 +230,16 @@ test.describe('itineraryPanelContent', () => {
       assert.equal(refreshed, 2);
    });
 
-   test('buildItineraryPanelContent unschedules all items after confirmation', async () => {
+   test('buildItineraryPanelContent unschedules all items and queues success feedback', async () => {
       let unscheduled = false;
       let refreshed = false;
+      const feedbackCalls = [];
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          unscheduleAll: async () => {
             unscheduled = true;
          },
-         showUnscheduleAllConfirmation: ({ onConfirm }) => {
-            void onConfirm?.();
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
          },
       });
 
@@ -265,11 +266,13 @@ test.describe('itineraryPanelContent', () => {
          }
       );
 
-      getPlannerOptions()?.onUnscheduleAllItemsClick?.();
-
-      await Promise.resolve();
+      await getPlannerOptions()?.onUnscheduleAllItemsClick?.();
 
       assert.equal(unscheduled, true);
       assert.equal(refreshed, true);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'success',
+         message: APP_STRINGS.itinerary.dayPlanner.unscheduleAllSuccess,
+      }]);
    });
 });

@@ -10,20 +10,6 @@ function resolveDayPlannerConfirmationMountEl(mountEl) {
       ?? document.body;
 }
 
-export function showUnscheduleAllItineraryItemsConfirmation({
-   mountEl = null,
-   onConfirm = null,
-} = {}) {
-   showItineraryConfirmPopup({
-      title: STRINGS.unscheduleAllTitle,
-      message: STRINGS.unscheduleAllMessage,
-      confirmText: STRINGS.unscheduleAllConfirm,
-      cancelText: APP_STRINGS.itinerary.actions.cancel,
-      mountEl: resolveDayPlannerConfirmationMountEl(mountEl),
-      onConfirm,
-   });
-}
-
 export function showRebuildScheduleConfirmation({
    mountEl = null,
    onConfirm = null,

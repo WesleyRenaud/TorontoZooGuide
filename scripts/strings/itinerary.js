@@ -170,16 +170,12 @@ export const itinerary = {
       rebuildScheduleButtonBusy: 'Rebuilding…',
       unscheduleAllButton: 'Unschedule all items',
       unscheduleAllButtonBusy: 'Unscheduling…',
+      unscheduleAllSuccess: 'All items unscheduled',
       rebuildScheduleTitle: 'Rebuild Schedule',
       rebuildScheduleMessage: (
          'Rebuild your day plan? This will schedule unscheduled items and may change existing times.'
       ),
       rebuildScheduleConfirm: 'Rebuild',
-      unscheduleAllTitle: 'Unschedule All Items',
-      unscheduleAllMessage: (
-         'Remove all scheduled times from your day plan? Items will stay on your itinerary.'
-      ),
-      unscheduleAllConfirm: 'Unschedule all',
    },
    scheduleItem: {
       title: 'Schedule item',

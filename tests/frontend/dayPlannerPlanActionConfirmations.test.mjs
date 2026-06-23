@@ -3,7 +3,6 @@ import { test } from 'node:test';
 
 import {
    showRebuildScheduleConfirmation,
-   showUnscheduleAllItineraryItemsConfirmation,
 } from '../../scripts/itinerary/panel/dayPlannerPlanActionConfirmations.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
@@ -21,18 +20,6 @@ test.describe('dayPlannerPlanActionConfirmations', () => {
       document.body.appendChild(dayPlannerView);
 
       showRebuildScheduleConfirmation({
-         mountEl: dayPlannerView,
-      });
-
-      assert.ok(dayPlannerView.querySelector('.tzg-confirm'));
-      assert.equal(document.querySelectorAll('.tzg-confirm').length, 1);
-   });
-
-   test('showUnscheduleAllItineraryItemsConfirmation mounts to the day planner view', () => {
-      const dayPlannerView = createDomNode('div', 'itin-panel-day-planner-view');
-      document.body.appendChild(dayPlannerView);
-
-      showUnscheduleAllItineraryItemsConfirmation({
          mountEl: dayPlannerView,
       });
 

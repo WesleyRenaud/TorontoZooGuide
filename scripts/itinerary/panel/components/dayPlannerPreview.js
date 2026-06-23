@@ -1,3 +1,8 @@
+import { consumePendingDayPlannerActionFeedback } from '../dayPlannerActionFeedback.js';
+import {
+   appendDayPlannerActionFeedbackBanner,
+   appendDayPlannerActionFeedbackSlot,
+} from './dayPlannerActionFeedbackBanner.js';
 import { makeDayPlannerControls } from './dayPlannerControls.js';
 import { hasScheduledItineraryItems } from '../dayPlannerPlanActions.js';
 import {
@@ -105,6 +110,7 @@ function appendScheduleActionButtons(
    } = {}
 ) {
    const buttons = [];
+   const feedback = consumePendingDayPlannerActionFeedback();
 
    if (typeof onScheduleItemClick === 'function') {
       buttons.push(
@@ -151,6 +157,12 @@ function appendScheduleActionButtons(
 
    if (buttons.length > 0) {
       container.appendChild(makeScheduleActionsBar(buttons));
+
+      const feedbackSlot = appendDayPlannerActionFeedbackSlot(container);
+
+      if (feedback) {
+         appendDayPlannerActionFeedbackBanner(feedbackSlot, feedback);
+      }
    }
 }
 

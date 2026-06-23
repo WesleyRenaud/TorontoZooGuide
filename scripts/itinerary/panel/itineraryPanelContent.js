@@ -7,10 +7,8 @@ import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
 import { makeDayPlannerPreview } from './components/dayPlanner.js';
 import { makeSection } from './components/section.js';
-import {
-   showRebuildScheduleConfirmation,
-   showUnscheduleAllItineraryItemsConfirmation,
-} from './dayPlannerPlanActionConfirmations.js';
+import { setPendingDayPlannerActionFeedback } from './dayPlannerActionFeedback.js';
+import { showRebuildScheduleConfirmation } from './dayPlannerPlanActionConfirmations.js';
 import { hasScheduledItineraryItems } from './dayPlannerPlanActions.js';
 import {
    buildItineraryPanelScheduleHandlers,
@@ -57,8 +55,8 @@ function appendDayPlannerViewWithHours(
       unscheduleAll = unscheduleAllItineraryItems,
       hasNotEnoughTimeIssue = hasBulkScheduleAnimalsNotEnoughTimeIssue,
       showNotEnoughTimeNotice = showBulkScheduleAnimalsNotEnoughTimeNotice,
-      showUnscheduleAllConfirmation = showUnscheduleAllItineraryItemsConfirmation,
       showRebuildConfirmation = showRebuildScheduleConfirmation,
+      setActionFeedback = setPendingDayPlannerActionFeedback,
       showNotice = showScheduleItemNotice,
       buildEventTypes = buildSchedulableEventTypes,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
@@ -109,23 +107,23 @@ function appendDayPlannerViewWithHours(
 
             await runRebuildSchedule();
          },
-         onUnscheduleAllItemsClick: () => {
-            showUnscheduleAllConfirmation({
-               mountEl: dayPlannerView,
-               onConfirm: async () => {
-                  try {
-                     await unscheduleAll();
+         onUnscheduleAllItemsClick: async () => {
+            try {
+               await unscheduleAll();
 
-                     if (typeof onPanelRefresh === 'function') {
-                        await onPanelRefresh();
-                     }
-                  }
-                  catch (err) {
-                     console.error('Failed to unschedule all items:', err);
-                     showNotice(err?.message || genericErrorMessage);
-                  }
-               },
-            });
+               setActionFeedback({
+                  variant: 'success',
+                  message: APP_STRINGS.itinerary.dayPlanner.unscheduleAllSuccess,
+               });
+
+               if (typeof onPanelRefresh === 'function') {
+                  await onPanelRefresh();
+               }
+            }
+            catch (err) {
+               console.error('Failed to unschedule all items:', err);
+               showNotice(err?.message || genericErrorMessage);
+            }
          },
          scheduleHandlers,
       })
