@@ -1839,8 +1839,7 @@ nav ul li a:hover {
    align-items: flex-start;
    justify-content: space-between;
    gap: 30px;
-   padding: 4px 4px 42px 4px;
-   border-bottom: 3px solid rgba(94, 150, 0, 0.18);
+   padding: 4px 4px 30px 4px;
 }
 
 .itinerary-day-module h3 {
@@ -1894,6 +1893,13 @@ nav ul li a:hover {
    max-width: none;
 }
 
+.itinerary-day-module-schedule-actions {
+   width: 100%;
+   box-sizing: border-box;
+   padding: 0 4px 42px 4px;
+   border-bottom: 3px solid rgba(94, 150, 0, 0.18);
+}
+
 .itinerary-day-schedule-actions {
    display: flex;
    flex-wrap: nowrap;
@@ -1940,6 +1946,21 @@ nav ul li a:hover {
 .itinerary-day-schedule-item-btn--secondary:hover,
 .itinerary-day-schedule-item-btn--secondary:focus-visible {
    background-color: #ffffff;
+   transform: translateY(-2px);
+   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+}
+
+.itinerary-day-schedule-item-btn--destructive {
+   background-color: rgba(255, 255, 255, 0.9);
+   color: rgba(120, 35, 20, 0.92);
+   border: 3px solid rgba(150, 55, 35, 0.55);
+   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+}
+
+.itinerary-day-schedule-item-btn--destructive:hover,
+.itinerary-day-schedule-item-btn--destructive:focus-visible {
+   background-color: #ffffff;
+   color: rgba(120, 35, 20, 0.98);
    transform: translateY(-2px);
    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
 }

@@ -10,6 +10,10 @@ export function getItineraryPanelMountEl() {
    return document.querySelector('.itinerary-panel');
 }
 
+export function getItineraryDayPlannerViewMountEl() {
+   return document.querySelector('.itin-panel-day-planner-view');
+}
+
 function joinClassNames(...classNames) {
    return classNames.filter(Boolean).join(' ');
 }

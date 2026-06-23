@@ -130,7 +130,7 @@ test.describe('itineraryPanelContent', () => {
 
       buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, { deps });
 
-      await getPlannerOptions()?.onBulkScheduleAnimalsClick?.();
+      await getPlannerOptions()?.onRebuildScheduleClick?.();
 
       assert.deepEqual(notices, ['Bulk schedule failed']);
    });
@@ -156,7 +156,7 @@ test.describe('itineraryPanelContent', () => {
          deps,
       });
 
-      await getPlannerOptions()?.onBulkScheduleAnimalsClick?.();
+      await getPlannerOptions()?.onRebuildScheduleClick?.();
 
       assert.equal(refreshed, true);
       assert.equal(warned, true);
@@ -186,7 +186,7 @@ test.describe('itineraryPanelContent', () => {
          { deps }
       );
 
-      await getPlannerOptions()?.onBulkScheduleAnimalsClick?.();
+      await getPlannerOptions()?.onRebuildScheduleClick?.();
 
       assert.deepEqual(notices, [APP_STRINGS.itinerary.errors.generic]);
    });
