@@ -331,4 +331,53 @@ test.describe('itineraryPanelContent', () => {
          message: APP_STRINGS.itinerary.errors.unscheduleAllNothingScheduled,
       }]);
    });
+
+   test('buildItineraryPanelContent shows error feedback when unschedule all throws', async () => {
+      let refreshed = false;
+      const feedbackCalls = [];
+      const notices = [];
+      const { deps, getPlannerOptions } = captureDayPlannerOptions({
+         unscheduleAll: async () => {
+            throw new TypeError('Failed to fetch');
+         },
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
+         },
+         showNotice: (message) => {
+            notices.push(message);
+         },
+      });
+
+      buildItineraryPanelContent(
+         {
+            date: '2026-06-15',
+            animals: [{
+               species: 'Tiger',
+               exhibit: 'Savanna',
+               start_time: '10:00',
+               end_time: '10:30',
+            }],
+            attractions: [],
+            guardiansTalks: [],
+            wildEncounters: [],
+            itineraryConfig: ITINERARY_CONFIG,
+         },
+         ZOO_HOURS,
+         {
+            onPanelRefresh: async () => {
+               refreshed = true;
+            },
+            deps,
+         }
+      );
+
+      await getPlannerOptions()?.onUnscheduleAllItemsClick?.();
+
+      assert.equal(refreshed, true);
+      assert.deepEqual(notices, []);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'error',
+         message: 'Failed to fetch',
+      }]);
+   });
 });

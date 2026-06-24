@@ -10,7 +10,6 @@ import { makeSection } from './components/section.js';
 import { setPendingDayPlannerActionFeedback } from './dayPlannerActionFeedback.js';
 import { showRebuildScheduleConfirmation } from './dayPlannerPlanActionConfirmations.js';
 import { hasScheduledItineraryItems } from './dayPlannerPlanActions.js';
-import { isUnscheduleAllNothingScheduled } from '../itineraryErrorTypes.js';
 import {
    buildItineraryPanelScheduleHandlers,
    openScheduleItemModule,
@@ -121,15 +120,10 @@ function appendDayPlannerViewWithHours(
                const result = await unscheduleAll();
 
                if (result.errorType) {
-                  if (isUnscheduleAllNothingScheduled(result.errorType)) {
-                     await queueActionFeedback({
-                        variant: 'error',
-                        message: result.message,
-                     });
-                     return;
-                  }
-
-                  showNotice(result.message || genericErrorMessage);
+                  await queueActionFeedback({
+                     variant: 'error',
+                     message: result.message || genericErrorMessage,
+                  });
                   return;
                }
 
@@ -140,7 +134,10 @@ function appendDayPlannerViewWithHours(
             }
             catch (err) {
                console.error('Failed to unschedule all items:', err);
-               showNotice(err?.message || genericErrorMessage);
+               await queueActionFeedback({
+                  variant: 'error',
+                  message: err?.message || genericErrorMessage,
+               });
             }
          },
          scheduleHandlers,
