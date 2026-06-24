@@ -39,7 +39,7 @@ def test_set_itinerary_rejects_invalid_departure_on_date_change_without_adjustme
    assert itinerary.departure_time == '18:30'
 
 
-def test_date_change_with_adjusted_arrival_unschedules_all_item_types_before_arrival(
+def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_schedules(
       db: DbControllers ) -> None:
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
@@ -128,18 +128,18 @@ def test_date_change_with_adjusted_arrival_unschedules_all_item_types_before_arr
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
    ] == [
-      ( 'African Lion', None, None ),
-      ( 'Cheetah', '10:30', '10:35' ),
+      ( 'African Lion', '09:30', '09:38' ),
+      ( 'Cheetah', '09:38', '09:43' ),
    ]
    assert itinerary.attractions[ 0 ].name == CAROUSEL
-   assert itinerary.attractions[ 0 ].start_time == '10:10'
-   assert itinerary.attractions[ 0 ].end_time is not None
+   assert itinerary.attractions[ 0 ].start_time is None
+   assert itinerary.attractions[ 0 ].end_time is None
    assert itinerary.guardians_talks == []
    assert itinerary.wild_encounters == []
    assert itinerary.events == []
 
 
-def test_date_change_with_adjusted_departure_unschedules_all_item_types_after_departure(
+def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_guest_schedules(
       db: DbControllers ) -> None:
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
@@ -222,11 +222,11 @@ def test_date_change_with_adjusted_departure_unschedules_all_item_types_after_de
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
    ] == [
-      ( 'African Lion', '15:45', '15:53' ),
-      ( 'Cheetah', None, None ),
+      ( 'African Lion', '09:30', '09:38' ),
+      ( 'Cheetah', '09:38', '09:43' ),
    ]
    assert itinerary.attractions[ 0 ].name == CAROUSEL
-   assert itinerary.attractions[ 0 ].start_time is not None
-   assert itinerary.attractions[ 0 ].end_time is not None
+   assert itinerary.attractions[ 0 ].start_time is None
+   assert itinerary.attractions[ 0 ].end_time is None
    assert itinerary.guardians_talks == []
    assert itinerary.wild_encounters == []

@@ -50,9 +50,7 @@ def commit_set_itinerary(
       context.save_input.date,
       validated_itinerary )
 
-   if (
-         context.unschedule_requirements.talks
-         or context.unschedule_requirements.encounters ):
+   if context.validated_itinerary.needs_schedule_reschedule:
       reschedule_result = reschedule_itinerary_items_after_fixed_time_activity_add(
          context.conn,
          saved_itinerary_before_clear=context.saved_itinerary,

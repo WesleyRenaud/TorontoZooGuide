@@ -17,3 +17,4 @@ class ValidatedItinerary:
    guardians_talks: list[ GuardiansTalkDiff ]
    wild_encounters: list[ WildEncounterDiff ]
    events: list[ ItineraryEvent ]
+   needs_schedule_reschedule: bool = False
