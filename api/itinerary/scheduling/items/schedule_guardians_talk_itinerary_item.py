@@ -125,6 +125,7 @@ def schedule_guardians_talk_itinerary_item(
    if has_overlap and confirming_guardians_talk_unschedule:
       return reschedule_itinerary_items_after_fixed_time_activity_add(
          conn,
+         saved_itinerary_before_clear=saved_itinerary,
          **itinerary_context )
 
    persist_itinerary_walk_route( conn, **itinerary_context )

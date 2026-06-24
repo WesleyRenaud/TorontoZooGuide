@@ -24,6 +24,7 @@ from ...request_connection import get_connection
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..results.itinerary_time_set_result import ItineraryTimeSetResult
 from ..scheduling.bulk import bulk_schedule_animals as bulk_schedule_animals_logic
+from ..scheduling.bulk.animals_for_bulk_schedule import animals_for_bulk_schedule
 from ..scheduling.items import schedule_itinerary_item as schedule_itinerary_item_logic
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
@@ -156,13 +157,19 @@ class ItineraryCoordinator():
    def bulk_schedule_animals(
          cls,
          visit_date_temp: float | None = None ) -> ItinerarySaveResult:
+      conn = get_connection()
+      saved_itinerary = fetch_saved_itinerary( conn )
+
       return bulk_schedule_animals_logic.bulk_schedule_animals(
-         get_connection(),
+         conn,
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
          wild_encounter_coordinator=WildEncounterCoordinator,
-         visit_date_temp=visit_date_temp )
+         visit_date_temp=visit_date_temp,
+         animals_to_schedule=animals_for_bulk_schedule(
+            saved_itinerary,
+            only_previously_scheduled=False ) )
 
 
    @classmethod
