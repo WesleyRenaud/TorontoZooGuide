@@ -4,7 +4,6 @@ import {
    appendDayPlannerActionFeedbackSlot,
 } from './dayPlannerActionFeedbackBanner.js';
 import { makeDayPlannerControls } from './dayPlannerControls.js';
-import { hasScheduledItineraryItems } from '../dayPlannerPlanActions.js';
 import {
    buildHalfHourSlotStarts,
    formatMinutesAsClockTime,
@@ -105,7 +104,6 @@ function appendScheduleActionButtons(
       onScheduleItemClick = null,
       onRebuildScheduleClick = null,
       onUnscheduleAllItemsClick = null,
-      showManagePlanActions = false,
       strings = {},
    } = {}
 ) {
@@ -138,7 +136,7 @@ function appendScheduleActionButtons(
       buttons.push(rebuildScheduleButton);
    }
 
-   if (showManagePlanActions && typeof onUnscheduleAllItemsClick === 'function') {
+   if (typeof onUnscheduleAllItemsClick === 'function') {
       const unscheduleAllButton = makeScheduleItemButton({
          label: strings.unscheduleAllButton,
          variant: 'destructive',
@@ -267,12 +265,10 @@ export function makeDayPlannerPreview(
       })
    );
 
-   const showManagePlanActions = hasScheduledItineraryItems(itinerary);
    const scheduleActionOptions = {
       onScheduleItemClick,
       onRebuildScheduleClick,
       onUnscheduleAllItemsClick,
-      showManagePlanActions,
       strings,
    };
 
