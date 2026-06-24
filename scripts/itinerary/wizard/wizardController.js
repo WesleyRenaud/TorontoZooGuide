@@ -83,9 +83,8 @@ export async function openItineraryWizard({
       wizard.updateSelection(selectionKey, value, options);
    }
 
-   function handleFinishDone(savedItinerary) {
+   function handleFinishDone() {
       wizard.consumePendingValidation();
-      onDone?.(savedItinerary);
    }
 
    function finish(override = {}, options = {}) {
