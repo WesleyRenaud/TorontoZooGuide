@@ -1,0 +1,24 @@
+from __future__ import annotations
+
+from ..bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from ...data_access.saved_itinerary import SavedItinerary
+
+
+def saved_itinerary_has_guest_scheduled_items(
+      saved_itinerary: SavedItinerary ) -> bool:
+   for animal_row in saved_itinerary.animal_rows:
+      if has_itinerary_schedule_times(
+            animal_row.start_time,
+            animal_row.end_time ):
+         return True
+
+   for attraction_row in saved_itinerary.attraction_rows:
+      if has_itinerary_schedule_times(
+            attraction_row.start_time,
+            attraction_row.end_time ):
+         return True
+
+   if saved_itinerary.event_rows:
+      return True
+
+   return False

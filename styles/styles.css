@@ -1937,6 +1937,12 @@ nav ul li a:hover {
    border: 1px solid rgba(94, 150, 0, 0.28);
 }
 
+.itinerary-day-action-feedback--error {
+   color: #8b1a1a;
+   background: rgba(198, 40, 40, 0.12);
+   border: 1px solid rgba(198, 40, 40, 0.28);
+}
+
 .itinerary-day-schedule-actions {
    display: flex;
    flex-wrap: nowrap;

@@ -8,8 +8,10 @@ import {
    destroyRenderedPanelChildren,
 } from '../../scripts/itinerary/panel/itineraryPanelContent.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
+import { updateItineraryErrorTypesFromConfig } from '../../scripts/itinerary/itineraryErrorTypes.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
+import { MOCK_ERROR_TYPES } from './helpers/scheduleItemActionsTestSetup.mjs';
 
 const ZOO_HOURS = {
    open: '09:00',
@@ -237,6 +239,7 @@ test.describe('itineraryPanelContent', () => {
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          unscheduleAll: async () => {
             unscheduled = true;
+            return {};
          },
          setActionFeedback: (feedback) => {
             feedbackCalls.push(feedback);
@@ -273,6 +276,59 @@ test.describe('itineraryPanelContent', () => {
       assert.deepEqual(feedbackCalls, [{
          variant: 'success',
          message: APP_STRINGS.itinerary.dayPlanner.unscheduleAllSuccess,
+      }]);
+   });
+
+   test('buildItineraryPanelContent shows error feedback when nothing is scheduled to unschedule', async () => {
+      updateItineraryErrorTypesFromConfig({
+         errorTypes: MOCK_ERROR_TYPES,
+         suppressedErrorTypes: [],
+      });
+
+      let refreshed = false;
+      const feedbackCalls = [];
+      const notices = [];
+      const { deps, getPlannerOptions } = captureDayPlannerOptions({
+         unscheduleAll: async () => ({
+            errorType: MOCK_ERROR_TYPES.UNSCHEDULE_ALL_NOTHING_SCHEDULED,
+            message: APP_STRINGS.itinerary.errors.unscheduleAllNothingScheduled,
+         }),
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
+         },
+         showNotice: (message) => {
+            notices.push(message);
+         },
+      });
+
+      buildItineraryPanelContent(
+         {
+            date: '2026-06-15',
+            animals: [{
+               species: 'Tiger',
+               exhibit: 'Savanna',
+            }],
+            attractions: [],
+            guardiansTalks: [],
+            wildEncounters: [],
+            itineraryConfig: ITINERARY_CONFIG,
+         },
+         ZOO_HOURS,
+         {
+            onPanelRefresh: async () => {
+               refreshed = true;
+            },
+            deps,
+         }
+      );
+
+      await getPlannerOptions()?.onUnscheduleAllItemsClick?.();
+
+      assert.equal(refreshed, true);
+      assert.deepEqual(notices, []);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'error',
+         message: APP_STRINGS.itinerary.errors.unscheduleAllNothingScheduled,
       }]);
    });
 });

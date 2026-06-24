@@ -126,6 +126,7 @@ export const itinerary = {
       bulkScheduleAnimalsAlreadyScheduled: (
          'All animals on your itinerary are already scheduled.'
       ),
+      unscheduleAllNothingScheduled: 'There were no items to unschedule.',
    },
    dayPlanner: {
       aria: 'Itinerary day planner preview',

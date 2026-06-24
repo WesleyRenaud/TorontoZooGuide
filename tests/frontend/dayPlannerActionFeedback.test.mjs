@@ -51,6 +51,25 @@ test.describe('dayPlannerActionFeedbackBanner', () => {
       assert.equal(banner.getAttribute('role'), 'status');
    });
 
+   test('appendDayPlannerActionFeedbackBanner renders an error status banner', () => {
+      const slot = document.createElement('div');
+      slot.className = 'itinerary-day-action-feedback-slot';
+
+      appendDayPlannerActionFeedbackBanner(slot, {
+         variant: 'error',
+         message: 'There were no items to unschedule.',
+      }, {
+         dismissMs: 10_000,
+         fadeMs: 300,
+      });
+
+      const banner = slot.querySelector('.itinerary-day-action-feedback--error');
+
+      assert.ok(banner);
+      assert.equal(banner.textContent, 'There were no items to unschedule.');
+      assert.equal(banner.getAttribute('role'), 'status');
+   });
+
    test('makeDayPlannerPreview renders pending action feedback below schedule buttons', () => {
       setPendingDayPlannerActionFeedback({
          variant: 'success',
