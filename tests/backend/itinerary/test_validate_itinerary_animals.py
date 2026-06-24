@@ -106,7 +106,7 @@ def test_validate_animals_uses_highest_likelihood_across_enclosures(
       arrival_time='09:30',
       departure_time='17:00',
       old_visit_date='2026-05-26',
-      saved_itinerary_animal_rows=[
+      saved_animal_rows=[
          ItineraryAnimalRecord(
             species='Masai Giraffe',
             exhibit='Africa Savanna',

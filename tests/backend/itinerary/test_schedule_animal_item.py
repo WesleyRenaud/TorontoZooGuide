@@ -57,7 +57,7 @@ def test_schedule_itinerary_animal_uses_arrival_time_when_set(
    assert result.itinerary.animals[ 0 ].end_time == '09:08'
 
 
-def test_date_change_unschedules_animal_before_new_admission_time(
+def test_date_change_reschedules_animal_before_new_admission_time(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -92,11 +92,11 @@ def test_date_change_unschedules_animal_before_new_admission_time(
 
    assert result.success
    assert result.itinerary.arrival_time == '09:30'
-   assert result.itinerary.animals[ 0 ].start_time is None
-   assert result.itinerary.animals[ 0 ].end_time is None
+   assert result.itinerary.animals[ 0 ].start_time == '09:30'
+   assert result.itinerary.animals[ 0 ].end_time is not None
 
 
-def test_date_change_unschedules_animal_after_new_closing_time(
+def test_date_change_reschedules_animal_after_new_closing_time(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -132,8 +132,8 @@ def test_date_change_unschedules_animal_after_new_closing_time(
 
    assert result.success
    assert result.itinerary.departure_time == '18:00'
-   assert result.itinerary.animals[ 0 ].start_time is None
-   assert result.itinerary.animals[ 0 ].end_time is None
+   assert result.itinerary.animals[ 0 ].start_time == '09:30'
+   assert result.itinerary.animals[ 0 ].end_time is not None
 
 
 def test_schedule_itinerary_animal_skips_existing_scheduled_slot(

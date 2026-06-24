@@ -17,6 +17,7 @@ from ...models import Itinerary
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection
+from ...types import DateKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -26,6 +27,7 @@ class SetItineraryContext:
    save_input: ItinerarySaveInput
    validated_itinerary: ValidatedItinerary
    current_itinerary: Itinerary
+   old_visit_date: DateKey | None
    saved_itinerary: SavedItinerary | None
    unschedule_requirements: ItineraryUnscheduleRequirements
    itinerary_controller_kwargs: dict[ str, Any ]

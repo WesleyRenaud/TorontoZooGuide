@@ -65,6 +65,7 @@ def prepare_set_itinerary_context(
       save_input=save_input,
       validated_itinerary=validated_itinerary,
       current_itinerary=current_itinerary,
+      old_visit_date=old_visit_date,
       saved_itinerary=saved_itinerary,
       unschedule_requirements=unschedule_requirements,
       itinerary_controller_kwargs=itinerary_controller_kwargs,
