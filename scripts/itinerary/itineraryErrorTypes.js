@@ -65,10 +65,6 @@ export function requiresGuardiansTalkWildEncounterTimeConflictConfirmation(error
    return errorType === itineraryErrorTypes?.GUARDIANS_TALK_WILD_ENCOUNTER_TIME_CONFLICT;
 }
 
-export function isUnscheduleAllNothingScheduled(errorType) {
-   return errorType === itineraryErrorTypes?.UNSCHEDULE_ALL_NOTHING_SCHEDULED;
-}
-
 export function resolveItineraryErrorMessage(
    errorType,
    strings = APP_STRINGS.itinerary.errors
