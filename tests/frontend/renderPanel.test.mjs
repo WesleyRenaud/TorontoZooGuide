@@ -52,6 +52,14 @@ test.describe('renderItineraryPanelInto', () => {
       assert.ok(bodyEl.querySelector('.itin-panel-view-toggle'));
       assert.ok(bodyEl.querySelector('.itin-panel-build-btn'));
       assert.ok(bodyEl.querySelector('.itinerary-day-planner-content'));
+      assert.equal(
+         bodyEl.querySelectorAll('.itinerary-day-schedule-item-btn').length,
+         3
+      );
+      assert.equal(
+         bodyEl.querySelector('.itinerary-day-schedule-item-btn--destructive')?.textContent,
+         'Unschedule all items'
+      );
    });
 
    test('renders itinerary sections and the day planner for populated itineraries', async () => {

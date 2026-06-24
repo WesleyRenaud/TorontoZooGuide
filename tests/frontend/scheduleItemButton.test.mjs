@@ -127,6 +127,38 @@ test('makeDayPlannerPreview renders unschedule button when items are scheduled',
    assert.equal(unscheduleAllClicked, true);
 });
 
+test('makeDayPlannerPreview renders unschedule button for an empty itinerary', () => {
+   installTestWindow();
+   installDocument();
+
+   let unscheduleAllClicked = false;
+   const planner = makeDayPlannerPreview(
+      { date: '2026-06-20' },
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [],
+      },
+      {},
+      {
+         onScheduleItemClick: () => {},
+         onRebuildScheduleClick: () => {},
+         onUnscheduleAllItemsClick: () => {
+            unscheduleAllClicked = true;
+         },
+      }
+   );
+
+   const buttons = planner.querySelectorAll('.itinerary-day-schedule-item-btn');
+
+   assert.equal(buttons.length, 3);
+   assert.equal(buttons[2].textContent, 'Unschedule all items');
+
+   buttons[2].listeners.click();
+   assert.equal(unscheduleAllClicked, true);
+});
+
 test('setScheduleItemButtonBusy toggles label, disabled state, and busy styling', () => {
    installTestWindow();
    installDocument();
