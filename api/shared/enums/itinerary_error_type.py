@@ -18,3 +18,4 @@ class ItineraryErrorType( str, Enum ):
    WILD_ENCOUNTER_TIME_CONFLICT = 'wildEncounterTimeConflict'
    BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME = 'bulkScheduleAnimalsNotEnoughTime'
    BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED = 'bulkScheduleAnimalsAlreadyScheduled'
+   UNSCHEDULE_ALL_NOTHING_SCHEDULED = 'unscheduleAllNothingScheduled'

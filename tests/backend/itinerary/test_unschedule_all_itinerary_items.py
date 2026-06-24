@@ -5,6 +5,7 @@ from itinerary.support import ANIMAL_KEY, CAROUSEL, GUARDIANS_TALK, guardians_ta
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 
 def _set_base_itinerary( db: DbControllers ) -> None:
@@ -142,3 +143,75 @@ def test_unschedule_all_itinerary_items_preserves_guardians_talks_and_wild_encou
    assert wild_encounter.name == WILD_ENCOUNTER
    assert wild_encounter.start_time is not None
    assert wild_encounter.end_time is not None
+
+
+def test_unschedule_all_itinerary_items_returns_error_when_nothing_guest_scheduled(
+      db: DbControllers ) -> None:
+   _set_base_itinerary( db )
+
+   result = ItineraryCoordinator.unschedule_all_itinerary_items()
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED
+
+   saved = fetch_saved_itinerary( db.conn )
+   animal_row = saved.animal_rows[ 0 ]
+
+   assert not has_itinerary_schedule_times(
+      animal_row.start_time,
+      animal_row.end_time )
+   assert not saved.event_rows
+
+
+def test_unschedule_all_itinerary_items_returns_error_after_items_already_unscheduled(
+      db: DbControllers ) -> None:
+   _set_base_itinerary( db )
+
+   assert ItineraryCoordinator.schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
+
+   first_result = ItineraryCoordinator.unschedule_all_itinerary_items()
+
+   assert first_result.success
+
+   saved_after_first = fetch_saved_itinerary( db.conn )
+
+   second_result = ItineraryCoordinator.unschedule_all_itinerary_items()
+
+   assert not second_result.success
+   assert second_result.status == ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED
+
+   saved_after_second = fetch_saved_itinerary( db.conn )
+
+   assert saved_after_second.animal_rows == saved_after_first.animal_rows
+   assert saved_after_second.attraction_rows == saved_after_first.attraction_rows
+   assert saved_after_second.event_rows == saved_after_first.event_rows
+
+
+def test_unschedule_all_itinerary_items_returns_error_when_only_guardians_talk_is_scheduled(
+      db: DbControllers ) -> None:
+   set_guardians_talk_and_wild_encounter_schedules_at_1400()
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK ) ],
+      wild_encounters=[],
+   ).success
+
+   assert ItineraryCoordinator.schedule_itinerary_item(
+      'guardians_talks',
+      GUARDIANS_TALK ).success
+
+   result = ItineraryCoordinator.unschedule_all_itinerary_items()
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED
+
+   guardians_talk = result.itinerary.guardians_talks[ 0 ]
+
+   assert guardians_talk.name == GUARDIANS_TALK
+   assert guardians_talk.start_time is not None
+   assert guardians_talk.end_time is not None

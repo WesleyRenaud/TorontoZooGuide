@@ -26,3 +26,10 @@ test('resolveItineraryErrorMessage maps bulkScheduleAnimalsAlreadyScheduled', ()
       /already scheduled/
    );
 });
+
+test('resolveItineraryErrorMessage maps unscheduleAllNothingScheduled', () => {
+   assert.match(
+      resolveItineraryErrorMessage('unscheduleAllNothingScheduled'),
+      /no items to unschedule/i
+   );
+});
