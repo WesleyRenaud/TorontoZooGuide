@@ -299,6 +299,39 @@ test.describe('openItineraryWizard lifecycle', () => {
       assert.deepEqual(shownSteps, ['date']);
    });
 
+   test('finish does not call onDone after save because itineraryUpdated handles refresh', async () => {
+      const mountEl = createDomNode('div', 'wizard-mount');
+      const doneCalls = [];
+      let finishHandler = null;
+
+      await openItineraryWizard({
+         mountEl,
+         onDone: () => {
+            doneCalls.push('done');
+         },
+         deps: {
+            loadItinerary: async () => null,
+            resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+            createWizardState: () => createItineraryWizardState({}),
+            createDateStepController: ({ onFinish }) => {
+               finishHandler = onFinish;
+               return { show() {} };
+            },
+            selectionStepConfigs: [],
+            finalizeWizard: async (_draft, _mountEl, { onDone }) => {
+               onDone?.({ date: '2026-06-15' });
+               return { date: '2026-06-15' };
+            },
+            showConfirmPopup: () => {},
+            syncAnimalDraft: () => {},
+         },
+      });
+
+      await finishHandler?.('2026-06-15');
+
+      assert.deepEqual(doneCalls, []);
+   });
+
    test('date finish saves an empty itinerary with allowEmpty', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       let finishHandler = null;

@@ -160,7 +160,7 @@ test.describe('openItineraryWizard draft sync', () => {
       assert.equal(popupConfigs.length, 1);
    });
 
-   test('notifies onDone when finalize completes successfully', async () => {
+   test('does not notify onDone when finalize completes successfully', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const doneCalls = [];
       let finishHandler = null;
@@ -211,6 +211,6 @@ test.describe('openItineraryWizard draft sync', () => {
          setTimeout(resolve, 0);
       });
 
-      assert.deepEqual(doneCalls, [savedItinerary]);
+      assert.deepEqual(doneCalls, []);
    });
 });
