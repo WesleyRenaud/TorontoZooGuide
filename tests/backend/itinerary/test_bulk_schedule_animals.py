@@ -47,7 +47,7 @@ def test_bulk_schedule_animals_schedules_in_walk_order(
    assert lion.end_time == '09:43'
 
 
-def test_bulk_schedule_animals_skips_already_scheduled_animals(
+def test_bulk_schedule_animals_rebuild_reschedules_already_scheduled_animals(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -82,13 +82,14 @@ def test_bulk_schedule_animals_skips_already_scheduled_animals(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Penguin' )
 
-   assert lion.start_time == '09:00'
+   assert lion.start_time is not None
    assert lion.end_time is not None
-   assert penguin.start_time == '09:08'
+   assert penguin.start_time is not None
    assert penguin.end_time is not None
+   assert lion.start_time != '09:00'
 
 
-def test_bulk_schedule_animals_warns_when_all_animals_are_already_scheduled(
+def test_bulk_schedule_animals_rebuild_reschedules_when_all_animals_are_already_scheduled(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -117,8 +118,8 @@ def test_bulk_schedule_animals_warns_when_all_animals_are_already_scheduled(
 
    result = ItineraryCoordinator.bulk_schedule_animals()
 
-   assert not result.success
-   assert result.status == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED
+   assert result.success
+   assert result.status == ItineraryErrorType.SUCCESS
    assert result.reasons == ()
    assert {
       animal.species

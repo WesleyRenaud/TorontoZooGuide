@@ -55,6 +55,7 @@ def commit_set_itinerary(
          or context.unschedule_requirements.encounters ):
       reschedule_result = reschedule_itinerary_items_after_fixed_time_activity_add(
          context.conn,
+         saved_itinerary_before_clear=context.saved_itinerary,
          **context.itinerary_controller_kwargs )
 
       return ItinerarySaveResult(

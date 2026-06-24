@@ -25,6 +25,7 @@ from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ....types import Cursor
 from ....types import ScheduleTimeKey
+from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_schedules
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
@@ -52,7 +53,8 @@ def bulk_schedule_animals(
       attraction_coordinator: type[ AttractionCoordinator ],
       guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_coordinator: type[ WildEncounterCoordinator ],
-      visit_date_temp: float | None = None ) -> ItinerarySaveResult:
+      visit_date_temp: float | None = None,
+      animals_to_schedule: list[ ItineraryAnimalRecord ] ) -> ItinerarySaveResult:
    itinerary_context = build_itinerary_context(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
@@ -69,6 +71,10 @@ def bulk_schedule_animals(
    if isinstance( window, ItinerarySaveResult ):
       return window
 
+   clear_all_itinerary_schedules( conn )
+
+   saved_itinerary = fetch_saved_itinerary( conn )
+
    anchor_seconds, day_end_seconds = window
    itinerary = build_current_itinerary(
       saved_itinerary,
@@ -80,33 +86,23 @@ def bulk_schedule_animals(
       saved_itinerary.animal_rows,
       anchor_seconds )
 
-   unscheduled_animals = sort_animals_for_bulk_schedule(
+   sorted_animals = sort_animals_for_bulk_schedule(
       walk_graph,
-      [
-         animal_row
-         for animal_row in saved_itinerary.animal_rows
-         if is_itinerary_animal_unscheduled( animal_row )
-      ],
+      animals_to_schedule,
       start_node_id=start_state.start_node_id )
 
-   if not unscheduled_animals:
-      status = (
-         ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED
-         if saved_itinerary.animal_rows
-         else ItineraryErrorType.SUCCESS
-      )
-
+   if not sorted_animals:
       persist_itinerary_walk_route( conn, **itinerary_context )
 
       return ItinerarySaveResult(
-         status=status,
+         status=ItineraryErrorType.SUCCESS,
          itinerary=build_current_itinerary(
             fetch_saved_itinerary( conn ),
             **itinerary_context ) )
 
    remaining_animals = _schedule_animals_in_order(
       conn,
-      unscheduled_animals,
+      sorted_animals,
       blockers=blockers,
       anchor_seconds=start_state.schedule_anchor_seconds,
       day_end_seconds=day_end_seconds )
