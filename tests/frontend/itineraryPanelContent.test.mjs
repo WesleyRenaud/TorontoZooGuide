@@ -118,36 +118,16 @@ test.describe('itineraryPanelContent', () => {
       assert.deepEqual(opened[0].eventTypes, ['lunch']);
    });
 
-   test('buildEmptyItineraryPanelContent shows a notice when bulk scheduling fails', async () => {
+   test('buildEmptyItineraryPanelContent shows error feedback when bulk scheduling fails', async () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
-      const notices = [];
+      let refreshed = false;
+      const feedbackCalls = [];
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          bulkSchedule: async () => {
             throw new Error('Bulk schedule failed');
          },
-         showNotice: (message) => {
-            notices.push(message);
-         },
-      });
-
-      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, { deps });
-
-      await getPlannerOptions()?.onRebuildScheduleClick?.();
-
-      assert.deepEqual(notices, ['Bulk schedule failed']);
-   });
-
-   test('buildEmptyItineraryPanelContent refreshes and warns when bulk scheduling is tight on time', async () => {
-      const bodyEl = createDomNode('div', 'side-panel-body');
-      let refreshed = false;
-      let warned = false;
-      const { deps, getPlannerOptions } = captureDayPlannerOptions({
-         bulkSchedule: async () => ({
-            issues: [{ code: 'notEnoughTime' }],
-         }),
-         hasNotEnoughTimeIssue: () => true,
-         showNotEnoughTimeNotice: () => {
-            warned = true;
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
          },
       });
 
@@ -161,17 +141,53 @@ test.describe('itineraryPanelContent', () => {
       await getPlannerOptions()?.onRebuildScheduleClick?.();
 
       assert.equal(refreshed, true);
-      assert.equal(warned, true);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'error',
+         message: 'Bulk schedule failed',
+      }]);
+   });
+
+   test('buildEmptyItineraryPanelContent refreshes and shows not-enough-time feedback', async () => {
+      const bodyEl = createDomNode('div', 'side-panel-body');
+      let refreshed = false;
+      const feedbackCalls = [];
+      const { deps, getPlannerOptions } = captureDayPlannerOptions({
+         bulkSchedule: async () => ({
+            issues: [{
+               type: 'bulkScheduleAnimalsNotEnoughTime',
+               items: [],
+            }],
+         }),
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
+         },
+      });
+
+      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
+         onPanelRefresh: async () => {
+            refreshed = true;
+         },
+         deps,
+      });
+
+      await getPlannerOptions()?.onRebuildScheduleClick?.();
+
+      assert.equal(refreshed, true);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'error',
+         message: APP_STRINGS.itinerary.confirmation.bulkScheduleAnimalsNotEnoughTimeMessage,
+      }]);
    });
 
    test('buildItineraryPanelContent uses the generic error when bulk scheduling fails without a message', async () => {
-      const notices = [];
+      let refreshed = false;
+      const feedbackCalls = [];
       const { deps, getPlannerOptions } = captureDayPlannerOptions({
          bulkSchedule: async () => {
             throw new Error('');
          },
-         showNotice: (message) => {
-            notices.push(message);
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
          },
       });
 
@@ -185,12 +201,110 @@ test.describe('itineraryPanelContent', () => {
             itineraryConfig: ITINERARY_CONFIG,
          },
          ZOO_HOURS,
-         { deps }
+         {
+            onPanelRefresh: async () => {
+               refreshed = true;
+            },
+            deps,
+         }
       );
 
       await getPlannerOptions()?.onRebuildScheduleClick?.();
 
-      assert.deepEqual(notices, [APP_STRINGS.itinerary.errors.generic]);
+      assert.equal(refreshed, true);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'error',
+         message: APP_STRINGS.itinerary.errors.generic,
+      }]);
+   });
+
+   test('buildItineraryPanelContent queues success feedback after rebuild schedule', async () => {
+      let refreshed = false;
+      const feedbackCalls = [];
+      const { deps, getPlannerOptions } = captureDayPlannerOptions({
+         bulkSchedule: async () => ({
+            issues: [],
+         }),
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
+         },
+      });
+
+      buildItineraryPanelContent(
+         {
+            date: '2026-06-15',
+            animals: [{
+               species: 'Tiger',
+               exhibit: 'Savanna',
+               start_time: '10:00',
+               end_time: '10:30',
+            }],
+            attractions: [],
+            guardiansTalks: [],
+            wildEncounters: [],
+            itineraryConfig: ITINERARY_CONFIG,
+         },
+         ZOO_HOURS,
+         {
+            onPanelRefresh: async () => {
+               refreshed = true;
+            },
+            deps,
+         }
+      );
+
+      await getPlannerOptions()?.onRebuildScheduleClick?.();
+
+      assert.equal(refreshed, true);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'success',
+         message: APP_STRINGS.itinerary.dayPlanner.rebuildScheduleSuccess,
+      }]);
+   });
+
+   test('buildItineraryPanelContent shows error feedback when nothing is scheduled to rebuild', async () => {
+      updateItineraryErrorTypesFromConfig({
+         errorTypes: MOCK_ERROR_TYPES,
+         suppressedErrorTypes: [],
+      });
+
+      let refreshed = false;
+      const feedbackCalls = [];
+      const { deps, getPlannerOptions } = captureDayPlannerOptions({
+         bulkSchedule: async () => ({
+            errorType: MOCK_ERROR_TYPES.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
+            message: APP_STRINGS.itinerary.errors.bulkScheduleAnimalsAlreadyScheduled,
+         }),
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
+         },
+      });
+
+      buildItineraryPanelContent(
+         {
+            date: '2026-06-15',
+            animals: [],
+            attractions: [],
+            guardiansTalks: [],
+            wildEncounters: [],
+            itineraryConfig: ITINERARY_CONFIG,
+         },
+         ZOO_HOURS,
+         {
+            onPanelRefresh: async () => {
+               refreshed = true;
+            },
+            deps,
+         }
+      );
+
+      await getPlannerOptions()?.onRebuildScheduleClick?.();
+
+      assert.equal(refreshed, true);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'error',
+         message: APP_STRINGS.itinerary.errors.bulkScheduleAnimalsAlreadyScheduled,
+      }]);
    });
 
    test('buildItineraryPanelContent refreshes after arrival and departure time changes', async () => {

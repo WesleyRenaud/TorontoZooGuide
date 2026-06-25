@@ -96,7 +96,10 @@ export async function bulkScheduleAnimals() {
    const result = await bulkScheduleAnimalsRequest(temp);
 
    if (!isItinerarySuccess(result.errorType)) {
-      throw new Error(resolveItineraryErrorMessage(result.errorType));
+      return {
+         errorType: result.errorType,
+         message: resolveItineraryErrorMessage(result.errorType),
+      };
    }
 
    const normalizedItinerary = normalizeItinerary({

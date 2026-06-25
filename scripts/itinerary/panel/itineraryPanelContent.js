@@ -1,15 +1,10 @@
-import {
-   hasBulkScheduleAnimalsNotEnoughTimeIssue,
-   showBulkScheduleAnimalsNotEnoughTimeNotice,
-} from './bulkScheduleAnimalsNotEnoughTimeConfirmation.js';
+import { hasBulkScheduleAnimalsNotEnoughTimeIssue } from './bulkScheduleAnimalsNotEnoughTimeConfirmation.js';
 import { makeActionsBar } from './components/actionsBar.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
 import { makeDayPlannerPreview } from './components/dayPlanner.js';
 import { makeSection } from './components/section.js';
 import { setPendingDayPlannerActionFeedback } from './dayPlannerActionFeedback.js';
-import { showRebuildScheduleConfirmation } from './dayPlannerPlanActionConfirmations.js';
-import { hasScheduledItineraryItems } from './dayPlannerPlanActions.js';
 import {
    buildItineraryPanelScheduleHandlers,
    openScheduleItemModule,
@@ -25,7 +20,6 @@ import {
 } from '../itineraryServiceTime.js';
 import { buildSchedulableEventTypes } from './scheduleItemTypes.js';
 import { buildSectionConfigs } from './sectionConfigs.js';
-import { showScheduleItemNotice } from './showScheduleItemNotice.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export function destroyRenderedPanelChildren(bodyEl) {
@@ -54,10 +48,7 @@ function appendDayPlannerViewWithHours(
       bulkSchedule = bulkScheduleAnimals,
       unscheduleAll = unscheduleAllItineraryItems,
       hasNotEnoughTimeIssue = hasBulkScheduleAnimalsNotEnoughTimeIssue,
-      showNotEnoughTimeNotice = showBulkScheduleAnimalsNotEnoughTimeNotice,
-      showRebuildConfirmation = showRebuildScheduleConfirmation,
       setActionFeedback = setPendingDayPlannerActionFeedback,
-      showNotice = showScheduleItemNotice,
       buildEventTypes = buildSchedulableEventTypes,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
       makeDayPlanner = makeDayPlannerPreview,
@@ -87,33 +78,44 @@ function appendDayPlannerViewWithHours(
             }, deps);
          },
          onRebuildScheduleClick: async () => {
-            const runRebuildSchedule = async () => {
-               try {
-                  const { issues } = await bulkSchedule();
+            try {
+               const result = await bulkSchedule();
 
-                  if (typeof onPanelRefresh === 'function') {
-                     await onPanelRefresh();
-                  }
-
-                  if (hasNotEnoughTimeIssue(issues)) {
-                     showNotEnoughTimeNotice();
-                  }
+               if (result.errorType) {
+                  await queueActionFeedback({
+                     variant: 'error',
+                     message: result.message || genericErrorMessage,
+                  });
+                  return;
                }
-               catch (err) {
-                  console.error('Failed to rebuild schedule:', err);
-                  showNotice(err?.message || genericErrorMessage);
-               }
-            };
 
-            if (hasScheduledItineraryItems(itinerary)) {
-               showRebuildConfirmation({
-                  mountEl: dayPlannerView,
-                  onConfirm: runRebuildSchedule,
+               if (typeof onPanelRefresh === 'function') {
+                  await onPanelRefresh();
+               }
+
+               if (hasNotEnoughTimeIssue(result.issues)) {
+                  await queueActionFeedback({
+                     variant: 'error',
+                     message: (
+                        APP_STRINGS.itinerary.confirmation
+                           .bulkScheduleAnimalsNotEnoughTimeMessage
+                     ),
+                  });
+                  return;
+               }
+
+               await queueActionFeedback({
+                  variant: 'success',
+                  message: APP_STRINGS.itinerary.dayPlanner.rebuildScheduleSuccess,
                });
-               return;
             }
-
-            await runRebuildSchedule();
+            catch (err) {
+               console.error('Failed to rebuild schedule:', err);
+               await queueActionFeedback({
+                  variant: 'error',
+                  message: err?.message || genericErrorMessage,
+               });
+            }
          },
          onUnscheduleAllItemsClick: async () => {
             try {

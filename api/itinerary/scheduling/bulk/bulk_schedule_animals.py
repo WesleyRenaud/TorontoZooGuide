@@ -16,6 +16,7 @@ from ...data_access.schedule_itinerary_item import update_itinerary_animal_sched
 from ...domain.itinerary import build_current_itinerary
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..items.schedule_itinerary_helpers import build_itinerary_context
+from ..items.schedule_itinerary_helpers import build_save_result
 from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..items.schedule_itinerary_helpers import resolve_schedule_window
 from ...results.itinerary_result_reason import ItineraryResultReason
@@ -70,6 +71,12 @@ def bulk_schedule_animals(
 
    if isinstance( window, ItinerarySaveResult ):
       return window
+
+   if not animals_to_schedule:
+      return build_save_result(
+         conn,
+         ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
+         **itinerary_context )
 
    clear_all_itinerary_schedules( conn )
 
