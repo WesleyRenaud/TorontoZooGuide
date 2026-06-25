@@ -10,6 +10,15 @@
   },
   {
     "kind": "wild_encounter_meeting_spot",
+    "name": "Wild Encounter - Amur Tiger Habitat Meeting Spot",
+    "location": "",
+    "x": 73.465,
+    "y": 75.658,
+    "walk_node_id": "v-1070",
+    "snap_distance_px": 27.238
+  },
+  {
+    "kind": "wild_encounter_meeting_spot",
     "name": "Wild Encounter - Canadian Domain Meeting Spot",
     "location": "",
     "x": 35.584,

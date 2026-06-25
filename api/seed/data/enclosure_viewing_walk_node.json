@@ -1443,6 +1443,33 @@
     "species": "Ostrich",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
+  },
+  {
+    "species": "Ostrich",
+    "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
+    "x": 40.544,
+    "y": 58.662,
+    "walk_node_id": "v-0339",
+    "snap_distance_px": 40.008
+  },
+  {
+    "species": "Ostrich",
+    "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
+    "x": 41.389,
+    "y": 55.434,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 51.566
+  },
+  {
+    "species": "Ostrich",
+    "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
     "x": 49.056,
     "y": 36.903,
     "walk_node_id": "v-0426",

@@ -1184,6 +1184,14 @@
     "y_coord": 62.754
   },
   {
+    "species": "Ostrich",
+    "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
+    "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
+    "x_coord": 43.612,
+    "y_coord": 62.754
+  },
+  {
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
@@ -1216,6 +1224,14 @@
     "y_coord": 58.662
   },
   {
+    "species": "Ostrich",
+    "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
+    "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
+    "x_coord": 40.544,
+    "y_coord": 58.662
+  },
+  {
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
@@ -1244,6 +1260,14 @@
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white-headed vultures are most likely inside and off-display on this day due to cooler weather.",
+    "x_coord": 41.389,
+    "y_coord": 55.434
+  },
+  {
+    "species": "Ostrich",
+    "exhibit": "Africa Savanna",
+    "enclosure_type": "Outdoor",
+    "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 41.389,
     "y_coord": 55.434
   },
