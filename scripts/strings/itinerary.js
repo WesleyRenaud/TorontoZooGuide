@@ -101,7 +101,6 @@ export const itinerary = {
          'It will no longer appear in your day plan or itinerary lists. You can add it again later from the itinerary builder.'
       ),
       animalMayBeOffDisplay: 'Animal May Be Off Display',
-      bulkScheduleAnimalsNotEnoughTimeTitle: 'Not Enough Time',
       bulkScheduleAnimalsNotEnoughTimeMessage: 'There is not enough time left in your day to schedule all unscheduled animals. Some animals could not be added to your day plan, but they are still on your itinerary.',
    },
    emptyText: {
@@ -124,7 +123,7 @@ export const itinerary = {
       itemNotOnItinerary: 'This item must be on your itinerary before it can be scheduled.',
       timeOutOfBounds: 'One or more visit times are outside operating hours for this date.',
       bulkScheduleAnimalsAlreadyScheduled: (
-         'All animals on your itinerary are already scheduled.'
+         'There were no items to schedule.'
       ),
       unscheduleAllNothingScheduled: 'There were no items to unschedule.',
    },
@@ -169,14 +168,10 @@ export const itinerary = {
       scheduleItemButton: 'Schedule an item',
       rebuildScheduleButton: 'Rebuild schedule',
       rebuildScheduleButtonBusy: 'Rebuilding…',
+      rebuildScheduleSuccess: 'Schedule rebuilt',
       unscheduleAllButton: 'Unschedule all items',
       unscheduleAllButtonBusy: 'Unscheduling…',
       unscheduleAllSuccess: 'All items unscheduled',
-      rebuildScheduleTitle: 'Rebuild Schedule',
-      rebuildScheduleMessage: (
-         'Rebuild your day plan? This will schedule unscheduled items and may change existing times.'
-      ),
-      rebuildScheduleConfirm: 'Rebuild',
    },
    scheduleItem: {
       title: 'Schedule item',

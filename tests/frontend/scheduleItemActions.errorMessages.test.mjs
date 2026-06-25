@@ -23,7 +23,7 @@ test('resolveItineraryErrorMessage maps requestedTimeNotAvailable', () => {
 test('resolveItineraryErrorMessage maps bulkScheduleAnimalsAlreadyScheduled', () => {
    assert.match(
       resolveItineraryErrorMessage('bulkScheduleAnimalsAlreadyScheduled'),
-      /already scheduled/
+      /no items to schedule/i
    );
 });
 
