@@ -19,7 +19,7 @@
   },
   {
     "name": "Highland Cattle",
-    "meeting_spot": "Wild Encounter - Eurasia Zoomobile Station Meeting Spot",
+    "meeting_spot": "Wild Encounter - Amur Tiger Habitat Meeting Spot",
     "link": "https://www.torontozoo.com/tickets/wecows",
     "maximum_duration": 30
   },
@@ -106,5 +106,59 @@
     "meeting_spot": "Wild Encounter - Canadian Domain Meeting Spot",
     "link": "https://www.torontozoo.com/tickets/wegrizzly",
     "maximum_duration": 45
+  },
+  {
+    "name": "Aldabra Tortoise",
+    "meeting_spot": "Wild Encounter - Africa Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wetortoise",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Amur Tiger",
+    "meeting_spot": "Wild Encounter - Amur Tiger Habitat Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wetiger",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Bactrian Camels",
+    "meeting_spot": "Wild Encounter - Eurasia Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wecamels",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Feathered Friends",
+    "meeting_spot": "Wild Encounter - Discovery Zone Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/webirds",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Lemur Lunchtime!",
+    "meeting_spot": "Wild Encounter - Africa Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/welemur",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Masai Giraffe",
+    "meeting_spot": "Wild Encounter - Africa Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wegiraffe",
+    "maximum_duration": 45
+  },
+  {
+    "name": "Mornings in Malaysia",
+    "meeting_spot": "Wild Encounter - Zoo Front Entrance Gates Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wemalaysia",
+    "maximum_duration": 60
+  },
+  {
+    "name": "River Hippos",
+    "meeting_spot": "Wild Encounter - Africa Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wehippo",
+    "maximum_duration": 30
+  },
+  {
+    "name": "Tortoise and the Hares",
+    "meeting_spot": "Wild Encounter - Discovery Zone Meeting Spot",
+    "link": "https://www.torontozoo.com/tickets/wesulcatta",
+    "maximum_duration": 30
   }
 ]
