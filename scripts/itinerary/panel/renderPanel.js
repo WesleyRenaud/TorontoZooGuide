@@ -8,8 +8,8 @@ import {
    clearItinerary,
    getItinerary,
    getZooHours,
-   isItineraryEmpty,
 } from '../itineraryService.js';
+import { isItineraryCompletelyUnset } from '../itineraryShape.js';
 import { resolveEffectiveItineraryHoursDateIso } from '../visitDateEarliest.js';
 
 let latestRenderToken = 0;
@@ -41,7 +41,7 @@ export async function renderItineraryPanelInto(
       loadItinerary = getItinerary,
       resolveHoursDate = resolveEffectiveItineraryHoursDateIso,
       loadZooHours = getZooHours,
-      itineraryIsEmpty = isItineraryEmpty,
+      itineraryIsEmpty = isItineraryCompletelyUnset,
       buildContent = buildItineraryPanelContent,
       buildEmptyContent = buildEmptyItineraryPanelContent,
       clearPanel = clearRenderedPanel,

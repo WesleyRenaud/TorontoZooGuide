@@ -1,5 +1,6 @@
 import {
    createEmptyItineraryDraft,
+   hasSavedItineraryContent,
    isItineraryEmptyDraft,
    normalizeItineraryDraft,
    normalizeItineraryItems,
@@ -48,6 +49,6 @@ export function normalizeItinerary(itinerary) {
          normalizedDraft,
          itinerary?.itineraryConfig ?? {}
       ),
-      isActive: !isItineraryEmptyDraft(normalizedDraft),
+      isActive: hasSavedItineraryContent(normalizedDraft),
    };
 }

@@ -240,3 +240,21 @@ export function isItineraryEmptyDraft(draft = {}) {
       normalizedDraft[key].length === 0
    ));
 }
+
+export function hasSavedItineraryContent(draft = {}) {
+   const normalizedDraft = normalizeItineraryDraft(draft);
+
+   return Boolean(normalizedDraft.date)
+      || !isItineraryEmptyDraft(normalizedDraft);
+}
+
+export function isItineraryCompletelyUnset(draft = {}) {
+   if (!draft || typeof draft !== 'object') {
+      return true;
+   }
+
+   const normalizedDraft = normalizeItineraryDraft(draft);
+
+   return !normalizedDraft.date
+      && isItineraryEmptyDraft(normalizedDraft);
+}
