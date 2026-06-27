@@ -3,6 +3,7 @@ import { APP_STRINGS } from '../../strings.js';
 
 const SCHEDULE_TIMES_LIST_CLASS = 'console-operations-schedule-times-list';
 const SCHEDULE_TIMES_PLACEHOLDER_CLASS = 'console-operations-schedule-times-placeholder';
+const SCHEDULE_TIMES_SINGLE_CLASS = 'console-operations-schedule-times-single';
 
 export function resolveScheduleTimesListEl(el) {
    if (el?.classList?.contains(SCHEDULE_TIMES_LIST_CLASS)) {
@@ -62,7 +63,23 @@ export function resetScheduleTimesCheckboxList(el) {
    );
 }
 
-export function populateScheduleTimesCheckboxList(el, times = []) {
+function renderSingleSelectedScheduleTime(listEl, time) {
+   listEl.replaceChildren();
+
+   const timeEl = document.createElement('div');
+   timeEl.className = SCHEDULE_TIMES_SINGLE_CLASS;
+   timeEl.dataset.scheduleTime = time;
+   timeEl.textContent = time;
+   listEl.appendChild(timeEl);
+}
+
+export function populateScheduleTimesCheckboxList(
+   el,
+   times = [],
+   {
+      autoSelectSingleTime = false,
+   } = {}
+) {
    const listEl = getScheduleTimesListEl(el);
 
    if (!listEl) {
@@ -76,6 +93,11 @@ export function populateScheduleTimesCheckboxList(el, times = []) {
          listEl,
          APP_STRINGS.help.noScheduledEncounterTimes
       );
+      return;
+   }
+
+   if (autoSelectSingleTime && normalizedTimes.length === 1) {
+      renderSingleSelectedScheduleTime(listEl, normalizedTimes[0]);
       return;
    }
 
@@ -101,6 +123,7 @@ export function updateScheduleTimesCheckboxList(el, {
    times = [],
    hasWildEncounter = false,
    hasDate = false,
+   autoSelectSingleTime = false,
 } = {}) {
    const listEl = getScheduleTimesListEl(el);
 
@@ -111,7 +134,9 @@ export function updateScheduleTimesCheckboxList(el, {
    const normalizedTimes = asTrimmedStringList(times);
 
    if (normalizedTimes.length) {
-      populateScheduleTimesCheckboxList(listEl, normalizedTimes);
+      populateScheduleTimesCheckboxList(listEl, normalizedTimes, {
+         autoSelectSingleTime,
+      });
       return;
    }
 
@@ -128,7 +153,9 @@ export function updateScheduleTimesCheckboxList(el, {
       return;
    }
 
-   populateScheduleTimesCheckboxList(listEl, []);
+   populateScheduleTimesCheckboxList(listEl, [], {
+      autoSelectSingleTime,
+   });
 }
 
 export function clearScheduleTimesCheckboxList(el) {
@@ -140,6 +167,13 @@ export function getSelectedScheduleTimes(el) {
 
    if (!listEl) {
       return [];
+   }
+
+   const singleTimeEl = listEl.querySelector(`.${SCHEDULE_TIMES_SINGLE_CLASS}`);
+   const singleTime = singleTimeEl?.dataset?.scheduleTime?.trim() ?? '';
+
+   if (singleTime) {
+      return [singleTime];
    }
 
    return [

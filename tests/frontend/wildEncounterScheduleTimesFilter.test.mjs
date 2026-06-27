@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { createScheduleTimesCheckboxField } from '../../scripts/consoleOperations/templates/fragments.js';
+import { getSelectedScheduleTimes } from '../../scripts/consoleOperations/forms/scheduleTimesCheckboxField.js';
 import { createWildEncounterScheduleTimesFilterController } from '../../scripts/consoleOperations/wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 
@@ -39,5 +40,29 @@ test.describe('wild encounter schedule times filter', () => {
       assert.equal(checkboxes[0].value, '2:00 PM');
       assert.equal(checkboxes[1].value, '3:30 PM');
       assert.equal(checkboxes[0].checked, false);
+   });
+
+   test('createWildEncounterScheduleTimesFilterController auto-selects a single schedule time', async () => {
+      const wildEncounterEl = document.createElement('select');
+      const fieldEl = createScheduleTimesCheckboxField({
+         label: 'Encounter times',
+         inputId: 'testWildEncounterScheduleTimesSingle',
+      });
+      const timesEl = fieldEl.querySelector('.console-operations-schedule-times-list');
+      wildEncounterEl.value = 'African Rainforest';
+
+      const controller = createWildEncounterScheduleTimesFilterController({
+         wildEncounterEl,
+         timesEl,
+         loadScheduleTimes: async () => [ '1:30 AM' ],
+      });
+
+      await controller.refresh();
+
+      assert.equal(
+         timesEl.querySelector('.console-operations-schedule-times-single')?.textContent,
+         '1:30 AM'
+      );
+      assert.deepEqual(getSelectedScheduleTimes(timesEl), [ '1:30 AM' ]);
    });
 });

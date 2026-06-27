@@ -57,6 +57,42 @@ test.describe('schedule times checkbox field', () => {
       assert.equal(checkboxes[0].checked, false);
    });
 
+   test('populateScheduleTimesCheckboxList auto-selects a single time without checkboxes', () => {
+      const fieldEl = createScheduleTimesCheckboxField({
+         label: 'Encounter times',
+         inputId: 'testEncounterTimesSingle',
+      });
+      const listEl = fieldEl.querySelector('.console-operations-schedule-times-list');
+
+      populateScheduleTimesCheckboxList(listEl, [ '2:00 PM' ], {
+         autoSelectSingleTime: true,
+      });
+
+      assert.equal(getCheckboxEls(listEl).length, 0);
+      assert.equal(
+         listEl.querySelector('.console-operations-schedule-times-single')?.textContent,
+         '2:00 PM'
+      );
+      assert.deepEqual(getSelectedScheduleTimes(listEl), [ '2:00 PM' ]);
+   });
+
+   test('updateScheduleTimesCheckboxList auto-selects a single occurrence time', () => {
+      const fieldEl = createScheduleTimesCheckboxField({
+         label: 'Encounter times',
+         inputId: 'testEncounterTimesSingleUpdate',
+      });
+      const listEl = fieldEl.querySelector('.console-operations-schedule-times-list');
+
+      updateScheduleTimesCheckboxList(listEl, {
+         times: [ '3:30 PM' ],
+         hasWildEncounter: true,
+         hasDate: true,
+         autoSelectSingleTime: true,
+      });
+
+      assert.deepEqual(getSelectedScheduleTimes(listEl), [ '3:30 PM' ]);
+   });
+
    test('populateScheduleTimesCheckboxList shows the no-times message inside the list box', () => {
       const fieldEl = createScheduleTimesCheckboxField({
          label: 'Encounter times',
