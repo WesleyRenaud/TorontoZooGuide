@@ -14,6 +14,7 @@ export function createGuardiansTalkOccurrenceFilterController({
    return createOccurrenceFilterController({
       dateEl,
       timeEl,
+      autoSelectSingleTime: true,
       getSelectionValues: () => ({
          talk: getFieldValue(talkNameEl),
          location: getFieldValue(locationEl),

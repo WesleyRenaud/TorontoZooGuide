@@ -30,6 +30,7 @@ export function createWildEncounterScheduleTimesFilterController({
          times,
          hasWildEncounter: Boolean(wildEncounter),
          hasDate: true,
+         autoSelectSingleTime: true,
       });
    }
 

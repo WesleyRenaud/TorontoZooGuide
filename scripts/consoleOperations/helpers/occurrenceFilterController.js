@@ -5,6 +5,7 @@ export function createOccurrenceFilterController({
    dateEl,
    timeEl = null,
    populateTimes = null,
+   autoSelectSingleTime = false,
    getSelectionValues = () => ({}),
    isSelectionReady = selectionValues => Object.values(selectionValues).every(Boolean),
    loadOccurrences,
@@ -81,6 +82,14 @@ export function createOccurrenceFilterController({
       ];
 
       populateTimeDropdown(occurrenceTimes);
+
+      if (
+         autoSelectSingleTime
+         && occurrenceTimes.length === 1
+         && timeEl?.tagName === 'SELECT'
+      ) {
+         timeEl.value = occurrenceTimes[0];
+      }
    }
 
    return {

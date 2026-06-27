@@ -23,6 +23,7 @@ export function createWildEncounterOccurrenceFilterController({
          times,
          hasWildEncounter: Boolean(getFieldValue(wildEncounterEl)),
          hasDate: Boolean(getFieldValue(dateEl)),
+         autoSelectSingleTime: true,
       });
    }
 
