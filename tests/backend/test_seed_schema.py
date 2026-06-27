@@ -196,3 +196,149 @@ def test_migrations_upgrade_partial_runtime_tables() -> None:
    ).fetchone()[ 0 ] == 1
 
    conn.close()
+
+
+def test_migration_016_normalizes_schedule_time_display_format() -> None:
+   conn = sqlite3.connect( ':memory:' )
+   cursor = conn.cursor()
+
+   create_schema( cursor )
+
+   ensure_migration_table( cursor )
+
+   for migration_file in migration_files():
+      if migration_file.name < '016_normalize_schedule_time_display_format.sql':
+         cursor.execute(
+            'INSERT INTO SchemaMigration ( MIGRATION_NAME ) VALUES ( ? );',
+            ( migration_file.name, ),
+         )
+
+   cursor.execute(
+      """   INSERT INTO ZooHours (
+               OPERATING_DATE,
+               OPEN_TIME,
+               LAST_ADMISSION_TIME,
+               CLOSE_TIME
+            )
+            VALUES ( '2026-05-07', '09:30', '15:30', '16:30' );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO WildEncounterSchedule (
+               WILD_ENCOUNTER,
+               SCHEDULE_START_DATE,
+               MONDAY,
+               ENCOUNTER_TIME
+            )
+            VALUES ( 'African Rainforest', '2026-06-01', 1, '14:00' ),
+                   ( 'African Rainforest', '2026-06-01', 1, '2:00 PM' );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO WildEncounterCancellation (
+               WILD_ENCOUNTER,
+               CANCELLATION_DATE,
+               ENCOUNTER_TIME
+            )
+            VALUES ( 'African Rainforest', '2026-06-15', '15:30' );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO GuardiansTalkCancellation (
+               TALK_NAME,
+               LOCATION,
+               CANCELLATION_DATE,
+               TALK_TIME
+            )
+            VALUES ( 'Arctic Wolf', 'Tundra Trek', '2026-06-15', '13:45' );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO ItineraryDate (
+               ITINERARY_DATE,
+               ARRIVAL_TIME,
+               DEPARTURE_TIME
+            )
+            VALUES ( '2026-06-15', '09:00', '17:00' );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO ItineraryEvent (
+               EVENT_TYPE,
+               START_TIME,
+               END_TIME
+            )
+            VALUES ( 'lunch', '12:00', '12:30' );
+      """
+   )
+   cursor.execute(
+      """   INSERT INTO ItineraryGuardiansTalk (
+               TALK_NAME,
+               START_TIME,
+               END_TIME,
+               IS_DELETED
+            )
+            VALUES ( 'Arctic Wolf', '1:00 PM', '1:30 PM', 0 );
+      """
+   )
+
+   run_migrations_on_cursor( cursor )
+
+   zoo_hours = cursor.execute(
+      """   SELECT OPEN_TIME, LAST_ADMISSION_TIME, CLOSE_TIME
+            FROM ZooHours
+            WHERE OPERATING_DATE = '2026-05-07';
+      """
+   ).fetchone()
+   assert zoo_hours == ( '9:30 AM', '3:30 PM', '4:30 PM' )
+
+   assert cursor.execute(
+      """   SELECT COUNT(*)
+            FROM WildEncounterSchedule
+            WHERE WILD_ENCOUNTER = 'African Rainforest'
+               AND ENCOUNTER_TIME = '2:00 PM';
+      """
+   ).fetchone()[ 0 ] == 1
+
+   assert cursor.execute(
+      """   SELECT ENCOUNTER_TIME
+            FROM WildEncounterCancellation
+            WHERE WILD_ENCOUNTER = 'African Rainforest';
+      """
+   ).fetchone()[ 0 ] == '3:30 PM'
+
+   assert cursor.execute(
+      """   SELECT TALK_TIME
+            FROM GuardiansTalkCancellation
+            WHERE TALK_NAME = 'Arctic Wolf';
+      """
+   ).fetchone()[ 0 ] == '1:45 PM'
+
+   arrival_time, departure_time = cursor.execute(
+      """   SELECT ARRIVAL_TIME, DEPARTURE_TIME
+            FROM ItineraryDate
+            WHERE ITINERARY_DATE = '2026-06-15';
+      """
+   ).fetchone()
+   assert arrival_time == '9:00 AM'
+   assert departure_time == '5:00 PM'
+
+   start_time, end_time = cursor.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryEvent
+            WHERE EVENT_TYPE = 'lunch';
+      """
+   ).fetchone()
+   assert start_time == '12:00 PM'
+   assert end_time == '12:30 PM'
+
+   talk_start_time, talk_end_time = cursor.execute(
+      """   SELECT START_TIME, END_TIME
+            FROM ItineraryGuardiansTalk
+            WHERE TALK_NAME = 'Arctic Wolf';
+      """
+   ).fetchone()
+   assert talk_start_time == '1:00 PM'
+   assert talk_end_time == '1:30 PM'
+
+   conn.close()
