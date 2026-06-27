@@ -29,6 +29,7 @@ const GUARDIANS_TALK_ROW = {
 
 const WILD_ENCOUNTER_ROW = {
    name: 'African Rainforest',
+   start_time: '2:00 PM',
    scheduleItemKind: 'wild_encounters',
 };
 

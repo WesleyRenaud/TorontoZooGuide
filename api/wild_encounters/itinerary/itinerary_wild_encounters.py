@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..domain.wild_encounter_sort import sort_wild_encounters_by_name_and_start_time
 from ...itinerary.data_access.itinerary_name_key import itinerary_name_key
 from ...itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from ...models import WildEncounter
@@ -24,11 +25,6 @@ def build_itinerary_wild_encounters(
       wild_encounter.end_time = saved_encounter.end_time
       wild_encounter.is_deleted = saved_encounter.is_deleted
 
-   wild_encounters.sort(
-      key=lambda wild_encounter: (
-         ( wild_encounter.name or '' ).lower(),
-         wild_encounter.start_time or ''
-      )
-   )
+   sort_wild_encounters_by_name_and_start_time( wild_encounters )
 
    return wild_encounters

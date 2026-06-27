@@ -78,7 +78,7 @@ def test_guardians_talk_schedule_can_replace_overlapping_schedules(
       (
          '2026-06-15',
          '2026-07-15',
-         '10:00',
+         '10:00 AM',
       )
    ]
 
@@ -116,16 +116,16 @@ def test_guardians_talk_schedule_can_trim_existing_schedule_around_new_schedule(
       (
          '2026-06-01',
          '2026-06-14',
-         '10:00',
+         '10:00 AM',
       ),
       (
          '2026-06-15',
          '2026-06-20',
-         '10:00',
+         '10:00 AM',
       ),
       (
          '2026-06-21',
          '2026-07-31',
-         '10:00',
+         '10:00 AM',
       ),
    ]

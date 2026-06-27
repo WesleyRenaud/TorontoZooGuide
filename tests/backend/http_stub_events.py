@@ -63,7 +63,7 @@ class EventsStubMixin:
          return [
             ScheduledOccurrence(
                date='2026-06-15',
-               time='10:00' )
+               time='10:00 AM' )
          ]
 
 
@@ -77,5 +77,5 @@ class EventsStubMixin:
          return [
             ScheduledOccurrence(
                date='2026-06-15',
-               time='14:00' )
+               time='2:00 PM' )
          ]

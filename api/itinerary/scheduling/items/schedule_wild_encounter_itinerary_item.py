@@ -16,35 +16,40 @@ from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ..unscheduling.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
 from ...warnings.wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
+from ...wild_encounter_item_key import WildEncounterScheduleItemKey
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
 def _saved_wild_encounter_exists(
       saved_itinerary: SavedItinerary,
-      wild_encounter_name: str ) -> bool:
+      wild_encounter_key: WildEncounterScheduleItemKey ) -> bool:
    return any(
-      row.wild_encounter == wild_encounter_name and not row.is_deleted
+      row.wild_encounter == wild_encounter_key.name and not row.is_deleted
       for row in saved_itinerary.wild_encounter_rows
    )
 
 
 def _wild_encounter_diff_for_saved_itinerary_day(
       saved_itinerary: SavedItinerary,
-      wild_encounter_name: str,
-      wild_encounter_coordinator: type[ WildEncounterCoordinator ] ) -> WildEncounterDiff:
+      wild_encounter_key: WildEncounterScheduleItemKey,
+      wild_encounter_coordinator: type[ WildEncounterCoordinator ],
+   ) -> WildEncounterDiff:
    encounter = wild_encounter_coordinator.get_wild_encounter_on_day_schedule(
       month=saved_itinerary.month(),
       day=saved_itinerary.day(),
       year=saved_itinerary.year(),
-      encounter_name=wild_encounter_name )
+      encounter_name=wild_encounter_key.name,
+      start_time=wild_encounter_key.start_time )
 
-   return schedule_wild_encounter_for_itinerary( wild_encounter_name, encounter )
+   return schedule_wild_encounter_for_itinerary(
+      wild_encounter_key.name,
+      encounter )
 
 
 def _insert_scheduled_wild_encounter(
       conn: Connection,
       *,
-      wild_encounter_name: str,
+      wild_encounter_key: WildEncounterScheduleItemKey,
       wild_encounter_diff: WildEncounterDiff,
       itinerary_context: dict[ str, Any ] ) -> ItinerarySaveResult | None:
    cur = conn.cursor()
@@ -52,7 +57,7 @@ def _insert_scheduled_wild_encounter(
    try:
       scheduled = insert_itinerary_wild_encounter(
          cur,
-         wild_encounter_name=wild_encounter_name,
+         wild_encounter_name=wild_encounter_key.name,
          start_time=wild_encounter_diff.start_time,
          end_time=wild_encounter_diff.end_time,
          is_deleted=wild_encounter_diff.is_deleted,
@@ -74,7 +79,7 @@ def _insert_scheduled_wild_encounter(
 
 def schedule_wild_encounter_itinerary_item(
       conn: Connection,
-      wild_encounter_name: str,
+      wild_encounter_key: WildEncounterScheduleItemKey,
       *,
       itinerary_context: dict[ str, Any ],
       confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
@@ -86,12 +91,12 @@ def schedule_wild_encounter_itinerary_item(
          ItineraryErrorType.ITINERARY_DATE_NOT_SET,
          **itinerary_context )
 
-   if _saved_wild_encounter_exists( saved_itinerary, wild_encounter_name ):
+   if _saved_wild_encounter_exists( saved_itinerary, wild_encounter_key ):
       return build_success_result( conn, **itinerary_context )
 
    wild_encounter_diff = _wild_encounter_diff_for_saved_itinerary_day(
       saved_itinerary,
-      wild_encounter_name,
+      wild_encounter_key,
       itinerary_context[ 'wild_encounter_coordinator' ] )
 
    if wild_encounter_diff.is_deleted:
@@ -115,7 +120,7 @@ def schedule_wild_encounter_itinerary_item(
 
    insert_error = _insert_scheduled_wild_encounter(
       conn,
-      wild_encounter_name=wild_encounter_name,
+      wild_encounter_key=wild_encounter_key,
       wild_encounter_diff=wild_encounter_diff,
       itinerary_context=itinerary_context )
 

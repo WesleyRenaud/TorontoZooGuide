@@ -6,9 +6,9 @@ from ...data_access.itinerary import fetch_saved_itinerary
 from .listed_schedule_item_persistence import commit_listed_schedule
 from .listed_schedule_item_persistence import prepare_schedule_item_on_itinerary
 from .listed_schedule_target import resolve_listed_schedule_target
-from .parse_schedule_item_request import ParsedScheduleItemRequest
 from .parse_schedule_time_options import ParsedScheduleTimeOptions
 from ...results.itinerary_save_result import ItinerarySaveResult
+from .schedule_item_key import ListedScheduleItemKey
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import effective_duration_seconds
 from .schedule_itinerary_helpers import resolve_schedule_window
@@ -21,7 +21,7 @@ from ...warnings.schedule_item_not_on_itinerary_warning import saved_itinerary_h
 
 def schedule_listed_itinerary_item(
       conn: Connection,
-      parsed: ParsedScheduleItemRequest,
+      schedule_item_key: ListedScheduleItemKey,
       time_options: ParsedScheduleTimeOptions,
       *,
       itinerary_context: dict[ str, Any ],
@@ -39,7 +39,7 @@ def schedule_listed_itinerary_item(
    suppressed_warnings, membership_error = prepare_schedule_item_on_itinerary(
       conn,
       saved_itinerary,
-      parsed,
+      schedule_item_key,
       itinerary_context=itinerary_context,
       confirming_schedule_item_not_on_itinerary=(
          confirming_schedule_item_not_on_itinerary
@@ -48,7 +48,7 @@ def schedule_listed_itinerary_item(
    if membership_error is not None:
       return membership_error
 
-   target = resolve_listed_schedule_target( conn, parsed )
+   target = resolve_listed_schedule_target( conn, schedule_item_key )
 
    duration_seconds = effective_duration_seconds(
       time_options.duration_minutes,
@@ -76,9 +76,11 @@ def schedule_listed_itinerary_item(
    return with_suppressed_warnings(
       commit_listed_schedule(
          conn,
-         parsed=parsed,
+         schedule_item_key=schedule_item_key,
          start_time=start_time_key,
          end_time=end_time,
-         insert_if_missing=not saved_itinerary_has_schedule_item( saved_itinerary, parsed ),
+         insert_if_missing=not saved_itinerary_has_schedule_item(
+            saved_itinerary,
+            schedule_item_key ),
          itinerary_context=itinerary_context ),
       suppressed_warnings )

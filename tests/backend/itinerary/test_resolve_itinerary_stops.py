@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import LION_ITINERARY_ENTRY
+from itinerary.support import LION_ITINERARY_ENTRY, wild_encounter_key
 from itinerary.support import LION_KEY
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -23,7 +23,7 @@ def _set_rhino_encounter_schedule() -> None:
       wild_encounter_name='Guardians of White Rhinos',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_time='11:00',
+      encounter_times=[ '11:00' ],
       monday=False,
       tuesday=False,
       wednesday=False,
@@ -72,7 +72,7 @@ def test_resolve_itinerary_stops_maps_rhino_encounter_to_meeting_spot_walk_node(
       animals=[],
       attractions=[],
       guardians_talks=[],
-      wild_encounters=[ 'Guardians of White Rhinos' ],
+      wild_encounters=[ wild_encounter_key( 'Guardians of White Rhinos', start_time='11:00' ) ],
       confirming_early_admission=True,
    ).success
 
@@ -86,8 +86,8 @@ def test_resolve_itinerary_stops_maps_rhino_encounter_to_meeting_spot_walk_node(
    assert len( encounter_stop.walk_node_ids ) == 1
    assert encounter_stop.walk_node_ids[ 0 ].startswith( 'v-' )
    assert encounter_stop.is_fixed_time
-   assert encounter_stop.start_time == '11:00'
-   assert encounter_stop.end_time == '11:45'
+   assert encounter_stop.start_time == '11:00 AM'
+   assert encounter_stop.end_time == '11:45 AM'
 
 
 def test_partition_itinerary_schedule_windows_splits_around_fixed_encounter(
@@ -103,7 +103,7 @@ def test_partition_itinerary_schedule_windows_splits_around_fixed_encounter(
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
       guardians_talks=[],
-      wild_encounters=[ 'Guardians of White Rhinos' ],
+      wild_encounters=[ wild_encounter_key( 'Guardians of White Rhinos', start_time='11:00' ) ],
       confirming_early_admission=True,
    ).success
 
@@ -121,6 +121,6 @@ def test_partition_itinerary_schedule_windows_splits_around_fixed_encounter(
 
    assert len( windows ) == 2
    assert windows[ 0 ].start_seconds == anchor_seconds
-   assert windows[ 0 ].end_seconds == DateValues.time_value_in_seconds( '11:00' )
-   assert windows[ 1 ].start_seconds == DateValues.time_value_in_seconds( '11:45' )
+   assert windows[ 0 ].end_seconds == DateValues.time_value_in_seconds( '11:00 AM' )
+   assert windows[ 1 ].start_seconds == DateValues.time_value_in_seconds( '11:45 AM' )
    assert windows[ 1 ].end_seconds == day_end_seconds

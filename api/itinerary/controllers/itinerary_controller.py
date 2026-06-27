@@ -6,7 +6,9 @@ from ...request_connection import get_connection
 from ..results.itinerary_result_response import itinerary_result_to_dict
 from ..results.itinerary_result_response import itinerary_time_set_result_to_dict
 from ..results.itinerary_result_response import suppress_itinerary_warning_result_to_dict
+from ..scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
 from ...shared.constants import itinerary_config_to_dict
+from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 
 
 class ItineraryController():
@@ -20,7 +22,8 @@ class ItineraryController():
       animals = data.get( 'animals' )
       attractions = data.get( 'attractions' )
       guardians_talks = data.get( 'guardiansTalks' )
-      wild_encounters = data.get( 'wildEncounters' )
+      wild_encounters = WildEncounterScheduleItemKey.from_wires(
+         data.get( 'wildEncounters' ) )
       selected_exhibits = data.get( 'selectedExhibits' )
       temp = data.get( 'temp' )
       overriding_conflicting_guardians_talks = bool(
@@ -71,8 +74,9 @@ class ItineraryController():
    def schedule_itinerary_item( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      item_type = data.get( 'itemType' )
-      key = data.get( 'key' )
+      schedule_item_key = map_schedule_item_key_from_wire(
+         data.get( 'itemType' ),
+         data.get( 'key' ) )
       start_time = data.get( 'startTime' )
       duration_minutes = data.get( 'durationMinutes' )
       confirming_schedule_item_not_on_itinerary = bool(
@@ -83,8 +87,7 @@ class ItineraryController():
          data.get( 'confirmingWildEncounterUnschedule' ) )
 
       save_result = ItineraryCoordinator.schedule_itinerary_item(
-         item_type=item_type,
-         key=key,
+         schedule_item_key,
          start_time=start_time,
          duration_minutes=duration_minutes,
          confirming_schedule_item_not_on_itinerary=(
@@ -141,12 +144,12 @@ class ItineraryController():
    def unschedule_itinerary_item( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      item_type = data.get( 'itemType' )
-      key = data.get( 'key' )
+      schedule_item_key = map_schedule_item_key_from_wire(
+         data.get( 'itemType' ),
+         data.get( 'key' ) )
 
       save_result = ItineraryCoordinator.unschedule_itinerary_item(
-         item_type=item_type,
-         key=key )
+         schedule_item_key )
 
       response = itinerary_result_to_dict(
          save_result,
@@ -159,12 +162,12 @@ class ItineraryController():
    def remove_item_from_itinerary( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      item_type = data.get( 'itemType' )
-      key = data.get( 'key' )
+      schedule_item_key = map_schedule_item_key_from_wire(
+         data.get( 'itemType' ),
+         data.get( 'key' ) )
 
       save_result = ItineraryCoordinator.remove_itinerary_item(
-         item_type=item_type,
-         key=key )
+         schedule_item_key )
 
       response = itinerary_result_to_dict(
          save_result,
@@ -189,8 +192,7 @@ class ItineraryController():
 
       response = itinerary_time_set_result_to_dict(
          save_result,
-         conn=get_connection(),
-         extra={ 'arrivalTime': arrival_time } )
+         conn=get_connection() )
 
       handler._write_json( response )
 
@@ -208,8 +210,7 @@ class ItineraryController():
 
       response = itinerary_time_set_result_to_dict(
          save_result,
-         conn=get_connection(),
-         extra={ 'departureTime': departure_time } )
+         conn=get_connection() )
 
       handler._write_json( response )
 

@@ -115,8 +115,8 @@ def save_itinerary_wild_encounters( cur: Cursor, wild_encounters: list[ WildEnco
          """,
          (
             encounter.name,
-            DateValues.normalize_itinerary_schedule_time( encounter.start_time ),
-            DateValues.normalize_itinerary_schedule_time( encounter.end_time ),
+            DateValues.normalize_schedule_time( encounter.start_time ),
+            DateValues.normalize_schedule_time( encounter.end_time ),
             encounter.is_deleted,
          ) )
 

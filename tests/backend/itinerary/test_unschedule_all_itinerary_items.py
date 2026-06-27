@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import ANIMAL_KEY, CAROUSEL, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, set_guardians_talk_and_wild_encounter_schedules_at_1400, set_wild_encounter_schedule, WILD_ENCOUNTER
+from itinerary.support import ANIMAL_KEY, CAROUSEL, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, schedule_itinerary_item, set_guardians_talk_and_wild_encounter_schedules_at_1400, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
@@ -24,11 +24,11 @@ def test_unschedule_all_itinerary_items_clears_schedules_but_keeps_itinerary_row
       db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryCoordinator.schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
+   assert schedule_itinerary_item(
       'attractions',
       CAROUSEL ).success
-   assert ItineraryCoordinator.schedule_itinerary_item( 'lunch', '' ).success
+   assert schedule_itinerary_item( 'lunch', '' ).success
 
    result = ItineraryCoordinator.unschedule_all_itinerary_items()
 
@@ -69,13 +69,13 @@ def test_unschedule_all_itinerary_items_preserves_arrival_and_departure_times(
       db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryCoordinator.schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
+   assert schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
 
    result = ItineraryCoordinator.unschedule_all_itinerary_items()
 
    assert result.success
-   assert result.itinerary.arrival_time == '09:30'
-   assert result.itinerary.departure_time == '17:00'
+   assert result.itinerary.arrival_time == '9:30 AM'
+   assert result.itinerary.departure_time == '5:00 PM'
 
 
 def test_unschedule_all_itinerary_items_preserves_guardians_talks_and_wild_encounters(
@@ -92,10 +92,10 @@ def test_unschedule_all_itinerary_items_preserves_guardians_talks_and_wild_encou
       wild_encounters=[],
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       'guardians_talks',
       GUARDIANS_TALK ).success
-   assert ItineraryCoordinator.schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
+   assert schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
 
    result = ItineraryCoordinator.unschedule_all_itinerary_items()
 
@@ -121,13 +121,13 @@ def test_unschedule_all_itinerary_items_preserves_guardians_talks_and_wild_encou
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
       guardians_talks=[],
-      wild_encounters=[ WILD_ENCOUNTER ],
+      wild_encounters=[ wild_encounter_key(  WILD_ENCOUNTER, start_time='15:00'  ) ],
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       'wild_encounters',
-      WILD_ENCOUNTER ).success
-   assert ItineraryCoordinator.schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
+      wild_encounter_key(  WILD_ENCOUNTER, start_time='15:00'  ).to_wire() ).success
+   assert schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
 
    result = ItineraryCoordinator.unschedule_all_itinerary_items()
 
@@ -167,7 +167,7 @@ def test_unschedule_all_itinerary_items_returns_error_after_items_already_unsche
       db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryCoordinator.schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
+   assert schedule_itinerary_item( 'animals', ANIMAL_KEY ).success
 
    first_result = ItineraryCoordinator.unschedule_all_itinerary_items()
 
@@ -201,7 +201,7 @@ def test_unschedule_all_itinerary_items_returns_error_when_only_guardians_talk_i
       wild_encounters=[],
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       'guardians_talks',
       GUARDIANS_TALK ).success
 

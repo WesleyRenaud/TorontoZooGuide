@@ -32,8 +32,8 @@ def test_apply_guardians_talk_trimming_keeps_tail_after_wild_encounter() -> None
 
    trimmed_talks = apply_guardians_talk_trimming( [ talk ], [ encounter ] )
 
-   assert trimmed_talks[ 0 ].start_time == '13:45'
-   assert trimmed_talks[ 0 ].end_time == '14:00'
+   assert trimmed_talks[ 0 ].start_time == '1:45 PM'
+   assert trimmed_talks[ 0 ].end_time == '2:00 PM'
 
 
 def test_apply_guardians_talk_trimming_gives_earlier_talk_precedence() -> None:
@@ -67,7 +67,7 @@ def test_apply_guardians_talk_trimming_gives_earlier_talk_precedence() -> None:
       [],
    )
 
-   assert trimmed_talks[ 0 ].start_time == '13:30'
-   assert trimmed_talks[ 0 ].end_time == '14:00'
-   assert trimmed_talks[ 1 ].start_time == '14:00'
-   assert trimmed_talks[ 1 ].end_time == '14:15'
+   assert trimmed_talks[ 0 ].start_time == '1:30 PM'
+   assert trimmed_talks[ 0 ].end_time == '2:00 PM'
+   assert trimmed_talks[ 1 ].start_time == '2:00 PM'
+   assert trimmed_talks[ 1 ].end_time == '2:15 PM'

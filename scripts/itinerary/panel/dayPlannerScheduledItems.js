@@ -13,6 +13,7 @@ import {
 import { formatItineraryEventTypeLabel } from './scheduleItemEventLabels.js';
 import { getAnimalId } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
+import { getWildEncounterKey } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import { buildUniqueSpeciesExhibitEntries } from '../speciesExhibitKey.js';
 
@@ -205,7 +206,7 @@ export function buildScheduledItemRowsContext(
    ).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: 'wild_encounters',
-      scheduleItemKey: String(scheduledItem.item.name).trim(),
+      scheduleItemKey: getWildEncounterKey(scheduledItem.item),
    }));
    const animalRows = buildScheduledAnimalRows(animals).map((scheduledItem) => ({
       ...scheduledItem,

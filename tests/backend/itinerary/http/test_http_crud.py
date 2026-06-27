@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from http_support import ANIMAL_EXHIBIT, make_handler, response_json, StubZooControllers
 
+from api.itinerary.animal_item_key import AnimalScheduleItemKey
+from api.itinerary.attraction_item_key import AttractionScheduleItemKey
 import api.server as server
 
 

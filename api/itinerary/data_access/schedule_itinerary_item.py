@@ -158,8 +158,8 @@ def insert_itinerary_wild_encounter(
          """,
          (
             wild_encounter_name,
-            DateValues.normalize_itinerary_schedule_time( start_time ),
-            DateValues.normalize_itinerary_schedule_time( end_time ),
+            DateValues.normalize_schedule_time( start_time ),
+            DateValues.normalize_schedule_time( end_time ),
             is_deleted,
          ),
    )

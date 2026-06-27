@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import ANIMAL_KEY
+from itinerary.support import ANIMAL_KEY, schedule_itinerary_item
 from itinerary.support import LION_ITINERARY_ENTRY
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
@@ -34,7 +34,7 @@ def test_schedule_itinerary_item_persists_walk_route(
       confirming_early_admission=True,
    ).success
 
-   result = ItineraryCoordinator.schedule_itinerary_item(
+   result = schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='10:00',
@@ -90,7 +90,7 @@ def test_rebuild_and_persist_itinerary_walk_route_round_trips_route(
       wild_encounters=[],
       confirming_early_admission=True,
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='10:00',
@@ -121,7 +121,7 @@ def test_clear_itinerary_clears_walk_route(
       wild_encounters=[],
       confirming_early_admission=True,
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='10:00',

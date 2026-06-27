@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, set_wild_encounter_schedule, WILD_ENCOUNTER
+from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.shared.enums import ItineraryErrorType
@@ -36,7 +36,7 @@ def test_set_itinerary_rejects_invalid_departure_on_date_change_without_adjustme
 
    itinerary = ItineraryCoordinator.get_itinerary()
    assert itinerary.date == '2026-06-20'
-   assert itinerary.departure_time == '18:30'
+   assert itinerary.departure_time == '6:30 PM'
 
 
 def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_schedules(
@@ -55,17 +55,17 @@ def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='09:20',
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=CHEETAH_KEY,
       start_time='10:30',
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
       start_time='10:10',
@@ -89,12 +89,12 @@ def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_
             end_time='09:30',
          ),
       ],
-      wild_encounters=[ WILD_ENCOUNTER ],
+      wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER, start_time='09:20' ) ],
       confirming_early_admission=True,
       confirming_wild_encounter_unschedule=True,
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type=ItineraryEventType.LUNCH.value,
       key='',
    ).success
@@ -115,7 +115,7 @@ def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_
             end_time='09:30',
          ),
       ],
-      wild_encounters=[ WILD_ENCOUNTER ],
+      wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER, start_time='09:20' ) ],
       confirming_wild_encounter_unschedule=True,
    )
 
@@ -123,13 +123,13 @@ def test_date_change_with_adjusted_arrival_reschedules_animals_and_clears_guest_
 
    assert result.success
    assert itinerary is not None
-   assert itinerary.arrival_time == '09:30'
+   assert itinerary.arrival_time == '9:30 AM'
    assert [
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
    ] == [
-      ( 'African Lion', '09:30', '09:38' ),
-      ( 'Cheetah', '09:38', '09:43' ),
+      ( 'African Lion', '9:30 AM', '9:38 AM' ),
+      ( 'Cheetah', '9:38 AM', '9:43 AM' ),
    ]
    assert itinerary.attractions[ 0 ].name == CAROUSEL
    assert itinerary.attractions[ 0 ].start_time is None
@@ -155,17 +155,17 @@ def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_gues
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='15:45',
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
       start_time='15:54',
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=CHEETAH_KEY,
       start_time='18:15',
@@ -189,7 +189,7 @@ def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_gues
             end_time='18:30',
          ),
       ],
-      wild_encounters=[ WILD_ENCOUNTER ],
+      wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER, start_time='18:15' ) ],
       confirming_wild_encounter_unschedule=True,
    ).success
 
@@ -209,7 +209,7 @@ def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_gues
             end_time='18:30',
          ),
       ],
-      wild_encounters=[ WILD_ENCOUNTER ],
+      wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER, start_time='18:15' ) ],
       confirming_wild_encounter_unschedule=True,
    )
 
@@ -217,13 +217,13 @@ def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_gues
 
    assert result.success
    assert itinerary is not None
-   assert itinerary.departure_time == '18:00'
+   assert itinerary.departure_time == '6:00 PM'
    assert [
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
    ] == [
-      ( 'African Lion', '09:30', '09:38' ),
-      ( 'Cheetah', '09:38', '09:43' ),
+      ( 'African Lion', '9:30 AM', '9:38 AM' ),
+      ( 'Cheetah', '9:38 AM', '9:43 AM' ),
    ]
    assert itinerary.attractions[ 0 ].name == CAROUSEL
    assert itinerary.attractions[ 0 ].start_time is None

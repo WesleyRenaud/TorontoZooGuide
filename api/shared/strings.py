@@ -108,6 +108,12 @@ class SharedStrings:
             'Guardians talk has no remaining time after trimming.' )
 
 
+      @staticmethod
+      def wild_encounter_row_missing_start_time( wild_encounter: str ) -> str:
+         return (
+            f'Wild encounter row { repr( wild_encounter ) } is missing a start time.' )
+
+
    class VisitDaySchedule:
       """Guest-facing copy when a visit-day schedule row does not apply."""
 

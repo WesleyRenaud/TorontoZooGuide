@@ -4843,11 +4843,130 @@ nav ul li a:hover {
    cursor: pointer;
 }
 
+.console-operations-schedule-times-list {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 16px 28px;
+   align-items: center;
+   box-sizing: border-box;
+
+   min-height: calc(3em + 48px);
+   padding: 24px 28px;
+   border-radius: 22px;
+
+   background: rgba(255,255,255,0.94);
+   border: 5px solid rgba(94,150,0,0.32);
+   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+}
+
+.console-operations-schedule-times-placeholder {
+   font-size: 3em;
+   font-weight: 700;
+   color: rgba(20,35,10,0.55);
+   line-height: 1.1;
+}
+
 .console-operations-help {
    font-size: 2.2em;
    font-weight: 600;
    color: rgba(20,35,10,0.62);
    line-height: 1.45;
+}
+
+.console-operations-multi-time-field {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   gap: 12px 14px;
+
+   width: 100%;
+   box-sizing: border-box;
+
+   padding: 18px 22px;
+   border-radius: 22px;
+
+   background: rgba(255,255,255,0.94);
+   border: 5px solid rgba(94,150,0,0.32);
+   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+}
+
+.console-operations-multi-time-field:focus-within {
+   border-color: rgba(94,150,0,0.95);
+   box-shadow: 0 14px 34px rgba(0,0,0,0.16);
+}
+
+.console-operations-multi-time-list {
+   display: contents;
+}
+
+.console-operations-time-chip {
+   display: inline-flex;
+   align-items: center;
+   gap: 10px;
+
+   padding: 10px 14px 10px 18px;
+   border-radius: 999px;
+
+   background: rgba(20,35,10,0.10);
+   border: 3px solid rgba(20,35,10,0.14);
+
+   font-size: 2.2em;
+   font-weight: 700;
+   color: rgba(20,35,10,0.88);
+}
+
+.console-operations-time-chip-label {
+   line-height: 1.1;
+}
+
+.console-operations-time-chip-remove {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+
+   width: 30px;
+   height: 30px;
+   padding: 0;
+
+   border: none;
+   border-radius: 999px;
+   background: rgba(20,35,10,0.10);
+   color: rgba(20,35,10,0.62);
+
+   font-size: 0.85em;
+   font-weight: 800;
+   line-height: 1;
+   cursor: pointer;
+}
+
+.console-operations-time-chip-remove:hover {
+   background: rgba(20,35,10,0.18);
+   color: rgba(20,35,10,0.88);
+}
+
+.console-operations-multi-time-field .console-operations-datetime {
+   width: auto;
+   padding: 6px 4px;
+   border: none;
+   border-radius: 0;
+   background: transparent;
+   box-shadow: none;
+}
+
+.console-operations-multi-time-field .console-operations-datetime:focus {
+   border: none;
+   box-shadow: none;
+}
+
+.console-operations-multi-time-input {
+   flex: 1 1 180px;
+   min-width: 180px;
+   outline: none;
+}
+
+.console-operations-multi-time-field--has-times .console-operations-multi-time-input {
+   flex-basis: 140px;
+   min-width: 140px;
 }
 
 /* ============================================================

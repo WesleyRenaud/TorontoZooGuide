@@ -358,10 +358,29 @@ def test_parse_values_raise_for_unsupported_formats() -> None:
       ( None, None ),
       ( '', None ),
       ( '   ', None ),
-      ( '1:00 PM', '13:00' ),
-      ( '13:45', '13:45' ),
-      ( '13:45:30', '13:45:30' ),
-      ( '10:00', '10:00' ),
+      ( '1:00 PM', '1:00 PM' ),
+      ( '13:45', '1:45 PM' ),
+      ( '13:45:30', '1:45:30 PM' ),
+      ( '10:00', '10:00 AM' ),
+      ( 'not-a-time', None ),
+   ]
+)
+def test_normalize_schedule_time(
+      value: str | None,
+      expected: str | None ) -> None:
+   assert DateValues.normalize_schedule_time( value ) == expected
+
+
+@pytest.mark.parametrize(
+   'value, expected',
+   [
+      ( None, None ),
+      ( '', None ),
+      ( '   ', None ),
+      ( '1:00 PM', '1:00 PM' ),
+      ( '13:45', '1:45 PM' ),
+      ( '13:45:30', '1:45:30 PM' ),
+      ( '10:00', '10:00 AM' ),
       ( 'not-a-time', None ),
    ]
 )
@@ -370,6 +389,20 @@ def test_normalize_itinerary_schedule_time(
       expected: str | None ) -> None:
    assert DateValues.normalize_itinerary_schedule_time( value ) == expected
 
+
+@pytest.mark.parametrize(
+   'values, expected',
+   [
+      ( [], [] ),
+      ( [ '2:00 PM', '3:30 PM' ], [ '2:00 PM', '3:30 PM' ] ),
+      ( [ '3:30 PM', '15:30', '2:00 PM' ], [ '3:30 PM', '2:00 PM' ] ),
+      ( [ '1:00 PM', 'not-a-time', '13:00' ], [ '1:00 PM' ] ),
+   ]
+)
+def test_normalize_unique_schedule_times(
+      values: list[ str ],
+      expected: list[ str ] ) -> None:
+   assert DateValues.normalize_unique_schedule_times( values ) == expected
 
 @pytest.mark.parametrize(
    'value, expected',
@@ -405,8 +438,8 @@ def test_time_value_in_seconds(
 @pytest.mark.parametrize(
    'total_seconds, expected',
    [
-      ( 9 * 3600 + 30 * 60, '09:30' ),
-      ( 9 * 3600 + 30 * 60 + 30, '09:30:30' ),
+      ( 9 * 3600 + 30 * 60, '9:30 AM' ),
+      ( 9 * 3600 + 30 * 60 + 30, '9:30:30 AM' ),
    ]
 )
 def test_schedule_time_key_from_seconds(

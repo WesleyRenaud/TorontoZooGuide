@@ -45,14 +45,14 @@ def test_itinerary_activity_scheduler_sets_activity_times_and_events() -> None:
 
    scheduler.schedule_event( ItineraryEventType.LUNCH, '14:00', '14:30' )
 
-   assert itinerary.animals[ 0 ].start_time == '10:00'
-   assert itinerary.attractions[ 0 ].end_time == '11:30'
-   assert itinerary.guardians_talks[ 0 ].start_time == '12:00'
-   assert itinerary.wild_encounters[ 0 ].end_time == '13:45'
+   assert itinerary.animals[ 0 ].start_time == '10:00 AM'
+   assert itinerary.attractions[ 0 ].end_time == '11:30 AM'
+   assert itinerary.guardians_talks[ 0 ].start_time == '12:00 PM'
+   assert itinerary.wild_encounters[ 0 ].end_time == '1:45 PM'
    assert itinerary.events[ 0 ].to_dict() == {
       'event_type': 'lunch',
-      'start_time': '14:00',
-      'end_time': '14:30',
+      'start_time': '2:00 PM',
+      'end_time': '2:30 PM',
       'type': 'itineraryEvent',
    }
 

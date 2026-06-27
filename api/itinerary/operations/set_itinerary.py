@@ -18,6 +18,7 @@ from ..results.itinerary_save_result import ItinerarySaveResult
 from .set_itinerary_context import itinerary_controller_kwargs
 from ...types import Connection, DateInput, TimeInput
 from .validate_set_itinerary_zoo_hours import validate_set_itinerary_zoo_hours
+from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -106,7 +107,7 @@ def set_itinerary(
       animals: list[ dict[ str, str ] ],
       attractions: list[ str ],
       guardians_talks: list[ dict[ str, str | None ] ],
-      wild_encounters: list[ str ],
+      wild_encounters: list[ WildEncounterScheduleItemKey ] | None = None,
       selected_exhibits: list[ str ] | None = None,
       visit_date_temp: float | None = None,
       *,

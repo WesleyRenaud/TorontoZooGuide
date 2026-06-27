@@ -20,6 +20,18 @@ export const help = {
    ),
    keepRouteUntilChanged: 'Leave blank to keep this route until it is changed again.',
    keepScheduleUntilChanged: 'Leave blank to keep this schedule active until it is changed.',
+   endSingleWildEncounterScheduleTime: (
+      'Leave blank to end all times for this encounter on the selected date.'
+   ),
+   endWildEncounterScheduleTimes: (
+      'Select one or more scheduled times to end.'
+   ),
+   cancelWildEncounterOccurrenceTimes: (
+      'Select one or more scheduled times to cancel.'
+   ),
+   noScheduledEncounterTimes: 'No scheduled times for this encounter.',
+   encounterTimesAddOneAtATime: 'Add one time at a time using the picker or Enter.',
+   removeScheduledTime: time => `Remove ${time}`,
    keepUpdateActiveWithoutEndDate: 'Leave blank to keep the update active with no end date.',
    keepVisibilityScheduleUntilChanged: (
       'Leave blank to keep this visibility schedule in place until manually changed.'
@@ -43,6 +55,9 @@ export const placeholders = {
    dailyEndTime: 'Select a daily end time',
    dailyStartTime: 'Select a daily start time',
    endDate: 'Select an end date',
+   encounterTimes: 'Select encounter times',
+   selectWildEncounterFirst: 'Select a wild encounter first',
+   selectDateFirst: 'Select a date first',
    exhibit: 'Select an exhibit',
    giftShop: 'Select a gift shop',
    keepCurrentType: 'Keep current type',

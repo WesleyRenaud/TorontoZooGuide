@@ -3,7 +3,6 @@ from __future__ import annotations
 from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
 from ...types import DateInput
-from .wild_encounter_schedule_end_input import WildEncounterScheduleEndInput
 from .wild_encounter_schedule_input import WildEncounterScheduleInput
 
 
@@ -32,8 +31,7 @@ def build_wild_encounter_schedule(
       wild_encounter=wild_encounter,
       start_date=date_range.start_date,
       end_date=date_range.end_date,
-      encounter_time=DateValues.normalize_itinerary_schedule_time(
-         encounter_time ),
+      encounter_time=encounter_time,
       monday=monday,
       tuesday=tuesday,
       wednesday=wednesday,
@@ -44,9 +42,3 @@ def build_wild_encounter_schedule(
       message=message )
 
 
-def build_wild_encounter_schedule_end(
-      wild_encounter: str,
-      schedule_end_date: str ) -> WildEncounterScheduleEndInput:
-   return WildEncounterScheduleEndInput(
-      wild_encounter=wild_encounter,
-      schedule_end_date=schedule_end_date )

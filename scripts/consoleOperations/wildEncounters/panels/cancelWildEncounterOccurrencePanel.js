@@ -2,6 +2,7 @@ import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createPanelShell,
+   createScheduleTimesCheckboxField,
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
@@ -21,10 +22,10 @@ export function createCancelWildEncounterOccurrencePanel() {
             inputId: 'cancelWildEncounterOccurrenceDate',
             emptyOptionLabel: APP_STRINGS.placeholders.date,
          }),
-         createSelectField({
-            label: APP_STRINGS.labels.time,
-            inputId: 'cancelWildEncounterOccurrenceTime',
-            emptyOptionLabel: APP_STRINGS.placeholders.time,
+         createScheduleTimesCheckboxField({
+            label: APP_STRINGS.labels.encounterTimes,
+            inputId: 'cancelWildEncounterOccurrenceTimes',
+            helpText: APP_STRINGS.help.cancelWildEncounterOccurrenceTimes,
          }),
          createActions({
             submitId: 'submitCancelWildEncounterOccurrence',

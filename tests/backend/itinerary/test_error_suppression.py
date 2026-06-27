@@ -34,7 +34,7 @@ def test_suppress_short_visit_warning_skips_confirmation_prompt(
    assert result.success
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '16:30'
+   assert itinerary.arrival_time == '4:30 PM'
 
 
 def test_suppress_short_visit_warning_persists_in_itinerary_config(

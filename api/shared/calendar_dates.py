@@ -79,7 +79,10 @@ class DateValues:
       if parsed_time == None:
          return None
 
-      return parsed_time.strftime( '%I:%M %p' ).lstrip( '0' )
+      if parsed_time.second == 0:
+         return parsed_time.strftime( '%I:%M %p' ).lstrip( '0' )
+
+      return parsed_time.strftime( '%I:%M:%S %p' ).lstrip( '0' )
 
 
    @staticmethod
@@ -137,21 +140,29 @@ class DateValues:
       minutes = ( total_seconds % 3600 ) // 60
       seconds = total_seconds % 60
 
-      if seconds == 0:
-         return time( hour=hours, minute=minutes ).strftime( '%H:%M' )
-
-      return time(
+      time_value = time(
          hour=hours,
          minute=minutes,
-         second=seconds ).strftime( '%H:%M:%S' )
+         second=seconds )
+      formatted = DateValues.format_display_time_value( time_value )
+
+      if formatted == None:
+         raise ValueError( f'Invalid schedule time seconds: { total_seconds }' )
+
+      return formatted
 
 
    @staticmethod
    def schedule_time_key_from_minutes( minutes: int ) -> str:
       hours = minutes // 60
       minute_value = minutes % 60
+      formatted = DateValues.format_display_time_value(
+         time( hour=hours, minute=minute_value ) )
 
-      return time( hour=hours, minute=minute_value ).strftime( '%H:%M' )
+      if formatted == None:
+         raise ValueError( f'Invalid schedule time minutes: { minutes }' )
+
+      return formatted
 
 
    @staticmethod
@@ -167,7 +178,8 @@ class DateValues:
          return None
 
       anchor = datetime.combine( date.today(), parsed_time )
-      return ( anchor + timedelta( minutes=duration ) ).time().strftime( '%H:%M' )
+      result_time = ( anchor + timedelta( minutes=duration ) ).time()
+      return DateValues.format_display_time_value( result_time )
 
 
    @staticmethod
@@ -250,14 +262,48 @@ class DateValues:
 
 
    @staticmethod
-   def normalize_itinerary_schedule_time( value: TimeInput ) -> str | None:
+   def normalize_schedule_time( value: TimeInput ) -> str | None:
       if value == None:
          return None
 
       try:
-         return DateValues.format_time_value( value )
+         return DateValues.format_display_time_value( value )
       except ValueError:
          return None
+
+
+   @staticmethod
+   def normalize_unique_schedule_times(
+         values: Sequence[ TimeInput ] ) -> list[ str ]:
+      unique_times: list[ str ] = []
+      seen_seconds: set[ int ] = set()
+
+      for value in values:
+         normalized_time = DateValues.normalize_schedule_time( value )
+         time_seconds = DateValues.time_value_in_seconds( normalized_time )
+
+         if (
+            normalized_time == None
+            or time_seconds == None
+            or time_seconds in seen_seconds
+         ):
+            continue
+
+         seen_seconds.add( time_seconds )
+         unique_times.append( normalized_time )
+
+      return unique_times
+
+
+   @staticmethod
+   def normalize_itinerary_schedule_time( value: TimeInput ) -> str | None:
+      return DateValues.normalize_schedule_time( value )
+
+
+   @staticmethod
+   def normalize_unique_itinerary_schedule_times(
+         values: Sequence[ TimeInput ] ) -> list[ str ]:
+      return DateValues.normalize_unique_schedule_times( values )
 
 
    @staticmethod

@@ -29,12 +29,12 @@ def test_set_itinerary_date_change_adjusts_arrival_when_early_admission_is_unava
    )
 
    assert result.success
-   assert result.itinerary.arrival_time == '09:30'
+   assert result.itinerary.arrival_time == '9:30 AM'
    assert [ adjustment.to_dict() for adjustment in result.adjustments ] == [
       {
          'type': 'arrivalTimeAdjusted',
          'field': 'arrivalTime',
-         'previous_value': '09:15',
+         'previous_value': '9:15 AM',
          'value': '09:30',
          'reason': 'arrivalOutsideAdmissionHours',
       },
@@ -65,12 +65,12 @@ def test_set_itinerary_date_change_adjusts_departure_when_close_time_is_earlier(
    )
 
    assert result.success
-   assert result.itinerary.departure_time == '18:00'
+   assert result.itinerary.departure_time == '6:00 PM'
    assert [ adjustment.to_dict() for adjustment in result.adjustments ] == [
       {
          'type': 'departureTimeAdjusted',
          'field': 'departureTime',
-         'previous_value': '18:30',
+         'previous_value': '6:30 PM',
          'value': '18:00',
          'reason': 'departureOutsideOperatingHours',
       },

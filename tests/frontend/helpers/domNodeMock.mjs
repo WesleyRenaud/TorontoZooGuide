@@ -166,7 +166,17 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
          }
       },
       addEventListener(eventName, handler) {
-         listeners[eventName] = handler;
+         const existingHandler = listeners[eventName];
+
+         if (!existingHandler) {
+            listeners[eventName] = handler;
+            return;
+         }
+
+         listeners[eventName] = (event) => {
+            existingHandler(event);
+            handler(event);
+         };
       },
       click() {
          const event = {

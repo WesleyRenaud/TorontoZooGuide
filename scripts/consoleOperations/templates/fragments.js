@@ -149,6 +149,31 @@ export function createSelectField({
    return fieldEl;
 }
 
+export function createScheduleTimesCheckboxField({
+   label,
+   inputId,
+   helpText = '',
+} = {}) {
+   const fieldEl = createFieldWrapper();
+   const labelEl = createLabel({
+      text: label,
+   });
+
+   const listEl = document.createElement('div');
+   listEl.id = inputId;
+   listEl.className = 'console-operations-schedule-times-list';
+
+   const placeholderEl = document.createElement('div');
+   placeholderEl.className = 'console-operations-schedule-times-placeholder';
+   placeholderEl.textContent = APP_STRINGS.placeholders.selectWildEncounterFirst;
+
+   listEl.appendChild(placeholderEl);
+   fieldEl.append(labelEl, listEl);
+   appendChild(fieldEl, createHelpText(helpText));
+
+   return fieldEl;
+}
+
 export function createSchedulePresetField({
    inputId,
    label = APP_STRINGS.labels.schedulePreset,
@@ -424,4 +449,37 @@ export function createStatus({
    statusEl.className = 'console-operations-status';
    statusEl.setAttribute('aria-live', 'polite');
    return statusEl;
+}
+
+export function createMultiTimeField({
+   label,
+   listId,
+   inputId,
+   placeholder,
+   helpText = '',
+} = {}) {
+   const fieldEl = createFieldWrapper();
+   const labelEl = createLabel({
+      text: label,
+      htmlFor: inputId,
+   });
+
+   const compositeEl = document.createElement('div');
+   compositeEl.className = 'console-operations-multi-time-field';
+
+   const listEl = document.createElement('div');
+   listEl.id = listId;
+   listEl.className = 'console-operations-multi-time-list';
+
+   const inputEl = createInput({
+      inputId,
+      className: 'console-operations-multi-time-input console-operations-datetime',
+      placeholder,
+   });
+
+   compositeEl.append(listEl, inputEl);
+   fieldEl.append(labelEl, compositeEl);
+   appendChild(fieldEl, createHelpText(helpText));
+
+   return fieldEl;
 }

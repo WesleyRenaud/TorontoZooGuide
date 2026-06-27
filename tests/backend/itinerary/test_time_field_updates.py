@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
+from itinerary.support import wild_encounter_key
+
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
@@ -24,20 +26,20 @@ def test_set_itinerary_arrival_and_departure_time_updates_only_requested_field(
    assert ItineraryCoordinator.set_arrival_time( '10:15 AM' ).success
    itinerary = ItineraryCoordinator.get_itinerary()
 
-   assert itinerary.arrival_time == '10:15'
-   assert itinerary.departure_time == '17:00'
+   assert itinerary.arrival_time == '10:15 AM'
+   assert itinerary.departure_time == '5:00 PM'
 
    assert ItineraryCoordinator.set_arrival_time( None ).success
    itinerary = ItineraryCoordinator.get_itinerary()
 
    assert itinerary.arrival_time is None
-   assert itinerary.departure_time == '17:00'
+   assert itinerary.departure_time == '5:00 PM'
 
    assert ItineraryCoordinator.set_arrival_time( '10:15 AM' ).success
    assert ItineraryCoordinator.set_departure_time( None ).success
    itinerary = ItineraryCoordinator.get_itinerary()
 
-   assert itinerary.arrival_time == '10:15'
+   assert itinerary.arrival_time == '10:15 AM'
    assert itinerary.departure_time is None
 
 
@@ -50,7 +52,7 @@ def test_set_itinerary_normalizes_display_format_schedule_times(
       wild_encounter_name='Grizzly Bear',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_time='1:00 PM',
+      encounter_times=[ '1:00 PM' ],
       monday=True,
       tuesday=False,
       wednesday=False,
@@ -66,7 +68,7 @@ def test_set_itinerary_normalizes_display_format_schedule_times(
       animals=[],
       attractions=[],
       guardians_talks=[],
-      wild_encounters=[ 'Grizzly Bear' ],
+      wild_encounters=[ wild_encounter_key( 'Grizzly Bear', start_time='13:00' ) ],
    ).success
 
    encounter_schedule = db.conn.execute(
@@ -76,6 +78,6 @@ def test_set_itinerary_normalizes_display_format_schedule_times(
       """ ).fetchone()
 
    assert dict( encounter_schedule ) == {
-      'START_TIME': '13:00',
-      'END_TIME': '13:45',
+      'START_TIME': '1:00 PM',
+      'END_TIME': '1:45 PM',
    }

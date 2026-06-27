@@ -248,6 +248,7 @@ const CONSOLE_OPERATION_REF_CONFIG = {
          includeDateRange: true,
          includeWeekdaySchedule: true,
          fieldSuffixes: {
+            timesListEl: 'Times',
             timeEl: 'Time',
             messageEl: 'Message',
          },
@@ -257,6 +258,9 @@ const CONSOLE_OPERATION_REF_CONFIG = {
       },
       endSchedule: {
          operationName: 'endWildEncounterSchedule',
+         fieldSuffixes: {
+            timesEl: 'Times',
+         },
          fieldIds: {
             wildEncounterEl: 'endWildEncounterScheduleName',
             endDateEl: 'endWildEncounterScheduleDate',
@@ -266,7 +270,7 @@ const CONSOLE_OPERATION_REF_CONFIG = {
          operationName: 'cancelWildEncounterOccurrence',
          fieldSuffixes: {
             dateEl: 'Date',
-            timeEl: 'Time',
+            timesEl: 'Times',
          },
          fieldIds: {
             wildEncounterEl: 'cancelWildEncounterOccurrenceName',

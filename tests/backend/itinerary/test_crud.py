@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import guardians_talk_save_entries
+from itinerary.support import guardians_talk_save_entries, wild_encounter_key
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -54,7 +54,7 @@ def test_set_get_and_clear_itinerary(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_time='14:00',
+      encounter_times=[ '14:00' ],
       monday=True,
       tuesday=False,
       wednesday=False,
@@ -72,7 +72,7 @@ def test_set_get_and_clear_itinerary(
       animals=[ { 'species': 'African Lion', 'exhibit': 'Africa Savanna' } ],
       attractions=[ 'Conservation Carousel' ],
       guardians_talks=guardians_talk_save_entries( 'African Lion' ),
-      wild_encounters=[ 'African Rainforest' ],
+      wild_encounters=[ wild_encounter_key( 'African Rainforest' ) ],
    ).success
 
    talk_schedule = db.conn.execute(
@@ -87,13 +87,13 @@ def test_set_get_and_clear_itinerary(
       """ ).fetchone()
 
    assert dict( talk_schedule ) == {
-      'START_TIME': '10:00',
-      'END_TIME': '10:30',
+      'START_TIME': '10:00 AM',
+      'END_TIME': '10:30 AM',
       'IS_DELETED': 0
    }
    assert dict( encounter_schedule ) == {
-      'START_TIME': '14:00',
-      'END_TIME': '14:45',
+      'START_TIME': '2:00 PM',
+      'END_TIME': '2:45 PM',
       'IS_DELETED': 0
    }
 
@@ -101,32 +101,32 @@ def test_set_get_and_clear_itinerary(
       talk='African Lion',
       location='Africa Savanna',
       date='2026-06-15',
-      time='10:00'
+      time='10:00 AM'
    )
    assert WildEncounterCoordinator.cancel_wild_encounter_occurrence(
       wild_encounter_name='African Rainforest',
       date='2026-06-15',
-      time='14:00'
+      encounter_times=[ '2:00 PM' ]
    )
 
    itinerary = ItineraryCoordinator.get_itinerary()
 
    assert itinerary.date == '2026-06-15'
-   assert itinerary.arrival_time == '09:30'
-   assert itinerary.departure_time == '17:00'
+   assert itinerary.arrival_time == '9:30 AM'
+   assert itinerary.departure_time == '5:00 PM'
    assert [ animal.species for animal in itinerary.animals ] == [ 'African Lion' ]
    assert [ attraction.name for attraction in itinerary.attractions ] == [ 'Conservation Carousel' ]
    assert [
       ( talk.name, talk.start_time, talk.end_time )
       for talk in itinerary.guardians_talks
    ] == [
-      ( 'African Lion', '10:00', '10:30' )
+      ( 'African Lion', '10:00 AM', '10:30 AM' )
    ]
    assert [
       ( encounter.name, encounter.start_time, encounter.end_time )
       for encounter in itinerary.wild_encounters
    ] == [
-      ( 'African Rainforest', '14:00', '14:45' )
+      ( 'African Rainforest', '2:00 PM', '2:45 PM' )
    ]
    itinerary_dict = itinerary.to_dict()
    assert itinerary_dict[ 'animals' ][ 0 ][ 'old_likelihood' ] is None

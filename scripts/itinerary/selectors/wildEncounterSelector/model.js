@@ -7,12 +7,21 @@ import {
    buildOccurrenceSubtitle,
 } from '../../scheduledOccurrencePresentation.js';
 import { buildScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
+import { WildEncounterScheduleItemKey } from './scheduleItemKey.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export function getWildEncounterName(row) {
    return typeof row?.name === 'string'
       ? row.name
       : '';
+}
+
+export function getWildEncounterKey(row) {
+   return WildEncounterScheduleItemKey.fromRow(row);
+}
+
+export function getWildEncounterId(row) {
+   return getWildEncounterKey(row).toWire();
 }
 
 export function formatWildEncounterSearchTitle(name) {
@@ -25,10 +34,6 @@ export function formatWildEncounterSearchTitle(name) {
 
 export function getWildEncounterSearchTitle(row) {
    return formatWildEncounterSearchTitle(getWildEncounterName(row));
-}
-
-export function getWildEncounterId(row) {
-   return getWildEncounterName(row).trim();
 }
 
 export function getWildEncounterMeetingSpot(row) {

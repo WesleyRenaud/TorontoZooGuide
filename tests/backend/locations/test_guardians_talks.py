@@ -55,23 +55,23 @@ def test_guardians_talk_schedule_and_cancellation(
    )
 
    talks = GuardiansCoordinator.get_guardians_talk_schedule( month='June', day=15, year=2026 )
-   assert any( talk.name == 'African Lion' and talk.start_time == '10:00' for talk in talks )
+   assert any( talk.name == 'African Lion' and talk.start_time == '10:00 AM' for talk in talks )
    talk = next(
       talk for talk in talks
-      if talk.name == 'African Lion' and talk.start_time == '10:00'
+      if talk.name == 'African Lion' and talk.start_time == '10:00 AM'
    )
    assert talk.maximum_duration == 30
-   assert talk.end_time == '10:30'
+   assert talk.end_time == '10:30 AM'
 
    assert GuardiansCoordinator.cancel_guardians_talk_occurrence(
       talk='African Lion',
       location='Africa Savanna',
       date='2026-06-15',
-      time='10:00'
+      time='10:00 AM'
    )
    talks_after_cancel = GuardiansCoordinator.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
-   assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00' ) for talk in talks_after_cancel )
+   assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00 AM' ) for talk in talks_after_cancel )
 
    assert GuardiansCoordinator.get_guardians_talk_schedule( month='June', day=16, year=2026 ) == []
 
@@ -105,11 +105,11 @@ def test_guardians_talk_schedule_supports_different_weekday_times(
       year=2026 )
 
    assert any(
-      talk.name == 'African Lion' and talk.start_time == '13:00'
+      talk.name == 'African Lion' and talk.start_time == '1:00 PM'
       for talk in wednesday_talks
    )
    assert any(
-      talk.name == 'African Lion' and talk.start_time == '14:00'
+      talk.name == 'African Lion' and talk.start_time == '2:00 PM'
       for talk in thursday_talks
    )
 
@@ -136,7 +136,7 @@ def test_guardians_talk_occurrences_cover_all_weekdays_and_cancellations(
       talk='African Lion',
       location='Africa Savanna',
       date='2026-06-18',
-      time='10:00'
+      time='10:00 AM'
    )
 
    occurrences = GuardiansCoordinator.get_guardians_talk_occurrences(

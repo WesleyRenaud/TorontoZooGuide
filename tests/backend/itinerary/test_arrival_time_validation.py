@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, set_wild_encounter_schedule, WILD_ENCOUNTER
+from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_itinerary_date
@@ -85,7 +85,7 @@ def test_set_arrival_time_succeeds_when_departure_is_unset(
    assert ItineraryCoordinator.set_arrival_time( '10:15' ).success
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '10:15'
+   assert itinerary.arrival_time == '10:15 AM'
    assert itinerary.departure_time is None
 
 
@@ -104,17 +104,17 @@ def test_set_arrival_time_unschedules_items_before_arrival(
       wild_encounters=[],
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='10:00',
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=CHEETAH_KEY,
       start_time='10:30',
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
       start_time='10:10',
@@ -138,7 +138,7 @@ def test_set_arrival_time_unschedules_items_before_arrival(
             end_time='10:10',
          ),
       ],
-      wild_encounters=[ WILD_ENCOUNTER ],
+      wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER, start_time='09:45' ) ],
       confirming_wild_encounter_unschedule=True,
    ).success
 
@@ -176,7 +176,7 @@ def test_set_arrival_time_unschedules_generic_event_before_arrival(
       wild_encounters=[],
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type=ItineraryEventType.LUNCH.value,
       key='',
    ).success

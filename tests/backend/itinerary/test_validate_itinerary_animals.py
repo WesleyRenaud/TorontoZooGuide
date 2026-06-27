@@ -129,8 +129,8 @@ def test_itinerary_animal_save_carryover_matches_species_exhibit_case_insensitiv
             exhibit='Africa Savanna',
             old_likelihood=None,
             new_likelihood=100,
-            start_time='14:30',
-            end_time='14:45',
+            start_time='2:30 PM',
+            end_time='2:45 PM',
          ),
       ],
       ItineraryAnimalInput(
@@ -139,5 +139,5 @@ def test_itinerary_animal_save_carryover_matches_species_exhibit_case_insensitiv
       old_visit_date='2026-06-15',
    )
 
-   assert carryover.start_time == '14:30'
-   assert carryover.end_time == '14:45'
+   assert carryover.start_time == '2:30 PM'
+   assert carryover.end_time == '2:45 PM'

@@ -35,13 +35,16 @@ def schedule_guardians_talk_for_itinerary(
 
 def schedule_wild_encounter_for_itinerary(
       name: str,
-      encounter: WildEncounter | None ) -> WildEncounterDiff:
+      encounter: WildEncounter | None,
+      *,
+      start_time_override: ScheduleTimeKey = None,
+      end_time_override: ScheduleTimeKey = None ) -> WildEncounterDiff:
    if encounter is None:
       return WildEncounterDiff(
          name=name,
          is_deleted=True,
-         start_time=None,
-         end_time=None )
+         start_time=start_time_override,
+         end_time=end_time_override )
 
    scheduled_end_time = DateValues.add_minutes_to_time(
       encounter.start_time,
@@ -50,7 +53,7 @@ def schedule_wild_encounter_for_itinerary(
    return WildEncounterDiff(
       name=name,
       is_deleted=not encounter.is_available,
-      start_time=encounter.start_time,
-      end_time=scheduled_end_time,
+      start_time=start_time_override or encounter.start_time,
+      end_time=end_time_override or scheduled_end_time,
       meeting_spot=encounter.meeting_spot,
       link=encounter.link )

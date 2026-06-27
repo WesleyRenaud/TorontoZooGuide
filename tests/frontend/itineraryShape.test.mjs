@@ -154,7 +154,7 @@ test('toSetItineraryPayload sends canonical shapes for the save API', () => {
       ],
       attractions: [{ name: 'Conservation Carousel' }, 'Greenhouse'],
       guardiansTalks: [{ name: 'African Lion', type: 'guardiansTalk' }],
-      wildEncounters: [{ name: 'African Rainforest' }],
+      wildEncounters: [{ name: 'African Rainforest', start_time: '14:00' }],
    }), {
       date: '2026-06-15',
       arrivalTime: '',
@@ -168,8 +168,19 @@ test('toSetItineraryPayload sends canonical shapes for the save API', () => {
          start_time: null,
          end_time: null,
       }],
-      wildEncounters: ['African Rainforest'],
+      wildEncounters: ['African Rainforest||14:00'],
    });
+});
+
+test('toSetItineraryPayload serializes wild encounters as wire strings', () => {
+   assert.deepEqual(toSetItineraryPayload({
+      date: '2026-06-15',
+      wildEncounters: [{
+         name: 'Kangaroo',
+         start_time: '13:00',
+         end_time: '13:45',
+      }],
+   }).wildEncounters, ['Kangaroo||13:00||13:45']);
 });
 
 test('toSetItineraryPayload keeps schedule times when provided', () => {
@@ -184,7 +195,10 @@ test('toSetItineraryPayload keeps schedule times when provided', () => {
          start_time: '13:45',
          end_time: '14:00',
       }],
-      wildEncounters: ['Grizzly Bear'],
+      wildEncounters: [{
+         name: 'Grizzly Bear',
+         start_time: '13:00',
+      }],
    }), {
       date: '2026-06-15',
       arrivalTime: '09:30',
@@ -196,6 +210,6 @@ test('toSetItineraryPayload keeps schedule times when provided', () => {
          start_time: '13:45',
          end_time: '14:00',
       }],
-      wildEncounters: ['Grizzly Bear'],
+      wildEncounters: ['Grizzly Bear||13:00'],
    });
 });

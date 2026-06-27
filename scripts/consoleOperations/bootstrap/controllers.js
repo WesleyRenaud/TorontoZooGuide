@@ -34,6 +34,7 @@ import { createCancelWildEncounterOccurrenceController } from '../wildEncounters
 import { createEndWildEncounterScheduleController } from '../wildEncounters/controllers/endWildEncounterSchedule.js';
 import { createWildEncounterOccurrenceFilterController } from '../wildEncounters/controllers/wildEncounterOccurrenceFilter.js';
 import { createWildEncounterScheduleController } from '../wildEncounters/controllers/wildEncounterSchedule.js';
+import { createWildEncounterScheduleTimesFilterController } from '../wildEncounters/controllers/wildEncounterScheduleTimesFilter.js';
 import { createZoomobileRouteController } from '../zoomobile/controllers/zoomobileRoute.js';
 import { createZoomobileStationClosedController } from '../zoomobile/controllers/zoomobileStationClosed.js';
 import { createZoomobileStationOpenController } from '../zoomobile/controllers/zoomobileStationOpen.js';
@@ -176,6 +177,9 @@ const CONTROLLER_BINDINGS = [
    {
       createController: createEndWildEncounterScheduleController,
       getRefs: refs => refs.wildEncounters.endSchedule,
+      getExtraOptions: ({ wildEncounterScheduleTimesFilterController }) => ({
+         scheduleTimesFilterController: wildEncounterScheduleTimesFilterController,
+      }),
    },
    {
       createController: createCancelWildEncounterOccurrenceController,
@@ -276,7 +280,12 @@ export function createConsoleSpecialControllers({ guardiansTalks, wildEncounters
          createWildEncounterOccurrenceFilterController({
             wildEncounterEl: wildEncounters.cancelOccurrence.wildEncounterEl,
             dateEl: wildEncounters.cancelOccurrence.dateEl,
-            timeEl: wildEncounters.cancelOccurrence.timeEl,
+            timesEl: wildEncounters.cancelOccurrence.timesEl,
+         }),
+      wildEncounterScheduleTimesFilterController:
+         createWildEncounterScheduleTimesFilterController({
+            wildEncounterEl: wildEncounters.endSchedule.wildEncounterEl,
+            timesEl: wildEncounters.endSchedule.timesEl,
          }),
    };
 }
@@ -289,6 +298,7 @@ export function wireConsoleOperationControllers({
    cancelGuardiansTalkOccurrenceLocationFilterController,
    cancelGuardiansTalkOccurrenceFilterController,
    wildEncounterOccurrenceFilterController,
+   wildEncounterScheduleTimesFilterController,
 }) {
    initAnimalSpeciesAutocompletes(refs.animals);
 
@@ -301,6 +311,7 @@ export function wireConsoleOperationControllers({
          cancelGuardiansTalkOccurrenceLocationFilterController,
          cancelGuardiansTalkOccurrenceFilterController,
          wildEncounterOccurrenceFilterController,
+         wildEncounterScheduleTimesFilterController,
       },
    });
 }

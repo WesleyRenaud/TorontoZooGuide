@@ -47,8 +47,8 @@ def test_set_get_and_clear_itinerary_via_http(
    assert status == 200
    itinerary = get_response[ 'itinerary' ]
    assert itinerary[ 'date' ] == '2026-06-15'
-   assert itinerary[ 'arrival_time' ] == '09:30'
-   assert itinerary[ 'departure_time' ] == '17:00'
+   assert itinerary[ 'arrival_time' ] == '9:30 AM'
+   assert itinerary[ 'departure_time' ] == '5:00 PM'
    assert _find_animal(
       itinerary,
       species='African Lion',
@@ -107,7 +107,7 @@ def test_schedule_and_unschedule_animal_via_http(
       species='African Lion',
       exhibit='Africa Savanna',
    )
-   assert scheduled_lion[ 'start_time' ] == '14:00'
+   assert scheduled_lion[ 'start_time' ] == '2:00 PM'
    assert scheduled_lion[ 'end_time' ] is not None
 
    status, unschedule_response = post_route(
@@ -185,8 +185,8 @@ def test_unschedule_all_itinerary_items_via_http(
 
    assert lion[ 'start_time' ] is None
    assert lion[ 'end_time' ] is None
-   assert itinerary[ 'arrival_time' ] == '09:30'
-   assert itinerary[ 'departure_time' ] == '17:00'
+   assert itinerary[ 'arrival_time' ] == '9:30 AM'
+   assert itinerary[ 'departure_time' ] == '5:00 PM'
    assert [ attraction[ 'name' ] for attraction in itinerary[ 'attractions' ] ] == [
       CAROUSEL,
    ]
@@ -220,12 +220,12 @@ def test_set_arrival_time_via_http(
 
    assert status == 200
    assert arrival_response[ 'status' ] == 'success'
-   assert arrival_response[ 'arrivalTime' ] == '09:45'
+   assert arrival_response[ 'itinerary' ][ 'arrival_time' ] == '9:45 AM'
 
    status, get_response = post_route( '/get-itinerary', {} )
 
    assert status == 200
-   assert get_response[ 'itinerary' ][ 'arrival_time' ] == '09:45'
+   assert get_response[ 'itinerary' ][ 'arrival_time' ] == '9:45 AM'
 
 
 def test_remove_item_from_itinerary_via_http(
@@ -303,12 +303,12 @@ def test_date_change_adjusts_arrival_time_via_http(
    assert status == 200
    assert date_change_response[ 'status' ] == 'success'
    assert date_change_response[ 'itinerary' ][ 'date' ] == '2026-06-22'
-   assert date_change_response[ 'itinerary' ][ 'arrival_time' ] == '09:30'
+   assert date_change_response[ 'itinerary' ][ 'arrival_time' ] == '9:30 AM'
    assert date_change_response[ 'adjustments' ] == [
       {
          'type': 'arrivalTimeAdjusted',
          'field': 'arrivalTime',
-         'previous_value': '09:15',
+         'previous_value': '9:15 AM',
          'value': '09:30',
          'reason': 'arrivalOutsideAdmissionHours',
       },
@@ -355,10 +355,10 @@ def test_bulk_schedule_animals_via_http(
       exhibit='Africa Savanna',
    )
 
-   assert cheetah[ 'start_time' ] == '09:30'
-   assert lion[ 'start_time' ] == '09:35'
-   assert cheetah[ 'end_time' ] == '09:35'
-   assert lion[ 'end_time' ] == '09:43'
+   assert cheetah[ 'start_time' ] == '9:30 AM'
+   assert lion[ 'start_time' ] == '9:35 AM'
+   assert cheetah[ 'end_time' ] == '9:35 AM'
+   assert lion[ 'end_time' ] == '9:43 AM'
 
 
 def test_set_departure_time_via_http(
@@ -390,12 +390,12 @@ def test_set_departure_time_via_http(
 
    assert status == 200
    assert departure_response[ 'status' ] == 'success'
-   assert departure_response[ 'departureTime' ] == '16:30'
+   assert departure_response[ 'itinerary' ][ 'departure_time' ] == '4:30 PM'
 
    status, get_response = post_route( '/get-itinerary', {} )
 
    assert status == 200
-   assert get_response[ 'itinerary' ][ 'departure_time' ] == '16:30'
+   assert get_response[ 'itinerary' ][ 'departure_time' ] == '4:30 PM'
 
 
 def test_accept_itinerary_via_http(

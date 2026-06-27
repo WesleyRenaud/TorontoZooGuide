@@ -46,6 +46,7 @@ export const labels = {
    departure: 'Departure',
    description: 'Description',
    encounterTime: 'Encounter time',
+   encounterTimes: 'Encounter times',
    endDate: 'End date',
    location: 'Location',
    message: 'Message',

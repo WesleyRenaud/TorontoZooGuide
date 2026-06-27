@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, set_wild_encounter_schedule, WILD_ENCOUNTER
+from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_itinerary_date
@@ -60,17 +60,17 @@ def test_set_departure_time_unschedules_items_after_departure(
       wild_encounters=[],
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='15:45',
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=CHEETAH_KEY,
       start_time='16:30',
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
       start_time='15:54',
@@ -94,7 +94,7 @@ def test_set_departure_time_unschedules_items_after_departure(
             end_time='16:45',
          ),
       ],
-      wild_encounters=[ WILD_ENCOUNTER ],
+      wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER, start_time='16:30' ) ],
       confirming_wild_encounter_unschedule=True,
    ).success
 
@@ -107,7 +107,7 @@ def test_set_departure_time_unschedules_items_after_departure(
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals
    ] == [
-      ( 'African Lion', '15:45', '15:53' ),
+      ( 'African Lion', '3:45 PM', '3:53 PM' ),
       ( 'Cheetah', None, None ),
    ]
    assert itinerary.attractions[ 0 ].name == CAROUSEL
@@ -129,7 +129,7 @@ def test_set_departure_time_unschedules_generic_event_after_departure(
       wild_encounters=[],
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type=ItineraryEventType.LUNCH.value,
       key='',
       start_time='16:00',

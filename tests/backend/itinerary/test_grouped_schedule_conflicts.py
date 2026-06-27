@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import guardians_talk_save_entries
+from itinerary.support import guardians_talk_save_entries, wild_encounter_keys
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -29,7 +29,7 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_time='13:00',
+      encounter_times=[ '13:00' ],
       monday=True,
       tuesday=False,
       wednesday=False,
@@ -43,7 +43,7 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
       wild_encounter_name='Kangaroo',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_time='13:00',
+      encounter_times=[ '13:00' ],
       monday=True,
       tuesday=False,
       wednesday=False,
@@ -59,7 +59,10 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
       animals=[],
       attractions=[],
       guardians_talks=guardians_talk_save_entries( 'African Lion' ),
-      wild_encounters=[ 'African Rainforest', 'Kangaroo' ],
+      wild_encounters=wild_encounter_keys(
+         'African Rainforest',
+         'Kangaroo',
+         start_time='13:00' ),
    )
 
    assert not result.success

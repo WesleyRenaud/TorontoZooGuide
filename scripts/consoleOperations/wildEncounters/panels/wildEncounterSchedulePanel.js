@@ -2,8 +2,8 @@ import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createCheckboxGridField,
-   createDateField,
    createDateRangeFields,
+   createMultiTimeField,
    createPanelShell,
    createSelectField,
    createStatus,
@@ -37,10 +37,12 @@ export function createWildEncounterSchedulePanel() {
                { id: 'wildEncounterScheduleSunday', label: APP_STRINGS.schedule.dayLabels.sunday },
             ],
          }),
-         createDateField({
-            label: APP_STRINGS.labels.encounterTime,
+         createMultiTimeField({
+            label: APP_STRINGS.labels.encounterTimes,
+            listId: 'wildEncounterScheduleTimes',
             inputId: 'wildEncounterScheduleTime',
             placeholder: APP_STRINGS.placeholders.scheduledTime('an encounter'),
+            helpText: APP_STRINGS.help.encounterTimesAddOneAtATime,
          }),
          createTextareaField({
             label: APP_STRINGS.labels.scheduleMessage,

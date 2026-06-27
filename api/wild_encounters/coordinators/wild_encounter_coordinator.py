@@ -5,8 +5,9 @@ from ..data_access.wild_encounter import fetch_wild_encounter_names
 from ..data_access.wild_encounter import fetch_wild_encounter_records
 from ..data_access.wild_encounter_cancellation import save_wild_encounter_cancellation
 from ..data_access.wild_encounter_schedule import fetch_wild_encounter_cancellation_records
-from ..data_access.wild_encounter_schedule import fetch_wild_encounter_schedule_record_for_occurrences
 from ..data_access.wild_encounter_schedule import fetch_wild_encounter_schedule_records
+from ..data_access.wild_encounter_schedule import fetch_wild_encounter_schedule_records_for_occurrences
+from ..data_access.wild_encounter_schedule import fetch_wild_encounter_schedule_times
 from ..data_access.wild_encounter_schedule import save_wild_encounter_schedule
 from ..data_access.wild_encounter_schedule import save_wild_encounter_schedule_end
 from ..domain.wild_encounter import build_wild_encounter_details
@@ -19,10 +20,11 @@ from ..scheduling.wild_encounter_occurrences import build_wild_encounter_occurre
 from ..scheduling.wild_encounter_schedule import build_wild_encounter_schedule_for_target_date
 from ..scheduling.wild_encounter_schedule import filter_available_wild_encounters
 from ..scheduling.wild_encounter_schedule import find_wild_encounter_on_day_schedule
+from ..scheduling.wild_encounter_schedule_ending import build_wild_encounter_schedule_end
 from ..scheduling.wild_encounter_schedule_status import build_wild_encounter_schedule
-from ..scheduling.wild_encounter_schedule_status import build_wild_encounter_schedule_end
 from ..search.wild_encounters_matching_query import build_wild_encounters_matching_query
 from ...shared.calendar_dates import CalendarDates
+from ...shared.calendar_dates import DateValues
 from ...types import DateInput, DateKey, MonthInput, VisitDay, VisitYear
 
 
@@ -37,7 +39,7 @@ class WildEncounterCoordinator():
          cls,
          wild_encounter_name: str,
          days_ahead: int = 60 ) -> list[ ScheduledOccurrence ]:
-      schedule_record = fetch_wild_encounter_schedule_record_for_occurrences(
+      schedule_records = fetch_wild_encounter_schedule_records_for_occurrences(
          get_connection(),
          wild_encounter=wild_encounter_name )
       cancellation_records = fetch_wild_encounter_cancellation_records(
@@ -45,7 +47,7 @@ class WildEncounterCoordinator():
          wild_encounter=wild_encounter_name )
 
       return build_wild_encounter_occurrences(
-         schedule_record=schedule_record,
+         schedule_records=schedule_records,
          cancellation_records=cancellation_records,
          days_ahead=days_ahead )
 
@@ -67,7 +69,7 @@ class WildEncounterCoordinator():
          wild_encounter_name: str,
          start_date: DateInput,
          end_date: DateInput,
-         encounter_time: str,
+         encounter_times: list[ str ],
          monday: bool,
          tuesday: bool,
          wednesday: bool,
@@ -76,37 +78,62 @@ class WildEncounterCoordinator():
          saturday: bool,
          sunday: bool,
          message: str ) -> bool:
-      schedule = build_wild_encounter_schedule(
-         wild_encounter=wild_encounter_name,
-         start_date=start_date,
-         end_date=end_date,
-         encounter_time=encounter_time,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         message=message )
+      for encounter_time in DateValues.normalize_unique_schedule_times(
+            encounter_times ):
+         schedule = build_wild_encounter_schedule(
+            wild_encounter=wild_encounter_name,
+            start_date=start_date,
+            end_date=end_date,
+            encounter_time=encounter_time,
+            monday=monday,
+            tuesday=tuesday,
+            wednesday=wednesday,
+            thursday=thursday,
+            friday=friday,
+            saturday=saturday,
+            sunday=sunday,
+            message=message )
 
-      return save_wild_encounter_schedule(
+         if not save_wild_encounter_schedule(
+               get_connection(),
+               schedule=schedule ):
+            return False
+
+      return True
+
+
+   @classmethod
+   def get_wild_encounter_schedule_times(
+         cls,
+         wild_encounter_name: str ) -> list[ str ]:
+      schedule_times = fetch_wild_encounter_schedule_times(
          get_connection(),
-         schedule=schedule )
+         wild_encounter=wild_encounter_name )
+
+      return sorted(
+         schedule_times,
+         key=DateValues.time_value_in_seconds )
 
 
    @classmethod
    def end_wild_encounter_schedule(
          cls,
          wild_encounter_name: str,
-         schedule_end_date: DateInput ) -> bool:
-      schedule_end = build_wild_encounter_schedule_end(
-         wild_encounter=wild_encounter_name,
-         schedule_end_date=schedule_end_date )
+         schedule_end_date: DateInput,
+         encounter_times: list[ str ] ) -> bool:
+      for encounter_time in DateValues.normalize_unique_schedule_times(
+            encounter_times ):
+         schedule_end = build_wild_encounter_schedule_end(
+            wild_encounter=wild_encounter_name,
+            schedule_end_date=schedule_end_date,
+            encounter_time=encounter_time )
 
-      return save_wild_encounter_schedule_end(
-         get_connection(),
-         schedule_end=schedule_end )
+         if not save_wild_encounter_schedule_end(
+               get_connection(),
+               schedule_end=schedule_end ):
+            return False
+
+      return True
 
 
    @classmethod
@@ -114,15 +141,20 @@ class WildEncounterCoordinator():
          cls,
          wild_encounter_name: str,
          date: DateKey,
-         time: str ) -> bool:
-      cancellation = build_wild_encounter_cancellation(
-         wild_encounter=wild_encounter_name,
-         date=date,
-         time=time )
+         encounter_times: list[ str ] ) -> bool:
+      for encounter_time in DateValues.normalize_unique_schedule_times(
+            encounter_times ):
+         cancellation = build_wild_encounter_cancellation(
+            wild_encounter=wild_encounter_name,
+            date=date,
+            time=encounter_time )
 
-      return save_wild_encounter_cancellation(
-         get_connection(),
-         cancellation=cancellation )
+         if not save_wild_encounter_cancellation(
+               get_connection(),
+               cancellation=cancellation ):
+            return False
+
+      return True
 
 
    @classmethod
@@ -172,6 +204,8 @@ class WildEncounterCoordinator():
          day: VisitDay,
          encounter_name: str,
          year: VisitYear,
+         *,
+         start_time: str,
          day_schedule: list[ WildEncounter ] | None = None ) -> WildEncounter | None:
       rows = (
          day_schedule
@@ -184,7 +218,8 @@ class WildEncounterCoordinator():
 
       return find_wild_encounter_on_day_schedule(
          rows,
-         encounter_name )
+         encounter_name,
+         start_time=start_time )
 
 
    @classmethod

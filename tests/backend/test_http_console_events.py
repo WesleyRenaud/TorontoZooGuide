@@ -79,7 +79,7 @@ import pytest
             'talk': 'African Lion',
             'location': 'Africa Savanna',
             'date': '2026-06-15',
-            'time': '10:00'
+            'time': '10:00 AM'
          },
          (
             'cancel_guardians_talk_occurrence',
@@ -87,14 +87,14 @@ import pytest
                'talk': 'African Lion',
                'location': 'Africa Savanna',
                'date': '2026-06-15',
-               'time': '10:00'
+               'time': '10:00 AM'
             }
          ),
          {
             'talk': 'African Lion',
             'location': 'Africa Savanna',
             'date': '2026-06-15',
-            'time': '10:00'
+            'time': '10:00 AM'
          }
       ),
       (
@@ -103,7 +103,7 @@ import pytest
             'wildEncounter': 'African Rainforest',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
-            'time': '14:00',
+            'times': [ '14:00', '15:30' ],
             'monday': True,
             'tuesday': False,
             'wednesday': True,
@@ -119,7 +119,7 @@ import pytest
                'wild_encounter_name': 'African Rainforest',
                'start_date': '2026-06-01',
                'end_date': '2026-06-30',
-               'encounter_time': '14:00',
+               'encounter_times': [ '14:00', '15:30' ],
                'monday': True,
                'tuesday': False,
                'wednesday': True,
@@ -134,25 +134,28 @@ import pytest
             'wildEncounter': 'African Rainforest',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
-            'time': '14:00'
+            'times': [ '14:00', '15:30' ]
          }
       ),
       (
          '/end-wild-encounter-schedule',
          {
             'wildEncounter': 'African Rainforest',
-            'endDate': '2026-06-30'
+            'endDate': '2026-06-30',
+            'times': [ '14:00' ],
          },
          (
             'end_wild_encounter_schedule',
             {
                'wild_encounter_name': 'African Rainforest',
-               'schedule_end_date': '2026-06-30'
+               'schedule_end_date': '2026-06-30',
+               'encounter_times': [ '14:00' ],
             }
          ),
          {
             'wildEncounter': 'African Rainforest',
-            'endDate': '2026-06-30'
+            'endDate': '2026-06-30',
+            'times': [ '14:00' ],
          }
       ),
       (
@@ -160,20 +163,20 @@ import pytest
          {
             'wildEncounter': 'African Rainforest',
             'date': '2026-06-15',
-            'time': '14:00'
+            'times': [ '2:00 PM' ],
          },
          (
             'cancel_wild_encounter_occurrence',
             {
                'wild_encounter_name': 'African Rainforest',
                'date': '2026-06-15',
-               'time': '14:00'
+               'encounter_times': [ '2:00 PM' ],
             }
          ),
          {
             'wildEncounter': 'African Rainforest',
             'date': '2026-06-15',
-            'time': '14:00'
+            'times': [ '2:00 PM' ],
          }
       ),
    ]
@@ -198,9 +201,9 @@ def test_console_mutation_maps_payload_and_success_response(
          {
             'wildEncounter': 'African Rainforest',
             'date': '2026-06-15',
-            'time': '14:00'
+            'times': [ '2:00 PM' ],
          },
-         'Could not cancel "African Rainforest" on 2026-06-15 at 14:00.'
+         'Could not cancel "African Rainforest" on 2026-06-15.'
       ),
    ]
 )

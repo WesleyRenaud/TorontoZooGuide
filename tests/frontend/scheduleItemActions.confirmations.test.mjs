@@ -266,7 +266,7 @@ test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter'
          wildEncounters: [{ name: 'African Rainforest' }],
       },
       'wild_encounters',
-      { name: 'African Rainforest', scheduleItemKind: 'wild_encounters' },
+      { name: 'African Rainforest', start_time: '14:00', scheduleItemKind: 'wild_encounters' },
       []
    );
 
