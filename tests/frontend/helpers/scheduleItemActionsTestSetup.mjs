@@ -1,5 +1,7 @@
 import { updateItineraryErrorTypesFromConfig } from '../../../scripts/itinerary/itineraryErrorTypes.js';
 import { installDomTestHooks } from './domTestSetup.mjs';
+import { mockJsonResponse } from './fetchMock.mjs';
+import { createLocalStorageMock } from './localStorageMock.mjs';
 
 export const MOCK_ERROR_TYPES = Object.freeze({
    SUCCESS: 'success',
@@ -13,18 +15,50 @@ export const MOCK_ERROR_TYPES = Object.freeze({
    UNSCHEDULE_ALL_NOTHING_SCHEDULED: 'unscheduleAllNothingScheduled',
 });
 
-export { mockJsonResponse } from './fetchMock.mjs';
+export { mockJsonResponse };
+
+export function mockScheduleItemFetch({
+   serverDate = '2026-06-15',
+   routes = {},
+} = {}) {
+   return async (url, options = {}) => {
+      if (url === '/get-itinerary-date') {
+         return mockJsonResponse({ date: serverDate });
+      }
+
+      const handler = routes[url];
+
+      if (typeof handler === 'function') {
+         return mockJsonResponse(await handler(url, options));
+      }
+
+      if (handler !== undefined) {
+         return mockJsonResponse(handler);
+      }
+
+      return mockJsonResponse({ status: 'success', reasons: [] });
+   };
+}
 
 export function installScheduleItemActionsTestHooks() {
    installDomTestHooks({
       before: () => {
+         globalThis.localStorage = createLocalStorageMock();
+         globalThis.CustomEvent = class CustomEvent {
+            constructor(type, options = {}) {
+               this.type = type;
+               this.detail = options.detail;
+            }
+         };
          updateItineraryErrorTypesFromConfig({
             errorTypes: MOCK_ERROR_TYPES,
             suppressedErrorTypes: [],
          });
       },
       after: () => {
+         delete globalThis.CustomEvent;
          delete globalThis.fetch;
+         delete globalThis.localStorage;
       },
    });
 }
