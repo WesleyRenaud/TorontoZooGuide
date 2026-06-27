@@ -4,8 +4,8 @@ from typing import Any
 
 from ...data_access.saved_itinerary import SavedItinerary
 from .listed_schedule_target import apply_listed_schedule
-from .parse_schedule_item_request import ParsedScheduleItemRequest
 from ...results.itinerary_save_result import ItinerarySaveResult
+from .schedule_item_key import ListedScheduleItemKey
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
 from .schedule_itinerary_helpers import persist_itinerary_walk_route
@@ -18,7 +18,7 @@ from ...warnings.schedule_item_not_on_itinerary_warning import schedule_item_not
 def prepare_schedule_item_on_itinerary(
       conn: Connection,
       saved_itinerary: SavedItinerary,
-      parsed: ParsedScheduleItemRequest,
+      schedule_item_key: ListedScheduleItemKey,
       *,
       itinerary_context: dict[ str, Any ],
       confirming_schedule_item_not_on_itinerary: bool,
@@ -28,7 +28,7 @@ def prepare_schedule_item_on_itinerary(
    if schedule_item_not_on_itinerary_warning_is_required(
          conn,
          saved_itinerary,
-         parsed,
+         schedule_item_key,
          confirming_schedule_item_not_on_itinerary=(
             confirming_schedule_item_not_on_itinerary
          ),
@@ -49,7 +49,7 @@ def prepare_schedule_item_on_itinerary(
 def commit_listed_schedule(
       conn: Connection,
       *,
-      parsed: ParsedScheduleItemRequest,
+      schedule_item_key: ListedScheduleItemKey,
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey,
       insert_if_missing: bool,
@@ -59,7 +59,7 @@ def commit_listed_schedule(
    try:
       scheduled = apply_listed_schedule(
          cur,
-         parsed,
+         schedule_item_key,
          start_time,
          end_time,
          insert_if_missing )

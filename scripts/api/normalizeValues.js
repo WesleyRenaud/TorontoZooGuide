@@ -14,6 +14,12 @@ export function asTrimmedString(value) {
       : '';
 }
 
+export function asTrimmedStringList(values) {
+   return asArray(values)
+      .map((value) => String(value ?? '').trim())
+      .filter(Boolean);
+}
+
 export function asNullableString(value) {
    const stringValue = asTrimmedString(value);
    return stringValue || null;

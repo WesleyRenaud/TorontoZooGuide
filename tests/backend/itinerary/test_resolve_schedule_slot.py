@@ -15,7 +15,7 @@ def test_resolve_schedule_slot_uses_anchor_when_start_time_is_unset() -> None:
       duration_seconds=DURATION_SECONDS,
       day_end_seconds=DAY_END_SECONDS )
 
-   assert slot == ( '09:30', '09:38' )
+   assert slot == ( '9:30 AM', '9:38 AM' )
 
 
 def test_resolve_schedule_slot_honors_requested_start_time() -> None:
@@ -32,7 +32,7 @@ def test_resolve_schedule_slot_honors_requested_start_time() -> None:
       day_end_seconds=DAY_END_SECONDS,
       start_time='10:00' )
 
-   assert slot == ( '10:00', '10:08' )
+   assert slot == ( '10:00 AM', '10:08 AM' )
 
 
 def test_resolve_schedule_slot_returns_none_when_requested_slot_overlaps() -> None:

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import CAROUSEL, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY
+from itinerary.support import CAROUSEL, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, schedule_itinerary_item
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
 from api.attractions.coordinators.attraction_coordinator import AttractionCoordinator
@@ -34,7 +34,7 @@ def test_reschedule_after_fixed_time_activity_only_reschedules_previously_schedu
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='10:00',
@@ -81,7 +81,7 @@ def test_bulk_schedule_schedules_unscheduled_animals_when_requested(
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='09:00',
@@ -117,15 +117,15 @@ def test_bulk_schedule_schedules_unscheduled_animals_clears_guest_scheduled_attr
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='attractions',
       key=CAROUSEL,
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item( 'lunch', '' ).success
+   assert schedule_itinerary_item( 'lunch', '' ).success
 
    result = ItineraryCoordinator.bulk_schedule_animals()
 

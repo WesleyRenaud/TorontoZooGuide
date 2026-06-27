@@ -1,18 +1,34 @@
 import { getWildEncounterOccurrences } from '../../../api/consoleOperationsApi.js';
+import {
+   resolveScheduleTimesListEl,
+   updateScheduleTimesCheckboxList,
+} from '../../forms/scheduleTimesCheckboxField.js';
 import { createOccurrenceFilterController } from '../../helpers/occurrenceFilterController.js';
 
 export function createWildEncounterOccurrenceFilterController({
    wildEncounterEl,
    dateEl,
-   timeEl,
+   timesEl,
 } = {}) {
    function getFieldValue(fieldEl) {
       return fieldEl?.value.trim() ?? '';
    }
 
+   function getTimesListEl() {
+      return resolveScheduleTimesListEl(timesEl);
+   }
+
+   function populateTimes(times = []) {
+      updateScheduleTimesCheckboxList(getTimesListEl(), {
+         times,
+         hasWildEncounter: Boolean(getFieldValue(wildEncounterEl)),
+         hasDate: Boolean(getFieldValue(dateEl)),
+      });
+   }
+
    return createOccurrenceFilterController({
       dateEl,
-      timeEl,
+      populateTimes,
       getSelectionValues: () => ({
          wildEncounter: getFieldValue(wildEncounterEl),
       }),

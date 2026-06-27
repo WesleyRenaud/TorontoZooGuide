@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from itinerary.support import wild_encounter_key
+
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.shared.enums import ItineraryErrorType
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -12,7 +14,7 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_time='14:00',
+      encounter_times=[ '14:00' ],
       monday=True,
       tuesday=False,
       wednesday=False,
@@ -26,7 +28,7 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       wild_encounter_name='Kangaroo',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_time='14:30',
+      encounter_times=[ '14:30' ],
       monday=True,
       tuesday=False,
       wednesday=False,
@@ -40,7 +42,7 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       wild_encounter_name='Capybara',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_time='16:00',
+      encounter_times=[ '16:00' ],
       monday=True,
       tuesday=False,
       wednesday=False,
@@ -57,9 +59,9 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       attractions=[ 'Conservation Carousel' ],
       guardians_talks=[],
       wild_encounters=[
-         'African Rainforest',
-         'Kangaroo',
-         'Capybara',
+         wild_encounter_key(  'African Rainforest', start_time='14:00'  ),
+         wild_encounter_key(  'Kangaroo', start_time='14:30'  ),
+         wild_encounter_key(  'Capybara', start_time='16:00'  ),
       ],
    )
 
@@ -71,8 +73,8 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
          'items': [
             {
                'name': 'African Rainforest',
-               'start_time': '14:00',
-               'end_time': '14:45',
+               'start_time': '2:00 PM',
+               'end_time': '2:45 PM',
                'item_type': 'wildEncounter',
                'meeting_spot': 'Wild Encounter - Africa Meeting Spot',
                'location': '',
@@ -80,8 +82,8 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
             },
             {
                'name': 'Kangaroo',
-               'start_time': '14:30',
-               'end_time': '15:15',
+               'start_time': '2:30 PM',
+               'end_time': '3:15 PM',
                'item_type': 'wildEncounter',
                'meeting_spot': 'Wild Encounter - Eurasia Meeting Spot',
                'location': '',

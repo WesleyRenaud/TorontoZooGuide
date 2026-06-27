@@ -5,7 +5,7 @@ const DATE_PICKER_OPTIONS = {
    dateFormat: 'Y-m-d',
 };
 
-const TIME_PICKER_OPTIONS = {
+export const CONSOLE_TIME_PICKER_OPTIONS = {
    enableTime: true,
    noCalendar: true,
    dateFormat: 'h:i K',
@@ -21,7 +21,7 @@ function initDatePicker(inputEl, options = {}, initFlatpickrFn = initFlatpickr) 
 
 export function initTimePicker(inputEl, options = {}, initFlatpickrFn = initFlatpickr) {
    return initFlatpickrFn(inputEl, {
-      ...TIME_PICKER_OPTIONS,
+      ...CONSOLE_TIME_PICKER_OPTIONS,
       ...options,
    });
 }

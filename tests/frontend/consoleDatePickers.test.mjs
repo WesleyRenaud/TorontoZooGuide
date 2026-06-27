@@ -17,8 +17,12 @@ function createFlatpickrSpy() {
          calls.push({ inputEl, options });
 
          return {
+            close() {},
             set(property, value) {
                this[property] = value;
+            },
+            setDate() {
+               inputEl.value = '';
             },
          };
       },

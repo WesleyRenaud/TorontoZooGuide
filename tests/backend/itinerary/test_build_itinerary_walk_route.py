@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import ANIMAL_KEY
+from itinerary.support import ANIMAL_KEY, schedule_itinerary_item, wild_encounter_key
 from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY
 from itinerary.support import LION_ITINERARY_ENTRY
 from itinerary.support import LION_KEY
@@ -25,7 +25,7 @@ def _set_rhino_encounter_schedule() -> None:
       wild_encounter_name='Guardians of White Rhinos',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_time='11:00',
+      encounter_times=[ '11:00' ],
       monday=False,
       tuesday=False,
       wednesday=False,
@@ -66,10 +66,10 @@ def test_order_itinerary_stops_for_walk_route_sorts_scheduled_stops_by_start_tim
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
       guardians_talks=[],
-      wild_encounters=[ 'Guardians of White Rhinos' ],
+      wild_encounters=[ wild_encounter_key( 'Guardians of White Rhinos', start_time='11:00' ) ],
       confirming_early_admission=True,
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='14:00',
@@ -113,7 +113,7 @@ def test_build_itinerary_walk_route_builds_polyline_for_scheduled_animal(
       wild_encounters=[],
       confirming_early_admission=True,
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='10:00',
@@ -153,12 +153,12 @@ def test_build_itinerary_walk_route_concatenates_legs_at_shared_node_once(
       wild_encounters=[],
       confirming_early_admission=True,
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=CHEETAH_INDO_MALAYA_KEY,
       start_time='10:00',
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='11:00',
@@ -195,12 +195,12 @@ def test_inclusive_point_slices_for_walk_route_legs_match_polyline(
       wild_encounters=[],
       confirming_early_admission=True,
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=CHEETAH_INDO_MALAYA_KEY,
       start_time='10:00',
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
       start_time='11:00',

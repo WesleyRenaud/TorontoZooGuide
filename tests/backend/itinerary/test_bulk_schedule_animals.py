@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY
+from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, schedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
@@ -41,10 +41,10 @@ def test_bulk_schedule_animals_schedules_in_walk_order(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Lion' )
 
-   assert cheetah.start_time == '09:30'
-   assert cheetah.end_time == '09:35'
-   assert lion.start_time == '09:35'
-   assert lion.end_time == '09:43'
+   assert cheetah.start_time == '9:30 AM'
+   assert cheetah.end_time == '9:35 AM'
+   assert lion.start_time == '9:35 AM'
+   assert lion.end_time == '9:43 AM'
 
 
 def test_bulk_schedule_animals_rebuild_reschedules_already_scheduled_animals(
@@ -65,7 +65,7 @@ def test_bulk_schedule_animals_rebuild_reschedules_already_scheduled_animals(
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
    ).success
@@ -107,11 +107,11 @@ def test_bulk_schedule_animals_rebuild_reschedules_when_all_animals_are_already_
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=LION_KEY,
    ).success
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=PENGUIN_KEY,
    ).success

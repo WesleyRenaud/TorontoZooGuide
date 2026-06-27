@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import guardians_talk_save_entries
+from itinerary.support import guardians_talk_save_entries, wild_encounter_key
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -28,7 +28,7 @@ def _set_lion_talk_and_grizzly_encounter_partial_overlap_schedules() -> None:
       wild_encounter_name='Grizzly Bear',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_time='13:00',
+      encounter_times=[ '13:00' ],
       monday=True,
       tuesday=False,
       wednesday=False,
@@ -49,7 +49,7 @@ def test_set_itinerary_reports_partial_guardians_talk_encounter_overlap_without_
       animals=[],
       attractions=[],
       guardians_talks=guardians_talk_save_entries( 'African Lion' ),
-      wild_encounters=[ 'Grizzly Bear' ],
+      wild_encounters=[ wild_encounter_key( 'Grizzly Bear', start_time='13:00' ) ],
    )
 
    assert not result.success
@@ -78,7 +78,7 @@ def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overl
       animals=[],
       attractions=[],
       guardians_talks=guardians_talk_save_entries( 'African Lion' ),
-      wild_encounters=[ 'Grizzly Bear' ],
+      wild_encounters=[ wild_encounter_key( 'Grizzly Bear', start_time='13:00' ) ],
       overriding_conflicting_guardians_talks=True,
    )
 
@@ -97,10 +97,10 @@ def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overl
       """ ).fetchone()
 
    assert dict( talk_schedule ) == {
-      'START_TIME': '13:45',
-      'END_TIME': '14:00',
+      'START_TIME': '1:45 PM',
+      'END_TIME': '2:00 PM',
    }
    assert dict( encounter_schedule ) == {
-      'START_TIME': '13:00',
-      'END_TIME': '13:45',
+      'START_TIME': '1:00 PM',
+      'END_TIME': '1:45 PM',
    }

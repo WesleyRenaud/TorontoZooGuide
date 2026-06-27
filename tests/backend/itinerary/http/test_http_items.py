@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from http_support import make_handler, response_json, StubZooControllers
 
+from api.itinerary.animal_item_key import AnimalScheduleItemKey
+from api.itinerary.attraction_item_key import AttractionScheduleItemKey
 import api.server as server
 
 
@@ -24,8 +26,9 @@ def test_unschedule_itinerary_item_endpoint(
       (
          'unschedule_itinerary_item',
          {
-            'item_type': 'animals',
-            'key': 'African Lion||Africa Savanna',
+            'schedule_item_key': AnimalScheduleItemKey(
+               species='African Lion',
+               exhibit='Africa Savanna' ),
          },
       ),
    ]
@@ -75,8 +78,8 @@ def test_remove_item_from_itinerary_endpoint(
       (
          'remove_itinerary_item',
          {
-            'item_type': 'attractions',
-            'key': 'Conservation Carousel',
+            'schedule_item_key': AttractionScheduleItemKey(
+               name='Conservation Carousel' ),
          },
       ),
    ]

@@ -1,4 +1,6 @@
 import { setWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
+import { initMultiTimePicker } from '../../../datePickers/multiTimePicker.js';
+import { createMultiTimeFieldController } from '../../forms/multiTimeFieldController.js';
 import { createRecurringScheduleFormController } from '../../forms/recurringScheduleFormController.js';
 import { resetFormFields } from '../../helpers/controllerUtils.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
@@ -9,6 +11,7 @@ export function createWildEncounterScheduleController({
    wildEncounterEl,
    startDateEl,
    endDateEl,
+   timesListEl,
    timeEl,
    mondayEl,
    tuesdayEl,
@@ -30,6 +33,18 @@ export function createWildEncounterScheduleController({
       sundayEl,
    ];
 
+   const multiTimeField = createMultiTimeFieldController({
+      listEl: timesListEl,
+      inputEl: timeEl,
+   });
+
+   initMultiTimePicker(timeEl, {
+      onCommitTime: (time) => {
+         multiTimeField.addTime(time);
+      },
+      onRemoveLastTime: () => multiTimeField.removeLastTime(),
+   });
+
    function getFieldValue(fieldEl) {
       return fieldEl?.value.trim() ?? '';
    }
@@ -48,14 +63,14 @@ export function createWildEncounterScheduleController({
       wildEncounter,
       startDate,
       endDate,
-      time,
+      times,
       message,
    }) {
       return setWildEncounterSchedule({
          wildEncounter,
          startDate: startDate || null,
          endDate: endDate || null,
-         time,
+         times,
          monday: Boolean(mondayEl?.checked),
          tuesday: Boolean(tuesdayEl?.checked),
          wednesday: Boolean(wednesdayEl?.checked),
@@ -84,6 +99,13 @@ export function createWildEncounterScheduleController({
       resetSelection: () => {
          resetFormFields([wildEncounterEl]);
       },
+      resetScheduleTimes: () => {
+         multiTimeField.reset();
+      },
+      getScheduleTimes: () => {
+         multiTimeField.commitPendingInput();
+         return multiTimeField.getTimes();
+      },
       getSelectionValues: () => ({
          wildEncounter: getFieldValue(wildEncounterEl),
       }),
@@ -92,6 +114,6 @@ export function createWildEncounterScheduleController({
       loadErrorMessage: APP_STRINGS.loadErrors.wildEncounters,
       submitSchedule,
       successMessage: result => APP_STRINGS.status.scheduleSaved(result.wildEncounter),
-      timeRequiredMessage: APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.encounterTime),
+      timeRequiredMessage: APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.encounterTimes),
    });
 }

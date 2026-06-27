@@ -40,21 +40,47 @@ class ItineraryStubMixin:
 
    def set_arrival_time( self, **kwargs: Any ) -> ItineraryTimeSetResult:
          self.calls.append( ( 'set_arrival_time', kwargs ) )
-         return ItineraryTimeSetResult()
+         return ItineraryTimeSetResult(
+            itinerary=Itinerary(
+               date='2026-06-15',
+               arrival_time=kwargs.get( 'arrival_time' ),
+            ) )
 
 
    def set_departure_time( self, **kwargs: Any ) -> ItineraryTimeSetResult:
          self.calls.append( ( 'set_departure_time', kwargs ) )
-         return ItineraryTimeSetResult()
+         return ItineraryTimeSetResult(
+            itinerary=Itinerary(
+               date='2026-06-15',
+               departure_time=kwargs.get( 'departure_time' ),
+            ) )
 
 
-   def unschedule_itinerary_item( self, **kwargs: Any ) -> ItinerarySaveResult:
-         self.calls.append( ( 'unschedule_itinerary_item', kwargs ) )
+   def unschedule_itinerary_item(
+         self,
+         schedule_item_key: Any = None,
+         **kwargs: Any ) -> ItinerarySaveResult:
+         self.calls.append( (
+            'unschedule_itinerary_item',
+            {
+               'schedule_item_key': schedule_item_key,
+               **kwargs,
+            },
+         ) )
          return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
 
-   def remove_itinerary_item( self, **kwargs: Any ) -> ItinerarySaveResult:
-         self.calls.append( ( 'remove_itinerary_item', kwargs ) )
+   def remove_itinerary_item(
+         self,
+         schedule_item_key: Any = None,
+         **kwargs: Any ) -> ItinerarySaveResult:
+         self.calls.append( (
+            'remove_itinerary_item',
+            {
+               'schedule_item_key': schedule_item_key,
+               **kwargs,
+            },
+         ) )
          return ItinerarySaveResult( itinerary=Itinerary( date='2026-06-15' ) )
 
 

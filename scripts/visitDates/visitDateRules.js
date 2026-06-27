@@ -220,6 +220,38 @@ export function parseZooClockTimeMinutes(timeValue) {
 }
 
 /**
+ * Formats a zoo clock string as 12-hour display (matches backend format_display_time_value).
+ */
+export function formatZooDisplayClockTime(timeValue) {
+   const minutes = parseZooClockTimeMinutes(timeValue);
+
+   if (minutes == null) {
+      return null;
+   }
+
+   const hours24 = Math.floor(minutes / 60);
+   const mins = minutes % 60;
+   const period = hours24 >= 12 ? 'PM' : 'AM';
+   const hours12 = hours24 % 12 || 12;
+
+   return `${hours12}:${String(mins).padStart(2, '0')} ${period}`;
+}
+
+/**
+ * Normalizes a zoo clock string to canonical 12-hour display (matches backend normalize_schedule_time).
+ */
+export function normalizeScheduleTime(timeValue) {
+   return formatZooDisplayClockTime(timeValue);
+}
+
+/**
+ * @deprecated Use normalizeScheduleTime.
+ */
+export function normalizeItineraryScheduleTime(timeValue) {
+   return normalizeScheduleTime(timeValue);
+}
+
+/**
  * True when local wall-clock time is at or after the zoo's close time for the current calendar day.
  */
 export function isLocalTimeAtOrPastZooClose(closeTimeStr, now = new Date()) {

@@ -25,8 +25,8 @@ from ..scheduling.guardians_talk_schedule import build_guardians_talk_schedule_f
 from ..scheduling.guardians_talk_schedule import find_guardians_talk_on_day_schedule
 from ..scheduling.guardians_talk_schedule_conflict_resolution import save_guardians_talk_schedule_replacing_overlaps
 from ..scheduling.guardians_talk_schedule_conflict_resolution import save_guardians_talk_schedule_trimming_overlaps
+from ..scheduling.guardians_talk_schedule_ending import build_guardians_talk_schedule_end
 from ..scheduling.guardians_talk_schedule_status import build_guardians_talk_schedule
-from ..scheduling.guardians_talk_schedule_status import build_guardians_talk_schedule_end
 from ..search.guardians_talks_matching_query import build_guardians_talks_matching_query
 from ...shared.calendar_dates import CalendarDates
 from ...types import DateInput, DateKey, MonthInput, VisitDay, VisitYear

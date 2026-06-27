@@ -509,7 +509,7 @@ test('saveItinerary does not diff unselected schedule conflicts as removals', as
       animals: [],
       attractions: [],
       guardiansTalks: [{ name: 'Highland Cattle' }],
-      wildEncounters: [{ name: 'Grizzly Bear' }],
+      wildEncounters: [{ name: 'Grizzly Bear', start_time: '13:00' }],
    });
 
    await new Promise((resolve) => {
@@ -533,7 +533,7 @@ test('saveItinerary does not diff unselected schedule conflicts as removals', as
    assert.equal(requests.length, 2);
    assert.equal(requests[1].body.overridingConflictingGuardiansTalks, true);
    assert.deepEqual(requests[1].body.guardiansTalks, []);
-   assert.equal(requests[1].body.wildEncounters[0], 'Grizzly Bear');
+   assert.equal(requests[1].body.wildEncounters[0], 'Grizzly Bear||13:00');
    assert.deepEqual(result.validation.removed.guardiansTalks, []);
    assert.equal(result.validation.hasChanges, false);
 });

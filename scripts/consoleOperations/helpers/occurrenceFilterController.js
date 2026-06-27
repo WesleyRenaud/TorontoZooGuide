@@ -1,8 +1,10 @@
+import { populateValueDropdown } from '../options/dropdowns.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export function createOccurrenceFilterController({
    dateEl,
-   timeEl,
+   timeEl = null,
+   populateTimes = null,
    getSelectionValues = () => ({}),
    isSelectionReady = selectionValues => Object.values(selectionValues).every(Boolean),
    loadOccurrences,
@@ -18,6 +20,11 @@ export function createOccurrenceFilterController({
    }
 
    function populateTimeDropdown(times) {
+      if (populateTimes) {
+         populateTimes(times);
+         return;
+      }
+
       populateValueDropdown(timeEl, times, APP_STRINGS.placeholders.time);
    }
 

@@ -10,7 +10,7 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
       stub_database: type[ StubZooControllers ] ) -> None:
    arrival_handler = make_handler(
       '/set-itinerary-arrival-time',
-      { 'arrivalTime': '09:45' } )
+      { 'arrivalTime': '9:45 AM' } )
    departure_handler = make_handler(
       '/set-itinerary-departure-time',
       { 'departureTime': None } )
@@ -22,21 +22,39 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
       'status': 'success',
       'reasons': [],
       'suppressed_warnings': [],
-      'arrivalTime': '09:45',
       'itinerary_config': itinerary_config_to_dict(),
+      'itinerary': {
+         'date': '2026-06-15',
+         'arrival_time': '9:45 AM',
+         'departure_time': None,
+         'animals': [],
+         'attractions': [],
+         'guardians_talks': [],
+         'wild_encounters': [],
+         'events': [],
+      },
    }
    assert response_json( departure_handler ) == {
       'status': 'success',
       'reasons': [],
       'suppressed_warnings': [],
-      'departureTime': None,
       'itinerary_config': itinerary_config_to_dict(),
+      'itinerary': {
+         'date': '2026-06-15',
+         'arrival_time': None,
+         'departure_time': None,
+         'animals': [],
+         'attractions': [],
+         'guardians_talks': [],
+         'wild_encounters': [],
+         'events': [],
+      },
    }
    assert StubZooControllers.instances[ 0 ].calls == [
       (
          'set_arrival_time',
          {
-            'arrival_time': '09:45',
+            'arrival_time': '9:45 AM',
             'confirming_short_visit': False,
             'confirming_early_admission': False,
          },

@@ -50,7 +50,7 @@ class WildEncounterController():
       wild_encounter = data.get( 'wildEncounter' )
       schedule_start_date = data.get( 'startDate' )
       schedule_end_date = data.get( 'endDate' )
-      encounter_time = data.get( 'time' )
+      encounter_times = data.get( 'times' )
       monday = data.get( 'monday' )
       tuesday = data.get( 'tuesday' )
       wednesday = data.get( 'wednesday' )
@@ -64,7 +64,7 @@ class WildEncounterController():
          wild_encounter_name=wild_encounter,
          start_date=schedule_start_date,
          end_date=schedule_end_date,
-         encounter_time=encounter_time,
+         encounter_times=encounter_times,
          monday=monday,
          tuesday=tuesday,
          wednesday=wednesday,
@@ -79,7 +79,7 @@ class WildEncounterController():
          'wildEncounter': wild_encounter,
          'startDate': schedule_start_date,
          'endDate': schedule_end_date,
-         'time': encounter_time,
+         'times': encounter_times,
          'monday': monday,
          'tuesday': tuesday,
          'wednesday': wednesday,
@@ -97,20 +97,37 @@ class WildEncounterController():
 
 
    @staticmethod
+   def get_wild_encounter_schedule_times( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      wild_encounter = data.get( 'wildEncounter' )
+      schedule_times = WildEncounterCoordinator.get_wild_encounter_schedule_times(
+         wild_encounter_name=wild_encounter )
+
+      handler._write_json( {
+         'wildEncounter': wild_encounter,
+         'times': schedule_times,
+      } )
+
+
+   @staticmethod
    def end_wild_encounter_schedule( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
       wild_encounter = data.get( 'wildEncounter' )
       schedule_end_date = data.get( 'endDate' )
+      encounter_times = data.get( 'times' )
 
       success = WildEncounterCoordinator.end_wild_encounter_schedule(
          wild_encounter_name=wild_encounter,
-         schedule_end_date=schedule_end_date )
+         schedule_end_date=schedule_end_date,
+         encounter_times=encounter_times )
 
       response = {
          'success': success,
          'wildEncounter': wild_encounter,
          'endDate': schedule_end_date,
+         'times': encounter_times,
       }
 
       if not success:
@@ -125,21 +142,21 @@ class WildEncounterController():
 
       wild_encounter = data.get( 'wildEncounter' )
       date = data.get( 'date' )
-      time = data.get( 'time' )
+      encounter_times = data.get( 'times' )
 
       success = WildEncounterCoordinator.cancel_wild_encounter_occurrence(
          wild_encounter_name=wild_encounter,
          date=date,
-         time=time )
+         encounter_times=encounter_times )
 
       response = {
          'success': success,
          'wildEncounter': wild_encounter,
          'date': date,
-         'time': time,
+         'times': encounter_times,
       }
 
       if not success:
-         response[ 'error' ] = f'Could not cancel "{ wild_encounter }" on { date } at { time }.'
+         response[ 'error' ] = f'Could not cancel "{ wild_encounter }" on { date }.'
 
       handler._write_json( response )

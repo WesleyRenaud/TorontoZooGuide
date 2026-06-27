@@ -264,8 +264,7 @@ def validate_itinerary_for_save(
             wild_encounter_coordinator.get_wild_encounter_schedule(
                month=save_input.month(),
                day=save_input.day(),
-               year=save_input.year() ),
-            saved_wild_encounter_rows=saved_itinerary.wild_encounter_rows ),
+               year=save_input.year() ) ),
          arrival_time=arrival_time,
          departure_time=departure_time ),
       events=itinerary_events_from_saved_rows(

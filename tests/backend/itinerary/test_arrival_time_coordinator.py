@@ -21,20 +21,20 @@ def test_set_itinerary_arrival_time_must_be_within_zoo_admission_hours(
    assert not ItineraryCoordinator.set_arrival_time( '09:00' ).success
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '09:30'
+   assert itinerary.arrival_time == '9:30 AM'
 
    assert ItineraryCoordinator.set_departure_time( '18:00' ).success
    assert ItineraryCoordinator.set_arrival_time(
       '17:00',
       confirming_short_visit=True ).success
    itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '17:00'
-   assert itinerary.departure_time == '18:00'
+   assert itinerary.arrival_time == '5:00 PM'
+   assert itinerary.departure_time == '6:00 PM'
 
    assert not ItineraryCoordinator.set_arrival_time( '17:15' ).success
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '17:00'
+   assert itinerary.arrival_time == '5:00 PM'
 
 
 def test_set_itinerary_arrival_time_allows_early_admission_when_offered(
@@ -51,12 +51,12 @@ def test_set_itinerary_arrival_time_allows_early_admission_when_offered(
    ).success
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '09:00'
+   assert itinerary.arrival_time == '9:00 AM'
 
    assert not ItineraryCoordinator.set_arrival_time( '08:45' ).success
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '09:00'
+   assert itinerary.arrival_time == '9:00 AM'
 
 
 def test_set_itinerary_rejects_arrival_time_outside_zoo_admission_hours(
@@ -85,8 +85,8 @@ def test_set_itinerary_rejects_arrival_time_outside_zoo_admission_hours(
    assert not result.success
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '09:30'
-   assert itinerary.departure_time == '17:00'
+   assert itinerary.arrival_time == '9:30 AM'
+   assert itinerary.departure_time == '5:00 PM'
 
 
 def test_set_itinerary_arrival_time_rejects_visit_shorter_than_two_hours_without_confirmation(
@@ -106,8 +106,8 @@ def test_set_itinerary_arrival_time_rejects_visit_shorter_than_two_hours_without
    assert result.status == ItineraryErrorType.ARRIVAL_DEPARTURE_TOO_CLOSE
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '09:30'
-   assert itinerary.departure_time == '17:00'
+   assert itinerary.arrival_time == '9:30 AM'
+   assert itinerary.departure_time == '5:00 PM'
 
 
 def test_set_itinerary_arrival_time_allows_short_visit_with_confirmation(
@@ -129,5 +129,5 @@ def test_set_itinerary_arrival_time_allows_short_visit_with_confirmation(
    assert result.success
 
    itinerary = ItineraryCoordinator.get_itinerary()
-   assert itinerary.arrival_time == '16:30'
-   assert itinerary.departure_time == '17:00'
+   assert itinerary.arrival_time == '4:30 PM'
+   assert itinerary.departure_time == '5:00 PM'

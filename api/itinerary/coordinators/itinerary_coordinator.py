@@ -26,6 +26,7 @@ from ..results.itinerary_time_set_result import ItineraryTimeSetResult
 from ..scheduling.bulk import bulk_schedule_animals as bulk_schedule_animals_logic
 from ..scheduling.bulk.animals_for_bulk_schedule import animals_for_bulk_schedule
 from ..scheduling.items import schedule_itinerary_item as schedule_itinerary_item_logic
+from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, DateInput, DurationInput, TimeInput
@@ -33,6 +34,7 @@ from ..validation.itinerary_arrival_time_validation import arrival_time_is_valid
 from ..validation.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from ..warnings.early_admission_warning import early_admission_warning_is_required
 from ..warnings.short_visit_warning import short_visit_warning_is_required
+from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 
@@ -88,7 +90,7 @@ class ItineraryCoordinator():
          animals: list[ dict[ str, str ] ],
          attractions: list[ str ],
          guardians_talks: list[ dict[ str, str | None ] ],
-         wild_encounters: list[ str ],
+         wild_encounters: list[ WildEncounterScheduleItemKey ] | None = None,
          arrival_time: TimeInput = None,
          departure_time: TimeInput = None,
          selected_exhibits: list[ str ] | None = None,
@@ -124,8 +126,7 @@ class ItineraryCoordinator():
    @classmethod
    def schedule_itinerary_item(
          cls,
-         item_type: str,
-         key: str,
+         schedule_item_key: ScheduleItemKey | None,
          *,
          start_time: TimeInput = None,
          duration_minutes: DurationInput = None,
@@ -134,8 +135,7 @@ class ItineraryCoordinator():
          confirming_wild_encounter_unschedule: bool = False ) -> ItinerarySaveResult:
       return schedule_itinerary_item_logic.schedule_itinerary_item(
          get_connection(),
-         item_type,
-         key,
+         schedule_item_key,
          start_time=start_time,
          duration_minutes=duration_minutes,
          animal_coordinator=AnimalCoordinator,
@@ -193,23 +193,19 @@ class ItineraryCoordinator():
    @classmethod
    def unschedule_itinerary_item(
          cls,
-         item_type: str,
-         key: str ) -> ItinerarySaveResult:
+         schedule_item_key: ScheduleItemKey | None ) -> ItinerarySaveResult:
       return unschedule_itinerary_item_logic.unschedule_itinerary_item(
          get_connection(),
-         item_type,
-         key )
+         schedule_item_key )
 
 
    @classmethod
    def remove_itinerary_item(
          cls,
-         item_type: str,
-         key: str ) -> ItinerarySaveResult:
+         schedule_item_key: ScheduleItemKey | None ) -> ItinerarySaveResult:
       return remove_itinerary_item_logic.remove_itinerary_item(
          get_connection(),
-         item_type,
-         key )
+         schedule_item_key )
 
 
    @classmethod

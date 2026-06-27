@@ -7,6 +7,7 @@ from .itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from .itinerary_save_input import ItinerarySaveInput
 from ...shared.calendar_dates import DateValues
 from ...types import DateInput, TimeInput
+from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 
 
 def map_named_strings( names: Iterable[ str ] | None ) -> tuple[ str, ... ]:
@@ -51,7 +52,7 @@ def map_itinerary_save_input(
       animals: Iterable[ dict[ str, str ] ] | None,
       attractions: Iterable[ str ] | None,
       guardians_talks: Iterable[ dict[ str, str | None ] ] | None,
-      wild_encounters: Iterable[ str ] | None,
+      wild_encounters: Iterable[ WildEncounterScheduleItemKey ] | None,
       selected_exhibits: Iterable[ str ] | None = None ) -> ItinerarySaveInput:
 
    return ItinerarySaveInput(
@@ -61,5 +62,5 @@ def map_itinerary_save_input(
       animals=map_animal_inputs( animals ),
       attractions=map_named_strings( attractions ),
       guardians_talks=map_guardians_talk_inputs( guardians_talks ),
-      wild_encounters=map_named_strings( wild_encounters ),
+      wild_encounters=tuple( wild_encounters or [] ),
       selected_exhibits=map_named_strings( selected_exhibits ) )

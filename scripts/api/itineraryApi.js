@@ -7,12 +7,17 @@ import {
    normalizeItineraryErrorTypeFromResponse,
    updateItineraryErrorTypesFromConfig,
 } from '../itinerary/itineraryErrorTypes.js';
+import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
 import {
    asArray,
    asNullableString,
    asObject,
    asTrimmedString,
 } from './normalizeValues.js';
+import {
+   ScheduleItemKind,
+   scheduleItemKindFromItemType,
+} from '../shared/enums/scheduleItemKind.js';
 
 const ITINERARY_COLLECTION_FIELDS = [
    ['animals', 'animals'],
@@ -20,6 +25,19 @@ const ITINERARY_COLLECTION_FIELDS = [
    ['guardiansTalks', 'guardians_talks'],
    ['wildEncounters', 'wild_encounters'],
 ];
+
+function mapScheduleItemKeyToWire(itemType, key) {
+   const kind = scheduleItemKindFromItemType(itemType);
+
+   if (
+      kind === ScheduleItemKind.WILD_ENCOUNTER
+      && key instanceof WildEncounterScheduleItemKey
+   ) {
+      return key.toWire();
+   }
+
+   return asTrimmedString(key);
+}
 
 function normalizeItineraryEvent(event) {
    const source = asObject(event);
@@ -269,6 +287,7 @@ export async function scheduleItineraryItemRequest(
 ) {
    const response = await postJson('/schedule-itinerary-item', {
       ...request,
+      key: mapScheduleItemKeyToWire(request.itemType, request.key),
       confirmingScheduleItemNotOnItinerary,
       confirmingGuardiansTalkUnschedule,
       confirmingWildEncounterUnschedule,
@@ -280,7 +299,7 @@ export async function scheduleItineraryItemRequest(
 export async function unscheduleItineraryItemRequest({ itemType, key }) {
    const response = await postJson('/unschedule-itinerary-item', {
       itemType: asTrimmedString(itemType),
-      key: asTrimmedString(key),
+      key: mapScheduleItemKeyToWire(itemType, key),
    });
 
    return normalizeScheduleItineraryItemResponse(response);
@@ -289,7 +308,7 @@ export async function unscheduleItineraryItemRequest({ itemType, key }) {
 export async function removeItemFromItineraryRequest({ itemType, key }) {
    const response = await postJson('/remove-item-from-itinerary', {
       itemType: asTrimmedString(itemType),
-      key: asTrimmedString(key),
+      key: mapScheduleItemKeyToWire(itemType, key),
    });
 
    return normalizeScheduleItineraryItemResponse(response);

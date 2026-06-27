@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from itinerary.support import remove_itinerary_item, schedule_itinerary_item, wild_encounter_key, wild_encounter_wire
+
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
@@ -43,14 +45,14 @@ def _set_base_itinerary( db: DbControllers ) -> None:
          'start_time': None,
          'end_time': None,
       } ],
-      wild_encounters=[ AFRICAN_RAINFOREST ],
+      wild_encounters=[ wild_encounter_key( AFRICAN_RAINFOREST ) ],
    ).success
 
 
 def test_remove_itinerary_animal_deletes_row( db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryCoordinator.remove_itinerary_item( 'animals', ANIMAL_KEY ).success
+   assert remove_itinerary_item( 'animals', ANIMAL_KEY ).success
 
    saved = fetch_saved_itinerary( db.conn )
 
@@ -62,7 +64,7 @@ def test_remove_itinerary_animal_deletes_row( db: DbControllers ) -> None:
 def test_remove_itinerary_attraction_deletes_row( db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryCoordinator.remove_itinerary_item(
+   assert remove_itinerary_item(
       'attractions',
       CAROUSEL ).success
 
@@ -74,7 +76,7 @@ def test_remove_itinerary_attraction_deletes_row( db: DbControllers ) -> None:
 def test_remove_itinerary_guardians_talk_deletes_row( db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryCoordinator.remove_itinerary_item(
+   assert remove_itinerary_item(
       'guardians_talks',
       GUARDIANS_TALK ).success
 
@@ -86,9 +88,9 @@ def test_remove_itinerary_guardians_talk_deletes_row( db: DbControllers ) -> Non
 def test_remove_itinerary_wild_encounter_deletes_row( db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryCoordinator.remove_itinerary_item(
+   assert remove_itinerary_item(
       'wild_encounters',
-      AFRICAN_RAINFOREST ).success
+      wild_encounter_wire( AFRICAN_RAINFOREST ) ).success
 
    saved = fetch_saved_itinerary( db.conn )
 
@@ -100,13 +102,13 @@ def test_remove_itinerary_wild_encounter_deletes_row( db: DbControllers ) -> Non
 def test_remove_itinerary_event_deletes_row( db: DbControllers ) -> None:
    _set_base_itinerary( db )
 
-   assert ItineraryCoordinator.schedule_itinerary_item( 'lunch', '' ).success
+   assert schedule_itinerary_item( 'lunch', '' ).success
 
    saved = fetch_saved_itinerary( db.conn )
 
    assert len( saved.event_rows ) == 1
 
-   assert ItineraryCoordinator.remove_itinerary_item( 'lunch', '' ).success
+   assert remove_itinerary_item( 'lunch', '' ).success
 
    saved = fetch_saved_itinerary( db.conn )
 

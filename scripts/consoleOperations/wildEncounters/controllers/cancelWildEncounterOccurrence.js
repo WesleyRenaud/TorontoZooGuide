@@ -1,7 +1,7 @@
 import { cancelWildEncounterOccurrence } from '../../../api/consoleOperationsApi.js';
+import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
 import {
    hideConsolePanel,
-   loadOptionsAndShowPanel,
    resetFormFields,
 } from '../../helpers/controllerUtils.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
@@ -17,35 +17,36 @@ export function createCancelWildEncounterOccurrenceController({
    statusEl,
    wildEncounterEl,
    dateEl,
-   timeEl,
+   timesEl,
    activatePanel,
    occurrenceFilterController = null,
 } = {}) {
-   const formFieldEls = [wildEncounterEl, dateEl, timeEl];
+   const formFieldEls = [wildEncounterEl, dateEl];
 
    function getFieldValue(fieldEl) {
       return fieldEl?.value.trim() ?? '';
    }
 
-   function resetOccurrenceDropdowns() {
+   function getSelectedTimes() {
+      return getSelectedScheduleTimes(timesEl);
+   }
+
+   function resetOccurrenceFields() {
       if (occurrenceFilterController?.clear) {
          occurrenceFilterController.clear();
-      }
-      else {
-         resetFormFields([dateEl, timeEl]);
       }
    }
 
    function resetForm() {
       resetFormFields(formFieldEls);
-      resetOccurrenceDropdowns();
+      resetOccurrenceFields();
    }
 
    function getFormValues() {
       return {
          wildEncounter: getFieldValue(wildEncounterEl),
          date: getFieldValue(dateEl),
-         time: getFieldValue(timeEl),
+         times: getSelectedTimes(),
       };
    }
 
@@ -62,7 +63,7 @@ export function createCancelWildEncounterOccurrenceController({
       });
    }
 
-   function validateForm({ wildEncounter, date, time }) {
+   function validateForm({ wildEncounter, date, times }) {
       if (!wildEncounter) {
          return APP_STRINGS.validation.entityRequired(APP_STRINGS.entityLabels.wildEncounter);
       }
@@ -71,25 +72,34 @@ export function createCancelWildEncounterOccurrenceController({
          return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.date);
       }
 
-      if (!time) {
-         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.time);
+      if (!times.length) {
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.encounterTimes);
       }
 
       return null;
    }
 
-   async function submitOccurrenceCancellation({ wildEncounter, date, time }) {
+   async function prepareForm() {
+      if (wildEncounterEl?.tagName === 'SELECT') {
+         const wildEncounters = await loadWildEncounters();
+         populateWildEncounterDropdown(wildEncounterEl, wildEncounters);
+      }
+   }
+
+   async function submitOccurrenceCancellation({ wildEncounter, date, times }) {
       return cancelWildEncounterOccurrence({
          wildEncounter,
          date,
-         time,
+         times,
       });
    }
 
    function handleSubmitSuccess(result) {
+      const cancelledTimes = (result.times ?? []).join(', ');
+
       setStatus(
          statusEl,
-         `${result.wildEncounter} on ${result.date} at ${result.time} was cancelled.`,
+         `${result.wildEncounter} on ${result.date} at ${cancelledTimes} was cancelled.`,
          'is-success'
       );
 
@@ -97,17 +107,17 @@ export function createCancelWildEncounterOccurrenceController({
    }
 
    async function onShowClick() {
-      await loadOptionsAndShowPanel({
-         statusEl,
-         setStatus,
-         loadOptions: loadWildEncounters,
-         populateOptions: populateWildEncounterDropdown,
-         targetEl: wildEncounterEl,
-         resetForm,
-         activatePanel,
-         panelEl,
-         errorMessage: APP_STRINGS.loadErrors.wildEncounters,
-      });
+      setStatus(statusEl, '');
+
+      try {
+         resetForm();
+         await prepareForm();
+         show();
+      }
+      catch (err) {
+         setStatus(statusEl, APP_STRINGS.loadErrors.wildEncounters, 'is-error');
+         show();
+      }
    }
 
    async function onSubmitClick() {
@@ -132,13 +142,14 @@ export function createCancelWildEncounterOccurrenceController({
             setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }
-      catch(err) {
+      catch (err) {
          setStatus(statusEl, APP_STRINGS.common.requestFailed, 'is-error');
       }
    }
 
    wildEncounterEl?.addEventListener('change', async () => {
-      resetFormFields([dateEl, timeEl]);
+      resetFormFields([dateEl]);
+      resetOccurrenceFields();
 
       if (occurrenceFilterController?.refresh) {
          await occurrenceFilterController.refresh();
@@ -146,8 +157,6 @@ export function createCancelWildEncounterOccurrenceController({
    });
 
    dateEl?.addEventListener('change', () => {
-      resetFormFields([timeEl]);
-
       if (occurrenceFilterController?.refreshTimes) {
          occurrenceFilterController.refreshTimes();
       }

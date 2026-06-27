@@ -6,6 +6,7 @@ from datetime import date
 from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from ...types import ScheduleTimeKey
+from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 
 
 @dataclass( frozen=True )
@@ -16,7 +17,7 @@ class ItinerarySaveInput:
    animals: tuple[ ItineraryAnimalInput, ... ]
    attractions: tuple[ str, ... ]
    guardians_talks: tuple[ ItineraryGuardiansTalkInput, ... ]
-   wild_encounters: tuple[ str, ... ]
+   wild_encounters: tuple[ WildEncounterScheduleItemKey, ... ]
    selected_exhibits: tuple[ str, ... ] = ()
 
 

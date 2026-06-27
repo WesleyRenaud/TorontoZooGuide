@@ -1,3 +1,5 @@
+import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/scheduleItemKey.js';
+
 function asObject(value) {
    return value && typeof value === 'object'
       ? value
@@ -196,4 +198,22 @@ export function normalizeWild(value) {
       link: normalizeOptionalText(source.link),
       removalReason: normalizeOptionalText(source.removalReason),
    };
+}
+
+export function normalizeWildEncounterForSave(value) {
+   if (typeof value === 'string') {
+      return WildEncounterScheduleItemKey.fromWire(value)?.toWire() ?? '';
+   }
+
+   return WildEncounterScheduleItemKey.fromRow(asObject(value))?.toWire() ?? '';
+}
+
+export function normalizeWildEncounterListForSave(items) {
+   if (!Array.isArray(items)) {
+      return [];
+   }
+
+   return items
+      .map(normalizeWildEncounterForSave)
+      .filter(Boolean);
 }

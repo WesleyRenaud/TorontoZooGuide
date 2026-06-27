@@ -222,6 +222,7 @@ test('getScheduleItemRowKind and getScheduleItemRowId resolve mixed rows', () =>
    };
    const wildEncounterRow = {
       name: 'African Rainforest',
+      start_time: '14:00',
       scheduleItemKind: 'wild_encounters',
    };
 
@@ -232,7 +233,7 @@ test('getScheduleItemRowKind and getScheduleItemRowId resolve mixed rows', () =>
    assert.equal(getScheduleItemRowId(animalRow), 'Tiger||Savanna');
    assert.equal(getScheduleItemRowId(attractionRow), 'Carousel');
    assert.equal(getScheduleItemRowId(guardiansTalkRow), 'Amur Tiger');
-   assert.equal(getScheduleItemRowId(wildEncounterRow), 'African Rainforest');
+   assert.equal(getScheduleItemRowId(wildEncounterRow), 'African Rainforest||14:00');
 });
 
 test('resolveEffectiveScheduleItemSelection infers animals from a selected row', () => {
@@ -269,8 +270,8 @@ test('buildItineraryScheduleItemRowIds collects schedule item keys', () => {
    assert.equal(ids.animalIds.has('Tiger||Savanna'), true);
    assert.equal(ids.attractionIds.has('Carousel'), true);
    assert.equal(ids.guardiansTalkIds.has('Amur Tiger'), true);
-   assert.equal(ids.wildEncounterIds.has('African Rainforest'), true);
-   assert.equal(ids.wildEncounterIds.has('Americas'), true);
+   assert.equal(ids.wildEncounterIds.has('African Rainforest'), false);
+   assert.equal(ids.wildEncounterIds.has('Americas||2:00 PM'), true);
 });
 
 test('buildItineraryScheduleItemRowIds can exclude scheduled items', () => {
@@ -304,7 +305,7 @@ test('buildItineraryScheduleItemRowIds can include scheduled items only', () => 
 
    assert.equal(ids.guardiansTalkIds.has('Amur Tiger'), true);
    assert.equal(ids.guardiansTalkIds.has('Polar Bear'), false);
-   assert.equal(ids.wildEncounterIds.has('African Rainforest'), true);
+   assert.equal(ids.wildEncounterIds.has('African Rainforest||2:00 PM'), true);
 });
 
 test('filterScheduleItemRowsExcludingScheduledOccurrences hides scheduled talks and encounters', () => {
@@ -319,6 +320,7 @@ test('filterScheduleItemRowsExcludingScheduledOccurrences hides scheduled talks 
       },
       {
          name: 'African Rainforest',
+         start_time: '2:00 PM',
          scheduleItemKind: 'wild_encounters',
       },
       {
@@ -365,6 +367,7 @@ test('filterScheduleItemRowsForScheduleModule applies module-specific occurrence
       },
       {
          name: 'African Rainforest',
+         start_time: '2:00 PM',
          scheduleItemKind: 'wild_encounters',
       },
    ];
@@ -436,6 +439,7 @@ test('filterScheduleItemRowsToItinerary keeps only rows on the itinerary', () =>
       },
       {
          name: 'African Rainforest',
+         start_time: '2:00 PM',
          scheduleItemKind: 'wild_encounters',
       },
    ];
@@ -445,7 +449,7 @@ test('filterScheduleItemRowsToItinerary keeps only rows on the itinerary', () =>
          animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
          attractions: [{ name: 'Carousel' }],
          guardiansTalks: [{ name: 'Amur Tiger' }],
-         wildEncounters: [{ name: 'African Rainforest' }],
+         wildEncounters: [{ name: 'African Rainforest', start_time: '2:00 PM' }],
       }),
       [
          {
@@ -463,6 +467,7 @@ test('filterScheduleItemRowsToItinerary keeps only rows on the itinerary', () =>
          },
          {
             name: 'African Rainforest',
+            start_time: '2:00 PM',
             scheduleItemKind: 'wild_encounters',
          },
       ]

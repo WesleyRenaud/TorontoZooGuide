@@ -3,10 +3,11 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, set_guardians_talk_and_wild_encounter_schedules_at_1400, set_itinerary_with_lion_scheduled_at_1400, WILD_ENCOUNTER
+from itinerary.support import GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, set_guardians_talk_and_wild_encounter_schedules_at_1400, set_itinerary_with_lion_scheduled_at_1400, WILD_ENCOUNTER, wild_encounter_key, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
+from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 
@@ -40,7 +41,7 @@ def test_set_itinerary_returns_guardians_unschedule_after_talk_encounter_conflic
    animal = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
-   assert animal.start_time == '14:00'
+   assert animal.start_time == '2:00 PM'
    assert not saved.guardians_talk_names()
    assert not saved.wild_encounter_names()
 
@@ -58,7 +59,7 @@ def test_set_itinerary_returns_wild_encounter_warning_after_talk_encounter_confl
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
       guardians_talks=[],
-      wild_encounters=[ WILD_ENCOUNTER ],
+      wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER ) ],
       overriding_conflicting_guardians_talks=True,
    )
 
@@ -74,7 +75,7 @@ def test_set_itinerary_returns_wild_encounter_warning_after_talk_encounter_confl
    animal = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
-   assert animal.start_time == '14:00'
+   assert animal.start_time == '2:00 PM'
    assert not saved.guardians_talk_names()
    assert not saved.wild_encounter_names()
 
@@ -106,7 +107,7 @@ def test_set_itinerary_saves_talk_after_conflict_and_unschedule_confirmations(
       if animal.species == 'African Lion' )
    assert lion.start_time is not None
    assert lion.end_time is not None
-   assert lion.end_time <= '14:00'
+   assert DateValues.time_value_in_seconds( lion.end_time ) <= DateValues.time_value_in_seconds( '2:00 PM' )
    assert [ talk.name for talk in result.itinerary.guardians_talks ] == [ GUARDIANS_TALK ]
    assert not result.itinerary.wild_encounters
 
@@ -116,6 +117,6 @@ def test_set_itinerary_saves_talk_after_conflict_and_unschedule_confirmations(
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
    assert animal.start_time is not None
    assert animal.end_time is not None
-   assert animal.end_time <= '14:00'
+   assert DateValues.time_value_in_seconds( animal.end_time ) <= DateValues.time_value_in_seconds( '2:00 PM' )
    assert saved.guardians_talk_names() == [ GUARDIANS_TALK ]
    assert not saved.wild_encounter_names()

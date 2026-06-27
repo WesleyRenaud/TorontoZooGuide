@@ -16,6 +16,8 @@ export function createRecurringScheduleFormController({
    startDateEl,
    endDateEl,
    timeEl,
+   getScheduleTimes = null,
+   resetScheduleTimes = null,
    messageEl,
    dayFieldEls = [],
    activatePanel,
@@ -43,19 +45,28 @@ export function createRecurringScheduleFormController({
 
    function resetForm() {
       resetFormFields(recurringFieldEls);
+      resetScheduleTimes?.();
       resetSelection?.();
    }
 
    function getFormValues() {
-      return {
+      const formValues = {
          ...(typeof getSelectionValues === 'function'
             ? getSelectionValues()
             : {}),
          startDate: getFieldValue(startDateEl),
          endDate: getFieldValue(endDateEl),
-         time: getFieldValue(timeEl),
          message: getFieldValue(messageEl),
       };
+
+      if (getScheduleTimes) {
+         formValues.times = getScheduleTimes();
+      }
+      else {
+         formValues.time = getFieldValue(timeEl);
+      }
+
+      return formValues;
    }
 
    function show() {
@@ -78,7 +89,12 @@ export function createRecurringScheduleFormController({
          return selectionError;
       }
 
-      if (!formValues.time) {
+      if (getScheduleTimes) {
+         if (!formValues.times?.length) {
+            return timeRequiredMessage;
+         }
+      }
+      else if (!formValues.time) {
          return timeRequiredMessage;
       }
 

@@ -10,7 +10,6 @@ if TYPE_CHECKING:
 
 from .wild_encounter_cancellation_mapper import map_wild_encounter_cancellation_records
 from .wild_encounter_cancellation_record import WildEncounterCancellationRecord
-from .wild_encounter_schedule_mapper import map_wild_encounter_schedule_record
 from .wild_encounter_schedule_mapper import map_wild_encounter_schedule_records
 from .wild_encounter_schedule_record import WildEncounterScheduleRecord
 
@@ -58,9 +57,9 @@ def fetch_wild_encounter_schedule_records(
       cur.close()
 
 
-def fetch_wild_encounter_schedule_record_for_occurrences(
+def fetch_wild_encounter_schedule_records_for_occurrences(
       conn: Connection,
-      wild_encounter: str ) -> WildEncounterScheduleRecord | None:
+      wild_encounter: str ) -> list[ WildEncounterScheduleRecord ]:
    cur = conn.cursor()
 
    try:
@@ -88,16 +87,12 @@ def fetch_wild_encounter_schedule_record_for_occurrences(
                   ON w.MEETING_SPOT = m.NAME
                JOIN WildEncounterSchedule s
                   ON w.NAME = s.WILD_ENCOUNTER
-               WHERE s.WILD_ENCOUNTER = ?;
+               WHERE s.WILD_ENCOUNTER = ?
+               ORDER BY s.ENCOUNTER_TIME;
          """,
          ( wild_encounter, ) )
 
-      row = data.fetchone()
-
-      if row == None:
-         return None
-
-      return map_wild_encounter_schedule_record( row )
+      return map_wild_encounter_schedule_records( data.fetchall() )
 
    finally:
       cur.close()
@@ -119,6 +114,26 @@ def fetch_wild_encounter_cancellation_records(
          ( wild_encounter, ) )
 
       return map_wild_encounter_cancellation_records( data.fetchall() )
+
+   finally:
+      cur.close()
+
+
+
+def fetch_wild_encounter_schedule_times(
+      conn: Connection,
+      wild_encounter: str ) -> list[ str ]:
+   cur = conn.cursor()
+
+   try:
+      rows = cur.execute(
+         """   SELECT ENCOUNTER_TIME
+               FROM WildEncounterSchedule
+               WHERE WILD_ENCOUNTER = ?
+               ORDER BY ENCOUNTER_TIME;""",
+         ( wild_encounter, ) ).fetchall()
+
+      return [ row[ 0 ] for row in rows ]
 
    finally:
       cur.close()
@@ -147,7 +162,7 @@ def save_wild_encounter_schedule(
                   SCHEDULE_MESSAGE
                )
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-               ON CONFLICT(WILD_ENCOUNTER) DO UPDATE SET
+               ON CONFLICT(WILD_ENCOUNTER, ENCOUNTER_TIME) DO UPDATE SET
                   SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
                   SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
                   ENCOUNTER_TIME = excluded.ENCOUNTER_TIME,
@@ -192,11 +207,13 @@ def save_wild_encounter_schedule_end(
       cur.execute(
          """   UPDATE WildEncounterSchedule
                SET SCHEDULE_END_DATE = ?
-               WHERE WILD_ENCOUNTER = ?;
+               WHERE WILD_ENCOUNTER = ?
+                  AND ENCOUNTER_TIME = ?;
          """,
          (
             schedule_end.schedule_end_date,
             schedule_end.wild_encounter,
+            schedule_end.encounter_time,
          ) )
 
       conn.commit()

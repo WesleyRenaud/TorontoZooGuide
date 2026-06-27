@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import CAROUSEL, GUARDIANS_TALK, guardians_talk_save_entries, set_guardians_talk_and_wild_encounter_schedules_at_1400, WILD_ENCOUNTER
+from itinerary.support import CAROUSEL, GUARDIANS_TALK, guardians_talk_save_entries, set_guardians_talk_and_wild_encounter_schedules_at_1400, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.shared.enums import ItineraryErrorType
@@ -16,7 +16,7 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
       animals=[],
       attractions=[ CAROUSEL ],
       guardians_talks=guardians_talk_save_entries( GUARDIANS_TALK ),
-      wild_encounters=[ WILD_ENCOUNTER ],
+      wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER ) ],
    )
 
    assert not result.success
@@ -27,8 +27,8 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
          'items': [
             {
                'name': 'African Lion',
-               'start_time': '14:00',
-               'end_time': '14:30',
+               'start_time': '2:00 PM',
+               'end_time': '2:30 PM',
                'item_type': 'guardiansTalk',
                'meeting_spot': '',
                'location': 'Africa Savanna',
@@ -36,8 +36,8 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
             },
             {
                'name': 'African Rainforest',
-               'start_time': '14:00',
-               'end_time': '14:45',
+               'start_time': '2:00 PM',
+               'end_time': '2:45 PM',
                'item_type': 'wildEncounter',
                'meeting_spot': 'Wild Encounter - Africa Meeting Spot',
                'location': '',

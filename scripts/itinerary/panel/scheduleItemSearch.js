@@ -3,12 +3,20 @@ import { isScheduleItemTypeUnset } from './scheduleItemTypes.js';
 import { getAnimalId } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
-import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
+import {
+   getWildEncounterId,
+   getWildEncounterKey,
+} from '../selectors/wildEncounterSelector/model.js';
+import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/scheduleItemKey.js';
 import {
    isFixedTimeScheduleItemKind,
    ScheduleItemKind,
    scheduleItemKindFromItemType,
 } from '../../shared/enums/scheduleItemKind.js';
+
+function itineraryWildEncounterId(encounter) {
+   return WildEncounterScheduleItemKey.fromRow(encounter)?.toWire() ?? null;
+}
 
 function tagRows(rows = [], scheduleItemKind) {
    return rows.map((row) => ({
@@ -116,11 +124,12 @@ export function getItineraryItemKey(itemType, item) {
       return getAttractionId(item);
    }
 
-   if (
-      kind === ScheduleItemKind.GUARDIANS_TALK
-      || kind === ScheduleItemKind.WILD_ENCOUNTER
-   ) {
-      return String(item.name).trim();
+   if (kind === ScheduleItemKind.GUARDIANS_TALK) {
+      return getGuardiansTalkId(item);
+   }
+
+   if (kind === ScheduleItemKind.WILD_ENCOUNTER) {
+      return getWildEncounterKey(item);
    }
 
    return '';
@@ -196,7 +205,9 @@ export function buildItineraryScheduleItemRowIds(
          pickItems(itinerary.guardiansTalks).map((talk) => getGuardiansTalkId(talk))
       ),
       wildEncounterIds: new Set(
-         pickItems(itinerary.wildEncounters).map((encounter) => getWildEncounterId(encounter))
+         pickItems(itinerary.wildEncounters)
+            .map(itineraryWildEncounterId)
+            .filter(Boolean)
       ),
    };
 }
@@ -224,7 +235,7 @@ export function filterScheduleItemRowsToItinerary(
       }
 
       if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
-         return wildEncounterIds.has(getScheduleItemRowId(row));
+         return wildEncounterIds.has(getWildEncounterId(row));
       }
 
       return animalIds.has(getScheduleItemRowId(row));
@@ -247,7 +258,7 @@ export function filterScheduleItemRowsExcludingScheduledOccurrences(
       }
 
       if (kind === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
-         return !wildEncounterIds.has(getScheduleItemRowId(row));
+         return !wildEncounterIds.has(getWildEncounterId(row));
       }
 
       return true;

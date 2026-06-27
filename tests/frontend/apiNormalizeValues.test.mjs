@@ -7,6 +7,7 @@ import {
    asNullableString,
    asObject,
    asTrimmedString,
+   asTrimmedStringList,
 } from '../../scripts/api/normalizeValues.js';
 
 test('keeps valid API collection and object values intact', () => {
@@ -32,4 +33,12 @@ test('normalizes scalar API values without inventing truthy values', () => {
    assert.equal(asBoolean(true), true);
    assert.equal(asBoolean(1), false);
    assert.equal(asBoolean('true'), false);
+});
+
+test('asTrimmedStringList trims values and drops blanks', () => {
+   assert.deepEqual(
+      asTrimmedStringList([ ' 2:00 PM ', '', null, '3:30 PM' ]),
+      [ '2:00 PM', '3:30 PM' ]
+   );
+   assert.deepEqual(asTrimmedStringList(null), []);
 });

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import guardians_talk_save_entry, LION_ITINERARY_ENTRY, RHINO_ENCOUNTER, set_itinerary_with_turtle_talk_and_lion_at_1430, set_turtle_talk_and_rhino_encounter_schedules_at_1400, TURTLE_TALK
+from itinerary.support import guardians_talk_save_entry, LION_ITINERARY_ENTRY, RHINO_ENCOUNTER, set_itinerary_with_turtle_talk_and_lion_at_1430, set_turtle_talk_and_rhino_encounter_schedules_at_1400, TURTLE_TALK, wild_encounter_key, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
@@ -24,7 +24,7 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( TURTLE_TALK ) ],
-      wild_encounters=[ RHINO_ENCOUNTER ],
+      wild_encounters=[ wild_encounter_key( RHINO_ENCOUNTER ) ],
    )
 
    assert not conflict.success
@@ -50,8 +50,8 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
    lion = next(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Lion' )
-   assert lion.start_time == '14:30'
-   assert lion.end_time == '14:45'
+   assert lion.start_time == '2:30 PM'
+   assert lion.end_time == '2:45 PM'
    assert [ talk.name for talk in result.itinerary.guardians_talks ] == [ TURTLE_TALK ]
    assert not result.itinerary.wild_encounters
 
@@ -59,8 +59,8 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
    animal = next(
       row for row in saved.animal_rows
       if row.species == 'African Lion' and row.exhibit == 'Africa Savanna' )
-   assert animal.start_time == '14:30'
-   assert animal.end_time == '14:45'
+   assert animal.start_time == '2:30 PM'
+   assert animal.end_time == '2:45 PM'
    assert saved.guardians_talk_names() == [ TURTLE_TALK ]
    assert not saved.wild_encounter_names()
 

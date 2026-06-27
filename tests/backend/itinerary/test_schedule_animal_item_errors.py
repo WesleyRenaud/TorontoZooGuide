@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import ANIMAL_KEY, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, saved_animal_row
+from itinerary.support import ANIMAL_KEY, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, saved_animal_row, schedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.shared.enums import ItineraryErrorType
@@ -26,12 +26,12 @@ def test_schedule_itinerary_animal_rejects_unavailable_requested_start_time(
       confirming_early_admission=True,
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
    ).success
 
-   rejected = ItineraryCoordinator.schedule_itinerary_item(
+   rejected = schedule_itinerary_item(
       item_type='animals',
       key=PENGUIN_KEY,
       start_time='09:30',
@@ -62,13 +62,13 @@ def test_schedule_itinerary_animal_rejects_conflicting_noon_start_time(
       wild_encounters=[],
    ).success
 
-   assert ItineraryCoordinator.schedule_itinerary_item(
+   assert schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       start_time='12:00 PM',
    ).success
 
-   result = ItineraryCoordinator.schedule_itinerary_item(
+   result = schedule_itinerary_item(
       item_type='animals',
       key=PENGUIN_KEY,
       start_time='12:00 PM',
@@ -99,15 +99,15 @@ def test_schedule_itinerary_event_uses_default_duration(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.schedule_itinerary_item(
+   result = schedule_itinerary_item(
       item_type=ItineraryEventType.LUNCH.value,
       key='' )
 
    assert result.success
    assert len( result.itinerary.events ) == 1
    assert result.itinerary.events[ 0 ].event_type == ItineraryEventType.LUNCH
-   assert result.itinerary.events[ 0 ].start_time == '09:30'
-   assert result.itinerary.events[ 0 ].end_time == '10:10'
+   assert result.itinerary.events[ 0 ].start_time == '9:30 AM'
+   assert result.itinerary.events[ 0 ].end_time == '10:10 AM'
 
 
 def test_schedule_itinerary_item_returns_no_available_slot(
@@ -126,7 +126,7 @@ def test_schedule_itinerary_item_returns_no_available_slot(
       confirming_short_visit=True,
    ).success
 
-   result = ItineraryCoordinator.schedule_itinerary_item(
+   result = schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
@@ -147,7 +147,7 @@ def test_schedule_itinerary_animal_requires_existing_itinerary_row(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.schedule_itinerary_item(
+   result = schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
@@ -169,7 +169,7 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_confirmed(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.schedule_itinerary_item(
+   result = schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       confirming_schedule_item_not_on_itinerary=True )
@@ -202,7 +202,7 @@ def test_schedule_itinerary_animal_adds_and_schedules_when_warning_suppressed(
    ItineraryCoordinator.suppress_itinerary_warning(
       ItineraryErrorType.ITEM_NOT_ON_ITINERARY.value )
 
-   result = ItineraryCoordinator.schedule_itinerary_item(
+   result = schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 
@@ -232,7 +232,7 @@ def test_schedule_itinerary_item_rejects_duration_without_time(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.schedule_itinerary_item(
+   result = schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY,
       duration_minutes=20 )
@@ -243,7 +243,7 @@ def test_schedule_itinerary_item_rejects_duration_without_time(
 
 def test_schedule_itinerary_item_requires_visit_date(
       db: DbControllers ) -> None:
-   result = ItineraryCoordinator.schedule_itinerary_item(
+   result = schedule_itinerary_item(
       item_type='animals',
       key=ANIMAL_KEY )
 

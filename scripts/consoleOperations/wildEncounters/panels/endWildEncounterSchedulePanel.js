@@ -3,6 +3,7 @@ import {
    createActions,
    createDateField,
    createPanelShell,
+   createScheduleTimesCheckboxField,
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
@@ -16,6 +17,11 @@ export function createEndWildEncounterSchedulePanel() {
             label: APP_STRINGS.entityLabels.wildEncounter,
             inputId: 'endWildEncounterScheduleName',
             emptyOptionLabel: APP_STRINGS.placeholders.wildEncounter,
+         }),
+         createScheduleTimesCheckboxField({
+            label: APP_STRINGS.labels.encounterTimes,
+            inputId: 'endWildEncounterScheduleTimes',
+            helpText: APP_STRINGS.help.endWildEncounterScheduleTimes,
          }),
          createDateField({
             label: APP_STRINGS.labels.endDate,

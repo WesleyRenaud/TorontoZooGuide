@@ -4,11 +4,13 @@ from datetime import date
 
 from itinerary.support import ANIMAL_KEY
 
+from api.itinerary.animal_item_key import AnimalScheduleItemKey
+from api.itinerary.attraction_item_key import AttractionScheduleItemKey
 from api.itinerary.scheduling.core.find_next_available_slot import find_next_available_slot
 from api.itinerary.scheduling.core.scheduling_anchor import scheduling_anchor_seconds
 from api.itinerary.scheduling.core.time_block import time_blocks_overlap
 from api.itinerary.scheduling.core.time_block import TimeBlock
-from api.itinerary.scheduling.items.parse_schedule_item_request import parse_schedule_item_request
+from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
 from api.shared.enums import ItineraryEventType
 from api.shared.enums import ScheduleItemKind
 from api.zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
@@ -26,29 +28,27 @@ def test_schedule_item_kind_from_item_type_accepts_module_types() -> None:
    assert ScheduleItemKind.ATTRACTION.item_type == 'attractions'
 
 
-def test_parse_schedule_item_request_animal_key() -> None:
-   parsed = parse_schedule_item_request( 'animals', ANIMAL_KEY )
+def test_map_schedule_item_key_from_wire_animal_key() -> None:
+   schedule_item_key = map_schedule_item_key_from_wire( 'animals', ANIMAL_KEY )
 
-   assert parsed is not None
-   assert parsed.kind == ScheduleItemKind.ANIMAL
-   assert parsed.species == 'African Lion'
-   assert parsed.exhibit == 'Africa Savanna'
-
-
-def test_parse_schedule_item_request_event_type_as_item_type() -> None:
-   parsed = parse_schedule_item_request( 'lunch', '' )
-
-   assert parsed is not None
-   assert parsed.kind == ScheduleItemKind.EVENT
-   assert parsed.event_type == ItineraryEventType.LUNCH
+   assert schedule_item_key == AnimalScheduleItemKey(
+      species='African Lion',
+      exhibit='Africa Savanna' )
 
 
-def test_parse_schedule_item_request_attraction_key() -> None:
-   parsed = parse_schedule_item_request( 'attractions', 'Conservation Carousel' )
+def test_map_schedule_item_key_from_wire_event_type_as_item_type() -> None:
+   schedule_item_key = map_schedule_item_key_from_wire( 'lunch', '' )
 
-   assert parsed is not None
-   assert parsed.kind == ScheduleItemKind.ATTRACTION
-   assert parsed.attraction_name == 'Conservation Carousel'
+   assert schedule_item_key == ItineraryEventType.LUNCH
+
+
+def test_map_schedule_item_key_from_wire_attraction_key() -> None:
+   schedule_item_key = map_schedule_item_key_from_wire(
+      'attractions',
+      'Conservation Carousel' )
+
+   assert schedule_item_key == AttractionScheduleItemKey(
+      name='Conservation Carousel' )
 
 
 def test_scheduling_anchor_uses_arrival_when_set( db: DbControllers ) -> None:
@@ -80,7 +80,7 @@ def test_find_next_available_slot_skips_overlapping_blockers() -> None:
       duration_seconds=8 * 60,
       day_end_seconds=17 * 3600 )
 
-   assert slot == ( '09:38', '09:46' )
+   assert slot == ( '9:38 AM', '9:46 AM' )
 
 
 def test_find_next_available_slot_returns_none_when_window_is_too_short() -> None:

@@ -17,6 +17,8 @@ import {
    normalizeDate,
    parseLocalDate,
    parseZooClockTimeMinutes,
+   normalizeItineraryScheduleTime,
+   normalizeScheduleTime,
    toISODate,
 } from '../../scripts/visitDates/visitDateRules.js';
 import { makeNoonDate } from './helpers/visitDateMock.mjs';
@@ -134,6 +136,15 @@ test('parses zoo clock strings to minutes from midnight', () => {
    assert.equal(parseZooClockTimeMinutes('12:00 PM'), 12 * 60);
    assert.equal(parseZooClockTimeMinutes(''), null);
    assert.equal(parseZooClockTimeMinutes('25:00'), null);
+});
+
+test('normalizes schedule times to canonical 12-hour display', () => {
+   assert.equal(normalizeScheduleTime('1:00 PM'), '1:00 PM');
+   assert.equal(normalizeScheduleTime('15:30'), '3:30 PM');
+   assert.equal(normalizeScheduleTime('10:00'), '10:00 AM');
+   assert.equal(normalizeScheduleTime(''), null);
+   assert.equal(normalizeScheduleTime('not-a-time'), null);
+   assert.equal(normalizeItineraryScheduleTime('1:00 PM'), '1:00 PM');
 });
 
 test('detects local wall-clock at or after zoo close', () => {

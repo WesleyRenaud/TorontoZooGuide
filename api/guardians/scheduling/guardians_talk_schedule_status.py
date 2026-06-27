@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from .guardians_talk_schedule_end_input import GuardiansTalkScheduleEndInput
 from .guardians_talk_schedule_input import GuardiansTalkScheduleInput
 from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
@@ -44,11 +43,3 @@ def build_guardians_talk_schedule(
       message=message )
 
 
-def build_guardians_talk_schedule_end(
-      talk: str,
-      location: str,
-      schedule_end_date: str ) -> GuardiansTalkScheduleEndInput:
-   return GuardiansTalkScheduleEndInput(
-      talk_name=talk,
-      location=location,
-      schedule_end_date=schedule_end_date )

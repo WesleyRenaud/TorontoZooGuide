@@ -1,6 +1,7 @@
 import {
    normalizeGuardiansTalkForSave,
    normalizeItineraryNamesForSave,
+   normalizeWildEncounterListForSave,
 } from './panel/format.js';
 
 export const ITINERARY_ITEM_KEYS = Object.freeze([
@@ -156,7 +157,7 @@ export function toSetItineraryPayload(draft = {}) {
       animals: base.animals.map(normalizeAnimalForSave).filter(Boolean),
       attractions: normalizeItineraryNamesForSave(base.attractions),
       guardiansTalks: normalizeGuardiansTalkListForSave(base.guardiansTalks),
-      wildEncounters: normalizeItineraryNamesForSave(base.wildEncounters),
+      wildEncounters: normalizeWildEncounterListForSave(base.wildEncounters),
    };
 }
 
@@ -164,10 +165,8 @@ function sortStringsForComparison(values = []) {
    return [...values].map((item) => String(item)).sort((a, b) => a.localeCompare(b));
 }
 
-function sortScheduledItemsForSaveComparison(items = []) {
-   return [...items].sort((left, right) => (
-      left.name.localeCompare(right.name)
-   ));
+function sortWildEncountersForSaveComparison(items = []) {
+   return sortStringsForComparison(items);
 }
 
 function sortAnimalsForSaveComparison(animals = []) {
@@ -213,9 +212,15 @@ export function areItineraryDraftsSemanticallyEqual(left, right) {
       sortScheduledItemsForSaveComparison(rightSave.guardiansTalks),
    )
    && areDraftValuesEqual(
-      sortStringsForComparison(leftSave.wildEncounters),
-      sortStringsForComparison(rightSave.wildEncounters),
+      sortWildEncountersForSaveComparison(leftSave.wildEncounters),
+      sortWildEncountersForSaveComparison(rightSave.wildEncounters),
    );
+}
+
+function sortScheduledItemsForSaveComparison(items = []) {
+   return [...items].sort((left, right) => (
+      left.name.localeCompare(right.name)
+   ));
 }
 
 export function areItineraryDraftsEqual(left, right) {

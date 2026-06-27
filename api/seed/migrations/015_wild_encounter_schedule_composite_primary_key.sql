@@ -1,0 +1,50 @@
+DROP TABLE IF EXISTS WildEncounterScheduleMigration;
+
+CREATE TABLE WildEncounterScheduleMigration
+(  WILD_ENCOUNTER         VARCHAR(64) NOT NULL,
+   SCHEDULE_START_DATE    DATE        NOT NULL,
+   SCHEDULE_END_DATE      DATE,
+   MONDAY                 BOOL        NOT NULL DEFAULT 0,
+   TUESDAY                BOOL        NOT NULL DEFAULT 0,
+   WEDNESDAY              BOOL        NOT NULL DEFAULT 0,
+   THURSDAY               BOOL        NOT NULL DEFAULT 0,
+   FRIDAY                 BOOL        NOT NULL DEFAULT 0,
+   SATURDAY               BOOL        NOT NULL DEFAULT 0,
+   SUNDAY                 BOOL        NOT NULL DEFAULT 0,
+   ENCOUNTER_TIME         TEXT        NOT NULL,
+   SCHEDULE_MESSAGE       TEXT,
+   PRIMARY KEY (WILD_ENCOUNTER, ENCOUNTER_TIME),
+   FOREIGN KEY (WILD_ENCOUNTER) REFERENCES WildEncounter(NAME) );
+
+INSERT OR IGNORE INTO WildEncounterScheduleMigration (
+   WILD_ENCOUNTER,
+   SCHEDULE_START_DATE,
+   SCHEDULE_END_DATE,
+   MONDAY,
+   TUESDAY,
+   WEDNESDAY,
+   THURSDAY,
+   FRIDAY,
+   SATURDAY,
+   SUNDAY,
+   ENCOUNTER_TIME,
+   SCHEDULE_MESSAGE
+)
+SELECT
+   WILD_ENCOUNTER,
+   SCHEDULE_START_DATE,
+   SCHEDULE_END_DATE,
+   MONDAY,
+   TUESDAY,
+   WEDNESDAY,
+   THURSDAY,
+   FRIDAY,
+   SATURDAY,
+   SUNDAY,
+   ENCOUNTER_TIME,
+   SCHEDULE_MESSAGE
+FROM WildEncounterSchedule;
+
+DROP TABLE WildEncounterSchedule;
+
+ALTER TABLE WildEncounterScheduleMigration RENAME TO WildEncounterSchedule;

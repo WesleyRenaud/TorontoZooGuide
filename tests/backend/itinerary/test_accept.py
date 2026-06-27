@@ -61,7 +61,7 @@ def test_accept_itinerary_removes_zero_likelihood_and_deleted_items( db: DbContr
                IS_DELETED
             )
             VALUES
-               ( 'African Lion', '10:00', '10:30', 1 ),
+               ( 'African Lion', '10:00 AM', '10:30 AM', 1 ),
                ( 'Amur Tiger', '11:00', '11:30', 0 );
       """ )
    db.conn.execute(
@@ -72,8 +72,8 @@ def test_accept_itinerary_removes_zero_likelihood_and_deleted_items( db: DbContr
                IS_DELETED
             )
             VALUES
-               ( 'African Rainforest', '14:00', '14:45', 1 ),
-               ( 'Kangaroo', '13:00', '13:45', 0 );
+               ( 'African Rainforest', '2:00 PM', '2:45 PM', 1 ),
+               ( 'Kangaroo', '1:00 PM', '1:45 PM', 0 );
       """ )
    db.conn.commit()
 

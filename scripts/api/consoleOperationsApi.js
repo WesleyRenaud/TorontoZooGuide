@@ -212,6 +212,10 @@ export function endWildEncounterSchedule(payload) {
    return postJson('/end-wild-encounter-schedule', payload);
 }
 
+export function getWildEncounterScheduleTimes(payload) {
+   return postJson('/get-wild-encounter-schedule-times', payload);
+}
+
 export function getWildEncounterOccurrences(payload) {
    return postJson('/get-wild-encounter-occurrences', payload);
 }

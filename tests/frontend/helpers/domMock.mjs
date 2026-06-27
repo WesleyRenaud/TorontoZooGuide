@@ -34,8 +34,14 @@ export function installDocument() {
       addEventListener: () => {},
       removeEventListener: () => {},
       createElement: (tagName) => {
-         if (tagName === 'button') {
+         const normalizedTagName = String(tagName).toLowerCase();
+
+         if (normalizedTagName === 'button') {
             return createDomNode('button');
+         }
+
+         if (normalizedTagName === 'select' || normalizedTagName === 'option') {
+            return createDomNode(normalizedTagName.toUpperCase());
          }
 
          return createDomNode(tagName);

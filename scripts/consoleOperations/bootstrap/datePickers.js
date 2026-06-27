@@ -55,10 +55,6 @@ const DATE_PICKER_BINDINGS = {
             'sundayTimeEl',
          ],
       },
-      {
-         path: ['wildEncounters', 'schedule'],
-         startTimeKey: 'timeEl',
-      },
    ],
 };
 
