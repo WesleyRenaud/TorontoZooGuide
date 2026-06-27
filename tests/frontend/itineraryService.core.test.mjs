@@ -161,7 +161,7 @@ test('acceptItinerary keeps selected animals and attractions', async () => {
    assert.equal(itinerary.attractions[0].name, 'Zoomobile');
 });
 
-test('hasActiveItinerary is false for empty inactive itineraries', async () => {
+test('hasActiveItinerary is true when only a visit date is saved', async () => {
    globalThis.fetch = async (url) => {
       if (url === '/get-itinerary-date') {
          return mockJsonResponse({ date: '2026-06-15' });
@@ -176,9 +176,32 @@ test('hasActiveItinerary is false for empty inactive itineraries', async () => {
                guardians_talks: [],
                wild_encounters: [],
             },
-            itineraryConfig: {
-               isActive: false,
+            itineraryConfig: {},
+         });
+      }
+
+      throw new Error(`Unexpected fetch: ${url}`);
+   };
+
+   assert.equal(await hasActiveItinerary(), true);
+});
+
+test('hasActiveItinerary is false when no itinerary is saved', async () => {
+   globalThis.fetch = async (url) => {
+      if (url === '/get-itinerary-date') {
+         return mockJsonResponse({ date: null });
+      }
+
+      if (url === '/get-itinerary') {
+         return mockJsonResponse({
+            itinerary: {
+               date: null,
+               animals: [],
+               attractions: [],
+               guardians_talks: [],
+               wild_encounters: [],
             },
+            itineraryConfig: {},
          });
       }
 

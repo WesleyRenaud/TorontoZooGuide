@@ -6,6 +6,8 @@ import {
    areItineraryDraftsSemanticallyEqual,
    cloneItineraryDraft,
    createEmptyItineraryDraft,
+   hasSavedItineraryContent,
+   isItineraryCompletelyUnset,
    isItineraryEmptyDraft,
    normalizeItineraryDraft,
    toSetItineraryPayload,
@@ -142,6 +144,18 @@ test('treats a draft with only a date as empty', () => {
    assert.equal(isItineraryEmptyDraft({
       date: '2026-06-15',
       events: [{ event_type: 'lunch', start_time: '12:00', end_time: '12:40' }],
+   }), false);
+});
+
+test('distinguishes date-only drafts from completely unset itineraries', () => {
+   assert.equal(isItineraryEmptyDraft({ date: '2026-06-15' }), true);
+   assert.equal(hasSavedItineraryContent({ date: '2026-06-15' }), true);
+   assert.equal(isItineraryCompletelyUnset({ date: '2026-06-15' }), false);
+   assert.equal(isItineraryCompletelyUnset(null), true);
+   assert.equal(isItineraryCompletelyUnset({}), true);
+   assert.equal(isItineraryEmptyDraft({
+      date: '2026-06-15',
+      animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
    }), false);
 });
 

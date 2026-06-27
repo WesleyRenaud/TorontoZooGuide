@@ -41,6 +41,15 @@ test('normalizeItinerary preserves scheduled generic events', () => {
    assert.equal(isItineraryEmpty(normalized), false);
 });
 
+test('normalizeItinerary treats a date-only itinerary as active saved content', () => {
+   const normalized = normalizeItinerary({
+      date: '2026-06-15',
+   });
+
+   assert.equal(normalized.isActive, true);
+   assert.equal(isItineraryEmpty(normalized), true);
+});
+
 test('normalizeItinerary treats missing collections as empty', () => {
    const normalized = normalizeItinerary({
       animals: 'not-an-array',

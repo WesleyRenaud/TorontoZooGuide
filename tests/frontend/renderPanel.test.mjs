@@ -33,7 +33,22 @@ test.describe('renderItineraryPanelInto', () => {
       },
    });
 
-   test('renders build-only content for an empty itinerary', async () => {
+   test('renders build-only content when no itinerary is saved', async () => {
+      const bodyEl = createDomNode('div', 'side-panel-body');
+
+      await renderItineraryPanelInto(bodyEl, {
+         loadItinerary: async () => null,
+         resolveHoursDate: async () => '2026-06-15',
+         loadZooHours: async () => ZOO_HOURS,
+      });
+
+      assert.equal(bodyEl.children.length, 1);
+      assert.ok(bodyEl.querySelector('.itin-panel-view-toggle'));
+      assert.ok(bodyEl.querySelector('.itin-panel-build-btn'));
+      assert.equal(bodyEl.querySelector('.itin-panel-date'), null);
+   });
+
+   test('renders date-only itineraries the same as other saved itineraries', async () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
 
       await renderItineraryPanelInto(bodyEl, {
@@ -43,23 +58,18 @@ test.describe('renderItineraryPanelInto', () => {
             attractions: [],
             guardiansTalks: [],
             wildEncounters: [],
+            itineraryConfig: POPULATED_ITINERARY.itineraryConfig,
          }),
          resolveHoursDate: async () => '2026-06-15',
          loadZooHours: async () => ZOO_HOURS,
       });
 
-      assert.equal(bodyEl.children.length, 1);
-      assert.ok(bodyEl.querySelector('.itin-panel-view-toggle'));
-      assert.ok(bodyEl.querySelector('.itin-panel-build-btn'));
+      assert.ok(bodyEl.querySelector('.itin-panel-actions-wrap'));
+      assert.ok(bodyEl.querySelector('.itin-panel-date'));
+      assert.ok(bodyEl.querySelector('.itin-panel-section'));
       assert.ok(bodyEl.querySelector('.itinerary-day-planner-content'));
-      assert.equal(
-         bodyEl.querySelectorAll('.itinerary-day-schedule-item-btn').length,
-         3
-      );
-      assert.equal(
-         bodyEl.querySelector('.itinerary-day-schedule-item-btn--destructive')?.textContent,
-         'Unschedule all items'
-      );
+      assert.equal(bodyEl.querySelector('.itin-panel-empty-items-alert'), null);
+      assert.equal(bodyEl.querySelectorAll('.itin-panel-build-btn').length, 0);
    });
 
    test('renders itinerary sections and the day planner for populated itineraries', async () => {
