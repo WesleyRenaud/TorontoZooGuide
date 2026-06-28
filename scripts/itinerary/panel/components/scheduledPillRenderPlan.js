@@ -1,4 +1,5 @@
 import {
+   clusterScheduledAnimalItemsByViewingWalkNode,
    clusterShortScheduledItemsForDisplay,
    getLayoutUnitItems,
    getLayoutUnitScheduleOffsetFraction,
@@ -92,7 +93,9 @@ export function planScheduledPillRenderGroupsByAnchor(
    sortedAnchorSlots.forEach((anchorSlotMinutes) => {
       const anchorItems = itemsByAnchor.get(anchorSlotMinutes) ?? [];
       const layoutUnits = normalizeLayoutUnitsForDisplay(
-         clusterShortScheduledItemsForDisplay(anchorItems),
+         clusterShortScheduledItemsForDisplay(
+            clusterScheduledAnimalItemsByViewingWalkNode(anchorItems)
+         ),
          minDisplayMinutes
       ).sort(compareScheduledItemsForLayout);
 

@@ -40,6 +40,16 @@ test('planScheduledPillRenderGroupsByAnchor clusters short visits in the same sl
    );
 });
 
+test('planScheduledPillRenderGroupsByAnchor groups animals at the same viewing stop', () => {
+   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+      makeScheduledItem('African Penguin', 600, 30, 600, 'v-0652'),
+      makeScheduledItem('White-Breasted Cormorant', 630, 30, 600, 'v-0652'),
+   ]);
+
+   assert.equal(groupsByAnchor.get(600)?.length, 1);
+   assert.equal(groupsByAnchor.get(600)?.[0]?.label, 'African Penguin + 1');
+});
+
 test('planScheduledPillRenderGroupsByAnchor keeps consecutive time buckets visible', () => {
    const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Eurasian Eagle Owl', 990, 2, 990),

@@ -212,6 +212,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
             'is_added': False,
             'start_time': None,
             'end_time': None,
+            'viewing_walk_node_id': None,
             'type': 'animal'
          }
       ],

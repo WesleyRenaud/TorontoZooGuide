@@ -5,8 +5,12 @@ import {
    getScheduledPillMinDisplayMinutes,
    sortScheduledItemsForGroupDisplay,
 } from './scheduledPillOverlap.js';
+import { getScheduledItemViewingWalkNodeId } from './scheduledPillViewingWalkNode.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
-import { isScheduleItemModuleItemType } from '../../../shared/enums/scheduleItemKind.js';
+import {
+   isScheduleItemModuleItemType,
+   ScheduleItemKind,
+} from '../../../shared/enums/scheduleItemKind.js';
 
 function compareScheduledItemsForLayout(leftItem = {}, rightItem = {}) {
    const startDelta = leftItem.startMinutes - rightItem.startMinutes;
@@ -375,6 +379,96 @@ function buildClusterLayoutItem(items = []) {
 
 function areConsecutiveScheduledItems(previousItem = {}, nextItem = {}) {
    return getScheduledItemEndMinutes(previousItem) === nextItem.startMinutes;
+}
+
+function isAnimalScheduledItem(scheduledItem = {}) {
+   return scheduledItem.scheduleItemKind === ScheduleItemKind.ANIMAL.itemType;
+}
+
+function areAdjacentOrOverlappingScheduledItems(previousItem = {}, nextItem = {}) {
+   const previousEndMinutes = getLayoutUnitEndMinutes(previousItem);
+   const nextStartMinutes = Number(nextItem.startMinutes);
+
+   if (!Number.isFinite(previousEndMinutes) || !Number.isFinite(nextStartMinutes)) {
+      return false;
+   }
+
+   return nextStartMinutes <= previousEndMinutes;
+}
+
+function canGroupScheduledItemsByViewingWalkNode(previousItem = {}, nextItem = {}) {
+   if (!isAnimalScheduledItem(nextItem)) {
+      return false;
+   }
+
+   const previousItems = getLayoutUnitItems(previousItem);
+
+   if (!previousItems.every(isAnimalScheduledItem)) {
+      return false;
+   }
+
+   const nextNodeId = getScheduledItemViewingWalkNodeId(nextItem);
+
+   if (!nextNodeId) {
+      return false;
+   }
+
+   if (!previousItems.every((item) => (
+      getScheduledItemViewingWalkNodeId(item) === nextNodeId
+   ))) {
+      return false;
+   }
+
+   return areAdjacentOrOverlappingScheduledItems(previousItem, nextItem);
+}
+
+function flushViewingWalkNodeClusterItems(clusterItems = [], clusters = []) {
+   if (clusterItems.length === 1) {
+      clusters.push(clusterItems[0]);
+   }
+   else if (clusterItems.length > 1) {
+      clusters.push(buildClusterLayoutItem(clusterItems));
+   }
+}
+
+export function clusterScheduledAnimalItemsByViewingWalkNode(scheduledItems = []) {
+   const sortedItems = [...scheduledItems].sort(compareScheduledItemsForLayout);
+   const clusters = [];
+   let clusterItems = [];
+
+   sortedItems.forEach((scheduledItem) => {
+      const previousItem = clusterItems[clusterItems.length - 1];
+
+      if (
+         previousItem
+         && canGroupScheduledItemsByViewingWalkNode(previousItem, scheduledItem)
+      ) {
+         clusterItems.push(scheduledItem);
+         return;
+      }
+
+      flushViewingWalkNodeClusterItems(clusterItems, clusters);
+
+      const lastCluster = clusters[clusters.length - 1];
+
+      if (
+         lastCluster
+         && canGroupScheduledItemsByViewingWalkNode(lastCluster, scheduledItem)
+      ) {
+         clusters.pop();
+         clusterItems = [
+            ...getLayoutUnitItems(lastCluster),
+            scheduledItem,
+         ];
+         return;
+      }
+
+      clusterItems = [scheduledItem];
+   });
+
+   flushViewingWalkNodeClusterItems(clusterItems, clusters);
+
+   return clusters;
 }
 
 export function clusterShortScheduledItemsForDisplay(

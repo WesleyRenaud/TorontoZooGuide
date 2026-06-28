@@ -10,6 +10,7 @@ from ...shared.calendar_dates import DateValues
 from ...shared.enums import ScheduleStatus
 from ...shared.weather import Weather
 from ...types import MonthInput, VisitDay, VisitYear
+from ...walk_graph.resolve_viewing_walk_node_id import apply_viewing_walk_node_id_to_animal
 
 
 def resolve_temperature_likelihood_context(
@@ -232,7 +233,7 @@ def build_viewable_animal_from_record(
       exhibit_closed_message=exhibit_closed_message,
       exhibit_day_seasonal_availability_multiplier=exhibit_day_seasonal_availability_multiplier )
 
-   return Animal(
+   viewable_animal = Animal(
       species=animal.species,
       latin_name=animal.latin_name,
       general_viewing_tips=animal.general_viewing_tips,
@@ -256,6 +257,10 @@ def build_viewable_animal_from_record(
       limited_viewing_message=limited_viewing_message,
       has_viewing_alert=has_viewing_alert,
       viewing_alert_message=viewing_alert_message )
+
+   apply_viewing_walk_node_id_to_animal( viewable_animal )
+
+   return viewable_animal
 
 
 def calculate_viewable_animal_likelihood(

@@ -1,3 +1,4 @@
+import { getAnimalViewingWalkNodeId } from './components/scheduledPillViewingWalkNode.js';
 import { parseClockTimeMinutes } from './dayPlannerSchedule.js';
 import {
    computeMarkerOffsetFraction,
@@ -105,6 +106,7 @@ function buildScheduledAnimalRows(animals = []) {
       const endMinutes = parseClockTimeMinutes(item.end_time);
       const maximumDuration = getDurationMinutesFromScheduleTimes(item);
       const label = getScheduledItemLabel(item);
+      const viewingWalkNodeId = getAnimalViewingWalkNodeId(item);
 
       return {
          index,
@@ -114,6 +116,7 @@ function buildScheduledAnimalRows(animals = []) {
          startMinutes,
          endMinutes,
          maximumDuration,
+         viewingWalkNodeId,
       };
    }).filter((scheduledItem) => (
       scheduledItem.row
