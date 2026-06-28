@@ -34,7 +34,8 @@ class Animal:
          old_likelihood: int | None = None,
          is_added: bool = False,
          start_time: ScheduleTimeKey = None,
-         end_time: ScheduleTimeKey = None ) -> None:
+         end_time: ScheduleTimeKey = None,
+         viewing_walk_node_id: str | None = None ) -> None:
       self.species = species
       self.latin_name = latin_name
       self.general_viewing_tips = general_viewing_tips
@@ -63,6 +64,7 @@ class Animal:
       self.is_added = is_added
       self.start_time = start_time
       self.end_time = end_time
+      self.viewing_walk_node_id = viewing_walk_node_id
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -95,4 +97,5 @@ class Animal:
          'is_added': ValueConversion.as_boolean( self.is_added ),
          'start_time': self.start_time,
          'end_time': self.end_time,
+         'viewing_walk_node_id': self.viewing_walk_node_id,
       }
