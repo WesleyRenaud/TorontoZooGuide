@@ -8,13 +8,15 @@ def delete_itinerary_animal(
       cur: Cursor,
       *,
       species: str,
-      exhibit: str ) -> None:
+      exhibit: str,
+      enclosure_name: str | None = None ) -> None:
    cur.execute(
       """   DELETE FROM ItineraryAnimal
             WHERE SPECIES = ?
-              AND EXHIBIT = ?;
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME IS ?;
          """,
-      ( species, exhibit ),
+      ( species, exhibit, enclosure_name ),
    )
 
 

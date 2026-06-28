@@ -10,11 +10,13 @@ class AnimalDiff:
          exhibit: str,
          old_likelihood: int | None,
          new_likelihood: int | None,
+         enclosure_name: str | None = None,
          is_added: bool = False,
          start_time: ScheduleTimeKey = None,
          end_time: ScheduleTimeKey = None ) -> None:
       self.species = species
       self.exhibit = exhibit
+      self.enclosure_name = enclosure_name
       self.old_likelihood = old_likelihood
       self.new_likelihood = new_likelihood
       self.is_added = is_added
@@ -26,6 +28,7 @@ class AnimalDiff:
       return {
          'species': self.species,
          'exhibit': self.exhibit,
+         'enclosure_name': self.enclosure_name,
          'old_likelihood': self.old_likelihood,
          'new_likelihood': self.new_likelihood,
          'is_added': self.is_added,

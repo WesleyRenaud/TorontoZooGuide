@@ -42,17 +42,19 @@ def save_itinerary_animals( cur: Cursor, animals: list[ AnimalDiff ] ) -> None:
          """   INSERT OR IGNORE INTO ItineraryAnimal (
                   SPECIES,
                   EXHIBIT,
+                  ENCLOSURE_NAME,
                   OLD_LIKELIHOOD,
                   NEW_LIKELIHOOD,
                   IS_ADDED,
                   START_TIME,
                   END_TIME
                )
-               VALUES ( ?, ?, ?, ?, ?, ?, ? );
+               VALUES ( ?, ?, ?, ?, ?, ?, ?, ? );
          """,
          (
             animal.species,
             animal.exhibit,
+            animal.enclosure_name,
             animal.old_likelihood,
             animal.new_likelihood,
             animal.is_added,

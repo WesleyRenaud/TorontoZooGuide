@@ -27,8 +27,8 @@ def itinerary_animal_input_key( animal: ItineraryAnimalInput ) -> tuple[ str, st
 
 
 def merge_itinerary_animal_inputs(
-      animals: tuple[ ItineraryAnimalInput, ... ],
-      animals_from_selected_exhibits: tuple[ ItineraryAnimalInput, ... ] ) -> tuple[ ItineraryAnimalInput, ... ]:
+      animals: list[ ItineraryAnimalInput ],
+      animals_from_selected_exhibits: list[ ItineraryAnimalInput ] ) -> list[ ItineraryAnimalInput ]:
    merged: list[ ItineraryAnimalInput ] = []
    seen: set[ tuple[ str, str ] ] = set()
 
@@ -41,15 +41,15 @@ def merge_itinerary_animal_inputs(
       seen.add( key )
       merged.append( animal )
 
-   return tuple( merged )
+   return merged
 
 
 def build_itinerary_animal_inputs_from_selected_exhibits(
       save_input: ItinerarySaveInput,
       animal_coordinator: type[ AnimalCoordinator ],
-      visit_date_temp: float | None = None ) -> tuple[ ItineraryAnimalInput, ... ]:
+      visit_date_temp: float | None = None ) -> list[ ItineraryAnimalInput ]:
    if not save_input.selected_exhibits:
-      return ()
+      return []
 
    animals = animal_coordinator.get_animals_viewable_on_day(
       day=save_input.day(),
@@ -60,13 +60,13 @@ def build_itinerary_animal_inputs_from_selected_exhibits(
       threshold=0,
       exhibits_to_include=list( save_input.selected_exhibits ) )
 
-   return tuple(
+   return [
       ItineraryAnimalInput(
          species=animal.species,
          exhibit=animal.exhibit )
       for animal in animals
       if animal.exhibit != None
-   )
+   ]
 
 
 def expand_selected_exhibit_animals(
@@ -85,12 +85,12 @@ def expand_selected_exhibit_animals(
       itinerary_animal_input_key( animal )
       for animal in save_input.animals
    }
-   animals_from_selected_exhibits = tuple(
+   animals_from_selected_exhibits = [
       replace(
          animal,
          is_added=itinerary_animal_input_key( animal ) not in original_animal_keys )
       for animal in animals_from_selected_exhibits
-   )
+   ]
 
    return replace(
       save_input,

@@ -1,0 +1,39 @@
+DROP TABLE IF EXISTS ItineraryAnimalMigration;
+
+CREATE TABLE ItineraryAnimalMigration
+(  SPECIES              VARCHAR(64) NOT NULL,
+   EXHIBIT              VARCHAR(64) NOT NULL,
+   ENCLOSURE_NAME       VARCHAR(64),
+   OLD_LIKELIHOOD       INTEGER,
+   NEW_LIKELIHOOD       INTEGER,
+   IS_ADDED             BOOL        NOT NULL DEFAULT 0,
+   START_TIME           TEXT,
+   END_TIME             TEXT,
+   PRIMARY KEY ( SPECIES, EXHIBIT, ENCLOSURE_NAME ),
+   FOREIGN KEY ( SPECIES, EXHIBIT, ENCLOSURE_NAME )
+      REFERENCES EnclosureViewing( SPECIES, EXHIBIT, NAME ) );
+
+INSERT OR IGNORE INTO ItineraryAnimalMigration (
+   SPECIES,
+   EXHIBIT,
+   ENCLOSURE_NAME,
+   OLD_LIKELIHOOD,
+   NEW_LIKELIHOOD,
+   IS_ADDED,
+   START_TIME,
+   END_TIME
+)
+SELECT
+   SPECIES,
+   EXHIBIT,
+   NULL,
+   OLD_LIKELIHOOD,
+   NEW_LIKELIHOOD,
+   IS_ADDED,
+   START_TIME,
+   END_TIME
+FROM ItineraryAnimal;
+
+DROP TABLE ItineraryAnimal;
+
+ALTER TABLE ItineraryAnimalMigration RENAME TO ItineraryAnimal;

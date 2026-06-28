@@ -11,6 +11,7 @@ def map_itinerary_animal_record( row: Row ) -> ItineraryAnimalRecord:
    return ItineraryAnimalRecord(
       species=row[ 'SPECIES' ],
       exhibit=row[ 'EXHIBIT' ],
+      enclosure_name=row[ 'ENCLOSURE_NAME' ],
       old_likelihood=row[ 'OLD_LIKELIHOOD' ],
       new_likelihood=row[ 'NEW_LIKELIHOOD' ],
       is_added=ValueConversion.as_boolean( row[ 'IS_ADDED' ] ),

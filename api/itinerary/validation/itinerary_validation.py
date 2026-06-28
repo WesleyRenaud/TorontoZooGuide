@@ -34,7 +34,7 @@ from ...wild_encounters.itinerary.wild_encounter_itinerary_validation import val
 
 def validate_itinerary_animals(
       animal_coordinator: type[ AnimalCoordinator ],
-      animals: tuple[ ItineraryAnimalInput, ... ],
+      animals: list[ ItineraryAnimalInput ],
       new_visit_date: date,
       *,
       arrival_time: ScheduleTimeKey,

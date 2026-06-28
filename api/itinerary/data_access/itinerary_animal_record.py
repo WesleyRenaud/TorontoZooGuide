@@ -10,8 +10,9 @@ from ...types import ScheduleTimeKey
 class ItineraryAnimalRecord:
    species: str
    exhibit: str
-   old_likelihood: int | None
-   new_likelihood: int | None
+   enclosure_name: str | None = None
+   old_likelihood: int | None = None
+   new_likelihood: int | None = None
    is_added: bool = False
    start_time: ScheduleTimeKey = None
    end_time: ScheduleTimeKey = None
