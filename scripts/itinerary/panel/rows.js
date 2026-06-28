@@ -30,6 +30,11 @@ import {
    buildScheduledTimeFieldLine,
    buildTitleLinkRowProps,
 } from './rowPresentation.js';
+import {
+   getAnimalEnclosureName,
+   getAnimalSpecies,
+   getAnimalSubtitle,
+} from '../selectors/animalSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 
 export function buildAnimalRows(
@@ -46,14 +51,14 @@ export function buildAnimalRows(
          buildUniqueAnimals(normalizedItems)
       ),
       buildRowProps: (animal) => {
-         const name = animal.species || 'Animal';
          const alert = buildAnimalAlert(animal);
 
          return {
-            name,
-            imageSrc: buildImageSrc('animals', animal.exhibit, name),
+            species: getAnimalSpecies(animal),
+            enclosureName: getAnimalEnclosureName(animal),
+            imageSrc: buildImageSrc('animals', animal.exhibit, getAnimalSpecies(animal)),
             metaLines: buildMetaLines([
-               buildFieldLine('Exhibit', animal.exhibit),
+               getAnimalSubtitle(animal),
                buildApproximateStartTimeFieldLine(animal),
             ]),
             alertLine: alert.line,

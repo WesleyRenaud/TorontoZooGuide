@@ -59,7 +59,7 @@ test('renderSearchResults shows thumbnails for animals and attractions', () => {
    );
 
    const animalTitle = findDescendant(animalRow, 'animal-result-species');
-   assert.ok(animalTitle?.className.includes('species-link'));
+   assert.ok(findDescendant(animalRow, 'species-link'));
 
    const attractionRow = resultsEl.children[1];
    const attractionContent = findDescendant(attractionRow, 'itin-animal-content');
@@ -93,7 +93,7 @@ test('renderSearchResults links wild encounter titles when url is present', () =
    const title = findDescendant(row, 'animal-result-species');
    const img = findDescendant(row, 'itin-animal-thumb-img');
 
-   assert.ok(title?.className.includes('species-link'));
+   assert.ok(findDescendant(row, 'species-link'));
    assert.equal(title?.textContent, 'African Rainforest Wild Encounter');
    assert.equal(
       findDescendant(row, 'animal-result-exhibit')?.textContent,

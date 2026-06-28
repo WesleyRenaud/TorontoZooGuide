@@ -1,4 +1,8 @@
 import { buildDetailImageSrc } from '../assets/detailImageSrc.js';
+import {
+   getAnimalSubtitle,
+   getAnimalTitleLine,
+} from '../itinerary/selectors/animalSelector/model.js';
 import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/base/resultRenderer.js';
 import { normalizeStoredLink } from '../itinerary/selectors/base/storedSelection.js';
 import {
@@ -89,10 +93,8 @@ export const SEARCH_RESULT_PRESENTATIONS = {
 };
 
 const DEFAULT_SEARCH_RESULT_PRESENTATION = {
-   getTitle: (row) => row.species || APP_STRINGS.entityLabels.animal,
-   getSubtitle: (row) => row.exhibit
-      ? `${APP_STRINGS.entityLabels.exhibit}: ${row.exhibit}`
-      : APP_STRINGS.entityLabels.animal,
+   getTitle: getAnimalTitleLine,
+   getSubtitle: getAnimalSubtitle,
 };
 
 export function getSearchResultPresentation(row) {

@@ -1,4 +1,7 @@
-import { createSpeciesLinkTitleElement } from '../../../animals/createSpeciesLinkTitle.js';
+import {
+   createAnimalTitleLinkElement,
+   createSpeciesLinkTitleElement,
+} from '../../../animals/createSpeciesLinkTitle.js';
 import { el } from '../dom.js';
 import {
    bindPillMenu,
@@ -6,6 +9,16 @@ import {
 } from './itineraryPillMenu.js';
 
 export function createPillLabelNode(label, className, onLabelClick = null) {
+   if (label && typeof label === 'object') {
+      return createAnimalTitleLinkElement({
+         species: label.species,
+         enclosureName: label.enclosureName,
+         className,
+         tagName: 'span',
+         onClick: onLabelClick,
+      });
+   }
+
    return createSpeciesLinkTitleElement({
       text: label,
       className,

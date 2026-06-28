@@ -36,6 +36,7 @@ function createNode(tagName, className = '', textContent = '') {
    const listeners = {};
    const attributes = {};
    const classes = new Set(className ? className.split(/\s+/).filter(Boolean) : []);
+   let ownTextContent = textContent;
 
    const node = {
       tagName,
@@ -51,7 +52,25 @@ function createNode(tagName, className = '', textContent = '') {
             }
          }
       },
-      textContent,
+      get textContent() {
+         if (children.length === 0) {
+            return ownTextContent;
+         }
+
+         return children
+            .map((child) => child.textContent ?? '')
+            .join('');
+      },
+      set textContent(value) {
+         ownTextContent = value;
+
+         for (const child of children) {
+            child.parentElement = null;
+            child.parent = null;
+         }
+
+         children.length = 0;
+      },
       children,
       listeners,
       attributes,
@@ -228,10 +247,15 @@ function nodeMatchesSelector(node, selector) {
 }
 
 function allTextFor(node) {
-   return [
-      node.textContent,
-      ...(node.children ?? []).map(allTextFor),
-   ].flat(Infinity).filter(Boolean).join(' ');
+   const childText = (node.children ?? [])
+      .map(allTextFor)
+      .filter((text) => text.length > 0);
+
+   if (childText.length > 0) {
+      return childText.join(' ');
+   }
+
+   return node.textContent ?? '';
 }
 
 function timelinePillTexts(planner) {

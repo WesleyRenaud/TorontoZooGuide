@@ -1,3 +1,8 @@
+import {
+   formatExhibitEnclosureTypeLine,
+   formatSpeciesEnclosureLine,
+} from '../../../animals/animalDisplayLines.js';
+import { asNullableString } from '../../../api/normalizeValues.js';
 import { normalizeAssetKey } from '../../../assets/normalizeAssetKey.js';
 import {
    migrateStoredSelectionItems,
@@ -5,6 +10,7 @@ import {
    normalizeStoredLink,
    normalizeStoredString,
 } from '../base/storedSelection.js';
+import { isEnclosureType } from '../../../shared/enums/enclosureType.js';
 
 export const OFF_DISPLAY_WARNING_THRESHOLD = 80;
 
@@ -18,6 +24,34 @@ export function getAnimalExhibit(row) {
    return typeof row?.exhibit === 'string'
       ? row.exhibit
       : '';
+}
+
+export function getAnimalEnclosureName(row) {
+   const enclosureName = asNullableString(row?.enclosure_name);
+
+   if (enclosureName && isEnclosureType(enclosureName)) {
+      return null;
+   }
+
+   return enclosureName;
+}
+
+export function getAnimalEnclosureType(row) {
+   if (typeof row?.enclosure_type !== 'string') {
+      return '';
+   }
+
+   if (isEnclosureType(row.enclosure_type)) {
+      return '';
+   }
+
+   return row.enclosure_type;
+}
+
+export function getAnimalTitleLine(row) {
+   return formatSpeciesEnclosureLine(
+      getAnimalSpecies(row),
+      getAnimalEnclosureName(row));
 }
 
 export function getAnimalId(row) {
@@ -54,8 +88,9 @@ export function isLikelyOffDisplayAnimal(row, threshold = OFF_DISPLAY_WARNING_TH
 }
 
 export function getAnimalSubtitle(row) {
-   const exhibit = getAnimalExhibit(row);
-   return exhibit ? `Exhibit: ${exhibit}` : '';
+   return formatExhibitEnclosureTypeLine(
+      getAnimalExhibit(row),
+      getAnimalEnclosureType(row));
 }
 
 export function buildAnimalImageSrc(row) {

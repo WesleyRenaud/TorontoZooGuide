@@ -12,11 +12,12 @@ import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 function createCheckboxOption({ value, label, checked = false }) {
    const labelEl = createDomNode('label');
    const checkbox = createDomNode('input');
+   const labelText = createDomNode('#text', '', label);
 
    checkbox.type = 'checkbox';
    checkbox.value = value;
    checkbox.checked = checked;
-   labelEl.textContent = label;
+   labelEl.appendChild(labelText);
    labelEl.appendChild(checkbox);
    checkbox.closest = (selector) => (
       selector === 'label' ? labelEl : null

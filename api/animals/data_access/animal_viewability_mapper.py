@@ -25,6 +25,7 @@ def map_animal_viewability_row( row: Row ) -> AnimalViewabilityRecord:
       seasonal_viewing_summary=row[ 'SEASONAL_VIEWING_SUMMARY' ],
       seasonal_viewing_information=row[ 'SEASONAL_VIEWING_INFORMATION' ],
       enclosure_type=row[ 'ENCLOSURE_TYPE' ],
+      enclosure_name=row[ 'ENCLOSURE_NAME' ],
       seasonally_off_display_message=row[ 'SEASONALLY_OFF_DISPLAY_MESSAGE' ],
       x_coord=row[ 'X_COORD' ],
       y_coord=row[ 'Y_COORD' ],

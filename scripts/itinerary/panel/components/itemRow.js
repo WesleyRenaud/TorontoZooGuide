@@ -1,19 +1,33 @@
-import { createSpeciesLinkTitleElement } from '../../../animals/createSpeciesLinkTitle.js';
+import {
+   createAnimalTitleLinkElement,
+   createSpeciesLinkTitleElement,
+} from '../../../animals/createSpeciesLinkTitle.js';
 import {
    el,
    safeImg,
 } from '../dom.js';
 
-function appendItemName(text, { name, onNameClick }) {
-   text.appendChild(createSpeciesLinkTitleElement({
+function createItemNameElement({ name, species, enclosureName, onNameClick } = {}) {
+   if (species !== undefined) {
+      return createAnimalTitleLinkElement({
+         species,
+         enclosureName,
+         className: 'itin-panel-name',
+         onClick: onNameClick,
+      });
+   }
+
+   return createSpeciesLinkTitleElement({
       text: name,
       className: 'itin-panel-name',
       onClick: onNameClick,
-   }));
+   });
 }
 
 export function makeItemRow({
    name,
+   species,
+   enclosureName,
    imageSrc,
    metaLines = [],
    alertLine = '',
@@ -37,7 +51,7 @@ export function makeItemRow({
    }
 
    const text = el('div', 'itin-panel-text');
-   appendItemName(text, { name, onNameClick });
+   text.appendChild(createItemNameElement({ name, species, enclosureName, onNameClick }));
 
    metaLines.forEach(line => {
       if (!line) return;

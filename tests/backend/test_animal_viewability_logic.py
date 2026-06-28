@@ -29,6 +29,7 @@ def make_animal_viewability_record( **overrides: object ) -> AnimalViewabilityRe
       'seasonal_viewing_summary': None,
       'seasonal_viewing_information': None,
       'enclosure_type': None,
+      'enclosure_name': None,
       'seasonally_off_display_message': None,
       'x_coord': None,
       'y_coord': None,

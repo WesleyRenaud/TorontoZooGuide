@@ -1,4 +1,13 @@
+import {
+   formatExhibitEnclosureTypeLine,
+   formatSpeciesEnclosureLine,
+} from '../animals/animalDisplayLines.js';
 import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
+import {
+   getAnimalEnclosureName,
+   getAnimalEnclosureType,
+   getAnimalExhibit,
+} from '../itinerary/selectors/animalSelector/model.js';
 import { APP_STRINGS } from '../strings.js';
 
 function readText(value) {
@@ -53,16 +62,21 @@ export function buildSpeciesContent(animal) {
    const fragment = document.createDocumentFragment();
    const species = readText(animal?.species);
    const latinName = readText(animal?.latin_name);
-   const exhibit = readText(animal?.exhibit);
+   const titleLine = formatSpeciesEnclosureLine(species, getAnimalEnclosureName(animal));
+   const exhibitLine = formatExhibitEnclosureTypeLine(
+      getAnimalExhibit(animal),
+      getAnimalEnclosureType(animal));
 
    fragment.appendChild(createSpeciesImage(animal));
-   fragment.appendChild(createTextElement('h2', 'animal-species-name', species));
+   fragment.appendChild(createTextElement('h2', 'animal-species-name', titleLine || species));
 
    if (latinName) {
       fragment.appendChild(createTextElement('h6', 'latin-name', latinName));
    }
 
-   fragment.appendChild(createTextElement('h4', 'animal-exhibit', exhibit));
+   if (exhibitLine) {
+      fragment.appendChild(createTextElement('h4', 'animal-exhibit', exhibitLine));
+   }
 
    APP_STRINGS.animalsPage.detailSections.forEach(([title, key]) => {
       appendIfPresent(

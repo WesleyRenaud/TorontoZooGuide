@@ -200,6 +200,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
             'seasonal_viewing_information': 'Indoor access during extreme weather.',
             'off_display_message': 'Temporarily resting.',
             'enclosure_type': 'Outdoor',
+            'enclosure_name': None,
             'x_coord': 12,
             'y_coord': 34,
             'likelihood': 85,

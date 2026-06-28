@@ -12,7 +12,11 @@ import {
    buildWildRows,
 } from './rows.js';
 import { formatItineraryEventTypeLabel } from './scheduleItemEventLabels.js';
-import { getAnimalId } from '../selectors/animalSelector/model.js';
+import {
+   getAnimalEnclosureName,
+   getAnimalId,
+   getAnimalSpecies,
+} from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getWildEncounterKey } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
@@ -34,7 +38,14 @@ function hasItineraryScheduleTimes(item) {
 }
 
 function getScheduledItemLabel(item) {
-   return String(item?.species || item?.name || '').trim();
+   if (item?.species) {
+      return {
+         species: getAnimalSpecies(item),
+         enclosureName: getAnimalEnclosureName(item),
+      };
+   }
+
+   return String(item?.name || '').trim();
 }
 
 function getItineraryEventType(item) {

@@ -13,6 +13,7 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
    const listeners = {};
    const classes = new Set(className ? className.split(/\s+/).filter(Boolean) : []);
    const attributes = {};
+   let ownTextContent = textContent;
 
    const node = {
       tagName,
@@ -28,7 +29,25 @@ export function createDomNode(tagName = 'div', className = '', textContent = '')
             }
          }
       },
-      textContent,
+      get textContent() {
+         if (children.length === 0) {
+            return ownTextContent;
+         }
+
+         return children
+            .map((child) => child.textContent ?? '')
+            .join('');
+      },
+      set textContent(value) {
+         ownTextContent = value;
+
+         for (const child of children) {
+            child.parentElement = null;
+            child.parent = null;
+         }
+
+         children.length = 0;
+      },
       children,
       listeners,
       dataset: {},

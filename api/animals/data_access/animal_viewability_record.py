@@ -24,6 +24,7 @@ class AnimalViewabilityRecord:
    seasonal_viewing_summary: str | None
    seasonal_viewing_information: str | None
    enclosure_type: str | None
+   enclosure_name: str | None
    seasonally_off_display_message: str | None
    x_coord: Coordinate
    y_coord: Coordinate

@@ -1,5 +1,11 @@
+import { createAnimalTitleLinkElement } from '../../animals/createSpeciesLinkTitle.js';
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createTooltipCard } from './cardFactory.js';
+import {
+   getAnimalEnclosureName,
+   getAnimalSpecies,
+   getAnimalSubtitle,
+} from '../../itinerary/selectors/animalSelector/model.js';
 import { getLikelihoodPhrase } from '../../likelihood/likelihoodPresentation.js';
 
 export const animalRenderer = {
@@ -26,18 +32,21 @@ export const animalRenderer = {
             alt: a.species,
          },
          title: {
-            text: a.species,
-            className: 'species-link',
-            dataset: {
-               index,
-               species: a.species,
-               exhibit: a.exhibit,
-               enclosure: a.enclosure_type,
-            },
+            element: createAnimalTitleLinkElement({
+               species: getAnimalSpecies(a),
+               enclosureName: getAnimalEnclosureName(a),
+               tagName: 'strong',
+               className: 'tooltip-card-title',
+               dataset: {
+                  index,
+                  species: a.species,
+                  exhibit: a.exhibit,
+                  enclosure: a.enclosure_type,
+               },
+            }),
          },
          details: [
-            `Exhibit: ${a.exhibit}`,
-            `Enclosure Type: ${a.enclosure_type}`,
+            getAnimalSubtitle(a),
             `Likelihood: ${getLikelihoodPhrase(a.likelihood)} (~${a.likelihood}%)`,
          ],
       });
