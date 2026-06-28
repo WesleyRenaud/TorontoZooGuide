@@ -63,7 +63,7 @@ def fetch_animal_names_in_exhibit( conn: Connection, exhibit: str ) -> list[ str
 
    try:
       data = cur.execute(
-         """   SELECT
+         """   SELECT DISTINCT
                   a.SPECIES
                FROM Animal a
                JOIN Enclosure e

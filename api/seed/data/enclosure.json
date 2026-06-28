@@ -42,13 +42,6 @@
     "default_itinerary_duration_minutes": 1
   },
   {
-    "species": "Demoiselle Crane",
-    "exhibit": "Australasia Pavilion",
-    "seasonal_viewing_summary": "Mar-Nov",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
-  },
-  {
     "species": "Eastern Rosella",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -285,6 +278,13 @@
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
     "default_itinerary_duration_minutes": 0.5
+  },
+  {
+    "species": "Demoiselle Crane",
+    "exhibit": "Australasia Pavilion",
+    "seasonal_viewing_summary": "Mar-Nov",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Western Grey Kangaroo",
@@ -903,6 +903,13 @@
     "default_itinerary_duration_minutes": 7
   },
   {
+    "species": "White-Breasted Cormorant",
+    "exhibit": "Africa Savanna",
+    "seasonal_viewing_summary": "Outdoor: Mar-Nov, Indoor: Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 1
+  },
+  {
     "species": "Cheetah",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",
@@ -924,18 +931,39 @@
     "default_itinerary_duration_minutes": 3
   },
   {
-    "species": "Grevy's Zebra",
-    "exhibit": "Africa Savanna",
-    "seasonal_viewing_summary": "Mar-Nov",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
-  },
-  {
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Jun-Sep",
     "seasonal_viewing_information": null,
     "default_itinerary_duration_minutes": 2
+  },
+  {
+    "species": "Southern Ground Hornbill",
+    "exhibit": "Africa Savanna",
+    "seasonal_viewing_summary": "Jun-Sep",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 2
+  },
+  {
+    "species": "White-Headed Vulture",
+    "exhibit": "Africa Savanna",
+    "seasonal_viewing_summary": "Jun-Sep",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 2
+  },
+  {
+    "species": "Ostrich",
+    "exhibit": "Africa Savanna",
+    "seasonal_viewing_summary": "Apr-Nov",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 5
+  },
+  {
+    "species": "Grevy's Zebra",
+    "exhibit": "Africa Savanna",
+    "seasonal_viewing_summary": "Mar-Nov",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Masai Giraffe",
@@ -952,25 +980,11 @@
     "default_itinerary_duration_minutes": 5
   },
   {
-    "species": "Ostrich",
-    "exhibit": "Africa Savanna",
-    "seasonal_viewing_summary": "Apr-Nov",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
-  },
-  {
     "species": "River Hippopotamus",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "May-Oct",
     "seasonal_viewing_information": null,
     "default_itinerary_duration_minutes": 10
-  },
-  {
-    "species": "Southern Ground Hornbill",
-    "exhibit": "Africa Savanna",
-    "seasonal_viewing_summary": "Jun-Sep",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Southern White Rhinoceros",
@@ -1001,39 +1015,11 @@
     "default_itinerary_duration_minutes": 3
   },
   {
-    "species": "White-Breasted Cormorant",
-    "exhibit": "Africa Savanna",
-    "seasonal_viewing_summary": "Outdoor: Mar-Nov, Indoor: Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
-  },
-  {
-    "species": "White-Headed Vulture",
-    "exhibit": "Africa Savanna",
-    "seasonal_viewing_summary": "Jun-Sep",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
-  },
-  {
     "species": "African Clawed Frog",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
     "default_itinerary_duration_minutes": 0.5
-  },
-  {
-    "species": "African Spoonbill",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
-  },
-  {
-    "species": "Aldabra Tortoise",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Outdoor: Jun-Sep, Indoor: Oct-May",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Black Crake",
@@ -1048,20 +1034,6 @@
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
     "default_itinerary_duration_minutes": 1
-  },
-  {
-    "species": "Gaboon Viper",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
-  },
-  {
-    "species": "Grey-Necked Crowned Crane",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Hamerkop",
@@ -1113,55 +1085,6 @@
     "default_itinerary_duration_minutes": 0.5
   },
   {
-    "species": "Nile Soft-Shelled Turtle",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
-  },
-  {
-    "species": "Pygmy Hippopotamus",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
-  },
-  {
-    "species": "Radiated Tortoise",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
-  },
-  {
-    "species": "Red River Hog",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Apr-Nov",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
-  },
-  {
-    "species": "Ring-Tailed Lemur",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
-  },
-  {
-    "species": "Royal Python",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
-  },
-  {
-    "species": "Sacred Ibis",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
-  },
-  {
     "species": "Slender-Tailed Meerkat",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -1176,13 +1099,6 @@
     "default_itinerary_duration_minutes": 2
   },
   {
-    "species": "South African Shelduck",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
-  },
-  {
     "species": "Speckled Mousebird",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
@@ -1191,13 +1107,6 @@
   },
   {
     "species": "Spider Tortoise",
-    "exhibit": "African Rainforest Pavilion",
-    "seasonal_viewing_summary": "Year-round",
-    "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
-  },
-  {
-    "species": "Straw Coloured Fruit Bat",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
@@ -1230,6 +1139,97 @@
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
     "default_itinerary_duration_minutes": 2
+  },
+  {
+    "species": "Aldabra Tortoise",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Outdoor: Jun-Sep, Indoor: Oct-May",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 3
+  },
+  {
+    "species": "Gaboon Viper",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 1
+  },
+  {
+    "species": "Grey-Necked Crowned Crane",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 3
+  },
+  {
+    "species": "Ring-Tailed Lemur",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 3
+  },
+  {
+    "species": "Royal Python",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 1
+  },
+  {
+    "species": "African Spoonbill",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 1
+  },
+  {
+    "species": "Nile Soft-Shelled Turtle",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 1
+  },
+  {
+    "species": "Pygmy Hippopotamus",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 3
+  },
+  {
+    "species": "Radiated Tortoise",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 1
+  },
+  {
+    "species": "Sacred Ibis",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 1
+  },
+  {
+    "species": "South African Shelduck",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 1
+  },
+  {
+    "species": "Straw Coloured Fruit Bat",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Year-round",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 1
+  },
+  {
+    "species": "Red River Hog",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Apr-Nov",
+    "seasonal_viewing_information": null,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Western Lowland Gorilla",

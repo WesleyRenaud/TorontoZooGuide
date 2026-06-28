@@ -2199,10 +2199,10 @@
     "species": "West Caucasian Tur",
     "exhibit": "Eurasia Wilds",
     "enclosure_type": "Outdoor",
-    "x": 88.224,
-    "y": 93.671,
-    "walk_node_id": "v-1023",
-    "snap_distance_px": 159.61
+    "x": 53.4,
+    "y": 87.672,
+    "walk_node_id": "v-0087",
+    "snap_distance_px": 148.245
   },
   {
     "species": "Western Blacknose Dace",

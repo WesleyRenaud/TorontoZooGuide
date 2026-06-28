@@ -33,6 +33,11 @@ from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animal
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
+# TODO: bulk scheduling currently stores one start/end time per species+exhibit in
+# ItineraryAnimal. Update this flow to schedule each EnclosureViewing (by name)
+# separately when an animal has multiple viewing spots.
+
+
 def has_itinerary_schedule_times(
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey ) -> bool:
