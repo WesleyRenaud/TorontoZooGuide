@@ -28,15 +28,17 @@ def clear_itinerary_animal_schedule(
       cur: Cursor,
       *,
       species: str,
-      exhibit: str ) -> None:
+      exhibit: str,
+      enclosure_name: str | None = None ) -> None:
    cur.execute(
       """   UPDATE ItineraryAnimal
             SET START_TIME = NULL,
                 END_TIME = NULL
             WHERE SPECIES = ?
-              AND EXHIBIT = ?;
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME IS ?;
          """,
-      ( species, exhibit ),
+      ( species, exhibit, enclosure_name ),
    )
 
 

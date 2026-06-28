@@ -327,5 +327,5 @@ class ItineraryCoordinator():
          attractions_to_keep: list[ str ] | None = None ) -> bool:
       return accept_itinerary(
          get_connection(),
-         animals_to_keep=list( map_animal_inputs( animals_to_keep ) ),
-         attractions_to_keep=list( map_named_strings( attractions_to_keep ) ) )
+         animals_to_keep=map_animal_inputs( animals_to_keep ),
+         attractions_to_keep=map_named_strings( attractions_to_keep ) )

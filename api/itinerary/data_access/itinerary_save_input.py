@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 from .itinerary_animal_input import ItineraryAnimalInput
@@ -14,11 +14,11 @@ class ItinerarySaveInput:
    date: date
    arrival_time: ScheduleTimeKey
    departure_time: ScheduleTimeKey
-   animals: tuple[ ItineraryAnimalInput, ... ]
-   attractions: tuple[ str, ... ]
-   guardians_talks: tuple[ ItineraryGuardiansTalkInput, ... ]
-   wild_encounters: tuple[ WildEncounterScheduleItemKey, ... ]
-   selected_exhibits: tuple[ str, ... ] = ()
+   animals: list[ ItineraryAnimalInput ]
+   attractions: list[ str ]
+   guardians_talks: list[ ItineraryGuardiansTalkInput ]
+   wild_encounters: list[ WildEncounterScheduleItemKey ]
+   selected_exhibits: list[ str ] = field( default_factory=list )
 
 
    def month( self ) -> int:

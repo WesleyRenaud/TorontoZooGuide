@@ -107,6 +107,30 @@ def test_as_boolean( value: Any, expected: bool ) -> None:
    assert ValueConversion.as_boolean( value ) is expected
 
 
+@pytest.mark.parametrize(
+   'value, expected',
+   [
+      ( None, '' ),
+      ( '  Lion  ', 'Lion' ),
+      ( 42, '42' ),
+   ]
+)
+def test_as_trimmed_string( value: Any, expected: str ) -> None:
+   assert ValueConversion.as_trimmed_string( value ) == expected
+
+
+@pytest.mark.parametrize(
+   'value, expected',
+   [
+      ( None, None ),
+      ( '   ', None ),
+      ( '  Lion  ', 'Lion' ),
+   ]
+)
+def test_as_nullable_string( value: Any, expected: str | None ) -> None:
+   assert ValueConversion.as_nullable_string( value ) == expected
+
+
 def test_temperature_helpers_are_stable() -> None:
    assert Weather.get_average_temperature( 'Jan', 1 ) == -5.0
    assert Weather.get_average_temperature( 'Jul', 1 ) == 26.0

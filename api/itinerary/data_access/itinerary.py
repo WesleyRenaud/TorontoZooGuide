@@ -50,6 +50,7 @@ def fetch_itinerary_animal_rows( conn: Connection ) -> list[ ItineraryAnimalReco
       """   SELECT
                SPECIES,
                EXHIBIT,
+               ENCLOSURE_NAME,
                OLD_LIKELIHOOD,
                NEW_LIKELIHOOD,
                IS_ADDED,

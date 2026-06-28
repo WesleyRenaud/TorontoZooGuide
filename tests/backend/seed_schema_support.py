@@ -231,6 +231,7 @@ EXPECTED_RUNTIME_COLUMNS = {
    'ItineraryAnimal': {
       'SPECIES',
       'EXHIBIT',
+      'ENCLOSURE_NAME',
       'OLD_LIKELIHOOD',
       'NEW_LIKELIHOOD',
       'IS_ADDED',

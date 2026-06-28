@@ -10,23 +10,26 @@ def insert_itinerary_animal_schedule(
       *,
       species: str,
       exhibit: str,
+      enclosure_name: str | None = None,
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey ) -> bool:
    cur.execute(
       """   INSERT OR IGNORE INTO ItineraryAnimal (
                   SPECIES,
                   EXHIBIT,
+                  ENCLOSURE_NAME,
                   OLD_LIKELIHOOD,
                   NEW_LIKELIHOOD,
                   IS_ADDED,
                   START_TIME,
                   END_TIME
                )
-               VALUES ( ?, ?, ?, ?, ?, ?, ? );
+               VALUES ( ?, ?, ?, ?, ?, ?, ?, ? );
          """,
          (
             species,
             exhibit,
+            enclosure_name,
             None,
             None,
             False,
@@ -71,6 +74,7 @@ def update_itinerary_animal_schedule(
       *,
       species: str,
       exhibit: str,
+      enclosure_name: str | None = None,
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey ) -> bool:
    cur.execute(
@@ -78,13 +82,15 @@ def update_itinerary_animal_schedule(
             SET START_TIME = ?,
                 END_TIME = ?
             WHERE SPECIES = ?
-              AND EXHIBIT = ?;
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME IS ?;
          """,
          (
             DateValues.normalize_itinerary_schedule_time( start_time ),
             DateValues.normalize_itinerary_schedule_time( end_time ),
             species,
             exhibit,
+            enclosure_name,
          ),
    )
 
