@@ -1,7 +1,7 @@
 import { initItineraryMap } from '../itinerary/itineraryMapController.js';
 import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
 import { getItinerary } from '../itinerary/itineraryService.js';
-import { isItineraryCompletelyUnset } from '../itinerary/itineraryShape.js';
+import { hasSavedItineraryContent } from '../itinerary/itineraryShape.js';
 import { isValidatedItineraryEmpty } from '../itinerary/wizard/itineraryDiff.js';
 import { showWizardValidationPopupIfNeeded } from '../itinerary/wizard/validationPopup.js';
 import { blockMapWheelWhileWizardOpen } from '../itinerary/wizard/wheelBlocker.js';
@@ -71,7 +71,7 @@ async function refreshItineraryPageContent(
 
    const itinerary = providedItinerary ?? await getItinerary();
 
-   if (!itinerary || isItineraryCompletelyUnset(itinerary)) {
+   if (!itinerary || !hasSavedItineraryContent(itinerary)) {
       if (openBuilderWhenEmpty) {
          openWizard();
       }
