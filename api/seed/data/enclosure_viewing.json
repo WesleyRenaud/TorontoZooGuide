@@ -2,6 +2,7 @@
   {
     "species": "Black Tree Monitor",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -10,6 +11,7 @@
   {
     "species": "Blue-Girdled Angelfish",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -18,6 +20,7 @@
   {
     "species": "Brush-Tailed Bettong",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -26,6 +29,7 @@
   {
     "species": "Clown Triggerfish",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -34,6 +38,7 @@
   {
     "species": "Crested Pigeon",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -42,6 +47,7 @@
   {
     "species": "Crimson Rosella",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -50,6 +56,7 @@
   {
     "species": "Eastern Rosella",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -58,6 +65,7 @@
   {
     "species": "Emerald Tree Boa",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -66,6 +74,7 @@
   {
     "species": "Flame Angelfish",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -74,6 +83,7 @@
   {
     "species": "Fly River Turtle",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -82,6 +92,7 @@
   {
     "species": "Galah",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -90,6 +101,7 @@
   {
     "species": "Green Tree Python",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -98,6 +110,7 @@
   {
     "species": "Green-Winged Dove",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -106,6 +119,7 @@
   {
     "species": "Komodo Dragon",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -114,6 +128,7 @@
   {
     "species": "Kookaburra",
     "exhibit": "Australasia Pavilion",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -122,6 +137,7 @@
   {
     "species": "Lau Banded Iguana",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -130,6 +146,7 @@
   {
     "species": "Lionfish",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -138,6 +155,7 @@
   {
     "species": "Live Coral Reefs",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -146,6 +164,7 @@
   {
     "species": "Longnose Butterflyfish",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -154,6 +173,7 @@
   {
     "species": "MacLeay's Spectres",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -162,6 +182,7 @@
   {
     "species": "Malagasy Rainbowfish",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -170,6 +191,7 @@
   {
     "species": "Mimic Surgeonfish",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -178,6 +200,7 @@
   {
     "species": "Moon Jellyfish",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -186,6 +209,7 @@
   {
     "species": "Nicobar Pigeon",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -194,6 +218,7 @@
   {
     "species": "Pennant Coral Fish",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -202,6 +227,7 @@
   {
     "species": "Pied Imperial Pigeon",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -210,6 +236,7 @@
   {
     "species": "Pot-Bellied Seahorse",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -218,6 +245,7 @@
   {
     "species": "Red Claw Yabby",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -226,6 +254,7 @@
   {
     "species": "Red-Bellied Short-Necked Turtle",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -234,6 +263,7 @@
   {
     "species": "Red-Tailed Black Cockatoo",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -242,6 +272,7 @@
   {
     "species": "Short-Beaked Echidna",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -250,6 +281,7 @@
   {
     "species": "Solomon Island Leaf Frog",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -258,6 +290,7 @@
   {
     "species": "Solomon Island Monkey-Tailed Skink",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -266,6 +299,7 @@
   {
     "species": "Southern Hairy-Nosed Wombat",
     "exhibit": "Australasia Pavilion",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -274,6 +308,7 @@
   {
     "species": "Stimson's Python",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -282,6 +317,7 @@
   {
     "species": "Tawny Frogmouth",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -290,6 +326,7 @@
   {
     "species": "Thorny Devil Stick Insect",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -298,6 +335,7 @@
   {
     "species": "Threadfin Butterflyfish",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -306,6 +344,7 @@
   {
     "species": "Victoria Crowned Pigeon",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -314,6 +353,7 @@
   {
     "species": "White's Tree Frog",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
@@ -322,6 +362,7 @@
   {
     "species": "Demoiselle Crane",
     "exhibit": "Australasia Pavilion",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The demoiselle cranes are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 72.925,
@@ -330,6 +371,7 @@
   {
     "species": "Kookaburra",
     "exhibit": "Australasia Pavilion",
+    "name": "Demoiselle Crane Enclosure",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The kookaburras can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 72.925,
@@ -338,6 +380,7 @@
   {
     "species": "Southern Hairy-Nosed Wombat",
     "exhibit": "Australasia Pavilion",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The wombats can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 73.888,
@@ -346,6 +389,7 @@
   {
     "species": "Western Grey Kangaroo",
     "exhibit": "Australasia Outdoor",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The kangaroos are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 75.357,
@@ -354,6 +398,7 @@
   {
     "species": "Amur Tiger",
     "exhibit": "Eurasia Wilds",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 76.076,
@@ -362,6 +407,7 @@
   {
     "species": "Asian Wild Horse",
     "exhibit": "Eurasia Wilds",
+    "name": "Shady Acres",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 83.172,
@@ -370,6 +416,7 @@
   {
     "species": "Asian Wild Horse",
     "exhibit": "Eurasia Wilds",
+    "name": "Eurasia Drive Thru",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 91.461,
@@ -378,6 +425,7 @@
   {
     "species": "Bactrian Camel",
     "exhibit": "Eurasia Wilds",
+    "name": "Shelter Habitat",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 85.339,
@@ -386,6 +434,7 @@
   {
     "species": "Bactrian Camel",
     "exhibit": "Eurasia Wilds",
+    "name": "Grass Habitat",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 81.436,
@@ -394,6 +443,7 @@
   {
     "species": "Domestic Yak",
     "exhibit": "Eurasia Wilds",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 90.495,
@@ -402,6 +452,7 @@
   {
     "species": "Highland Cattle",
     "exhibit": "Eurasia Wilds",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 82.525,
@@ -410,6 +461,7 @@
   {
     "species": "Mouflon",
     "exhibit": "Eurasia Wilds",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 79.357,
@@ -418,6 +470,7 @@
   {
     "species": "Red Panda",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The red pandas are likely to be inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 52.186,
@@ -426,6 +479,7 @@
   {
     "species": "Snow Leopard",
     "exhibit": "Eurasia Wilds",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 86.033,
@@ -434,6 +488,7 @@
   {
     "species": "Steller's Sea Eagle",
     "exhibit": "Eurasia Wilds",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 86.73,
@@ -442,6 +497,7 @@
   {
     "species": "West Caucasian Tur",
     "exhibit": "Eurasia Wilds",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 85.24,
@@ -450,14 +506,16 @@
   {
     "species": "West Caucasian Tur",
     "exhibit": "Eurasia Wilds",
+    "name": "Zoomobile Habitat",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
-    "x_coord": 88.224,
-    "y_coord": 93.671
+    "x_coord": 53.4,
+    "y_coord": 87.672
   },
   {
     "species": "Arctic Wolf",
     "exhibit": "Tundra Trek",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 75.673,
@@ -466,6 +524,7 @@
   {
     "species": "Caribou",
     "exhibit": "Tundra Trek",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 77.744,
@@ -474,6 +533,7 @@
   {
     "species": "Lesser Snow Goose",
     "exhibit": "Tundra Trek",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.064,
@@ -482,6 +542,7 @@
   {
     "species": "Northern Bald Eagle",
     "exhibit": "Tundra Trek",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 73.885,
@@ -490,6 +551,7 @@
   {
     "species": "Polar Bear",
     "exhibit": "Tundra Trek",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 78.289,
@@ -498,6 +560,7 @@
   {
     "species": "American Flamingo",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The American flamingos are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 77.471,
@@ -506,6 +569,7 @@
   {
     "species": "Black-Handed Spider Monkey",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The black-handed spider monkeys are likely to be inside and off display on this day due to colder weather.",
     "x_coord": 77.016,
@@ -514,6 +578,7 @@
   {
     "species": "Capybara",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The capybaras are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 76.108,
@@ -522,6 +587,7 @@
   {
     "species": "Red-Legged Seriema",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The red-legged seriemas are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 78.017,
@@ -530,6 +596,7 @@
   {
     "species": "Turkey Vulture",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The turkey vultures are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 78.017,
@@ -538,6 +605,7 @@
   {
     "species": "American Alligator",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -546,6 +614,7 @@
   {
     "species": "American Eel",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -554,6 +623,7 @@
   {
     "species": "American Lobster",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -562,6 +632,7 @@
   {
     "species": "Axolotl",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -570,6 +641,7 @@
   {
     "species": "Bark Scorpion",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -578,6 +650,7 @@
   {
     "species": "Black-Footed Ferret",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -586,6 +659,7 @@
   {
     "species": "Black-Widow Spider",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -594,6 +668,7 @@
   {
     "species": "Blanding's Turtle",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -602,6 +677,7 @@
   {
     "species": "Blue And Yellow Macaw",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -610,6 +686,7 @@
   {
     "species": "Boa Constrictor",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -618,6 +695,7 @@
   {
     "species": "Blue Poison Dart Frog",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -626,6 +704,7 @@
   {
     "species": "Brazilian Giant Cockroach",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -634,6 +713,7 @@
   {
     "species": "Brazilian Salmon Pink Bird-Eating Tarantula",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -642,6 +722,7 @@
   {
     "species": "Butterfly Goodeid",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -650,6 +731,7 @@
   {
     "species": "Crested Tinamou",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -658,6 +740,7 @@
   {
     "species": "Cuvier's Smooth-Fronted Caiman",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -666,6 +749,7 @@
   {
     "species": "Desert Grassland Whiptail",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -674,6 +758,7 @@
   {
     "species": "Dyeing Poison Dart Frog",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -682,6 +767,7 @@
   {
     "species": "Eastern Loggerhead Shrike",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -690,6 +776,7 @@
   {
     "species": "Eastern Lubber Grasshopper",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -698,6 +785,7 @@
   {
     "species": "Eyelash Viper",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -706,6 +794,7 @@
   {
     "species": "Ferocious Water Bug",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -714,6 +803,7 @@
   {
     "species": "Golden Lion Tamarin",
     "exhibit": "Americas Pavilion",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -722,6 +812,7 @@
   {
     "species": "Great Horned Owl",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -730,6 +821,7 @@
   {
     "species": "Green And Black Poison Dart Frog",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -738,6 +830,7 @@
   {
     "species": "Green Surf Anemone",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -746,6 +839,7 @@
   {
     "species": "Green-Winged Macaw",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -754,6 +848,7 @@
   {
     "species": "Guatemalan Beaded Lizard",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -762,6 +857,7 @@
   {
     "species": "Jamaican Boa",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -770,6 +866,7 @@
   {
     "species": "Leather Sea Star",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -778,6 +875,7 @@
   {
     "species": "Lemur Leaf Frog",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -786,6 +884,7 @@
   {
     "species": "Longnose Dace",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -794,6 +893,7 @@
   {
     "species": "Massasauga Rattlesnake",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -802,6 +902,7 @@
   {
     "species": "Mexican Blind Cavefish",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -810,6 +911,7 @@
   {
     "species": "Midland Painted Turtle",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -818,6 +920,7 @@
   {
     "species": "North American River Otter",
     "exhibit": "Americas Pavilion",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -826,6 +929,7 @@
   {
     "species": "Opal-Rumped Tanager",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -834,6 +938,7 @@
   {
     "species": "Painted Anemone",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -842,6 +947,7 @@
   {
     "species": "Panamanian Golden Frog",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -850,6 +956,7 @@
   {
     "species": "Plumose Anemone",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -858,6 +965,7 @@
   {
     "species": "Plush-Crested Jay",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -866,6 +974,7 @@
   {
     "species": "Puerto Rican Crested Toad",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -874,6 +983,7 @@
   {
     "species": "Pumpkinseed Sunfish",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -882,6 +992,7 @@
   {
     "species": "Red Island Bird-Eating Tarantula",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -890,6 +1001,7 @@
   {
     "species": "Red-Crested Finch",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -898,6 +1010,7 @@
   {
     "species": "Reticulate Gila Monster",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -906,6 +1019,7 @@
   {
     "species": "Round Goby",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -914,6 +1028,7 @@
   {
     "species": "Rufous-Collared Sparrow",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -922,6 +1037,7 @@
   {
     "species": "San-Esteban Island Chuckwalla",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -930,6 +1046,7 @@
   {
     "species": "Snapping Turtle",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -938,6 +1055,7 @@
   {
     "species": "Spot Prawn",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -946,6 +1064,7 @@
   {
     "species": "Spotted River Stingray",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -954,6 +1073,7 @@
   {
     "species": "Spotted Turtle",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -962,6 +1082,7 @@
   {
     "species": "Timber Rattlesnake",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -970,6 +1091,7 @@
   {
     "species": "Turquoise Tanager",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -978,6 +1100,7 @@
   {
     "species": "Two-Toed Sloth",
     "exhibit": "Americas Pavilion",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -986,6 +1109,7 @@
   {
     "species": "Western Blacknose Dace",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -994,6 +1118,7 @@
   {
     "species": "White-Faced Saki",
     "exhibit": "Americas Pavilion",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -1002,6 +1127,7 @@
   {
     "species": "Yellow-Banded Poison Dart Frog",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -1010,6 +1136,7 @@
   {
     "species": "Zebra Finch",
     "exhibit": "Americas Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
@@ -1018,6 +1145,7 @@
   {
     "species": "Golden Lion Tamarin",
     "exhibit": "Americas Pavilion",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The golden lion tamarins can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 69.119,
@@ -1026,6 +1154,7 @@
   {
     "species": "Two-Toed Sloth",
     "exhibit": "Americas Pavilion",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The sloths can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 69.119,
@@ -1034,6 +1163,7 @@
   {
     "species": "White-Faced Saki",
     "exhibit": "Americas Pavilion",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white-faced sakis can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 69.119,
@@ -1042,6 +1172,7 @@
   {
     "species": "North American River Otter",
     "exhibit": "Americas Pavilion",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.706,
@@ -1050,6 +1181,7 @@
   {
     "species": "Cougar",
     "exhibit": "Canadian Domain",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 26.885,
@@ -1058,6 +1190,7 @@
   {
     "species": "Grizzly Bear",
     "exhibit": "Canadian Domain",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The grizzly bears are likely to be off display on this day due to cooler weather and hibernation patterns.",
     "x_coord": 22.896,
@@ -1066,6 +1199,7 @@
   {
     "species": "Northern Bald Eagle",
     "exhibit": "Canadian Domain",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 22.226,
@@ -1074,6 +1208,7 @@
   {
     "species": "Raccoon",
     "exhibit": "Canadian Domain",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 30.393,
@@ -1082,6 +1217,7 @@
   {
     "species": "Wood Bison",
     "exhibit": "Canadian Domain",
+    "name": "Male Herd",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 28.482,
@@ -1090,6 +1226,7 @@
   {
     "species": "Wood Bison",
     "exhibit": "Canadian Domain",
+    "name": "Female Herd",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 20.453,
@@ -1098,6 +1235,7 @@
   {
     "species": "African Lion",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The African lions are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 51.162,
@@ -1106,6 +1244,7 @@
   {
     "species": "African Penguin",
     "exhibit": "Africa Savanna",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The penguins can most likely be seen inside on this day due to cold weather.",
     "x_coord": 51.001,
@@ -1114,6 +1253,7 @@
   {
     "species": "White-Breasted Cormorant",
     "exhibit": "Africa Savanna",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The cormorants can most likely be seen inside on this day due to cold weather.",
     "x_coord": 51.001,
@@ -1122,6 +1262,7 @@
   {
     "species": "African Penguin",
     "exhibit": "Africa Savanna",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 51.954,
@@ -1130,6 +1271,7 @@
   {
     "species": "White-Breasted Cormorant",
     "exhibit": "Africa Savanna",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 51.954,
@@ -1138,6 +1280,7 @@
   {
     "species": "Cheetah",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The cheetahs are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 42.194,
@@ -1146,6 +1289,7 @@
   {
     "species": "Common Eland",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The elands are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 50.618,
@@ -1154,6 +1298,7 @@
   {
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
+    "name": "White Rhino Viewing",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater kudus are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 43.612,
@@ -1162,6 +1307,7 @@
   {
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
+    "name": "White Rhino Viewing",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 43.612,
@@ -1170,6 +1316,7 @@
   {
     "species": "Southern Ground Hornbill",
     "exhibit": "Africa Savanna",
+    "name": "White Rhino Viewing",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 43.612,
@@ -1178,6 +1325,7 @@
   {
     "species": "White-Headed Vulture",
     "exhibit": "Africa Savanna",
+    "name": "White Rhino Viewing",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white-headed vultures are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 43.612,
@@ -1186,6 +1334,7 @@
   {
     "species": "Ostrich",
     "exhibit": "Africa Savanna",
+    "name": "White Rhino Viewing",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 43.612,
@@ -1194,6 +1343,7 @@
   {
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
+    "name": "Kesho Park Offshoot",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater kudus are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 40.544,
@@ -1202,6 +1352,7 @@
   {
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
+    "name": "Kesho Park Offshoot",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 40.544,
@@ -1210,6 +1361,7 @@
   {
     "species": "Southern Ground Hornbill",
     "exhibit": "Africa Savanna",
+    "name": "Kesho Park Offshoot",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are off-display for the season. They can be seen outside again in the summer.",
     "x_coord": 40.544,
@@ -1218,6 +1370,7 @@
   {
     "species": "White-Headed Vulture",
     "exhibit": "Africa Savanna",
+    "name": "Kesho Park Offshoot",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 40.544,
@@ -1226,6 +1379,7 @@
   {
     "species": "Ostrich",
     "exhibit": "Africa Savanna",
+    "name": "Kesho Park Offshoot",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 40.544,
@@ -1234,6 +1388,7 @@
   {
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
+    "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater kudus are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 41.389,
@@ -1242,6 +1397,7 @@
   {
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
+    "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 41.389,
@@ -1250,6 +1406,7 @@
   {
     "species": "Southern Ground Hornbill",
     "exhibit": "Africa Savanna",
+    "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 41.389,
@@ -1258,6 +1415,7 @@
   {
     "species": "White-Headed Vulture",
     "exhibit": "Africa Savanna",
+    "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white-headed vultures are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 41.389,
@@ -1266,6 +1424,7 @@
   {
     "species": "Ostrich",
     "exhibit": "Africa Savanna",
+    "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 41.389,
@@ -1274,6 +1433,7 @@
   {
     "species": "Grevy's Zebra",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The zebras are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 46.194,
@@ -1282,6 +1442,7 @@
   {
     "species": "Grevy's Zebra",
     "exhibit": "Africa Savanna",
+    "name": "Savanna Grasslands",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 51.664,
@@ -1290,6 +1451,7 @@
   {
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
+    "name": "Grevy's Zebra Enclosure",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 43.38,
@@ -1298,6 +1460,7 @@
   {
     "species": "Masai Giraffe",
     "exhibit": "Africa Savanna",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The giraffes can most likely be seen inside on this day due to cold weather.",
     "x_coord": 39.885,
@@ -1306,6 +1469,7 @@
   {
     "species": "Masai Giraffe",
     "exhibit": "Africa Savanna",
+    "name": "Giraffe House",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 42.35,
@@ -1314,6 +1478,7 @@
   {
     "species": "Olive Baboon",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The baboons are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 46.381,
@@ -1322,6 +1487,7 @@
   {
     "species": "Ostrich",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 49.056,
@@ -1330,6 +1496,7 @@
   {
     "species": "River Hippopotamus",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The hippopotamuses are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 37.731,
@@ -1338,6 +1505,7 @@
   {
     "species": "Southern White Rhinoceros",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white rhinos are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 41.57,
@@ -1346,6 +1514,7 @@
   {
     "species": "Spotted Hyena",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The hyenas are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 53.96,
@@ -1354,6 +1523,7 @@
   {
     "species": "Warthog",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The warthogs are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 41.363,
@@ -1362,6 +1532,7 @@
   {
     "species": "Watusi Cattle",
     "exhibit": "Africa Savanna",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The watusi cattle are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 55.34,
@@ -1370,6 +1541,7 @@
   {
     "species": "African Clawed Frog",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1378,6 +1550,7 @@
   {
     "species": "Black Crake",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1386,6 +1559,7 @@
   {
     "species": "Blue-Bellied Roller",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1394,6 +1568,7 @@
   {
     "species": "Hamerkop",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1402,6 +1577,7 @@
   {
     "species": "Lake Malawi Cichlids",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1410,6 +1586,7 @@
   {
     "species": "Lau Banded Iguana",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1418,6 +1595,7 @@
   {
     "species": "Leopard Ctenopoma",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1426,6 +1604,7 @@
   {
     "species": "Mantella (Poison Frog)",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1434,6 +1613,7 @@
   {
     "species": "Naked Mole Rat",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1442,6 +1622,7 @@
   {
     "species": "Ngege",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1450,6 +1631,7 @@
   {
     "species": "Slender-Tailed Meerkat",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1458,6 +1640,7 @@
   {
     "species": "South African Crested Porcupine",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1466,6 +1649,7 @@
   {
     "species": "Speckled Mousebird",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1474,6 +1658,7 @@
   {
     "species": "Spider Tortoise",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1482,6 +1667,7 @@
   {
     "species": "Tomato Frog",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1490,6 +1676,7 @@
   {
     "species": "Veiled Chameleon",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1498,6 +1685,7 @@
   {
     "species": "Violaceous Plantain Eater",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1506,6 +1694,7 @@
   {
     "species": "West African Dwarf Crocodile",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
@@ -1514,6 +1703,7 @@
   {
     "species": "Aldabra Tortoise",
     "exhibit": "African Rainforest Pavilion",
+    "name": "Ring-Tailed Lemur Enclosure",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 43.103,
@@ -1522,6 +1712,7 @@
   {
     "species": "Gaboon Viper",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 43.103,
@@ -1530,6 +1721,7 @@
   {
     "species": "Grey-Necked Crowned Crane",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 43.103,
@@ -1538,6 +1730,7 @@
   {
     "species": "Ring-Tailed Lemur",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 43.103,
@@ -1546,6 +1739,7 @@
   {
     "species": "Royal Python",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 43.103,
@@ -1554,6 +1748,7 @@
   {
     "species": "Aldabra Tortoise",
     "exhibit": "African Rainforest Pavilion",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The Aldabra tortoises can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 47.091,
@@ -1562,6 +1757,7 @@
   {
     "species": "African Spoonbill",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
@@ -1570,6 +1766,7 @@
   {
     "species": "Nile Soft-Shelled Turtle",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
@@ -1578,6 +1775,7 @@
   {
     "species": "Pygmy Hippopotamus",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
@@ -1586,6 +1784,7 @@
   {
     "species": "Radiated Tortoise",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
@@ -1594,6 +1793,7 @@
   {
     "species": "Sacred Ibis",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
@@ -1602,6 +1802,7 @@
   {
     "species": "South African Shelduck",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
@@ -1610,6 +1811,7 @@
   {
     "species": "Straw Coloured Fruit Bat",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
@@ -1618,6 +1820,7 @@
   {
     "species": "Red River Hog",
     "exhibit": "African Rainforest Pavilion",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The red river hogs are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 44.591,
@@ -1626,6 +1829,7 @@
   {
     "species": "Western Lowland Gorilla",
     "exhibit": "African Rainforest Pavilion",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 47.487,
@@ -1634,6 +1838,7 @@
   {
     "species": "Western Lowland Gorilla",
     "exhibit": "African Rainforest Pavilion",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The gorillas can most likely only be seen inside on this day due to cold weather.",
     "x_coord": 48.951,
@@ -1642,6 +1847,7 @@
   {
     "species": "Asian Brown Tortoise",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1650,6 +1856,7 @@
   {
     "species": "Bighead Carp",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1658,6 +1865,7 @@
   {
     "species": "Black Carp",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1666,6 +1874,7 @@
   {
     "species": "Black-Breasted Leaf Turtle",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1674,6 +1883,7 @@
   {
     "species": "Black-Throated Laughing Thrush",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1682,6 +1892,7 @@
   {
     "species": "Burmese Star Tortoise",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1690,6 +1901,7 @@
   {
     "species": "Cattle Egret",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1698,6 +1910,7 @@
   {
     "species": "Concave Casqued Hornbill",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1706,6 +1919,7 @@
   {
     "species": "Crested Wood Partridge",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1714,6 +1928,7 @@
   {
     "species": "Crocodile Lizard",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1722,6 +1937,7 @@
   {
     "species": "Crocodile Newt",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1730,6 +1946,7 @@
   {
     "species": "Edward's Pheasant",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1738,6 +1955,7 @@
   {
     "species": "Giant Gourami",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1746,6 +1964,7 @@
   {
     "species": "Grass Carp",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1754,6 +1973,7 @@
   {
     "species": "Green Crested Basilisk",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1762,6 +1982,7 @@
   {
     "species": "Hamilton's Pond Turtle",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1770,6 +1991,7 @@
   {
     "species": "Iridescent Shark Catfish",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1778,6 +2000,7 @@
   {
     "species": "Luzon Bleeding-Heart Dove",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1786,6 +2009,7 @@
   {
     "species": "Malayan Bonytongue",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1794,6 +2018,7 @@
   {
     "species": "Malaysian Painted Turtle",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1802,6 +2027,7 @@
   {
     "species": "Mekong Barb",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1810,6 +2036,7 @@
   {
     "species": "Monocled Cobra",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1818,6 +2045,7 @@
   {
     "species": "Nicobar Pigeon",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1826,6 +2054,7 @@
   {
     "species": "Palawan Peacock-Pheasant",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1834,6 +2063,7 @@
   {
     "species": "Red-Lined Torpedo Barb",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1842,6 +2072,7 @@
   {
     "species": "Reticulated Python",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1850,6 +2081,7 @@
   {
     "species": "Spiny Turtle",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1858,6 +2090,7 @@
   {
     "species": "Sumatran Orangutan",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1866,6 +2099,7 @@
   {
     "species": "Tentacled Snake",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1874,6 +2108,7 @@
   {
     "species": "Tinfoil Barb",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1882,6 +2117,7 @@
   {
     "species": "Tomistoma",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1890,6 +2126,7 @@
   {
     "species": "Tri-Coloured Shark",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1898,6 +2135,7 @@
   {
     "species": "White-Handed Gibbon",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
@@ -1906,6 +2144,7 @@
   {
     "species": "Sumatran Orangutan",
     "exhibit": "Indo-Malaya Pavilion",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The orangutans can most only likely be seen inside on this day due to cold weather.",
     "x_coord": 42.963,
@@ -1914,6 +2153,7 @@
   {
     "species": "Asian Brown Tortoise",
     "exhibit": "Indo-Malaya Outdoor",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The Asian brown tortoise can most likely be seen inside the Indo-Malaya Pavilion on this day due to cooler weather.",
     "x_coord": 54.631,
@@ -1922,6 +2162,7 @@
   {
     "species": "Babirusa",
     "exhibit": "Indo-Malaya Outdoor",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The babirusas can most likely be seen inside on this day due to cold weather.",
     "x_coord": 54.631,
@@ -1930,6 +2171,7 @@
   {
     "species": "Babirusa",
     "exhibit": "Indo-Malaya Outdoor",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 53.679,
@@ -1938,6 +2180,7 @@
   {
     "species": "Greater One-Horned Rhinoceros",
     "exhibit": "Indo-Malaya Outdoor",
+    "name": "Outdoor",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater one-horned rhinoceros is most likely inside and off-display on this day due to cold weather.",
     "x_coord": 52.485,
@@ -1946,6 +2189,7 @@
   {
     "species": "Greater One-Horned Rhinoceros",
     "exhibit": "Indo-Malaya Outdoor",
+    "name": "Indoor",
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 53.679,
@@ -1954,6 +2198,7 @@
   {
     "species": "Indian Peafowl",
     "exhibit": "Indo-Malaya Outdoor",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 52.643,
@@ -1962,6 +2207,7 @@
   {
     "species": "Cheetah",
     "exhibit": "Indo-Malaya Outdoor",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The cheetahs are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 49.295,
@@ -1970,6 +2216,7 @@
   {
     "species": "Asian Giant Millipede",
     "exhibit": "Malayan Woods Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
@@ -1978,6 +2225,7 @@
   {
     "species": "Clouded Leopard",
     "exhibit": "Malayan Woods Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
@@ -1986,6 +2234,7 @@
   {
     "species": "Giant Gourami",
     "exhibit": "Malayan Woods Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
@@ -1994,6 +2243,7 @@
   {
     "species": "Gooty Sapphire Ornamental Tarantula",
     "exhibit": "Malayan Woods Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
@@ -2002,6 +2252,7 @@
   {
     "species": "Malayan Walking Stick",
     "exhibit": "Malayan Woods Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
@@ -2010,6 +2261,7 @@
   {
     "species": "Malaysian Stick Insect Jungle Wood Nymph",
     "exhibit": "Malayan Woods Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
@@ -2018,6 +2270,7 @@
   {
     "species": "Red-Tailed Green Ratsnake",
     "exhibit": "Malayan Woods Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
@@ -2026,6 +2279,7 @@
   {
     "species": "Wrinkled Hornbill",
     "exhibit": "Malayan Woods Pavilion",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
@@ -2034,6 +2288,7 @@
   {
     "species": "Domestic Goat",
     "exhibit": "Goat World",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 64.786,
@@ -2042,6 +2297,7 @@
   {
     "species": "African Spurred Tortoise",
     "exhibit": "Kids Zoo",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The African spurred tortoise is most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 66.827,
@@ -2050,6 +2306,7 @@
   {
     "species": "Common Raven",
     "exhibit": "Kids Zoo",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 66.827,
@@ -2058,6 +2315,7 @@
   {
     "species": "Eurasian Eagle Owl",
     "exhibit": "Kids Zoo",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 66.827,
@@ -2066,6 +2324,7 @@
   {
     "species": "Great Horned Owl",
     "exhibit": "Kids Zoo",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 66.827,
@@ -2074,6 +2333,7 @@
   {
     "species": "Guinea Pig",
     "exhibit": "Kids Zoo",
+    "name": null,
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 66.827,
@@ -2082,6 +2342,7 @@
   {
     "species": "Harris's Hawk",
     "exhibit": "Kids Zoo",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The Harris' hawks can most likely be seen inside on this day due to cold weather.",
     "x_coord": 66.827,
@@ -2090,6 +2351,7 @@
   {
     "species": "Marabou Stork",
     "exhibit": "Kids Zoo",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 66.827,
@@ -2098,6 +2360,7 @@
   {
     "species": "Rabbit",
     "exhibit": "Kids Zoo",
+    "name": null,
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The rabbits are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 66.827,

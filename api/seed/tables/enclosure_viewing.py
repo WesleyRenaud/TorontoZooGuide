@@ -11,6 +11,7 @@ from ...types import Cursor
 RECORD_FIELDS = [
    'species',
    'exhibit',
+   'name',
    'enclosure_type',
    'seasonally_off_display_message',
    'x_coord',
@@ -20,6 +21,7 @@ RECORD_FIELDS = [
 DB_COLUMNS = [
    'SPECIES',
    'EXHIBIT',
+   'NAME',
    'ENCLOSURE_TYPE',
    'SEASONALLY_OFF_DISPLAY_MESSAGE',
    'X_COORD',

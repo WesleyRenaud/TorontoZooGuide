@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS ItineraryAnimal
    IS_ADDED             BOOL        NOT NULL DEFAULT 0,
    START_TIME           TEXT,
    END_TIME             TEXT,
+   -- TODO: extend scheduling to support multiple EnclosureViewing rows per
+   -- species+exhibit (e.g. include NAME in the primary key and schedule each
+   -- viewing spot separately).
    PRIMARY KEY ( SPECIES, EXHIBIT ),
    FOREIGN KEY ( SPECIES, EXHIBIT )
       REFERENCES Enclosure( SPECIES, EXHIBIT ) );
