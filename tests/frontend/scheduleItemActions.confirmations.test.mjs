@@ -5,15 +5,24 @@ import { scheduleSelectedItineraryItem } from '../../scripts/itinerary/panel/sch
 import {
    MOCK_ERROR_TYPES,
    mockJsonResponse,
+   mockScheduleItemFetch,
    installScheduleItemActionsTestHooks,
 } from './helpers/scheduleItemActionsTestSetup.mjs';
 
 installScheduleItemActionsTestHooks();
 
+function mockItineraryDateResponse() {
+   return mockJsonResponse({ date: '2026-06-15' });
+}
+
 test('scheduleSelectedItineraryItem persists suppression before confirming', async () => {
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
+      if (url === '/get-itinerary-date') {
+         return mockItineraryDateResponse();
+      }
+
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
@@ -88,6 +97,10 @@ test('scheduleSelectedItineraryItem confirms before scheduling a new animal', as
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
+      if (url === '/get-itinerary-date') {
+         return mockItineraryDateResponse();
+      }
+
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
@@ -135,6 +148,10 @@ test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk'
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
+      if (url === '/get-itinerary-date') {
+         return mockItineraryDateResponse();
+      }
+
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),
@@ -196,16 +213,20 @@ test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk'
 });
 
 test('scheduleSelectedItineraryItem returns cancelled when guardians talk reschedule is declined', async () => {
-   globalThis.fetch = async () => mockJsonResponse({
-      status: 'guardiansTalkWillUnscheduleItems',
-      reasons: [{
-         code: 'guardiansTalkWillUnscheduleItems',
-         items: [{
-            name: 'Arctic Wolf',
-            item_type: 'guardiansTalk',
-            start_time: '11:00',
-         }],
-      }],
+   globalThis.fetch = mockScheduleItemFetch({
+      routes: {
+         '/schedule-itinerary-item': {
+            status: 'guardiansTalkWillUnscheduleItems',
+            reasons: [{
+               code: 'guardiansTalkWillUnscheduleItems',
+               items: [{
+                  name: 'Arctic Wolf',
+                  item_type: 'guardiansTalk',
+                  start_time: '11:00',
+               }],
+            }],
+         },
+      },
    });
 
    const schedulePromise = scheduleSelectedItineraryItem(
@@ -236,6 +257,10 @@ test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter'
    const requests = [];
 
    globalThis.fetch = async (url, options = {}) => {
+      if (url === '/get-itinerary-date') {
+         return mockItineraryDateResponse();
+      }
+
       requests.push({
          url,
          body: JSON.parse(options.body ?? '{}'),

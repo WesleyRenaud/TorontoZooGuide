@@ -1,3 +1,4 @@
+import { ensureItineraryVisitDate } from '../ensureItineraryVisitDate.js';
 import {
    createScheduleItemSaveFailedResult,
    scheduleItineraryItemWithConfirmation,
@@ -89,6 +90,13 @@ export async function scheduleSelectedItineraryItem(
    );
 
    if (!request) {
+      return createScheduleItemSaveFailedResult();
+   }
+
+   try {
+      await ensureItineraryVisitDate(itinerary);
+   }
+   catch {
       return createScheduleItemSaveFailedResult();
    }
 
