@@ -1,6 +1,6 @@
 export const TIMELINE_SLOT_MINUTES = 30;
 export const EXTENDED_SCHEDULED_PILL_MINUTES = TIMELINE_SLOT_MINUTES;
-// 730px per half hour => 73px per 3 minutes, enough room for pill labels and controls.
+// Keep in sync with styles/tokens.css (--itinerary-half-hour-slot-height, etc.).
 export const TIMELINE_SLOT_HEIGHT_PX = 730;
 export const TIMELINE_PILL_STRIP_TOP_OFFSET_PX = 80;
 export const TIMELINE_SCHEDULED_PILL_MIN_CLUSTER_MINUTES = 3;

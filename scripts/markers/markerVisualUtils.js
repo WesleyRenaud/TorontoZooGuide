@@ -1,7 +1,7 @@
 import { likelihoodToColor } from '../likelihood/likelihoodColors.js';
 import { clampLikelihood } from '../likelihood/likelihoodScale.js';
 
-const DEFAULT_STACK_MARKER_COLOR = 'rgba(94,150,0,0.95)';
+const DEFAULT_STACK_MARKER_COLOR = '#5e9600f2';
 
 const MARKER_TYPE_CLASSES = [
    'marker-restaurant',

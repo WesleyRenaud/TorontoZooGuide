@@ -1,36 +1,11 @@
-/* ============================================================
-   TOKENS / VARIABLES
-============================================================ */
-
-:root {
-   /* Layout */
-   --side-column-width: clamp(630px, 39vw, 1050px);
-   --map-menu-width: clamp(980px, 60vw, 1620px);
-
-   /* Explore control (dropdown + search input) */
-   --explore-control-font: 2.4em;
-   --explore-control-weight: 700;
-   --explore-control-pad-y: 17px;
-   --explore-control-pad-x: 19px;
-   --explore-control-radius: 13px;
-
-   --explore-control-border: 4px;
-   --explore-control-border-color: rgba(94, 150, 0, 0.5);
-   --explore-control-border-color-focus: rgba(94, 150, 0, 0.95);
-
-   --explore-control-bg: rgba(255, 255, 255, 0.92);
-   --explore-control-fg: rgba(20, 35, 10, 0.95);
-
-   --explore-control-shadow: 0 6px 14px rgba(0,0,0,0.18);
-   --explore-control-shadow-focus: 0 8px 20px rgba(0,0,0,0.28);
-}
+@import url('./tokens.css');
 
 /* ============================================================
    BASE / GLOBAL
 ============================================================ */
 
 html, body {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
 }
 
 /* Screen-reader only utility */
@@ -69,7 +44,7 @@ html.home-page {
    width: 100%;
    overflow: hidden;
    box-sizing: border-box;
-   padding-top: 8vh;
+   padding-top: var(--layout-top-bar-height);
    gap: 0;
 }
 
@@ -82,15 +57,15 @@ html.home-page {
    top: 0;
    left: 0;
    width: 100%;
-   height: 8vh;
-   background-color: #5e9600;
+   height: var(--layout-top-bar-height);
+   background-color: var(--color-brand-primary);
 
    display: flex;
    justify-content: center;
    align-items: center;
    gap: 64px;
 
-   color: #ffffff;
+   color: var(--color-white);
 
    z-index: 10;
    box-sizing: border-box;
@@ -125,13 +100,13 @@ html.home-page {
    display: flex;
    flex-direction: column;
 
-   background-color: #e2e8d4;
+   background-color: var(--color-surface-panel);
    backdrop-filter: blur(6px);
-   border-right: 2px solid rgba(94, 150, 0, 0.35);
+   border-right: 2px solid #5e960059;
 }
 
 .side-panel-header {
-   background-color: #53841c;
+   background-color: var(--color-brand-primary-muted);
    padding: 28px 28px;
    display: flex;
    align-items: center;
@@ -140,7 +115,7 @@ html.home-page {
 
 .side-panel-title {
    margin: 0;
-   color: #ffffff;
+   color: var(--color-white);
    font-size: 6em;
    font-weight: 700;
    letter-spacing: 0.02em;
@@ -178,14 +153,14 @@ html.home-page {
    gap: 32px;
    font-size: 4em;
    font-weight: 600;
-   color: rgba(20, 35, 10, 0.9);
+   color: #14230ae6;
    user-select: none;
 }
 
 .toggle-row input[type="checkbox"] {
    width: 64px;
    height: 64px;
-   accent-color: #5e9600;
+   accent-color: var(--color-brand-primary);
    cursor: pointer;
 }
 
@@ -213,7 +188,7 @@ html.home-page {
 .zoomobile-route-title {
    font-size: 2.4em;
    font-weight: 700;
-   color: rgba(20, 35, 10, 0.95);
+   color: #14230af2;
 }
 
 .zoomobile-route-options {
@@ -231,7 +206,7 @@ html.home-page {
 
    font-size: 2.4em;
    font-weight: 600;
-   color: rgba(20, 35, 10, 0.9);
+   color: #14230ae6;
    cursor: pointer;
 
    flex: 0 0 auto;
@@ -240,7 +215,7 @@ html.home-page {
 .zoomobile-route-option input[type="radio"] {
    width: 38px;
    height: 38px;
-   accent-color: #5e9600;
+   accent-color: var(--color-brand-primary);
    cursor: pointer;
 }
 
@@ -263,7 +238,7 @@ html.home-page {
    width: 100%;
    box-sizing: border-box;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: var(--explore-control-font);
    font-weight: var(--explore-control-weight);
 
@@ -298,11 +273,11 @@ html.home-page {
    left: 0;
    right: 0;
 
-   background: rgba(255, 255, 255, 0.98);
+   background: #fffffffa;
    border-radius: var(--explore-control-radius);
-   border: var(--explore-control-border) solid rgba(94, 150, 0, 0.35);
+   border: var(--explore-control-border) solid #5e960059;
 
-   box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+   box-shadow: 0 8px 20px #00000038;
    padding: 11px 13px;
 
    display: none;
@@ -319,16 +294,16 @@ html.home-page {
    padding: 11px 5px;
    cursor: pointer;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.04em;
    font-weight: 700;
-   color: rgba(20, 35, 10, 0.95);
+   color: #14230af2;
 }
 
 .multi-select-dropdown input[type="checkbox"] {
    width: 38px;
    height: 38px;
-   accent-color: #5e9600;
+   accent-color: var(--color-brand-primary);
    cursor: pointer;
 }
 
@@ -344,15 +319,15 @@ html.home-page {
 }
 
 .filter-chip {
-   background-color: #5e9600;
-   color: #ffffff;
+   background-color: var(--color-brand-primary);
+   color: var(--color-white);
    padding: 7px 13px;
    border-radius: 999px;
 
    font-size: 0.75em;
    font-weight: 700;
 
-   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+   box-shadow: 0 2px 6px #00000026;
 }
 
 .filter-none {
@@ -372,29 +347,29 @@ html.home-page {
    width: 100%;
    box-sizing: border-box;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.4em;
    font-weight: 700;
 
    padding: 17px 19px;
    border-radius: 13px;
 
-   border: 4px solid rgba(94, 150, 0, 0.5);
-   background: rgba(255, 255, 255, 0.92);
-   color: rgba(20, 35, 10, 0.95);
+   border: 4px solid #5e960080;
+   background: #ffffffeb;
+   color: #14230af2;
 
-   box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+   box-shadow: 0 6px 14px #0000002e;
    outline: none;
 }
 
 .animal-search::placeholder {
-   color: rgba(20, 35, 10, 0.45);
+   color: #14230a73;
    font-weight: 700;
 }
 
 .animal-search:focus {
-   border-color: rgba(94, 150, 0, 0.95);
-   box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+   border-color: #5e9600f2;
+   box-shadow: 0 8px 20px #00000047;
 }
 
 /* ============================================================
@@ -423,18 +398,18 @@ html.home-page {
 }
 
 .animal-search-results::-webkit-scrollbar-track {
-   background: rgba(94, 150, 0, 0.12);
+   background: #5e96001f;
    border-radius: 999px;
 }
 
 .animal-search-results::-webkit-scrollbar-thumb {
-   background: rgba(94, 150, 0, 0.55);
+   background: #5e96008c;
    border-radius: 999px;
-   border: 2px solid rgba(255,255,255,0.7);
+   border: 2px solid #ffffffb2;
 }
 
 .animal-search-results::-webkit-scrollbar-thumb:hover {
-   background: rgba(94, 150, 0, 0.8);
+   background: #5e9600cc;
 }
 
 .explore-updates {
@@ -446,8 +421,8 @@ html.home-page {
    gap: 14px;
    box-sizing: border-box;
    border-radius: 8px;
-   background-color: rgba(94, 150, 0, 0.95);
-   box-shadow: 0 6px 15px rgba(0,0,0,0.18);
+   background-color: #5e9600f2;
+   box-shadow: 0 6px 15px #0000002e;
 }
 
 .explore-updates[hidden] {
@@ -466,7 +441,7 @@ html.home-page {
    margin: 0;
    font-size: 3.2em;
    font-weight: 800;
-   color: #ffffff;
+   color: var(--color-white);
 }
 
 .explore-updates-toggle {
@@ -478,15 +453,15 @@ html.home-page {
    min-width: 56px;
    min-height: 56px;
    padding: 6px;
-   border: 3px solid rgba(255, 255, 255, 0.72);
+   border: 3px solid #ffffffb8;
    border-radius: 10px;
-   background-color: rgba(255, 255, 255, 0.16);
-   color: #ffffff;
-   font-family: 'Poppins', sans-serif;
+   background-color: #ffffff29;
+   color: var(--color-white);
+   font-family: var(--font-family-base);
    font-weight: 800;
    line-height: 1;
    cursor: pointer;
-   box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+   box-shadow: 0 4px 10px #0000002e;
 }
 
 .explore-updates-toggle::before {
@@ -496,17 +471,17 @@ html.home-page {
    height: 0;
    border-left: 12px solid transparent;
    border-right: 12px solid transparent;
-   border-top: 18px solid #ffffff;
+   border-top: 18px solid var(--color-white);
 }
 
 .explore-updates.is-collapsed .explore-updates-toggle::before {
    border-top: 0;
-   border-bottom: 18px solid #ffffff;
+   border-bottom: 18px solid var(--color-white);
 }
 
 .explore-updates-toggle:hover,
 .explore-updates-toggle:focus {
-   background-color: rgba(255, 255, 255, 0.28);
+   background-color: #ffffff47;
 }
 
 .explore-updates-list {
@@ -533,21 +508,21 @@ html.home-page {
 .explore-update-arrow {
    min-width: 46px;
    min-height: 46px;
-   border: 3px solid rgba(255, 255, 255, 0.72);
+   border: 3px solid #ffffffb8;
    border-radius: 10px;
-   background-color: rgba(255, 255, 255, 0.16);
-   color: #ffffff;
-   font-family: 'Poppins', sans-serif;
+   background-color: #ffffff29;
+   color: var(--color-white);
+   font-family: var(--font-family-base);
    font-size: 2.2em;
    font-weight: 800;
    line-height: 1;
    cursor: pointer;
-   box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+   box-shadow: 0 4px 10px #0000002e;
 }
 
 .explore-update-arrow:hover,
 .explore-update-arrow:focus {
-   background-color: rgba(255, 255, 255, 0.28);
+   background-color: #ffffff47;
 }
 
 .explore-update-card,
@@ -555,9 +530,9 @@ html.home-page {
    grid-area: 1 / 1;
    box-sizing: border-box;
    border-radius: 8px;
-   background: rgba(255, 255, 255, 0.94);
+   background: #fffffff0;
    border: 0;
-   box-shadow: 0 4px 10px rgba(0,0,0,0.16);
+   box-shadow: 0 4px 10px #00000029;
 }
 
 .explore-update-card[hidden] {
@@ -576,7 +551,7 @@ html.home-page {
    padding: 24px;
    font-size: 2.5em;
    font-weight: 700;
-   color: rgba(20, 35, 10, 0.62);
+   color: #14230a9e;
 }
 
 .explore-update-meta {
@@ -592,31 +567,31 @@ html.home-page {
    min-height: 44px;
    padding: 7px 14px;
    border-radius: 999px;
-   background: #2f7a63;
-   color: #ffffff;
+   background: var(--color-marker-teal);
+   color: var(--color-white);
    font-size: 2em;
    font-weight: 800;
    line-height: 1.1;
 }
 
 .explore-update-type-animal-birth {
-   background: #2f7a63;
+   background: var(--color-marker-teal);
 }
 
 .explore-update-type-animal-passing {
-   background: #5f5f67;
+   background: var(--color-marker-gray);
 }
 
 .explore-update-type-closure {
-   background: #a53a2f;
+   background: var(--color-marker-red);
 }
 
 .explore-update-type-new-arrival {
-   background: #2d6fa3;
+   background: var(--color-marker-blue);
 }
 
 .explore-update-type-departure {
-   background: #8a5a2b;
+   background: var(--color-marker-brown);
 }
 
 .explore-update-title {
@@ -624,7 +599,7 @@ html.home-page {
    font-size: 3.15em;
    font-weight: 800;
    line-height: 1.12;
-   color: rgba(20, 35, 10, 0.95);
+   color: #14230af2;
    overflow-wrap: anywhere;
 }
 
@@ -633,12 +608,12 @@ html.home-page {
    font-size: 2.45em;
    font-weight: 600;
    line-height: 1.28;
-   color: rgba(20, 35, 10, 0.72);
+   color: #14230ab8;
    overflow-wrap: anywhere;
 }
 
 .animal-result {
-   background-color: rgba(94, 150, 0, 0.95);
+   background-color: #5e9600f2;
    border-radius: 11px;
    padding: 17px 17px;
 
@@ -647,7 +622,7 @@ html.home-page {
    justify-content: space-between;
    gap: 17px;
 
-   box-shadow: 0 6px 15px rgba(0,0,0,0.18);
+   box-shadow: 0 6px 15px #0000002e;
 }
 
 .animal-result-left {
@@ -661,7 +636,7 @@ html.home-page {
 .animal-result-species {
    font-size: 2.4em;
    font-weight: 800;
-   color: #ffffff;
+   color: var(--color-white);
 
    white-space: normal;
    overflow: visible;
@@ -673,7 +648,7 @@ html.home-page {
 .animal-result-exhibit {
    font-size: 1.68em;
    font-weight: 600;
-   color: rgba(255,255,255,0.9);
+   color: var(--color-white-soft);
 
    white-space: normal;
    overflow: visible;
@@ -689,19 +664,19 @@ html.home-page {
    border-radius: 11px;
    border: none;
 
-   background-color: #77B800;
-   color: #ffffff;
+   background-color: var(--color-brand-accent);
+   color: var(--color-white);
 
    font-size: 1.68em;
    font-weight: 800;
 
    cursor: pointer;
-   box-shadow: 0 6px 13px rgba(0,0,0,0.22);
+   box-shadow: 0 6px 13px #00000038;
    transition: transform 0.15s ease, background-color 0.2s ease;
 }
 
 .animal-result-map-btn:hover {
-   background-color: #5e9600;
+   background-color: var(--color-brand-primary);
    transform: translateY(-3px);
 }
 
@@ -717,8 +692,8 @@ html.home-page {
    border-radius: 18px;
    overflow: hidden;
    flex: 0 0 auto;
-   background: rgba(0, 0, 0, 0.18);
-   box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.18);
+   background: #0000002e;
+   box-shadow: inset 0 0 0 3px #ffffff2e;
 }
 
 .animal-search-results .itin-animal-thumb-img {
@@ -748,7 +723,7 @@ html.home-page {
 .animal-result-empty {
    font-size: 1.8em;
    font-weight: 700;
-   color: rgba(20, 35, 10, 0.75);
+   color: #14230abf;
    padding: 11px 5px;
 }
 
@@ -821,32 +796,32 @@ html.home-page {
    top: 1vh;
    left: 50%;
    transform: translateX(-50%);
-   background-color: rgba(255, 255, 255, 0.85);
+   background-color: #ffffffd9;
    padding: 10px 20px;
    border-radius: 12px;
    display: flex;
    gap: 10px;
    align-items: center;
    z-index: 15;
-   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+   box-shadow: 0 4px 10px #0000004c;
    font-size: 2em;
 }
 
 .home-page .map-controls select,
 .home-page .map-controls input[type="date"] {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 1.5em;
    padding: 5px 10px;
    border-radius: 8px;
-   border: 1px solid #ccc;
+   border: 1px solid var(--color-border-neutral);
 }
 
 .home-page .map-controls input#mapDate {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 1.5em;
    padding: 10px 15px;
    border-radius: 10px;
-   border: 1px solid #ccc;
+   border: 1px solid var(--color-border-neutral);
    height: 1.5em;
    width: 7em;
    box-sizing: border-box;
@@ -872,7 +847,7 @@ html.home-page {
 
 nav {
    width: 100%;
-   background-color: rgba(119, 184, 0, 0.3);
+   background-color: #77b8004c;
    display: flex;
    justify-content: center;
    padding: 10px 0;
@@ -898,8 +873,8 @@ nav ul li a {
    height: 6vh;
    min-width: 180px;
    min-height: 60px;
-   background-color: #77B800;
-   color: #ffffff;
+   background-color: var(--color-brand-accent);
+   color: var(--color-white);
    font-weight: bold;
    font-size: 4em;
    text-align: center;
@@ -910,7 +885,7 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-   background-color: #5e9600;
+   background-color: var(--color-brand-primary);
    transform: translateY(-2px);
 }
 
@@ -935,7 +910,7 @@ nav ul li a:hover {
    align-items: center;
    justify-content: center;
    font-weight: bold;
-   color: #ffffff;
+   color: var(--color-white);
    font-size: 32px;
 }
 
@@ -969,11 +944,11 @@ nav ul li a:hover {
 }
 
 .marker.marker-has-limited-viewing {
-   box-shadow: 0 0 0 7px rgba(255,221,0,0.98);
+   box-shadow: 0 0 0 7px #ffdd00fa;
 }
 
 .marker.marker-restroom.marker-has-limited-viewing {
-   box-shadow: 0 0 0 6px rgba(255,221,0,0.98);
+   box-shadow: 0 0 0 6px #ffdd00fa;
 }
 
 /* ============================================================
@@ -988,16 +963,16 @@ nav ul li a:hover {
    padding: 16px 18px;
    border-radius: 14px;
 
-   background: rgba(94, 150, 0, 0.97);
-   color: #fff;
+   background: #5e9600f7;
+   color: var(--color-white);
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3em;
    font-weight: 800;
    line-height: 1.2;
 
-   box-shadow: 0 12px 28px rgba(0,0,0,0.35);
-   border: 2px solid rgba(255,255,255,0.35);
+   box-shadow: 0 12px 28px #00000059;
+   border: 2px solid #ffffff59;
 
    white-space: nowrap;
    overflow-wrap: anywhere;
@@ -1012,8 +987,8 @@ nav ul li a:hover {
    height: 0;
    border-left: 10px solid transparent;
    border-right: 10px solid transparent;
-   border-top: 10px solid rgba(94, 150, 0, 0.97);
-   filter: drop-shadow(0 6px 10px rgba(0,0,0,0.25));
+   border-top: 10px solid #5e9600f7;
+   filter: drop-shadow(0 6px 10px #00000040);
 }
 
 /* ============================================================
@@ -1024,7 +999,7 @@ nav ul li a:hover {
    position: absolute;
    display: none;
    flex-direction: column;
-   background-color: rgba(94, 150, 0, 0.95);
+   background-color: #5e9600f2;
    border-radius: 16px;
    padding: 36px;
    z-index: 20;
@@ -1034,9 +1009,9 @@ nav ul li a:hover {
    max-height: 90vh;
    overflow-y: auto;
 
-   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-   color: #ffffff;
-   font-family: 'Poppins', sans-serif;
+   box-shadow: 0 8px 24px #00000099;
+   color: var(--color-white);
+   font-family: var(--font-family-base);
    font-size: 2.4em;
 }
 
@@ -1069,7 +1044,7 @@ nav ul li a:hover {
 ============================================================ */
 
 .tooltip-card {
-   background-color: rgba(119, 184, 0, 0.95);
+   background-color: #77b800f2;
    border-radius: 12px;
    padding: 24px;
    width: 1175px;
@@ -1083,7 +1058,7 @@ nav ul li a:hover {
 
 .tooltip-card strong,
 .tooltip-card span {
-   color: #ffffff;
+   color: var(--color-white);
    white-space: normal;
    overflow: visible;
    text-overflow: unset;
@@ -1096,12 +1071,12 @@ nav ul li a:hover {
 .tooltip-link {
    font-weight: 800;
    text-decoration: underline;
-   color: #ffffff;
+   color: var(--color-white);
    cursor: pointer;
 }
 
 .tooltip-link:hover {
-   color: #ffd54d;
+   color: var(--color-warning);
 }
 
 .tooltip-image-frame {
@@ -1110,7 +1085,7 @@ nav ul li a:hover {
    overflow: hidden;
    border-radius: 12px;
    flex-shrink: 0;
-   background: #4f7f00;
+   background: var(--color-brand-forest);
 }
 
 .tooltip-image {
@@ -1126,8 +1101,8 @@ nav ul li a:hover {
 ============================================================ */
 
 .tooltip-arrow {
-   background-color: #77B800;
-   color: #ffffff;
+   background-color: var(--color-brand-accent);
+   color: var(--color-white);
    padding: 12px 20px;
    border-radius: 10px;
    font-weight: bold;
@@ -1142,7 +1117,7 @@ nav ul li a:hover {
 }
 
 .tooltip-arrow:hover {
-   background-color: #5e9600;
+   background-color: var(--color-brand-primary);
 }
 
 /* ============================================================
@@ -1152,7 +1127,7 @@ nav ul li a:hover {
 .species-overlay {
    position: fixed;
    inset: 0;
-   background: rgba(0, 0, 0, 0.55);
+   background: #0000008c;
    z-index: 9999;
 
    display: flex;
@@ -1166,16 +1141,16 @@ nav ul li a:hover {
 
 .species-overlay-card,
 .list {
-   background-color: rgba(119, 184, 0);
+   background-color: #77b800ff;
    border-radius: 12px;
    padding: 32px;
    overflow: hidden;
    position: relative;
-   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+   box-shadow: 0 15px 50px #00000066;
    max-width: 90vw;
    width: 2000px;
    max-height: 90vh;
-   color: #ffffff;
+   color: var(--color-white);
 }
 
 .species-overlay-card h2,
@@ -1196,7 +1171,7 @@ nav ul li a:hover {
 
 .species-overlay-card h6,
 .list h6 {
-   color: #D2691E;
+   color: var(--color-marker-orange);
    font-style: italic;
 }
 
@@ -1213,7 +1188,7 @@ nav ul li a:hover {
    gap: 24px;
 
    scrollbar-width: thin;
-   scrollbar-color: rgba(94, 150, 0, 0.8) rgba(119, 184, 0, 0.3);
+   scrollbar-color: #5e9600cc #77b8004c;
 }
 
 .species-overlay-scroll::-webkit-scrollbar {
@@ -1221,18 +1196,18 @@ nav ul li a:hover {
 }
 
 .species-overlay-scroll::-webkit-scrollbar-track {
-   background: rgba(119, 184, 0, 0.3);
+   background: #77b8004c;
    border-radius: 8px;
 }
 
 .species-overlay-scroll::-webkit-scrollbar-thumb {
-   background-color: rgba(94, 150, 0, 0.8);
+   background-color: #5e9600cc;
    border-radius: 8px;
-   border: 4px solid rgba(119, 184, 0, 0.3);
+   border: 4px solid #77b8004c;
 }
 
 .species-overlay-scroll::-webkit-scrollbar-thumb:hover {
-   background-color: rgba(94, 150, 0, 1);
+   background-color: var(--color-brand-primary);
 }
 
 /* Images */
@@ -1285,7 +1260,7 @@ nav ul li a:hover {
 #speciesOverlay .species-overlay-content .section,
 .list .section {
    pointer-events: auto;
-   background-color: rgba(94, 150, 0, 0.95);
+   background-color: #5e9600f2;
    border-radius: 12px;
    display: flex;
    flex-direction: column;
@@ -1307,7 +1282,7 @@ nav ul li a:hover {
 .list .section strong {
    font-style: italic;
    text-decoration: underline;
-   text-decoration-color: #2f5e00;
+   text-decoration-color: var(--color-brand-link);
 }
 
 #speciesOverlay .species-overlay-content .section strong {
@@ -1327,7 +1302,7 @@ nav ul li a:hover {
 #speciesOverlay .species-overlay-content .section p,
 .list .section p {
    line-height: 1.6;
-   color: #ffffff;
+   color: var(--color-white);
    margin: 0;
    white-space: pre-line;
 }
@@ -1357,14 +1332,14 @@ nav ul li a:hover {
 
    font-size: 42px;
    font-weight: bold;
-   color: #ffffff;
+   color: var(--color-white);
 
-   background-color: rgba(94, 150, 0, 0.95);
+   background-color: #5e9600f2;
    border-radius: 50%;
    border: none;
    cursor: pointer;
 
-   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+   box-shadow: 0 6px 16px #00000080;
    transition: background-color 0.3s ease, transform 0.2s ease;
 
    z-index: 20;
@@ -1372,7 +1347,7 @@ nav ul li a:hover {
 }
 
 .species-close:hover {
-   background-color: rgba(94, 150, 0, 1);
+   background-color: var(--color-brand-primary);
    transform: scale(1.1);
 }
 
@@ -1388,7 +1363,7 @@ nav ul li a:hover {
    display: flex;
    justify-content: center;
    padding: 0;
-   background-color: #8bc34a;
+   background-color: var(--color-brand-highlight);
 }
 
 .list {
@@ -1398,7 +1373,7 @@ nav ul li a:hover {
    gap: 0;
    padding: 0;
    margin: 0;
-   background-color: #8bc34a;
+   background-color: var(--color-brand-highlight);
    overflow-y: auto;
 }
 
@@ -1411,14 +1386,14 @@ nav ul li a:hover {
 
    padding: 48px 32px;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 6em;
    font-weight: 700;
 
-   background-color: #8bc34a;
-   color: #ffffff;
+   background-color: var(--color-brand-highlight);
+   color: var(--color-white);
 
-   border: 2px solid #5e9600;
+   border: 2px solid var(--color-brand-primary);
    border-left: none;
    border-right: none;
    border-radius: 0;
@@ -1440,11 +1415,11 @@ nav ul li a:hover {
 }
 
 .list-button:hover {
-   background-color: #77B800;
+   background-color: var(--color-brand-accent);
 }
 
 .list-button:active {
-   background-color: #6aa500;
+   background-color: var(--color-brand-accent-hover);
 }
 
 .back-button {
@@ -1473,13 +1448,13 @@ nav ul li a:hover {
    padding: 32px;
    border-radius: 32px;
 
-   background-color: rgba(94, 150, 0, 0.95);
-   color: #ffffff;
+   background-color: #5e9600f2;
+   color: var(--color-white);
    border: none;
    cursor: pointer;
 
    font-size: 80px;
-   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+   box-shadow: 0 6px 16px #00000059;
 }
 
 .view-on-map-button {
@@ -1493,16 +1468,16 @@ nav ul li a:hover {
    border-radius: 20px;
    border: none;
 
-   background-color: #5e9600;
+   background-color: var(--color-brand-primary);
    color: white;
 
    cursor: pointer;
-   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+   box-shadow: 0 8px 20px #00000040;
    transition: transform 0.15s ease, background-color 0.2s ease;
 }
 
 .view-on-map-button:hover {
-   background-color: #4b7c00;
+   background-color: var(--color-brand-primary-dark);
    transform: translateY(-3px);
 }
 
@@ -1526,12 +1501,12 @@ nav ul li a:hover {
    max-width: calc(100vw - 48px);
    padding: 0.42em 0.55em 0.55em;
 
-   background: #4b7526;
-   color: #ffffff;
+   background: var(--color-brand-primary-darker);
+   color: var(--color-white);
 
-   border: 1px solid rgba(255,255,255,0.22);
+   border: 1px solid #ffffff38;
    border-radius: 22px;
-   box-shadow: 0 26px 80px rgba(0,0,0,0.44);
+   box-shadow: 0 26px 80px #00000070;
 
    font-size: clamp(28px, 4vw, 56px);
    font-weight: 850;
@@ -1552,10 +1527,10 @@ nav ul li a:hover {
    flex: 0 0 auto;
 
    border-radius: 0.28em;
-   background: #ffd54d;
-   color: #2f2f2f;
+   background: var(--color-warning);
+   color: var(--color-warning-text);
 
-   box-shadow: inset 0 0 0 0.04em rgba(47,47,47,0.22), 0 0.12em 0.3em rgba(0,0,0,0.28);
+   box-shadow: inset 0 0 0 0.04em #2f2f2f38, 0 0.12em 0.3em #00000047;
 }
 
 .off-display-warning-icon {
@@ -1570,7 +1545,7 @@ nav ul li a:hover {
 
 .off-display-warning-icon rect,
 .off-display-warning-icon circle {
-   fill: #ffd54d;
+   fill: var(--color-warning);
 }
 
 .off-display-closed-text strong {
@@ -1587,10 +1562,10 @@ nav ul li a:hover {
    margin-top: 1.35em;
    padding: 0.55em 0.7em;
 
-   background: #5f9232;
-   border: 1px solid rgba(255,255,255,0.18);
+   background: var(--color-brand-primary-soft);
+   border: 1px solid #ffffff2e;
    border-radius: 16px;
-   box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+   box-shadow: inset 0 1px 0 #ffffff1a;
 }
 
 .off-display-closed-message {
@@ -1611,11 +1586,11 @@ nav ul li a:hover {
    place-items: center;
    flex: 0 0 auto;
 
-   background: rgba(255,255,255,0.14);
-   border: 1px solid rgba(255,255,255,0.2);
+   background: #ffffff24;
+   border: 1px solid #ffffff33;
    border-radius: 0.28em;
 
-   color: #ffffff;
+   color: var(--color-white);
    font-size: 0.9em;
    font-weight: 700;
 
@@ -1624,7 +1599,7 @@ nav ul li a:hover {
 }
 
 .off-display-closed-close:hover {
-   background: rgba(255,255,255,0.3);
+   background: #ffffff4c;
    transform: translateY(-1px);
 }
 
@@ -1695,7 +1670,7 @@ nav ul li a:hover {
 .itin-overlay {
    position: absolute;
    inset: 0;
-   background: rgba(20, 35, 10, 0.22);
+   background: #14230a38;
 
    display: flex;
    justify-content: center;
@@ -1788,14 +1763,14 @@ nav ul li a:hover {
    min-height: 104px;
    border: none;
    border-radius: 18px;
-   background: #77B800;
-   color: #ffffff;
-   font-family: 'Poppins', sans-serif;
+   background: var(--color-brand-accent);
+   color: var(--color-white);
+   font-family: var(--font-family-base);
    font-size: 2.8em;
    font-weight: 900;
    line-height: 1.1;
    cursor: pointer;
-   box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+   box-shadow: 0 10px 22px #00000038;
    transition:
       transform 0.15s ease,
       background-color 0.2s ease,
@@ -1803,16 +1778,16 @@ nav ul li a:hover {
 }
 
 .itin-panel-view-toggle-button-active {
-   background: #77B800;
-   color: #ffffff;
-   box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+   background: var(--color-brand-accent);
+   color: var(--color-white);
+   box-shadow: 0 10px 22px #00000038;
 }
 
 .itin-panel-view-toggle-button:hover,
 .itin-panel-view-toggle-button:focus-visible {
-   background: #5e9600;
+   background: var(--color-brand-primary);
    transform: translateY(-2px);
-   box-shadow: 0 14px 32px rgba(0,0,0,0.28);
+   box-shadow: 0 14px 32px #00000047;
 }
 
 /* ============================================================
@@ -1832,12 +1807,12 @@ nav ul li a:hover {
 
    padding: 34px;
    border-radius: 8px;
-   border: 4px solid rgba(94, 150, 0, 0.48);
-   background: rgba(246, 251, 238, 0.97);
-   box-shadow: 0 10px 24px rgba(20, 35, 10, 0.16);
+   border: 4px solid #5e96007a;
+   background: #f6fbeef7;
+   box-shadow: 0 10px 24px #14230a29;
 
-   font-family: 'Poppins', sans-serif;
-   color: rgba(20, 35, 10, 0.94);
+   font-family: var(--font-family-base);
+   color: #14230af0;
 }
 
 .itinerary-day-module-header {
@@ -1862,7 +1837,7 @@ nav ul li a:hover {
    padding: 0;
    border-radius: 8px;
    background: transparent;
-   color: #ffffff;
+   color: var(--color-white);
    font-size: 3rem;
    line-height: 1.1;
    font-weight: 900;
@@ -1889,9 +1864,9 @@ nav ul li a:hover {
    box-sizing: border-box;
    padding: 38px 44px 44px 44px;
    border-radius: 8px;
-   background: #5e9600;
-   color: #ffffff;
-   box-shadow: inset 0 -2px 0 rgba(20, 35, 10, 0.18);
+   background: var(--color-brand-primary);
+   color: var(--color-white);
+   box-shadow: inset 0 -2px 0 #14230a2e;
 }
 
 .itinerary-day-module-controls .itinerary-day-module-date {
@@ -1905,7 +1880,7 @@ nav ul li a:hover {
    width: 100%;
    box-sizing: border-box;
    padding: 0 4px 42px 4px;
-   border-bottom: 3px solid rgba(94, 150, 0, 0.18);
+   border-bottom: 3px solid #5e96002e;
 }
 
 .itinerary-day-action-feedback-slot {
@@ -1938,15 +1913,15 @@ nav ul li a:hover {
 }
 
 .itinerary-day-action-feedback--success {
-   color: #245a12;
-   background: rgba(94, 150, 0, 0.14);
-   border: 1px solid rgba(94, 150, 0, 0.28);
+   color: var(--color-brand-text);
+   background: #5e960024;
+   border: 1px solid #5e960047;
 }
 
 .itinerary-day-action-feedback--error {
-   color: #8b1a1a;
-   background: rgba(198, 40, 40, 0.12);
-   border: 1px solid rgba(198, 40, 40, 0.28);
+   color: var(--color-danger-text);
+   background: #c628281f;
+   border: 1px solid #c6282847;
 }
 
 .itinerary-day-schedule-actions {
@@ -1969,15 +1944,15 @@ nav ul li a:hover {
    padding: 18px 32px;
    border: none;
    border-radius: 18px;
-   background-color: #77B800;
-   color: #ffffff;
-   font-family: 'Poppins', sans-serif;
+   background-color: var(--color-brand-accent);
+   color: var(--color-white);
+   font-family: var(--font-family-base);
    font-size: 2rem;
    font-weight: 900;
    line-height: 1.15;
    text-align: center;
    cursor: pointer;
-   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+   box-shadow: 0 10px 22px #00000038;
    transition: transform 0.15s ease,
                background-color 0.2s ease,
                box-shadow 0.2s ease;
@@ -1985,38 +1960,38 @@ nav ul li a:hover {
 
 .itinerary-day-schedule-item-btn:hover,
 .itinerary-day-schedule-item-btn:focus-visible {
-   background-color: #5e9600;
+   background-color: var(--color-brand-primary);
    transform: translateY(-2px);
-   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+   box-shadow: 0 14px 32px #00000047;
 }
 
 .itinerary-day-schedule-item-btn--secondary {
-   background-color: rgba(255, 255, 255, 0.9);
-   color: rgba(20, 35, 10, 0.9);
-   border: 3px solid rgba(94, 150, 0, 0.6);
-   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+   background-color: var(--color-white-soft);
+   color: #14230ae6;
+   border: 3px solid #5e960099;
+   box-shadow: 0 10px 22px #00000024;
 }
 
 .itinerary-day-schedule-item-btn--secondary:hover,
 .itinerary-day-schedule-item-btn--secondary:focus-visible {
-   background-color: #ffffff;
+   background-color: var(--color-white);
    transform: translateY(-2px);
-   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+   box-shadow: 0 14px 32px #00000033;
 }
 
 .itinerary-day-schedule-item-btn--destructive {
-   background-color: rgba(255, 255, 255, 0.9);
-   color: rgba(120, 35, 20, 0.92);
-   border: 3px solid rgba(150, 55, 35, 0.55);
-   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+   background-color: var(--color-white-soft);
+   color: #782314eb;
+   border: 3px solid #9637238c;
+   box-shadow: 0 10px 22px #00000024;
 }
 
 .itinerary-day-schedule-item-btn--destructive:hover,
 .itinerary-day-schedule-item-btn--destructive:focus-visible {
-   background-color: #ffffff;
-   color: rgba(120, 35, 20, 0.98);
+   background-color: var(--color-white);
+   color: #782314fa;
    transform: translateY(-2px);
-   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+   box-shadow: 0 14px 32px #00000033;
 }
 
 .itinerary-day-schedule-item-btn:disabled,
@@ -2024,7 +1999,7 @@ nav ul li a:hover {
    cursor: wait;
    opacity: 0.82;
    transform: none;
-   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+   box-shadow: 0 10px 22px #00000024;
    box-sizing: border-box;
 }
 
@@ -2044,17 +2019,17 @@ nav ul li a:hover {
    border: 0.14em solid currentColor;
    border-top-color: transparent;
    border-radius: 50%;
-   color: #ffffff;
+   color: var(--color-white);
    animation: tzg-schedule-btn-spin 0.8s linear infinite;
 }
 
 .itinerary-day-schedule-item-btn--secondary.is-busy::before,
 .itinerary-day-schedule-item-btn--destructive.is-busy::before {
-   color: rgba(20, 35, 10, 0.9);
+   color: #14230ae6;
 }
 
 .itinerary-day-schedule-item-btn--destructive.is-busy::before {
-   color: rgba(120, 35, 20, 0.92);
+   color: #782314eb;
 }
 
 @keyframes tzg-schedule-btn-spin {
@@ -2112,7 +2087,7 @@ nav ul li a:hover {
    font-weight: 900;
    padding: 28px 54px;
    border-radius: 18px;
-   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+   box-shadow: 0 14px 32px #0000002e;
 }
 
 .schedule-item-module .itin-finish:disabled {
@@ -2149,11 +2124,11 @@ nav ul li a:hover {
 }
 
 .schedule-item-field-label {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.8rem;
    font-weight: 850;
    line-height: 1.2;
-   color: rgba(20, 35, 10, 0.88);
+   color: #14230ae0;
 }
 
 .schedule-item-field-label.is-disabled {
@@ -2166,16 +2141,16 @@ nav ul li a:hover {
    box-sizing: border-box;
    min-height: 120px;
    padding: 26px 34px;
-   border: 5px solid rgba(94, 150, 0, 0.35);
+   border: 5px solid #5e960059;
    border-radius: 22px;
-   background: rgba(255, 255, 255, 0.96);
-   color: rgba(20, 35, 10, 0.94);
-   font-family: 'Poppins', sans-serif;
+   background: #fffffff5;
+   color: #14230af0;
+   font-family: var(--font-family-base);
    font-size: 2.65rem;
    font-weight: 750;
    line-height: 1.25;
    outline: none;
-   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+   box-shadow: 0 12px 26px #0000001f;
 }
 
 .schedule-item-time-field {
@@ -2196,28 +2171,28 @@ nav ul li a:hover {
    box-sizing: border-box;
    min-height: 120px;
    padding: 26px 28px;
-   border: 5px solid rgba(94, 150, 0, 0.35);
+   border: 5px solid #5e960059;
    border-radius: 22px;
-   background: rgba(255, 255, 255, 0.96);
-   color: rgba(20, 35, 10, 0.94);
-   font-family: 'Poppins', sans-serif;
+   background: #fffffff5;
+   color: #14230af0;
+   font-family: var(--font-family-base);
    font-size: 2.65rem;
    font-weight: 750;
    line-height: 1.25;
    outline: none;
-   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+   box-shadow: 0 12px 26px #0000001f;
 }
 
 .schedule-item-select:focus,
 .schedule-item-search-input:focus,
 .schedule-item-time-input:focus,
 .schedule-item-duration-input:focus {
-   border-color: rgba(94, 150, 0, 0.95);
-   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.16);
+   border-color: #5e9600f2;
+   box-shadow: 0 16px 34px #00000029;
 }
 
 .schedule-item-search-input::placeholder {
-   color: rgba(20, 35, 10, 0.45);
+   color: #14230a73;
    font-weight: 750;
 }
 
@@ -2225,11 +2200,11 @@ nav ul li a:hover {
    display: flex;
    align-items: center;
    gap: 24px;
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.65rem;
    font-weight: 750;
    line-height: 1.25;
-   color: rgba(20, 35, 10, 0.94);
+   color: #14230af0;
    user-select: none;
    cursor: pointer;
 }
@@ -2238,7 +2213,7 @@ nav ul li a:hover {
    width: 52px;
    height: 52px;
    margin: 0;
-   accent-color: #5e9600;
+   accent-color: var(--color-brand-primary);
    cursor: pointer;
    flex: 0 0 auto;
 }
@@ -2264,10 +2239,10 @@ nav ul li a:hover {
 .schedule-item-duration-input:disabled {
    opacity: 0.55;
    cursor: not-allowed;
-   background: rgba(235, 240, 228, 0.92);
-   border-color: rgba(94, 150, 0, 0.18);
+   background: #ebf0e4eb;
+   border-color: #5e96002e;
    box-shadow: none;
-   color: rgba(20, 35, 10, 0.42);
+   color: #14230a6b;
 }
 
 .schedule-item-module .itin-results {
@@ -2300,8 +2275,8 @@ nav ul li a:hover {
    cursor: pointer;
    border-radius: 22px;
    padding: 24px 28px;
-   background-color: rgba(94, 150, 0, 0.95);
-   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+   background-color: #5e9600f2;
+   box-shadow: 0 10px 25px #0000002e;
 
    display: flex;
    align-items: center;
@@ -2311,8 +2286,8 @@ nav ul li a:hover {
 
 .schedule-item-module .schedule-item-result.is-selected {
    box-shadow:
-      0 0 0 4px rgba(255, 255, 255, 0.85),
-      0 10px 25px rgba(0, 0, 0, 0.18);
+      0 0 0 4px #ffffffd9,
+      0 10px 25px #0000002e;
 }
 
 .schedule-item-module .schedule-item-select-btn {
@@ -2337,7 +2312,7 @@ nav ul li a:hover {
    font-size: 2.65rem;
    font-weight: 900;
    line-height: 1.2;
-   color: #ffffff;
+   color: var(--color-white);
 }
 
 .schedule-item-module .schedule-item-result .animal-result-exhibit,
@@ -2345,7 +2320,7 @@ nav ul li a:hover {
    font-size: 2.35rem;
    font-weight: 700;
    line-height: 1.25;
-   color: rgba(255, 255, 255, 0.9);
+   color: var(--color-white-soft);
 }
 
 .itinerary-day-time-control {
@@ -2355,7 +2330,7 @@ nav ul li a:hover {
 
 .itinerary-day-time-control-label {
    align-self: center;
-   color: #ffffff;
+   color: var(--color-white);
    font-size: 2.25rem;
    line-height: 1;
    font-weight: 900;
@@ -2391,14 +2366,14 @@ nav ul li a:hover {
    padding: 0;
    border: none;
    border-radius: 999px;
-   background: #8bc34a;
-   color: #ffffff;
-   font-family: 'Poppins', sans-serif;
+   background: var(--color-brand-highlight);
+   color: var(--color-white);
+   font-family: var(--font-family-base);
    font-size: 3.2rem;
    line-height: 1;
    font-weight: 900;
    cursor: pointer;
-   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+   box-shadow: 0 10px 22px #00000038;
    transition:
       background-color 0.2s ease,
       box-shadow 0.2s ease;
@@ -2409,17 +2384,17 @@ nav ul li a:hover {
 }
 
 .itinerary-day-time-clear-btn:disabled {
-   background: rgba(139, 195, 74, 0.42);
-   color: rgba(255, 255, 255, 0.72);
+   background: #8bc34a6b;
+   color: #ffffffb8;
    cursor: default;
    box-shadow: none;
 }
 
 .itinerary-day-time-clear-btn:not(:disabled):hover,
 .itinerary-day-time-clear-btn:not(:disabled):focus-visible {
-   background: #77b800;
+   background: var(--color-brand-accent);
    outline: none;
-   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+   box-shadow: 0 14px 32px #00000047;
 }
 
 .tzg-validation-bubble {
@@ -2432,15 +2407,15 @@ nav ul li a:hover {
    width: max-content;
    max-width: none;
    padding: 18px 24px;
-   border: 1px solid rgba(20, 35, 10, 0.2);
+   border: 1px solid #14230a33;
    border-radius: 10px;
-   background: #ffffff;
-   box-shadow: 0 10px 24px rgba(20, 35, 10, 0.18);
-   font-family: 'Poppins', sans-serif;
+   background: var(--color-white);
+   box-shadow: 0 10px 24px #14230a2e;
+   font-family: var(--font-family-base);
    font-size: 2rem;
    line-height: 1.2;
    font-weight: 600;
-   color: rgba(20, 35, 10, 0.94);
+   color: #14230af0;
    white-space: nowrap;
    pointer-events: none;
 }
@@ -2452,9 +2427,9 @@ nav ul li a:hover {
    left: var(--tzg-validation-bubble-arrow-left, 28px);
    width: 14px;
    height: 14px;
-   background: #ffffff;
-   border-top: 1px solid rgba(20, 35, 10, 0.2);
-   border-left: 1px solid rgba(20, 35, 10, 0.2);
+   background: var(--color-white);
+   border-top: 1px solid #14230a33;
+   border-left: 1px solid #14230a33;
    transform: rotate(45deg);
 }
 
@@ -2464,7 +2439,7 @@ nav ul li a:hover {
    height: 2.5rem;
    border-radius: 4px;
    background: #e67c00;
-   color: #ffffff;
+   color: var(--color-white);
    font-size: 1.85rem;
    font-weight: 800;
    line-height: 2.5rem;
@@ -2483,14 +2458,14 @@ nav ul li a:hover {
    box-sizing: border-box;
    min-height: 104px;
    padding: 18px 22px;
-   border: 4px solid rgba(255, 255, 255, 0.82);
+   border: 4px solid #ffffffd1;
    border-radius: 8px;
-   background: rgba(255, 255, 255, 0.96);
-   color: rgba(20, 35, 10, 0.94);
-   font-family: 'Poppins', sans-serif;
+   background: #fffffff5;
+   color: #14230af0;
+   font-family: var(--font-family-base);
    font-size: 2.45rem;
    font-weight: 900;
-   box-shadow: 0 6px 12px rgba(20, 35, 10, 0.16);
+   box-shadow: 0 6px 12px #14230a29;
    text-align: center;
 }
 
@@ -2503,7 +2478,7 @@ nav ul li a:hover {
    transform-origin: top left;
    width: auto !important;
    min-width: 0 !important;
-   box-shadow: 0 10px 24px rgba(20, 35, 10, 0.18);
+   box-shadow: 0 10px 24px #14230a2e;
 }
 
 .flatpickr-calendar.itinerary-day-time-picker.open {
@@ -2526,7 +2501,7 @@ nav ul li a:hover {
 
 .flatpickr-calendar.itinerary-day-time-picker .flatpickr-time input.flatpickr-hour,
 .flatpickr-calendar.itinerary-day-time-picker .flatpickr-time input.flatpickr-minute {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-weight: 700;
    text-align: center;
 }
@@ -2535,14 +2510,14 @@ nav ul li a:hover {
    margin: 0 0 0 6px;
    padding: 8px 12px;
    border-radius: 6px;
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-weight: 700;
-   background: rgba(94, 150, 0, 0.1);
+   background: #5e96001a;
    cursor: pointer;
 }
 
 .flatpickr-calendar.itinerary-day-time-picker .flatpickr-am-pm:hover {
-   background: rgba(94, 150, 0, 0.18);
+   background: #5e96002e;
 }
 
 .itin-overlay .flatpickr-calendar.schedule-item-time-picker,
@@ -2551,7 +2526,7 @@ nav ul li a:hover {
    transform-origin: top left;
    width: auto !important;
    min-width: 0 !important;
-   box-shadow: 0 10px 24px rgba(20, 35, 10, 0.18);
+   box-shadow: 0 10px 24px #14230a2e;
 }
 
 .itin-overlay .flatpickr-calendar.schedule-item-time-picker.open,
@@ -2582,7 +2557,7 @@ nav ul li a:hover {
 .flatpickr-calendar.schedule-item-time-picker .flatpickr-time input.flatpickr-minute {
    width: 100%;
    padding: 0;
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-weight: 700;
    text-align: center;
 }
@@ -2599,26 +2574,18 @@ nav ul li a:hover {
    margin: 0 0 0 4px;
    padding: 6px 10px;
    border-radius: 6px;
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-weight: 700;
-   background: rgba(94, 150, 0, 0.1);
+   background: #5e96001a;
    cursor: pointer;
 }
 
 .itin-overlay .flatpickr-calendar.schedule-item-time-picker .flatpickr-am-pm:hover,
 .flatpickr-calendar.schedule-item-time-picker .flatpickr-am-pm:hover {
-   background: rgba(94, 150, 0, 0.18);
+   background: #5e96002e;
 }
 
 .itinerary-day-timeline {
-   --itinerary-half-hour-slot-height: 730px;
-   --itinerary-pill-strip-top-offset: 80px;
-   --itinerary-scheduled-pill-min-height: 73px;
-   --itinerary-scheduled-pill-compact-min-height: 73px;
-   --itinerary-scheduled-pill-label-size: 2rem;
-   --itinerary-timeline-spine-color: rgba(94, 150, 0, 0.14);
-   --itinerary-timeline-time-column-width: 300px;
-
    display: grid;
    grid-template-columns:
       var(--itinerary-timeline-time-column-width)
@@ -2629,7 +2596,7 @@ nav ul li a:hover {
 
 .itinerary-day-unavailable {
    padding-top: 38px;
-   color: rgba(20, 35, 10, 0.72);
+   color: #14230ab8;
    font-size: 2rem;
    line-height: 1.25;
    font-weight: 900;
@@ -2643,8 +2610,8 @@ nav ul li a:hover {
    box-sizing: border-box;
    padding-top: 18px;
    padding-right: 20px;
-   border-right: 1px solid rgba(94, 150, 0, 0.14);
-   color: rgba(20, 35, 10, 0.64);
+   border-right: 1px solid #5e960024;
+   color: #14230aa3;
    font-size: 2.05rem;
    font-weight: 900;
    text-align: right;
@@ -2661,9 +2628,9 @@ nav ul li a:hover {
    width: 100%;
    padding: 12px 16px;
    border-radius: 999px;
-   background: rgba(94, 150, 0, 0.07);
-   border: 1px solid rgba(94, 150, 0, 0.2);
-   color: rgba(94, 150, 0, 0.82);
+   background: #5e960012;
+   border: 1px solid #5e960033;
+   color: #5e9600d1;
    font-size: 1.65rem;
    line-height: 1.15;
    font-weight: 800;
@@ -2676,9 +2643,9 @@ nav ul li a:hover {
    min-height: var(--itinerary-half-hour-slot-height);
    overflow-x: visible;
    overflow-y: visible;
-   border-top: 1px solid rgba(94, 150, 0, 0.14);
+   border-top: 1px solid #5e960024;
    border-left: none;
-   background: rgba(94, 150, 0, 0.018);
+   background: #5e960005;
 }
 
 .itinerary-day-grid-line::before {
@@ -2694,7 +2661,7 @@ nav ul li a:hover {
 }
 
 .itinerary-day-grid-line:nth-child(4n) {
-   background: rgba(94, 150, 0, 0.035);
+   background: #5e960009;
 }
 
 .itinerary-day-pill-strip {
@@ -2785,13 +2752,13 @@ nav ul li a:hover {
    );
    padding: 14px 18px;
    border-radius: 16px;
-   background: rgba(255, 255, 255, 0.94);
-   border: 1px solid rgba(94, 150, 0, 0.26);
-   color: #4f7f00;
+   background: #fffffff0;
+   border: 1px solid #5e960042;
+   color: var(--color-brand-forest);
    font-size: var(--itinerary-scheduled-pill-label-size);
    line-height: 1.15;
    font-weight: 800;
-   box-shadow: 0 2px 8px rgba(20, 35, 10, 0.07);
+   box-shadow: 0 2px 8px #14230a12;
    overflow: hidden;
    white-space: nowrap;
    text-overflow: ellipsis;
@@ -2801,10 +2768,10 @@ nav ul li a:hover {
    min-height: 0;
    padding: 10px 12px 10px 14px;
    border-radius: 14px;
-   background: rgba(248, 252, 244, 0.96);
-   border-color: rgba(94, 150, 0, 0.2);
+   background: #f8fcf4f5;
+   border-color: #5e960033;
    box-shadow: none;
-   color: rgba(79, 127, 0, 0.92);
+   color: #4f7f00eb;
    font-weight: 800;
 }
 
@@ -2841,9 +2808,9 @@ nav ul li a:hover {
 }
 
 .itinerary-day-scheduled-pill.itinerary-day-scheduled-pill--extended {
-   background: rgba(248, 252, 244, 0.98);
-   border-color: rgba(94, 150, 0, 0.32);
-   box-shadow: 0 3px 10px rgba(20, 35, 10, 0.08);
+   background: #f8fcf4fa;
+   border-color: #5e960052;
+   box-shadow: 0 3px 10px #14230a14;
 }
 
 .itinerary-day-scheduled-pill-header--grouped {
@@ -2903,7 +2870,7 @@ nav ul li a:hover {
 
 .itinerary-day-scheduled-pill-count {
    flex: 0 0 auto;
-   color: rgba(79, 127, 0, 0.72);
+   color: #4f7f00b8;
    font-size: inherit;
    font-weight: inherit;
    white-space: nowrap;
@@ -2917,7 +2884,7 @@ nav ul li a:hover {
    border: none;
    border-radius: 8px;
    background: transparent;
-   color: rgba(94, 150, 0, 0.72);
+   color: #5e9600b8;
    font-size: 1.85rem;
    line-height: 1;
    font-weight: 900;
@@ -2926,8 +2893,8 @@ nav ul li a:hover {
 
 .itinerary-day-scheduled-pill-toggle:hover,
 .itinerary-day-scheduled-pill-toggle:focus-visible {
-   background: rgba(94, 150, 0, 0.1);
-   color: #5e9600;
+   background: #5e96001a;
+   color: var(--color-brand-primary);
 }
 
 .itinerary-day-scheduled-pill-label {
@@ -2960,8 +2927,8 @@ nav ul li a:hover {
    width: 44px;
    height: 44px;
    border-width: 1px;
-   border-color: rgba(94, 150, 0, 0.24);
-   background: rgba(255, 255, 255, 0.8);
+   border-color: #5e96003d;
+   background: #ffffffcc;
 }
 
 .itinerary-day-scheduled-pill--grouped .itinerary-day-open-pill-menu-btn {
@@ -2981,7 +2948,7 @@ nav ul li a:hover {
 .itinerary-day-scheduled-pill-time-range {
    display: block;
    margin-top: 8px;
-   color: rgba(20, 35, 10, 0.58);
+   color: #14230a94;
    font-size: 1.3rem;
    font-weight: 700;
    line-height: 1.2;
@@ -3076,13 +3043,13 @@ nav ul li a:hover {
    order: 0;
    padding: 17px 30px;
    border-radius: 999px;
-   background: #ffffff;
-   border: 2px solid rgba(94, 150, 0, 0.35);
-   color: #5e9600;
+   background: var(--color-white);
+   border: 2px solid #5e960059;
+   color: var(--color-brand-primary);
    font-size: 2.05rem;
    line-height: 1;
    font-weight: 900;
-   box-shadow: 0 6px 14px rgba(20, 35, 10, 0.14);
+   box-shadow: 0 6px 14px #14230a24;
 }
 
 .itinerary-day-open-pill--with-menu {
@@ -3113,10 +3080,10 @@ nav ul li a:hover {
    height: 52px;
    margin: 0;
    padding: 0;
-   border: 2px solid rgba(94, 150, 0, 0.28);
+   border: 2px solid #5e960047;
    border-radius: 999px;
-   background: rgba(94, 150, 0, 0.06);
-   color: #5e9600;
+   background: #5e96000f;
+   color: var(--color-brand-primary);
    appearance: none;
    cursor: pointer;
 }
@@ -3140,7 +3107,7 @@ nav ul li a:hover {
 
 .itinerary-day-open-pill-menu-btn:hover,
 .itinerary-day-open-pill-menu-btn:focus-visible {
-   background: rgba(94, 150, 0, 0.12);
+   background: #5e96001f;
    outline: none;
 }
 
@@ -3152,9 +3119,9 @@ nav ul li a:hover {
    min-width: 240px;
    padding: 10px;
    border-radius: 20px;
-   background: #77b800;
-   border: 2px solid rgba(94, 150, 0, 0.45);
-   box-shadow: 0 10px 24px rgba(20, 35, 10, 0.18);
+   background: var(--color-brand-accent);
+   border: 2px solid #5e960073;
+   box-shadow: 0 10px 24px #14230a2e;
 }
 
 .itinerary-day-open-pill-menu-panel[hidden] {
@@ -3169,7 +3136,7 @@ nav ul li a:hover {
    border: 0;
    border-radius: 14px;
    background: transparent;
-   color: #ffffff;
+   color: var(--color-white);
    font-size: 2.05rem;
    line-height: 1.1;
    font-weight: 900;
@@ -3179,7 +3146,7 @@ nav ul li a:hover {
 
 .itinerary-day-open-pill-menu-item:hover,
 .itinerary-day-open-pill-menu-item:focus-visible {
-   background: rgba(255, 255, 255, 0.16);
+   background: #ffffff29;
    outline: none;
 }
 
@@ -3199,14 +3166,14 @@ nav ul li a:hover {
    z-index: 14;
    padding: 10px 14px;
    border-radius: 14px;
-   background: rgba(94, 150, 0, 0.97);
-   border: 2px solid rgba(255, 255, 255, 0.35);
-   color: #ffffff;
+   background: #5e9600f7;
+   border: 2px solid #ffffff59;
+   color: var(--color-white);
    font-size: 1.45rem;
    line-height: 1.1;
    font-weight: 900;
    white-space: nowrap;
-   box-shadow: 0 10px 22px rgba(20, 35, 10, 0.22);
+   box-shadow: 0 10px 22px #14230a38;
    opacity: 0;
    pointer-events: none;
    transform: translateY(-50%);
@@ -3223,8 +3190,8 @@ nav ul li a:hover {
    height: 0;
    border-top: 7px solid transparent;
    border-bottom: 7px solid transparent;
-   border-left: 7px solid rgba(94, 150, 0, 0.97);
-   filter: drop-shadow(3px 2px 4px rgba(20, 35, 10, 0.16));
+   border-left: 7px solid #5e9600f7;
+   filter: drop-shadow(3px 2px 4px #14230a29);
    opacity: 0;
    pointer-events: none;
    transform: translateY(-50%);
@@ -3246,10 +3213,10 @@ nav ul li a:hover {
    height: 66px;
    box-sizing: border-box;
    border-radius: 999px;
-   background: var(--itinerary-boundary-marker-color, #5e9600);
-   border: 2px solid #ffffff;
-   color: #ffffff !important;
-   box-shadow: 0 2px 7px rgba(20, 35, 10, 0.16);
+   background: var(--itinerary-boundary-marker-color, var(--color-brand-primary));
+   border: 2px solid var(--color-white);
+   color: var(--color-white) !important;
+   box-shadow: 0 2px 7px #14230a29;
 }
 
 .itinerary-day-boundary-marker-btn {
@@ -3263,7 +3230,7 @@ nav ul li a:hover {
 .itinerary-day-boundary-marker-icon::after,
 .itinerary-day-boundary-marker-btn::after {
    content: '!';
-   color: #ffffff;
+   color: var(--color-white);
    font-size: 3rem;
    line-height: 0.9;
    font-weight: 900;
@@ -3271,16 +3238,16 @@ nav ul li a:hover {
 }
 
 .itinerary-day-boundary-marker[data-boundary-marker-kind="arrival"] {
-   --itinerary-boundary-marker-color: #77b800;
+   --itinerary-boundary-marker-color: var(--itinerary-boundary-arrival-color);
 }
 
 .itinerary-day-boundary-marker[data-boundary-marker-kind="departure"] {
-   --itinerary-boundary-marker-color: #c2412d;
+   --itinerary-boundary-marker-color: var(--itinerary-boundary-departure-color);
 }
 
 .itinerary-day-boundary-marker-btn:hover,
 .itinerary-day-boundary-marker-btn:focus-visible {
-   border-color: #ffffff;
+   border-color: var(--color-white);
    filter: brightness(1.06);
    outline: none;
 }
@@ -3306,7 +3273,7 @@ nav ul li a:hover {
 
 .itinerary-day-items-title {
    margin: 0 0 4px 0;
-   color: rgba(20, 35, 10, 0.92);
+   color: #14230aeb;
    font-size: 3.8em;
    line-height: 1.05;
    font-weight: 900;
@@ -3319,11 +3286,11 @@ nav ul li a:hover {
 .itin-card {
    width: min(1800px, 92vw);
 
-   background: rgba(252, 248, 236, 0.98);
+   background: #fcf8ecfa;
    border-radius: 28px;
 
-   border: 3px solid rgba(94, 150, 0, 0.25);
-   box-shadow: 0 30px 120px rgba(0,0,0,0.35);
+   border: 3px solid #5e960040;
+   box-shadow: 0 30px 120px #00000059;
 
    overflow: hidden;
 }
@@ -3335,15 +3302,15 @@ nav ul li a:hover {
 
    padding: 30px 40px;
 
-   background: linear-gradient(180deg, rgba(119,184,0,0.22), rgba(119,184,0,0.10));
-   border-bottom: 2px solid rgba(94,150,0,0.18);
+   background: linear-gradient(180deg, #77b80038, #77b8001a);
+   border-bottom: 2px solid #5e96002e;
 }
 
 .itin-top-title {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 4.2em;
    font-weight: 900;
-   color: rgba(20,35,10,0.92);
+   color: #14230aeb;
    letter-spacing: 0.02em;
 }
 
@@ -3352,19 +3319,19 @@ nav ul li a:hover {
 }
 
 .itin-h1 {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 6.2em;
    font-weight: 900;
    margin: 0 0 18px 0;
-   color: rgba(20,35,10,0.95);
+   color: #14230af2;
 }
 
 .itin-subtitle {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3.2em;
    font-weight: 650;
    margin: 0 0 52px 0;
-   color: rgba(20,35,10,0.60);
+   color: #14230a99;
 }
 
 .itin-card-actions {
@@ -3381,7 +3348,7 @@ nav ul li a:hover {
 
 .itin-next,
 .itin-finish {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3.8em;
    font-weight: 950;
 
@@ -3389,17 +3356,17 @@ nav ul li a:hover {
    border-radius: 18px;
    border: none;
 
-   background: #5e9600;
-   color: #ffffff;
+   background: var(--color-brand-primary);
+   color: var(--color-white);
 
    cursor: pointer;
-   box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+   box-shadow: 0 18px 40px #00000038;
    transition: transform 0.15s ease, background-color 0.2s ease;
 }
 
 .itin-next:hover,
 .itin-finish:hover {
-   background-color: #4b7c00;
+   background-color: var(--color-brand-primary-dark);
    transform: translateY(-2px);
 }
 
@@ -3408,10 +3375,10 @@ nav ul li a:hover {
 ============================================================ */
 
 .itin-field-label {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3.2em;
    font-weight: 850;
-   color: rgba(20,35,10,0.85);
+   color: #14230ad9;
    margin-bottom: 18px;
 }
 
@@ -3419,24 +3386,24 @@ nav ul li a:hover {
    width: 100%;
    box-sizing: border-box;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 4.2em;
    font-weight: 850;
-   color: rgba(20,35,10,0.95);
+   color: #14230af2;
 
    padding: 34px 34px;
    border-radius: 22px;
 
-   background: rgba(255,255,255,0.92);
-   border: 6px solid rgba(94,150,0,0.35);
+   background: #ffffffeb;
+   border: 6px solid #5e960059;
 
-   box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+   box-shadow: 0 14px 30px #0000001f;
    outline: none;
 }
 
 .itin-date-input:focus {
-   border-color: rgba(94,150,0,0.95);
-   box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+   border-color: #5e9600f2;
+   box-shadow: 0 18px 40px #0000002e;
 }
 
 .itin-overlay .flatpickr-calendar {
@@ -3509,29 +3476,29 @@ nav ul li a:hover {
    width: 100%;
    box-sizing: border-box;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 4.2em;
    font-weight: 850;
-   color: rgba(20,35,10,0.95);
+   color: #14230af2;
 
    padding: 34px 34px;
    border-radius: 22px;
 
-   background: rgba(255,255,255,0.92);
-   border: 6px solid rgba(94,150,0,0.35);
+   background: #ffffffeb;
+   border: 6px solid #5e960059;
 
-   box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+   box-shadow: 0 14px 30px #0000001f;
    outline: none;
    line-height: 1.15;
 }
 
 .itin-search-input:focus {
-   border-color: rgba(94,150,0,0.95);
-   box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+   border-color: #5e9600f2;
+   box-shadow: 0 18px 40px #0000002e;
 }
 
 .itin-search-input::placeholder {
-   color: rgba(20,35,10,0.45);
+   color: #14230a73;
    font-weight: 850;
 }
 
@@ -3549,10 +3516,10 @@ nav ul li a:hover {
 }
 
 .itin-empty {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3.2em;
    font-weight: 800;
-   color: rgba(20,35,10,0.65);
+   color: #14230aa6;
    padding: 18px 2px;
 }
 
@@ -3571,7 +3538,7 @@ nav ul li a:hover {
 .itin-panel-view::-webkit-scrollbar-track,
 .itin-panel-section-body::-webkit-scrollbar-track,
 .itin-removed-popup-body::-webkit-scrollbar-track {
-   background: rgba(94, 150, 0, 0.12);
+   background: #5e96001f;
    border-radius: 999px;
 }
 
@@ -3579,16 +3546,16 @@ nav ul li a:hover {
 .itin-panel-view::-webkit-scrollbar-thumb,
 .itin-panel-section-body::-webkit-scrollbar-thumb,
 .itin-removed-popup-body::-webkit-scrollbar-thumb {
-   background: rgba(94, 150, 0, 0.55);
+   background: #5e96008c;
    border-radius: 999px;
-   border: 4px solid rgba(255,255,255,0.7);
+   border: 4px solid #ffffffb2;
 }
 
 .itin-results::-webkit-scrollbar-thumb:hover,
 .itin-panel-view::-webkit-scrollbar-thumb:hover,
 .itin-panel-section-body::-webkit-scrollbar-thumb:hover,
 .itin-removed-popup-body::-webkit-scrollbar-thumb:hover {
-   background: rgba(94, 150, 0, 0.8);
+   background: #5e9600cc;
 }
 
 /* ============================================================
@@ -3619,8 +3586,8 @@ nav ul li a:hover {
    overflow: hidden;
 
    flex: 0 0 auto;
-   background: rgba(0,0,0,0.18);
-   box-shadow: inset 0 0 0 3px rgba(255,255,255,0.18);
+   background: #0000002e;
+   box-shadow: inset 0 0 0 3px #ffffff2e;
 }
 
 .itin-animal-thumb-img {
@@ -3675,37 +3642,37 @@ nav ul li a:hover {
    border-radius: 50%;
    border: none;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3.4em;
    font-weight: 900;
    line-height: 1;
 
-   background: #77B800;
-   color: #ffffff;
+   background: var(--color-brand-accent);
+   color: var(--color-white);
 
    cursor: pointer;
 
-   box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+   box-shadow: 0 10px 24px #00000040;
    transition: transform 0.15s ease,
                background-color 0.2s ease,
                box-shadow 0.2s ease;
 }
 
 .itin-add-btn:hover {
-   background-color: #5e9600;
+   background-color: var(--color-brand-primary);
    transform: translateY(-2px);
-   box-shadow: 0 14px 32px rgba(0,0,0,0.32);
+   box-shadow: 0 14px 32px #00000052;
 }
 
 .itin-add-btn.is-added {
-   background: rgba(255,255,255,0.15);
-   color: #ffffff;
-   border: 4px solid rgba(255,255,255,0.6);
+   background: #ffffff26;
+   color: var(--color-white);
+   border: 4px solid #ffffff99;
    box-shadow: none;
 }
 
 .itin-add-btn.is-added:hover {
-   background: rgba(255,255,255,0.25);
+   background: #ffffff40;
    transform: none;
 }
 
@@ -3721,24 +3688,24 @@ nav ul li a:hover {
 }
 
 .itin-prev {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3.8em;
    font-weight: 950;
 
    padding: 26px 58px;
    border-radius: 18px;
-   border: 3px solid rgba(94,150,0,0.6);
+   border: 3px solid #5e960099;
 
-   background: rgba(255,255,255,0.85);
-   color: rgba(20,35,10,0.85);
+   background: #ffffffd9;
+   color: #14230ad9;
 
    cursor: pointer;
-   box-shadow: 0 18px 40px rgba(0,0,0,0.15);
+   box-shadow: 0 18px 40px #00000026;
    transition: transform 0.15s ease, background-color 0.2s ease;
 }
 
 .itin-prev:hover {
-   background: rgba(255,255,255,1);
+   background: #ffffffff;
    transform: translateY(-2px);
 }
 
@@ -3752,10 +3719,10 @@ nav ul li a:hover {
 }
 
 .itin-talk-meta {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.8em;
    font-weight: 650;
-   color: rgba(255,255,255,0.9);
+   color: var(--color-white-soft);
 
    white-space: normal;
    overflow-wrap: anywhere;
@@ -3769,7 +3736,7 @@ nav ul li a:hover {
 .itinerary-empty {
    font-size: 3.2em;
    font-weight: 800;
-   color: rgba(20, 35, 10, 0.65);
+   color: #14230aa6;
    padding: 18px 8px;
 }
 
@@ -3797,12 +3764,12 @@ nav ul li a:hover {
    border-radius: 18px;
    border: none;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3.2em;
    font-weight: 900;
 
    cursor: pointer;
-   box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+   box-shadow: 0 10px 22px #00000038;
    transition: transform 0.15s ease,
                background-color 0.2s ease,
                box-shadow 0.2s ease;
@@ -3810,28 +3777,28 @@ nav ul li a:hover {
 
 .itin-panel-build-btn,
 .itin-panel-edit-btn {
-   background-color: #77B800;
-   color: #ffffff;
+   background-color: var(--color-brand-accent);
+   color: var(--color-white);
 }
 
 .itin-panel-build-btn:hover,
 .itin-panel-edit-btn:hover {
-   background-color: #5e9600;
+   background-color: var(--color-brand-primary);
    transform: translateY(-2px);
-   box-shadow: 0 14px 32px rgba(0,0,0,0.28);
+   box-shadow: 0 14px 32px #00000047;
 }
 
 .itin-panel-clear-btn {
-   background-color: rgba(255,255,255,0.90);
-   color: rgba(20,35,10,0.90);
-   border: 3px solid rgba(94,150,0,0.6);
-   box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+   background-color: var(--color-white-soft);
+   color: #14230ae6;
+   border: 3px solid #5e960099;
+   box-shadow: 0 10px 22px #00000024;
 }
 
 .itin-panel-clear-btn:hover {
-   background-color: rgba(255,255,255,1);
+   background-color: #ffffffff;
    transform: translateY(-2px);
-   box-shadow: 0 14px 32px rgba(0,0,0,0.20);
+   box-shadow: 0 14px 32px #00000033;
 }
 
 /* ============================================================
@@ -3839,11 +3806,11 @@ nav ul li a:hover {
 ============================================================ */
 
 .itin-panel-date {
-   background: rgba(255,255,255,0.65);
-   border: 3px solid rgba(94, 150, 0, 0.18);
+   background: #ffffffa6;
+   border: 3px solid #5e96002e;
    border-radius: 22px;
    padding: 22px 22px;
-   box-shadow: 0 12px 28px rgba(0,0,0,0.10);
+   box-shadow: 0 12px 28px #0000001a;
 
    display: flex;
    flex-direction: column;
@@ -3865,7 +3832,7 @@ nav ul li a:hover {
 .itin-panel-date-label {
    font-size: 2.4em;
    font-weight: 900;
-   color: rgba(20, 35, 10, 0.65);
+   color: #14230aa6;
    letter-spacing: 0.08em;
    text-transform: uppercase;
 }
@@ -3873,7 +3840,7 @@ nav ul li a:hover {
 .itin-panel-date-value {
    font-size: 3.2em;
    font-weight: 900;
-   color: rgba(20, 35, 10, 0.92);
+   color: #14230aeb;
 
    white-space: normal;
    overflow-wrap: anywhere;
@@ -3898,27 +3865,27 @@ nav ul li a:hover {
    padding: 14px 18px;
    border-radius: 14px;
 
-   background: rgba(20, 35, 10, 0.10);
-   color: rgba(20, 35, 10, 0.90);
+   background: #14230a1a;
+   color: #14230ae6;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.6em;
    font-weight: 900;
 
-   box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+   box-shadow: 0 8px 18px #0000001f;
 }
 
 .itin-panel-section-edit-btn:hover {
-   background: rgba(20, 35, 10, 0.16);
+   background: #14230a29;
 }
 
 .itin-panel-section {
    flex: 0 0 auto;
-   background: rgba(255,255,255,0.55);
-   border: 3px solid rgba(94, 150, 0, 0.18);
+   background: #ffffff8c;
+   border: 3px solid #5e96002e;
    border-radius: 22px;
    overflow: hidden;
-   box-shadow: 0 12px 28px rgba(0,0,0,0.10);
+   box-shadow: 0 12px 28px #0000001a;
 }
 
 .itin-panel-section-header {
@@ -3929,7 +3896,7 @@ nav ul li a:hover {
 
    padding: 26px 26px;
 
-   background: rgba(94, 150, 0, 0.18);
+   background: #5e96002e;
    cursor: pointer;
    user-select: none;
 }
@@ -3937,7 +3904,7 @@ nav ul li a:hover {
 .itin-panel-section-title {
    font-size: 3.8em;
    font-weight: 900;
-   color: rgba(20, 35, 10, 0.92);
+   color: #14230aeb;
    letter-spacing: 0.02em;
 
    display: flex;
@@ -3953,7 +3920,7 @@ nav ul li a:hover {
 
 .itin-panel-toggle {
    border: none;
-   background: rgba(20, 35, 10, 0.08);
+   background: #14230a14;
    width: 72px;
    height: 72px;
    border-radius: 18px;
@@ -3965,7 +3932,7 @@ nav ul li a:hover {
 }
 
 .itin-panel-toggle:hover {
-   background: rgba(20, 35, 10, 0.14);
+   background: #14230a24;
 }
 
 .itin-panel-toggle-icon {
@@ -3985,8 +3952,8 @@ nav ul li a:hover {
    width: 16px;
    height: 16px;
 
-   border-right: 5px solid rgba(20, 35, 10, 0.85);
-   border-bottom: 5px solid rgba(20, 35, 10, 0.85);
+   border-right: 5px solid #14230ad9;
+   border-bottom: 5px solid #14230ad9;
 
    transform: rotate(45deg);
 }
@@ -4024,7 +3991,7 @@ nav ul li a:hover {
 ============================================================ */
 
 .itin-panel-item {
-   background-color: rgba(94, 150, 0, 0.95);
+   background-color: #5e9600f2;
    border-radius: 18px;
    padding: 22px 22px;
 
@@ -4033,7 +4000,7 @@ nav ul li a:hover {
    justify-content: space-between;
    gap: 22px;
 
-   box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+   box-shadow: 0 10px 25px #0000002e;
 }
 
 .itin-panel-item-left {
@@ -4060,18 +4027,18 @@ nav ul li a:hover {
    padding: 14px 18px;
    border-radius: 14px;
 
-   background: rgba(255, 255, 255, 0.14);
-   color: #fff;
+   background: #ffffff24;
+   color: var(--color-white);
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.6em;
    font-weight: 900;
 
-   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+   box-shadow: 0 8px 18px #0000001f;
 }
 
 .itin-panel-item-action-btn:hover {
-   background: rgba(255, 255, 255, 0.22);
+   background: #ffffff38;
 }
 
 .itin-panel-thumb {
@@ -4081,8 +4048,8 @@ nav ul li a:hover {
    overflow: hidden;
    flex: 0 0 auto;
 
-   background: rgba(0,0,0,0.18);
-   box-shadow: inset 0 0 0 3px rgba(255,255,255,0.18);
+   background: #0000002e;
+   box-shadow: inset 0 0 0 3px #ffffff2e;
 }
 
 .itin-panel-thumb img {
@@ -4103,7 +4070,7 @@ nav ul li a:hover {
 .itin-panel-name {
    font-size: 3.6em;
    font-weight: 900;
-   color: #fff;
+   color: var(--color-white);
 
    white-space: normal;
    overflow-wrap: anywhere;
@@ -4113,7 +4080,7 @@ nav ul li a:hover {
 .itin-panel-meta {
    font-size: 2.6em;
    font-weight: 650;
-   color: rgba(255,255,255,0.9);
+   color: var(--color-white-soft);
 
    white-space: normal;
    overflow-wrap: anywhere;
@@ -4123,14 +4090,14 @@ nav ul li a:hover {
 .itin-panel-link {
    font-size: 2.6em;
    font-weight: 750;
-   color: #fff;
+   color: var(--color-white);
    text-decoration: underline;
    cursor: pointer;
    width: fit-content;
 }
 
 .itin-panel-link:hover {
-   color: #ffd54d;
+   color: var(--color-warning);
 }
 
 .itin-region-choice-row {
@@ -4173,11 +4140,11 @@ nav ul li a:hover {
    height: 40px;
    flex-shrink: 0;
    display: block;
-   filter: drop-shadow(0 3px 4px rgba(0,0,0,0.4));
+   filter: drop-shadow(0 3px 4px #00000066);
 }
 
 .itin-likelihood-warning.medium .itin-warning-icon path {
-   fill: #ffd54d;
+   fill: var(--color-warning);
    stroke: #000;
    stroke-width: 1.5;
 }
@@ -4210,7 +4177,7 @@ nav ul li a:hover {
 .tzg-popup-message {
    font-size: 3em;
    font-weight: 800;
-   color: rgba(20,35,10,0.75);
+   color: #14230abf;
    line-height: 1.25;
    white-space: pre-line;
 
@@ -4236,7 +4203,7 @@ nav ul li a:hover {
    gap: 18px;
    font-size: 2.4em;
    font-weight: 700;
-   color: rgba(20, 35, 10, 0.82);
+   color: #14230ad1;
 }
 
 .tzg-confirm .itin-overlay,
@@ -4262,10 +4229,10 @@ nav ul li a:hover {
 .itin-save-issue-section-title {
    margin: 0;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.8em;
    font-weight: 900;
-   color: rgba(20,35,10,0.92);
+   color: #14230aeb;
 }
 
 .itin-save-issue-section-message {
@@ -4274,7 +4241,7 @@ nav ul li a:hover {
    font-size: 2.1em;
    font-weight: 750;
    line-height: 1.25;
-   color: rgba(20,35,10,0.68);
+   color: #14230aad;
 }
 
 .itin-save-issue-conflict {
@@ -4282,7 +4249,7 @@ nav ul li a:hover {
    flex-direction: column;
    gap: 14px;
    padding: 18px 0;
-   border-top: 2px solid rgba(20,35,10,0.12);
+   border-top: 2px solid #14230a1f;
 }
 
 .itin-save-issue-conflict:first-of-type {
@@ -4296,7 +4263,7 @@ nav ul li a:hover {
    font-size: 2.1em;
    font-weight: 750;
    line-height: 1.25;
-   color: rgba(20,35,10,0.68);
+   color: #14230aad;
 }
 
 .itin-panel-time-conflict {
@@ -4312,15 +4279,15 @@ nav ul li a:hover {
 }
 
 .itin-save-issue-select-btn:disabled:hover {
-   background-color: #77B800;
+   background-color: var(--color-brand-accent);
    transform: none;
    box-shadow: none;
 }
 
 .itin-save-issue-select-btn.is-added {
-   background: rgba(255,255,255,0.15);
-   color: #ffffff;
-   border: 4px solid rgba(255,255,255,0.6);
+   background: #ffffff26;
+   color: var(--color-white);
+   border: 4px solid #ffffff99;
    box-shadow: none;
 }
 
@@ -4330,22 +4297,22 @@ nav ul li a:hover {
 
 .itin-save-issue-select-btn.requires-trim-override:not(:disabled) {
    background: #e6c200;
-   color: #ffffff;
-   border: 4px solid rgba(255, 255, 255, 0.85);
-   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+   color: var(--color-white);
+   border: 4px solid #ffffffd9;
+   box-shadow: 0 10px 24px #00000033;
 }
 
 .itin-save-issue-select-btn.requires-trim-override:not(:disabled):hover {
    background: #d4b000;
-   color: #ffffff;
+   color: var(--color-white);
    transform: translateY(-2px);
-   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+   box-shadow: 0 14px 32px #00000047;
 }
 
 .itin-save-issue-select-btn.requires-trim-override:disabled {
    background: #e6c200;
-   color: #ffffff;
-   border: 4px solid rgba(255, 255, 255, 0.85);
+   color: var(--color-white);
+   border: 4px solid #ffffffd9;
    opacity: 0.55;
 }
 
@@ -4369,14 +4336,14 @@ nav ul li a:hover {
    gap: 32px;
    font-size: 3.2em;
    font-weight: 600;
-   color: rgba(20, 35, 10, 0.9);
+   color: #14230ae6;
    user-select: none;
 }
 
 .itin-selector-toggle-row input[type="checkbox"] {
    width: 64px;
    height: 64px;
-   accent-color: #5e9600;
+   accent-color: var(--color-brand-primary);
    cursor: pointer;
    flex: 0 0 auto;
 }
@@ -4405,22 +4372,22 @@ nav ul li a:hover {
    border: none;
    border-radius: 22px;
 
-   background: rgba(20, 35, 10, 0.10);
-   color: rgba(20, 35, 10, 0.9);
+   background: #14230a1a;
+   color: #14230ae6;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3.6em;
    font-weight: 900;
    line-height: 1;
 
    cursor: pointer;
 
-   box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+   box-shadow: 0 8px 18px #0000001f;
    transition: background 0.18s ease, transform 0.12s ease;
 }
 
 .itin-close:hover {
-   background: rgba(20, 35, 10, 0.16);
+   background: #14230a29;
    transform: translateY(-50%) scale(1.05);
 }
 
@@ -4454,7 +4421,7 @@ nav ul li a:hover {
    -webkit-overflow-scrolling: touch;
 
    scrollbar-width: thin;
-   scrollbar-color: rgba(94, 150, 0, 0.55) rgba(94, 150, 0, 0.12);
+   scrollbar-color: #5e96008c #5e96001f;
 
    padding-top: 40px;
    padding-bottom: 40px;
@@ -4477,10 +4444,10 @@ nav ul li a:hover {
 }
 
 .itin-removed-section-title {
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.4em;
    font-weight: 900;
-   color: rgba(20, 35, 10, 0.72);
+   color: #14230ab8;
    letter-spacing: 0.04em;
    text-transform: uppercase;
 }
@@ -4523,22 +4490,22 @@ nav ul li a:hover {
    border-radius: 16px;
    border: none;
 
-   background: rgba(255,255,255,0.16);
-   color: #ffffff;
+   background: #ffffff29;
+   color: var(--color-white);
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.2em;
    font-weight: 900;
    line-height: 1.15;
 
    cursor: pointer;
 
-   box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+   box-shadow: 0 8px 18px #0000002e;
    transition: background-color 0.18s ease, transform 0.12s ease;
 }
 
 .itin-removed-alt-btn:hover {
-   background: rgba(255,255,255,0.26);
+   background: #ffffff42;
    transform: translateY(-2px);
 }
 
@@ -4560,17 +4527,17 @@ nav ul li a:hover {
 }
 
 .itin-removed-keep-btn.is-selected {
-   background: rgba(255,255,255,0.34);
+   background: #ffffff57;
    box-shadow:
-      0 0 0 3px rgba(255,255,255,0.55),
-      0 8px 18px rgba(0,0,0,0.18);
+      0 0 0 3px #ffffff8c,
+      0 8px 18px #0000002e;
 }
 
 .itin-removed-section-subtitle {
    font-size: 2.1em;
    font-weight: 650;
    line-height: 1.35;
-   color: rgba(20, 35, 10, 0.68);
+   color: #14230aad;
    margin-top: -4px;
    margin-bottom: 8px;
 }
@@ -4587,9 +4554,9 @@ nav ul li a:hover {
    padding: 12px 16px;
    border-radius: 12px;
 
-   background: rgba(255, 248, 220, 0.95);
+   background: #fff8dcf2;
    border-left: 6px solid #e6a700;
-   color: rgba(120, 85, 0, 0.95);
+   color: #785500f2;
 
    font-size: 2.15em;
    font-weight: 750;
@@ -4608,9 +4575,9 @@ nav ul li a:hover {
    padding: 12px 16px;
    border-radius: 12px;
 
-   background: rgba(232, 246, 221, 0.96);
-   border-left: 6px solid rgba(94, 150, 0, 0.95);
-   color: rgba(49, 94, 0, 0.96);
+   background: #e8f6ddf5;
+   border-left: 6px solid #5e9600f2;
+   color: #315e00f5;
 
    font-size: 2.15em;
    font-weight: 750;
@@ -4638,7 +4605,7 @@ nav ul li a:hover {
    font-size: 3em;
    font-weight: 600;
    line-height: 1.45;
-   color: rgba(20, 35, 10, 0.72);
+   color: #14230ab8;
 }
 
 /* ============================================================
@@ -4662,39 +4629,39 @@ nav ul li a:hover {
    border: none;
    border-radius: 24px;
 
-   background-color: #77B800;
-   color: #ffffff;
+   background-color: var(--color-brand-accent);
+   color: var(--color-white);
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3.4em;
    font-weight: 850;
    text-align: left;
    line-height: 1.2;
 
    cursor: pointer;
-   box-shadow: 0 16px 34px rgba(0,0,0,0.18);
+   box-shadow: 0 16px 34px #0000002e;
    transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .console-operations-menu-btn:hover {
-   background-color: #5e9600;
+   background-color: var(--color-brand-primary);
    transform: translateY(-2px);
-   box-shadow: 0 20px 42px rgba(0,0,0,0.24);
+   box-shadow: 0 20px 42px #0000003d;
 }
 
 .console-operations-menu-btn.active {
    background-color: #9ccc65;
    box-shadow:
-      0 16px 34px rgba(0,0,0,0.18),
-      inset 0 0 0 4px rgba(255, 255, 255, 0.45);
+      0 16px 34px #0000002e,
+      inset 0 0 0 4px #ffffff73;
 }
 
 .console-operations-menu-btn.active:hover {
    background-color: #aed581;
    transform: translateY(-2px);
    box-shadow:
-      0 20px 42px rgba(0,0,0,0.24),
-      inset 0 0 0 4px rgba(255, 255, 255, 0.55);
+      0 20px 42px #0000003d,
+      inset 0 0 0 4px #ffffff8c;
 }
 
 .console-operations-menu-btn-number {
@@ -4705,7 +4672,7 @@ nav ul li a:hover {
    place-items: center;
 
    border-radius: 18px;
-   background: rgba(255,255,255,0.18);
+   background: #ffffff2e;
    font-size: 0.88em;
    font-weight: 900;
    line-height: 1;
@@ -4744,10 +4711,10 @@ nav ul li a:hover {
 .console-operations-panel {
    display: none;
    width: min(1800px, 100%);
-   background: rgba(252, 248, 236, 0.98);
-   border: 3px solid rgba(94, 150, 0, 0.22);
+   background: #fcf8ecfa;
+   border: 3px solid #5e960038;
    border-radius: 32px;
-   box-shadow: 0 22px 64px rgba(0,0,0,0.14);
+   box-shadow: 0 22px 64px #00000024;
    overflow: hidden;
    margin-top: 2vh;
 }
@@ -4755,7 +4722,7 @@ nav ul li a:hover {
 .console-operations-panel.active {
    display: flex;
    flex-direction: column;
-   max-height: calc(100vh - 8vh - 56px);
+   max-height: calc(100vh - var(--layout-top-bar-height) - 56px);
    margin-bottom: 56px;
 }
 
@@ -4766,8 +4733,8 @@ nav ul li a:hover {
 }
 
 .console-operations-panel-header {
-   background: linear-gradient(180deg, rgba(119,184,0,0.22), rgba(119,184,0,0.10));
-   border-bottom: 2px solid rgba(94,150,0,0.18);
+   background: linear-gradient(180deg, #77b80038, #77b8001a);
+   border-bottom: 2px solid #5e96002e;
    padding: 30px 38px;
 }
 
@@ -4775,7 +4742,7 @@ nav ul li a:hover {
    margin: 0;
    font-size: 4.2em;
    font-weight: 900;
-   color: rgba(20,35,10,0.92);
+   color: #14230aeb;
    line-height: 1.08;
 }
 
@@ -4804,7 +4771,7 @@ nav ul li a:hover {
 .console-operations-label {
    font-size: 2.9em;
    font-weight: 850;
-   color: rgba(20,35,10,0.85);
+   color: #14230ad9;
    line-height: 1.2;
 }
 
@@ -4813,25 +4780,25 @@ nav ul li a:hover {
    width: 100%;
    box-sizing: border-box;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3em;
    font-weight: 700;
-   color: rgba(20,35,10,0.95);
+   color: #14230af2;
 
    padding: 24px 28px;
    border-radius: 22px;
 
-   background: rgba(255,255,255,0.94);
-   border: 5px solid rgba(94,150,0,0.32);
+   background: #fffffff0;
+   border: 5px solid #5e960052;
 
-   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+   box-shadow: 0 10px 24px #0000001a;
    outline: none;
 }
 
 .console-operations-input:focus,
 .console-operations-textarea:focus {
-   border-color: rgba(94,150,0,0.95);
-   box-shadow: 0 14px 34px rgba(0,0,0,0.16);
+   border-color: #5e9600f2;
+   box-shadow: 0 14px 34px #00000029;
 }
 
 .console-operations-textarea {
@@ -4860,29 +4827,29 @@ nav ul li a:hover {
    padding: 24px 28px;
    border-radius: 22px;
 
-   background: rgba(255,255,255,0.94);
-   border: 5px solid rgba(94,150,0,0.32);
-   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+   background: #fffffff0;
+   border: 5px solid #5e960052;
+   box-shadow: 0 10px 24px #0000001a;
 }
 
 .console-operations-schedule-times-placeholder {
    font-size: 3em;
    font-weight: 700;
-   color: rgba(20,35,10,0.55);
+   color: #14230a8c;
    line-height: 1.1;
 }
 
 .console-operations-schedule-times-single {
    font-size: 2.3em;
    font-weight: 700;
-   color: rgba(20,35,10,0.85);
+   color: #14230ad9;
    line-height: 1.1;
 }
 
 .console-operations-help {
    font-size: 2.2em;
    font-weight: 600;
-   color: rgba(20,35,10,0.62);
+   color: #14230a9e;
    line-height: 1.45;
 }
 
@@ -4898,14 +4865,14 @@ nav ul li a:hover {
    padding: 18px 22px;
    border-radius: 22px;
 
-   background: rgba(255,255,255,0.94);
-   border: 5px solid rgba(94,150,0,0.32);
-   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+   background: #fffffff0;
+   border: 5px solid #5e960052;
+   box-shadow: 0 10px 24px #0000001a;
 }
 
 .console-operations-multi-time-field:focus-within {
-   border-color: rgba(94,150,0,0.95);
-   box-shadow: 0 14px 34px rgba(0,0,0,0.16);
+   border-color: #5e9600f2;
+   box-shadow: 0 14px 34px #00000029;
 }
 
 .console-operations-multi-time-list {
@@ -4920,12 +4887,12 @@ nav ul li a:hover {
    padding: 10px 14px 10px 18px;
    border-radius: 999px;
 
-   background: rgba(20,35,10,0.10);
-   border: 3px solid rgba(20,35,10,0.14);
+   background: #14230a1a;
+   border: 3px solid #14230a24;
 
    font-size: 2.2em;
    font-weight: 700;
-   color: rgba(20,35,10,0.88);
+   color: #14230ae0;
 }
 
 .console-operations-time-chip-label {
@@ -4943,8 +4910,8 @@ nav ul li a:hover {
 
    border: none;
    border-radius: 999px;
-   background: rgba(20,35,10,0.10);
-   color: rgba(20,35,10,0.62);
+   background: #14230a1a;
+   color: #14230a9e;
 
    font-size: 0.85em;
    font-weight: 800;
@@ -4953,8 +4920,8 @@ nav ul li a:hover {
 }
 
 .console-operations-time-chip-remove:hover {
-   background: rgba(20,35,10,0.18);
-   color: rgba(20,35,10,0.88);
+   background: #14230a2e;
+   color: #14230ae0;
 }
 
 .console-operations-multi-time-field .console-operations-datetime {
@@ -5000,7 +4967,7 @@ nav ul li a:hover {
 
    font-size: 2.3em;
    font-weight: 700;
-   color: rgba(20,35,10,0.85);
+   color: #14230ad9;
 
    cursor: pointer;
    user-select: none;
@@ -5009,7 +4976,7 @@ nav ul li a:hover {
 .console-operations-checkbox-option input[type="checkbox"] {
    width: 24px;
    height: 24px;
-   accent-color: #5e9600;
+   accent-color: var(--color-brand-primary);
    cursor: pointer;
 }
 
@@ -5021,24 +4988,24 @@ nav ul li a:hover {
    width: 100%;
    box-sizing: border-box;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 3em;
    font-weight: 700;
-   color: rgba(20,35,10,0.95);
+   color: #14230af2;
 
    padding: 24px 28px;
    border-radius: 22px;
 
-   background: rgba(255,255,255,0.94);
-   border: 5px solid rgba(94,150,0,0.32);
+   background: #fffffff0;
+   border: 5px solid #5e960052;
 
-   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+   box-shadow: 0 10px 24px #0000001a;
    outline: none;
 }
 
 .console-operations-datetime:focus {
-   border-color: rgba(94,150,0,0.95);
-   box-shadow: 0 14px 34px rgba(0,0,0,0.16);
+   border-color: #5e9600f2;
+   box-shadow: 0 14px 34px #00000029;
 }
 
 /* ============================================================
@@ -5080,12 +5047,12 @@ nav ul li a:hover {
    border-radius: 6px;
    font-size: 13px;
    font-weight: 700;
-   background: rgba(94,150,0,0.08);
+   background: #5e960014;
    cursor: pointer;
 }
 
 .console-operations-page .flatpickr-am-pm:hover {
-   background: rgba(94,150,0,0.16);
+   background: #5e960029;
 }
 
 /* ============================================================
@@ -5103,7 +5070,7 @@ nav ul li a:hover {
 .console-operations-secondary-btn {
    padding: 22px 34px;
    border-radius: 20px;
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.5em;
    font-weight: 900;
    line-height: 1.2;
@@ -5113,25 +5080,25 @@ nav ul li a:hover {
 
 .console-operations-primary-btn {
    border: none;
-   background: #5e9600;
-   color: #ffffff;
-   box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+   background: var(--color-brand-primary);
+   color: var(--color-white);
+   box-shadow: 0 12px 28px #0000002e;
 }
 
 .console-operations-primary-btn:hover {
-   background: #4b7c00;
+   background: var(--color-brand-primary-dark);
    transform: translateY(-2px);
 }
 
 .console-operations-secondary-btn {
-   background: rgba(255,255,255,0.92);
-   color: rgba(20,35,10,0.88);
-   border: 3px solid rgba(94,150,0,0.55);
-   box-shadow: 0 10px 22px rgba(0,0,0,0.10);
+   background: #ffffffeb;
+   color: #14230ae0;
+   border: 3px solid #5e96008c;
+   box-shadow: 0 10px 22px #0000001a;
 }
 
 .console-operations-secondary-btn:hover {
-   background: rgba(255,255,255,1);
+   background: #ffffffff;
    transform: translateY(-2px);
 }
 
@@ -5168,7 +5135,7 @@ nav ul li a:hover {
    justify-content: center;
    padding: 16px;
    box-sizing: border-box;
-   background: rgba(20, 35, 10, 0.24);
+   background: #14230a3d;
 }
 
 .console-overlap-dialog-card {
@@ -5176,9 +5143,9 @@ nav ul li a:hover {
    min-width: 1040px;
    overflow: hidden;
    border-radius: 18px;
-   border: 3px solid rgba(94, 150, 0, 0.28);
-   background: rgba(252, 248, 236, 0.99);
-   box-shadow: 0 26px 90px rgba(0,0,0,0.34);
+   border: 3px solid #5e960047;
+   background: #fcf8ecfc;
+   box-shadow: 0 26px 90px #00000057;
 }
 
 .console-overlap-dialog-header {
@@ -5187,8 +5154,8 @@ nav ul li a:hover {
    justify-content: center;
    gap: 30px;
    padding: 58px 64px;
-   background: linear-gradient(180deg, rgba(119,184,0,0.22), rgba(119,184,0,0.10));
-   border-bottom: 2px solid rgba(94,150,0,0.18);
+   background: linear-gradient(180deg, #77b80038, #77b8001a);
+   border-bottom: 2px solid #5e96002e;
 }
 
 .console-overlap-dialog-icon-wrap {
@@ -5202,8 +5169,8 @@ nav ul li a:hover {
 
 .console-overlap-dialog-title {
    margin: 0;
-   color: rgba(20,35,10,0.95);
-   font-family: 'Poppins', sans-serif;
+   color: #14230af2;
+   font-family: var(--font-family-base);
    font-size: 5rem;
    font-weight: 950;
    line-height: 1.05;
@@ -5215,7 +5182,7 @@ nav ul li a:hover {
 
 .console-overlap-dialog-message {
    margin: 0;
-   color: rgba(20,35,10,0.76);
+   color: #14230ac2;
    font-size: 2.9rem;
    font-weight: 800;
    line-height: 1.25;
@@ -5234,7 +5201,7 @@ nav ul li a:hover {
    min-height: 104px;
    padding: 24px 16px;
    border-radius: 9px;
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.35rem;
    font-weight: 900;
    line-height: 1.15;
@@ -5244,17 +5211,17 @@ nav ul li a:hover {
 }
 
 .console-overlap-dialog-cancel {
-   background: rgba(255,255,255,0.94);
-   color: rgba(20,35,10,0.9);
-   border: 2px solid rgba(94,150,0,0.56);
-   box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+   background: #fffffff0;
+   color: #14230ae6;
+   border: 2px solid #5e96008f;
+   box-shadow: 0 8px 18px #0000001a;
 }
 
 .console-overlap-dialog-action {
-   background: #5e9600;
-   color: #ffffff;
+   background: var(--color-brand-primary);
+   color: var(--color-white);
    border: none;
-   box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+   box-shadow: 0 10px 22px #0000002e;
 }
 
 .console-overlap-dialog-cancel:hover,
@@ -5263,11 +5230,11 @@ nav ul li a:hover {
 }
 
 .console-overlap-dialog-cancel:hover {
-   background: rgba(255,255,255,1);
+   background: #ffffffff;
 }
 
 .console-overlap-dialog-action:hover {
-   background: #4b7c00;
+   background: var(--color-brand-primary-dark);
 }
 
 @media (max-width: 640px) {
@@ -5322,10 +5289,10 @@ nav ul li a:hover {
    display: none;
    flex-direction: column;
 
-   background: rgba(255,255,255,0.98);
-   border: 4px solid rgba(94,150,0,0.35);
+   background: #fffffffa;
+   border: 4px solid #5e960059;
    border-radius: 20px;
-   box-shadow: 0 18px 36px rgba(0,0,0,0.18);
+   box-shadow: 0 18px 36px #0000002e;
 
    max-height: 420px;
    overflow-y: auto;
@@ -5343,27 +5310,27 @@ nav ul li a:hover {
    text-align: left;
    padding: 20px 26px;
 
-   font-family: 'Poppins', sans-serif;
+   font-family: var(--font-family-base);
    font-size: 2.6em;
    font-weight: 700;
-   color: rgba(20,35,10,0.92);
+   color: #14230aeb;
    cursor: pointer;
 }
 
 .console-operations-autocomplete-item:hover,
 .console-operations-autocomplete-item.is-highlighted {
-   background: rgba(119,184,0,0.18);
+   background: #77b8002e;
 }
 
 .console-operations-autocomplete-item + .console-operations-autocomplete-item {
-   border-top: 2px solid rgba(94,150,0,0.18);
+   border-top: 2px solid #5e96002e;
 }
 
 .console-operations-autocomplete-empty {
    padding: 20px 26px;
    font-size: 2.4em;
    font-weight: 600;
-   color: rgba(20,35,10,0.55);
+   color: #14230a8c;
 }
 
 /* ============================================================
@@ -5407,7 +5374,7 @@ nav ul li a:hover {
 
    font-size: 2.4em;
    font-weight: 700;
-   color: rgba(20,35,10,0.85);
+   color: #14230ad9;
 
    cursor: pointer;
    user-select: none;
@@ -5416,6 +5383,6 @@ nav ul li a:hover {
 .console-operations-radio-option input[type="radio"] {
    width: 28px;
    height: 28px;
-   accent-color: #5e9600;
+   accent-color: var(--color-brand-primary);
    cursor: pointer;
 }

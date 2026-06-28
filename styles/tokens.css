@@ -1,0 +1,109 @@
+/**
+ * Toronto Zoo Guide — shared design tokens.
+ * Reference these with var(--token-name) in styles.css and feature CSS.
+ */
+
+:root {
+   /*
+    * Colors use 6-digit hex (#RRGGBB) or 8-digit hex (#RRGGBBAA) for alpha.
+    */
+
+   /* ── Brand palette ── */
+   --color-brand-primary: #5e9600;
+   --color-brand-primary-dark: #4b7c00;
+   --color-brand-primary-darker: #4b7526;
+   --color-brand-primary-muted: #53841c;
+   --color-brand-primary-soft: #5f9232;
+   --color-brand-accent: #77b800;
+   --color-brand-accent-hover: #6aa500;
+   --color-brand-highlight: #8bc34a;
+   --color-brand-forest: #4f7f00;
+   --color-brand-link: #2f5e00;
+   --color-brand-text: #245a12;
+
+   /* ── Surfaces & neutrals ── */
+   --color-white: #ffffff;
+   --color-white-soft: #ffffffe6;
+   --color-surface-panel: #e2e8d4;
+   --color-border-neutral: #ccc;
+
+   /* ── Text ── */
+   --color-text-primary: #141d0a;
+   --color-text-on-brand: var(--color-white);
+
+   /* ── Semantic ── */
+   --color-danger: #c2412d;
+   --color-danger-text: #8b1a1a;
+   --color-warning: #ffd54d;
+   --color-warning-text: #2f2f2f;
+
+   /* ── Map marker category colors ── */
+   --color-marker-teal: #2f7a63;
+   --color-marker-gray: #5f5f67;
+   --color-marker-red: #a53a2f;
+   --color-marker-blue: #2d6fa3;
+   --color-marker-brown: #8a5a2b;
+   --color-marker-orange: #d2691e;
+
+   /* ── Typography ── */
+   --font-family-base: 'Poppins', sans-serif;
+   --font-weight-medium: 500;
+   --font-weight-semibold: 600;
+   --font-weight-bold: 700;
+   --font-weight-extrabold: 800;
+
+   /* ── Layout ── */
+   --layout-top-bar-height: 8vh;
+   --side-column-width: clamp(630px, 39vw, 1050px);
+   --map-menu-width: clamp(980px, 60vw, 1620px);
+
+   /* ── Spacing ── */
+   --space-1: 6px;
+   --space-2: 13px;
+   --space-3: 19px;
+   --space-4: 28px;
+   --space-5: 32px;
+   --space-6: 64px;
+
+   /* ── Radius ── */
+   --radius-sm: 8px;
+   --radius-md: 10px;
+   --radius-lg: 13px;
+   --radius-xl: 18px;
+   --radius-pill: 999px;
+   --radius-circle: 50%;
+
+   /* ── Shadows ── */
+   --shadow-sm: 0 4px 10px #0000002e;
+   --shadow-md: 0 6px 14px #0000002e;
+   --shadow-lg: 0 8px 20px #00000047;
+   --shadow-xl: 0 12px 28px #00000059;
+
+   /* ── Explore controls (dropdown + search) ── */
+   --explore-control-font: 2.4em;
+   --explore-control-weight: var(--font-weight-bold);
+   --explore-control-pad-y: 17px;
+   --explore-control-pad-x: var(--space-3);
+   --explore-control-radius: var(--radius-lg);
+   --explore-control-border: 4px;
+   --explore-control-border-color: #5e960080;
+   --explore-control-border-color-focus: #5e9600f2;
+   --explore-control-bg: #ffffffeb;
+   --explore-control-fg: #14230af2;
+   --explore-control-shadow: var(--shadow-md);
+   --explore-control-shadow-focus: var(--shadow-lg);
+
+   /*
+    * Itinerary day planner timeline — keep in sync with
+    * scripts/shared/constants.js (TIMELINE_SLOT_HEIGHT_PX, etc.).
+    */
+   --itinerary-half-hour-slot-height: 730px;
+   --itinerary-pill-strip-top-offset: 80px;
+   --itinerary-scheduled-pill-min-height: 73px;
+   --itinerary-scheduled-pill-compact-min-height: 73px;
+   --itinerary-scheduled-pill-label-size: 2rem;
+   --itinerary-timeline-spine-color: #5e960024;
+   --itinerary-timeline-time-column-width: 300px;
+   --itinerary-boundary-arrival-color: var(--color-brand-accent);
+   --itinerary-boundary-departure-color: var(--color-danger);
+}
