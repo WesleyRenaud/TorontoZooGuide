@@ -2,8 +2,8 @@ import {
    buildAnimalImageSrc,
    buildOffDisplayWarningMessage,
    getAnimalId,
-   getAnimalSpecies,
    getAnimalSubtitle,
+   getAnimalTitleLine,
    isLikelyOffDisplayAnimal,
    makeAnimalSelection,
    migrateStoredAnimals,
@@ -20,7 +20,7 @@ import { APP_STRINGS } from '../../strings.js';
 
 const STORAGE_KEY = 'tzg.itineraryAnimals';
 function getAnimalTitle(row) {
-   return getAnimalSpecies(row) || APP_STRINGS.entityLabels.animal;
+   return getAnimalTitleLine(row);
 }
 
 function buildAnimalSearchPayload(query, includeOffDisplayAnimals) {

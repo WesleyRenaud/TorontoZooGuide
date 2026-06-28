@@ -250,6 +250,7 @@ def build_viewable_animal_from_record(
       seasonal_viewing_information=animal.seasonal_viewing_information,
       off_display_message=display_message,
       enclosure_type=animal.enclosure_type,
+      enclosure_name=animal.enclosure_name,
       x_coord=animal.x_coord,
       y_coord=animal.y_coord,
       likelihood=likelihood,

@@ -90,7 +90,10 @@ export function createTooltipCard({
       card.appendChild(createTooltipImageFrame(image));
    }
 
-   if (title?.text) {
+   if (title?.element) {
+      card.appendChild(title.element);
+   }
+   else if (title?.text) {
       card.appendChild(
          createTextElement(title.tagName || 'strong', title.text, {
             className: title.className,

@@ -1,5 +1,6 @@
 export const TIMELINE_SLOT_MINUTES = 30;
 export const EXTENDED_SCHEDULED_PILL_MINUTES = TIMELINE_SLOT_MINUTES;
+export const DETAIL_SEPARATOR = ' \u2022 ';
 // Keep in sync with styles/tokens.css (--itinerary-half-hour-slot-height, etc.).
 export const TIMELINE_SLOT_HEIGHT_PX = 730;
 export const TIMELINE_PILL_STRIP_TOP_OFFSET_PX = 80;

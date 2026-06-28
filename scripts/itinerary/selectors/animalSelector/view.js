@@ -1,3 +1,4 @@
+import { createAnimalTitleLinkElement } from '../../../animals/createSpeciesLinkTitle.js';
 import { createWarningIcon } from '../../../assets/warningIcon.js';
 import {
    createSelectorRowContent,
@@ -5,6 +6,7 @@ import {
 } from '../base/resultRenderer.js';
 import {
    buildAnimalImageSrc,
+   getAnimalEnclosureName,
    getAnimalLikelihoodLevel,
    getAnimalSpecies,
    getAnimalSubtitle,
@@ -27,16 +29,18 @@ function createLikelihoodWarning(level) {
 }
 
 export function renderAnimalSelectorRowLeft(row) {
-   const species = getAnimalSpecies(row) || 'Animal';
+   const species = getAnimalSpecies(row);
    const subtitle = getAnimalSubtitle(row);
    const imageSrc = buildAnimalImageSrc(row);
 
    const titleWrap = document.createElement('div');
    titleWrap.className = 'itin-animal-title-wrap';
 
-   const titleEl = document.createElement('div');
-   titleEl.className = 'animal-result-species';
-   titleEl.textContent = species;
+   const titleEl = createAnimalTitleLinkElement({
+      species,
+      enclosureName: getAnimalEnclosureName(row),
+      className: 'animal-result-species',
+   });
 
    titleWrap.appendChild(titleEl);
 

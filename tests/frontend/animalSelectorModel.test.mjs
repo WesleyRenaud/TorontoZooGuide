@@ -4,8 +4,11 @@ import test from 'node:test';
 import {
    buildAnimalImageSrc,
    buildOffDisplayWarningMessage,
+   getAnimalEnclosureName,
    getAnimalId,
    getAnimalLikelihoodLevel,
+   getAnimalSubtitle,
+   getAnimalTitleLine,
    isLikelyOffDisplayAnimal,
    makeAnimalSelection,
    migrateStoredAnimals,
@@ -15,11 +18,38 @@ import {
 const africanLionRow = {
    species: 'African Lion',
    exhibit: 'African Savanna',
+   enclosure_type: 'Outdoor',
    likelihood: 75,
 };
 
+test('getAnimalEnclosureName omits indoor and outdoor viewing spot names', () => {
+   assert.equal(getAnimalEnclosureName({ enclosure_name: 'Indoor' }), null);
+   assert.equal(getAnimalEnclosureName({ enclosure_name: 'Outdoor' }), null);
+   assert.equal(getAnimalEnclosureName({ enclosure_name: 'White Rhino Viewing' }), 'White Rhino Viewing');
+});
+
+test('getAnimalEnclosureName normalizes nullable enclosure names', () => {
+   assert.equal(getAnimalEnclosureName({ enclosure_name: 'White Rhino Viewing' }), 'White Rhino Viewing');
+   assert.equal(getAnimalEnclosureName({ enclosure_name: '  Savanna Overlook  ' }), 'Savanna Overlook');
+   assert.equal(getAnimalEnclosureName({ enclosure_name: null }), null);
+   assert.equal(getAnimalEnclosureName({ enclosure_name: '' }), null);
+   assert.equal(getAnimalEnclosureName({ enclosure_name: '   ' }), null);
+   assert.equal(getAnimalEnclosureName({}), null);
+});
+
 test('animal selector model derives ids, subtitles, and image paths', () => {
    assert.equal(getAnimalId(africanLionRow), 'African Lion||African Savanna');
+   assert.equal(getAnimalTitleLine(africanLionRow), 'African Lion');
+   assert.equal(getAnimalSubtitle(africanLionRow), 'African Savanna');
+   assert.equal(
+      getAnimalTitleLine({
+         species: 'Marabou Stork',
+         exhibit: 'Africa Savanna',
+         enclosure_name: 'White Rhino Viewing',
+         enclosure_type: 'Outdoor',
+      }),
+      'Marabou Stork \u2022 White Rhino Viewing'
+   );
    assert.equal(
       buildAnimalImageSrc(africanLionRow),
       '../images/details/animals/african-savanna/african-lion.png'

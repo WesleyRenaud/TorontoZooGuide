@@ -3,8 +3,10 @@ import { makeScheduleItemTimeFields } from './scheduleItemTimeFields.js';
 import { buildScheduleItemTypeOptions } from '../scheduleItemTypes.js';
 import {
    buildAnimalImageSrc,
+   getAnimalEnclosureName,
    getAnimalSpecies,
    getAnimalSubtitle,
+   getAnimalTitleLine,
 } from '../../selectors/animalSelector/model.js';
 import {
    buildAttractionImageSrc,
@@ -78,7 +80,11 @@ function createSelectField({
 export function buildSearchRowRenderer(moduleType) {
    if (moduleType === ScheduleItemKind.ANIMAL.itemType) {
       return createDefaultSelectorRowLeftRenderer({
-         getTitle: getAnimalSpecies,
+         getTitle: getAnimalTitleLine,
+         getTitleParts: (row) => ({
+            species: getAnimalSpecies(row),
+            enclosureName: getAnimalEnclosureName(row),
+         }),
          getSubtitle: getAnimalSubtitle,
          getImageSrc: buildAnimalImageSrc,
          getInfoLink: () => null,

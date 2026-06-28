@@ -9,7 +9,7 @@ import {
    isScheduleItemSearchEnabled,
    isScheduleItemTypeUnset,
 } from '../scheduleItemTypes.js';
-import { getAnimalSpecies } from '../../selectors/animalSelector/model.js';
+import { getAnimalTitleLine } from '../../selectors/animalSelector/model.js';
 import { getAttractionTitle } from '../../selectors/attractionSelector/model.js';
 import { getGuardiansTalkName } from '../../selectors/guardiansTalkSelector/model.js';
 import { getWildEncounterName } from '../../selectors/wildEncounterSelector/model.js';
@@ -69,7 +69,7 @@ export function resolveScheduleModuleSearchLabel(row) {
       return getWildEncounterName(row) || '';
    }
 
-   return getAnimalSpecies(row) || '';
+   return getAnimalTitleLine(row);
 }
 
 export function resolveScheduleModuleSearchRowRenderer({

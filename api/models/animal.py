@@ -23,6 +23,7 @@ class Animal:
          seasonal_viewing_information: str | None = None,
          off_display_message: str | None = None,
          enclosure_type: str | None = None,
+         enclosure_name: str | None = None,
          x_coord: float | None = None,
          y_coord: float | None = None,
          likelihood: int | None = None,
@@ -52,6 +53,7 @@ class Animal:
       self.seasonal_viewing_information = seasonal_viewing_information
       self.off_display_message = off_display_message
       self.enclosure_type = enclosure_type
+      self.enclosure_name = enclosure_name
       self.x_coord = x_coord
       self.y_coord = y_coord
       self.likelihood = likelihood
@@ -85,6 +87,7 @@ class Animal:
          'seasonal_viewing_information': self.seasonal_viewing_information,
          'off_display_message': self.off_display_message,
          'enclosure_type': self.enclosure_type,
+         'enclosure_name': self.enclosure_name,
          'x_coord': self.x_coord,
          'y_coord': self.y_coord,
          'likelihood': self.likelihood,
