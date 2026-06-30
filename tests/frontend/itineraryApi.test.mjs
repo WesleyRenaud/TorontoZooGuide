@@ -58,6 +58,48 @@ function normalizedItineraryResultFields(status, reasons = []) {
    };
 }
 
+function normalizedItineraryPath(overrides = {}) {
+   return {
+      stops: overrides.stops ?? [],
+      legs: overrides.legs ?? [],
+      points: overrides.points ?? [],
+   };
+}
+
+function mockItineraryPathResponse(overrides = {}) {
+   return {
+      itinerary_path: {
+         stops: overrides.stops ?? [
+            {
+               schedule_item_kind: 'animals',
+               item_key: 'African Lion||Africa Savanna',
+               walk_node_id: 'v-0255',
+               start_time: '10:00 AM',
+               end_time: '10:30 AM',
+            },
+         ],
+         legs: overrides.legs ?? [
+            {
+               from_item_key: 'arrival',
+               to_item_key: 'African Lion||Africa Savanna',
+               from_schedule_item_kind: 'visit_boundary',
+               to_schedule_item_kind: 'animals',
+               node_ids: ['n-0001', 'n-0002'],
+            },
+         ],
+         points: overrides.points ?? [
+            {
+               node_id: 'n-0001',
+               x: 1.5,
+               y: 2.5,
+               x_px: 150,
+               y_px: 250,
+            },
+         ],
+      },
+   };
+}
+
 function mockItineraryConfigResponse(overrides = {}) {
    return {
       itinerary_config: {
@@ -128,6 +170,7 @@ test('normalizes stored itinerary response from snake case backend keys', async 
             events: [{ event_type: 'lunch', start_time: '12:00 PM', end_time: '12:40 PM' }],
          },
          ...mockItineraryConfigResponse(),
+         ...mockItineraryPathResponse(),
       });
    };
 
@@ -143,8 +186,53 @@ test('normalizes stored itinerary response from snake case backend keys', async 
          wildEncounters: [{ name: 'African Rainforest' }],
          events: [{ event_type: 'lunch', start_time: '12:00 PM', end_time: '12:40 PM' }],
       },
+      itineraryPath: normalizedItineraryPath({
+         stops: [
+            {
+               scheduleItemKind: 'animals',
+               itemKey: 'African Lion||Africa Savanna',
+               walkNodeId: 'v-0255',
+               startTime: '10:00 AM',
+               endTime: '10:30 AM',
+            },
+         ],
+         legs: [
+            {
+               fromItemKey: 'arrival',
+               toItemKey: 'African Lion||Africa Savanna',
+               fromScheduleItemKind: 'visit_boundary',
+               toScheduleItemKind: 'animals',
+               nodeIds: ['n-0001', 'n-0002'],
+            },
+         ],
+         points: [
+            {
+               nodeId: 'n-0001',
+               x: 1.5,
+               y: 2.5,
+               xPx: 150,
+               yPx: 250,
+            },
+         ],
+      }),
       itineraryConfig: normalizedItineraryConfig(),
    });
+});
+
+test('defaults itinerary path to empty arrays when itinerary is returned without itinerary_path', async () => {
+   globalThis.fetch = async () => mockJsonResponse({
+      status: 'success',
+      itinerary: {
+         date: '2026-06-15',
+         animals: [],
+      },
+      ...mockItineraryConfigResponse(),
+   });
+
+   assert.deepEqual(
+      (await setItineraryRequest({ date: '2026-06-15' })).itineraryPath,
+      normalizedItineraryPath()
+   );
 });
 
 test('normalizes set itinerary failures without dropping returned itinerary data', async () => {
@@ -171,6 +259,7 @@ test('normalizes set itinerary failures without dropping returned itinerary data
          wildEncounters: [],
          events: [],
       },
+      itineraryPath: normalizedItineraryPath(),
       itineraryConfig: normalizedItineraryConfig(),
    });
 });
@@ -391,6 +480,7 @@ test('normalizes accept itinerary response', async () => {
          wildEncounters: [],
          events: [],
       },
+      itineraryPath: normalizedItineraryPath(),
       itineraryConfig: normalizedItineraryConfig(),
    });
 });
@@ -433,6 +523,7 @@ test('normalizes itinerary config from itinerary responses', async () => {
          wildEncounters: [],
          events: [],
       },
+      itineraryPath: normalizedItineraryPath(),
       itineraryConfig: normalizedItineraryConfig({
          animalVisibilityChangeThreshold: 25,
          eventTypes: [

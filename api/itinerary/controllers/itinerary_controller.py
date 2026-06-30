@@ -3,6 +3,7 @@ from __future__ import annotations
 from ..coordinators.itinerary_coordinator import ItineraryCoordinator
 from ...json_handler import JsonRequestHandler
 from ...request_connection import get_connection
+from ..results.build_itinerary_path import build_itinerary_path
 from ..results.itinerary_result_response import itinerary_result_to_dict
 from ..results.itinerary_result_response import itinerary_time_set_result_to_dict
 from ..results.itinerary_result_response import suppress_itinerary_warning_result_to_dict
@@ -238,9 +239,11 @@ class ItineraryController():
 
       itinerary = ItineraryCoordinator.get_itinerary( visit_date_temp=temp )
 
+      conn = get_connection()
       handler._write_json( {
          'itinerary': itinerary.to_dict(),
-         'itinerary_config': itinerary_config_to_dict( get_connection() ),
+         'itinerary_config': itinerary_config_to_dict( conn ),
+         'itinerary_path': build_itinerary_path( conn ),
       } )
 
 
@@ -274,10 +277,12 @@ class ItineraryController():
          else None
       )
 
+      conn = get_connection()
       response = {
          'success': success,
          'itinerary': itinerary.to_dict() if itinerary != None else None,
-         'itinerary_config': itinerary_config_to_dict( get_connection() ),
+         'itinerary_config': itinerary_config_to_dict( conn ),
+         'itinerary_path': build_itinerary_path( conn ),
       }
 
       if not success:

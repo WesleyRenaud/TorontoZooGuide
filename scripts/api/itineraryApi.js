@@ -7,6 +7,10 @@ import {
    normalizeItineraryErrorTypeFromResponse,
    updateItineraryErrorTypesFromConfig,
 } from '../itinerary/itineraryErrorTypes.js';
+import {
+   EMPTY_ITINERARY_PATH,
+   normalizeItineraryPath,
+} from '../itinerary/itineraryPathModel.js';
 import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
 import {
    asArray,
@@ -210,8 +214,16 @@ function normalizeItineraryResult(source = {}, { includeItinerary = true } = {})
       suppressedWarnings,
    };
 
+   if (response.itinerary_path !== undefined) {
+      result.itineraryPath = normalizeItineraryPath(response.itinerary_path);
+   }
+
    if (includeItinerary && response.itinerary !== undefined) {
       result.itinerary = normalizeItineraryModel(response.itinerary);
+
+      if (result.itineraryPath === undefined) {
+         result.itineraryPath = EMPTY_ITINERARY_PATH;
+      }
    }
 
    if (response.itinerary_config !== undefined) {

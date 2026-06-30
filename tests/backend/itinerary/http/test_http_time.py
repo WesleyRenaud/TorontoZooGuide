@@ -5,6 +5,12 @@ from http_support import make_handler, response_json, StubZooControllers
 import api.server as server
 from api.shared.constants import itinerary_config_to_dict
 
+EMPTY_ITINERARY_PATH = {
+   'stops': [],
+   'legs': [],
+   'points': [],
+}
+
 
 def test_itinerary_time_endpoints_update_only_the_requested_time(
       stub_database: type[ StubZooControllers ] ) -> None:
@@ -23,6 +29,7 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
       'reasons': [],
       'suppressed_warnings': [],
       'itinerary_config': itinerary_config_to_dict(),
+      'itinerary_path': EMPTY_ITINERARY_PATH,
       'itinerary': {
          'date': '2026-06-15',
          'arrival_time': '9:45 AM',
@@ -39,6 +46,7 @@ def test_itinerary_time_endpoints_update_only_the_requested_time(
       'reasons': [],
       'suppressed_warnings': [],
       'itinerary_config': itinerary_config_to_dict(),
+      'itinerary_path': EMPTY_ITINERARY_PATH,
       'itinerary': {
          'date': '2026-06-15',
          'arrival_time': None,

@@ -34,6 +34,11 @@ def test_itinerary_endpoints_return_success_payloads(
    set_response = response_json( set_handler )
    assert set_response[ 'status' ] == 'success'
    assert set_response[ 'reasons' ] == []
+   assert set_response[ 'itinerary_path' ] == {
+      'stops': [],
+      'legs': [],
+      'points': [],
+   }
    assert StubZooControllers.instances[ 0 ].calls[ 0 ] == (
       'set_itinerary',
       {
@@ -54,9 +59,19 @@ def test_itinerary_endpoints_return_success_payloads(
       }
    )
    assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
+   assert response_json( get_handler )[ 'itinerary_path' ] == {
+      'stops': [],
+      'legs': [],
+      'points': [],
+   }
    assert response_json( clear_handler )[ 'success' ] is True
    assert response_json( accept_handler )[ 'success' ] is True
    assert response_json( accept_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
+   assert response_json( accept_handler )[ 'itinerary_path' ] == {
+      'stops': [],
+      'legs': [],
+      'points': [],
+   }
    assert StubZooControllers.instances[ 0 ].calls[ -2 ] == (
       'accept_itinerary',
       {

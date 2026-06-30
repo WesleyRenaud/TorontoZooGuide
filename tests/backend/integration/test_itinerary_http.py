@@ -41,12 +41,22 @@ def test_set_get_and_clear_itinerary_via_http(
    assert status == 200
    assert set_response[ 'status' ] == 'success'
    assert set_response[ 'reasons' ] == []
+   assert set_response[ 'itinerary_path' ] == {
+      'stops': [],
+      'legs': [],
+      'points': [],
+   }
 
    status, get_response = post_route( '/get-itinerary', {} )
 
    assert status == 200
    itinerary = get_response[ 'itinerary' ]
    assert itinerary[ 'date' ] == '2026-06-15'
+   assert get_response[ 'itinerary_path' ] == {
+      'stops': [],
+      'legs': [],
+      'points': [],
+   }
    assert itinerary[ 'arrival_time' ] == '9:30 AM'
    assert itinerary[ 'departure_time' ] == '5:00 PM'
    assert _find_animal(
@@ -109,6 +119,10 @@ def test_schedule_and_unschedule_animal_via_http(
    )
    assert scheduled_lion[ 'start_time' ] == '2:00 PM'
    assert scheduled_lion[ 'end_time' ] is not None
+   itinerary_path = schedule_response[ 'itinerary_path' ]
+   assert itinerary_path[ 'points' ]
+   assert itinerary_path[ 'stops' ]
+   assert itinerary_path[ 'legs' ]
 
    status, unschedule_response = post_route(
       '/unschedule-itinerary-item',
@@ -131,6 +145,7 @@ def test_schedule_and_unschedule_animal_via_http(
    )
    assert unscheduled_lion[ 'start_time' ] is None
    assert unscheduled_lion[ 'end_time' ] is None
+   assert 'itinerary_path' in get_response
 
 
 def test_unschedule_all_itinerary_items_via_http(
