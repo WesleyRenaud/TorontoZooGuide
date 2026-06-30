@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .build_itinerary_path import build_itinerary_path
 from .itinerary_save_result import ItinerarySaveResult
 from .itinerary_time_set_result import ItineraryTimeSetResult
 from ..operations.suppress_itinerary_warning import SuppressItineraryWarningResult
@@ -30,6 +31,7 @@ def itinerary_result_to_dict(
 
    if include_itinerary:
       payload[ 'itinerary' ] = result.itinerary.to_dict()
+      payload[ 'itinerary_path' ] = build_itinerary_path( conn )
 
    if include_config:
       payload[ 'itinerary_config' ] = itinerary_config_to_dict( conn )
@@ -55,6 +57,7 @@ def itinerary_time_set_result_to_dict(
    }
 
    payload[ 'itinerary_config' ] = itinerary_config_to_dict( conn )
+   payload[ 'itinerary_path' ] = build_itinerary_path( conn )
 
    if result.itinerary is not None:
       payload[ 'itinerary' ] = result.itinerary.to_dict()

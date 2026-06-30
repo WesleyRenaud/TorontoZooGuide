@@ -12,6 +12,7 @@ from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.fetch_itinerary_walk_route import fetch_itinerary_walk_route
 from api.itinerary.data_access.itinerary_walk_route_helpers import walk_route_matches
+from api.itinerary.results.itinerary_result_response import itinerary_result_to_dict
 from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
 from api.itinerary.routing.itinerary_walk_route import empty_itinerary_walk_route
 from api.itinerary.routing.persist_itinerary_walk_route import rebuild_and_persist_itinerary_walk_route
@@ -138,3 +139,34 @@ def test_clear_itinerary_clears_walk_route(
 
    assert ItineraryCoordinator.clear_itinerary()
    assert fetch_itinerary_walk_route( db.conn ) == empty_itinerary_walk_route()
+
+
+def test_itinerary_result_to_dict_includes_itinerary_path(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='10:00',
+   )
+
+   assert result.success
+
+   payload = itinerary_result_to_dict( result, conn=db.conn )
+
+   assert payload[ 'itinerary_path' ] == fetch_itinerary_walk_route( db.conn ).to_dict()
+   assert payload[ 'itinerary_path' ][ 'points' ]
+   assert walk_route_matches(
+      build_itinerary_walk_route( result.itinerary ),
+      fetch_itinerary_walk_route( db.conn ) )
