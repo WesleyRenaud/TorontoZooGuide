@@ -49,6 +49,10 @@ function normalizeItineraryPathPoint(point) {
    };
 }
 
+export function resolveItineraryPath(options, itinerary) {
+   return options?.itineraryPath ?? itinerary?.itineraryPath ?? EMPTY_ITINERARY_PATH;
+}
+
 export function normalizeItineraryPath(itineraryPath) {
    const source = asObject(itineraryPath);
 

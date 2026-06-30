@@ -60,5 +60,10 @@ test('normalizeItinerary treats missing collections as empty', () => {
    assert.deepEqual(normalized.attractions, []);
    assert.deepEqual(normalized.events, []);
    assert.equal(normalized.itineraryConfig, null);
+   assert.deepEqual(normalized.itineraryPath, {
+      stops: [],
+      legs: [],
+      points: [],
+   });
    assert.equal(normalized.isActive, false);
 });

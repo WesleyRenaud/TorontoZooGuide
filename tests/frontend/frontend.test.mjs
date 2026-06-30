@@ -55,6 +55,8 @@ import './regionSelectorView.test.mjs';
 import './regionStorage.test.mjs';
 import './regionSelection.test.mjs';
 import './itineraryApi.test.mjs';
+import './itineraryPathGeometry.test.mjs';
+import './itineraryPathOverlay.test.mjs';
 import './itineraryPanelViewUrl.test.mjs';
 import './itineraryPanelViews.test.mjs';
 import './itineraryPanelScheduleHandlers.test.mjs';

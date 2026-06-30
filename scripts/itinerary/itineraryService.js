@@ -16,6 +16,7 @@ import {
    createEmptyItinerary,
    isItineraryEmpty,
    normalizeItinerary,
+   normalizeItineraryFromApiResult,
 } from './itineraryNormalization.js';
 import { getItineraryDateSearchContext } from './itinerarySearchContext.js';
 import { hasSavedItineraryContent } from './itineraryShape.js';
@@ -38,10 +39,7 @@ export function dispatchScheduleItineraryItemResult(result) {
       return;
    }
 
-   dispatchItineraryUpdated(normalizeItinerary({
-      ...result.itinerary,
-      itineraryConfig: result.itineraryConfig,
-   }));
+   dispatchItineraryUpdated(normalizeItineraryFromApiResult(result));
 }
 
 async function fetchSavedItineraryVisitDate() {
@@ -58,10 +56,7 @@ export async function getItinerary() {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
    const result = await getItineraryRequest(temp);
-   return normalizeItinerary({
-      ...result?.itinerary,
-      itineraryConfig: result?.itineraryConfig,
-   });
+   return normalizeItineraryFromApiResult(result);
 }
 
 export async function getZooHours(date) {
@@ -103,10 +98,7 @@ export async function bulkScheduleAnimals() {
       };
    }
 
-   const normalizedItinerary = normalizeItinerary({
-      ...result?.itinerary,
-      itineraryConfig: result?.itineraryConfig,
-   });
+   const normalizedItinerary = normalizeItineraryFromApiResult(result);
    dispatchItineraryUpdated(normalizedItinerary);
 
    return {
@@ -127,10 +119,7 @@ export async function unscheduleAllItineraryItems() {
       };
    }
 
-   const normalizedItinerary = normalizeItinerary({
-      ...result?.itinerary,
-      itineraryConfig: result?.itineraryConfig,
-   });
+   const normalizedItinerary = normalizeItineraryFromApiResult(result);
    dispatchItineraryUpdated(normalizedItinerary);
 
    return {
@@ -148,10 +137,7 @@ export async function acceptItinerary({
       temp,
       { animalsToKeep, attractionsToKeep }
    );
-   const acceptedItinerary = normalizeItinerary({
-      ...result?.itinerary,
-      itineraryConfig: result?.itineraryConfig,
-   });
+   const acceptedItinerary = normalizeItineraryFromApiResult(result);
 
    dispatchItineraryUpdated(acceptedItinerary);
 
