@@ -10,8 +10,8 @@ from ...types import ScheduleTimeKey
 from ...walk_graph.data_access.load_walk_graph import load_walk_graph
 from ...walk_graph.domain.map_location_kind import MapLocationKind
 from ...walk_graph.domain.map_location_walk_node import MapLocationWalkNode
-from ...walk_graph.enclosure_viewing_walk_node_lookup import walk_nodes_for_species_exhibit
 from ...walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
+from ...walk_graph.resolve_viewing_walk_node_id import resolve_viewing_walk_node_id
 
 
 def resolve_entrance_itinerary_stop() -> ItineraryStop:
@@ -29,18 +29,20 @@ def resolve_itinerary_stops( itinerary: Itinerary ) -> list[ ItineraryStop ]:
    stops: list[ ItineraryStop ] = [ resolve_entrance_itinerary_stop() ]
 
    for animal in itinerary.animals:
-      walk_node_ids = tuple(
-         row[ 'walk_node_id' ]
-         for row in walk_nodes_for_species_exhibit(
-            animal.species,
-            animal.exhibit ) )
+      walk_node_id = resolve_viewing_walk_node_id(
+         animal.species,
+         animal.exhibit,
+         animal.x_coord,
+         animal.y_coord )
+      walk_node_ids = ( walk_node_id, ) if walk_node_id != None else ()
 
       stops.append(
          ItineraryStop(
             schedule_item_kind=ScheduleItemKind.ANIMAL,
             item_key=format_animal_schedule_item_key(
                animal.species,
-               animal.exhibit ),
+               animal.exhibit,
+               animal.enclosure_name ),
             walk_node_ids=walk_node_ids,
             x_coord=animal.x_coord,
             y_coord=animal.y_coord,

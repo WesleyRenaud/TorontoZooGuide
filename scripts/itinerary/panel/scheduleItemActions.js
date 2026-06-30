@@ -15,18 +15,26 @@ import {
 import {
    getAnimalExhibit,
    getAnimalSpecies,
+   getAnimalStoredEnclosureName,
 } from '../selectors/animalSelector/model.js';
 import { getAttractionName } from '../selectors/attractionSelector/model.js';
 
 export function buildAnimalDraftEntry(row) {
    const species = getAnimalSpecies(row);
    const exhibit = getAnimalExhibit(row);
+   const enclosureName = getAnimalStoredEnclosureName(row);
 
    if (!species || !exhibit) {
       return null;
    }
 
-   return { species, exhibit };
+   const entry = { species, exhibit };
+
+   if (enclosureName) {
+      entry.enclosure_name = enclosureName;
+   }
+
+   return entry;
 }
 
 export function buildAttractionDraftEntry(row) {

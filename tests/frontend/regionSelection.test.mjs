@@ -3,10 +3,12 @@ import { test } from 'node:test';
 
 import {
    buildSelectedAnimalKey,
+   buildSelectedAnimalKeyFromWire,
    getExhibitNamesFromAnimals,
    mergeAnimals,
    normalizeSelectedAnimal,
    omitRemovedAnimals,
+   parseAnimalWireKey,
    shouldHideDuplicateSingleExhibit,
 } from '../../scripts/itinerary/selectors/regionSelector/regionSelection.js';
 
@@ -42,6 +44,31 @@ test('buildSelectedAnimalKey prefers explicit animal ids', () => {
          exhibit: 'Africa Savanna',
       }),
       'custom-id'
+   );
+});
+
+test('parseAnimalWireKey splits species, exhibit, and enclosure name', () => {
+   assert.deepEqual(
+      parseAnimalWireKey('Masai Giraffe||Africa Savanna||Giraffe House'),
+      {
+         species: 'Masai Giraffe',
+         exhibit: 'Africa Savanna',
+         enclosure_name: 'Giraffe House',
+      }
+   );
+   assert.deepEqual(
+      parseAnimalWireKey('African Lion||Africa Savanna'),
+      {
+         species: 'African Lion',
+         exhibit: 'Africa Savanna',
+      }
+   );
+});
+
+test('buildSelectedAnimalKeyFromWire normalizes wire keys for removal', () => {
+   assert.equal(
+      buildSelectedAnimalKeyFromWire('African Penguin||Africa Savanna||Outdoor'),
+      'african penguin||africa savanna||outdoor'
    );
 });
 

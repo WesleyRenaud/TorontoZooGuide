@@ -1,8 +1,8 @@
+import { normalizeAnimalIdentityFields } from '../../animalIdentity.js';
 import {
    formatExhibitEnclosureTypeLine,
    formatSpeciesEnclosureLine,
 } from '../../../animals/animalDisplayLines.js';
-import { asNullableString } from '../../../api/normalizeValues.js';
 import { normalizeAssetKey } from '../../../assets/normalizeAssetKey.js';
 import {
    migrateStoredSelectionItems,
@@ -15,19 +15,19 @@ import { isEnclosureType } from '../../../shared/enums/enclosureType.js';
 export const OFF_DISPLAY_WARNING_THRESHOLD = 80;
 
 export function getAnimalSpecies(row) {
-   return typeof row?.species === 'string'
-      ? row.species
-      : '';
+   return normalizeAnimalIdentityFields(row).species;
 }
 
 export function getAnimalExhibit(row) {
-   return typeof row?.exhibit === 'string'
-      ? row.exhibit
-      : '';
+   return normalizeAnimalIdentityFields(row).exhibit;
+}
+
+export function getAnimalStoredEnclosureName(row) {
+   return normalizeAnimalIdentityFields(row).enclosure_name;
 }
 
 export function getAnimalEnclosureName(row) {
-   const enclosureName = asNullableString(row?.enclosure_name);
+   const enclosureName = getAnimalStoredEnclosureName(row);
 
    if (enclosureName && isEnclosureType(enclosureName)) {
       return null;
@@ -55,7 +55,12 @@ export function getAnimalTitleLine(row) {
 }
 
 export function getAnimalId(row) {
-   return `${getAnimalSpecies(row)}||${getAnimalExhibit(row)}`;
+   const species = getAnimalSpecies(row);
+   const exhibit = getAnimalExhibit(row);
+   const enclosureName = getAnimalStoredEnclosureName(row);
+   const base = `${species}||${exhibit}`;
+
+   return enclosureName ? `${base}||${enclosureName}` : base;
 }
 
 export function getAnimalLikelihood(row) {
@@ -138,7 +143,11 @@ function createStoredAnimalFromString(item) {
 function createStoredAnimalFromObject(item) {
    const species = normalizeLegacyStoredSpecies(item);
    const exhibit = normalizeLegacyStoredExhibit(item);
-   const id = normalizeStoredId(item.id, `${species}||${exhibit}`);
+   const enclosureName = normalizeAnimalIdentityFields(item).enclosure_name;
+   const defaultId = enclosureName
+      ? `${species}||${exhibit}||${enclosureName}`
+      : `${species}||${exhibit}`;
+   const id = normalizeStoredId(item.id, defaultId);
 
    if (!id) {
       return null;
@@ -148,6 +157,7 @@ function createStoredAnimalFromObject(item) {
       id,
       species,
       exhibit,
+      ...(enclosureName ? { enclosure_name: enclosureName } : {}),
       imageSrc: normalizeLegacyStoredImageSrc(item),
    };
 }
@@ -160,10 +170,15 @@ export function migrateStoredAnimals(items) {
 }
 
 export function makeAnimalSelection(row) {
+   const species = getAnimalSpecies(row);
+   const exhibit = getAnimalExhibit(row);
+   const enclosureName = getAnimalStoredEnclosureName(row);
+
    return {
       id: getAnimalId(row),
-      species: getAnimalSpecies(row),
-      exhibit: getAnimalExhibit(row),
+      species,
+      exhibit,
+      ...(enclosureName ? { enclosure_name: enclosureName } : {}),
       imageSrc: buildAnimalImageSrc(row),
    };
 }

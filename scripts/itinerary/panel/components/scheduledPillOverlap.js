@@ -132,6 +132,10 @@ export function getScheduledItemMaximumDuration(scheduledItem = {}) {
    return 0;
 }
 
+export function compareScheduledItemLabels(leftItem = {}, rightItem = {}) {
+   return (leftItem.label ?? '').localeCompare(rightItem.label ?? '');
+}
+
 export function compareScheduledItemsForGroupDisplay(leftItem = {}, rightItem = {}) {
    const durationDelta = getScheduledItemMaximumDuration(rightItem)
       - getScheduledItemMaximumDuration(leftItem);
@@ -140,7 +144,7 @@ export function compareScheduledItemsForGroupDisplay(leftItem = {}, rightItem = 
       return durationDelta;
    }
 
-   return String(leftItem.label || '').localeCompare(String(rightItem.label || ''));
+   return compareScheduledItemLabels(leftItem, rightItem);
 }
 
 export function sortScheduledItemsForGroupDisplay(items = []) {
@@ -153,7 +157,7 @@ export function formatScheduledPillGroupLabel(items = []) {
    }
 
    const sortedItems = sortScheduledItemsForGroupDisplay(items);
-   const firstLabel = String(sortedItems[0]?.label || '').trim();
+   const firstLabel = (sortedItems[0]?.label ?? '').trim();
 
    if (sortedItems.length === 1) {
       return firstLabel;

@@ -13,8 +13,13 @@ def build_excluded_animal_where_clause(
    params: list[ str ] = []
 
    for animal in animals_to_keep:
-      clauses.append( '( SPECIES = ? AND EXHIBIT = ? )' )
-      params.extend( [ animal.species, animal.exhibit ] )
+      clauses.append(
+         '( SPECIES = ? AND EXHIBIT = ? AND ENCLOSURE_NAME IS ? )' )
+      params.extend( [
+         animal.species,
+         animal.exhibit,
+         animal.enclosure_name,
+      ] )
 
    return f" AND NOT ( { ' OR '.join( clauses ) } )", params
 

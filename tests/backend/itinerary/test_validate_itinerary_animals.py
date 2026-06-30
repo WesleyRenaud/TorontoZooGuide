@@ -31,7 +31,8 @@ def test_validate_animals_removes_unavailable_entries(
             exhibit='Africa Savanna' ),
          ItineraryAnimalInput(
             species='African Penguin',
-            exhibit='Africa Savanna' ),
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor' ),
       ],
       new_visit_date=date( 2026, 6, 15 ),
       arrival_time='09:30',
@@ -67,6 +68,14 @@ def test_get_itinerary_animals_keeps_indoor_and_outdoor_viewing_for_map_markers(
          ItineraryAnimalRecord(
             species='Masai Giraffe',
             exhibit='Africa Savanna',
+            enclosure_name='Giraffe House',
+            old_likelihood=100,
+            new_likelihood=100,
+         ),
+         ItineraryAnimalRecord(
+            species='Masai Giraffe',
+            exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
             old_likelihood=100,
             new_likelihood=100,
          ),
@@ -90,7 +99,7 @@ def test_get_itinerary_animals_keeps_indoor_and_outdoor_viewing_for_map_markers(
    assert all( giraffe.old_likelihood == 100 for giraffe in giraffes )
 
 
-def test_validate_animals_uses_highest_likelihood_across_enclosures(
+def test_validate_animals_resolves_likelihood_for_viewing_spot(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 5, 26 ) )
@@ -100,7 +109,8 @@ def test_validate_animals_uses_highest_likelihood_across_enclosures(
       animals=[
          ItineraryAnimalInput(
             species='Masai Giraffe',
-            exhibit='Africa Savanna' ),
+            exhibit='Africa Savanna',
+            enclosure_name='Giraffe House' ),
       ],
       new_visit_date=date( 2026, 5, 30 ),
       arrival_time='09:30',
@@ -110,6 +120,7 @@ def test_validate_animals_uses_highest_likelihood_across_enclosures(
          ItineraryAnimalRecord(
             species='Masai Giraffe',
             exhibit='Africa Savanna',
+            enclosure_name='Giraffe House',
             old_likelihood=None,
             new_likelihood=100,
          ),

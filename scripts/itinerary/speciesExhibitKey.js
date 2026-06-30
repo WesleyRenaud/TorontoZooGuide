@@ -1,6 +1,8 @@
+import { normalizeAnimalIdentitySearchFields } from './animalIdentity.js';
+import { normalizeEnclosureType } from '../shared/enums/enclosureType.js';
+
 export function buildSpeciesExhibitKey(animal = {}, { requireExhibit = true } = {}) {
-   const species = String(animal?.species ?? '').trim().toLowerCase();
-   const exhibit = String(animal?.exhibit ?? '').trim().toLowerCase();
+   const { species, exhibit } = normalizeAnimalIdentitySearchFields(animal);
 
    if (!species || (requireExhibit && !exhibit)) {
       return '';
@@ -9,35 +11,60 @@ export function buildSpeciesExhibitKey(animal = {}, { requireExhibit = true } = 
    return `${species}|${exhibit}`;
 }
 
+function buildViewingSpotSuffix(animal = {}) {
+   const { enclosure_name: enclosureName } = normalizeAnimalIdentitySearchFields(animal);
+
+   if (enclosureName) {
+      return enclosureName;
+   }
+
+   const enclosureType = normalizeEnclosureType(animal?.enclosure_type);
+
+   return enclosureType ? enclosureType.toLowerCase() : '';
+}
+
+export function buildAnimalViewingSpotKey(animal = {}, { requireExhibit = true } = {}) {
+   const baseKey = buildSpeciesExhibitKey(animal, { requireExhibit });
+
+   if (!baseKey) {
+      return '';
+   }
+
+   const viewingSpotSuffix = buildViewingSpotSuffix(animal);
+
+   return viewingSpotSuffix ? `${baseKey}|${viewingSpotSuffix}` : baseKey;
+}
+
 export function buildUniqueSpeciesExhibitEntries(
    animals = [],
    {
       includeAnimal = () => true,
       mergeAnimals = null,
       requireExhibit = true,
+      buildKey = buildSpeciesExhibitKey,
    } = {}
 ) {
    const entries = [];
-   const entriesBySpeciesExhibit = new Map();
+   const entriesByKey = new Map();
 
    animals.forEach((animal, index) => {
       if (!includeAnimal(animal, index)) {
          return;
       }
 
-      const key = buildSpeciesExhibitKey(animal, { requireExhibit });
+      const key = buildKey(animal, { requireExhibit });
 
       if (!key) {
          return;
       }
 
-      const existing = entriesBySpeciesExhibit.get(key);
+      const existing = entriesByKey.get(key);
 
       if (!existing) {
          const entry = { item: animal, index };
 
          entries.push(entry);
-         entriesBySpeciesExhibit.set(key, entry);
+         entriesByKey.set(key, entry);
          return;
       }
 

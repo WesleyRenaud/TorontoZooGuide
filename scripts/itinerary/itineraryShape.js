@@ -1,4 +1,8 @@
 import {
+   buildAnimalIdentityComparisonKey,
+   normalizeAnimalForSave,
+} from './animalIdentity.js';
+import {
    normalizeGuardiansTalkForSave,
    normalizeItineraryNamesForSave,
    normalizeWildEncounterListForSave,
@@ -132,21 +136,6 @@ function normalizeGuardiansTalkListForSave(items) {
       .filter((talk) => talk.name);
 }
 
-function normalizeAnimalForSave(item) {
-   if (!item || typeof item !== 'object') {
-      return null;
-   }
-
-   const species = String(item.species ?? '').trim();
-   const exhibit = String(item.exhibit ?? '').trim();
-
-   if (!species || !exhibit) {
-      return null;
-   }
-
-   return { species, exhibit };
-}
-
 export function toSetItineraryPayload(draft = {}) {
    const base = normalizeItineraryDraft(draft);
 
@@ -170,12 +159,11 @@ function sortWildEncountersForSaveComparison(items = []) {
 }
 
 function sortAnimalsForSaveComparison(animals = []) {
-   return [...animals].sort((a, b) => {
-      const keyA = `${String(a.species).toLowerCase()}||${String(a.exhibit).toLowerCase()}`;
-      const keyB = `${String(b.species).toLowerCase()}||${String(b.exhibit).toLowerCase()}`;
-
-      return keyA.localeCompare(keyB);
-   });
+   return [...animals].sort((a, b) => (
+      buildAnimalIdentityComparisonKey(a).localeCompare(
+         buildAnimalIdentityComparisonKey(b)
+      )
+   ));
 }
 
 export function areItineraryDraftsSemanticallyEqual(left, right) {

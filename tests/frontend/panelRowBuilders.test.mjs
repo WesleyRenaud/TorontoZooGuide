@@ -200,6 +200,23 @@ test.describe('itinerary panel row builders', () => {
       assert.equal(scheduleCalls[0].row.species, 'Giant Panda');
       assert.equal(scheduleCalls[0].row.scheduleItemKind, 'animals');
    });
+   test('buildAnimalRows keeps separate viewing spots for the same species', () => {
+      const rows = buildAnimalRows([
+         {
+            species: 'Western Lowland Gorilla',
+            exhibit: 'African Rainforest Pavilion',
+            enclosure_type: 'Indoor',
+         },
+         {
+            species: 'Western Lowland Gorilla',
+            exhibit: 'African Rainforest Pavilion',
+            enclosure_type: 'Outdoor',
+         },
+      ]);
+
+      assert.equal(rows.length, 2);
+   });
+
    test('buildAnimalRows deduplicates animal exhibit pairs and renders visibility alerts', () => {
       const rows = buildAnimalRows([
          {

@@ -38,6 +38,14 @@ test('getAnimalEnclosureName normalizes nullable enclosure names', () => {
 });
 
 test('animal selector model derives ids, subtitles, and image paths', () => {
+   assert.equal(
+      getAnimalId({
+         species: 'Marabou Stork',
+         exhibit: 'Africa Savanna',
+         enclosure_name: 'White Rhino Viewing',
+      }),
+      'Marabou Stork||Africa Savanna||White Rhino Viewing'
+   );
    assert.equal(getAnimalId(africanLionRow), 'African Lion||African Savanna');
    assert.equal(getAnimalTitleLine(africanLionRow), 'African Lion');
    assert.equal(getAnimalSubtitle(africanLionRow), 'African Savanna');

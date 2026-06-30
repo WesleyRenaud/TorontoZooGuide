@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ..animal_item_key import AnimalScheduleItemKey
 from ...animals.search.animals_matching_query import species_exhibit_key_from_values
+from ...animals.search.animals_matching_query import viewing_spot_key_from_values
 from ..data_access.itinerary_status import is_itinerary_error_suppressed
 from ..data_access.saved_itinerary import SavedItinerary
 from .itinerary_suppressed_warnings import append_suppressed_warning
@@ -14,6 +15,16 @@ def saved_itinerary_has_schedule_item(
       saved_itinerary: SavedItinerary,
       schedule_item_key: ListedScheduleItemKey ) -> bool:
    if isinstance( schedule_item_key, AnimalScheduleItemKey ):
+      if schedule_item_key.enclosure_name != None:
+         spot_key = viewing_spot_key_from_values(
+            schedule_item_key.species,
+            schedule_item_key.exhibit,
+            schedule_item_key.enclosure_name )
+         return any(
+            row.viewing_spot_key() == spot_key
+            for row in saved_itinerary.animal_rows
+         )
+
       key = species_exhibit_key_from_values(
          schedule_item_key.species,
          schedule_item_key.exhibit )

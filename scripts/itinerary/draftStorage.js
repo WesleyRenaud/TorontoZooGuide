@@ -4,6 +4,7 @@ import {
 } from './itineraryShape.js';
 import {
    buildSelectedAnimalKey,
+   buildSelectedAnimalKeyFromWire,
    getExhibitNamesFromAnimals,
    makeSelectedAnimal,
    normalizeSelectedAnimal,
@@ -179,8 +180,7 @@ export function removeAnimalFromItineraryAnimalDraft(itemType, key) {
       return;
    }
 
-   const [species, exhibit] = String(key).split('||', 2);
-   const removeKey = buildSelectedAnimalKey({ species, exhibit });
+   const removeKey = buildSelectedAnimalKeyFromWire(key);
 
    if (!removeKey) {
       return;

@@ -1,3 +1,8 @@
+import {
+   buildAnimalIdentityStorageKey,
+   normalizeAnimalIdentityFields,
+} from '../../animalIdentity.js';
+
 function normalizeRegionName(name = '') {
    return typeof name === 'string'
       ? name.trim()
@@ -58,12 +63,11 @@ export function normalizeSelectedAnimal(animal) {
       return null;
    }
 
-   const species = typeof animal.species === 'string'
-      ? animal.species.trim()
-      : '';
-   const exhibit = typeof animal.exhibit === 'string'
-      ? animal.exhibit.trim()
-      : '';
+   const {
+      species,
+      exhibit,
+      enclosure_name: enclosureName,
+   } = normalizeAnimalIdentityFields(animal);
    const imageSrc = typeof animal.imageSrc === 'string'
       ? animal.imageSrc.trim()
       : '';
@@ -72,14 +76,19 @@ export function normalizeSelectedAnimal(animal) {
       return null;
    }
 
+   const defaultId = enclosureName
+      ? `${species}||${exhibit}||${enclosureName}`
+      : `${species}||${exhibit}`;
+
    return {
       ...animal,
       species,
       exhibit,
+      ...(enclosureName ? { enclosure_name: enclosureName } : {}),
       imageSrc: imageSrc || null,
       id: typeof animal.id === 'string' && animal.id.trim()
          ? animal.id.trim()
-         : `${species}||${exhibit}`,
+         : defaultId,
    };
 }
 
@@ -87,6 +96,7 @@ export function makeSelectedAnimal(fullAnimal) {
    return normalizeSelectedAnimal({
       species: fullAnimal?.species,
       exhibit: fullAnimal?.exhibit,
+      enclosure_name: fullAnimal?.enclosure_name ?? null,
       imageSrc: fullAnimal?.imageSrc ?? null,
    });
 }
@@ -101,12 +111,36 @@ export function buildSelectedAnimalKey(animal) {
    const id = normalizedAnimal.id.trim().toLowerCase();
    if (id) return id;
 
-   const species = normalizedAnimal.species.trim().toLowerCase();
-   const exhibit = normalizedAnimal.exhibit.trim().toLowerCase();
+   return buildAnimalIdentityStorageKey(normalizedAnimal);
+}
 
-   if (!species) return '';
+export function parseAnimalWireKey(key) {
+   const parts = String(key ?? '').split('||');
+   const {
+      species,
+      exhibit,
+      enclosure_name: enclosureName,
+   } = normalizeAnimalIdentityFields({
+      species: parts[0],
+      exhibit: parts[1],
+      enclosure_name: parts[2],
+   });
 
-   return `${species}||${exhibit}`;
+   if (!species) {
+      return null;
+   }
+
+   return {
+      species,
+      exhibit,
+      ...(enclosureName ? { enclosure_name: enclosureName } : {}),
+   };
+}
+
+export function buildSelectedAnimalKeyFromWire(key) {
+   const animal = parseAnimalWireKey(key);
+
+   return animal ? buildSelectedAnimalKey(animal) : '';
 }
 
 export function getExhibitNamesFromAnimals(animals = []) {

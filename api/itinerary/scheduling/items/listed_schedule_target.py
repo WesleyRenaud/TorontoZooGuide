@@ -49,6 +49,7 @@ def apply_listed_schedule(
             cur,
             species=schedule_item_key.species,
             exhibit=schedule_item_key.exhibit,
+            enclosure_name=schedule_item_key.enclosure_name,
             start_time=start_time,
             end_time=end_time )
 
@@ -59,6 +60,7 @@ def apply_listed_schedule(
          cur,
          species=schedule_item_key.species,
          exhibit=schedule_item_key.exhibit,
+         enclosure_name=schedule_item_key.enclosure_name,
          start_time=start_time,
          end_time=end_time )
 

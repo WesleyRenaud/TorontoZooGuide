@@ -8,6 +8,7 @@ from api.walk_graph.data_access.load_enclosure_viewing_walk_nodes import load_en
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.data_access.paths import MAX_ENCLOSURE_VIEWING_SNAP_DISTANCE_PX
 from api.walk_graph.domain.viewing_spot_key import viewing_spot_key_from_enclosure_viewing_row
+from api.walk_graph.enclosure_viewing_walk_node_lookup import walk_node_id_by_enclosure_name
 from api.walk_graph.enclosure_viewing_walk_node_lookup import walk_nodes_for_species_exhibit
 
 
@@ -66,3 +67,15 @@ def test_walk_nodes_for_species_exhibit_returns_every_viewing_spot() -> None:
    assert len( kudu_rows ) == 3
    assert all( row[ 'enclosure_type' ] == 'Outdoor' for row in kudu_rows )
    assert len( { row[ 'walk_node_id' ] for row in kudu_rows } ) == 3
+
+
+def test_walk_node_id_by_enclosure_name_resolves_viewing_spot_name() -> None:
+   walk_node_ids = walk_node_id_by_enclosure_name()
+
+   assert walk_node_ids[
+      ( 'Ostrich', 'Africa Savanna', None )
+   ] == 'v-0426'
+
+   assert walk_node_ids[
+      ( 'Ostrich', 'Africa Savanna', 'Savanna Overlook' )
+   ] == 'v-0263'

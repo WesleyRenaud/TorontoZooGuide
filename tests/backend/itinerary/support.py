@@ -23,7 +23,7 @@ RHINO_ENCOUNTER_TIME = '14:00'
 CAROUSEL = 'Conservation Carousel'
 LION_KEY = 'African Lion||Africa Savanna'
 ANIMAL_KEY = LION_KEY
-PENGUIN_KEY = 'African Penguin||Africa Savanna'
+PENGUIN_KEY = 'African Penguin||Africa Savanna||Outdoor'
 CHEETAH_KEY = 'Cheetah||Africa Savanna'
 LION_ITINERARY_ENTRY = {
    'species': 'African Lion',
@@ -32,6 +32,7 @@ LION_ITINERARY_ENTRY = {
 PENGUIN_ITINERARY_ENTRY = {
    'species': 'African Penguin',
    'exhibit': 'Africa Savanna',
+   'enclosure_name': 'Outdoor',
 }
 CHEETAH_ITINERARY_ENTRY = {
    'species': 'Cheetah',
