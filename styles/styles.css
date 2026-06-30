@@ -782,6 +782,18 @@ html.home-page {
    display: block;
 }
 
+#itinerary-path {
+   pointer-events: none;
+}
+
+.itinerary-path-line {
+   stroke: var(--color-itinerary-path);
+   stroke-width: 8;
+   stroke-linecap: round;
+   stroke-linejoin: round;
+   fill: none;
+}
+
 .hide-map-labels .map-label-primary-svg,
 .hide-map-labels .map-label-secondary-svg {
    display: none !important;

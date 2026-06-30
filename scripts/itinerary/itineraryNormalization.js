@@ -1,3 +1,4 @@
+import { EMPTY_ITINERARY_PATH } from './itineraryPathModel.js';
 import {
    createEmptyItineraryDraft,
    hasSavedItineraryContent,
@@ -37,6 +38,14 @@ export function isItineraryEmpty(itinerary) {
    );
 }
 
+export function normalizeItineraryFromApiResult(result) {
+   return normalizeItinerary({
+      ...result?.itinerary,
+      itineraryConfig: result?.itineraryConfig,
+      itineraryPath: result?.itineraryPath,
+   });
+}
+
 export function normalizeItinerary(itinerary) {
    const normalizedDraft = normalizeItineraryDraft(
       normalizeItinerarySource(itinerary)
@@ -45,6 +54,7 @@ export function normalizeItinerary(itinerary) {
    return {
       ...normalizedDraft,
       itineraryConfig: itinerary?.itineraryConfig ?? null,
+      itineraryPath: itinerary?.itineraryPath ?? EMPTY_ITINERARY_PATH,
       validation: buildItineraryValidationState(
          normalizedDraft,
          itinerary?.itineraryConfig ?? {}

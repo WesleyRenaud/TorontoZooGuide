@@ -5,6 +5,11 @@ import {
    resolveDeepLinkFocus,
    scheduleFocusRequest,
 } from './focusRequest.js';
+import { resolveItineraryPath } from '../itinerary/itineraryPathModel.js';
+import {
+   clearItineraryPathOverlay,
+   renderItineraryPathOverlay,
+} from './itineraryPathOverlay.js';
 import {
    buildItineraryRows,
    buildLayerRequest,
@@ -44,6 +49,7 @@ export function createMapUpdater({
 
    function clearRenderedMarkers() {
       markers.render([]);
+      clearItineraryPathOverlay();
    }
 
    function resolvePendingUpdateOptions(options) {
@@ -111,6 +117,9 @@ export function createMapUpdater({
    function renderItineraryOnly(itinerary, options) {
       try {
          markers.render(buildItineraryRows(itinerary));
+         renderItineraryPathOverlay(
+            resolveItineraryPath(options, itinerary)
+         );
          focusIfRequested(options);
          return true;
       } catch (err) {
@@ -160,6 +169,7 @@ export function createMapUpdater({
       } = buildRequestedLayers(dateCtx, options);
 
       await syncClosedExhibitOverlays(sources, ctx);
+      clearItineraryPathOverlay();
 
       if (selectedTypes.length === 0) {
          clearRenderedMarkers();

@@ -9,7 +9,7 @@ import {
    requiresShortVisitConfirmation,
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
-import { normalizeItinerary } from './itineraryNormalization.js';
+import { normalizeItineraryFromApiResult } from './itineraryNormalization.js';
 import {
    dispatchItineraryUpdated,
    getItinerary,
@@ -109,10 +109,7 @@ function buildValidatedTimeSetItinerary(previousItinerary, result) {
       return null;
    }
 
-   const normalizedItinerary = normalizeItinerary({
-      ...result.itinerary,
-      itineraryConfig: result.itineraryConfig,
-   });
+   const normalizedItinerary = normalizeItineraryFromApiResult(result);
    const timeDiff = buildItineraryDiff(
       normalizeItineraryDraft(previousItinerary),
       normalizedItinerary,
