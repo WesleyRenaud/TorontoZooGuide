@@ -13,14 +13,16 @@ import {
 } from './rows.js';
 import { formatItineraryEventTypeLabel } from './scheduleItemEventLabels.js';
 import {
-   getAnimalEnclosureName,
    getAnimalId,
-   getAnimalSpecies,
+   getAnimalTitleLine,
 } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
 import { getWildEncounterKey } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
-import { buildUniqueSpeciesExhibitEntries } from '../speciesExhibitKey.js';
+import {
+   buildAnimalViewingSpotKey,
+   buildUniqueSpeciesExhibitEntries,
+} from '../speciesExhibitKey.js';
 
 function getScheduledMaximumDuration(item) {
    const maximumDuration = Number(item?.maximum_duration);
@@ -39,10 +41,7 @@ function hasItineraryScheduleTimes(item) {
 
 function getScheduledItemLabel(item) {
    if (item?.species) {
-      return {
-         species: getAnimalSpecies(item),
-         enclosureName: getAnimalEnclosureName(item),
-      };
+      return getAnimalTitleLine(item);
    }
 
    return String(item?.name || '').trim();
@@ -110,6 +109,7 @@ function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
 function buildScheduledAnimalRows(animals = []) {
    return buildUniqueSpeciesExhibitEntries(animals, {
       includeAnimal: hasItineraryScheduleTimes,
+      buildKey: buildAnimalViewingSpotKey,
       requireExhibit: false,
    }).map(({ item, index }) => {
       const [row] = buildAnimalRows([item]);

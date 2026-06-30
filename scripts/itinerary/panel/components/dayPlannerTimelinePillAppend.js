@@ -60,6 +60,7 @@ export function appendScheduledDurationPill(
       menuItems = [],
       menuAriaLabel = '',
       onLabelClick = null,
+      item = null,
    }
 ) {
    const pill = makeScheduledPill(label, durationMinutes, {
@@ -69,6 +70,7 @@ export function appendScheduledDurationPill(
       menuItems,
       menuAriaLabel,
       onLabelClick,
+      item,
       slotSpanMinutes,
       displayDurationMinutes,
    });

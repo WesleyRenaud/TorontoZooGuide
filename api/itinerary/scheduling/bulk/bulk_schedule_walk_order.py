@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ....walk_graph.domain.walk_graph import WalkGraph
-from ....walk_graph.enclosure_viewing_walk_node_lookup import walk_nodes_for_species_exhibit
+from ....walk_graph.enclosure_viewing_walk_node_lookup import walk_node_id_by_enclosure_name
 from ....walk_graph.representative_walk_node import representative_walk_node_id_from_candidates
 from ....walk_graph.shortest_path import build_walk_graph_adjacency
 from ....walk_graph.shortest_path import shortest_path_distances
@@ -12,19 +12,24 @@ def representative_walk_node_id(
       graph: WalkGraph,
       from_node_id: str,
       species: str,
-      exhibit: str ) -> str | None:
+      exhibit: str,
+      enclosure_name: str | None = None ) -> str | None:
    return representative_walk_node_id_from_candidates(
       graph,
       from_node_id,
-      _viewing_node_ids( species, exhibit ) )
+      _viewing_node_ids( species, exhibit, enclosure_name ) )
 
 
 def walk_travel_distance_px(
       graph: WalkGraph,
       from_node_id: str,
       species: str,
-      exhibit: str ) -> float | None:
-   viewing_node_ids = _viewing_node_ids( species, exhibit )
+      exhibit: str,
+      enclosure_name: str | None = None ) -> float | None:
+   viewing_node_ids = _viewing_node_ids(
+      species,
+      exhibit,
+      enclosure_name )
    distances = shortest_path_distances( graph, from_node_id )
 
    return _min_distance_to_viewing_nodes( distances, viewing_node_ids )
@@ -40,9 +45,10 @@ def sort_animals_for_bulk_schedule(
 
    adjacency = build_walk_graph_adjacency( graph )
    viewing_node_ids_by_animal = {
-      ( animal_row.species, animal_row.exhibit ): _viewing_node_ids(
+      animal_row.viewing_spot_key(): _viewing_node_ids(
          animal_row.species,
-         animal_row.exhibit )
+         animal_row.exhibit,
+         animal_row.enclosure_name )
       for animal_row in animal_rows
    }
 
@@ -62,7 +68,7 @@ def sort_animals_for_bulk_schedule(
             distances,
             animal_row,
             viewing_node_ids_by_animal[
-               ( animal_row.species, animal_row.exhibit ) ] ) )
+               animal_row.viewing_spot_key() ] ) )
       remaining_animals.remove( next_animal )
       ordered_animals.append( next_animal )
 
@@ -70,7 +76,7 @@ def sort_animals_for_bulk_schedule(
          graph,
          current_node_id,
          viewing_node_ids_by_animal[
-            ( next_animal.species, next_animal.exhibit ) ] )
+            next_animal.viewing_spot_key() ] )
 
       if next_node_id is not None:
          current_node_id = next_node_id
@@ -78,10 +84,17 @@ def sort_animals_for_bulk_schedule(
    return ordered_animals
 
 
-def _viewing_node_ids( species: str, exhibit: str ) -> tuple[ str, ... ]:
-   return tuple(
-      str( row[ 'walk_node_id' ] )
-      for row in walk_nodes_for_species_exhibit( species, exhibit ) )
+def _viewing_node_ids(
+      species: str,
+      exhibit: str,
+      enclosure_name: str | None ) -> tuple[ str, ... ]:
+   walk_node_id = walk_node_id_by_enclosure_name().get(
+      ( species, exhibit, enclosure_name ) )
+
+   if walk_node_id == None:
+      return ()
+
+   return ( walk_node_id, )
 
 
 def _min_distance_to_viewing_nodes(
@@ -106,12 +119,24 @@ def _min_distance_to_viewing_nodes(
 def _bulk_schedule_walk_sort_key_from_distances(
       distances: dict[ str, float ],
       animal_row: ItineraryAnimalRecord,
-      viewing_node_ids: tuple[ str, ... ] ) -> tuple[ float, str, str ]:
+      viewing_node_ids: tuple[ str, ... ] ) -> tuple[ float, str, str, str ]:
    distance_px = _min_distance_to_viewing_nodes(
       distances,
       viewing_node_ids )
 
-   if distance_px is None:
-      return ( float( 'inf' ), animal_row.exhibit.lower(), animal_row.species.lower() )
+   enclosure_name = animal_row.enclosure_name or ''
 
-   return ( distance_px, animal_row.exhibit.lower(), animal_row.species.lower() )
+   if distance_px is None:
+      return (
+         float( 'inf' ),
+         animal_row.exhibit.lower(),
+         enclosure_name.lower(),
+         animal_row.species.lower(),
+      )
+
+   return (
+      distance_px,
+      animal_row.exhibit.lower(),
+      enclosure_name.lower(),
+      animal_row.species.lower(),
+   )

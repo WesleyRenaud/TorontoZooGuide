@@ -1,5 +1,6 @@
 import { computeMarkerOffsetFraction } from '../dayPlannerTimelineMarkers.js';
 import {
+   compareScheduledItemLabels,
    formatScheduledPillGroupLabel,
    getScheduledItemEndMinutes,
    getScheduledPillMinDisplayMinutes,
@@ -12,14 +13,14 @@ import {
    ScheduleItemKind,
 } from '../../../shared/enums/scheduleItemKind.js';
 
-function compareScheduledItemsForLayout(leftItem = {}, rightItem = {}) {
+export function compareScheduledItemsForLayout(leftItem = {}, rightItem = {}) {
    const startDelta = leftItem.startMinutes - rightItem.startMinutes;
 
    if (startDelta !== 0) {
       return startDelta;
    }
 
-   return String(leftItem.label || '').localeCompare(String(rightItem.label || ''));
+   return compareScheduledItemLabels(leftItem, rightItem);
 }
 
 export function getLayoutUnitItems(scheduledItem = {}) {
@@ -321,12 +322,32 @@ export function normalizeLayoutUnitsForDisplay(
    return normalizedUnits;
 }
 
+function getEarliestScheduledItemByStartTime(items = []) {
+   if (!items.length) {
+      return null;
+   }
+
+   let earliestItem = items[0];
+
+   for (const item of items) {
+      if (item.startMinutes < earliestItem.startMinutes) {
+         earliestItem = item;
+      }
+   }
+
+   return earliestItem;
+}
+
+function getLayoutUnitAnchorItem(layoutUnit = {}) {
+   return getEarliestScheduledItemByStartTime(getLayoutUnitItems(layoutUnit));
+}
+
 export function getLayoutUnitSlotContext(layoutUnit = {}) {
-   const items = getLayoutUnitItems(layoutUnit);
+   const anchorItem = getLayoutUnitAnchorItem(layoutUnit);
    const anchorSlotMinutes = layoutUnit.anchorSlotMinutes
-      ?? items[0]?.anchorSlotMinutes;
+      ?? anchorItem?.anchorSlotMinutes;
    const slotEndMinutes = layoutUnit.slotEndMinutes
-      ?? items.find((item) => Number.isFinite(item.slotEndMinutes))?.slotEndMinutes
+      ?? anchorItem?.slotEndMinutes
       ?? (
          Number.isFinite(anchorSlotMinutes)
             ? anchorSlotMinutes + TIMELINE_SLOT_MINUTES
@@ -359,15 +380,14 @@ function buildClusterLayoutItem(items = []) {
    const displayItems = sortScheduledItemsForGroupDisplay(items);
    const startMinutes = Math.min(...items.map((item) => item.startMinutes));
    const endMinutes = Math.max(...items.map(getScheduledItemEndMinutes));
+   const anchorItem = getEarliestScheduledItemByStartTime(items);
    const layoutUnit = {
       clusterItems: displayItems,
       startMinutes,
       endMinutes,
       maximumDuration: endMinutes - startMinutes,
-      anchorSlotMinutes: items[0].anchorSlotMinutes,
-      slotEndMinutes: items.find((item) => (
-         Number.isFinite(item.slotEndMinutes)
-      ))?.slotEndMinutes,
+      anchorSlotMinutes: anchorItem?.anchorSlotMinutes,
+      slotEndMinutes: anchorItem?.slotEndMinutes,
       label: formatScheduledPillGroupLabel(displayItems),
    };
 

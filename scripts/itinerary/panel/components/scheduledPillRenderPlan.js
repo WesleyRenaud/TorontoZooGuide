@@ -1,6 +1,7 @@
 import {
    clusterScheduledAnimalItemsByViewingWalkNode,
    clusterShortScheduledItemsForDisplay,
+   compareScheduledItemsForLayout,
    getLayoutUnitItems,
    getLayoutUnitScheduleOffsetFraction,
    getLayoutUnitSlotContext,
@@ -12,16 +13,6 @@ import {
    getScheduledPillMinDisplayMinutes,
    getScheduledPillVisualBand,
 } from './scheduledPillOverlap.js';
-
-function compareScheduledItemsForLayout(leftItem = {}, rightItem = {}) {
-   const startDelta = leftItem.startMinutes - rightItem.startMinutes;
-
-   if (startDelta !== 0) {
-      return startDelta;
-   }
-
-   return String(leftItem.label || '').localeCompare(String(rightItem.label || ''));
-}
 
 function appendRenderGroup(groupsByAnchor, anchorSlotMinutes, renderGroup) {
    const groups = groupsByAnchor.get(anchorSlotMinutes) ?? [];
@@ -71,30 +62,44 @@ function compareRenderGroupsForDisplay(leftGroup = {}, rightGroup = {}) {
    );
 }
 
+function assignLayoutUnitsByRenderAnchor(layoutUnits = []) {
+   return layoutUnits.reduce((unitsByAnchor, layoutUnit) => {
+      const { anchorSlotMinutes } = getLayoutUnitSlotContext(layoutUnit);
+
+      if (!Number.isFinite(anchorSlotMinutes)) {
+         return unitsByAnchor;
+      }
+
+      const units = unitsByAnchor.get(anchorSlotMinutes) ?? [];
+
+      units.push(layoutUnit);
+      unitsByAnchor.set(anchorSlotMinutes, units);
+
+      return unitsByAnchor;
+   }, new Map());
+}
+
 export function planScheduledPillRenderGroupsByAnchor(
    scheduledItems = [],
    _pointPillMarkers = []
 ) {
-   const itemsByAnchor = new Map();
-
-   scheduledItems.forEach((scheduledItem) => {
-      const anchorItems = itemsByAnchor.get(scheduledItem.anchorSlotMinutes) ?? [];
-
-      anchorItems.push(scheduledItem);
-      itemsByAnchor.set(scheduledItem.anchorSlotMinutes, anchorItems);
-   });
-
    const groupsByAnchor = new Map();
    const minDisplayMinutes = getScheduledPillMinDisplayMinutes();
-   const sortedAnchorSlots = [...itemsByAnchor.keys()].sort((left, right) => (
-      left - right
-   ));
+   const viewingNodeLayoutUnits = clusterScheduledAnimalItemsByViewingWalkNode(
+      scheduledItems
+   );
+   const layoutUnitsByRenderAnchor = assignLayoutUnitsByRenderAnchor(
+      viewingNodeLayoutUnits
+   );
+   const sortedAnchorSlots = [...layoutUnitsByRenderAnchor.keys()].sort((
+      left,
+      right
+   ) => left - right);
 
    sortedAnchorSlots.forEach((anchorSlotMinutes) => {
-      const anchorItems = itemsByAnchor.get(anchorSlotMinutes) ?? [];
       const layoutUnits = normalizeLayoutUnitsForDisplay(
          clusterShortScheduledItemsForDisplay(
-            clusterScheduledAnimalItemsByViewingWalkNode(anchorItems)
+            layoutUnitsByRenderAnchor.get(anchorSlotMinutes) ?? []
          ),
          minDisplayMinutes
       ).sort(compareScheduledItemsForLayout);

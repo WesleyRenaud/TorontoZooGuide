@@ -21,6 +21,7 @@ import {
    saveSelectedNames,
 } from './regionStorage.js';
 import { buildDateSearchContext } from '../../../search/searchContext.js';
+import { buildSpeciesExhibitKey } from '../../speciesExhibitKey.js';
 import {
    ANIMALS_KEY,
    SELECTED_EXHIBITS_KEY,
@@ -167,6 +168,9 @@ export function createRegionSelectorState() {
       const selectedExhibitSet = new Set(
          selectedExhibits.map((exhibitName) => String(exhibitName).trim().toLowerCase())
       );
+      const rebuiltSpeciesExhibitKeys = new Set(
+         selectedAnimals.map((animal) => buildSpeciesExhibitKey(animal))
+      );
 
       const preservedAnimals = currentAnimals.filter((animal) => {
          const exhibit = animal.exhibit.trim().toLowerCase();
@@ -175,7 +179,11 @@ export function createRegionSelectorState() {
             return true;
          }
 
-         return selectedExhibitSet.has(exhibit);
+         if (!selectedExhibitSet.has(exhibit)) {
+            return true;
+         }
+
+         return !rebuiltSpeciesExhibitKeys.has(buildSpeciesExhibitKey(animal));
       });
 
       const mergedAnimals = mergeAnimals(preservedAnimals, selectedAnimals);

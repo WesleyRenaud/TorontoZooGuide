@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from itinerary.support import ANIMAL_KEY
+from itinerary.support import ANIMAL_KEY, PENGUIN_KEY
 
 from api.itinerary.animal_item_key import AnimalScheduleItemKey
 from api.itinerary.attraction_item_key import AttractionScheduleItemKey
@@ -34,6 +34,15 @@ def test_map_schedule_item_key_from_wire_animal_key() -> None:
    assert schedule_item_key == AnimalScheduleItemKey(
       species='African Lion',
       exhibit='Africa Savanna' )
+
+
+def test_map_schedule_item_key_from_wire_animal_key_with_enclosure_name() -> None:
+   schedule_item_key = map_schedule_item_key_from_wire( 'animals', PENGUIN_KEY )
+
+   assert schedule_item_key == AnimalScheduleItemKey(
+      species='African Penguin',
+      exhibit='Africa Savanna',
+      enclosure_name='Outdoor' )
 
 
 def test_map_schedule_item_key_from_wire_event_type_as_item_type() -> None:

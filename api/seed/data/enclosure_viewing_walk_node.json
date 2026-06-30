@@ -795,10 +795,10 @@
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 43.612,
-    "y": 62.754,
-    "walk_node_id": "v-0263",
-    "snap_distance_px": 28.006
+    "x": 41.389,
+    "y": 55.434,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 51.566
   },
   {
     "species": "Greater Kudu",
@@ -813,10 +813,10 @@
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 41.389,
-    "y": 55.434,
-    "walk_node_id": "v-0359",
-    "snap_distance_px": 51.566
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
   },
   {
     "species": "Greater One-Horned Rhinoceros",
@@ -1209,10 +1209,10 @@
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 43.612,
-    "y": 62.754,
-    "walk_node_id": "v-0263",
-    "snap_distance_px": 28.006
+    "x": 41.389,
+    "y": 55.434,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 51.566
   },
   {
     "species": "Marabou Stork",
@@ -1227,10 +1227,10 @@
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 41.389,
-    "y": 55.434,
-    "walk_node_id": "v-0359",
-    "snap_distance_px": 51.566
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
   },
   {
     "species": "Marabou Stork",
@@ -1443,10 +1443,10 @@
     "species": "Ostrich",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 43.612,
-    "y": 62.754,
-    "walk_node_id": "v-0263",
-    "snap_distance_px": 28.006
+    "x": 41.389,
+    "y": 55.434,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 51.566
   },
   {
     "species": "Ostrich",
@@ -1461,10 +1461,10 @@
     "species": "Ostrich",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 41.389,
-    "y": 55.434,
-    "walk_node_id": "v-0359",
-    "snap_distance_px": 51.566
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
   },
   {
     "species": "Ostrich",
@@ -1857,10 +1857,10 @@
     "species": "Southern Ground Hornbill",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 43.612,
-    "y": 62.754,
-    "walk_node_id": "v-0263",
-    "snap_distance_px": 28.006
+    "x": 41.389,
+    "y": 55.434,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 51.566
   },
   {
     "species": "Southern Ground Hornbill",
@@ -1875,10 +1875,10 @@
     "species": "Southern Ground Hornbill",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 41.389,
-    "y": 55.434,
-    "walk_node_id": "v-0359",
-    "snap_distance_px": 51.566
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
   },
   {
     "species": "Southern Hairy-Nosed Wombat",
@@ -2298,10 +2298,10 @@
     "species": "White-Headed Vulture",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 43.612,
-    "y": 62.754,
-    "walk_node_id": "v-0263",
-    "snap_distance_px": 28.006
+    "x": 41.389,
+    "y": 55.434,
+    "walk_node_id": "v-0359",
+    "snap_distance_px": 51.566
   },
   {
     "species": "White-Headed Vulture",
@@ -2316,10 +2316,10 @@
     "species": "White-Headed Vulture",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 41.389,
-    "y": 55.434,
-    "walk_node_id": "v-0359",
-    "snap_distance_px": 51.566
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
   },
   {
     "species": "Wood Bison",

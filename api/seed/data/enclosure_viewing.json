@@ -1301,8 +1301,8 @@
     "name": "White Rhino Viewing",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater kudus are most likely inside and off-display on this day due to cold weather.",
-    "x_coord": 43.612,
-    "y_coord": 62.754
+    "x_coord": 41.389,
+    "y_coord": 55.434
   },
   {
     "species": "Marabou Stork",
@@ -1310,8 +1310,8 @@
     "name": "White Rhino Viewing",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
-    "x_coord": 43.612,
-    "y_coord": 62.754
+    "x_coord": 41.389,
+    "y_coord": 55.434
   },
   {
     "species": "Southern Ground Hornbill",
@@ -1319,8 +1319,8 @@
     "name": "White Rhino Viewing",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.",
-    "x_coord": 43.612,
-    "y_coord": 62.754
+    "x_coord": 41.389,
+    "y_coord": 55.434
   },
   {
     "species": "White-Headed Vulture",
@@ -1328,8 +1328,8 @@
     "name": "White Rhino Viewing",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white-headed vultures are most likely inside and off-display on this day due to cooler weather.",
-    "x_coord": 43.612,
-    "y_coord": 62.754
+    "x_coord": 41.389,
+    "y_coord": 55.434
   },
   {
     "species": "Ostrich",
@@ -1337,8 +1337,8 @@
     "name": "White Rhino Viewing",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
-    "x_coord": 43.612,
-    "y_coord": 62.754
+    "x_coord": 41.389,
+    "y_coord": 55.434
   },
   {
     "species": "Greater Kudu",
@@ -1391,8 +1391,8 @@
     "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater kudus are most likely inside and off-display on this day due to cold weather.",
-    "x_coord": 41.389,
-    "y_coord": 55.434
+    "x_coord": 43.612,
+    "y_coord": 62.754
   },
   {
     "species": "Marabou Stork",
@@ -1400,8 +1400,8 @@
     "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
-    "x_coord": 41.389,
-    "y_coord": 55.434
+    "x_coord": 43.612,
+    "y_coord": 62.754
   },
   {
     "species": "Southern Ground Hornbill",
@@ -1409,8 +1409,8 @@
     "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.",
-    "x_coord": 41.389,
-    "y_coord": 55.434
+    "x_coord": 43.612,
+    "y_coord": 62.754
   },
   {
     "species": "White-Headed Vulture",
@@ -1418,8 +1418,8 @@
     "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white-headed vultures are most likely inside and off-display on this day due to cooler weather.",
-    "x_coord": 41.389,
-    "y_coord": 55.434
+    "x_coord": 43.612,
+    "y_coord": 62.754
   },
   {
     "species": "Ostrich",
@@ -1427,8 +1427,8 @@
     "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
-    "x_coord": 41.389,
-    "y_coord": 55.434
+    "x_coord": 43.612,
+    "y_coord": 62.754
   },
   {
     "species": "Grevy's Zebra",

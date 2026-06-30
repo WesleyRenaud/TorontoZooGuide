@@ -6,6 +6,7 @@ import {
    resolveGroupedScheduledPillOptions,
    resolveScheduledPillOptions,
 } from '../../scripts/itinerary/panel/components/dayPlannerScheduledPillOptions.js';
+import { installDomTestHooks } from './helpers/domTestSetup.mjs';
 import { makeScheduledItem } from './helpers/scheduledPillTestSetup.mjs';
 import { ScheduleItemKind } from '../../scripts/shared/enums/scheduleItemKind.js';
 
@@ -128,6 +129,51 @@ test('resolveScheduledPillOptions adds remove for animals and guardians talks', 
    assert.deepEqual(removeRequests[1], {
       itemType: 'guardians_talks',
       key: 'Amur Tiger',
+   });
+});
+
+test.describe('buildScheduledItemRowsContext scheduled animals', () => {
+   installDomTestHooks();
+
+   test('keeps separate scheduled animals per viewing spot', () => {
+      const context = buildScheduledItemRowsContext(
+         {
+            animals: [
+               {
+                  species: 'Western Lowland Gorilla',
+                  exhibit: 'African Rainforest Pavilion',
+                  enclosure_name: 'Indoor',
+                  start_time: '9:30 AM',
+                  end_time: '9:35 AM',
+               },
+               {
+                  species: 'Western Lowland Gorilla',
+                  exhibit: 'African Rainforest Pavilion',
+                  enclosure_name: 'Outdoor',
+                  start_time: '9:40 AM',
+                  end_time: '9:45 AM',
+               },
+            ],
+            attractions: [],
+            guardiansTalks: [],
+            wildEncounters: [],
+            events: [],
+         },
+         [570, 600],
+         1140
+      );
+      const animalItems = [...context.itemsByStart.values()].flat()
+         .filter((item) => item.scheduleItemKind === ScheduleItemKind.ANIMAL.itemType);
+
+      assert.equal(animalItems.length, 2);
+      assert.deepEqual(
+         animalItems.map((item) => item.scheduleItemKey).sort(),
+         [
+            'Western Lowland Gorilla||African Rainforest Pavilion||Indoor',
+            'Western Lowland Gorilla||African Rainforest Pavilion||Outdoor',
+         ]
+      );
+      assert.equal(context.scheduledAnimalIndexes.size, 2);
    });
 });
 

@@ -25,7 +25,8 @@ def _apply_unschedule(
       clear_itinerary_animal_schedule(
          cur,
          species=schedule_item_key.species,
-         exhibit=schedule_item_key.exhibit )
+         exhibit=schedule_item_key.exhibit,
+         enclosure_name=schedule_item_key.enclosure_name )
       return
 
    if isinstance( schedule_item_key, AttractionScheduleItemKey ):

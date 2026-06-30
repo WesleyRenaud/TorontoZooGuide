@@ -4,6 +4,14 @@ import {
    ScheduleItemKind,
 } from '../../../shared/enums/scheduleItemKind.js';
 
+function flattenScheduledItemsForPillGroup(scheduledItems = []) {
+   return scheduledItems.flatMap((scheduledItem) => (
+      scheduledItem.clusterItems?.length
+         ? scheduledItem.clusterItems
+         : [scheduledItem]
+   ));
+}
+
 function buildScheduledPillMenuItems(
    scheduledItem = {},
    scheduleHandlers = {},
@@ -64,7 +72,7 @@ function buildScheduledPillMenuItems(
 function mergeScheduledPillMenuItems(items = [], scheduleHandlers = {}, strings = {}) {
    const menuItems = [];
 
-   items.forEach((scheduledItem) => {
+   flattenScheduledItemsForPillGroup(items).forEach((scheduledItem) => {
       menuItems.push(
          ...buildScheduledPillMenuItems(scheduledItem, scheduleHandlers, strings)
       );
@@ -100,8 +108,11 @@ export function buildGroupedScheduledPillItems(
    strings = {},
    resolveItemLabelClick = () => null
 ) {
-   return sortScheduledItemsForGroupDisplay(scheduledItems).map((scheduledItem) => ({
+   return sortScheduledItemsForGroupDisplay(
+      flattenScheduledItemsForPillGroup(scheduledItems)
+   ).map((scheduledItem) => ({
       label: scheduledItem.label,
+      item: scheduledItem.item,
       startTime: scheduledItem.item?.start_time ?? '',
       endTime: scheduledItem.item?.end_time ?? '',
       onLabelClick: resolveItemLabelClick(scheduledItem),

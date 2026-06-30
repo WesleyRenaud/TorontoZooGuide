@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Self
 
+from ..shared.value_conversion import ValueConversion
+
 ANIMAL_ITEM_KEY_SEPARATOR = '||'
 
 
@@ -10,34 +12,59 @@ ANIMAL_ITEM_KEY_SEPARATOR = '||'
 class AnimalScheduleItemKey:
    species: str
    exhibit: str
+   enclosure_name: str | None = None
 
    @classmethod
    def from_wire( cls, wire: str ) -> Self | None:
-      parts = wire.split( ANIMAL_ITEM_KEY_SEPARATOR, 1 )
+      parts = [
+         part.strip()
+         for part in wire.split( ANIMAL_ITEM_KEY_SEPARATOR )
+      ]
 
-      if len( parts ) != 2:
+      if len( parts ) not in ( 2, 3 ):
          return None
 
-      species = parts[ 0 ].strip()
-      exhibit = parts[ 1 ].strip()
+      species = parts[ 0 ]
+      exhibit = parts[ 1 ]
 
       if not species or not exhibit:
          return None
 
-      return cls( species=species, exhibit=exhibit )
+      enclosure_name = (
+         ValueConversion.as_nullable_string( parts[ 2 ] )
+         if len( parts ) == 3
+         else None )
+
+      return cls(
+         species=species,
+         exhibit=exhibit,
+         enclosure_name=enclosure_name,
+      )
 
 
    def to_wire( self ) -> str:
-      return (
+      base = (
          f'{ self.species.strip() }'
          f'{ ANIMAL_ITEM_KEY_SEPARATOR }'
          f'{ self.exhibit.strip() }' )
 
+      if self.enclosure_name:
+         return (
+            f'{ base }'
+            f'{ ANIMAL_ITEM_KEY_SEPARATOR }'
+            f'{ self.enclosure_name.strip() }' )
 
-def format_animal_schedule_item_key( species: str, exhibit: str ) -> str:
+      return base
+
+
+def format_animal_schedule_item_key(
+      species: str,
+      exhibit: str,
+      enclosure_name: str | None = None ) -> str:
    return AnimalScheduleItemKey(
       species=species,
-      exhibit=exhibit ).to_wire()
+      exhibit=exhibit,
+      enclosure_name=enclosure_name ).to_wire()
 
 
 def parse_animal_schedule_item_key( key: str ) -> tuple[ str, str ] | None:

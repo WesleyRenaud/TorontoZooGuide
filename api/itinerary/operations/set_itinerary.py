@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 from ...animals.coordinators.animal_coordinator import AnimalCoordinator
-from ...animals.search.animals_matching_query import species_exhibit_key_from_values
+from ...animals.search.animals_matching_query import viewing_spot_key_from_values
 from ...attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .check_set_itinerary_save_warnings import check_set_itinerary_save_warnings
 from .commit_set_itinerary import commit_set_itinerary
@@ -16,21 +16,26 @@ from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .prepare_set_itinerary_context import prepare_set_itinerary_context
 from ..results.itinerary_save_result import ItinerarySaveResult
 from .set_itinerary_context import itinerary_controller_kwargs
+from ...shared.value_conversion import ValueConversion
 from ...types import Connection, DateInput, TimeInput
 from .validate_set_itinerary_zoo_hours import validate_set_itinerary_zoo_hours
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
 from ...wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
-def itinerary_animal_input_key( animal: ItineraryAnimalInput ) -> tuple[ str, str ]:
-   return species_exhibit_key_from_values( animal.species, animal.exhibit )
+def itinerary_animal_input_key(
+      animal: ItineraryAnimalInput ) -> tuple[ str, str, str | None ]:
+   return viewing_spot_key_from_values(
+      animal.species,
+      animal.exhibit,
+      animal.enclosure_name )
 
 
 def merge_itinerary_animal_inputs(
       animals: list[ ItineraryAnimalInput ],
       animals_from_selected_exhibits: list[ ItineraryAnimalInput ] ) -> list[ ItineraryAnimalInput ]:
    merged: list[ ItineraryAnimalInput ] = []
-   seen: set[ tuple[ str, str ] ] = set()
+   seen: set[ tuple[ str, str, str | None ] ] = set()
 
    for animal in ( *animals, *animals_from_selected_exhibits ):
       key = itinerary_animal_input_key( animal )
@@ -63,7 +68,9 @@ def build_itinerary_animal_inputs_from_selected_exhibits(
    return [
       ItineraryAnimalInput(
          species=animal.species,
-         exhibit=animal.exhibit )
+         exhibit=animal.exhibit,
+         enclosure_name=ValueConversion.as_nullable_string(
+            animal.enclosure_name ) )
       for animal in animals
       if animal.exhibit != None
    ]

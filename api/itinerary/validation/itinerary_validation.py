@@ -60,6 +60,7 @@ def validate_itinerary_animals(
             ItineraryAnimalRecord(
                species=carryover.species,
                exhibit=carryover.exhibit,
+               enclosure_name=carryover.enclosure_name,
                old_likelihood=None,
                new_likelihood=None ) ],
       )
@@ -81,6 +82,7 @@ def validate_itinerary_animals(
          AnimalDiff(
             species=carryover.species,
             exhibit=carryover.exhibit,
+            enclosure_name=carryover.enclosure_name,
             old_likelihood=carryover.old_likelihood,
             new_likelihood=new_likelihood,
             is_added=carryover.is_added,

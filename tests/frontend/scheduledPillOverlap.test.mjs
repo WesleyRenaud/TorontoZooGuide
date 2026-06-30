@@ -128,6 +128,22 @@ test('computeFirstFreeHorizontalOffsetIndex returns past maxColumn when all colu
    );
 });
 
+test('formatScheduledPillGroupLabel formats animal viewing spot labels', () => {
+   assert.equal(
+      formatScheduledPillGroupLabel([
+         { label: 'Marabou Stork • Savanna Overlook' },
+      ]),
+      'Marabou Stork • Savanna Overlook'
+   );
+   assert.equal(
+      formatScheduledPillGroupLabel([
+         { label: 'Marabou Stork • Savanna Overlook' },
+         { label: 'Southern Ground Hornbill • Savanna Overlook' },
+      ]),
+      'Marabou Stork • Savanna Overlook + 1'
+   );
+});
+
 test('formatScheduledPillGroupLabel matches map-style counted labels', () => {
    assert.equal(
       formatScheduledPillGroupLabel([{ label: 'African Lion' }]),

@@ -22,6 +22,7 @@ def test_itinerary_filter_helpers_sort_matching_animals( db: DbControllers ) -> 
          ItineraryAnimalRecord(
             species='African Penguin',
             exhibit='Africa Savanna',
+            enclosure_name='Outdoor',
             old_likelihood=None,
             new_likelihood=None ),
          ItineraryAnimalRecord(

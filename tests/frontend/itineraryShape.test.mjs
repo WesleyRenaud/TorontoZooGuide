@@ -165,6 +165,11 @@ test('toSetItineraryPayload sends canonical shapes for the save API', () => {
       animals: [
          { species: 'African Lion', exhibit: 'Africa Savanna', likelihood: 90 },
          { species: '  ', exhibit: 'Africa Savanna' },
+         {
+            species: ' Masai Giraffe ',
+            exhibit: 'Africa Savanna',
+            enclosure_name: ' Giraffe House ',
+         },
       ],
       attractions: [{ name: 'Conservation Carousel' }, 'Greenhouse'],
       guardiansTalks: [{ name: 'African Lion', type: 'guardiansTalk' }],
@@ -175,6 +180,11 @@ test('toSetItineraryPayload sends canonical shapes for the save API', () => {
       departureTime: '',
       animals: [
          { species: 'African Lion', exhibit: 'Africa Savanna' },
+         {
+            species: 'Masai Giraffe',
+            exhibit: 'Africa Savanna',
+            enclosure_name: 'Giraffe House',
+         },
       ],
       attractions: ['Conservation Carousel', 'Greenhouse'],
       guardiansTalks: [{

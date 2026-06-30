@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from typing import Any
+
 from ...models import Animal
 from ...shared.name_matching_query import normalize_search_key
+from ...shared.value_conversion import ValueConversion
 
 
 def species_exhibit_key_from_values( species: str, exhibit: str ) -> tuple[ str, str ]:
@@ -11,8 +14,29 @@ def species_exhibit_key_from_values( species: str, exhibit: str ) -> tuple[ str,
    )
 
 
+def viewing_spot_name_from_value( value: Any ) -> str | None:
+   return ValueConversion.as_nullable_string( value )
+
+
+def viewing_spot_key_from_values(
+      species: str,
+      exhibit: str,
+      enclosure_name: Any = None ) -> tuple[ str, str, str | None ]:
+   return (
+      *species_exhibit_key_from_values( species, exhibit ),
+      viewing_spot_name_from_value( enclosure_name ),
+   )
+
+
 def species_exhibit_key( animal: Animal ) -> tuple[ str, str ]:
    return species_exhibit_key_from_values( animal.species, animal.exhibit )
+
+
+def viewing_spot_key( animal: Animal ) -> tuple[ str, str, str | None ]:
+   return viewing_spot_key_from_values(
+      animal.species,
+      animal.exhibit,
+      animal.enclosure_name )
 
 
 def animal_matches_query( animal: Animal, query_lower: str ) -> bool:
@@ -62,8 +86,12 @@ def dedupe_animals_by_species_and_exhibit(
 
 def sort_animals_by_species_and_exhibit(
       animals: list[ Animal ] ) -> list[ Animal ]:
+   def sort_key( animal: Animal ) -> tuple[ str, str, str ]:
+      species, exhibit, enclosure_name = viewing_spot_key( animal )
+      return ( species, exhibit, enclosure_name or '' )
+
    sorted_animals = list( animals )
-   sorted_animals.sort( key=species_exhibit_key )
+   sorted_animals.sort( key=sort_key )
    return sorted_animals
 
 

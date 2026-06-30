@@ -63,16 +63,20 @@ function usesScheduledTimelineEventBlock(scheduledItem) {
    );
 }
 
+function getRenderGroupPrimaryScheduledItem(renderGroup = {}) {
+   return renderGroup.items?.[0] ?? null;
+}
+
 function resolveRenderGroupLabel(renderGroup = {}) {
    if (renderGroup.label) {
       return renderGroup.label;
    }
 
-   return renderGroup.items?.[0]?.label ?? '';
+   return getRenderGroupPrimaryScheduledItem(renderGroup)?.label ?? '';
 }
 
 function resolveRenderGroupStartTime(renderGroup = {}) {
-   return renderGroup.items?.[0]?.item?.start_time ?? '';
+   return getRenderGroupPrimaryScheduledItem(renderGroup)?.item?.start_time ?? '';
 }
 
 function resolveRenderGroupEndTime(renderGroup = {}) {
@@ -100,13 +104,21 @@ function resolveRenderGroupLabelClick(renderGroup = {}) {
       return null;
    }
 
-   const scheduledItem = renderGroup.items[0];
+   const scheduledItem = getRenderGroupPrimaryScheduledItem(renderGroup);
 
    if (scheduledItem.scheduleItemKind !== ScheduleItemKind.ANIMAL.itemType) {
       return null;
    }
 
    return () => openAnimalSpeciesOverlay(scheduledItem.item);
+}
+
+function resolveRenderGroupItem(renderGroup = {}) {
+   if (renderGroup.items?.length !== 1) {
+      return null;
+   }
+
+   return getRenderGroupPrimaryScheduledItem(renderGroup)?.item ?? null;
 }
 
 function resolveRenderGroupPillOptions(
@@ -116,7 +128,7 @@ function resolveRenderGroupPillOptions(
 ) {
    if ((renderGroup.items ?? []).length === 1) {
       return resolveScheduledPillOptions(
-         renderGroup.items[0],
+         getRenderGroupPrimaryScheduledItem(renderGroup),
          scheduleHandlers,
          strings
       );
@@ -137,7 +149,7 @@ export function appendScheduledItems(
    strings = {}
 ) {
    (scheduledRenderGroups ?? []).forEach((renderGroup) => {
-      const scheduledItem = renderGroup.items?.[0];
+      const scheduledItem = getRenderGroupPrimaryScheduledItem(renderGroup);
 
       if (scheduledItem && usesScheduledTimelineEventBlock(scheduledItem)) {
          gridLine.appendChild(
@@ -159,6 +171,7 @@ export function appendScheduledItems(
          startTime: resolveRenderGroupStartTime(renderGroup),
          endTime: resolveRenderGroupEndTime(renderGroup),
          onLabelClick: resolveRenderGroupLabelClick(renderGroup),
+         item: resolveRenderGroupItem(renderGroup),
          ...resolveRenderGroupPillOptions(
             renderGroup,
             scheduleHandlers,

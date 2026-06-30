@@ -50,6 +50,41 @@ test('planScheduledPillRenderGroupsByAnchor groups animals at the same viewing s
    assert.equal(groupsByAnchor.get(600)?.[0]?.label, 'African Penguin + 1');
 });
 
+test('planScheduledPillRenderGroupsByAnchor groups same viewing stop across anchor slots', () => {
+   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+      makeScheduledItem('Slender-Tailed Meerkat', 600, 3, 600, 'v-0255'),
+      makeScheduledItem('South African Crested Porcupine', 603, 2, 600, 'v-0255'),
+      makeScheduledItem('Speckled Mousebird', 605, 3, 600, 'v-0255'),
+      makeScheduledItem('Naked Mole Rat', 608, 3, 630, 'v-0255'),
+   ]);
+
+   assert.equal(groupsByAnchor.get(600)?.length, 1);
+   assert.equal(groupsByAnchor.get(600)?.[0]?.items?.length, 4);
+   assert.match(
+      groupsByAnchor.get(600)?.[0]?.label ?? '',
+      / \+ 3$/
+   );
+   assert.equal(groupsByAnchor.get(630), undefined);
+});
+
+test('planScheduledPillRenderGroupsByAnchor keeps different viewing stops separate', () => {
+   const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
+      makeScheduledItem('Western Lowland Gorilla', 600, 30, 600, 'v-0247'),
+      makeScheduledItem('Western Lowland Gorilla', 630, 30, 630, 'v-0229'),
+   ]);
+
+   assert.equal(groupsByAnchor.get(600)?.length, 1);
+   assert.equal(groupsByAnchor.get(630)?.length, 1);
+   assert.equal(
+      groupsByAnchor.get(600)?.[0]?.label ?? groupsByAnchor.get(600)?.[0]?.items[0]?.label,
+      'Western Lowland Gorilla'
+   );
+   assert.equal(
+      groupsByAnchor.get(630)?.[0]?.label ?? groupsByAnchor.get(630)?.[0]?.items[0]?.label,
+      'Western Lowland Gorilla'
+   );
+});
+
 test('planScheduledPillRenderGroupsByAnchor keeps consecutive time buckets visible', () => {
    const groupsByAnchor = planScheduledPillRenderGroupsByAnchor([
       makeScheduledItem('Eurasian Eagle Owl', 990, 2, 990),

@@ -6,7 +6,6 @@ from .itinerary_animal_input import ItineraryAnimalInput
 from .itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
 from .itinerary_save_input import ItinerarySaveInput
 from ...shared.calendar_dates import DateValues
-from ...shared.enums.enclosure_type import EnclosureType
 from ...shared.value_conversion import ValueConversion
 from ...types import DateInput, TimeInput
 from ..wild_encounter_item_key import WildEncounterScheduleItemKey
@@ -51,7 +50,7 @@ def map_animal_inputs(
          ItineraryAnimalInput(
             species=str( animal[ 'species' ] ),
             exhibit=str( animal[ 'exhibit' ] ),
-            enclosure_name=EnclosureType.normalize_viewing_spot_name(
+            enclosure_name=ValueConversion.as_nullable_string(
                animal.get( 'enclosure_name' ) ),
          )
       )
