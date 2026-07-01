@@ -3,8 +3,6 @@ import {
    buildRouteMapPoints,
 } from './itineraryPathGeometry.js';
 import {
-   ENTRANCE_LANDMARK,
-   ENTRANCE_WALK_NODE_ID,
    ZOO_MAP_HEIGHT_PX,
    ZOO_MAP_WIDTH_PX,
 } from '../shared/zooMapConstants.js';
@@ -35,17 +33,9 @@ function pointToMapPx(point) {
    return null;
 }
 
-function withEntranceLandmark(points = []) {
-   if (points.length === 0 || points[0].nodeId !== ENTRANCE_WALK_NODE_ID) {
-      return points;
-   }
-
-   return [ENTRANCE_LANDMARK, ...points];
-}
-
 function buildPathD(points = []) {
    const routePoints = buildRouteMapPoints(points, {
-      withEntranceLandmark,
+      withEntranceLandmark: (normalizedPoints) => normalizedPoints,
       pointToMapPx,
    });
 

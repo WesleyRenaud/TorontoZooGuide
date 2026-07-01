@@ -1,12 +1,7 @@
 {
   "map_width_px": 4096,
   "map_height_px": 2665,
-  "entrance_node_id": "v-0013",
-  "entrance_landmark": {
-    "name": "Wild Encounter - Zoo Front Entrance Gates Meeting Spot",
-    "x": 59.812,
-    "y": 85.689
-  },
+  "entrance_node_id": "v-0001",
   "nodes": [
     {
       "id": "v-0001",

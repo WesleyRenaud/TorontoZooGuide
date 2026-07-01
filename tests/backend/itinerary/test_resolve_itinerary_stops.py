@@ -51,7 +51,9 @@ def test_resolve_itinerary_stops_includes_entrance_and_animal_walk_nodes(
 
    assert stops[ 0 ].schedule_item_kind == ScheduleItemKind.ENTRANCE
    assert stops[ 0 ].item_key == ENTRANCE_ITEM_KEY
-   assert stops[ 0 ].walk_node_ids == ( 'v-0013', )
+   assert stops[ 0 ].walk_node_ids == ( 'v-0001', )
+   assert stops[ 0 ].x_coord == 61.414
+   assert stops[ 0 ].y_coord == 91.366
 
    lion_stop = next(
       stop for stop in stops

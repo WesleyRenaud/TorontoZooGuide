@@ -10,19 +10,24 @@ from ...types import ScheduleTimeKey
 from ...walk_graph.data_access.load_walk_graph import load_walk_graph
 from ...walk_graph.domain.map_location_kind import MapLocationKind
 from ...walk_graph.domain.map_location_walk_node import MapLocationWalkNode
+from ...walk_graph.domain.walk_graph import WalkGraph
+from ...walk_graph.domain.walk_graph_node import WalkGraphNode
 from ...walk_graph.map_location_walk_node_lookup import walk_node_for_map_location
 from ...walk_graph.resolve_viewing_walk_node_id import resolve_viewing_walk_node_id
 
 
 def resolve_entrance_itinerary_stop() -> ItineraryStop:
    walk_graph = load_walk_graph()
+   entrance_node = _walk_graph_node_by_id(
+      walk_graph,
+      walk_graph[ 'entrance_node_id' ] )
 
    return ItineraryStop(
       schedule_item_kind=ScheduleItemKind.ENTRANCE,
       item_key=ENTRANCE_ITEM_KEY,
-      walk_node_ids=( walk_graph[ 'entrance_node_id' ], ),
-      x_coord=walk_graph[ 'entrance_landmark' ][ 'x' ],
-      y_coord=walk_graph[ 'entrance_landmark' ][ 'y' ] )
+      walk_node_ids=( entrance_node[ 'id' ], ),
+      x_coord=entrance_node[ 'x' ],
+      y_coord=entrance_node[ 'y' ] )
 
 
 def resolve_itinerary_stops( itinerary: Itinerary ) -> list[ ItineraryStop ]:
@@ -148,3 +153,13 @@ def _has_schedule_times(
    return bool(
       DateValues.normalize_schedule_time_key( start_time )
       and DateValues.normalize_schedule_time_key( end_time ) )
+
+
+def _walk_graph_node_by_id(
+      walk_graph: WalkGraph,
+      node_id: str ) -> WalkGraphNode:
+   for node in walk_graph[ 'nodes' ]:
+      if node[ 'id' ] == node_id:
+         return node
+
+   raise ValueError( 'Walk graph node %r not found' % ( node_id, ) )

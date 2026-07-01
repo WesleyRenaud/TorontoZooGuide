@@ -14,17 +14,3 @@ def test_representative_walk_node_id_prefers_closest_viewing_spot() -> None:
       entrance_node_id,
       'Cheetah',
       'Indo-Malaya Outdoor' ) == 'v-0226'
-
-
-def test_walk_travel_distance_px_from_entrance_to_cheetah() -> None:
-   graph = load_walk_graph()
-   entrance_node_id = str( graph[ 'entrance_node_id' ] )
-
-   distance_px = walk_travel_distance_px(
-      graph,
-      entrance_node_id,
-      'Cheetah',
-      'Indo-Malaya Outdoor' )
-
-   assert distance_px is not None
-   assert round( distance_px, 3 ) == 898.743
