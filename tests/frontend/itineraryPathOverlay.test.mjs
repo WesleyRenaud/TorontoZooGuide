@@ -80,6 +80,20 @@ test.describe('itinerary path overlay', () => {
       );
    });
 
+   test('places arrows along the route path', () => {
+      renderItineraryPathOverlay({
+         points: [
+            { nodeId: 'v-0001', xPx: 100, yPx: 200 },
+            { nodeId: 'v-0002', xPx: 500, yPx: 200 },
+         ],
+      });
+
+      const svgRoot = document.querySelector('#zooMapMount svg');
+      const arrows = svgRoot?.querySelectorAll('.itinerary-path-arrow') ?? [];
+
+      assert.equal(arrows.length, 6);
+   });
+
    test('clears the overlay when fewer than two points are available', () => {
       renderItineraryPathOverlay({
          points: [{ xPx: 100, yPx: 200 }],

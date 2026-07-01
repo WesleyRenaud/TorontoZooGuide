@@ -1,6 +1,9 @@
+import { ITINERARY_PATH_ARROW_SIDE_OFFSET_PX } from './itineraryPathConstants.js';
 import {
    buildItineraryPathD,
+   buildPathArrowPlacements,
    buildRouteMapPoints,
+   offsetArrowPlacement,
 } from './itineraryPathGeometry.js';
 import {
    ZOO_MAP_HEIGHT_PX,
@@ -10,6 +13,10 @@ import {
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const ITINERARY_PATH_LAYER_ID = 'itinerary-path';
 const PATH_CLASS = 'itinerary-path-line';
+const ARROWS_CLASS = 'itinerary-path-arrows';
+const ARROW_CLASS = 'itinerary-path-arrow';
+
+const ARROW_HEAD_POINTS = '0,-2.5 12,0 0,2.5';
 
 function getSvgRoot() {
    return document.querySelector('#zooMapMount svg');
@@ -42,6 +49,33 @@ function buildPathD(points = []) {
    return buildItineraryPathD(routePoints);
 }
 
+function createArrowMarker({ x, y, angleDeg }) {
+   const markerGroup = document.createElementNS(SVG_NS, 'g');
+   markerGroup.classList.add(ARROW_CLASS);
+   markerGroup.setAttribute(
+      'transform',
+      `translate(${x} ${y}) rotate(${angleDeg})`
+   );
+
+   const head = document.createElementNS(SVG_NS, 'polygon');
+   head.setAttribute('points', ARROW_HEAD_POINTS);
+   markerGroup.appendChild(head);
+
+   return markerGroup;
+}
+
+function appendArrowMarkers(markersLayer, pathD) {
+   if (!pathD) {
+      return;
+   }
+
+   for (const placement of buildPathArrowPlacements(pathD)) {
+      markersLayer.appendChild(createArrowMarker(
+         offsetArrowPlacement(placement, ITINERARY_PATH_ARROW_SIDE_OFFSET_PX, 'left')
+      ));
+   }
+}
+
 function createPathLayer(pathD) {
    const layer = document.createElementNS(SVG_NS, 'g');
    layer.setAttribute('id', ITINERARY_PATH_LAYER_ID);
@@ -52,6 +86,11 @@ function createPathLayer(pathD) {
    path.setAttribute('d', pathD);
    path.setAttribute('fill', 'none');
    layer.appendChild(path);
+
+   const markersLayer = document.createElementNS(SVG_NS, 'g');
+   markersLayer.classList.add(ARROWS_CLASS);
+   appendArrowMarkers(markersLayer, pathD);
+   layer.appendChild(markersLayer);
 
    return layer;
 }

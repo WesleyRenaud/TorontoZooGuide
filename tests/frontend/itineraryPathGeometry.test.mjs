@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
+   buildPathArrowPlacements,
    buildPathDFromWalkGraphSegments,
    buildSmoothedPathD,
    parseSvgPathD,
@@ -51,4 +52,16 @@ test('buildSmoothedPathD returns a line for two points', () => {
       ]),
       'M 10 20 L 30 40'
    );
+});
+
+test('buildPathArrowPlacements spaces arrows along a straight path', () => {
+   const placements = buildPathArrowPlacements('M 0 0 L 400 0');
+
+   assert.equal(placements.length, 6);
+   assert.equal(placements[0].x, 60);
+   assert.equal(placements[0].angleDeg, 0);
+});
+
+test('buildPathArrowPlacements skips short paths', () => {
+   assert.deepEqual(buildPathArrowPlacements('M 0 0 L 20 0'), []);
 });
