@@ -36,7 +36,8 @@ class Animal:
          is_added: bool = False,
          start_time: ScheduleTimeKey = None,
          end_time: ScheduleTimeKey = None,
-         viewing_walk_node_id: str | None = None ) -> None:
+         viewing_walk_node_id: str | None = None,
+         always_include_indoor_viewing: bool | None = None ) -> None:
       self.species = species
       self.latin_name = latin_name
       self.general_viewing_tips = general_viewing_tips
@@ -67,6 +68,7 @@ class Animal:
       self.start_time = start_time
       self.end_time = end_time
       self.viewing_walk_node_id = viewing_walk_node_id
+      self.always_include_indoor_viewing = always_include_indoor_viewing
 
 
    def to_dict( self ) -> dict[ str, object ]:

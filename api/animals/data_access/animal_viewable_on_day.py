@@ -21,6 +21,7 @@ _FETCH_ANIMALS_VIEWABLE_ON_DAY_SQL = """   SELECT
                   e.EXHIBIT,
                   e.SEASONAL_VIEWING_SUMMARY,
                   e.SEASONAL_VIEWING_INFORMATION,
+                  e.ALWAYS_INCLUDE_INDOOR_VIEWING,
                   v.ENCLOSURE_TYPE,
                   v.NAME AS ENCLOSURE_NAME,
                   v.SEASONALLY_OFF_DISPLAY_MESSAGE,
