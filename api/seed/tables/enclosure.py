@@ -14,6 +14,7 @@ RECORD_FIELDS = [
    'seasonal_viewing_summary',
    'seasonal_viewing_information',
    'default_itinerary_duration_minutes',
+   'always_include_indoor_viewing',
 ]
 
 DB_COLUMNS = [
@@ -22,6 +23,7 @@ DB_COLUMNS = [
    'SEASONAL_VIEWING_SUMMARY',
    'SEASONAL_VIEWING_INFORMATION',
    'DEFAULT_ITINERARY_DURATION_MINUTES',
+   'ALWAYS_INCLUDE_INDOOR_VIEWING',
 ]
 
 DATA_FILE = 'enclosure.json'

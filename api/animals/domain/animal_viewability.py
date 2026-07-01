@@ -4,9 +4,11 @@ from datetime import date
 
 from .animal_viewability_context import AnimalViewabilityContext
 from ..data_access.animal_viewability_record import AnimalViewabilityRecord
+from .indoor_outdoor_viewing_visibility import apply_indoor_outdoor_viewing_visibility
 from ...models import Animal
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
+from ...shared.enums import EnclosureType
 from ...shared.enums import ScheduleStatus
 from ...shared.weather import Weather
 from ...types import MonthInput, VisitDay, VisitYear
@@ -139,9 +141,7 @@ def calculate_animal_likelihood(
       min_temperature: float | None,
       day_seasonal_multiplier: float | None,
       exhibit_day_seasonal_availability_multiplier: float = 1.0 ) -> int:
-   normalized_enclosure_type = str( enclosure_type ).strip().lower() if enclosure_type is not None else None
-
-   if normalized_enclosure_type == 'indoor':
+   if EnclosureType.is_indoor( enclosure_type ):
       temperature_likelihood = 1.0
       animal_seasonal_multiplier = 1.0
    else:
@@ -178,15 +178,19 @@ def build_viewable_animals_on_day(
       sigma: int,
       include_off_display_animals: bool = False,
       threshold: int = 0 ) -> list[ Animal ]:
-   animals: list[ Animal ] = []
-
-   for animal_record in animal_records:
-      animal = build_viewable_animal_from_record(
+   built_animals = [
+      build_viewable_animal_from_record(
          animal_record,
          target_date=target_date,
          temp=temp,
          sigma=sigma )
+      for animal_record in animal_records
+   ]
+   visible_animals = apply_indoor_outdoor_viewing_visibility( built_animals )
 
+   animals: list[ Animal ] = []
+
+   for animal in visible_animals:
       if (
             animal.likelihood > threshold
             or ( include_off_display_animals and animal.likelihood == 0 ) ):
@@ -257,7 +261,8 @@ def build_viewable_animal_from_record(
       has_limited_viewing_schedule=has_limited_viewing_schedule,
       limited_viewing_message=limited_viewing_message,
       has_viewing_alert=has_viewing_alert,
-      viewing_alert_message=viewing_alert_message )
+      viewing_alert_message=viewing_alert_message,
+      always_include_indoor_viewing=animal.always_include_indoor_viewing )
 
    apply_viewing_walk_node_id_to_animal( viewable_animal )
 
