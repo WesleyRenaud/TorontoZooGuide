@@ -788,10 +788,18 @@ html.home-page {
 
 .itinerary-path-line {
    stroke: var(--color-itinerary-path);
-   stroke-width: 8;
+   stroke-width: 4;
    stroke-linecap: round;
    stroke-linejoin: round;
    fill: none;
+}
+
+.itinerary-path-arrows {
+   pointer-events: none;
+}
+
+.itinerary-path-arrow {
+   fill: var(--color-itinerary-path);
 }
 
 .hide-map-labels .map-label-primary-svg,
