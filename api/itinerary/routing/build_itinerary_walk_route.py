@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ..animal_item_key import parse_animal_schedule_item_key
+from .append_return_to_entrance_walk_route_leg import append_return_to_entrance_walk_route_leg
 from .itinerary_stop import ItineraryStop
 from .itinerary_walk_route import empty_itinerary_walk_route
 from .itinerary_walk_route import ItineraryWalkRoute
@@ -33,6 +34,7 @@ def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
    route_node_ids: list[ str ] = []
    entrance_stop, current_node_id = _resolve_entrance_walk_route_start(
       ordered_stops )
+   entrance_node_id = entrance_stop.walk_node_ids[ 0 ]
 
    route_stops.append(
       ItineraryWalkRouteStop.from_itinerary_stop(
@@ -72,6 +74,15 @@ def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
 
    if not legs:
       return empty_itinerary_walk_route()
+
+   append_return_to_entrance_walk_route_leg(
+      walk_graph,
+      entrance_stop=entrance_stop,
+      entrance_node_id=entrance_node_id,
+      current_node_id=current_node_id,
+      route_stops=route_stops,
+      legs=legs,
+      route_node_ids=route_node_ids )
 
    return ItineraryWalkRoute(
       stops=tuple( route_stops ),
