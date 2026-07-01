@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from collections import defaultdict
-import math
-
 from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 
 
@@ -30,34 +27,16 @@ def test_walk_graph_node_and_edge_references_are_valid() -> None:
       assert edge[ 'length_px' ] > 0
 
 
-def test_walk_graph_entrance_is_a_dead_end_near_the_entrance_landmark() -> None:
+def test_walk_graph_entrance_is_the_parking_lot_spur_dead_end() -> None:
    graph = load_walk_graph()
-   degrees: dict[ str, int ] = defaultdict( int )
 
-   for edge in graph[ 'edges' ]:
-      degrees[ edge[ 'from' ] ] += 1
-      degrees[ edge[ 'to' ] ] += 1
-
-   entrance_id = graph[ 'entrance_node_id' ]
-   assert degrees[ entrance_id ] == 1
-
-   landmark = graph[ 'entrance_landmark' ]
-   landmark_x_px = landmark[ 'x' ] / 100 * graph[ 'map_width_px' ]
-   landmark_y_px = landmark[ 'y' ] / 100 * graph[ 'map_height_px' ]
-
-   dead_ends = [
+   spur_nodes = [
       node
       for node in graph[ 'nodes' ]
-      if degrees[ node[ 'id' ] ] == 1
+      if node[ 'id' ] in { 'v-%04d' % index for index in range( 1, 8 ) }
    ]
 
-   expected_entrance = min(
-      dead_ends,
-      key=lambda node: (
-         math.hypot(
-            node[ 'x_px' ] - landmark_x_px,
-            node[ 'y_px' ] - landmark_y_px ),
-         -node[ 'y' ],
-      ) )
+   expected_entrance = max( spur_nodes, key=lambda node: node[ 'y_px' ] )
 
-   assert entrance_id == expected_entrance[ 'id' ]
+   assert graph[ 'entrance_node_id' ] == expected_entrance[ 'id' ]
+   assert graph[ 'entrance_node_id' ] == 'v-0001'
