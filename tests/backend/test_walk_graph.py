@@ -33,7 +33,7 @@ def test_walk_graph_entrance_is_the_parking_lot_spur_dead_end() -> None:
    spur_nodes = [
       node
       for node in graph[ 'nodes' ]
-      if node[ 'id' ] in { f'v-{ index:04d }' for index in range( 1, 8 ) }
+      if node[ 'id' ] in { 'v-%04d' % index for index in range( 1, 8 ) }
    ]
 
    expected_entrance = max( spur_nodes, key=lambda node: node[ 'y_px' ] )
