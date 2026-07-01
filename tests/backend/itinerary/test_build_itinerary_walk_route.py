@@ -124,17 +124,47 @@ def test_build_itinerary_walk_route_builds_polyline_for_scheduled_animal(
    assert [ stop.item_key for stop in walk_route.stops ] == [
       ENTRANCE_ITEM_KEY,
       LION_KEY,
+      ENTRANCE_ITEM_KEY,
    ]
-   assert len( walk_route.legs ) == 1
+   assert len( walk_route.legs ) == 2
    assert walk_route.legs[ 0 ].from_item_key == ENTRANCE_ITEM_KEY
    assert walk_route.legs[ 0 ].to_item_key == LION_KEY
-   assert len( walk_route.legs[ 0 ].node_ids ) >= 2
-   assert len( walk_route.points ) == len( walk_route.legs[ 0 ].node_ids )
+   assert walk_route.legs[ 1 ].from_item_key == LION_KEY
+   assert walk_route.legs[ 1 ].to_item_key == ENTRANCE_ITEM_KEY
+   assert len( walk_route.points ) == (
+      len( walk_route.legs[ 0 ].node_ids )
+      + len( walk_route.legs[ 1 ].node_ids )
+      - 1
+   )
    assert walk_route.points[ 0 ].node_id == walk_route.legs[ 0 ].node_ids[ 0 ]
-   assert walk_route.points[ -1 ].node_id == walk_route.legs[ 0 ].node_ids[ -1 ]
+   assert walk_route.points[ -1 ].node_id == walk_route.legs[ 1 ].node_ids[ -1 ]
    assert all(
       point.x_px > 0 and point.y_px > 0
       for point in walk_route.points )
+
+
+def test_build_itinerary_walk_route_returns_to_entrance(
+      db: DbControllers ) -> None:
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+   assert schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='10:00',
+   ).success
+
+   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+
+   assert walk_route.stops[ 0 ].item_key == ENTRANCE_ITEM_KEY
+   assert walk_route.stops[ -1 ].item_key == ENTRANCE_ITEM_KEY
+   assert walk_route.legs[ -1 ].to_item_key == ENTRANCE_ITEM_KEY
+   assert walk_route.points[ -1 ].node_id == walk_route.stops[ -1 ].walk_node_id
 
 
 CHEETAH_INDO_MALAYA_KEY = 'Cheetah||Indo-Malaya Outdoor'
@@ -166,20 +196,35 @@ def test_build_itinerary_walk_route_concatenates_legs_at_shared_node_once(
 
    walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
 
-   assert len( walk_route.legs ) == 2
+   assert len( walk_route.legs ) == 3
+   assert walk_route.legs[ -1 ].to_item_key == ENTRANCE_ITEM_KEY
    assert len( walk_route.points ) == (
       len( walk_route.legs[ 0 ].node_ids )
       + len( walk_route.legs[ 1 ].node_ids )
-      - 1
+      + len( walk_route.legs[ 2 ].node_ids )
+      - 2
    )
 
    joined_node_id = walk_route.legs[ 0 ].node_ids[ -1 ]
 
    assert walk_route.legs[ 1 ].node_ids[ 0 ] == joined_node_id
-   assert [
-      point.node_id
-      for point in walk_route.points
-   ].count( joined_node_id ) == 1
+   leg0_end_point_index = len( walk_route.legs[ 0 ].node_ids ) - 1
+   assert walk_route.points[ leg0_end_point_index ].node_id == joined_node_id
+   assert walk_route.points[ leg0_end_point_index + 1 ].node_id == (
+      walk_route.legs[ 1 ].node_ids[ 1 ]
+   )
+
+   leg1_end_node_id = walk_route.legs[ 1 ].node_ids[ -1 ]
+   assert walk_route.legs[ 2 ].node_ids[ 0 ] == leg1_end_node_id
+   leg1_end_point_index = (
+      len( walk_route.legs[ 0 ].node_ids )
+      + len( walk_route.legs[ 1 ].node_ids )
+      - 2
+   )
+   assert walk_route.points[ leg1_end_point_index ].node_id == leg1_end_node_id
+   assert walk_route.points[ leg1_end_point_index + 1 ].node_id == (
+      walk_route.legs[ 2 ].node_ids[ 1 ]
+   )
 
 
 def test_inclusive_point_slices_for_walk_route_legs_match_polyline(
