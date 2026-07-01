@@ -64,17 +64,18 @@ def test_get_itinerary_animals_keeps_indoor_and_outdoor_viewing_for_map_markers(
       day=30,
       month='May',
       year=2026,
+      temp=22,
       saved_animals=[
          ItineraryAnimalRecord(
-            species='Masai Giraffe',
-            exhibit='Africa Savanna',
-            enclosure_name='Giraffe House',
+            species='Western Lowland Gorilla',
+            exhibit='African Rainforest Pavilion',
+            enclosure_name='Indoor',
             old_likelihood=100,
             new_likelihood=100,
          ),
          ItineraryAnimalRecord(
-            species='Masai Giraffe',
-            exhibit='Africa Savanna',
+            species='Western Lowland Gorilla',
+            exhibit='African Rainforest Pavilion',
             enclosure_name='Outdoor',
             old_likelihood=100,
             new_likelihood=100,
@@ -82,27 +83,27 @@ def test_get_itinerary_animals_keeps_indoor_and_outdoor_viewing_for_map_markers(
       ],
    )
 
-   giraffes = [
+   gorillas = [
       animal
       for animal in animals
-      if animal.species == 'Masai Giraffe'
+      if animal.species == 'Western Lowland Gorilla'
    ]
 
    assert sorted( [
-      ( giraffe.exhibit, giraffe.enclosure_type, giraffe.x_coord, giraffe.y_coord )
-      for giraffe in giraffes
+      ( gorilla.exhibit, gorilla.enclosure_type, gorilla.x_coord, gorilla.y_coord )
+      for gorilla in gorillas
    ] ) == [
-      ( 'Africa Savanna', 'Indoor', 42.35, 71.366 ),
-      ( 'Africa Savanna', 'Outdoor', 39.885, 70.927 ),
+      ( 'African Rainforest Pavilion', 'Indoor', 47.487, 62.703 ),
+      ( 'African Rainforest Pavilion', 'Outdoor', 48.951, 59.856 ),
    ]
-   assert all( giraffe.likelihood == 100 for giraffe in giraffes )
-   assert all( giraffe.old_likelihood == 100 for giraffe in giraffes )
+   assert all( gorilla.likelihood == 100 for gorilla in gorillas )
+   assert all( gorilla.old_likelihood == 100 for gorilla in gorillas )
 
 
 def test_validate_animals_resolves_likelihood_for_viewing_spot(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
-   freeze_database_today( date( 2026, 5, 26 ) )
+   freeze_database_today( date( 2026, 1, 15 ) )
 
    result = validate_itinerary_animals(
       AnimalCoordinator,
@@ -112,10 +113,11 @@ def test_validate_animals_resolves_likelihood_for_viewing_spot(
             exhibit='Africa Savanna',
             enclosure_name='Giraffe House' ),
       ],
-      new_visit_date=date( 2026, 5, 30 ),
+      new_visit_date=date( 2026, 1, 15 ),
       arrival_time='09:30',
       departure_time='17:00',
-      old_visit_date='2026-05-26',
+      new_visit_date_temp=-5,
+      old_visit_date='2026-01-15',
       saved_animal_rows=[
          ItineraryAnimalRecord(
             species='Masai Giraffe',

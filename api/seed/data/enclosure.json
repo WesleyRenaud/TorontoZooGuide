@@ -4,1623 +4,1855 @@
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Blue-Girdled Angelfish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Brush-Tailed Bettong",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Clown Triggerfish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Crested Pigeon",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Crimson Rosella",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Eastern Rosella",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Emerald Tree Boa",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Flame Angelfish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Fly River Turtle",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Galah",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Green Tree Python",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Green-Winged Dove",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Komodo Dragon",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Kookaburra",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Outdoor: May-Sep, Indoor: Oct-Apr",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": false
   },
   {
     "species": "Lau Banded Iguana",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Lionfish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Live Coral Reefs",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Longnose Butterflyfish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "MacLeay's Spectres",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Malagasy Rainbowfish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Mimic Surgeonfish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Moon Jellyfish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Nicobar Pigeon",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Pennant Coral Fish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Pied Imperial Pigeon",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Pot-Bellied Seahorse",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Red Claw Yabby",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Red-Bellied Short-Necked Turtle",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Red-Tailed Black Cockatoo",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Short-Beaked Echidna",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Solomon Island Leaf Frog",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Solomon Island Monkey-Tailed Skink",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Southern Hairy-Nosed Wombat",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Outdoor: May-Sep, Indoor: Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": true
   },
   {
     "species": "Stimson's Python",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Tawny Frogmouth",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Thorny Devil Stick Insect",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Threadfin Butterflyfish",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Victoria Crowned Pigeon",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "White's Tree Frog",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Demoiselle Crane",
     "exhibit": "Australasia Pavilion",
     "seasonal_viewing_summary": "Mar-Nov",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Western Grey Kangaroo",
     "exhibit": "Australasia Outdoor",
     "seasonal_viewing_summary": "Mar-Nov",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Amur Tiger",
     "exhibit": "Eurasia Wilds",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 8
+    "default_itinerary_duration_minutes": 8,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Asian Wild Horse",
     "exhibit": "Eurasia Wilds",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Bactrian Camel",
     "exhibit": "Eurasia Wilds",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Domestic Yak",
     "exhibit": "Eurasia Wilds",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Highland Cattle",
     "exhibit": "Eurasia Wilds",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Mouflon",
     "exhibit": "Eurasia Wilds",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Red Panda",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 6
+    "default_itinerary_duration_minutes": 6,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Snow Leopard",
     "exhibit": "Eurasia Wilds",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 8
+    "default_itinerary_duration_minutes": 8,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Steller's Sea Eagle",
     "exhibit": "Eurasia Wilds",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "West Caucasian Tur",
     "exhibit": "Eurasia Wilds",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Arctic Wolf",
     "exhibit": "Tundra Trek",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Caribou",
     "exhibit": "Tundra Trek",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Lesser Snow Goose",
     "exhibit": "Tundra Trek",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Northern Bald Eagle",
     "exhibit": "Tundra Trek",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Polar Bear",
     "exhibit": "Tundra Trek",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 10
+    "default_itinerary_duration_minutes": 10,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "American Flamingo",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
     "seasonal_viewing_summary": "May-Oct",
     "seasonal_viewing_information": "The American flamingos are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit          typically opens for the season sometime in late March or April, and closes sometime in November. For confirmation on whether          the exhibit is open, consult the Toronto Zoo's official website.",
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Black-Handed Spider Monkey",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
     "seasonal_viewing_summary": "May-Sep",
     "seasonal_viewing_information": "The black-handed spider monkeys are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit          typically opens for the season sometime in late March or April, and closes sometime in November. For confirmation on whether          the exhibit is open, consult the Toronto Zoo's official website.",
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Capybara",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
     "seasonal_viewing_summary": "May-Oct",
     "seasonal_viewing_information": "The capybara is part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit typically opens for          the season sometime in late March or April, and closes sometime in November. For confirmation on whether the exhibit is open,          consult the Toronto Zoo's official website.",
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Red-Legged Seriema",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
     "seasonal_viewing_summary": "May-Oct",
     "seasonal_viewing_information": "The red-legged seriemas are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit          typically opens for the season sometime in late March or April, and closes sometime in November. For confirmation on whether          the exhibit is open, consult the Toronto Zoo's official website.",
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Turkey Vulture",
     "exhibit": "Americas Outdoor Mayan Temple Ruins",
     "seasonal_viewing_summary": "May-Oct",
     "seasonal_viewing_information": "The turkey vultures are part of the Mayan Temple Ruins exhibit at the zoo, which is a seasonal exhibit. The exhibit          typically opens for the season sometime in late March or April, and closes sometime in November. For confirmation on whether          the exhibit is open, consult the Toronto Zoo's official website.",
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "American Alligator",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "American Eel",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "American Lobster",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Axolotl",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Bark Scorpion",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Black-Footed Ferret",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Black-Widow Spider",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Blanding's Turtle",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Blue And Yellow Macaw",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Boa Constrictor",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Blue Poison Dart Frog",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Brazilian Giant Cockroach",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Brazilian Salmon Pink Bird-Eating Tarantula",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Butterfly Goodeid",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Crested Tinamou",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Cuvier's Smooth-Fronted Caiman",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Desert Grassland Whiptail",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Dyeing Poison Dart Frog",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Eastern Loggerhead Shrike",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Eastern Lubber Grasshopper",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Eyelash Viper",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Ferocious Water Bug",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Golden Lion Tamarin",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Outdoor: May-Sep, Indoor: Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": true
   },
   {
     "species": "Great Horned Owl",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Green And Black Poison Dart Frog",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Green Surf Anemone",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Green-Winged Macaw",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Guatemalan Beaded Lizard",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Jamaican Boa",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Leather Sea Star",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Lemur Leaf Frog",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Longnose Dace",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Massasauga Rattlesnake",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Mexican Blind Cavefish",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Midland Painted Turtle",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "North American River Otter",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 7
+    "default_itinerary_duration_minutes": 7,
+    "always_include_indoor_viewing": true
   },
   {
     "species": "Opal-Rumped Tanager",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Painted Anemone",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Panamanian Golden Frog",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Plumose Anemone",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Plush-Crested Jay",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Puerto Rican Crested Toad",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Pumpkinseed Sunfish",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Red Island Bird-Eating Tarantula",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Red-Crested Finch",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Reticulate Gila Monster",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Round Goby",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Rufous-Collared Sparrow",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "San-Esteban Island Chuckwalla",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Snapping Turtle",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Spot Prawn",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Spotted River Stingray",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Spotted Turtle",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Timber Rattlesnake",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Turquoise Tanager",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Two-Toed Sloth",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Outdoor: May-Sep, Indoor:Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": true
   },
   {
     "species": "Western Blacknose Dace",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "White-Faced Saki",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Outdoor: May-Sep, Indoor: Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": true
   },
   {
     "species": "Yellow-Banded Poison Dart Frog",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Zebra Finch",
     "exhibit": "Americas Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Cougar",
     "exhibit": "Canadian Domain",
     "seasonal_viewing_summary": "Mar-Dec",
     "seasonal_viewing_information": "The cougars are part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom          of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March.          To check whether the domain is open, consult the Toronto Zoo's official website. Cougars thrive in all seasons, and if the          domain is open, then the cougar will be viewable.",
-    "default_itinerary_duration_minutes": 6
+    "default_itinerary_duration_minutes": 6,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Grizzly Bear",
     "exhibit": "Canadian Domain",
     "seasonal_viewing_summary": "Apr-Oct",
     "seasonal_viewing_information": "The grizzly bear is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the          bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in          March. To check whether the domain is open, consult the Toronto Zoo's official website. Keep in mind, that even if the domain          is open, the grizzly bear may be off display due to hibernation.",
-    "default_itinerary_duration_minutes": 10
+    "default_itinerary_duration_minutes": 10,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Northern Bald Eagle",
     "exhibit": "Canadian Domain",
     "seasonal_viewing_summary": "Mar-Dec",
     "seasonal_viewing_information": "The Northern bald eagle is part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at          the bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime          in March. To check whether the domain is open, consult the Toronto Zoo's official website. Bald eagles thrive in all seasons,          and if the domain is open, then the cougar will be viewable.",
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Raccoon",
     "exhibit": "Canadian Domain",
     "seasonal_viewing_summary": "Mar-Dec",
     "seasonal_viewing_information": "The raccoons are part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the bottom          of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in March.          To check whether the domain is open, consult the Toronto Zoo's official website. Raccoons thrive in all seasons, and if the          domain is open, then the cougar will be viewable.",
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Wood Bison",
     "exhibit": "Canadian Domain",
     "seasonal_viewing_summary": "Mar-Dec",
     "seasonal_viewing_information": "The wood bison are part of the Canadian Domain exhibit at the zoo, which is open seasonally. The domain is located at the          bottom of the Rouge Valley, and for the safety of guests, the domain closes from about the start of January until sometime in          March. To check whether the domain is open, consult the Toronto Zoo's official website. Cougars thrive in all seasons, and if           the domain is open, then the cougar will be viewable.",
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "African Lion",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 8
+    "default_itinerary_duration_minutes": 8,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "African Penguin",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Outdoor: Mar-Nov, Indoor: Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 7
+    "default_itinerary_duration_minutes": 7,
+    "always_include_indoor_viewing": true
   },
   {
     "species": "White-Breasted Cormorant",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Outdoor: Mar-Nov, Indoor: Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": true
   },
   {
     "species": "Cheetah",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Common Eland",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Mar-Nov",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Greater Kudu",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "May-Oct",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Jun-Sep",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Southern Ground Hornbill",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Jun-Sep",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "White-Headed Vulture",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Jun-Sep",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Ostrich",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Apr-Nov",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Grevy's Zebra",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Mar-Nov",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Masai Giraffe",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Outdoor: May-Oct, Indoor: Nov-Apr",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 10
+    "default_itinerary_duration_minutes": 10,
+    "always_include_indoor_viewing": false
   },
   {
     "species": "Olive Baboon",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "River Hippopotamus",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "May-Oct",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 10
+    "default_itinerary_duration_minutes": 10,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Southern White Rhinoceros",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "May-Oct",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 10
+    "default_itinerary_duration_minutes": 10,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Spotted Hyena",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Warthog",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Jun-Sep",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Watusi Cattle",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "African Clawed Frog",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Black Crake",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Blue-Bellied Roller",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Hamerkop",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Lake Malawi Cichlids",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Lau Banded Iguana",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Leopard Ctenopoma",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Mantella (Poison Frog)",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Naked Mole Rat",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Ngege",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Slender-Tailed Meerkat",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "South African Crested Porcupine",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Speckled Mousebird",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Spider Tortoise",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Tomato Frog",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Veiled Chameleon",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Violaceous Plantain Eater",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "West African Dwarf Crocodile",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Aldabra Tortoise",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Outdoor: Jun-Sep, Indoor: Oct-May",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": false
   },
   {
     "species": "Gaboon Viper",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Grey-Necked Crowned Crane",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Ring-Tailed Lemur",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Royal Python",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "African Spoonbill",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Nile Soft-Shelled Turtle",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Pygmy Hippopotamus",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Radiated Tortoise",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Sacred Ibis",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "South African Shelduck",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Straw Coloured Fruit Bat",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Red River Hog",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Apr-Nov",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Western Lowland Gorilla",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Outdoor: Apr-Oct, Indoor: Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 10
+    "default_itinerary_duration_minutes": 10,
+    "always_include_indoor_viewing": true
   },
   {
     "species": "Asian Brown Tortoise",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Bighead Carp",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Black Carp",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Black-Breasted Leaf Turtle",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Black-Throated Laughing Thrush",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Burmese Star Tortoise",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Cattle Egret",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Concave Casqued Hornbill",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Crested Wood Partridge",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Crocodile Lizard",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Crocodile Newt",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Edward's Pheasant",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Giant Gourami",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Grass Carp",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Green Crested Basilisk",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Hamilton's Pond Turtle",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Iridescent Shark Catfish",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Luzon Bleeding-Heart Dove",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Malayan Bonytongue",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Malaysian Painted Turtle",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Mekong Barb",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Monocled Cobra",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Nicobar Pigeon",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Palawan Peacock-Pheasant",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Red-Lined Torpedo Barb",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Reticulated Python",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Spiny Turtle",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Sumatran Orangutan",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Outdoor: Apr-Oct, Indoor: Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 10
+    "default_itinerary_duration_minutes": 10,
+    "always_include_indoor_viewing": true
   },
   {
     "species": "Tentacled Snake",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Tinfoil Barb",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Tomistoma",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Tri-Coloured Shark",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "White-Handed Gibbon",
     "exhibit": "Indo-Malaya Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Asian Brown Tortoise",
     "exhibit": "Indo-Malaya Outdoor",
     "seasonal_viewing_summary": "Outdoor: May-Oct",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Babirusa",
     "exhibit": "Indo-Malaya Outdoor",
     "seasonal_viewing_summary": "Outdoor: Apr-Nov, Indoor: Nov-Mar",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": false
   },
   {
     "species": "Greater One-Horned Rhinoceros",
     "exhibit": "Indo-Malaya Outdoor",
     "seasonal_viewing_summary": "Outdoor: May-Oct, Indoor: Nov-Apr",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 7
+    "default_itinerary_duration_minutes": 7,
+    "always_include_indoor_viewing": true
   },
   {
     "species": "Indian Peafowl",
     "exhibit": "Indo-Malaya Outdoor",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Cheetah",
     "exhibit": "Indo-Malaya Outdoor",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Asian Giant Millipede",
     "exhibit": "Malayan Woods Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Clouded Leopard",
     "exhibit": "Malayan Woods Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 5
+    "default_itinerary_duration_minutes": 5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Giant Gourami",
     "exhibit": "Malayan Woods Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Gooty Sapphire Ornamental Tarantula",
     "exhibit": "Malayan Woods Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Malayan Walking Stick",
     "exhibit": "Malayan Woods Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Malaysian Stick Insect Jungle Wood Nymph",
     "exhibit": "Malayan Woods Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 0.5
+    "default_itinerary_duration_minutes": 0.5,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Red-Tailed Green Ratsnake",
     "exhibit": "Malayan Woods Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Wrinkled Hornbill",
     "exhibit": "Malayan Woods Pavilion",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Domestic Goat",
     "exhibit": "Goat World",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": null,
-    "default_itinerary_duration_minutes": 3
+    "default_itinerary_duration_minutes": 3,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "African Spurred Tortoise",
     "exhibit": "Kids Zoo",
     "seasonal_viewing_summary": "Outdoor: May-Oct",
     "seasonal_viewing_information": "The African spurred tortoise is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through          October. To check whether the Kids Zoo is open, consult the Toronto Zoo's official website.",
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Common Raven",
     "exhibit": "Kids Zoo",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": "The common raven is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To          check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The raven is a very hardy species, and should          be viewable if the Kids Zoo is open.",
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Eurasian Eagle Owl",
     "exhibit": "Kids Zoo",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": "The Eurasian eagle owl is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.          To check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The Eurasian eagle owl is a very hardy          species, and should be viewable if the Kids Zoo is open.",
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Great Horned Owl",
     "exhibit": "Kids Zoo",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": "The great horned owl is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October.          To check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The great horned owl is a very hardy          species, and should be viewable if the Kids Zoo is open.",
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Guinea Pig",
     "exhibit": "Kids Zoo",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": "The guinea pig is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check          whether the Kids Zoo is open, consult the Toronto Zoo's official website.",
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Harris's Hawk",
     "exhibit": "Kids Zoo",
     "seasonal_viewing_summary": "Apr-Nov",
     "seasonal_viewing_information": "The Harris's hawk is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To          check whether the Kids Zoo is open, consult the Toronto Zoo's official website. The Harris's hawk is a somewhat hardy species,          and should be viewable if the Kids Zoo is open.",
-    "default_itinerary_duration_minutes": 1
+    "default_itinerary_duration_minutes": 1,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Marabou Stork",
     "exhibit": "Kids Zoo",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": "The marabou stork is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To          check whether the Kids Zoo is open, consult the Toronto Zoo's official website.",
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   },
   {
     "species": "Rabbit",
     "exhibit": "Kids Zoo",
     "seasonal_viewing_summary": "Year-round",
     "seasonal_viewing_information": "The rabbit is part of the Kids Zoo exhibit at the zoo, which is open seasonally, roughly from May through October. To check          whether the Kids Zoo is open, consult the Toronto Zoo's official website. The rabbit is a hardy species, and should be viewable          if the Kids Zoo is open.",
-    "default_itinerary_duration_minutes": 2
+    "default_itinerary_duration_minutes": 2,
+    "always_include_indoor_viewing": null
   }
 ]

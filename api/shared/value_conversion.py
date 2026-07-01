@@ -28,3 +28,11 @@ class ValueConversion:
          return value != 0
 
       return False
+
+
+   @staticmethod
+   def as_nullable_boolean( value: Any ) -> bool | None:
+      if value is None:
+         return None
+
+      return ValueConversion.as_boolean( value )

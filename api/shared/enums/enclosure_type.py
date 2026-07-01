@@ -28,6 +28,35 @@ class EnclosureType( str, Enum ):
 
 
    @classmethod
+   def normalized_enclosure_type(
+         cls,
+         value: Any ) -> str | None:
+      if value is None:
+         return None
+
+      normalized_value = ValueConversion.as_trimmed_string( value ).lower()
+
+      if not normalized_value:
+         return None
+
+      for enclosure_type in cls:
+         if normalized_value == enclosure_type.value.lower():
+            return normalized_value
+
+      return None
+
+
+   @classmethod
+   def is_indoor( cls, value: Any ) -> bool:
+      return cls.normalized_enclosure_type( value ) == cls.INDOOR.value.lower()
+
+
+   @classmethod
+   def is_outdoor( cls, value: Any ) -> bool:
+      return cls.normalized_enclosure_type( value ) == cls.OUTDOOR.value.lower()
+
+
+   @classmethod
    def normalize_viewing_spot_name(
          cls,
          value: Any ) -> str | None:
