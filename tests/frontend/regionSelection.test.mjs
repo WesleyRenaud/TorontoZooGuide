@@ -9,6 +9,7 @@ import {
    normalizeSelectedAnimal,
    omitRemovedAnimals,
    parseAnimalWireKey,
+   selectedExhibitsNeedAnimalRebuild,
    shouldHideDuplicateSingleExhibit,
 } from '../../scripts/itinerary/selectors/regionSelector/regionSelection.js';
 
@@ -111,5 +112,28 @@ test('shouldHideDuplicateSingleExhibit hides lone exhibit rows that mirror the r
          exhibits: ['Africa Savanna', 'Africa Rainforest'],
       }),
       false
+   );
+});
+
+test('selectedExhibitsNeedAnimalRebuild detects stale exhibit selection without animals', () => {
+   const selectedExhibits = new Set(['Africa Savanna']);
+
+   assert.equal(
+      selectedExhibitsNeedAnimalRebuild(selectedExhibits, []),
+      true
+   );
+   assert.equal(
+      selectedExhibitsNeedAnimalRebuild(
+         selectedExhibits,
+         [{ species: 'African Lion', exhibit: 'Africa Savanna' }]
+      ),
+      false
+   );
+   assert.equal(
+      selectedExhibitsNeedAnimalRebuild(
+         new Set(['Africa Savanna', 'Eurasia Wilds']),
+         [{ species: 'African Lion', exhibit: 'Africa Savanna' }]
+      ),
+      true
    );
 });

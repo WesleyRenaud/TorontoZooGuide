@@ -194,3 +194,30 @@ export function syncRegionSelection(region, selectedRegionNames, selectedExhibit
       selectedRegionNames.delete(regionName);
    }
 }
+
+export function selectedExhibitsNeedAnimalRebuild(
+   selectedExhibitNames,
+   storedAnimals = []
+) {
+   if (!selectedExhibitNames?.size) {
+      return false;
+   }
+
+   const animals = storedAnimals
+      .map(normalizeSelectedAnimal)
+      .filter(Boolean);
+
+   if (!animals.length) {
+      return true;
+   }
+
+   const storedExhibits = new Set(getExhibitNamesFromAnimals(animals));
+
+   for (const exhibitName of selectedExhibitNames) {
+      if (!storedExhibits.has(exhibitName)) {
+         return true;
+      }
+   }
+
+   return false;
+}

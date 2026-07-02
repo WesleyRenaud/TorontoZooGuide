@@ -1,11 +1,14 @@
 import { getExhibitsByRegion } from '../../api/itinerarySelectorApi.js';
+import { loadArray } from '../draftStorage.js';
 import { getItineraryDateSearchContext } from '../itinerarySearchContext.js';
+import { selectedExhibitsNeedAnimalRebuild } from './regionSelector/regionSelection.js';
 import { buildRegionSelectorShell } from './regionSelector/shell.js';
 import { createRegionSelectorState } from './regionSelector/state.js';
 import {
    bindRegionSelectionEvents,
    renderRegionSelectionView,
 } from './regionSelector/view.js';
+import { ANIMALS_KEY } from '../storageKeys.js';
 
 export function shouldSkipRegionSelectionSync({
    fingerprintAtShow = '',
@@ -187,6 +190,13 @@ export function createItineraryRegionSelectorController({
 
    function shouldSkipClosingSelectionSync() {
       if (selectionChangedSinceShow) {
+         return false;
+      }
+
+      if (selectedExhibitsNeedAnimalRebuild(
+         state.getSelectedExhibitNamesSet(),
+         loadArray(ANIMALS_KEY)
+      )) {
          return false;
       }
 

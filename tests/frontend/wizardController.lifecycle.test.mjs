@@ -3,6 +3,7 @@ import { test } from 'node:test';
 
 import { openItineraryWizard } from '../../scripts/itinerary/wizard/wizardController.js';
 import { createItineraryWizardState } from '../../scripts/itinerary/wizard/state.js';
+import { SELECTED_EXHIBITS_KEY } from '../../scripts/itinerary/storageKeys.js';
 import { APP_STRINGS } from '../../scripts/strings.js';
 import { createDomNode } from './helpers/domNodeMock.mjs';
 import { installDomTestHooks } from './helpers/domTestSetup.mjs';
@@ -117,6 +118,37 @@ test.describe('openItineraryWizard lifecycle', () => {
       });
 
       assert.equal(syncedItineraries.length, 1);
+   });
+
+   test('clears stale region selection storage when opening without an active itinerary', async () => {
+      const mountEl = createDomNode('div', 'wizard-mount');
+
+      localStorage.setItem(
+         SELECTED_EXHIBITS_KEY,
+         JSON.stringify(['Africa Savanna'])
+      );
+
+      await openItineraryWizard({
+         mountEl,
+         deps: {
+            loadItinerary: async () => ({
+               date: '',
+               animals: [],
+               attractions: [],
+               guardiansTalks: [],
+               wildEncounters: [],
+               isActive: false,
+            }),
+            resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+            createWizardState: () => createItineraryWizardState({}),
+            createDateStepController: () => ({ show() {} }),
+            selectionStepConfigs: [],
+            finalizeWizard: async () => {},
+            syncAnimalDraft: () => {},
+         },
+      });
+
+      assert.equal(localStorage.getItem(SELECTED_EXHIBITS_KEY), null);
    });
 
    test('prompts to save when closing with unsaved changes', async () => {

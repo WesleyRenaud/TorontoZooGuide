@@ -161,6 +161,12 @@ export function clearItineraryDraftStorage({ includeSelections = true } = {}) {
    });
 }
 
+export function clearItinerarySelectionStorage() {
+   ITINERARY_SELECTION_KEYS.forEach((key) => {
+      localStorage.removeItem(key);
+   });
+}
+
 function writeItineraryAnimalDraft(animals = []) {
    const draftAnimals = animals
       .map(makeSelectedAnimal)
