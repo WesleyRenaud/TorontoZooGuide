@@ -69,6 +69,7 @@ test('buildItineraryPanelScheduleHandlers opens the module for a picked row', ()
 test('buildItineraryPanelScheduleHandlers unschedules items and refreshes the panel', async () => {
    const unscheduled = [];
    let refreshed = false;
+   let notified = false;
    const handlers = buildItineraryPanelScheduleHandlers(
       {},
       {
@@ -78,6 +79,11 @@ test('buildItineraryPanelScheduleHandlers unschedules items and refreshes the pa
          deps: {
             unscheduleItem: async (payload) => {
                unscheduled.push(payload);
+               return { errorType: 'success' };
+            },
+            notifyUpdated: async () => {
+               notified = true;
+               return true;
             },
          },
       }
@@ -92,6 +98,7 @@ test('buildItineraryPanelScheduleHandlers unschedules items and refreshes the pa
       itemType: ScheduleItemKind.ANIMAL.itemType,
       key: 'Tiger||Savanna',
    }]);
+   assert.equal(notified, true);
    assert.equal(refreshed, true);
 });
 
@@ -99,6 +106,7 @@ test('buildItineraryPanelScheduleHandlers confirms before removing configured ev
    const removed = [];
    const confirmations = [];
    let refreshed = false;
+   let notified = false;
    const handlers = buildItineraryPanelScheduleHandlers(
       { itineraryConfig: ITINERARY_CONFIG },
       {
@@ -108,11 +116,16 @@ test('buildItineraryPanelScheduleHandlers confirms before removing configured ev
          deps: {
             removeItem: async (payload) => {
                removed.push(payload);
+               return { errorType: 'success' };
             },
             removeAnimalDraft: () => {},
             requiresRemoveConfirmation: () => true,
             showRemoveConfirmation: ({ onConfirm }) => {
                confirmations.push(onConfirm);
+            },
+            notifyUpdated: async () => {
+               notified = true;
+               return true;
             },
          },
       }
@@ -129,20 +142,27 @@ test('buildItineraryPanelScheduleHandlers confirms before removing configured ev
    await confirmations[0]();
 
    assert.deepEqual(removed, [{ itemType: 'lunch', key: '' }]);
+   assert.equal(notified, true);
    assert.equal(refreshed, true);
 });
 
 test('buildItineraryPanelScheduleHandlers removes animals without confirmation', async () => {
    const removed = [];
+   let notified = false;
    const handlers = buildItineraryPanelScheduleHandlers(
       { itineraryConfig: ITINERARY_CONFIG },
       {
          deps: {
             removeItem: async (payload) => {
                removed.push(payload);
+               return { errorType: 'success' };
             },
             removeAnimalDraft: () => {},
             requiresRemoveConfirmation: () => false,
+            notifyUpdated: async () => {
+               notified = true;
+               return true;
+            },
          },
       }
    );
@@ -160,4 +180,5 @@ test('buildItineraryPanelScheduleHandlers removes animals without confirmation',
       itemType: ScheduleItemKind.ANIMAL.itemType,
       key: 'Tiger||Savanna',
    }]);
+   assert.equal(notified, true);
 });
