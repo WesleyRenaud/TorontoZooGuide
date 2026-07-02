@@ -1464,7 +1464,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The giraffes can most likely be seen inside on this day due to cold weather.",
     "x_coord": 39.885,
-    "y_coord": 70.927
+    "y_coord": 70.927,
+    "walk_node_id": "v-0303"
   },
   {
     "species": "Masai Giraffe",
