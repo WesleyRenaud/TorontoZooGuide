@@ -197,7 +197,11 @@ test('region selector routes close and prev actions', async () => {
    assert.deepEqual(prevCalls, ['prev']);
 });
 
-test('region selector finish skips rebuild when selection is unchanged', async () => {
+test('region selector finish skips rebuild when stored animals match selected exhibits', async () => {
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([{ species: 'African Lion', exhibit: 'Africa Savanna' }])
+   );
    localStorage.setItem(
       SELECTED_EXHIBITS_KEY,
       JSON.stringify(['Africa Savanna'])
@@ -216,10 +220,47 @@ test('region selector finish skips rebuild when selection is unchanged', async (
    });
 
    await controller.show();
+   assert.equal(controller.shouldSkipClosingSelectionSync(), true);
+
    mountEl.querySelector('.itin-finish')?.click();
    await flushAsyncWork();
 
    assert.deepEqual(finishCalls, [null]);
+});
+
+test('region selector finish rebuilds animals when exhibits are selected without stored animals', async () => {
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   mockRegionSelectorFetch({
+      animals: [
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+      ],
+   });
+
+   const mountEl = createDomNode('div');
+   const finishCalls = [];
+
+   const controller = createItineraryRegionSelectorController({
+      mountEl,
+      onFinish: (animals) => {
+         finishCalls.push(animals);
+      },
+   });
+
+   await controller.show();
+   assert.equal(controller.shouldSkipClosingSelectionSync(), false);
+
+   mountEl.querySelector('.itin-finish')?.click();
+   await flushAsyncWork();
+
+   assert.equal(finishCalls.length, 1);
+   assert.deepEqual(
+      finishCalls[0].map((animal) => animal.species),
+      ['African Lion']
+   );
 });
 
 test('region selector toggles regions and ignores empty regions', async () => {
