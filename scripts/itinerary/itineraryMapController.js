@@ -2,6 +2,7 @@ import {
    getItinerary,
    isItineraryEmpty,
 } from './itineraryService.js';
+import { clearItineraryPathOverlay } from '../map/itineraryPathOverlay.js';
 import { createMapRuntime } from '../map/mapRuntime.js';
 
 const ITINERARY_MAP_FILTERS = Object.freeze({
@@ -46,8 +47,9 @@ function createItineraryMapRuntime() {
    });
 }
 
-function clearItineraryMarkers(runtime) {
+export function clearItineraryMapDisplay(runtime) {
    runtime?.markers?.render([]);
+   clearItineraryPathOverlay();
 }
 
 function getItineraryMapDate(itinerary) {
@@ -59,7 +61,7 @@ async function refreshItineraryMap(runtime) {
       const itinerary = await getItinerary();
 
       if (!itinerary || isItineraryEmpty(itinerary)) {
-         clearItineraryMarkers(runtime);
+         clearItineraryMapDisplay(runtime);
          return;
       }
 
@@ -71,7 +73,7 @@ async function refreshItineraryMap(runtime) {
    }
    catch (err) {
       console.error('Failed to load itinerary:', err);
-      clearItineraryMarkers(runtime);
+      clearItineraryMapDisplay(runtime);
    }
 }
 
