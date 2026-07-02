@@ -4,9 +4,27 @@ import {
 } from '../../api/itineraryApi.js';
 import { showScheduleItemModule } from './components/showScheduleItemModule.js';
 import { removeAnimalFromItineraryAnimalDraft } from '../draftStorage.js';
+import { isItinerarySuccess } from '../itineraryErrorTypes.js';
 import { requiresRemoveItineraryItemConfirmation } from '../itineraryEventTypes.js';
+import {
+   dispatchItineraryUpdated,
+   getItinerary,
+} from '../itineraryService.js';
 import { showRemoveItineraryItemConfirmation } from './removeItineraryItemConfirmation.js';
 import { buildSchedulableEventTypes } from './scheduleItemTypes.js';
+
+async function notifyItineraryUpdated({
+   result,
+   dispatchUpdated = dispatchItineraryUpdated,
+   loadItinerary = getItinerary,
+} = {}) {
+   if (!isItinerarySuccess(result?.errorType)) {
+      return false;
+   }
+
+   dispatchUpdated(await loadItinerary());
+   return true;
+}
 
 export function openScheduleItemModule(
    {
@@ -42,6 +60,7 @@ export function buildItineraryPanelScheduleHandlers(
       requiresRemoveConfirmation = requiresRemoveItineraryItemConfirmation,
       showRemoveConfirmation = showRemoveItineraryItemConfirmation,
       buildEventTypes = buildSchedulableEventTypes,
+      notifyUpdated = notifyItineraryUpdated,
    } = deps;
 
    return {
@@ -54,7 +73,8 @@ export function buildItineraryPanelScheduleHandlers(
          }, deps);
       },
       onUnscheduleItineraryItem: async ({ itemType, key }) => {
-         await unscheduleItem({ itemType, key });
+         const result = await unscheduleItem({ itemType, key });
+         await notifyUpdated({ result });
 
          if (typeof onPanelRefresh === 'function') {
             await onPanelRefresh();
@@ -62,8 +82,9 @@ export function buildItineraryPanelScheduleHandlers(
       },
       onRemoveItineraryItem: ({ itemType, key }) => {
          const performRemove = async () => {
-            await removeItem({ itemType, key });
+            const result = await removeItem({ itemType, key });
             removeAnimalDraft(itemType, key);
+            await notifyUpdated({ result });
 
             if (typeof onPanelRefresh === 'function') {
                await onPanelRefresh();
