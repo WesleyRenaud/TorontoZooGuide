@@ -1,0 +1,221 @@
+from __future__ import annotations
+
+from ..bulk.bulk_schedule_animals import has_itinerary_schedule_times
+from ..core.time_block import time_block_from_schedule_times
+from ..core.time_block import time_block_from_seconds
+from ..core.time_block import TimeBlock
+from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
+from ...data_access.itinerary import fetch_itinerary_animal_rows
+from ...data_access.itinerary import fetch_itinerary_attraction_rows
+from ...data_access.itinerary import fetch_itinerary_event_rows
+from ...data_access.saved_itinerary import SavedItinerary
+from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
+from ...data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
+from ...data_access.schedule_itinerary_item import update_itinerary_event_schedule
+from ..items.schedule_item_key import ScheduleItemKey
+from ....shared.calendar_dates import DateValues
+from ....shared.enums import ItineraryEventType
+from ....types import Connection
+from ....types import Cursor
+from ....types import ScheduleTimeKey
+
+
+def shifted_schedule_times(
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey,
+      delta_seconds: int ) -> tuple[ ScheduleTimeKey, ScheduleTimeKey ] | None:
+   block = time_block_from_schedule_times( start_time, end_time )
+
+   if block is None:
+      return None
+
+   shifted_block = time_block_from_seconds(
+      block.start_seconds + delta_seconds,
+      block.end_seconds + delta_seconds )
+
+   if shifted_block is None:
+      return None
+
+   return (
+      DateValues.schedule_time_key_from_seconds( shifted_block.start_seconds ),
+      DateValues.schedule_time_key_from_seconds( shifted_block.end_seconds ),
+   )
+
+
+def resolve_unscheduled_item_time_block(
+      saved_itinerary: SavedItinerary,
+      schedule_item_key: ScheduleItemKey,
+      ) -> TimeBlock | None:
+   row = find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      schedule_item_key )
+
+   if row is None:
+      return None
+
+   return time_block_from_schedule_times(
+      row.start_time,
+      row.end_time )
+
+
+def _shift_guest_scheduled_animal_rows(
+      conn: Connection,
+      cur: Cursor,
+      *,
+      anchor_end_time: ScheduleTimeKey,
+      delta_seconds: int ) -> None:
+   for animal_row in fetch_itinerary_animal_rows( conn ):
+      if not has_itinerary_schedule_times(
+            animal_row.start_time,
+            animal_row.end_time ):
+         continue
+
+      if not DateValues.time_value_is_at_or_after(
+            animal_row.start_time,
+            anchor_end_time ):
+         continue
+
+      shifted_times = shifted_schedule_times(
+         animal_row.start_time,
+         animal_row.end_time,
+         delta_seconds )
+
+      if shifted_times is None:
+         continue
+
+      update_itinerary_animal_schedule(
+         cur,
+         species=animal_row.species,
+         exhibit=animal_row.exhibit,
+         enclosure_name=animal_row.enclosure_name,
+         start_time=shifted_times[ 0 ],
+         end_time=shifted_times[ 1 ],
+      )
+
+
+def _shift_guest_scheduled_attraction_rows(
+      conn: Connection,
+      cur: Cursor,
+      *,
+      anchor_end_time: ScheduleTimeKey,
+      delta_seconds: int ) -> None:
+   for attraction_row in fetch_itinerary_attraction_rows( conn ):
+      if not has_itinerary_schedule_times(
+            attraction_row.start_time,
+            attraction_row.end_time ):
+         continue
+
+      if not DateValues.time_value_is_at_or_after(
+            attraction_row.start_time,
+            anchor_end_time ):
+         continue
+
+      shifted_times = shifted_schedule_times(
+         attraction_row.start_time,
+         attraction_row.end_time,
+         delta_seconds )
+
+      if shifted_times is None:
+         continue
+
+      update_itinerary_attraction_schedule(
+         cur,
+         name=attraction_row.attraction,
+         start_time=shifted_times[ 0 ],
+         end_time=shifted_times[ 1 ],
+      )
+
+
+def _should_shift_guest_scheduled_event(
+      event_type: ItineraryEventType ) -> bool:
+   return event_type not in (
+      ItineraryEventType.ARRIVAL,
+      ItineraryEventType.DEPARTURE,
+   )
+
+
+def _shift_guest_scheduled_event_rows(
+      conn: Connection,
+      cur: Cursor,
+      *,
+      anchor_end_time: ScheduleTimeKey,
+      delta_seconds: int ) -> None:
+   for event_row in fetch_itinerary_event_rows( conn ):
+      if not _should_shift_guest_scheduled_event( event_row.event_type ):
+         continue
+
+      if not has_itinerary_schedule_times(
+            event_row.start_time,
+            event_row.end_time ):
+         continue
+
+      if not DateValues.time_value_is_at_or_after(
+            event_row.start_time,
+            anchor_end_time ):
+         continue
+
+      shifted_times = shifted_schedule_times(
+         event_row.start_time,
+         event_row.end_time,
+         delta_seconds )
+
+      if shifted_times is None:
+         continue
+
+      update_itinerary_event_schedule(
+         cur,
+         event_type=event_row.event_type,
+         start_time=shifted_times[ 0 ],
+         end_time=shifted_times[ 1 ],
+      )
+
+
+def shift_guest_scheduled_items_after_unschedule(
+      conn: Connection,
+      cur: Cursor,
+      *,
+      anchor_end_seconds: int,
+      shift_seconds: int ) -> None:
+   if shift_seconds == 0:
+      return
+
+   anchor_end_time = DateValues.schedule_time_key_from_seconds( anchor_end_seconds )
+
+   _shift_guest_scheduled_animal_rows(
+      conn,
+      cur,
+      anchor_end_time=anchor_end_time,
+      delta_seconds=shift_seconds )
+   _shift_guest_scheduled_attraction_rows(
+      conn,
+      cur,
+      anchor_end_time=anchor_end_time,
+      delta_seconds=shift_seconds )
+   _shift_guest_scheduled_event_rows(
+      conn,
+      cur,
+      anchor_end_time=anchor_end_time,
+      delta_seconds=shift_seconds )
+
+
+def apply_guest_schedule_shift_for_unschedule(
+      conn: Connection,
+      cur: Cursor,
+      *,
+      saved_itinerary: SavedItinerary,
+      schedule_item_key: ScheduleItemKey,
+      ) -> None:
+   removed_block = resolve_unscheduled_item_time_block(
+      saved_itinerary,
+      schedule_item_key )
+
+   if removed_block is None:
+      return
+
+   shift_seconds = removed_block.start_seconds - removed_block.end_seconds
+
+   shift_guest_scheduled_items_after_unschedule(
+      conn,
+      cur,
+      anchor_end_seconds=removed_block.end_seconds,
+      shift_seconds=shift_seconds )

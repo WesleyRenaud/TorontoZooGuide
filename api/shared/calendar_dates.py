@@ -125,6 +125,19 @@ class DateValues:
 
 
    @staticmethod
+   def time_value_is_at_or_after(
+         left: TimeInput,
+         right: TimeInput ) -> bool:
+      left_seconds = DateValues.time_value_in_seconds( left )
+      right_seconds = DateValues.time_value_in_seconds( right )
+
+      return (
+         left_seconds is not None
+         and right_seconds is not None
+         and left_seconds >= right_seconds )
+
+
+   @staticmethod
    def time_value_in_minutes( value: TimeInput ) -> int | None:
       parsed_time = DateValues.parse_time_value( value )
 

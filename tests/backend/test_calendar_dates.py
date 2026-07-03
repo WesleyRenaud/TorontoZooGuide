@@ -435,6 +435,14 @@ def test_time_value_in_seconds(
    assert DateValues.time_value_in_seconds( value ) == expected
 
 
+def test_time_value_is_at_or_after() -> None:
+   assert DateValues.time_value_is_at_or_after( '10:30 AM', '10:30 AM' )
+   assert DateValues.time_value_is_at_or_after( '10:30 AM', '10:15 AM' )
+   assert not DateValues.time_value_is_at_or_after( '10:15 AM', '10:30 AM' )
+   assert not DateValues.time_value_is_at_or_after( None, '10:30 AM' )
+   assert not DateValues.time_value_is_at_or_after( '10:30 AM', None )
+
+
 @pytest.mark.parametrize(
    'total_seconds, expected',
    [
