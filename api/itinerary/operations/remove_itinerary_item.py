@@ -2,16 +2,15 @@ from __future__ import annotations
 
 from ..animal_item_key import AnimalScheduleItemKey
 from ..attraction_item_key import AttractionScheduleItemKey
+from .commit_itinerary_item_schedule_change import commit_itinerary_item_schedule_change
 from ..data_access.remove_itinerary_item import delete_itinerary_animal
 from ..data_access.remove_itinerary_item import delete_itinerary_attraction
 from ..data_access.remove_itinerary_item import delete_itinerary_event
 from ..data_access.remove_itinerary_item import delete_itinerary_guardians_talk
 from ..data_access.remove_itinerary_item import delete_itinerary_wild_encounter
 from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
-from ...models import Itinerary
 from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
-from ...shared.enums import ItineraryErrorType
 from ...shared.enums import ItineraryEventType
 from ...types import Connection
 from ...types import Cursor
@@ -54,17 +53,7 @@ def _apply_remove(
 def remove_itinerary_item(
       conn: Connection,
       schedule_item_key: ScheduleItemKey | None ) -> ItinerarySaveResult:
-   cur = conn.cursor()
-
-   try:
-      if schedule_item_key is not None:
-         _apply_remove( cur, schedule_item_key )
-
-      conn.commit()
-
-   finally:
-      cur.close()
-
-   return ItinerarySaveResult(
-      itinerary=Itinerary( date='' ),
-      status=ItineraryErrorType.SUCCESS )
+   return commit_itinerary_item_schedule_change(
+      conn,
+      schedule_item_key,
+      _apply_remove )

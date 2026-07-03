@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ...models.itinerary_event import ItineraryEvent
 from ...shared.calendar_dates import DateValues
+from ...shared.enums import ItineraryEventType
 from ...types import Cursor, ScheduleTimeKey
 
 
@@ -113,6 +114,28 @@ def update_itinerary_attraction_schedule(
             DateValues.normalize_itinerary_schedule_time( start_time ),
             DateValues.normalize_itinerary_schedule_time( end_time ),
             name,
+         ),
+   )
+
+   return cur.rowcount > 0
+
+
+def update_itinerary_event_schedule(
+      cur: Cursor,
+      *,
+      event_type: ItineraryEventType,
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey ) -> bool:
+   cur.execute(
+      """   UPDATE ItineraryEvent
+            SET START_TIME = ?,
+                END_TIME = ?
+            WHERE EVENT_TYPE = ?;
+         """,
+         (
+            DateValues.normalize_itinerary_schedule_time( start_time ),
+            DateValues.normalize_itinerary_schedule_time( end_time ),
+            event_type.value,
          ),
    )
 

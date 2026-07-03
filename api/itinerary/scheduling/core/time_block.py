@@ -13,6 +13,17 @@ class TimeBlock:
    end_seconds: int
 
 
+def time_block_from_seconds(
+      start_seconds: int,
+      end_seconds: int ) -> TimeBlock | None:
+   if start_seconds < 0 or end_seconds <= start_seconds:
+      return None
+
+   return TimeBlock(
+      start_seconds=start_seconds,
+      end_seconds=end_seconds )
+
+
 def time_block_from_schedule_times(
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey ) -> TimeBlock | None:
@@ -22,12 +33,7 @@ def time_block_from_schedule_times(
    if start_seconds is None or end_seconds is None:
       return None
 
-   if end_seconds <= start_seconds:
-      return None
-
-   return TimeBlock(
-      start_seconds=start_seconds,
-      end_seconds=end_seconds )
+   return time_block_from_seconds( start_seconds, end_seconds )
 
 
 def time_blocks_overlap(

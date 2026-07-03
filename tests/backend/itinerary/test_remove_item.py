@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import remove_itinerary_item, schedule_itinerary_item, wild_encounter_key, wild_encounter_wire
+from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, remove_itinerary_item, schedule_itinerary_item, wild_encounter_key, wild_encounter_wire
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -113,3 +113,56 @@ def test_remove_itinerary_event_deletes_row( db: DbControllers ) -> None:
    saved = fetch_saved_itinerary( db.conn )
 
    assert len( saved.event_rows ) == 0
+
+
+def test_remove_middle_animal_shifts_later_items_by_removed_duration(
+      db: DbControllers ) -> None:
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[
+         LION_ITINERARY_ENTRY,
+         CHEETAH_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert schedule_itinerary_item(
+      'animals',
+      LION_KEY,
+      start_time='10:00 AM',
+      duration_minutes=15,
+   ).success
+   assert schedule_itinerary_item(
+      'animals',
+      CHEETAH_KEY,
+      start_time='10:15 AM',
+      duration_minutes=15,
+   ).success
+   assert schedule_itinerary_item(
+      'animals',
+      PENGUIN_KEY,
+      start_time='10:45 AM',
+      duration_minutes=15,
+   ).success
+
+   assert remove_itinerary_item( 'animals', CHEETAH_KEY ).success
+
+   saved = fetch_saved_itinerary( db.conn )
+   animals_by_key = {
+      ( row.species, row.exhibit, row.enclosure_name ): row
+      for row in saved.animal_rows
+   }
+
+   lion = animals_by_key[ ( 'African Lion', 'Africa Savanna', None ) ]
+   penguin = animals_by_key[ ( 'African Penguin', 'Africa Savanna', 'Outdoor' ) ]
+
+   assert lion.start_time == '10:00 AM'
+   assert lion.end_time == '10:15 AM'
+   assert ( 'Cheetah', 'Africa Savanna', None ) not in animals_by_key
+   assert penguin.start_time == '10:30 AM'
+   assert penguin.end_time == '10:45 AM'

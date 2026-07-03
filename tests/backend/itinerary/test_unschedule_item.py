@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import schedule_itinerary_item, unschedule_itinerary_item
+from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, schedule_itinerary_item, unschedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
@@ -97,6 +97,107 @@ def test_unschedule_itinerary_event_deletes_row( db: DbControllers ) -> None:
    saved = fetch_saved_itinerary( db.conn )
 
    assert len( saved.event_rows ) == 0
+
+
+def test_unschedule_middle_animal_shifts_later_items_by_removed_duration(
+      db: DbControllers ) -> None:
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[
+         LION_ITINERARY_ENTRY,
+         CHEETAH_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert schedule_itinerary_item(
+      'animals',
+      LION_KEY,
+      start_time='10:00 AM',
+      duration_minutes=15,
+   ).success
+   assert schedule_itinerary_item(
+      'animals',
+      CHEETAH_KEY,
+      start_time='10:15 AM',
+      duration_minutes=15,
+   ).success
+   assert schedule_itinerary_item(
+      'animals',
+      PENGUIN_KEY,
+      start_time='10:45 AM',
+      duration_minutes=15,
+   ).success
+
+   assert unschedule_itinerary_item( 'animals', CHEETAH_KEY ).success
+
+   saved = fetch_saved_itinerary( db.conn )
+   animals_by_key = {
+      ( row.species, row.exhibit, row.enclosure_name ): row
+      for row in saved.animal_rows
+   }
+
+   lion = animals_by_key[ ( 'African Lion', 'Africa Savanna', None ) ]
+   cheetah = animals_by_key[ ( 'Cheetah', 'Africa Savanna', None ) ]
+   penguin = animals_by_key[ ( 'African Penguin', 'Africa Savanna', 'Outdoor' ) ]
+
+   assert lion.start_time == '10:00 AM'
+   assert lion.end_time == '10:15 AM'
+   assert cheetah.start_time is None
+   assert cheetah.end_time is None
+   assert penguin.start_time == '10:30 AM'
+   assert penguin.end_time == '10:45 AM'
+
+
+def test_unschedule_middle_animal_preserves_deliberate_gap_after_shift(
+      db: DbControllers ) -> None:
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[
+         LION_ITINERARY_ENTRY,
+         CHEETAH_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert schedule_itinerary_item(
+      'animals',
+      LION_KEY,
+      start_time='10:00 AM',
+      duration_minutes=15,
+   ).success
+   assert schedule_itinerary_item(
+      'animals',
+      CHEETAH_KEY,
+      start_time='10:15 AM',
+      duration_minutes=15,
+   ).success
+   assert schedule_itinerary_item(
+      'animals',
+      PENGUIN_KEY,
+      start_time='10:50 AM',
+      duration_minutes=15,
+   ).success
+
+   assert unschedule_itinerary_item( 'animals', CHEETAH_KEY ).success
+
+   saved = fetch_saved_itinerary( db.conn )
+   penguin = next(
+      row for row in saved.animal_rows
+      if row.species == 'African Penguin' )
+
+   assert penguin.start_time == '10:35 AM'
+   assert penguin.end_time == '10:50 AM'
 
 
 def test_set_arrival_time_none_clears_arrival_time( db: DbControllers ) -> None:
