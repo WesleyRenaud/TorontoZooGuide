@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import ANIMAL_KEY, schedule_itinerary_item, wild_encounter_key
+from itinerary.support import CAROUSEL
 from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY
 from itinerary.support import LION_ITINERARY_ENTRY
 from itinerary.support import LION_KEY
@@ -141,6 +142,87 @@ def test_build_itinerary_walk_route_builds_polyline_for_scheduled_animal(
    assert all(
       point.x_px > 0 and point.y_px > 0
       for point in walk_route.points )
+
+
+def test_build_itinerary_walk_route_ends_at_last_stop_with_unscheduled_attraction(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[ CAROUSEL ],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+   assert schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='10:00',
+   ).success
+
+   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+
+   assert walk_route.stops[ -1 ].item_key == LION_KEY
+   assert walk_route.legs[ -1 ].to_item_key == LION_KEY
+
+
+def test_bulk_schedule_partial_itinerary_ends_at_last_scheduled_stop(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:30',
+      departure_time='09:35',
+      confirming_short_visit=True,
+      animals=[
+         LION_ITINERARY_ENTRY,
+         CHEETAH_INDO_MALAYA_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   walk_route = build_itinerary_walk_route( result.itinerary )
+
+   assert walk_route.stops[ -1 ].item_key != ENTRANCE_ITEM_KEY
+   assert walk_route.legs[ -1 ].to_item_key != ENTRANCE_ITEM_KEY
+
+
+def test_build_itinerary_walk_route_ends_at_last_stop_when_some_items_remain_unscheduled(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[
+         CHEETAH_INDO_MALAYA_ITINERARY_ENTRY,
+         LION_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+   assert schedule_itinerary_item(
+      item_type='animals',
+      key=LION_KEY,
+      start_time='10:00',
+   ).success
+
+   walk_route = build_itinerary_walk_route( ItineraryCoordinator.get_itinerary() )
+
+   assert walk_route.stops[ -1 ].item_key == LION_KEY
+   assert walk_route.legs[ -1 ].to_item_key == LION_KEY
 
 
 def test_build_itinerary_walk_route_returns_to_entrance(
