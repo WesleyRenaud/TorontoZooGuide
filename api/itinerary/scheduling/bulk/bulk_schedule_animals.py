@@ -18,7 +18,7 @@ from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from ..items.schedule_itinerary_helpers import build_itinerary_context
 from ..items.schedule_itinerary_helpers import build_save_result
 from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
-from ..items.schedule_itinerary_helpers import resolve_schedule_window
+from ..items.schedule_itinerary_helpers import prepare_schedule_window
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ....shared.calendar_dates import DateValues
@@ -64,13 +64,16 @@ def bulk_schedule_animals(
       visit_date_temp=visit_date_temp )
 
    saved_itinerary = fetch_saved_itinerary( conn )
-   window = resolve_schedule_window(
+   schedule_window = prepare_schedule_window(
       conn,
       saved_itinerary,
+      ensure_arrival_at_zoo_open=True,
       **itinerary_context )
 
-   if isinstance( window, ItinerarySaveResult ):
-      return window
+   if isinstance( schedule_window, ItinerarySaveResult ):
+      return schedule_window
+
+   saved_itinerary, window = schedule_window
 
    if not animals_to_schedule:
       return build_save_result(

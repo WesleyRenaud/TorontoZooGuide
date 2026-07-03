@@ -10,6 +10,7 @@ from ..core.scheduling_anchor import scheduling_day_end_seconds
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.itinerary import fetch_itinerary_date
 from ...data_access.itinerary import fetch_saved_itinerary
+from ...data_access.itinerary_time import set_itinerary_arrival_time
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -21,6 +22,7 @@ from ....types import Connection
 from ....types import ScheduleTimeKey
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
+from ....zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
 def build_itinerary_context(
@@ -79,6 +81,24 @@ def resolve_schedule_window(
       conn: Connection,
       saved_itinerary: SavedItinerary,
       **itinerary_context: Any ) -> tuple[ int, int ] | ItinerarySaveResult:
+   result = prepare_schedule_window(
+      conn,
+      saved_itinerary,
+      **itinerary_context )
+
+   if isinstance( result, ItinerarySaveResult ):
+      return result
+
+   _, window = result
+   return window
+
+
+def prepare_schedule_window(
+      conn: Connection,
+      saved_itinerary: SavedItinerary,
+      *,
+      ensure_arrival_at_zoo_open: bool = False,
+      **itinerary_context: Any ) -> tuple[ SavedItinerary, tuple[ int, int ] ] | ItinerarySaveResult:
    visit_date = fetch_itinerary_date( conn )
 
    if visit_date is None:
@@ -88,6 +108,12 @@ def resolve_schedule_window(
          **itinerary_context )
 
    zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
+
+   if ensure_arrival_at_zoo_open:
+      saved_itinerary = _ensure_arrival_at_zoo_open(
+         conn,
+         saved_itinerary,
+         zoo_hours_record )
 
    anchor_seconds = scheduling_anchor_seconds(
       zoo_hours_record,
@@ -102,7 +128,24 @@ def resolve_schedule_window(
          ItineraryErrorType.SAVE_FAILED,
          **itinerary_context )
 
-   return ( anchor_seconds, day_end_seconds )
+   return saved_itinerary, ( anchor_seconds, day_end_seconds )
+
+
+def _ensure_arrival_at_zoo_open(
+      conn: Connection,
+      saved_itinerary: SavedItinerary,
+      zoo_hours_record: ZooHoursRecord | None ) -> SavedItinerary:
+   if saved_itinerary.arrival_time is not None:
+      return saved_itinerary
+
+   if (
+         zoo_hours_record is not None
+         and zoo_hours_record.open_time is not None
+   ):
+      set_itinerary_arrival_time( conn, zoo_hours_record.open_time )
+      return fetch_saved_itinerary( conn )
+
+   return saved_itinerary
 
 
 def resolve_slot_times(
