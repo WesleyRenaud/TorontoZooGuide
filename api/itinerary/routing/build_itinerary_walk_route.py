@@ -5,6 +5,7 @@ from .append_return_to_entrance_walk_route_leg import append_return_to_entrance_
 from .itinerary_stop import ItineraryStop
 from .itinerary_walk_route import empty_itinerary_walk_route
 from .itinerary_walk_route import ItineraryWalkRoute
+from .itinerary_walk_route_completion import should_append_return_to_entrance_walk_route_leg
 from .itinerary_walk_route_stop import ItineraryWalkRouteStop
 from ...models import Itinerary
 from .order_itinerary_stops_for_walk_route import order_itinerary_stops_for_walk_route
@@ -75,14 +76,15 @@ def build_itinerary_walk_route( itinerary: Itinerary ) -> ItineraryWalkRoute:
    if not legs:
       return empty_itinerary_walk_route()
 
-   append_return_to_entrance_walk_route_leg(
-      walk_graph,
-      entrance_stop=entrance_stop,
-      entrance_node_id=entrance_node_id,
-      current_node_id=current_node_id,
-      route_stops=route_stops,
-      legs=legs,
-      route_node_ids=route_node_ids )
+   if should_append_return_to_entrance_walk_route_leg( itinerary ):
+      append_return_to_entrance_walk_route_leg(
+         walk_graph,
+         entrance_stop=entrance_stop,
+         entrance_node_id=entrance_node_id,
+         current_node_id=current_node_id,
+         route_stops=route_stops,
+         legs=legs,
+         route_node_ids=route_node_ids )
 
    return ItineraryWalkRoute(
       stops=tuple( route_stops ),
