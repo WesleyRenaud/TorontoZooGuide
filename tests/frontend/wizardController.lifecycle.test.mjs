@@ -64,7 +64,7 @@ test.describe('openItineraryWizard lifecycle', () => {
       let closeHandler = null;
       const dateController = {
          show() {},
-         getDate: () => makeNoonDate(2026, 5, 15),
+         getDate: () => null,
       };
 
       await openItineraryWizard({
@@ -242,6 +242,50 @@ test.describe('openItineraryWizard lifecycle', () => {
       assert.deepEqual(shownSteps, ['date', 'regions']);
    });
 
+   test('regions finish saves a date-only itinerary', async () => {
+      const mountEl = createDomNode('div', 'wizard-mount');
+      let saveHandler = null;
+      let regionsFinishHandler = null;
+      const finishCalls = [];
+
+      await openItineraryWizard({
+         mountEl,
+         deps: {
+            loadItinerary: async () => null,
+            resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+            createWizardState: () => createItineraryWizardState({}),
+            createDateStepController: ({ onSave }) => {
+               saveHandler = onSave;
+               return { show() {} };
+            },
+            selectionStepConfigs: [
+               {
+                  stepKey: 'regions',
+                  selectionKey: 'animals',
+                  preserveOnInvalid: true,
+                  factory: ({ onFinish }) => {
+                     regionsFinishHandler = onFinish;
+                     return { show() {} };
+                  },
+               },
+            ],
+            finalizeWizard: async (draft, _mountEl, options) => {
+               finishCalls.push({ draft, options });
+               return draft;
+            },
+            showConfirmPopup: () => {},
+            syncAnimalDraft: () => {},
+         },
+      });
+
+      saveHandler?.('2026-06-15');
+      await regionsFinishHandler?.(null);
+
+      assert.equal(finishCalls.length, 1);
+      assert.equal(finishCalls[0].draft.date, '2026-06-15');
+      assert.deepEqual(finishCalls[0].draft.animals, []);
+   });
+
    test('selection prev handlers return to the previous step', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const shownSteps = [];
@@ -364,7 +408,7 @@ test.describe('openItineraryWizard lifecycle', () => {
       assert.deepEqual(doneCalls, []);
    });
 
-   test('date finish saves an empty itinerary with allowEmpty', async () => {
+   test('date finish saves a date-only itinerary', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       let finishHandler = null;
       const finishCalls = [];
@@ -393,6 +437,5 @@ test.describe('openItineraryWizard lifecycle', () => {
 
       assert.equal(finishCalls.length, 1);
       assert.equal(finishCalls[0].draft.date, '2026-06-15');
-      assert.equal(finishCalls[0].options.allowEmpty, true);
    });
 });

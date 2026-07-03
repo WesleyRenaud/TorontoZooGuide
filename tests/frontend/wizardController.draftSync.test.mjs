@@ -22,9 +22,10 @@ test.describe('openItineraryWizard draft sync', () => {
          delete globalThis.localStorage;
       },
    });
-   test('syncs the date step draft before closing without unsaved changes', async () => {
+   test('syncs the date step draft before closing and prompts when the date changes', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const doneCalls = [];
+      const popupConfigs = [];
       let closeHandler = null;
       const selectedDate = makeNoonDate(2026, 5, 15);
 
@@ -52,8 +53,8 @@ test.describe('openItineraryWizard draft sync', () => {
             },
             selectionStepConfigs: [],
             finalizeWizard: async () => {},
-            showConfirmPopup: () => {
-               assert.fail('Expected close without a save prompt');
+            showConfirmPopup: (config) => {
+               popupConfigs.push(config);
             },
             syncAnimalDraft: () => {},
          },
@@ -61,8 +62,12 @@ test.describe('openItineraryWizard draft sync', () => {
 
       await closeHandler?.();
 
-      assert.deepEqual(doneCalls, ['done']);
-      assert.equal(mountEl.children.length, 0);
+      assert.deepEqual(doneCalls, []);
+      assert.equal(popupConfigs.length, 1);
+      assert.equal(
+         popupConfigs[0].title,
+         APP_STRINGS.itinerary.confirmation.saveChangesTitle
+      );
    });
 
    test('skips date draft sync when the picker date already matches the wizard', async () => {

@@ -12,7 +12,7 @@ afterEach(() => {
    delete globalThis.localStorage;
 });
 
-test('hasUnsavedChanges is false when both drafts are itinerary-empty (date-only drift)', () => {
+test('hasUnsavedChanges is true after selecting only a visit date', () => {
    const wizard = createItineraryWizardState({
       date: '',
       animals: [],
@@ -25,7 +25,7 @@ test('hasUnsavedChanges is false when both drafts are itinerary-empty (date-only
 
    wizard.applyValidationResult('2026-06-15', null);
 
-   assert.equal(wizard.hasUnsavedChanges(), false);
+   assert.equal(wizard.hasUnsavedChanges(), true);
 });
 
 test('hasUnsavedChanges is true when selections differ from initial', () => {

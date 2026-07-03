@@ -221,7 +221,8 @@ export function areItineraryDraftsEqual(left, right) {
 export function isItineraryEmptyDraft(draft = {}) {
    const normalizedDraft = normalizeItineraryDraft(draft);
 
-   return !normalizedDraft.arrivalTime
+   return !normalizedDraft.date
+   && !normalizedDraft.arrivalTime
    && !normalizedDraft.departureTime
    && normalizedDraft.events.length === 0
    && ITINERARY_ITEM_KEYS.every((key) => (
@@ -230,10 +231,7 @@ export function isItineraryEmptyDraft(draft = {}) {
 }
 
 export function hasSavedItineraryContent(draft = {}) {
-   const normalizedDraft = normalizeItineraryDraft(draft);
-
-   return Boolean(normalizedDraft.date)
-      || !isItineraryEmptyDraft(normalizedDraft);
+   return !isItineraryEmptyDraft(normalizeItineraryDraft(draft));
 }
 
 export function isItineraryCompletelyUnset(draft = {}) {
@@ -241,8 +239,5 @@ export function isItineraryCompletelyUnset(draft = {}) {
       return true;
    }
 
-   const normalizedDraft = normalizeItineraryDraft(draft);
-
-   return !normalizedDraft.date
-      && isItineraryEmptyDraft(normalizedDraft);
+   return isItineraryEmptyDraft(normalizeItineraryDraft(draft));
 }

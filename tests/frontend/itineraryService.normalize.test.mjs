@@ -47,7 +47,7 @@ test('normalizeItinerary treats a date-only itinerary as active saved content', 
    });
 
    assert.equal(normalized.isActive, true);
-   assert.equal(isItineraryEmpty(normalized), true);
+   assert.equal(isItineraryEmpty(normalized), false);
 });
 
 test('normalizeItinerary treats missing collections as empty', () => {
