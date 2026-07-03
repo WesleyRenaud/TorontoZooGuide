@@ -131,8 +131,8 @@ test('semantic draft equality ignores animal metadata and list order', () => {
    ), false);
 });
 
-test('treats a draft with only a date as empty', () => {
-   assert.equal(isItineraryEmptyDraft({ date: '2026-06-15' }), true);
+test('treats a draft with only a date as non-empty', () => {
+   assert.equal(isItineraryEmptyDraft({ date: '2026-06-15' }), false);
    assert.equal(isItineraryEmptyDraft({
       date: '2026-06-15',
       arrivalTime: '09:30',
@@ -148,7 +148,7 @@ test('treats a draft with only a date as empty', () => {
 });
 
 test('distinguishes date-only drafts from completely unset itineraries', () => {
-   assert.equal(isItineraryEmptyDraft({ date: '2026-06-15' }), true);
+   assert.equal(isItineraryEmptyDraft({ date: '2026-06-15' }), false);
    assert.equal(hasSavedItineraryContent({ date: '2026-06-15' }), true);
    assert.equal(isItineraryCompletelyUnset({ date: '2026-06-15' }), false);
    assert.equal(isItineraryCompletelyUnset(null), true);

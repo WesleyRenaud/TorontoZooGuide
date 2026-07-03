@@ -210,7 +210,7 @@ export async function openItineraryWizard({
 
    async function handleDateFinish(date) {
       applyWizardDate(date);
-      await finish({ date }, { allowEmpty: true });
+      await finish({ date });
    }
 
    wizardSteps.date = createDateStepController({
