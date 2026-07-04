@@ -1,8 +1,5 @@
 import { normalizeAnimalIdentityFields } from '../../animalIdentity.js';
-import {
-   formatExhibitEnclosureTypeLine,
-   formatSpeciesEnclosureLine,
-} from '../../../animals/animalDisplayLines.js';
+import { formatSpeciesEnclosureLine } from '../../../animals/animalDisplayLines.js';
 import { normalizeAssetKey } from '../../../assets/normalizeAssetKey.js';
 import {
    migrateStoredSelectionItems,
@@ -10,10 +7,7 @@ import {
    normalizeStoredLink,
    normalizeStoredString,
 } from '../base/storedSelection.js';
-import {
-   isEnclosureType,
-   normalizeEnclosureType,
-} from '../../../shared/enums/enclosureType.js';
+import { normalizeEnclosureType } from '../../../shared/enums/enclosureType.js';
 
 export const OFF_DISPLAY_WARNING_THRESHOLD = 80;
 
@@ -82,15 +76,7 @@ export function isLikelyOffDisplayAnimal(row, threshold = OFF_DISPLAY_WARNING_TH
 }
 
 export function getAnimalSubtitle(row) {
-   const enclosureName = getAnimalEnclosureName(row);
-
-   if (enclosureName && isEnclosureType(enclosureName)) {
-      return getAnimalExhibit(row);
-   }
-
-   return formatExhibitEnclosureTypeLine(
-      getAnimalExhibit(row),
-      getAnimalEnclosureType(row));
+   return getAnimalExhibit(row);
 }
 
 export function buildAnimalImageSrc(row) {

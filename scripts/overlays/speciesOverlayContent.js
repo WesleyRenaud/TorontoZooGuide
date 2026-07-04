@@ -1,11 +1,7 @@
-import {
-   formatExhibitEnclosureTypeLine,
-   formatSpeciesEnclosureLine,
-} from '../animals/animalDisplayLines.js';
+import { formatSpeciesEnclosureLine } from '../animals/animalDisplayLines.js';
 import { normalizeAssetKey } from '../assets/normalizeAssetKey.js';
 import {
    getAnimalEnclosureName,
-   getAnimalEnclosureType,
    getAnimalExhibit,
 } from '../itinerary/selectors/animalSelector/model.js';
 import { APP_STRINGS } from '../strings.js';
@@ -63,9 +59,7 @@ export function buildSpeciesContent(animal) {
    const species = readText(animal?.species);
    const latinName = readText(animal?.latin_name);
    const titleLine = formatSpeciesEnclosureLine(species, getAnimalEnclosureName(animal));
-   const exhibitLine = formatExhibitEnclosureTypeLine(
-      getAnimalExhibit(animal),
-      getAnimalEnclosureType(animal));
+   const exhibitLine = getAnimalExhibit(animal);
 
    fragment.appendChild(createSpeciesImage(animal));
    fragment.appendChild(createTextElement('h2', 'animal-species-name', titleLine || species));
