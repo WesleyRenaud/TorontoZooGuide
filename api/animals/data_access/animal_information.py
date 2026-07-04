@@ -4,7 +4,10 @@ from ...models import Animal
 from ...types import Connection
 
 
-def fetch_animal_information( conn: Connection, species: str ) -> Animal | None:
+def fetch_animal_information(
+      conn: Connection,
+      species: str,
+      exhibit: str ) -> Animal | None:
    cur = conn.cursor()
 
    try:
@@ -26,9 +29,10 @@ def fetch_animal_information( conn: Connection, species: str ) -> Animal | None:
                FROM Animal a
                JOIN Enclosure e
                   ON a.SPECIES = e.SPECIES
-               WHERE a.SPECIES = ?;
+               WHERE a.SPECIES = ?
+                  AND e.EXHIBIT = ?;
          """,
-         ( species, ) )
+         ( species, exhibit ) )
 
       row = data.fetchone()
 

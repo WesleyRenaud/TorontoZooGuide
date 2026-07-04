@@ -75,7 +75,9 @@ export function createAnimalsRouter({ listEl }) {
    }
 
    async function showAnimalDetail(regionName, exhibitName, animalName) {
-      await runNavigation(() => api.getAnimalInformation(animalName), (animalInfo) => {
+      await runNavigation(
+         () => api.getAnimalInformation({ species: animalName, exhibit: exhibitName }),
+         (animalInfo) => {
          detailView.render(animalInfo, {
             regionName,
             exhibitName,

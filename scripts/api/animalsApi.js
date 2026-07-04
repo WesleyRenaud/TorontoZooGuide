@@ -97,8 +97,8 @@ export async function getAnimalViewingScopes({ species, exhibit } = {}) {
    return normalizeAnimalViewingScopesResponse(response);
 }
 
-export async function getAnimalInformation(species) {
-   const response = await postJson('/get-animal-information', { species });
+export async function getAnimalInformation({ species, exhibit }) {
+   const response = await postJson('/get-animal-information', { species, exhibit });
    return normalizeAnimalInformationResponse(response);
 }
 
