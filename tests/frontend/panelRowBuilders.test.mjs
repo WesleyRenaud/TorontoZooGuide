@@ -205,16 +205,28 @@ test.describe('itinerary panel row builders', () => {
          {
             species: 'Western Lowland Gorilla',
             exhibit: 'African Rainforest Pavilion',
+            enclosure_name: 'Indoor',
             enclosure_type: 'Indoor',
          },
          {
             species: 'Western Lowland Gorilla',
             exhibit: 'African Rainforest Pavilion',
+            enclosure_name: 'Outdoor',
             enclosure_type: 'Outdoor',
          },
       ]);
 
       assert.equal(rows.length, 2);
+      assert.match(textFor(rows[0], '.itin-panel-name'), /Indoor/);
+      assert.match(textFor(rows[1], '.itin-panel-name'), /Outdoor/);
+      assert.equal(
+         textFor(rows[0], '.itin-panel-meta'),
+         'African Rainforest Pavilion'
+      );
+      assert.equal(
+         textFor(rows[1], '.itin-panel-meta'),
+         'African Rainforest Pavilion'
+      );
    });
 
    test('buildAnimalRows deduplicates animal exhibit pairs and renders visibility alerts', () => {

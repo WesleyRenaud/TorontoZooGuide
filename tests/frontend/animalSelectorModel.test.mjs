@@ -22,13 +22,9 @@ const africanLionRow = {
    likelihood: 75,
 };
 
-test('getAnimalEnclosureName omits indoor and outdoor viewing spot names', () => {
-   assert.equal(getAnimalEnclosureName({ enclosure_name: 'Indoor' }), null);
-   assert.equal(getAnimalEnclosureName({ enclosure_name: 'Outdoor' }), null);
-   assert.equal(getAnimalEnclosureName({ enclosure_name: 'White Rhino Viewing' }), 'White Rhino Viewing');
-});
-
 test('getAnimalEnclosureName normalizes nullable enclosure names', () => {
+   assert.equal(getAnimalEnclosureName({ enclosure_name: 'Indoor' }), 'Indoor');
+   assert.equal(getAnimalEnclosureName({ enclosure_name: 'Outdoor' }), 'Outdoor');
    assert.equal(getAnimalEnclosureName({ enclosure_name: 'White Rhino Viewing' }), 'White Rhino Viewing');
    assert.equal(getAnimalEnclosureName({ enclosure_name: '  Savanna Overlook  ' }), 'Savanna Overlook');
    assert.equal(getAnimalEnclosureName({ enclosure_name: null }), null);
@@ -48,7 +44,7 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
    );
    assert.equal(getAnimalId(africanLionRow), 'African Lion||African Savanna');
    assert.equal(getAnimalTitleLine(africanLionRow), 'African Lion');
-   assert.equal(getAnimalSubtitle(africanLionRow), 'African Savanna');
+   assert.equal(getAnimalSubtitle(africanLionRow), 'African Savanna \u2022 Outdoor');
    assert.equal(
       getAnimalTitleLine({
          species: 'Marabou Stork',
@@ -57,6 +53,33 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
          enclosure_type: 'Outdoor',
       }),
       'Marabou Stork \u2022 White Rhino Viewing'
+   );
+   assert.equal(
+      getAnimalSubtitle({
+         species: 'Marabou Stork',
+         exhibit: 'Africa Savanna',
+         enclosure_name: 'White Rhino Viewing',
+         enclosure_type: 'Outdoor',
+      }),
+      'Africa Savanna \u2022 Outdoor'
+   );
+   assert.equal(
+      getAnimalTitleLine({
+         species: 'Western Lowland Gorilla',
+         exhibit: 'African Rainforest Pavilion',
+         enclosure_name: 'Indoor',
+         enclosure_type: 'Indoor',
+      }),
+      'Western Lowland Gorilla \u2022 Indoor'
+   );
+   assert.equal(
+      getAnimalSubtitle({
+         species: 'Western Lowland Gorilla',
+         exhibit: 'African Rainforest Pavilion',
+         enclosure_name: 'Indoor',
+         enclosure_type: 'Indoor',
+      }),
+      'African Rainforest Pavilion'
    );
    assert.equal(
       buildAnimalImageSrc(africanLionRow),

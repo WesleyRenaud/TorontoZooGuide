@@ -10,7 +10,10 @@ import {
    normalizeStoredLink,
    normalizeStoredString,
 } from '../base/storedSelection.js';
-import { isEnclosureType } from '../../../shared/enums/enclosureType.js';
+import {
+   isEnclosureType,
+   normalizeEnclosureType,
+} from '../../../shared/enums/enclosureType.js';
 
 export const OFF_DISPLAY_WARNING_THRESHOLD = 80;
 
@@ -27,25 +30,11 @@ export function getAnimalStoredEnclosureName(row) {
 }
 
 export function getAnimalEnclosureName(row) {
-   const enclosureName = getAnimalStoredEnclosureName(row);
-
-   if (enclosureName && isEnclosureType(enclosureName)) {
-      return null;
-   }
-
-   return enclosureName;
+   return getAnimalStoredEnclosureName(row);
 }
 
 export function getAnimalEnclosureType(row) {
-   if (typeof row?.enclosure_type !== 'string') {
-      return '';
-   }
-
-   if (isEnclosureType(row.enclosure_type)) {
-      return '';
-   }
-
-   return row.enclosure_type;
+   return normalizeEnclosureType(row?.enclosure_type) ?? '';
 }
 
 export function getAnimalTitleLine(row) {
@@ -93,6 +82,12 @@ export function isLikelyOffDisplayAnimal(row, threshold = OFF_DISPLAY_WARNING_TH
 }
 
 export function getAnimalSubtitle(row) {
+   const enclosureName = getAnimalEnclosureName(row);
+
+   if (enclosureName && isEnclosureType(enclosureName)) {
+      return getAnimalExhibit(row);
+   }
+
    return formatExhibitEnclosureTypeLine(
       getAnimalExhibit(row),
       getAnimalEnclosureType(row));

@@ -1,19 +1,8 @@
 import { asTrimmedString } from '../api/normalizeValues.js';
 import { DETAIL_SEPARATOR } from '../shared/constants.js';
-import { isEnclosureType } from '../shared/enums/enclosureType.js';
-
-function normalizeDisplayDetail(value) {
-   const normalized = asTrimmedString(value);
-
-   if (isEnclosureType(normalized)) {
-      return '';
-   }
-
-   return normalized;
-}
 
 export function formatAnimalTitleSuffix(enclosureName) {
-   const normalizedEnclosureName = normalizeDisplayDetail(enclosureName);
+   const normalizedEnclosureName = asTrimmedString(enclosureName);
 
    if (!normalizedEnclosureName) {
       return '';
@@ -24,7 +13,7 @@ export function formatAnimalTitleSuffix(enclosureName) {
 
 export function formatSpeciesEnclosureLine(species, enclosureName) {
    const normalizedSpecies = asTrimmedString(species);
-   const normalizedEnclosureName = normalizeDisplayDetail(enclosureName);
+   const normalizedEnclosureName = asTrimmedString(enclosureName);
 
    if (!normalizedEnclosureName) {
       return normalizedSpecies;
@@ -35,7 +24,7 @@ export function formatSpeciesEnclosureLine(species, enclosureName) {
 
 export function formatExhibitEnclosureTypeLine(exhibit, enclosureType) {
    const normalizedExhibit = asTrimmedString(exhibit);
-   const normalizedEnclosureType = normalizeDisplayDetail(enclosureType);
+   const normalizedEnclosureType = asTrimmedString(enclosureType);
 
    if (!normalizedEnclosureType) {
       return normalizedExhibit;
