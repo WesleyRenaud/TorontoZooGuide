@@ -61,12 +61,17 @@ def test_walk_nodes_for_species_exhibit_returns_every_viewing_spot() -> None:
    kudu_rows = walk_nodes_for_species_exhibit(
       'Greater Kudu',
       'Africa Savanna' )
+   kudu_pavilion_rows = walk_nodes_for_species_exhibit(
+      'Greater Kudu',
+      'African Rainforest Pavilion' )
 
    assert len( gorilla_rows ) == 2
    assert { row[ 'enclosure_type' ] for row in gorilla_rows } == { 'Indoor', 'Outdoor' }
-   assert len( kudu_rows ) == 3
+   assert len( kudu_rows ) == 2
    assert all( row[ 'enclosure_type' ] == 'Outdoor' for row in kudu_rows )
-   assert len( { row[ 'walk_node_id' ] for row in kudu_rows } ) == 3
+   assert len( { row[ 'walk_node_id' ] for row in kudu_rows } ) == 2
+   assert len( kudu_pavilion_rows ) == 1
+   assert kudu_pavilion_rows[ 0 ][ 'walk_node_id' ] == 'v-0263'
 
 
 def test_walk_node_id_by_enclosure_name_resolves_viewing_spot_name() -> None:
@@ -77,5 +82,5 @@ def test_walk_node_id_by_enclosure_name_resolves_viewing_spot_name() -> None:
    ] == 'v-0426'
 
    assert walk_node_ids[
-      ( 'Ostrich', 'Africa Savanna', 'Savanna Overlook' )
+      ( 'Ostrich', 'African Rainforest Pavilion', 'Savanna Overlook' )
    ] == 'v-0263'
