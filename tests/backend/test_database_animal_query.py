@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
+from api.animals.search.animals_matching_query import viewing_spot_key
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from conftest import DbControllers
 
@@ -33,7 +34,7 @@ def test_animal_query_matches_species_not_exhibit( db: DbControllers ) -> None:
    assert exhibit_matches == []
 
 
-def test_animal_query_helpers_dedupe_and_sort( db: DbControllers ) -> None:
+def test_animal_query_helpers_sort_results( db: DbControllers ) -> None:
    animals = AnimalCoordinator.get_animals_matching_query(
       query='african',
       day=15,
@@ -43,12 +44,11 @@ def test_animal_query_helpers_dedupe_and_sort( db: DbControllers ) -> None:
       include_off_display_animals=True
    )
 
-   species_exhibits = [ ( animal.species, animal.exhibit ) for animal in animals ]
+   viewing_spots = [ viewing_spot_key( animal ) for animal in animals ]
 
-   assert species_exhibits == sorted(
-      species_exhibits,
-      key=lambda pair: ( pair[ 0 ].lower(), ( pair[ 1 ] or '' ).lower() ) )
-   assert len( species_exhibits ) == len( set( species_exhibits ) )
+   assert viewing_spots == sorted(
+      viewing_spots,
+      key=lambda spot: ( spot[ 0 ], spot[ 1 ], spot[ 2 ] or '' ) )
    assert all(
       'african' in ( animal.species or '' ).lower()
       for animal in animals
@@ -68,6 +68,24 @@ def test_animal_query_returns_same_species_in_multiple_exhibits( db: DbControlle
    exhibits = { animal.exhibit for animal in animals if animal.species == 'Cheetah' }
 
    assert exhibits == { 'Africa Savanna', 'Indo-Malaya Outdoor' }
+
+
+def test_animal_query_returns_indoor_and_outdoor_viewing_spots( db: DbControllers ) -> None:
+   animals = AnimalCoordinator.get_animals_matching_query(
+      query='gorilla',
+      day=15,
+      month='June',
+      year=2026,
+      temp=22,
+   )
+
+   gorilla_spots = {
+      animal.enclosure_name
+      for animal in animals
+      if animal.species == 'Western Lowland Gorilla'
+   }
+
+   assert gorilla_spots == { 'Indoor', 'Outdoor' }
 
 
 def test_basic_animal_lookup_methods( db: DbControllers ) -> None:
