@@ -65,9 +65,9 @@ test.describe('itinerary day planner preview scheduled', () => {
          lunchPill.querySelector('.itinerary-day-scheduled-pill-label')?.className.includes('species-link'),
          false
       );
-      assert.match(
-         lunchPill.querySelector('.itinerary-day-scheduled-pill-time-range')?.textContent ?? '',
-         /12:00 PM – 12:40 PM/
+      assert.equal(
+         lunchPill.querySelector('.itinerary-day-scheduled-pill-time-range'),
+         null
       );
       lunchPill?.querySelector('.itinerary-day-open-pill-menu-item')?.click();
       assert.deepEqual(removeCalls, [{

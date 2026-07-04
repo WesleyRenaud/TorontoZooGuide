@@ -16,10 +16,7 @@ test('makeScheduledPill adds extended layout for longer visits', () => {
 
    assert.ok(pill.classList.contains('itinerary-day-scheduled-pill--extended'));
    assert.ok(pill.querySelector('.itinerary-day-scheduled-pill-header'));
-   assert.equal(
-      pill.querySelector('.itinerary-day-scheduled-pill-time-range')?.textContent,
-      '12:00 PM – 12:40 PM'
-   );
+   assert.equal(pill.querySelector('.itinerary-day-scheduled-pill-time-range'), null);
 });
 
 test('makeScheduledPill does not show time range for grouped pills', () => {
