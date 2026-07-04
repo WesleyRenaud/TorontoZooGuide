@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import ANIMAL_KEY, schedule_itinerary_item
+from itinerary.support import ANIMAL_KEY, CHEETAH_ITINERARY_ENTRY, schedule_itinerary_item
 from itinerary.support import LION_ITINERARY_ENTRY
 
 from api.animals.coordinators.animal_coordinator import AnimalCoordinator
@@ -166,6 +166,52 @@ def test_itinerary_result_to_dict_includes_itinerary_path(
    payload = itinerary_result_to_dict( result, conn=db.conn )
 
    assert payload[ 'itinerary_path' ] == fetch_itinerary_walk_route( db.conn ).to_dict()
+   assert payload[ 'itinerary_path' ][ 'points' ]
+
+
+def test_set_itinerary_preserves_walk_route_when_adding_unscheduled_item(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+   assert schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='10:00',
+   ).success
+
+   assert fetch_itinerary_walk_route( db.conn ).legs
+
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[
+         LION_ITINERARY_ENTRY,
+         CHEETAH_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   )
+
+   assert result.success
+   assert result.itinerary.animals[ 0 ].start_time
+   assert not result.itinerary.animals[ 1 ].start_time
+
+   expected_route = build_itinerary_walk_route( result.itinerary )
+   persisted_route = fetch_itinerary_walk_route( db.conn )
+   payload = itinerary_result_to_dict( result, conn=db.conn )
+
+   assert expected_route.legs
+   assert walk_route_matches( expected_route, persisted_route )
    assert payload[ 'itinerary_path' ][ 'points' ]
    assert walk_route_matches(
       build_itinerary_walk_route( result.itinerary ),
