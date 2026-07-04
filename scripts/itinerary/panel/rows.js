@@ -59,7 +59,6 @@ export function buildAnimalRows(
             imageSrc: buildImageSrc('animals', animal.exhibit, getAnimalSpecies(animal)),
             metaLines: buildMetaLines([
                getAnimalSubtitle(animal),
-               buildApproximateStartTimeFieldLine(animal),
             ]),
             alertLine: alert.line,
             alertTone: alert.tone,

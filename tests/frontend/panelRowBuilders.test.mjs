@@ -374,7 +374,7 @@ test.describe('itinerary panel row builders', () => {
       assert.match(text, /Conservation Carousel/);
    });
    
-   test('animal and attraction rows show approximate scheduled start times', () => {
+   test('animal rows omit scheduled start times', () => {
       const [animalRow] = buildAnimalRows([
          {
             species: 'African Lion',
@@ -391,9 +391,10 @@ test.describe('itinerary panel row builders', () => {
          },
       ]);
    
+      assert.equal(animalRow.querySelectorAll('.itin-panel-meta').length, 1);
       assert.equal(
-         animalRow.querySelectorAll('.itin-panel-meta')[1].textContent,
-         'Time: ~2:30 PM'
+         animalRow.querySelectorAll('.itin-panel-meta')[0].textContent.includes('Time:'),
+         false
       );
       assert.equal(
          attractionRow.querySelectorAll('.itin-panel-meta')[0].textContent,

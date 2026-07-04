@@ -4,10 +4,7 @@ import {
    buildPillMenuNodes,
 } from './itineraryPillMenu.js';
 import { createPillLabelNode } from './openTimelinePill.js';
-import {
-   formatScheduledPillTimeRange,
-   isExtendedScheduledPill,
-} from '../scheduledPillPresentation.js';
+import { isExtendedScheduledPill } from '../scheduledPillPresentation.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 
 function applyScheduledPillDuration(
@@ -25,18 +22,6 @@ function applyScheduledPillDuration(
       String(durationFraction)
    );
    pill.setAttribute('data-duration-fraction', String(durationFraction));
-}
-
-function appendScheduledPillTimeRange(pill, startTime, endTime, durationMinutes) {
-   const timeRange = formatScheduledPillTimeRange(startTime, endTime);
-
-   if (!isExtendedScheduledPill(durationMinutes) || !timeRange) {
-      return;
-   }
-
-   pill.appendChild(
-      el('span', 'itinerary-day-scheduled-pill-time-range', timeRange)
-   );
 }
 
 function makeScheduledPillArrowButton(label, direction) {
@@ -218,7 +203,6 @@ function buildScheduledPillWithMenu(
    header.appendChild(labelNode);
    header.appendChild(menu);
    pill.appendChild(header);
-   appendScheduledPillTimeRange(pill, startTime, endTime, durationMinutes);
    bindPillMenu(pill, {
       menuButton,
       menuPanel,
@@ -264,7 +248,6 @@ function buildScheduledPillWithoutMenu(
       )
    );
    pill.appendChild(header);
-   appendScheduledPillTimeRange(pill, startTime, endTime, durationMinutes);
 
    return pill;
 }
