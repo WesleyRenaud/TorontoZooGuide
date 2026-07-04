@@ -811,7 +811,7 @@
   },
   {
     "species": "Greater Kudu",
-    "exhibit": "Africa Savanna",
+    "exhibit": "African Rainforest Pavilion",
     "enclosure_type": "Outdoor",
     "x": 43.612,
     "y": 62.754,
@@ -1227,19 +1227,19 @@
     "species": "Marabou Stork",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 43.612,
-    "y": 62.754,
-    "walk_node_id": "v-0263",
-    "snap_distance_px": 28.006
-  },
-  {
-    "species": "Marabou Stork",
-    "exhibit": "Africa Savanna",
-    "enclosure_type": "Outdoor",
     "x": 43.38,
     "y": 43.353,
     "walk_node_id": "v-0406",
     "snap_distance_px": 36.486
+  },
+  {
+    "species": "Marabou Stork",
+    "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Outdoor",
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
   },
   {
     "species": "Marabou Stork",
@@ -1461,19 +1461,19 @@
     "species": "Ostrich",
     "exhibit": "Africa Savanna",
     "enclosure_type": "Outdoor",
-    "x": 43.612,
-    "y": 62.754,
-    "walk_node_id": "v-0263",
-    "snap_distance_px": 28.006
-  },
-  {
-    "species": "Ostrich",
-    "exhibit": "Africa Savanna",
-    "enclosure_type": "Outdoor",
     "x": 49.056,
     "y": 36.903,
     "walk_node_id": "v-0426",
     "snap_distance_px": 58.509
+  },
+  {
+    "species": "Ostrich",
+    "exhibit": "African Rainforest Pavilion",
+    "enclosure_type": "Outdoor",
+    "x": 43.612,
+    "y": 62.754,
+    "walk_node_id": "v-0263",
+    "snap_distance_px": 28.006
   },
   {
     "species": "Painted Anemone",
@@ -1873,7 +1873,7 @@
   },
   {
     "species": "Southern Ground Hornbill",
-    "exhibit": "Africa Savanna",
+    "exhibit": "African Rainforest Pavilion",
     "enclosure_type": "Outdoor",
     "x": 43.612,
     "y": 62.754,
@@ -2314,7 +2314,7 @@
   },
   {
     "species": "White-Headed Vulture",
-    "exhibit": "Africa Savanna",
+    "exhibit": "African Rainforest Pavilion",
     "enclosure_type": "Outdoor",
     "x": 43.612,
     "y": 62.754,

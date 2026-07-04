@@ -8,11 +8,14 @@ from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.enclosure_viewing_walk_node_lookup import walk_node_id_by_enclosure_name
 
 
+PAVILION = 'African Rainforest Pavilion'
+
+
 def test_walk_node_id_by_enclosure_name_resolves_named_and_unnamed_viewing_spots() -> None:
    walk_node_ids = walk_node_id_by_enclosure_name()
 
    assert walk_node_ids[
-      ( 'Marabou Stork', 'Africa Savanna', 'Savanna Overlook' )
+      ( 'Marabou Stork', PAVILION, 'Savanna Overlook' )
    ] == 'v-0263'
 
    assert walk_node_ids[
@@ -34,21 +37,21 @@ def test_sort_animals_for_bulk_schedule_groups_animals_at_the_same_viewing_spot(
          ),
          ItineraryAnimalRecord(
             species='Southern Ground Hornbill',
-            exhibit='Africa Savanna',
+            exhibit=PAVILION,
             enclosure_name='Savanna Overlook',
             old_likelihood=None,
             new_likelihood=100,
          ),
          ItineraryAnimalRecord(
             species='Marabou Stork',
-            exhibit='Africa Savanna',
+            exhibit=PAVILION,
             enclosure_name='Savanna Overlook',
             old_likelihood=None,
             new_likelihood=100,
          ),
          ItineraryAnimalRecord(
             species='White-Headed Vulture',
-            exhibit='Africa Savanna',
+            exhibit=PAVILION,
             enclosure_name='Savanna Overlook',
             old_likelihood=None,
             new_likelihood=100,

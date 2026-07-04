@@ -1232,6 +1232,41 @@
     "always_include_indoor_viewing": null
   },
   {
+    "species": "Greater Kudu",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "May-Oct",
+    "seasonal_viewing_information": null,
+    "always_include_indoor_viewing": null
+  },
+  {
+    "species": "Marabou Stork",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Jun-Sep",
+    "seasonal_viewing_information": null,
+    "always_include_indoor_viewing": null
+  },
+  {
+    "species": "Southern Ground Hornbill",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Jun-Sep",
+    "seasonal_viewing_information": null,
+    "always_include_indoor_viewing": null
+  },
+  {
+    "species": "White-Headed Vulture",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Jun-Sep",
+    "seasonal_viewing_information": null,
+    "always_include_indoor_viewing": null
+  },
+  {
+    "species": "Ostrich",
+    "exhibit": "African Rainforest Pavilion",
+    "seasonal_viewing_summary": "Apr-Nov",
+    "seasonal_viewing_information": null,
+    "always_include_indoor_viewing": null
+  },
+  {
     "species": "Western Lowland Gorilla",
     "exhibit": "African Rainforest Pavilion",
     "seasonal_viewing_summary": "Outdoor: Apr-Oct, Indoor: Year-round",

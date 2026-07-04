@@ -1541,7 +1541,7 @@
   },
   {
     "species": "Greater Kudu",
-    "exhibit": "Africa Savanna",
+    "exhibit": "African Rainforest Pavilion",
     "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater kudus are most likely inside and off-display on this day due to cold weather.",
@@ -1551,7 +1551,7 @@
   },
   {
     "species": "Marabou Stork",
-    "exhibit": "Africa Savanna",
+    "exhibit": "African Rainforest Pavilion",
     "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
@@ -1561,7 +1561,7 @@
   },
   {
     "species": "Southern Ground Hornbill",
-    "exhibit": "Africa Savanna",
+    "exhibit": "African Rainforest Pavilion",
     "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.",
@@ -1571,7 +1571,7 @@
   },
   {
     "species": "White-Headed Vulture",
-    "exhibit": "Africa Savanna",
+    "exhibit": "African Rainforest Pavilion",
     "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white-headed vultures are most likely inside and off-display on this day due to cooler weather.",
@@ -1581,7 +1581,7 @@
   },
   {
     "species": "Ostrich",
-    "exhibit": "Africa Savanna",
+    "exhibit": "African Rainforest Pavilion",
     "name": "Savanna Overlook",
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
