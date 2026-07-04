@@ -13,6 +13,10 @@ test('normalizes seeded names into asset-safe keys', () => {
       normalizeAssetKey('Virtual Reality (VR) Theatre!'),
       'virtual-reality-vr-theatre'
    );
+   assert.equal(
+      normalizeAssetKey('Mantella (Poison Frog)'),
+      'mantella-poison-frog'
+   );
 });
 
 test('normalizes punctuation, accents, and repeated spacing', () => {
