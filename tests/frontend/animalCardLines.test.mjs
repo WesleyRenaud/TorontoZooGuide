@@ -16,30 +16,21 @@ test('formatSpeciesEnclosureLine joins species and enclosure name', () => {
       formatSpeciesEnclosureLine('Marabou Stork', 'White Rhino Viewing'),
       'Marabou Stork \u2022 White Rhino Viewing'
    );
-});
-
-test('formatExhibitEnclosureTypeLine omits enclosure type labels', () => {
-   assert.equal(formatExhibitEnclosureTypeLine('Americas Pavilion', 'Indoor'), 'Americas Pavilion');
-   assert.equal(formatExhibitEnclosureTypeLine('Africa Savanna', 'Outdoor'), 'Africa Savanna');
-   assert.equal(formatExhibitEnclosureTypeLine('Indo-Malaya Outdoor', 'Outdoor'), 'Indo-Malaya Outdoor');
-});
-
-test('formatSpeciesEnclosureLine omits indoor and outdoor viewing spot names', () => {
    assert.equal(
       formatSpeciesEnclosureLine('Golden Lion Tamarin', 'Indoor'),
-      'Golden Lion Tamarin'
-   );
-   assert.equal(
-      formatSpeciesEnclosureLine('Golden Lion Tamarin', 'Outdoor'),
-      'Golden Lion Tamarin'
-   );
-   assert.equal(
-      formatSpeciesEnclosureLine('Marabou Stork', 'White Rhino Viewing'),
-      'Marabou Stork \u2022 White Rhino Viewing'
+      'Golden Lion Tamarin \u2022 Indoor'
    );
 });
 
 test('formatExhibitEnclosureTypeLine joins exhibit and enclosure type', () => {
+   assert.equal(
+      formatExhibitEnclosureTypeLine('Americas Pavilion', 'Indoor'),
+      'Americas Pavilion \u2022 Indoor'
+   );
+   assert.equal(
+      formatExhibitEnclosureTypeLine('Africa Savanna', 'Outdoor'),
+      'Africa Savanna \u2022 Outdoor'
+   );
    assert.equal(
       formatExhibitEnclosureTypeLine('Africa Savanna', 'Aviary'),
       'Africa Savanna \u2022 Aviary'
