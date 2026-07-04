@@ -22,6 +22,28 @@ test('makeScheduledPill adds extended layout for longer visits', () => {
    );
 });
 
+test('makeScheduledPill does not show time range for grouped pills', () => {
+   const pill = makeScheduledPill('White-Handed Gibbon + 29', 36, {
+      startTime: '10:31:30',
+      endTime: '10:36:30',
+      groupItems: [
+         {
+            label: 'White-Handed Gibbon',
+            startTime: '10:31:30',
+            endTime: '10:36:30',
+         },
+         {
+            label: 'Tentacled Snake',
+            startTime: '10:27:30',
+            endTime: '10:31:30',
+         },
+      ],
+   });
+
+   assert.ok(pill.classList.contains('itinerary-day-scheduled-pill--grouped'));
+   assert.equal(pill.querySelector('.itinerary-day-scheduled-pill-time-range'), null);
+});
+
 test('makeScheduledPill keeps compact layout for short visits', () => {
    const pill = makeScheduledPill('African Lion', 15, {
       startTime: '1:00 PM',

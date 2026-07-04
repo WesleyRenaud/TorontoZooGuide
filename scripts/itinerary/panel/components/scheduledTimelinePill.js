@@ -80,29 +80,6 @@ function replaceGroupedScheduledPillLabel(
    }
 }
 
-function syncScheduledPillTimeRange(
-   pill,
-   timeRangeNode,
-   startTime,
-   endTime,
-   durationMinutes
-) {
-   const timeRange = formatScheduledPillTimeRange(startTime, endTime);
-
-   if (!isExtendedScheduledPill(durationMinutes) || !timeRange) {
-      timeRangeNode.hidden = true;
-      timeRangeNode.textContent = '';
-      return;
-   }
-
-   timeRangeNode.hidden = false;
-   timeRangeNode.textContent = timeRange;
-
-   if (!timeRangeNode.parentElement) {
-      pill.appendChild(timeRangeNode);
-   }
-}
-
 function resolveWrappedGroupIndex(index, groupSize) {
    if (groupSize <= 0) {
       return 0;
@@ -141,7 +118,6 @@ function buildGroupedScheduledPill(
    const menuNodes = hasMenuItems
       ? buildPillMenuNodes(menuAriaLabel, groupItems[0]?.menuItems ?? [])
       : null;
-   const timeRangeNode = el('span', 'itinerary-day-scheduled-pill-time-range');
 
    if (isExtendedScheduledPill(durationMinutes)) {
       pill.classList.add('itinerary-day-scheduled-pill--extended');
@@ -167,13 +143,6 @@ function buildGroupedScheduledPill(
             suffixCount,
             onLabelClick: activeItem.onLabelClick,
          }
-      );
-      syncScheduledPillTimeRange(
-         pill,
-         timeRangeNode,
-         activeItem.startTime,
-         activeItem.endTime,
-         durationMinutes
       );
       pill.setAttribute('data-active-group-index', String(activeIndex));
    }
@@ -202,7 +171,6 @@ function buildGroupedScheduledPill(
    header.appendChild(trailingControls);
 
    pill.appendChild(header);
-   pill.appendChild(timeRangeNode);
    pill.setAttribute('data-group-size', String(groupSize));
    syncActiveItem();
 
