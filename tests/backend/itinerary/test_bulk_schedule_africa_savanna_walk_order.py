@@ -66,6 +66,19 @@ def test_bulk_schedule_africa_savanna_has_no_savanna_overlook_animals(
       for row in scheduled_order )
 
 
+def test_bulk_schedule_africa_savanna_has_no_savanna_grasslands_zebra(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ],
+) -> None:
+   scheduled_order = _scheduled_animal_order(
+      db,
+      freeze_database_today=freeze_database_today )
+
+   assert not any(
+      row[ 0 ] == "Grevy's Zebra" and row[ 1 ] == 'Savanna Grasslands'
+      for row in scheduled_order )
+
+
 def test_bulk_schedule_africa_savanna_schedules_null_enclosure_ostrich_after_named_viewing_spots(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ],

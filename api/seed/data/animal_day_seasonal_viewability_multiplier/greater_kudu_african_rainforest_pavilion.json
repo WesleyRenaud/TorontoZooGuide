@@ -1,0 +1,1836 @@
+{
+  "species": "Greater Kudu",
+  "exhibit": "African Rainforest Pavilion",
+  "days": [
+    {
+      "month": 1,
+      "day": 1,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 2,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 3,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 4,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 5,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 6,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 7,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 8,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 9,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 10,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 11,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 12,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 13,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 14,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 15,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 16,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 17,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 18,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 19,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 20,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 21,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 22,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 23,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 24,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 25,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 26,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 27,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 28,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 29,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 30,
+      "value": 0.01
+    },
+    {
+      "month": 1,
+      "day": 31,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 1,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 2,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 3,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 4,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 5,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 6,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 7,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 8,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 9,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 10,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 11,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 12,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 13,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 14,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 15,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 16,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 17,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 18,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 19,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 20,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 21,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 22,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 23,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 24,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 25,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 26,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 27,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 28,
+      "value": 0.01
+    },
+    {
+      "month": 2,
+      "day": 29,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 1,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 2,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 3,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 4,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 5,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 6,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 7,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 8,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 9,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 10,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 11,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 12,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 13,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 14,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 15,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 16,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 17,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 18,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 19,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 20,
+      "value": 0.01
+    },
+    {
+      "month": 3,
+      "day": 21,
+      "value": 0.035
+    },
+    {
+      "month": 3,
+      "day": 22,
+      "value": 0.061
+    },
+    {
+      "month": 3,
+      "day": 23,
+      "value": 0.086
+    },
+    {
+      "month": 3,
+      "day": 24,
+      "value": 0.112
+    },
+    {
+      "month": 3,
+      "day": 25,
+      "value": 0.137
+    },
+    {
+      "month": 3,
+      "day": 26,
+      "value": 0.162
+    },
+    {
+      "month": 3,
+      "day": 27,
+      "value": 0.188
+    },
+    {
+      "month": 3,
+      "day": 28,
+      "value": 0.213
+    },
+    {
+      "month": 3,
+      "day": 29,
+      "value": 0.238
+    },
+    {
+      "month": 3,
+      "day": 30,
+      "value": 0.264
+    },
+    {
+      "month": 3,
+      "day": 31,
+      "value": 0.289
+    },
+    {
+      "month": 4,
+      "day": 1,
+      "value": 0.315
+    },
+    {
+      "month": 4,
+      "day": 2,
+      "value": 0.34
+    },
+    {
+      "month": 4,
+      "day": 3,
+      "value": 0.365
+    },
+    {
+      "month": 4,
+      "day": 4,
+      "value": 0.391
+    },
+    {
+      "month": 4,
+      "day": 5,
+      "value": 0.416
+    },
+    {
+      "month": 4,
+      "day": 6,
+      "value": 0.442
+    },
+    {
+      "month": 4,
+      "day": 7,
+      "value": 0.467
+    },
+    {
+      "month": 4,
+      "day": 8,
+      "value": 0.492
+    },
+    {
+      "month": 4,
+      "day": 9,
+      "value": 0.518
+    },
+    {
+      "month": 4,
+      "day": 10,
+      "value": 0.543
+    },
+    {
+      "month": 4,
+      "day": 11,
+      "value": 0.568
+    },
+    {
+      "month": 4,
+      "day": 12,
+      "value": 0.594
+    },
+    {
+      "month": 4,
+      "day": 13,
+      "value": 0.619
+    },
+    {
+      "month": 4,
+      "day": 14,
+      "value": 0.645
+    },
+    {
+      "month": 4,
+      "day": 15,
+      "value": 0.67
+    },
+    {
+      "month": 4,
+      "day": 16,
+      "value": 0.695
+    },
+    {
+      "month": 4,
+      "day": 17,
+      "value": 0.721
+    },
+    {
+      "month": 4,
+      "day": 18,
+      "value": 0.746
+    },
+    {
+      "month": 4,
+      "day": 19,
+      "value": 0.772
+    },
+    {
+      "month": 4,
+      "day": 20,
+      "value": 0.797
+    },
+    {
+      "month": 4,
+      "day": 21,
+      "value": 0.822
+    },
+    {
+      "month": 4,
+      "day": 22,
+      "value": 0.848
+    },
+    {
+      "month": 4,
+      "day": 23,
+      "value": 0.873
+    },
+    {
+      "month": 4,
+      "day": 24,
+      "value": 0.898
+    },
+    {
+      "month": 4,
+      "day": 25,
+      "value": 0.924
+    },
+    {
+      "month": 4,
+      "day": 26,
+      "value": 0.949
+    },
+    {
+      "month": 4,
+      "day": 27,
+      "value": 0.975
+    },
+    {
+      "month": 4,
+      "day": 28,
+      "value": 1.0
+    },
+    {
+      "month": 4,
+      "day": 29,
+      "value": 1.0
+    },
+    {
+      "month": 4,
+      "day": 30,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 1,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 2,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 3,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 4,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 5,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 6,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 7,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 8,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 9,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 10,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 11,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 12,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 13,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 14,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 15,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 16,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 17,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 18,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 19,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 20,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 21,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 22,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 23,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 24,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 25,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 26,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 27,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 28,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 29,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 30,
+      "value": 1.0
+    },
+    {
+      "month": 5,
+      "day": 31,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 1,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 2,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 3,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 4,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 5,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 6,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 7,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 8,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 9,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 10,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 11,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 12,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 13,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 14,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 15,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 16,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 17,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 18,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 19,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 20,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 21,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 22,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 23,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 24,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 25,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 26,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 27,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 28,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 29,
+      "value": 1.0
+    },
+    {
+      "month": 6,
+      "day": 30,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 1,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 2,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 3,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 4,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 5,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 6,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 7,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 8,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 9,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 10,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 11,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 12,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 13,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 14,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 15,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 16,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 17,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 18,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 19,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 20,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 21,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 22,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 23,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 24,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 25,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 26,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 27,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 28,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 29,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 30,
+      "value": 1.0
+    },
+    {
+      "month": 7,
+      "day": 31,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 1,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 2,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 3,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 4,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 5,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 6,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 7,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 8,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 9,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 10,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 11,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 12,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 13,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 14,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 15,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 16,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 17,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 18,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 19,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 20,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 21,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 22,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 23,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 24,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 25,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 26,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 27,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 28,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 29,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 30,
+      "value": 1.0
+    },
+    {
+      "month": 8,
+      "day": 31,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 1,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 2,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 3,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 4,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 5,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 6,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 7,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 8,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 9,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 10,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 11,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 12,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 13,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 14,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 15,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 16,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 17,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 18,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 19,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 20,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 21,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 22,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 23,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 24,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 25,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 26,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 27,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 28,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 29,
+      "value": 1.0
+    },
+    {
+      "month": 9,
+      "day": 30,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 1,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 2,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 3,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 4,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 5,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 6,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 7,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 8,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 9,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 10,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 11,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 12,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 13,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 14,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 15,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 16,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 17,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 18,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 19,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 20,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 21,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 22,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 23,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 24,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 25,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 26,
+      "value": 1.0
+    },
+    {
+      "month": 10,
+      "day": 27,
+      "value": 0.976
+    },
+    {
+      "month": 10,
+      "day": 28,
+      "value": 0.952
+    },
+    {
+      "month": 10,
+      "day": 29,
+      "value": 0.928
+    },
+    {
+      "month": 10,
+      "day": 30,
+      "value": 0.903
+    },
+    {
+      "month": 10,
+      "day": 31,
+      "value": 0.879
+    },
+    {
+      "month": 11,
+      "day": 1,
+      "value": 0.855
+    },
+    {
+      "month": 11,
+      "day": 2,
+      "value": 0.831
+    },
+    {
+      "month": 11,
+      "day": 3,
+      "value": 0.807
+    },
+    {
+      "month": 11,
+      "day": 4,
+      "value": 0.783
+    },
+    {
+      "month": 11,
+      "day": 5,
+      "value": 0.759
+    },
+    {
+      "month": 11,
+      "day": 6,
+      "value": 0.734
+    },
+    {
+      "month": 11,
+      "day": 7,
+      "value": 0.71
+    },
+    {
+      "month": 11,
+      "day": 8,
+      "value": 0.686
+    },
+    {
+      "month": 11,
+      "day": 9,
+      "value": 0.662
+    },
+    {
+      "month": 11,
+      "day": 10,
+      "value": 0.638
+    },
+    {
+      "month": 11,
+      "day": 11,
+      "value": 0.614
+    },
+    {
+      "month": 11,
+      "day": 12,
+      "value": 0.59
+    },
+    {
+      "month": 11,
+      "day": 13,
+      "value": 0.565
+    },
+    {
+      "month": 11,
+      "day": 14,
+      "value": 0.541
+    },
+    {
+      "month": 11,
+      "day": 15,
+      "value": 0.517
+    },
+    {
+      "month": 11,
+      "day": 16,
+      "value": 0.493
+    },
+    {
+      "month": 11,
+      "day": 17,
+      "value": 0.469
+    },
+    {
+      "month": 11,
+      "day": 18,
+      "value": 0.445
+    },
+    {
+      "month": 11,
+      "day": 19,
+      "value": 0.42
+    },
+    {
+      "month": 11,
+      "day": 20,
+      "value": 0.396
+    },
+    {
+      "month": 11,
+      "day": 21,
+      "value": 0.372
+    },
+    {
+      "month": 11,
+      "day": 22,
+      "value": 0.348
+    },
+    {
+      "month": 11,
+      "day": 23,
+      "value": 0.324
+    },
+    {
+      "month": 11,
+      "day": 24,
+      "value": 0.3
+    },
+    {
+      "month": 11,
+      "day": 25,
+      "value": 0.276
+    },
+    {
+      "month": 11,
+      "day": 26,
+      "value": 0.251
+    },
+    {
+      "month": 11,
+      "day": 27,
+      "value": 0.227
+    },
+    {
+      "month": 11,
+      "day": 28,
+      "value": 0.203
+    },
+    {
+      "month": 11,
+      "day": 29,
+      "value": 0.179
+    },
+    {
+      "month": 11,
+      "day": 30,
+      "value": 0.155
+    },
+    {
+      "month": 12,
+      "day": 1,
+      "value": 0.131
+    },
+    {
+      "month": 12,
+      "day": 2,
+      "value": 0.107
+    },
+    {
+      "month": 12,
+      "day": 3,
+      "value": 0.082
+    },
+    {
+      "month": 12,
+      "day": 4,
+      "value": 0.058
+    },
+    {
+      "month": 12,
+      "day": 5,
+      "value": 0.034
+    },
+    {
+      "month": 12,
+      "day": 6,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 7,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 8,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 9,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 10,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 11,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 12,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 13,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 14,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 15,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 16,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 17,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 18,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 19,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 20,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 21,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 22,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 23,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 24,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 25,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 26,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 27,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 28,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 29,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 30,
+      "value": 0.01
+    },
+    {
+      "month": 12,
+      "day": 31,
+      "value": 0.01
+    }
+  ]
+}
