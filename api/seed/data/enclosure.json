@@ -889,6 +889,13 @@
     "always_include_indoor_viewing": null
   },
   {
+    "species": "Grevy's Zebra",
+    "exhibit": "Canadian Domain",
+    "seasonal_viewing_summary": "Mar-Nov",
+    "seasonal_viewing_information": null,
+    "always_include_indoor_viewing": null
+  },
+  {
     "species": "African Lion",
     "exhibit": "Africa Savanna",
     "seasonal_viewing_summary": "Year-round",

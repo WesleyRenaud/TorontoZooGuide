@@ -72,6 +72,16 @@ def test_walk_nodes_for_species_exhibit_returns_every_viewing_spot() -> None:
    assert len( { row[ 'walk_node_id' ] for row in kudu_rows } ) == 2
    assert len( kudu_pavilion_rows ) == 1
    assert kudu_pavilion_rows[ 0 ][ 'walk_node_id' ] == 'v-0263'
+   zebra_savanna_rows = walk_nodes_for_species_exhibit(
+      "Grevy's Zebra",
+      'Africa Savanna' )
+   zebra_domain_rows = walk_nodes_for_species_exhibit(
+      "Grevy's Zebra",
+      'Canadian Domain' )
+
+   assert len( zebra_savanna_rows ) == 1
+   assert len( zebra_domain_rows ) == 1
+   assert zebra_domain_rows[ 0 ][ 'walk_node_id' ] == 'v-0457'
 
 
 def test_walk_node_id_by_enclosure_name_resolves_viewing_spot_name() -> None:
