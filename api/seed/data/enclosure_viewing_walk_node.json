@@ -2219,8 +2219,8 @@
     "enclosure_type": "Outdoor",
     "x": 75.357,
     "y": 72.167,
-    "walk_node_id": "v-1061",
-    "snap_distance_px": 33.009
+    "walk_node_id": "v-1103",
+    "snap_distance_px": 100.683
   },
   {
     "species": "Western Lowland Gorilla",
