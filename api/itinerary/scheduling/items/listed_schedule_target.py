@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from ...animal_item_key import AnimalScheduleItemKey
 from ...attraction_item_key import AttractionScheduleItemKey
 from ...data_access.itinerary_default_duration import fetch_attraction_default_duration_seconds
-from ...data_access.itinerary_default_duration import fetch_enclosure_default_duration_seconds
+from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
 from ...data_access.schedule_itinerary_item import insert_itinerary_animal_schedule
 from ...data_access.schedule_itinerary_item import insert_itinerary_attraction_schedule
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
@@ -26,10 +26,11 @@ def resolve_listed_schedule_target(
       schedule_item_key: ListedScheduleItemKey ) -> ListedScheduleTarget:
    if isinstance( schedule_item_key, AnimalScheduleItemKey ):
       return ListedScheduleTarget(
-         default_duration_seconds=fetch_enclosure_default_duration_seconds(
+         default_duration_seconds=fetch_enclosure_viewing_default_duration_seconds(
             conn,
             schedule_item_key.species,
-            schedule_item_key.exhibit ) )
+            schedule_item_key.exhibit,
+            schedule_item_key.enclosure_name ) )
 
    return ListedScheduleTarget(
       default_duration_seconds=fetch_attraction_default_duration_seconds(

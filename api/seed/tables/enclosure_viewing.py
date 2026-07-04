@@ -16,6 +16,7 @@ RECORD_FIELDS = [
    'seasonally_off_display_message',
    'x_coord',
    'y_coord',
+   'default_itinerary_duration_minutes',
 ]
 
 DB_COLUMNS = [
@@ -26,6 +27,7 @@ DB_COLUMNS = [
    'SEASONALLY_OFF_DISPLAY_MESSAGE',
    'X_COORD',
    'Y_COORD',
+   'DEFAULT_ITINERARY_DURATION_MINUTES',
 ]
 
 DATA_FILE = 'enclosure_viewing.json'

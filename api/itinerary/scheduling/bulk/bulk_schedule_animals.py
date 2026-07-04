@@ -11,7 +11,7 @@ from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ...data_access.itinerary_default_duration import fetch_enclosure_default_duration_seconds
+from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...domain.itinerary import build_current_itinerary
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -184,10 +184,11 @@ def _schedule_animals_in_order(
 
    try:
       for index, animal_row in enumerate( animals ):
-         duration_seconds = fetch_enclosure_default_duration_seconds(
+         duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
             conn,
             animal_row.species,
-            animal_row.exhibit )
+            animal_row.exhibit,
+            animal_row.enclosure_name )
 
          if duration_seconds is None:
             _commit_scheduled_animals( conn, scheduled_count )

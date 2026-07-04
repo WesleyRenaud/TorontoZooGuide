@@ -66,3 +66,20 @@ def test_gorilla_includes_indoor_and_outdoor_when_outdoor_is_likely(
       'Indoor',
       'Outdoor',
    }
+
+
+def test_rhino_excludes_indoor_viewing_when_outdoor_is_likely(
+      db: DbControllers ) -> None:
+   animals = AnimalCoordinator.get_animals_viewable_on_day(
+      day=15,
+      month='June',
+      year=2026,
+      temp=22,
+      exhibits_to_include=[ 'Indo-Malaya Outdoor' ] )
+
+   assert _viewing_spots_for_species(
+      animals,
+      species='Greater One-Horned Rhinoceros',
+      exhibit='Indo-Malaya Outdoor' ) == [
+      ( 'Outdoor', 'Outdoor' ),
+   ]
