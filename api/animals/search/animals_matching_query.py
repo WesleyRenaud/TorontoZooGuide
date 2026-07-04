@@ -71,19 +71,6 @@ def filter_animals_by_species_exhibit_keys(
    ]
 
 
-def dedupe_animals_by_species_and_exhibit(
-      animals: list[ Animal ] ) -> list[ Animal ]:
-   best_by_species_and_exhibit: dict[ tuple[ str, str ], Animal ] = {}
-
-   for animal in animals:
-      key = species_exhibit_key( animal )
-      current = best_by_species_and_exhibit.get( key )
-      if current is None or ( animal.likelihood or 0 ) > ( current.likelihood or 0 ):
-         best_by_species_and_exhibit[ key ] = animal
-
-   return list( best_by_species_and_exhibit.values() )
-
-
 def sort_animals_by_species_and_exhibit(
       animals: list[ Animal ] ) -> list[ Animal ]:
    def sort_key( animal: Animal ) -> tuple[ str, str, str ]:
@@ -99,5 +86,4 @@ def build_animals_matching_query(
       animals: list[ Animal ],
       query: str ) -> list[ Animal ]:
    animals = filter_animals_matching_query( animals, query )
-   animals = dedupe_animals_by_species_and_exhibit( animals )
    return sort_animals_by_species_and_exhibit( animals )
