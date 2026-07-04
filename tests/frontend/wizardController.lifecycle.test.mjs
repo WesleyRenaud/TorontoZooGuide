@@ -201,6 +201,68 @@ test.describe('openItineraryWizard lifecycle', () => {
       );
    });
 
+   test('closes without prompting after revisiting regions on an unchanged itinerary', async () => {
+      const mountEl = createDomNode('div', 'wizard-mount');
+      const doneCalls = [];
+      const popupConfigs = [];
+      let saveHandler = null;
+      let closeHandler = null;
+      const visitDate = '2026-07-04';
+      const existingAnimals = [
+         { species: 'Red Panda', exhibit: 'Eurasia Wilds' },
+      ];
+
+      await openItineraryWizard({
+         mountEl,
+         onDone: () => {
+            doneCalls.push('done');
+         },
+         deps: {
+            loadItinerary: async () => ({
+               isActive: true,
+               date: visitDate,
+               animals: existingAnimals,
+               attractions: [],
+               guardiansTalks: [],
+               wildEncounters: [],
+            }),
+            resolveEarliestVisitDate: async () => makeNoonDate(2026, 6, 4),
+            createWizardState: (existing = {}) => createItineraryWizardState(existing),
+            createDateStepController: ({ onSave, onClose }) => {
+               saveHandler = onSave;
+               closeHandler = onClose;
+               return { show() {} };
+            },
+            selectionStepConfigs: [
+               {
+                  stepKey: 'regions',
+                  selectionKey: 'animals',
+                  preserveOnInvalid: true,
+                  factory: ({ onClose }) => {
+                     closeHandler = onClose;
+                     return {
+                        show() {},
+                        getSelectionSnapshot: async () => existingAnimals,
+                        shouldSkipClosingSelectionSync: () => true,
+                     };
+                  },
+               },
+            ],
+            finalizeWizard: async () => {},
+            showConfirmPopup: (config) => {
+               popupConfigs.push(config);
+            },
+            syncAnimalDraft: () => {},
+         },
+      });
+
+      saveHandler?.(visitDate);
+      await closeHandler?.();
+
+      assert.deepEqual(doneCalls, ['done']);
+      assert.equal(popupConfigs.length, 0);
+   });
+
    test('date save advances to the regions step', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const shownSteps = [];

@@ -12,7 +12,7 @@ afterEach(() => {
    delete globalThis.localStorage;
 });
 
-test('hasUnsavedChanges is true after selecting only a visit date', () => {
+test('hasUnsavedChanges ignores visit date-only edits', () => {
    const wizard = createItineraryWizardState({
       date: '',
       animals: [],
@@ -25,7 +25,7 @@ test('hasUnsavedChanges is true after selecting only a visit date', () => {
 
    wizard.applyValidationResult('2026-06-15', null);
 
-   assert.equal(wizard.hasUnsavedChanges(), true);
+   assert.equal(wizard.hasUnsavedChanges(), false);
 });
 
 test('hasUnsavedChanges is true when selections differ from initial', () => {
@@ -62,6 +62,20 @@ test('hasUnsavedChanges is false when animals match semantically after refetch-s
          id: 'African Lion||Africa Savanna',
       },
    ]);
+
+   assert.equal(wizard.hasUnsavedChanges(), false);
+});
+
+test('hasUnsavedChanges ignores revisiting the same visit date on a saved itinerary', () => {
+   const wizard = createItineraryWizardState({
+      date: '2026-06-15',
+      animals: [{ species: 'Red Panda', exhibit: 'Eurasia Wilds' }],
+      attractions: [],
+      guardiansTalks: [],
+      wildEncounters: [],
+   });
+
+   wizard.applyValidationResult('2026-06-15', null);
 
    assert.equal(wizard.hasUnsavedChanges(), false);
 });

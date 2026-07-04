@@ -166,14 +166,9 @@ function sortAnimalsForSaveComparison(animals = []) {
    ));
 }
 
-export function areItineraryDraftsSemanticallyEqual(left, right) {
-   const leftSave = toSetItineraryPayload(left);
-   const rightSave = toSetItineraryPayload(right);
-
-   if (leftSave.date !== rightSave.date) {
-      return false;
-   }
-
+function areItineraryDraftSaveItemSelectionsEqual(
+      leftSave,
+      rightSave) {
    if (leftSave.arrivalTime !== rightSave.arrivalTime) {
       return false;
    }
@@ -203,6 +198,24 @@ export function areItineraryDraftsSemanticallyEqual(left, right) {
       sortWildEncountersForSaveComparison(leftSave.wildEncounters),
       sortWildEncountersForSaveComparison(rightSave.wildEncounters),
    );
+}
+
+export function areItineraryDraftItemSelectionsEqual(left, right) {
+   return areItineraryDraftSaveItemSelectionsEqual(
+      toSetItineraryPayload(left),
+      toSetItineraryPayload(right),
+   );
+}
+
+export function areItineraryDraftsSemanticallyEqual(left, right) {
+   const leftSave = toSetItineraryPayload(left);
+   const rightSave = toSetItineraryPayload(right);
+
+   if (leftSave.date !== rightSave.date) {
+      return false;
+   }
+
+   return areItineraryDraftSaveItemSelectionsEqual(leftSave, rightSave);
 }
 
 function sortScheduledItemsForSaveComparison(items = []) {
