@@ -6,7 +6,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Blue-Girdled Angelfish",
@@ -15,7 +16,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Brush-Tailed Bettong",
@@ -24,7 +26,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Clown Triggerfish",
@@ -33,7 +36,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Crested Pigeon",
@@ -42,7 +46,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Crimson Rosella",
@@ -51,7 +56,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Eastern Rosella",
@@ -60,7 +66,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Emerald Tree Boa",
@@ -69,7 +76,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Flame Angelfish",
@@ -78,7 +86,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Fly River Turtle",
@@ -87,7 +96,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Galah",
@@ -96,7 +106,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Green Tree Python",
@@ -105,7 +116,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Green-Winged Dove",
@@ -114,7 +126,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Komodo Dragon",
@@ -123,7 +136,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Kookaburra",
@@ -132,7 +146,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Lau Banded Iguana",
@@ -141,7 +156,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Lionfish",
@@ -150,7 +166,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Live Coral Reefs",
@@ -159,7 +176,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Longnose Butterflyfish",
@@ -168,7 +186,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "MacLeay's Spectres",
@@ -177,7 +196,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Malagasy Rainbowfish",
@@ -186,7 +206,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Mimic Surgeonfish",
@@ -195,7 +216,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Moon Jellyfish",
@@ -204,7 +226,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Nicobar Pigeon",
@@ -213,7 +236,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Pennant Coral Fish",
@@ -222,7 +246,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Pied Imperial Pigeon",
@@ -231,7 +256,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Pot-Bellied Seahorse",
@@ -240,7 +266,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Red Claw Yabby",
@@ -249,7 +276,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Red-Bellied Short-Necked Turtle",
@@ -258,7 +286,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Red-Tailed Black Cockatoo",
@@ -267,7 +296,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Short-Beaked Echidna",
@@ -276,7 +306,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Solomon Island Leaf Frog",
@@ -285,7 +316,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Solomon Island Monkey-Tailed Skink",
@@ -294,7 +326,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Southern Hairy-Nosed Wombat",
@@ -303,7 +336,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Stimson's Python",
@@ -312,7 +346,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Tawny Frogmouth",
@@ -321,7 +356,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Thorny Devil Stick Insect",
@@ -330,7 +366,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Threadfin Butterflyfish",
@@ -339,7 +376,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Victoria Crowned Pigeon",
@@ -348,7 +386,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "White's Tree Frog",
@@ -357,7 +396,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.869,
-    "y_coord": 67.782
+    "y_coord": 67.782,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Demoiselle Crane",
@@ -366,7 +406,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The demoiselle cranes are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 72.925,
-    "y_coord": 64.81
+    "y_coord": 64.81,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Kookaburra",
@@ -375,7 +416,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The kookaburras can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 72.925,
-    "y_coord": 64.81
+    "y_coord": 64.81,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Southern Hairy-Nosed Wombat",
@@ -384,7 +426,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The wombats can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 73.888,
-    "y_coord": 67.181
+    "y_coord": 67.181,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Western Grey Kangaroo",
@@ -393,7 +436,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The kangaroos are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 75.357,
-    "y_coord": 72.167
+    "y_coord": 72.167,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Amur Tiger",
@@ -402,7 +446,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 76.076,
-    "y_coord": 76.176
+    "y_coord": 76.176,
+    "default_itinerary_duration_minutes": 8
   },
   {
     "species": "Asian Wild Horse",
@@ -411,7 +456,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 83.172,
-    "y_coord": 65.82
+    "y_coord": 65.82,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Asian Wild Horse",
@@ -420,7 +466,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 91.461,
-    "y_coord": 85.732
+    "y_coord": 85.732,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Bactrian Camel",
@@ -429,7 +476,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 85.339,
-    "y_coord": 84.538
+    "y_coord": 84.538,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Bactrian Camel",
@@ -438,7 +486,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 81.436,
-    "y_coord": 83.418
+    "y_coord": 83.418,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Domestic Yak",
@@ -447,7 +496,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 90.495,
-    "y_coord": 90.868
+    "y_coord": 90.868,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Highland Cattle",
@@ -456,7 +506,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 82.525,
-    "y_coord": 95.269
+    "y_coord": 95.269,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Mouflon",
@@ -465,7 +516,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 79.357,
-    "y_coord": 69.972
+    "y_coord": 69.972,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Red Panda",
@@ -474,7 +526,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The red pandas are likely to be inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 52.186,
-    "y_coord": 42.034
+    "y_coord": 42.034,
+    "default_itinerary_duration_minutes": 6
   },
   {
     "species": "Snow Leopard",
@@ -483,7 +536,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 86.033,
-    "y_coord": 76.673
+    "y_coord": 76.673,
+    "default_itinerary_duration_minutes": 8
   },
   {
     "species": "Steller's Sea Eagle",
@@ -492,7 +546,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 86.73,
-    "y_coord": 79.365
+    "y_coord": 79.365,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "West Caucasian Tur",
@@ -501,7 +556,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 85.24,
-    "y_coord": 72.803
+    "y_coord": 72.803,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "West Caucasian Tur",
@@ -510,7 +566,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 53.4,
-    "y_coord": 87.672
+    "y_coord": 87.672,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Arctic Wolf",
@@ -519,7 +576,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 75.673,
-    "y_coord": 53.208
+    "y_coord": 53.208,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Caribou",
@@ -528,7 +586,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 77.744,
-    "y_coord": 43.772
+    "y_coord": 43.772,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Lesser Snow Goose",
@@ -537,7 +596,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 72.064,
-    "y_coord": 51.575
+    "y_coord": 51.575,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Northern Bald Eagle",
@@ -546,7 +606,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 73.885,
-    "y_coord": 46.811
+    "y_coord": 46.811,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Polar Bear",
@@ -555,7 +616,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 78.289,
-    "y_coord": 51.1
+    "y_coord": 51.1,
+    "default_itinerary_duration_minutes": 10
   },
   {
     "species": "American Flamingo",
@@ -564,7 +626,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The American flamingos are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 77.471,
-    "y_coord": 38.008
+    "y_coord": 38.008,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Black-Handed Spider Monkey",
@@ -573,7 +636,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The black-handed spider monkeys are likely to be inside and off display on this day due to colder weather.",
     "x_coord": 77.016,
-    "y_coord": 35.154
+    "y_coord": 35.154,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Capybara",
@@ -582,7 +646,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The capybaras are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 76.108,
-    "y_coord": 37.753
+    "y_coord": 37.753,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Red-Legged Seriema",
@@ -591,7 +656,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The red-legged seriemas are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 78.017,
-    "y_coord": 36.228
+    "y_coord": 36.228,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Turkey Vulture",
@@ -600,7 +666,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The turkey vultures are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 78.017,
-    "y_coord": 36.228
+    "y_coord": 36.228,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "American Alligator",
@@ -609,7 +676,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "American Eel",
@@ -618,7 +686,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "American Lobster",
@@ -627,7 +696,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Axolotl",
@@ -636,7 +706,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Bark Scorpion",
@@ -645,7 +716,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Black-Footed Ferret",
@@ -654,7 +726,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Black-Widow Spider",
@@ -663,7 +736,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Blanding's Turtle",
@@ -672,7 +746,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Blue And Yellow Macaw",
@@ -681,7 +756,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Boa Constrictor",
@@ -690,7 +766,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Blue Poison Dart Frog",
@@ -699,7 +776,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Brazilian Giant Cockroach",
@@ -708,7 +786,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Brazilian Salmon Pink Bird-Eating Tarantula",
@@ -717,7 +796,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Butterfly Goodeid",
@@ -726,7 +806,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Crested Tinamou",
@@ -735,7 +816,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Cuvier's Smooth-Fronted Caiman",
@@ -744,7 +826,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Desert Grassland Whiptail",
@@ -753,7 +836,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Dyeing Poison Dart Frog",
@@ -762,7 +846,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Eastern Loggerhead Shrike",
@@ -771,7 +856,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Eastern Lubber Grasshopper",
@@ -780,7 +866,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Eyelash Viper",
@@ -789,7 +876,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Ferocious Water Bug",
@@ -798,7 +886,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Golden Lion Tamarin",
@@ -807,7 +896,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Great Horned Owl",
@@ -816,7 +906,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Green And Black Poison Dart Frog",
@@ -825,7 +916,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Green Surf Anemone",
@@ -834,7 +926,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Green-Winged Macaw",
@@ -843,7 +936,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Guatemalan Beaded Lizard",
@@ -852,7 +946,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Jamaican Boa",
@@ -861,7 +956,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Leather Sea Star",
@@ -870,7 +966,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Lemur Leaf Frog",
@@ -879,7 +976,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Longnose Dace",
@@ -888,7 +986,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Massasauga Rattlesnake",
@@ -897,7 +996,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Mexican Blind Cavefish",
@@ -906,7 +1006,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Midland Painted Turtle",
@@ -915,7 +1016,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "North American River Otter",
@@ -924,7 +1026,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Opal-Rumped Tanager",
@@ -933,7 +1036,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Painted Anemone",
@@ -942,7 +1046,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Panamanian Golden Frog",
@@ -951,7 +1056,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Plumose Anemone",
@@ -960,7 +1066,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Plush-Crested Jay",
@@ -969,7 +1076,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Puerto Rican Crested Toad",
@@ -978,7 +1086,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Pumpkinseed Sunfish",
@@ -987,7 +1096,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Red Island Bird-Eating Tarantula",
@@ -996,7 +1106,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Red-Crested Finch",
@@ -1005,7 +1116,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Reticulate Gila Monster",
@@ -1014,7 +1126,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Round Goby",
@@ -1023,7 +1136,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Rufous-Collared Sparrow",
@@ -1032,7 +1146,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "San-Esteban Island Chuckwalla",
@@ -1041,7 +1156,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Snapping Turtle",
@@ -1050,7 +1166,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Spot Prawn",
@@ -1059,7 +1176,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Spotted River Stingray",
@@ -1068,7 +1186,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Spotted Turtle",
@@ -1077,7 +1196,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Timber Rattlesnake",
@@ -1086,7 +1206,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Turquoise Tanager",
@@ -1095,7 +1216,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Two-Toed Sloth",
@@ -1104,7 +1226,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Western Blacknose Dace",
@@ -1113,7 +1236,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "White-Faced Saki",
@@ -1122,7 +1246,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Yellow-Banded Poison Dart Frog",
@@ -1131,7 +1256,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Zebra Finch",
@@ -1140,7 +1266,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.663,
-    "y_coord": 49.679
+    "y_coord": 49.679,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Golden Lion Tamarin",
@@ -1149,7 +1276,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The golden lion tamarins can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 69.119,
-    "y_coord": 51.599
+    "y_coord": 51.599,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Two-Toed Sloth",
@@ -1158,7 +1286,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The sloths can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 69.119,
-    "y_coord": 51.599
+    "y_coord": 51.599,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "White-Faced Saki",
@@ -1167,7 +1296,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white-faced sakis can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 69.119,
-    "y_coord": 51.599
+    "y_coord": 51.599,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "North American River Otter",
@@ -1176,7 +1306,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 68.706,
-    "y_coord": 47.561
+    "y_coord": 47.561,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Cougar",
@@ -1185,7 +1316,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 26.885,
-    "y_coord": 7.094
+    "y_coord": 7.094,
+    "default_itinerary_duration_minutes": 6
   },
   {
     "species": "Grizzly Bear",
@@ -1194,7 +1326,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The grizzly bears are likely to be off display on this day due to cooler weather and hibernation patterns.",
     "x_coord": 22.896,
-    "y_coord": 4.714
+    "y_coord": 4.714,
+    "default_itinerary_duration_minutes": 10
   },
   {
     "species": "Northern Bald Eagle",
@@ -1203,7 +1336,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 22.226,
-    "y_coord": 14.269
+    "y_coord": 14.269,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Raccoon",
@@ -1212,7 +1346,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 30.393,
-    "y_coord": 17.759
+    "y_coord": 17.759,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Wood Bison",
@@ -1221,7 +1356,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 28.482,
-    "y_coord": 4.141
+    "y_coord": 4.141,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Wood Bison",
@@ -1230,7 +1366,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 20.453,
-    "y_coord": 21.249
+    "y_coord": 21.249,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "African Lion",
@@ -1239,7 +1376,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The African lions are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 51.162,
-    "y_coord": 39.787
+    "y_coord": 39.787,
+    "default_itinerary_duration_minutes": 8
   },
   {
     "species": "African Penguin",
@@ -1248,7 +1386,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The penguins can most likely be seen inside on this day due to cold weather.",
     "x_coord": 51.001,
-    "y_coord": 50.458
+    "y_coord": 50.458,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "White-Breasted Cormorant",
@@ -1257,7 +1396,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The cormorants can most likely be seen inside on this day due to cold weather.",
     "x_coord": 51.001,
-    "y_coord": 50.458
+    "y_coord": 50.458,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "African Penguin",
@@ -1266,7 +1406,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 51.954,
-    "y_coord": 49.237
+    "y_coord": 49.237,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "White-Breasted Cormorant",
@@ -1275,7 +1416,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 51.954,
-    "y_coord": 49.237
+    "y_coord": 49.237,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Cheetah",
@@ -1284,7 +1426,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The cheetahs are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 42.194,
-    "y_coord": 40.492
+    "y_coord": 40.492,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Common Eland",
@@ -1293,7 +1436,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The elands are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 50.618,
-    "y_coord": 44.872
+    "y_coord": 44.872,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Greater Kudu",
@@ -1302,7 +1446,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater kudus are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 41.389,
-    "y_coord": 55.434
+    "y_coord": 55.434,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Marabou Stork",
@@ -1311,7 +1456,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 41.389,
-    "y_coord": 55.434
+    "y_coord": 55.434,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Southern Ground Hornbill",
@@ -1320,7 +1466,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 41.389,
-    "y_coord": 55.434
+    "y_coord": 55.434,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "White-Headed Vulture",
@@ -1329,7 +1476,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white-headed vultures are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 41.389,
-    "y_coord": 55.434
+    "y_coord": 55.434,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Ostrich",
@@ -1338,7 +1486,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 41.389,
-    "y_coord": 55.434
+    "y_coord": 55.434,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Greater Kudu",
@@ -1347,7 +1496,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater kudus are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 40.544,
-    "y_coord": 58.662
+    "y_coord": 58.662,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Marabou Stork",
@@ -1356,7 +1506,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 40.544,
-    "y_coord": 58.662
+    "y_coord": 58.662,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Southern Ground Hornbill",
@@ -1365,7 +1516,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are off-display for the season. They can be seen outside again in the summer.",
     "x_coord": 40.544,
-    "y_coord": 58.662
+    "y_coord": 58.662,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "White-Headed Vulture",
@@ -1374,7 +1526,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 40.544,
-    "y_coord": 58.662
+    "y_coord": 58.662,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Ostrich",
@@ -1383,7 +1536,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 40.544,
-    "y_coord": 58.662
+    "y_coord": 58.662,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Greater Kudu",
@@ -1392,7 +1546,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater kudus are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 43.612,
-    "y_coord": 62.754
+    "y_coord": 62.754,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Marabou Stork",
@@ -1401,7 +1556,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 43.612,
-    "y_coord": 62.754
+    "y_coord": 62.754,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Southern Ground Hornbill",
@@ -1410,7 +1566,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The southern ground hornbills are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 43.612,
-    "y_coord": 62.754
+    "y_coord": 62.754,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "White-Headed Vulture",
@@ -1419,7 +1576,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white-headed vultures are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 43.612,
-    "y_coord": 62.754
+    "y_coord": 62.754,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Ostrich",
@@ -1428,7 +1586,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 43.612,
-    "y_coord": 62.754
+    "y_coord": 62.754,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Grevy's Zebra",
@@ -1437,7 +1596,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The zebras are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 46.194,
-    "y_coord": 41.967
+    "y_coord": 41.967,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Grevy's Zebra",
@@ -1446,7 +1606,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 51.664,
-    "y_coord": 29.598
+    "y_coord": 29.598,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Marabou Stork",
@@ -1455,7 +1616,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 43.38,
-    "y_coord": 43.353
+    "y_coord": 43.353,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Masai Giraffe",
@@ -1465,7 +1627,8 @@
     "seasonally_off_display_message": "The giraffes can most likely be seen inside on this day due to cold weather.",
     "x_coord": 39.885,
     "y_coord": 70.927,
-    "walk_node_id": "v-0303"
+    "walk_node_id": "v-0303",
+    "default_itinerary_duration_minutes": 10
   },
   {
     "species": "Masai Giraffe",
@@ -1474,7 +1637,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 42.35,
-    "y_coord": 71.366
+    "y_coord": 71.366,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Olive Baboon",
@@ -1483,7 +1647,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The baboons are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 46.381,
-    "y_coord": 37.671
+    "y_coord": 37.671,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Ostrich",
@@ -1492,7 +1657,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The ostriches are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 49.056,
-    "y_coord": 36.903
+    "y_coord": 36.903,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "River Hippopotamus",
@@ -1501,7 +1667,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The hippopotamuses are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 37.731,
-    "y_coord": 68.101
+    "y_coord": 68.101,
+    "default_itinerary_duration_minutes": 10
   },
   {
     "species": "Southern White Rhinoceros",
@@ -1510,7 +1677,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The white rhinos are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 41.57,
-    "y_coord": 50.29
+    "y_coord": 50.29,
+    "default_itinerary_duration_minutes": 10
   },
   {
     "species": "Spotted Hyena",
@@ -1519,7 +1687,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The hyenas are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 53.96,
-    "y_coord": 42.207
+    "y_coord": 42.207,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Warthog",
@@ -1528,7 +1697,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The warthogs are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 41.363,
-    "y_coord": 64.056
+    "y_coord": 64.056,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Watusi Cattle",
@@ -1537,7 +1707,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The watusi cattle are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 55.34,
-    "y_coord": 45.331
+    "y_coord": 45.331,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "African Clawed Frog",
@@ -1546,7 +1717,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Black Crake",
@@ -1555,7 +1727,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Blue-Bellied Roller",
@@ -1564,7 +1737,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Hamerkop",
@@ -1573,7 +1747,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Lake Malawi Cichlids",
@@ -1582,7 +1757,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Lau Banded Iguana",
@@ -1591,7 +1767,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Leopard Ctenopoma",
@@ -1600,7 +1777,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Mantella (Poison Frog)",
@@ -1609,7 +1787,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Naked Mole Rat",
@@ -1618,7 +1797,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Ngege",
@@ -1627,7 +1807,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Slender-Tailed Meerkat",
@@ -1636,7 +1817,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "South African Crested Porcupine",
@@ -1645,7 +1827,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Speckled Mousebird",
@@ -1654,7 +1837,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Spider Tortoise",
@@ -1663,7 +1847,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Tomato Frog",
@@ -1672,7 +1857,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Veiled Chameleon",
@@ -1681,7 +1867,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Violaceous Plantain Eater",
@@ -1690,7 +1877,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "West African Dwarf Crocodile",
@@ -1699,7 +1887,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 45.865,
-    "y_coord": 64.211
+    "y_coord": 64.211,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Aldabra Tortoise",
@@ -1708,7 +1897,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 43.103,
-    "y_coord": 67.078
+    "y_coord": 67.078,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Gaboon Viper",
@@ -1717,7 +1907,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 43.103,
-    "y_coord": 67.078
+    "y_coord": 67.078,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Grey-Necked Crowned Crane",
@@ -1726,7 +1917,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 43.103,
-    "y_coord": 67.078
+    "y_coord": 67.078,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Ring-Tailed Lemur",
@@ -1735,7 +1927,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 43.103,
-    "y_coord": 67.078
+    "y_coord": 67.078,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Royal Python",
@@ -1744,7 +1937,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 43.103,
-    "y_coord": 67.078
+    "y_coord": 67.078,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Aldabra Tortoise",
@@ -1753,7 +1947,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The Aldabra tortoises can most likely be seen inside on this day due to cooler weather.",
     "x_coord": 47.091,
-    "y_coord": 66.261
+    "y_coord": 66.261,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "African Spoonbill",
@@ -1762,7 +1957,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
-    "y_coord": 66.138
+    "y_coord": 66.138,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Nile Soft-Shelled Turtle",
@@ -1771,7 +1967,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
-    "y_coord": 66.138
+    "y_coord": 66.138,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Pygmy Hippopotamus",
@@ -1780,7 +1977,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
-    "y_coord": 66.138
+    "y_coord": 66.138,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Radiated Tortoise",
@@ -1789,7 +1987,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
-    "y_coord": 66.138
+    "y_coord": 66.138,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Sacred Ibis",
@@ -1798,7 +1997,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
-    "y_coord": 66.138
+    "y_coord": 66.138,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "South African Shelduck",
@@ -1807,7 +2007,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
-    "y_coord": 66.138
+    "y_coord": 66.138,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Straw Coloured Fruit Bat",
@@ -1816,7 +2017,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 44.546,
-    "y_coord": 66.138
+    "y_coord": 66.138,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Red River Hog",
@@ -1825,7 +2027,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The red river hogs are most likely inside and off-display on this day due to cold weather.",
     "x_coord": 44.591,
-    "y_coord": 68.531
+    "y_coord": 68.531,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Western Lowland Gorilla",
@@ -1834,7 +2037,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 47.487,
-    "y_coord": 62.703
+    "y_coord": 62.703,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Western Lowland Gorilla",
@@ -1843,7 +2047,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The gorillas can most likely only be seen inside on this day due to cold weather.",
     "x_coord": 48.951,
-    "y_coord": 59.856
+    "y_coord": 59.856,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Asian Brown Tortoise",
@@ -1852,7 +2057,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Bighead Carp",
@@ -1861,7 +2067,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Black Carp",
@@ -1870,7 +2077,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Black-Breasted Leaf Turtle",
@@ -1879,7 +2087,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Black-Throated Laughing Thrush",
@@ -1888,7 +2097,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Burmese Star Tortoise",
@@ -1897,7 +2107,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Cattle Egret",
@@ -1906,7 +2117,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Concave Casqued Hornbill",
@@ -1915,7 +2127,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Crested Wood Partridge",
@@ -1924,7 +2137,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Crocodile Lizard",
@@ -1933,7 +2147,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Crocodile Newt",
@@ -1942,7 +2157,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Edward's Pheasant",
@@ -1951,7 +2167,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Giant Gourami",
@@ -1960,7 +2177,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Grass Carp",
@@ -1969,7 +2187,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Green Crested Basilisk",
@@ -1978,7 +2197,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Hamilton's Pond Turtle",
@@ -1987,7 +2207,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Iridescent Shark Catfish",
@@ -1996,7 +2217,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Luzon Bleeding-Heart Dove",
@@ -2005,7 +2227,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Malayan Bonytongue",
@@ -2014,7 +2237,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Malaysian Painted Turtle",
@@ -2023,7 +2247,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Mekong Barb",
@@ -2032,7 +2257,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Monocled Cobra",
@@ -2041,7 +2267,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Nicobar Pigeon",
@@ -2050,7 +2277,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Palawan Peacock-Pheasant",
@@ -2059,7 +2287,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Red-Lined Torpedo Barb",
@@ -2068,7 +2297,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Reticulated Python",
@@ -2077,7 +2307,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Spiny Turtle",
@@ -2086,7 +2317,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Sumatran Orangutan",
@@ -2095,7 +2327,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Tentacled Snake",
@@ -2104,7 +2337,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Tinfoil Barb",
@@ -2113,7 +2347,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Tomistoma",
@@ -2122,7 +2357,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Tri-Coloured Shark",
@@ -2131,7 +2367,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "White-Handed Gibbon",
@@ -2140,7 +2377,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 46.391,
-    "y_coord": 75.269
+    "y_coord": 75.269,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Sumatran Orangutan",
@@ -2149,7 +2387,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The orangutans can most only likely be seen inside on this day due to cold weather.",
     "x_coord": 42.963,
-    "y_coord": 78.506
+    "y_coord": 78.506,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Asian Brown Tortoise",
@@ -2158,7 +2397,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The Asian brown tortoise can most likely be seen inside the Indo-Malaya Pavilion on this day due to cooler weather.",
     "x_coord": 54.631,
-    "y_coord": 83.101
+    "y_coord": 83.101,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Babirusa",
@@ -2167,7 +2407,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The babirusas can most likely be seen inside on this day due to cold weather.",
     "x_coord": 54.631,
-    "y_coord": 83.101
+    "y_coord": 83.101,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Babirusa",
@@ -2176,7 +2417,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 53.679,
-    "y_coord": 84.485
+    "y_coord": 84.485,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Greater One-Horned Rhinoceros",
@@ -2185,7 +2427,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The greater one-horned rhinoceros is most likely inside and off-display on this day due to cold weather.",
     "x_coord": 52.485,
-    "y_coord": 85.012
+    "y_coord": 85.012,
+    "default_itinerary_duration_minutes": 7
   },
   {
     "species": "Greater One-Horned Rhinoceros",
@@ -2194,7 +2437,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 53.679,
-    "y_coord": 84.485
+    "y_coord": 84.485,
+    "default_itinerary_duration_minutes": 7
   },
   {
     "species": "Indian Peafowl",
@@ -2203,7 +2447,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 52.643,
-    "y_coord": 78.68
+    "y_coord": 78.68,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Cheetah",
@@ -2212,7 +2457,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The cheetahs are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 49.295,
-    "y_coord": 71.958
+    "y_coord": 71.958,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Asian Giant Millipede",
@@ -2221,7 +2467,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
-    "y_coord": 81.571
+    "y_coord": 81.571,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Clouded Leopard",
@@ -2230,7 +2477,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
-    "y_coord": 81.571
+    "y_coord": 81.571,
+    "default_itinerary_duration_minutes": 5
   },
   {
     "species": "Giant Gourami",
@@ -2239,7 +2487,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
-    "y_coord": 81.571
+    "y_coord": 81.571,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Gooty Sapphire Ornamental Tarantula",
@@ -2248,7 +2497,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
-    "y_coord": 81.571
+    "y_coord": 81.571,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Malayan Walking Stick",
@@ -2257,7 +2507,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
-    "y_coord": 81.571
+    "y_coord": 81.571,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Malaysian Stick Insect Jungle Wood Nymph",
@@ -2266,7 +2517,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
-    "y_coord": 81.571
+    "y_coord": 81.571,
+    "default_itinerary_duration_minutes": 0.5
   },
   {
     "species": "Red-Tailed Green Ratsnake",
@@ -2275,7 +2527,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
-    "y_coord": 81.571
+    "y_coord": 81.571,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Wrinkled Hornbill",
@@ -2284,7 +2537,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 50.177,
-    "y_coord": 81.571
+    "y_coord": 81.571,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Domestic Goat",
@@ -2293,7 +2547,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 64.786,
-    "y_coord": 72.611
+    "y_coord": 72.611,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "African Spurred Tortoise",
@@ -2302,7 +2557,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The African spurred tortoise is most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 66.827,
-    "y_coord": 80.627
+    "y_coord": 80.627,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Common Raven",
@@ -2311,7 +2567,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 66.827,
-    "y_coord": 80.627
+    "y_coord": 80.627,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Eurasian Eagle Owl",
@@ -2320,7 +2577,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 66.827,
-    "y_coord": 80.627
+    "y_coord": 80.627,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Great Horned Owl",
@@ -2329,7 +2587,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": null,
     "x_coord": 66.827,
-    "y_coord": 80.627
+    "y_coord": 80.627,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Guinea Pig",
@@ -2338,7 +2597,8 @@
     "enclosure_type": "Indoor",
     "seasonally_off_display_message": null,
     "x_coord": 66.827,
-    "y_coord": 80.627
+    "y_coord": 80.627,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Harris's Hawk",
@@ -2347,7 +2607,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The Harris' hawks can most likely be seen inside on this day due to cold weather.",
     "x_coord": 66.827,
-    "y_coord": 80.627
+    "y_coord": 80.627,
+    "default_itinerary_duration_minutes": 1
   },
   {
     "species": "Marabou Stork",
@@ -2356,7 +2617,8 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The marabou storks are most likely inside and off-display on this day due to cooler weather.",
     "x_coord": 66.827,
-    "y_coord": 80.627
+    "y_coord": 80.627,
+    "default_itinerary_duration_minutes": 2
   },
   {
     "species": "Rabbit",
@@ -2365,6 +2627,7 @@
     "enclosure_type": "Outdoor",
     "seasonally_off_display_message": "The rabbits are most likely inside and off-display on this day due to particularly harsh conditions.",
     "x_coord": 66.827,
-    "y_coord": 80.627
+    "y_coord": 80.627,
+    "default_itinerary_duration_minutes": 2
   }
 ]

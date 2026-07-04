@@ -65,7 +65,7 @@ def _execute_migration_statement( cursor: Cursor, statement: str ) -> None:
    except sqlite3.OperationalError as error:
       message = str( error ).lower()
 
-      if 'duplicate column name' in message or 'no such table' in message:
+      if 'duplicate column name' in message or 'no such table' in message or 'no such column' in message:
          return
 
       raise

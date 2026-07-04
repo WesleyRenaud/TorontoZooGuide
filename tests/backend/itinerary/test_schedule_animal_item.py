@@ -141,6 +141,16 @@ def test_schedule_itinerary_animal_skips_existing_scheduled_slot(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
 
+   db.conn.execute(
+      """   UPDATE EnclosureViewing
+            SET DEFAULT_ITINERARY_DURATION_MINUTES = ?
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND NAME = ?;
+      """,
+      ( 7, 'African Penguin', 'Africa Savanna', 'Outdoor' ) )
+   db.conn.commit()
+
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
       arrival_time='09:30',
@@ -174,10 +184,11 @@ def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
    db.conn.execute(
-      """   UPDATE Enclosure
+      """   UPDATE EnclosureViewing
             SET DEFAULT_ITINERARY_DURATION_MINUTES = ?
             WHERE SPECIES = ?
-              AND EXHIBIT = ?;
+              AND EXHIBIT = ?
+              AND NAME IS NULL;
       """,
       ( 0.5, 'African Lion', 'Africa Savanna' ) )
    db.conn.commit()
@@ -201,10 +212,11 @@ def test_schedule_itinerary_animal_preserves_sub_minute_default_duration(
    assert result.itinerary.animals[ 0 ].end_time == '9:30:30 AM'
 
    db.conn.execute(
-      """   UPDATE Enclosure
+      """   UPDATE EnclosureViewing
             SET DEFAULT_ITINERARY_DURATION_MINUTES = ?
             WHERE SPECIES = ?
-              AND EXHIBIT = ?;
+              AND EXHIBIT = ?
+              AND NAME IS NULL;
       """,
       ( 8, 'African Lion', 'Africa Savanna' ) )
    db.conn.commit()
