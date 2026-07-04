@@ -44,7 +44,7 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
    );
    assert.equal(getAnimalId(africanLionRow), 'African Lion||African Savanna');
    assert.equal(getAnimalTitleLine(africanLionRow), 'African Lion');
-   assert.equal(getAnimalSubtitle(africanLionRow), 'African Savanna \u2022 Outdoor');
+   assert.equal(getAnimalSubtitle(africanLionRow), 'African Savanna');
    assert.equal(
       getAnimalTitleLine({
          species: 'Marabou Stork',
@@ -61,7 +61,23 @@ test('animal selector model derives ids, subtitles, and image paths', () => {
          enclosure_name: 'White Rhino Viewing',
          enclosure_type: 'Outdoor',
       }),
-      'Africa Savanna \u2022 Outdoor'
+      'Africa Savanna'
+   );
+   assert.equal(
+      getAnimalTitleLine({
+         species: 'Red River Hog',
+         exhibit: 'African Rainforest Pavilion',
+         enclosure_type: 'Outdoor',
+      }),
+      'Red River Hog'
+   );
+   assert.equal(
+      getAnimalSubtitle({
+         species: 'Red River Hog',
+         exhibit: 'African Rainforest Pavilion',
+         enclosure_type: 'Outdoor',
+      }),
+      'African Rainforest Pavilion'
    );
    assert.equal(
       getAnimalTitleLine({
