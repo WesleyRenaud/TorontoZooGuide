@@ -18,7 +18,6 @@ def build_walk_graph_adjacency( graph: WalkGraph ) -> WalkGraphAdjacency:
       length_px = float( edge[ 'length_px' ] )
 
       adjacency[ from_id ].append( ( to_id, length_px ) )
-      adjacency[ to_id ].append( ( from_id, length_px ) )
 
    return dict( adjacency )
 
