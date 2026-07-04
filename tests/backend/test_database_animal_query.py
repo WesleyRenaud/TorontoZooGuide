@@ -73,7 +73,36 @@ def test_animal_query_returns_same_species_in_multiple_exhibits( db: DbControlle
 def test_basic_animal_lookup_methods( db: DbControllers ) -> None:
    assert 'African Lion' in ExhibitCoordinator.get_names_of_animals_in_exhibit( 'Africa Savanna' )
 
-   information = AnimalCoordinator.get_animal_information( 'African Lion' )
+   information = AnimalCoordinator.get_animal_information(
+      'African Lion',
+      exhibit='Africa Savanna' )
 
    assert information.species == 'African Lion'
    assert information.exhibit == 'Africa Savanna'
+
+
+def test_animal_information_resolves_exhibit_for_multi_exhibit_species(
+      db: DbControllers,
+) -> None:
+   pavilion_kudu = AnimalCoordinator.get_animal_information(
+      'Greater Kudu',
+      exhibit='African Rainforest Pavilion' )
+
+   assert pavilion_kudu is not None
+   assert pavilion_kudu.exhibit == 'African Rainforest Pavilion'
+
+   tundra_eagle = AnimalCoordinator.get_animal_information(
+      'Northern Bald Eagle',
+      exhibit='Tundra Trek' )
+
+   assert tundra_eagle is not None
+   assert tundra_eagle.exhibit == 'Tundra Trek'
+   assert tundra_eagle.seasonal_viewing_summary == 'Year-round'
+
+   domain_eagle = AnimalCoordinator.get_animal_information(
+      'Northern Bald Eagle',
+      exhibit='Canadian Domain' )
+
+   assert domain_eagle is not None
+   assert domain_eagle.exhibit == 'Canadian Domain'
+   assert domain_eagle.seasonal_viewing_summary == 'Mar-Dec'

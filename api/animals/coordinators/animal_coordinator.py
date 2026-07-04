@@ -59,10 +59,14 @@ class AnimalCoordinator():
 
 
    @classmethod
-   def get_animal_information( cls, species: str ) -> Animal | None:
+   def get_animal_information(
+         cls,
+         species: str,
+         exhibit: str ) -> Animal | None:
       return fetch_animal_information(
          get_connection(),
-         species=species )
+         species=species,
+         exhibit=exhibit )
 
 
    @classmethod

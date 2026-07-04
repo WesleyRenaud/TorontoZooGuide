@@ -43,7 +43,9 @@ class AnimalController():
    def get_animal_information( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      animal_info = AnimalCoordinator.get_animal_information( species=data.get( 'species' ) )
+      animal_info = AnimalCoordinator.get_animal_information(
+         species=data.get( 'species' ),
+         exhibit=data.get( 'exhibit' ) )
 
       handler._write_json( {
          'information': [ animal_info.to_dict() ],

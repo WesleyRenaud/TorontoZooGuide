@@ -84,7 +84,10 @@ def test_get_visible_animals_endpoint_maps_payload_and_response(
          { 'species': 'African Lion', 'exhibit': 'Africa Savanna' },
          'viewingScopes'
       ),
-      ( '/get-animal-information', { 'species': 'African Lion' }, 'information' ),
+      ( '/get-animal-information', {
+         'species': 'African Lion',
+         'exhibit': 'Africa Savanna',
+      }, 'information' ),
    ]
 )
 def test_read_animal_endpoints_return_json_keys(

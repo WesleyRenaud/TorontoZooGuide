@@ -47,9 +47,20 @@ class AnimalsExhibitsStubMixin:
          return [ AnimalViewingScope.INDOOR, AnimalViewingScope.OUTDOOR ]
 
 
-   def get_animal_information( self, species: str ) -> Animal:
-         self.calls.append( ( 'get_animal_information', { 'species': species } ) )
-         return Animal( species=species, exhibit=ANIMAL_EXHIBIT )
+   def get_animal_information(
+         self,
+         species: str,
+         exhibit: str ) -> Animal:
+         self.calls.append(
+            (
+               'get_animal_information',
+               {
+                  'species': species,
+                  'exhibit': exhibit,
+               }
+            )
+         )
+         return Animal( species=species, exhibit=exhibit )
 
 
    def get_closed_exhibits( self, **kwargs: Any ) -> list[ str ]:

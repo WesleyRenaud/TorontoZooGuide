@@ -91,7 +91,10 @@ test('getAnimalViewingScopes keeps only valid viewing scopes', async () => {
 test('getAnimalInformation returns the first normalized animal row', async () => {
    globalThis.fetch = async (url, options) => {
       assert.equal(url, '/get-animal-information');
-      assert.deepEqual(JSON.parse(options.body), { species: 'African Lion' });
+      assert.deepEqual(JSON.parse(options.body), {
+         species: 'African Lion',
+         exhibit: 'Africa Savanna',
+      });
 
       return mockResponse(JSON.stringify({
          information: [
@@ -106,7 +109,12 @@ test('getAnimalInformation returns the first normalized animal row', async () =>
       }));
    };
 
-   assert.deepEqual(await getAnimalInformation('African Lion'), {
+   assert.deepEqual(
+      await getAnimalInformation({
+         species: 'African Lion',
+         exhibit: 'Africa Savanna',
+      }),
+      {
       species: 'African Lion',
       latin_name: 'Panthera leo',
       general_viewing_tips: null,
@@ -129,7 +137,10 @@ test('getAnimalInformation returns null when no animal rows remain', async () =>
       information: [{ species: ' ' }],
    }));
 
-   assert.equal(await getAnimalInformation('African Lion'), null);
+   assert.equal(
+      await getAnimalInformation({ species: 'African Lion', exhibit: 'Africa Savanna' }),
+      null
+   );
 });
 
 test('createAnimalsApi exposes animals API methods', () => {
