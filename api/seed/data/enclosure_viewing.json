@@ -437,6 +437,7 @@
     "seasonally_off_display_message": "The kangaroos are likely to be inside and off display on this day due to cold weather.",
     "x_coord": 75.357,
     "y_coord": 72.167,
+    "walk_node_id": "v-1103",
     "default_itinerary_duration_minutes": 5
   },
   {
