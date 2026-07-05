@@ -1,23 +1,90 @@
 from __future__ import annotations
 
+from collections import defaultdict
+
 from ...models import Animal
 from ..search.animals_matching_query import species_exhibit_key
-from ...shared.constants import OUTDOOR_LIKELIHOOD_EXCLUDE_INDOOR_THRESHOLD
 from ...shared.enums import EnclosureType
 
 
-def should_exclude_indoor_viewing_spot(
+def complementary_indoor_likelihood( outdoor_likelihood: int ) -> int:
+   return 100 - outdoor_likelihood
+
+
+def effective_viewing_likelihood(
       animal: Animal,
       *,
-      outdoor_likelihood: int ) -> bool:
-   return (
-      animal.always_include_indoor_viewing is False
-      and outdoor_likelihood >= OUTDOOR_LIKELIHOOD_EXCLUDE_INDOOR_THRESHOLD )
+      outdoor_likelihood: int,
+      single_habitat: bool ) -> int:
+   if single_habitat and EnclosureType.is_indoor( animal.enclosure_type ):
+      return complementary_indoor_likelihood( outdoor_likelihood )
+
+   return animal.likelihood or 0
+
+
+def single_habitat_viewing_species_exhibit_keys(
+      animals: list[ Animal ] ) -> set[ tuple[ str, str ] ]:
+   candidate_keys = {
+      species_exhibit_key( animal )
+      for animal in animals
+      if animal.include_all_viewing_spots is False
+   }
+   max_likelihood_by_key: dict[ tuple[ str, str ], int ] = defaultdict( int )
+
+   for animal in animals:
+      key = species_exhibit_key( animal )
+      if key in candidate_keys:
+         max_likelihood_by_key[ key ] = max(
+            max_likelihood_by_key[ key ],
+            animal.likelihood or 0 )
+
+   return {
+      key
+      for key in candidate_keys
+      if max_likelihood_by_key[ key ] > 0
+   }
+
+
+def preferred_viewing_spot_among(
+      viewing_spots: list[ Animal ],
+      *,
+      outdoor_likelihood: int ) -> Animal:
+   return max(
+      viewing_spots,
+      key=lambda animal: (
+         effective_viewing_likelihood(
+            animal,
+            outdoor_likelihood=outdoor_likelihood,
+            single_habitat=True ),
+         EnclosureType.is_outdoor( animal.enclosure_type ),
+      ) )
+
+
+def preferred_single_habitat_viewing_spot_by_species_exhibit(
+      animals: list[ Animal ],
+      *,
+      outdoor_likelihood_by_species_exhibit: dict[ tuple[ str, str ], int ],
+      single_habitat_species_exhibit_keys: set[ tuple[ str, str ] ] ) -> dict[ tuple[ str, str ], Animal ]:
+   viewing_spots_by_species_exhibit: dict[ tuple[ str, str ], list[ Animal ] ] = defaultdict( list )
+
+   for animal in animals:
+      key = species_exhibit_key( animal )
+      if key in single_habitat_species_exhibit_keys:
+         viewing_spots_by_species_exhibit[ key ].append( animal )
+
+   return {
+      key: preferred_viewing_spot_among(
+         viewing_spots,
+         outdoor_likelihood=outdoor_likelihood_by_species_exhibit.get( key, 0 ) )
+      for key, viewing_spots in viewing_spots_by_species_exhibit.items()
+   }
 
 
 def apply_indoor_outdoor_viewing_visibility(
       animals: list[ Animal ] ) -> list[ Animal ]:
    outdoor_likelihood_by_species_exhibit: dict[ tuple[ str, str ], int ] = {}
+   single_habitat_species_exhibit_keys = single_habitat_viewing_species_exhibit_keys(
+      animals )
 
    for animal in animals:
       if not EnclosureType.is_outdoor( animal.enclosure_type ):
@@ -28,17 +95,29 @@ def apply_indoor_outdoor_viewing_visibility(
          outdoor_likelihood_by_species_exhibit.get( key, 0 ),
          animal.likelihood or 0 )
 
+   preferred_viewing_spot_by_species_exhibit = (
+      preferred_single_habitat_viewing_spot_by_species_exhibit(
+         animals,
+         outdoor_likelihood_by_species_exhibit=outdoor_likelihood_by_species_exhibit,
+         single_habitat_species_exhibit_keys=single_habitat_species_exhibit_keys ) )
+
    visible_animals: list[ Animal ] = []
 
    for animal in animals:
+      key = species_exhibit_key( animal )
+      outdoor_likelihood = outdoor_likelihood_by_species_exhibit.get( key, 0 )
+      is_single_habitat = key in single_habitat_species_exhibit_keys
+
       if (
-            EnclosureType.is_indoor( animal.enclosure_type )
-            and should_exclude_indoor_viewing_spot(
-                  animal,
-                  outdoor_likelihood=outdoor_likelihood_by_species_exhibit.get(
-                     species_exhibit_key( animal ),
-                     0 ) ) ):
+            is_single_habitat
+            and preferred_viewing_spot_by_species_exhibit.get( key ) is not animal ):
          continue
+
+      if is_single_habitat and EnclosureType.is_indoor( animal.enclosure_type ):
+         animal.likelihood = effective_viewing_likelihood(
+            animal,
+            outdoor_likelihood=outdoor_likelihood,
+            single_habitat=True )
 
       visible_animals.append( animal )
 

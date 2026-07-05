@@ -47,4 +47,4 @@ class AnimalViewabilityRecord:
    closed_end: DateKey | None
    animal_day_seasonal_multiplier: SeasonalMultiplier
    exhibit_day_seasonal_availability_multiplier: SeasonalMultiplier
-   always_include_indoor_viewing: bool | None = None
+   include_all_viewing_spots: bool | None = None
