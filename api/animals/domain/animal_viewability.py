@@ -262,7 +262,7 @@ def build_viewable_animal_from_record(
       limited_viewing_message=limited_viewing_message,
       has_viewing_alert=has_viewing_alert,
       viewing_alert_message=viewing_alert_message,
-      always_include_indoor_viewing=animal.always_include_indoor_viewing )
+      include_all_viewing_spots=animal.include_all_viewing_spots )
 
    apply_viewing_walk_node_id_to_animal( viewable_animal )
 

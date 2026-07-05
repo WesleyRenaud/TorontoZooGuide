@@ -13,7 +13,7 @@ RECORD_FIELDS = [
    'exhibit',
    'seasonal_viewing_summary',
    'seasonal_viewing_information',
-   'always_include_indoor_viewing',
+   'include_all_viewing_spots',
 ]
 
 DB_COLUMNS = [
@@ -21,7 +21,7 @@ DB_COLUMNS = [
    'EXHIBIT',
    'SEASONAL_VIEWING_SUMMARY',
    'SEASONAL_VIEWING_INFORMATION',
-   'ALWAYS_INCLUDE_INDOOR_VIEWING',
+   'INCLUDE_ALL_VIEWING_SPOTS',
 ]
 
 DATA_FILE = 'enclosure.json'
