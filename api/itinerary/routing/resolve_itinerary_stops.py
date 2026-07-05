@@ -38,7 +38,8 @@ def resolve_itinerary_stops( itinerary: Itinerary ) -> list[ ItineraryStop ]:
          animal.species,
          animal.exhibit,
          animal.x_coord,
-         animal.y_coord )
+         animal.y_coord,
+         animal.enclosure_name )
       walk_node_ids = ( walk_node_id, ) if walk_node_id != None else ()
 
       stops.append(

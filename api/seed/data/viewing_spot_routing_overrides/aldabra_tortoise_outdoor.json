@@ -1,0 +1,22 @@
+{
+  "id": "aldabra_tortoise_outdoor",
+  "description": "Route outdoor Aldabra tortoises via the pavilion approach path and schedule them before gorillas.",
+  "viewing_spot": {
+    "species": "Aldabra Tortoise",
+    "exhibit": "African Rainforest Pavilion",
+    "name": "Outdoor"
+  },
+  "scheduling_walk_node_id": "v-0192",
+  "visit_before": [
+    {
+      "species": "Western Lowland Gorilla",
+      "exhibit": "African Rainforest Pavilion",
+      "name": "Outdoor"
+    },
+    {
+      "species": "Western Lowland Gorilla",
+      "exhibit": "African Rainforest Pavilion",
+      "name": "Indoor"
+    }
+  ]
+}

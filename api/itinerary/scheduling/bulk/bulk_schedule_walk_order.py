@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from .bulk_schedule_visit_before_candidates import bulk_schedule_candidate_animals_after_visit_before_rules
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ....walk_graph.domain.walk_graph import WalkGraph
-from ....walk_graph.enclosure_viewing_walk_node_lookup import walk_node_id_by_enclosure_name
 from ....walk_graph.representative_walk_node import representative_walk_node_id_from_candidates
 from ....walk_graph.shortest_path import build_walk_graph_adjacency
 from ....walk_graph.shortest_path import shortest_path_distances
@@ -10,6 +10,7 @@ from ....walk_graph.walk_graph_spurs import is_walk_graph_spur_active
 from ....walk_graph.walk_graph_spurs import walk_graph_spur_index_for_viewing_node_ids
 from ....walk_graph.walk_graph_spurs import walk_graph_spurs_for_graph
 from ....walk_graph.walk_graph_spurs import WalkGraphSpur
+from ....walk_graph.walk_node_id_for_viewing_spot import scheduling_walk_node_id_for_viewing_spot
 
 
 def representative_walk_node_id(
@@ -106,8 +107,10 @@ def _viewing_node_ids(
       species: str,
       exhibit: str,
       enclosure_name: str | None ) -> tuple[ str, ... ]:
-   walk_node_id = walk_node_id_by_enclosure_name().get(
-      ( species, exhibit, enclosure_name ) )
+   walk_node_id = scheduling_walk_node_id_for_viewing_spot(
+      species,
+      exhibit,
+      enclosure_name )
 
    if walk_node_id == None:
       return ()
@@ -181,11 +184,16 @@ def _bulk_schedule_candidate_animals(
    }
 
    if not active_spur_indexes:
-      return remaining_animals
+      return bulk_schedule_candidate_animals_after_visit_before_rules(
+         remaining_animals )
 
-   return [
+   spur_filtered_animals = [
       animal_row
       for animal_row in remaining_animals
       if spur_index_by_animal.get( animal_row.viewing_spot_key() )
          in active_spur_indexes
    ]
+
+   return bulk_schedule_candidate_animals_after_visit_before_rules(
+      spur_filtered_animals,
+      fallback_animals=remaining_animals )
