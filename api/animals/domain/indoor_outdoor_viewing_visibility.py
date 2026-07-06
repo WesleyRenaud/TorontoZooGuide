@@ -25,8 +25,14 @@ def single_habitat_alternate_enclosure_viewing_alert_message(
 
 
 def apply_single_habitat_alternate_enclosure_viewing_alert(
-      animal: Animal ) -> None:
-   if ( animal.likelihood or 0 ) >= 100:
+      animal: Animal,
+      *,
+      outdoor_likelihood: int ) -> None:
+   effective_likelihood = effective_viewing_likelihood(
+      animal,
+      outdoor_likelihood=outdoor_likelihood,
+      single_habitat=True )
+   if effective_likelihood >= 100:
       return
 
    message = single_habitat_alternate_enclosure_viewing_alert_message( animal )
@@ -138,14 +144,13 @@ def apply_indoor_outdoor_viewing_visibility(
             and preferred_viewing_spot_by_species_exhibit.get( key ) is not animal ):
          continue
 
-      if is_single_habitat and EnclosureType.is_indoor( animal.enclosure_type ):
-         animal.likelihood = effective_viewing_likelihood(
-            animal,
-            outdoor_likelihood=outdoor_likelihood,
-            single_habitat=True )
-
       if is_single_habitat:
-         apply_single_habitat_alternate_enclosure_viewing_alert( animal )
+         apply_single_habitat_alternate_enclosure_viewing_alert(
+            animal,
+            outdoor_likelihood=outdoor_likelihood )
+
+      if is_single_habitat and EnclosureType.is_indoor( animal.enclosure_type ):
+         animal.likelihood = 100
 
       visible_animals.append( animal )
 
