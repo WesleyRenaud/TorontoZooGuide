@@ -51,22 +51,12 @@ def test_giraffe_includes_indoor_viewing_when_outdoor_is_unlikely(
       ( 'Indoor', 'Giraffe House' ),
    ]
 
+   giraffe = next(
+      animal
+      for animal in animals
+      if animal.species == 'Masai Giraffe' )
 
-def test_giraffe_includes_indoor_viewing_when_outdoor_is_unlikely(
-      db: DbControllers ) -> None:
-   animals = AnimalCoordinator.get_animals_viewable_on_day(
-      day=15,
-      month='January',
-      year=2026,
-      temp=-5,
-      exhibits_to_include=[ 'Africa Savanna' ] )
-
-   assert _viewing_spots_for_species(
-      animals,
-      species='Masai Giraffe',
-      exhibit='Africa Savanna' ) == [
-      ( 'Indoor', 'Giraffe House' ),
-   ]
+   assert giraffe.likelihood == 100
 
 
 def test_giraffe_adds_alternate_habitat_alert_when_outdoor_likelihood_is_partial(
