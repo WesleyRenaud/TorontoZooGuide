@@ -11,6 +11,9 @@ export function createItineraryDateSelectorController({
    mountEl,
    initialDate = null,
    earliestSelectableDate = null,
+   hideNextButton = false,
+   titleText = null,
+   subtitleText = null,
    onSave,
    onFinish,
    onClose,
@@ -74,6 +77,15 @@ export function createItineraryDateSelectorController({
       }
 
       elements = buildView(APP_STRINGS);
+
+      if (titleText && elements.root) {
+         elements.root.querySelector('.itin-h1').textContent = titleText;
+      }
+
+      if (subtitleText && elements.root) {
+         elements.root.querySelector('.itin-subtitle').textContent = subtitleText;
+      }
+
       bindDomEvents();
       picker = createPicker({
          inputEl: elements.inputEl,
@@ -95,6 +107,10 @@ export function createItineraryDateSelectorController({
       ensureView();
       syncInputValue();
       picker?.syncBounds();
+
+      if (elements.nextButtonEl) {
+         elements.nextButtonEl.hidden = hideNextButton;
+      }
 
       mountEl.replaceChildren(elements.root);
    }

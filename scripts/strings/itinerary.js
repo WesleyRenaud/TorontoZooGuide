@@ -112,6 +112,17 @@ export const itinerary = {
       wildEncounters: 'No wild encounters found for this day',
    },
    emptyPanel: 'Build an itinerary to see it here.',
+   stale: {
+      title: 'Itinerary Date Has Passed',
+      message: (
+         'Your saved itinerary is scheduled for a day which has passed. Choose a new date to keep your plan, or clear it to start over.'
+      ),
+      recover: 'Choose New Date',
+      recoveryTitle: 'Choose a New Visit Date',
+      recoverySubtitle: (
+         'Pick a future visit date for your saved itinerary. We will check what still works on that day.'
+      ),
+   },
    errors: {
       generic: 'Could not update itinerary.',
       arrivalDepartureTooClose: 'Could not update itinerary time.',

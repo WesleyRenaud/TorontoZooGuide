@@ -280,6 +280,29 @@ export function addLocalCalendarDays(localNoonDate, deltaDays) {
    return normalizeDate(d);
 }
 
+/**
+ * True when a visit date is before the earliest selectable floor passed to the map
+ * date picker and visit-date clamping (minDate / clampToAllowedVisitDate).
+ */
+export function isVisitDateBeforeEarliestFloor(dateValue, earliestNoon) {
+   if (typeof dateValue === 'string' && !dateValue.trim()) {
+      return false;
+   }
+
+   const visitDate = normalizeDate(
+      typeof dateValue === 'string'
+         ? parseLocalDate(dateValue.trim())
+         : dateValue
+   );
+   const floor = normalizeDate(earliestNoon);
+
+   if (!visitDate || !floor) {
+      return false;
+   }
+
+   return visitDate < floor;
+}
+
 export function clampToAllowedVisitDate(
    d,
    daysAhead = DEFAULT_DAYS_AHEAD,
@@ -295,7 +318,7 @@ export function clampToAllowedVisitDate(
       return floor;
    }
 
-   if (normalized < floor) {
+   if (isVisitDateBeforeEarliestFloor(normalized, floor)) {
       return floor;
    }
 
