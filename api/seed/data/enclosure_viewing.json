@@ -561,16 +561,6 @@
     "default_itinerary_duration_minutes": 3
   },
   {
-    "species": "West Caucasian Tur",
-    "exhibit": "Eurasia Wilds",
-    "name": "Zoomobile Habitat",
-    "enclosure_type": "Outdoor",
-    "seasonally_off_display_message": null,
-    "x_coord": 53.4,
-    "y_coord": 87.672,
-    "default_itinerary_duration_minutes": 3
-  },
-  {
     "species": "Arctic Wolf",
     "exhibit": "Tundra Trek",
     "name": null,
@@ -2460,6 +2450,16 @@
     "x_coord": 49.295,
     "y_coord": 71.958,
     "default_itinerary_duration_minutes": 5
+  },
+  {
+    "species": "West Caucasian Tur",
+    "exhibit": "Indo-Malaya Outdoor",
+    "name": "Zoomobile Habitat",
+    "enclosure_type": "Outdoor",
+    "seasonally_off_display_message": null,
+    "x_coord": 53.4,
+    "y_coord": 87.672,
+    "default_itinerary_duration_minutes": 3
   },
   {
     "species": "Asian Giant Millipede",
