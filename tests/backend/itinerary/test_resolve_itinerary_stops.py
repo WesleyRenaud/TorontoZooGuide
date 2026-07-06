@@ -5,6 +5,7 @@ from datetime import date
 
 from itinerary.support import LION_ITINERARY_ENTRY, wild_encounter_key
 from itinerary.support import LION_KEY
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.routing.itinerary_stop import ENTRANCE_ITEM_KEY
@@ -23,14 +24,9 @@ def _set_rhino_encounter_schedule() -> None:
       wild_encounter_name='Guardians of White Rhinos',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '11:00' ],
-      monday=False,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=True,
-      sunday=False,
+      schedule_rows=[
+         wire_schedule_row( '11:00', monday=False, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=True, sunday=False ),
+      ],
       message=None,
    )
 

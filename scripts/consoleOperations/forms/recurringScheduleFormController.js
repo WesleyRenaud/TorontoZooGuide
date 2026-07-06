@@ -28,8 +28,10 @@ export function createRecurringScheduleFormController({
    loadErrorMessage = APP_STRINGS.loadErrors.options,
    submitSchedule,
    successMessage = () => APP_STRINGS.status.scheduleWasSaved,
+   shouldReportSubmitFailure = null,
    timeRequiredMessage = APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.time),
    noDaysSelectedMessage = APP_STRINGS.validation.oneDay,
+   validateRecurringSchedule = null,
 } = {}) {
    const recurringFieldEls = [
       startDateEl,
@@ -89,7 +91,14 @@ export function createRecurringScheduleFormController({
          return selectionError;
       }
 
-      if (getScheduleTimes) {
+      if (validateRecurringSchedule) {
+         const recurringScheduleError = validateRecurringSchedule(formValues);
+
+         if (recurringScheduleError) {
+            return recurringScheduleError;
+         }
+      }
+      else if (getScheduleTimes) {
          if (!formValues.times?.length) {
             return timeRequiredMessage;
          }
@@ -98,7 +107,7 @@ export function createRecurringScheduleFormController({
          return timeRequiredMessage;
       }
 
-      if (!hasCheckedField(dayFieldEls)) {
+      if (!validateRecurringSchedule && !hasCheckedField(dayFieldEls)) {
          return noDaysSelectedMessage;
       }
 
@@ -150,7 +159,7 @@ export function createRecurringScheduleFormController({
          if (result.success) {
             handleSubmitSuccess(result);
          }
-         else {
+         else if (shouldReportSubmitFailure?.(result) ?? true) {
             setStatus(statusEl, result.error || APP_STRINGS.common.genericFailed, 'is-error');
          }
       }

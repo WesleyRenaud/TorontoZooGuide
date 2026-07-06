@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
+from wild_encounter_schedule_support import wire_schedule_rows
+
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
@@ -64,18 +66,11 @@ def test_set_end_and_cancel_wild_encounter_schedule_changes_wild_encounter_resul
    freeze_database_today( date( 2026, 6, 15 ) )
 
    assert WildEncounterCoordinator.set_wild_encounter_schedule(
-      'African Rainforest',
-      '2026-06-01',
-      '2026-06-30',
-      [ '14:00' ],
-      True,
-      False,
-      False,
-      False,
-      False,
-      False,
-      False,
-      ''
+      wild_encounter_name='African Rainforest',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      schedule_rows=wire_schedule_rows( '14:00' ),
+      message='',
    )
 
    encounters = WildEncounterCoordinator.get_wild_encounter_schedule( month='June', day=15, year=2026 )
@@ -96,18 +91,11 @@ def test_set_end_and_cancel_wild_encounter_schedule_changes_wild_encounter_resul
    assert encounter.unavailable_message == 'African Rainforest is not scheduled on June 15.'
 
    assert WildEncounterCoordinator.set_wild_encounter_schedule(
-      'African Rainforest',
-      '2026-06-01',
-      '2026-06-30',
-      [ '14:00' ],
-      True,
-      False,
-      False,
-      False,
-      False,
-      False,
-      False,
-      ''
+      wild_encounter_name='African Rainforest',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      schedule_rows=wire_schedule_rows( '14:00' ),
+      message='',
    )
    assert WildEncounterCoordinator.cancel_wild_encounter_occurrence( 'African Rainforest', '2026-06-15', [ '2:00 PM' ] )
 

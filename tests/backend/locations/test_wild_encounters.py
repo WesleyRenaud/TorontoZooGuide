@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
+
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from conftest import DbControllers
 
@@ -14,14 +16,7 @@ def test_wild_encounter_schedule_and_cancellation(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '14:00' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '14:00' ),
       message=None
    )
 
@@ -60,14 +55,9 @@ def test_wild_encounter_search_only_returns_available_schedule_days(
       wild_encounter_name='Mischevious Meerkats',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '14:00' ],
-      monday=True,
-      tuesday=False,
-      wednesday=True,
-      thursday=True,
-      friday=False,
-      saturday=True,
-      sunday=False,
+      schedule_rows=[
+         wire_schedule_row( '14:00', monday=True, tuesday=False, wednesday=True, thursday=True, friday=False, saturday=True, sunday=False ),
+      ],
       message=None
    )
 
@@ -99,14 +89,9 @@ def test_wild_encounter_occurrences_cover_all_weekdays_and_cancellations(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-15',
       end_date='2026-06-21',
-      encounter_times=[ '14:00' ],
-      monday=True,
-      tuesday=True,
-      wednesday=True,
-      thursday=True,
-      friday=True,
-      saturday=True,
-      sunday=True,
+      schedule_rows=[
+         wire_schedule_row( '14:00', monday=True, tuesday=True, wednesday=True, thursday=True, friday=True, saturday=True, sunday=True ),
+      ],
       message=None
    )
    assert WildEncounterCoordinator.cancel_wild_encounter_occurrence(
@@ -141,14 +126,7 @@ def test_wild_encounter_schedule_accepts_multiple_times_on_one_day(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '14:00', '15:30' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '14:00', '15:30' ),
       message=None
    )
 
@@ -171,14 +149,7 @@ def test_wild_encounter_schedule_deduplicates_equivalent_time_formats(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '3:30 PM', '15:30', '14:00' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '3:30 PM', '15:30', '14:00' ),
       message=None
    )
 
@@ -192,7 +163,7 @@ def test_wild_encounter_schedule_deduplicates_equivalent_time_formats(
    assert rainforest_times == [ '2:00 PM', '3:30 PM' ]
 
 
-def test_wild_encounter_schedule_overrides_existing_equivalent_encounter_time(
+def test_wild_encounter_schedule_rejects_overlapping_date_ranges_for_same_time(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
@@ -233,14 +204,15 @@ def test_wild_encounter_schedule_overrides_existing_equivalent_encounter_time(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '15:30' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '15:30' ),
+      message='Updated schedule.'
+   ) is False
+
+   assert WildEncounterCoordinator.replace_wild_encounter_schedule_overlaps(
+      wild_encounter_name='African Rainforest',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      schedule_rows=wire_schedule_rows( '15:30' ),
       message='Updated schedule.'
    )
 
@@ -273,14 +245,7 @@ def test_wild_encounter_schedule_times_lists_distinct_scheduled_times(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '2:00 PM', '3:30 PM' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '2:00 PM', '3:30 PM' ),
       message=None
    )
 
@@ -365,14 +330,7 @@ def test_wild_encounter_schedule_end_accepts_multiple_times(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '2:00 PM', '3:30 PM' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '2:00 PM', '3:30 PM' ),
       message=None
    )
 
@@ -382,7 +340,7 @@ def test_wild_encounter_schedule_end_accepts_multiple_times(
       encounter_times=[ '2:00 PM', '3:30 PM' ] )
 
    assert WildEncounterCoordinator.get_wild_encounter_schedule_times(
-      'African Rainforest' ) == [ '2:00 PM', '3:30 PM' ]
+      'African Rainforest' ) == []
 
    encounters = WildEncounterCoordinator.get_wild_encounter_schedule( month='June', day=15, year=2026 )
    available_times = sorted(
@@ -402,6 +360,104 @@ def test_wild_encounter_schedule_end_accepts_multiple_times(
    assert unavailable_times == [ '2:00 PM', '3:30 PM' ]
 
 
+def test_wild_encounter_schedule_times_excludes_ended_trimmed_rows(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 7, 6 ) )
+
+   cur = db.conn.cursor()
+   for encounter_time in ( '10:00 AM', '3:30 PM' ):
+      cur.execute(
+         """   INSERT INTO WildEncounterSchedule (
+                  WILD_ENCOUNTER,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  ENCOUNTER_TIME,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY
+               )
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""",
+         (
+            'Kangaroo',
+            '2026-06-28',
+            '2026-07-05',
+            encounter_time,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+         ) )
+      cur.execute(
+         """   INSERT INTO WildEncounterSchedule (
+                  WILD_ENCOUNTER,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  ENCOUNTER_TIME,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY
+               )
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);""",
+         (
+            'Kangaroo',
+            '2026-07-06',
+            None,
+            encounter_time,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+         ) )
+   db.conn.commit()
+
+   assert WildEncounterCoordinator.get_wild_encounter_schedule_times(
+      'Kangaroo' ) == [ '10:00 AM', '3:30 PM' ]
+
+   assert WildEncounterCoordinator.end_wild_encounter_schedule(
+      wild_encounter_name='Kangaroo',
+      schedule_end_date='2026-07-10',
+      encounter_times=[ '10:00 AM', '3:30 PM' ] )
+
+   cur.execute(
+      """   SELECT
+               SCHEDULE_START_DATE,
+               SCHEDULE_END_DATE,
+               ENCOUNTER_TIME
+            FROM WildEncounterSchedule
+            WHERE WILD_ENCOUNTER = ?
+            ORDER BY ENCOUNTER_TIME, SCHEDULE_START_DATE;""",
+      ( 'Kangaroo', ) )
+
+   assert [
+      (
+         row[ 'SCHEDULE_START_DATE' ],
+         row[ 'SCHEDULE_END_DATE' ],
+         row[ 'ENCOUNTER_TIME' ],
+      )
+      for row in cur.fetchall()
+   ] == [
+      ( '2026-06-28', '2026-07-05', '10:00 AM' ),
+      ( '2026-07-06', '2026-07-10', '10:00 AM' ),
+      ( '2026-06-28', '2026-07-05', '3:30 PM' ),
+      ( '2026-07-06', '2026-07-10', '3:30 PM' ),
+   ]
+
+
 def test_wild_encounter_occurrence_cancel_accepts_multiple_times(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
@@ -411,14 +467,7 @@ def test_wild_encounter_occurrence_cancel_accepts_multiple_times(
       wild_encounter_name='Kangaroo',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '10:00 AM', '3:30 PM' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '10:00 AM', '3:30 PM' ),
       message=None
    )
 
@@ -502,14 +551,10 @@ def test_end_wild_encounter_schedule_uses_today_when_end_date_is_null(
       wild_encounter_name='Kangaroo',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '10:00 AM', '3:30 PM' ],
-      monday=True,
-      tuesday=True,
-      wednesday=True,
-      thursday=True,
-      friday=True,
-      saturday=True,
-      sunday=True,
+      schedule_rows=[
+         wire_schedule_row( '10:00 AM', monday=True, tuesday=True, wednesday=True, thursday=True, friday=True, saturday=True, sunday=True ),
+         wire_schedule_row( '3:30 PM', monday=True, tuesday=True, wednesday=True, thursday=True, friday=True, saturday=True, sunday=True ),
+      ],
       message=None
    )
 

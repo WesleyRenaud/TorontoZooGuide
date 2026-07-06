@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
+
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
@@ -173,14 +175,7 @@ def set_wild_encounter_schedule( *, encounter_time: str ) -> None:
       wild_encounter_name=WILD_ENCOUNTER,
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ encounter_time ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( encounter_time ),
       message=None,
    )
 
@@ -204,14 +199,7 @@ def set_guardians_talk_and_wild_encounter_schedules_at_1400() -> None:
       wild_encounter_name=WILD_ENCOUNTER,
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '14:00' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '14:00' ),
       message=None,
    )
 
@@ -256,14 +244,7 @@ def set_turtle_talk_and_rhino_encounter_schedules_at_1400() -> None:
       wild_encounter_name=RHINO_ENCOUNTER,
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '14:00' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '14:00' ),
       message=None,
    )
 

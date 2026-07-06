@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from itinerary.support import guardians_talk_save_entries, wild_encounter_key
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -28,14 +29,7 @@ def _set_lion_talk_and_grizzly_encounter_partial_overlap_schedules() -> None:
       wild_encounter_name='Grizzly Bear',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '13:00' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '13:00' ),
       message=None
    )
 

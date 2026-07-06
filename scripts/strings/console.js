@@ -31,6 +31,8 @@ export const help = {
    ),
    noScheduledEncounterTimes: 'No scheduled times for this encounter.',
    encounterTimesAddOneAtATime: 'Add one time at a time using the picker or Enter.',
+   encounterScheduleRows: 'Add each encounter time with the days it runs.',
+   removeEncounterScheduleRow: 'Remove this scheduled time',
    removeScheduledTime: time => `Remove ${time}`,
    keepUpdateActiveWithoutEndDate: 'Leave blank to keep the update active with no end date.',
    keepVisibilityScheduleUntilChanged: (
@@ -183,6 +185,8 @@ export const viewingScopes = [
 export const validation = {
    dateRangeInvalid: 'Invalid start or end date.',
    dailyViewingTimes: 'Daily viewing start and end times are required.',
+   duplicateEncounterTime: 'Each encounter time can only be added once.',
+   encounterScheduleRowNeedsDay: 'Each scheduled time needs at least one day selected.',
    endDateBeforeStartDate: 'End date cannot be before the start date.',
    entityRequired: entityLabel => `${entityLabel} is required.`,
    oneDay: 'At least one day must be selected.',

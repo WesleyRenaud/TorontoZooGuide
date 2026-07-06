@@ -4972,6 +4972,104 @@ nav ul li a:hover {
 }
 
 /* ============================================================
+   CONSOLE OPERATIONS: WILD ENCOUNTER SCHEDULE ROWS
+============================================================ */
+
+.console-operations-schedule-rows {
+   display: flex;
+   flex-direction: column;
+   gap: 18px;
+   width: 100%;
+}
+
+.console-operations-schedule-row {
+   display: grid;
+   grid-template-columns: minmax(0, 1fr) 52px;
+   grid-template-areas:
+      'time remove'
+      'days remove';
+   gap: 18px 24px;
+   align-items: start;
+
+   box-sizing: border-box;
+   width: 100%;
+   padding: 20px 22px;
+   border-radius: 22px;
+
+   background: #fffffff0;
+   border: 5px solid #5e960052;
+   box-shadow: 0 10px 24px #0000001a;
+}
+
+.console-operations-schedule-row-time {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   grid-area: time;
+   min-width: 0;
+}
+
+.console-operations-schedule-row .console-operations-datetime {
+   font-size: 2.4em;
+   padding: 18px 20px;
+}
+
+.console-operations-schedule-row-days {
+   align-content: center;
+   grid-area: days;
+   min-width: 0;
+}
+
+.console-operations-schedule-row-days .console-operations-checkbox-option {
+   font-size: 1.9em;
+}
+
+.console-operations-schedule-row-remove-slot {
+   grid-area: remove;
+   align-self: center;
+
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   width: 52px;
+   height: 52px;
+}
+
+.console-operations-schedule-row-remove {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+
+   width: 52px;
+   height: 52px;
+   padding: 0;
+   border-radius: 999px;
+
+   font-size: 2.4em;
+   font-weight: 700;
+   line-height: 1;
+   color: #14230ad9;
+
+   background: #14230a12;
+   border: 3px solid #14230a24;
+   cursor: pointer;
+}
+
+.console-operations-schedule-row-remove:hover {
+   background: #14230a1f;
+   border-color: #14230a3d;
+}
+
+.console-operations-schedule-rows-add {
+   align-self: flex-start;
+   width: fit-content;
+   max-width: 100%;
+   margin-top: 8px;
+   white-space: nowrap;
+}
+
+/* ============================================================
    CONSOLE OPERATIONS: CHECKBOX GRID
 ============================================================ */
 
@@ -5090,12 +5188,15 @@ nav ul li a:hover {
 
 .console-operations-primary-btn,
 .console-operations-secondary-btn {
-   padding: 22px 34px;
+   box-sizing: border-box;
+   padding: 24px 34px;
    border-radius: 20px;
    font-family: var(--font-family-base);
    font-size: 2.5em;
    font-weight: 900;
-   line-height: 1.2;
+   line-height: 1.35;
+   white-space: nowrap;
+   overflow: visible;
    cursor: pointer;
    transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }

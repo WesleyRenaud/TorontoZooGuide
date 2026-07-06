@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
+
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.guardians.itinerary.guardians_talk_itinerary_validation import validate_guardians_talks_for_itinerary
 from api.itinerary.data_access.itinerary_guardians_talk_input import ItineraryGuardiansTalkInput
@@ -113,28 +115,14 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '14:00' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '14:00' ),
       message=None
    )
    assert WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='Kangaroo',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '09:00' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '09:00' ),
       message=None
    )
 

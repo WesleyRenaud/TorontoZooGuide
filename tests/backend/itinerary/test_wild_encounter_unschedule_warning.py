@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import schedule_itinerary_item, wild_encounter_key, wild_encounter_wire
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.fetch_itinerary_walk_route import fetch_itinerary_walk_route
@@ -31,14 +32,7 @@ def _set_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER,
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ encounter_time ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( encounter_time ),
       message=None,
    )
 

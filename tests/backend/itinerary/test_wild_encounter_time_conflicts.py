@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from itinerary.support import wild_encounter_key
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.shared.enums import ItineraryErrorType
@@ -14,42 +15,21 @@ def test_set_itinerary_skips_wild_encounters_with_overlapping_times(
       wild_encounter_name='African Rainforest',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '14:00' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '14:00' ),
       message=None
    )
    WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='Kangaroo',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '14:30' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '14:30' ),
       message=None
    )
    WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='Capybara',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '16:00' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '16:00' ),
       message=None
    )
 

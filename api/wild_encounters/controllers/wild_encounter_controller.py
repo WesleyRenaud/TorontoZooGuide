@@ -44,56 +44,112 @@ class WildEncounterController():
 
 
    @staticmethod
-   def set_wild_encounter_schedule( handler: JsonRequestHandler ) -> None:
-      data = handler._read_json_body()
-
-      wild_encounter = data.get( 'wildEncounter' )
-      schedule_start_date = data.get( 'startDate' )
-      schedule_end_date = data.get( 'endDate' )
-      encounter_times = data.get( 'times' )
-      monday = data.get( 'monday' )
-      tuesday = data.get( 'tuesday' )
-      wednesday = data.get( 'wednesday' )
-      thursday = data.get( 'thursday' )
-      friday = data.get( 'friday' )
-      saturday = data.get( 'saturday' )
-      sunday = data.get( 'sunday' )
-      message = data.get( 'message' )
-
-      success = WildEncounterCoordinator.set_wild_encounter_schedule(
-         wild_encounter_name=wild_encounter,
-         start_date=schedule_start_date,
-         end_date=schedule_end_date,
-         encounter_times=encounter_times,
-         monday=monday,
-         tuesday=tuesday,
-         wednesday=wednesday,
-         thursday=thursday,
-         friday=friday,
-         saturday=saturday,
-         sunday=sunday,
-         message=message )
-
+   def _wild_encounter_schedule_response(
+         *,
+         success: bool,
+         wild_encounter: str,
+         schedule_start_date: str,
+         schedule_end_date: str | None,
+         schedule_rows: list | None,
+         message: str ) -> dict:
       response = {
          'success': success,
          'wildEncounter': wild_encounter,
          'startDate': schedule_start_date,
          'endDate': schedule_end_date,
-         'times': encounter_times,
-         'monday': monday,
-         'tuesday': tuesday,
-         'wednesday': wednesday,
-         'thursday': thursday,
-         'friday': friday,
-         'saturday': saturday,
-         'sunday': sunday,
+         'scheduleRows': schedule_rows,
          'message': message,
       }
 
       if not success:
          response[ 'error' ] = f'Could not set schedule for "{ wild_encounter }".'
 
+      return response
+
+
+   @staticmethod
+   def set_wild_encounter_schedule( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      wild_encounter = data.get( 'wildEncounter' )
+      schedule_start_date = data.get( 'startDate' )
+      schedule_end_date = data.get( 'endDate' )
+      schedule_rows = data.get( 'scheduleRows' )
+      message = data.get( 'message' )
+
+      success = WildEncounterCoordinator.set_wild_encounter_schedule(
+         wild_encounter_name=wild_encounter,
+         start_date=schedule_start_date,
+         end_date=schedule_end_date,
+         message=message,
+         schedule_rows=schedule_rows )
+
+      response = WildEncounterController._wild_encounter_schedule_response(
+         success=success,
+         wild_encounter=wild_encounter,
+         schedule_start_date=schedule_start_date,
+         schedule_end_date=schedule_end_date,
+         schedule_rows=schedule_rows,
+         message=message )
+
+      if not success:
+         response[ 'errorType' ] = 'overlappingSchedule'
+
       handler._write_json( response )
+
+
+   @staticmethod
+   def replace_wild_encounter_schedule_overlaps( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      wild_encounter = data.get( 'wildEncounter' )
+      schedule_start_date = data.get( 'startDate' )
+      schedule_end_date = data.get( 'endDate' )
+      schedule_rows = data.get( 'scheduleRows' )
+      message = data.get( 'message' )
+
+      success = WildEncounterCoordinator.replace_wild_encounter_schedule_overlaps(
+         wild_encounter_name=wild_encounter,
+         start_date=schedule_start_date,
+         end_date=schedule_end_date,
+         message=message,
+         schedule_rows=schedule_rows )
+
+      handler._write_json(
+         WildEncounterController._wild_encounter_schedule_response(
+            success=success,
+            wild_encounter=wild_encounter,
+            schedule_start_date=schedule_start_date,
+            schedule_end_date=schedule_end_date,
+            schedule_rows=schedule_rows,
+            message=message ) )
+
+
+   @staticmethod
+   def trim_wild_encounter_schedule_overlaps( handler: JsonRequestHandler ) -> None:
+      data = handler._read_json_body()
+
+      wild_encounter = data.get( 'wildEncounter' )
+      schedule_start_date = data.get( 'startDate' )
+      schedule_end_date = data.get( 'endDate' )
+      schedule_rows = data.get( 'scheduleRows' )
+      message = data.get( 'message' )
+
+      success = WildEncounterCoordinator.trim_wild_encounter_schedule_overlaps(
+         wild_encounter_name=wild_encounter,
+         start_date=schedule_start_date,
+         end_date=schedule_end_date,
+         message=message,
+         schedule_rows=schedule_rows )
+
+      handler._write_json(
+         WildEncounterController._wild_encounter_schedule_response(
+            success=success,
+            wild_encounter=wild_encounter,
+            schedule_start_date=schedule_start_date,
+            schedule_end_date=schedule_end_date,
+            schedule_rows=schedule_rows,
+            message=message ) )
 
 
    @staticmethod

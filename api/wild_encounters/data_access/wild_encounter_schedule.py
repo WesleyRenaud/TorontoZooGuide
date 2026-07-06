@@ -12,6 +12,9 @@ from .wild_encounter_cancellation_mapper import map_wild_encounter_cancellation_
 from .wild_encounter_cancellation_record import WildEncounterCancellationRecord
 from .wild_encounter_schedule_mapper import map_wild_encounter_schedule_records
 from .wild_encounter_schedule_record import WildEncounterScheduleRecord
+from .wild_encounter_schedule_conflict_mapper import map_wild_encounter_schedule_conflict_records
+from .wild_encounter_schedule_conflict_record import WildEncounterScheduleConflictRecord
+from ...shared.constants import OPEN_ENDED_SQL_DATE
 
 
 def fetch_wild_encounter_schedule_records(
@@ -122,16 +125,24 @@ def fetch_wild_encounter_cancellation_records(
 
 def fetch_wild_encounter_schedule_times(
       conn: Connection,
-      wild_encounter: str ) -> list[ str ]:
+      wild_encounter: str,
+      target_date: DateKey ) -> list[ str ]:
    cur = conn.cursor()
 
    try:
       rows = cur.execute(
-         """   SELECT ENCOUNTER_TIME
+         """   SELECT DISTINCT ENCOUNTER_TIME
                FROM WildEncounterSchedule
                WHERE WILD_ENCOUNTER = ?
+                  AND SCHEDULE_START_DATE <= ?
+                  AND COALESCE( SCHEDULE_END_DATE, ? ) >= ?
                ORDER BY ENCOUNTER_TIME;""",
-         ( wild_encounter, ) ).fetchall()
+         (
+            wild_encounter,
+            target_date,
+            OPEN_ENDED_SQL_DATE,
+            target_date,
+         ) ).fetchall()
 
       return [ row[ 0 ] for row in rows ]
 
@@ -140,9 +151,193 @@ def fetch_wild_encounter_schedule_times(
 
 
 
-def save_wild_encounter_schedule(
+def wild_encounter_schedule_overlaps_existing_schedule(
       conn: Connection,
       schedule: WildEncounterScheduleInput ) -> bool:
+   cur = conn.cursor()
+
+   try:
+      row = cur.execute(
+         """   SELECT 1
+               FROM WildEncounterSchedule
+               WHERE WILD_ENCOUNTER = ?
+                  AND ENCOUNTER_TIME = ?
+                  AND SCHEDULE_START_DATE != ?
+                  AND SCHEDULE_START_DATE <= COALESCE( ?, ? )
+                  AND COALESCE( SCHEDULE_END_DATE, ? ) >= ?
+               LIMIT 1;
+         """,
+         (
+            schedule.wild_encounter,
+            schedule.encounter_time,
+            schedule.start_date,
+            schedule.end_date,
+            OPEN_ENDED_SQL_DATE,
+            OPEN_ENDED_SQL_DATE,
+            schedule.start_date,
+         ) ).fetchone()
+
+      return row != None
+
+   finally:
+      cur.close()
+
+
+
+def fetch_wild_encounter_schedule_conflicts(
+      conn: Connection,
+      schedule: WildEncounterScheduleInput ) -> list[ WildEncounterScheduleConflictRecord ]:
+   cur = conn.cursor()
+
+   try:
+      data = cur.execute(
+         """   SELECT
+                  WILD_ENCOUNTER,
+                  ENCOUNTER_TIME,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  SCHEDULE_MESSAGE
+               FROM WildEncounterSchedule
+               WHERE WILD_ENCOUNTER = ?
+                  AND ENCOUNTER_TIME = ?
+                  AND SCHEDULE_START_DATE != ?
+                  AND SCHEDULE_START_DATE <= COALESCE( ?, ? )
+                  AND COALESCE( SCHEDULE_END_DATE, ? ) >= ?;
+         """,
+         (
+            schedule.wild_encounter,
+            schedule.encounter_time,
+            schedule.start_date,
+            schedule.end_date,
+            OPEN_ENDED_SQL_DATE,
+            OPEN_ENDED_SQL_DATE,
+            schedule.start_date,
+         ) )
+
+      return map_wild_encounter_schedule_conflict_records( data.fetchall() )
+
+   finally:
+      cur.close()
+
+
+
+def delete_wild_encounter_schedule(
+      conn: Connection,
+      schedule: WildEncounterScheduleConflictRecord ) -> None:
+   cur = conn.cursor()
+
+   try:
+      cur.execute(
+         """   DELETE FROM WildEncounterSchedule
+               WHERE WILD_ENCOUNTER = ?
+                  AND ENCOUNTER_TIME = ?
+                  AND SCHEDULE_START_DATE = ?;
+         """,
+         (
+            schedule.wild_encounter,
+            schedule.encounter_time,
+            schedule.schedule_start_date,
+         ) )
+
+   finally:
+      cur.close()
+
+
+
+def update_wild_encounter_schedule_dates(
+      conn: Connection,
+      schedule: WildEncounterScheduleConflictRecord,
+      start_date: DateKey,
+      end_date: DateKey | None ) -> None:
+   cur = conn.cursor()
+
+   try:
+      cur.execute(
+         """   UPDATE WildEncounterSchedule
+               SET
+                  SCHEDULE_START_DATE = ?,
+                  SCHEDULE_END_DATE = ?
+               WHERE WILD_ENCOUNTER = ?
+                  AND ENCOUNTER_TIME = ?
+                  AND SCHEDULE_START_DATE = ?;
+         """,
+         (
+            start_date,
+            end_date,
+            schedule.wild_encounter,
+            schedule.encounter_time,
+            schedule.schedule_start_date,
+         ) )
+
+   finally:
+      cur.close()
+
+
+
+def insert_copied_wild_encounter_schedule(
+      conn: Connection,
+      schedule: WildEncounterScheduleConflictRecord,
+      start_date: DateKey,
+      end_date: DateKey | None ) -> None:
+   cur = conn.cursor()
+
+   try:
+      cur.execute(
+         """   INSERT INTO WildEncounterSchedule (
+                  WILD_ENCOUNTER,
+                  SCHEDULE_START_DATE,
+                  SCHEDULE_END_DATE,
+                  ENCOUNTER_TIME,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  SCHEDULE_MESSAGE
+               )
+               SELECT
+                  WILD_ENCOUNTER,
+                  ?,
+                  ?,
+                  ENCOUNTER_TIME,
+                  MONDAY,
+                  TUESDAY,
+                  WEDNESDAY,
+                  THURSDAY,
+                  FRIDAY,
+                  SATURDAY,
+                  SUNDAY,
+                  SCHEDULE_MESSAGE
+               FROM WildEncounterSchedule
+               WHERE WILD_ENCOUNTER = ?
+                  AND ENCOUNTER_TIME = ?
+                  AND SCHEDULE_START_DATE = ?;
+         """,
+         (
+            start_date,
+            end_date,
+            schedule.wild_encounter,
+            schedule.encounter_time,
+            schedule.schedule_start_date,
+         ) )
+
+   finally:
+      cur.close()
+
+
+
+def insert_or_update_wild_encounter_schedule(
+      conn: Connection,
+      schedule: WildEncounterScheduleInput ) -> None:
    cur = conn.cursor()
 
    try:
@@ -162,10 +357,8 @@ def save_wild_encounter_schedule(
                   SCHEDULE_MESSAGE
                )
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-               ON CONFLICT(WILD_ENCOUNTER, ENCOUNTER_TIME) DO UPDATE SET
-                  SCHEDULE_START_DATE = excluded.SCHEDULE_START_DATE,
+               ON CONFLICT(WILD_ENCOUNTER, ENCOUNTER_TIME, SCHEDULE_START_DATE) DO UPDATE SET
                   SCHEDULE_END_DATE = excluded.SCHEDULE_END_DATE,
-                  ENCOUNTER_TIME = excluded.ENCOUNTER_TIME,
                   MONDAY = excluded.MONDAY,
                   TUESDAY = excluded.TUESDAY,
                   WEDNESDAY = excluded.WEDNESDAY,
@@ -190,11 +383,20 @@ def save_wild_encounter_schedule(
             schedule.message,
          ) )
 
-      conn.commit()
-      return cur.rowcount > 0
-
    finally:
       cur.close()
+
+
+
+def save_wild_encounter_schedule(
+      conn: Connection,
+      schedule: WildEncounterScheduleInput ) -> bool:
+   if wild_encounter_schedule_overlaps_existing_schedule( conn, schedule ):
+      return False
+
+   insert_or_update_wild_encounter_schedule( conn, schedule )
+   conn.commit()
+   return True
 
 
 
@@ -208,12 +410,17 @@ def save_wild_encounter_schedule_end(
          """   UPDATE WildEncounterSchedule
                SET SCHEDULE_END_DATE = ?
                WHERE WILD_ENCOUNTER = ?
-                  AND ENCOUNTER_TIME = ?;
+                  AND ENCOUNTER_TIME = ?
+                  AND SCHEDULE_START_DATE <= ?
+                  AND COALESCE( SCHEDULE_END_DATE, ? ) >= ?;
          """,
          (
             schedule_end.schedule_end_date,
             schedule_end.wild_encounter,
             schedule_end.encounter_time,
+            schedule_end.schedule_end_date,
+            OPEN_ENDED_SQL_DATE,
+            schedule_end.schedule_end_date,
          ) )
 
       conn.commit()

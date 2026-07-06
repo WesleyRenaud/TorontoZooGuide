@@ -246,10 +246,9 @@ const CONSOLE_OPERATION_REF_CONFIG = {
       schedule: {
          operationName: 'wildEncounterSchedule',
          includeDateRange: true,
-         includeWeekdaySchedule: true,
          fieldSuffixes: {
-            timesListEl: 'Times',
-            timeEl: 'Time',
+            scheduleRowsEl: 'ScheduleRows',
+            addScheduleRowEl: 'AddScheduleRow',
             messageEl: 'Message',
          },
          fieldIds: {
