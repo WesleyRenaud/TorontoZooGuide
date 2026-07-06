@@ -13,8 +13,8 @@ export function createOffDisplayBanner() {
             messages.push(animal.limited_viewing_message);
          }
 
-         if (animal?.viewing_alert_message) {
-            messages.push(animal.viewing_alert_message);
+         if (animal?.viewing_alert_messages?.length) {
+            messages.push(animal.viewing_alert_messages.join('\n\n'));
          }
 
          return [...new Set(messages)];

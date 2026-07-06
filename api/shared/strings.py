@@ -18,6 +18,16 @@ class SharedStrings:
 
 
       @staticmethod
+      def single_habitat_alternate_enclosure_viewing_alert(
+            species: str,
+            chosen_location: str,
+            alternate_habitat: str ) -> str:
+         return (
+            f'If you do not see the { species } { chosen_location }, '
+            f'then check their { alternate_habitat } habitat.' )
+
+
+      @staticmethod
       def limited_viewing_schedule(
             species: str,
             daily_start_time: str,

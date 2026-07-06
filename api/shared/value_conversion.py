@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 from typing import Any
+from typing import TypeVar
+
+
+T = TypeVar( 'T' )
 
 
 class ValueConversion:
@@ -36,3 +40,11 @@ class ValueConversion:
          return None
 
       return ValueConversion.as_boolean( value )
+
+
+   @staticmethod
+   def as_singleton_list( value: T | None ) -> list[ T ]:
+      if value is None:
+         return []
+
+      return [ value ]

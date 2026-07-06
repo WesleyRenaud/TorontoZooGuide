@@ -29,8 +29,7 @@ class Animal:
          likelihood: int | None = None,
          has_limited_viewing_schedule: bool | None = None,
          limited_viewing_message: str | None = None,
-         has_viewing_alert: bool | None = None,
-         viewing_alert_message: str | None = None,
+         viewing_alert_messages: list[ str ] | None = None,
          is_deleted: bool = False,
          old_likelihood: int | None = None,
          is_added: bool = False,
@@ -60,8 +59,7 @@ class Animal:
       self.likelihood = likelihood
       self.has_limited_viewing_schedule = has_limited_viewing_schedule
       self.limited_viewing_message = limited_viewing_message
-      self.has_viewing_alert = has_viewing_alert
-      self.viewing_alert_message = viewing_alert_message
+      self.viewing_alert_messages = list( viewing_alert_messages or [] )
       self.is_deleted = is_deleted
       self.old_likelihood = old_likelihood
       self.is_added = is_added
@@ -69,6 +67,11 @@ class Animal:
       self.end_time = end_time
       self.viewing_walk_node_id = viewing_walk_node_id
       self.include_all_viewing_spots = include_all_viewing_spots
+
+
+   @property
+   def has_viewing_alert( self ) -> bool:
+      return bool( self.viewing_alert_messages )
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -95,8 +98,8 @@ class Animal:
          'likelihood': self.likelihood,
          'has_limited_viewing_schedule': ValueConversion.as_boolean( self.has_limited_viewing_schedule ),
          'limited_viewing_message': self.limited_viewing_message,
-         'has_viewing_alert': ValueConversion.as_boolean( self.has_viewing_alert ),
-         'viewing_alert_message': self.viewing_alert_message,
+         'has_viewing_alert': bool( self.viewing_alert_messages ),
+         'viewing_alert_messages': list( self.viewing_alert_messages ),
          'is_deleted': ValueConversion.as_boolean( self.is_deleted ),
          'old_likelihood': self.old_likelihood,
          'is_added': ValueConversion.as_boolean( self.is_added ),
