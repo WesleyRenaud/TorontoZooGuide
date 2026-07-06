@@ -2,6 +2,8 @@ import { initItineraryMap } from '../itinerary/itineraryMapController.js';
 import { renderItineraryPanel } from '../itinerary/itineraryRenderer.js';
 import { getItinerary } from '../itinerary/itineraryService.js';
 import { hasSavedItineraryContent } from '../itinerary/itineraryShape.js';
+import { getItineraryOverlayMountEl } from '../itinerary/panel/components/popup.js';
+import { offerPastItineraryClearOrRecovery } from '../itinerary/pastItinerary/offerPastItineraryClearOrRecovery.js';
 import { isValidatedItineraryEmpty } from '../itinerary/wizard/itineraryDiff.js';
 import { showWizardValidationPopupIfNeeded } from '../itinerary/wizard/validationPopup.js';
 import { blockMapWheelWhileWizardOpen } from '../itinerary/wizard/wheelBlocker.js';
@@ -65,11 +67,35 @@ function showItineraryValidationDiff(mountEl, itinerary, openWizard) {
 async function refreshItineraryPageContent(
    mountEl,
    openWizard,
-   { openBuilderWhenEmpty = false, itinerary: providedItinerary = null } = {}
+   { openBuilderWhenEmpty = false, itinerary: providedItinerary = null, skipStaleCheck = false } = {}
 ) {
-   await renderItineraryPanel();
-
    const itinerary = providedItinerary ?? await getItinerary();
+
+   if (!skipStaleCheck) {
+      const pastDatePromptShown = await offerPastItineraryClearOrRecovery({
+         mountEl,
+         itinerary,
+         onCleared: () => {
+            void refreshItineraryPageContent(mountEl, openWizard, {
+               openBuilderWhenEmpty: true,
+               skipStaleCheck: true,
+            });
+         },
+         onRecovered: (savedItinerary) => {
+            void refreshItineraryPageContent(mountEl, openWizard, {
+               itinerary: savedItinerary,
+               skipStaleCheck: true,
+            });
+         },
+      });
+
+      if (pastDatePromptShown) {
+         await renderItineraryPanel();
+         return;
+      }
+   }
+
+   await renderItineraryPanel();
 
    if (!itinerary || !hasSavedItineraryContent(itinerary)) {
       if (openBuilderWhenEmpty) {
@@ -120,12 +146,12 @@ async function initEmbeddedItineraryMap() {
 }
 
 async function initItineraryPageContent(mountEl, openWizard, refreshPanel) {
-   await initEmbeddedItineraryMap();
    await refreshPanel({ openBuilderWhenEmpty: true });
+   await initEmbeddedItineraryMap();
 }
 
 export function initItineraryPage() {
-   const mountEl = document.getElementById('itineraryFlow');
+   const mountEl = getItineraryOverlayMountEl();
    if (!mountEl) return;
 
    initSpeciesOverlay();

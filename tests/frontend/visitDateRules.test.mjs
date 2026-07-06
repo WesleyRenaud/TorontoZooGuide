@@ -13,6 +13,7 @@ import {
    isAfterMaxDate,
    isBeforeToday,
    isLocalTimeAtOrPastZooClose,
+   isVisitDateBeforeEarliestFloor,
    isWithinNextNDays,
    normalizeDate,
    parseLocalDate,
@@ -163,4 +164,15 @@ test('adds local calendar days from a local-noon anchor', () => {
 
    assert.equal(toISODate(next), '2026-06-16');
    assert.equal(toISODate(prev), '2026-06-14');
+});
+
+test('isVisitDateBeforeEarliestFloor matches the map date-picker floor', () => {
+   const today = makeNoonDate(2026, 5, 15);
+   const tomorrow = makeNoonDate(2026, 5, 16);
+
+   assert.equal(isVisitDateBeforeEarliestFloor('2026-06-15', today), false);
+   assert.equal(isVisitDateBeforeEarliestFloor('2026-06-15', tomorrow), true);
+   assert.equal(isVisitDateBeforeEarliestFloor('2026-06-14', today), true);
+   assert.equal(isVisitDateBeforeEarliestFloor('2026-06-20', today), false);
+   assert.equal(isVisitDateBeforeEarliestFloor('  ', today), false);
 });
