@@ -1,13 +1,12 @@
 import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
-   createCheckboxGridField,
    createDateRangeFields,
-   createMultiTimeField,
    createPanelShell,
    createSelectField,
    createStatus,
    createTextareaField,
+   createWildEncounterScheduleRowsField,
 } from '../../templates/fragments.js';
 
 export function createWildEncounterSchedulePanel() {
@@ -25,24 +24,9 @@ export function createWildEncounterSchedulePanel() {
             endDateId: 'wildEncounterScheduleEndDate',
             endHelpText: APP_STRINGS.help.continueUntilScheduleEnded,
          }),
-         createCheckboxGridField({
-            label: APP_STRINGS.labels.occursOnTheseDays,
-            options: [
-               { id: 'wildEncounterScheduleMonday', label: APP_STRINGS.schedule.dayLabels.monday },
-               { id: 'wildEncounterScheduleTuesday', label: APP_STRINGS.schedule.dayLabels.tuesday },
-               { id: 'wildEncounterScheduleWednesday', label: APP_STRINGS.schedule.dayLabels.wednesday },
-               { id: 'wildEncounterScheduleThursday', label: APP_STRINGS.schedule.dayLabels.thursday },
-               { id: 'wildEncounterScheduleFriday', label: APP_STRINGS.schedule.dayLabels.friday },
-               { id: 'wildEncounterScheduleSaturday', label: APP_STRINGS.schedule.dayLabels.saturday },
-               { id: 'wildEncounterScheduleSunday', label: APP_STRINGS.schedule.dayLabels.sunday },
-            ],
-         }),
-         createMultiTimeField({
-            label: APP_STRINGS.labels.encounterTimes,
-            listId: 'wildEncounterScheduleTimes',
-            inputId: 'wildEncounterScheduleTime',
-            placeholder: APP_STRINGS.placeholders.scheduledTime('an encounter'),
-            helpText: APP_STRINGS.help.encounterTimesAddOneAtATime,
+         createWildEncounterScheduleRowsField({
+            rowsId: 'wildEncounterScheduleScheduleRows',
+            addRowButtonId: 'wildEncounterScheduleAddScheduleRow',
          }),
          createTextareaField({
             label: APP_STRINGS.labels.scheduleMessage,

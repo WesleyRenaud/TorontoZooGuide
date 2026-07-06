@@ -483,3 +483,30 @@ export function createMultiTimeField({
 
    return fieldEl;
 }
+
+export function createWildEncounterScheduleRowsField({
+   label = APP_STRINGS.labels.encounterTimes,
+   rowsId,
+   addRowButtonId,
+   helpText = APP_STRINGS.help.encounterScheduleRows,
+} = {}) {
+   const fieldEl = createFieldWrapper();
+   const labelEl = createLabel({
+      text: label,
+   });
+
+   const rowsEl = document.createElement('div');
+   rowsEl.id = rowsId;
+   rowsEl.className = 'console-operations-schedule-rows';
+
+   const addRowButtonEl = document.createElement('button');
+   addRowButtonEl.id = addRowButtonId;
+   addRowButtonEl.type = 'button';
+   addRowButtonEl.className = 'console-operations-secondary-btn console-operations-schedule-rows-add';
+   addRowButtonEl.textContent = APP_STRINGS.actions.addEncounterScheduleRow;
+
+   fieldEl.append(labelEl, rowsEl, addRowButtonEl);
+   appendChild(fieldEl, createHelpText(helpText));
+
+   return fieldEl;
+}

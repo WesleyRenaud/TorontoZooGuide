@@ -208,6 +208,14 @@ export function setWildEncounterSchedule(payload) {
    return postJson('/set-wild-encounter-schedule', payload);
 }
 
+export function replaceWildEncounterScheduleOverlaps(payload) {
+   return postJson('/replace-wild-encounter-schedule-overlaps', payload);
+}
+
+export function trimWildEncounterScheduleOverlaps(payload) {
+   return postJson('/trim-wild-encounter-schedule-overlaps', payload);
+}
+
 export function endWildEncounterSchedule(payload) {
    return postJson('/end-wild-encounter-schedule', payload);
 }

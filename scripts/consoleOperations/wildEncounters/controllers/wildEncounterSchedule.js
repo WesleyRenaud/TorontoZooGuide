@@ -1,7 +1,15 @@
-import { setWildEncounterSchedule } from '../../../api/consoleOperationsApi.js';
-import { initMultiTimePicker } from '../../../datePickers/multiTimePicker.js';
-import { createMultiTimeFieldController } from '../../forms/multiTimeFieldController.js';
+import {
+   replaceWildEncounterScheduleOverlaps,
+   setWildEncounterSchedule,
+   trimWildEncounterScheduleOverlaps,
+} from '../../../api/consoleOperationsApi.js';
+import {
+   OPENING_SCHEDULE_OVERLAP_RESOLUTION,
+   resultHasOpeningScheduleOverlap,
+} from '../../forms/openingScheduleOverlap.js';
+import { showOpeningScheduleOverlapDialog } from '../../forms/openingScheduleOverlapDialog.js';
 import { createRecurringScheduleFormController } from '../../forms/recurringScheduleFormController.js';
+import { createWildEncounterScheduleRowsController } from '../../forms/wildEncounterScheduleRowsController.js';
 import { resetFormFields } from '../../helpers/controllerUtils.js';
 import { populateWildEncounterDropdown } from '../../options/dropdowns.js';
 import { loadWildEncounters } from '../../options/loaders.js';
@@ -11,38 +19,14 @@ export function createWildEncounterScheduleController({
    wildEncounterEl,
    startDateEl,
    endDateEl,
-   timesListEl,
-   timeEl,
-   mondayEl,
-   tuesdayEl,
-   wednesdayEl,
-   thursdayEl,
-   fridayEl,
-   saturdayEl,
-   sundayEl,
+   scheduleRowsEl,
+   addScheduleRowEl,
    messageEl,
    ...controllerOptions
 } = {}) {
-   const dayFieldEls = [
-      mondayEl,
-      tuesdayEl,
-      wednesdayEl,
-      thursdayEl,
-      fridayEl,
-      saturdayEl,
-      sundayEl,
-   ];
-
-   const multiTimeField = createMultiTimeFieldController({
-      listEl: timesListEl,
-      inputEl: timeEl,
-   });
-
-   initMultiTimePicker(timeEl, {
-      onCommitTime: (time) => {
-         multiTimeField.addTime(time);
-      },
-      onRemoveLastTime: () => multiTimeField.removeLastTime(),
+   const scheduleRowsController = createWildEncounterScheduleRowsController({
+      rowsEl: scheduleRowsEl,
+      addRowButtonEl: addScheduleRowEl,
    });
 
    function getFieldValue(fieldEl) {
@@ -63,23 +47,34 @@ export function createWildEncounterScheduleController({
       wildEncounter,
       startDate,
       endDate,
-      times,
       message,
    }) {
-      return setWildEncounterSchedule({
+      const scheduleRows = scheduleRowsController.getRows();
+      const payload = {
          wildEncounter,
          startDate: startDate || null,
          endDate: endDate || null,
-         times,
-         monday: Boolean(mondayEl?.checked),
-         tuesday: Boolean(tuesdayEl?.checked),
-         wednesday: Boolean(wednesdayEl?.checked),
-         thursday: Boolean(thursdayEl?.checked),
-         friday: Boolean(fridayEl?.checked),
-         saturday: Boolean(saturdayEl?.checked),
-         sunday: Boolean(sundayEl?.checked),
          message,
-      });
+         scheduleRows,
+      };
+
+      const result = await setWildEncounterSchedule(payload);
+
+      if (result.success || !resultHasOpeningScheduleOverlap(result)) {
+         return result;
+      }
+
+      const resolution = await showOpeningScheduleOverlapDialog();
+
+      if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.REPLACE) {
+         return replaceWildEncounterScheduleOverlaps(payload);
+      }
+
+      if (resolution === OPENING_SCHEDULE_OVERLAP_RESOLUTION.TRIM) {
+         return trimWildEncounterScheduleOverlaps(payload);
+      }
+
+      return { success: false, dismissed: true };
    }
 
    async function prepareForm() {
@@ -93,19 +88,14 @@ export function createWildEncounterScheduleController({
       ...controllerOptions,
       startDateEl,
       endDateEl,
-      timeEl,
       messageEl,
-      dayFieldEls,
       resetSelection: () => {
-         resetFormFields([wildEncounterEl]);
+         resetFormFields([wildEncounterEl, startDateEl, endDateEl, messageEl]);
       },
       resetScheduleTimes: () => {
-         multiTimeField.reset();
+         scheduleRowsController.reset();
       },
-      getScheduleTimes: () => {
-         multiTimeField.commitPendingInput();
-         return multiTimeField.getTimes();
-      },
+      validateRecurringSchedule: () => scheduleRowsController.validate(),
       getSelectionValues: () => ({
          wildEncounter: getFieldValue(wildEncounterEl),
       }),
@@ -114,6 +104,6 @@ export function createWildEncounterScheduleController({
       loadErrorMessage: APP_STRINGS.loadErrors.wildEncounters,
       submitSchedule,
       successMessage: result => APP_STRINGS.status.scheduleSaved(result.wildEncounter),
-      timeRequiredMessage: APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.encounterTimes),
+      shouldReportSubmitFailure: result => !result?.dismissed,
    });
 }

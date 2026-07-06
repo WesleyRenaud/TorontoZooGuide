@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import wild_encounter_key
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -52,14 +53,7 @@ def test_set_itinerary_normalizes_display_format_schedule_times(
       wild_encounter_name='Grizzly Bear',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      encounter_times=[ '1:00 PM' ],
-      monday=True,
-      tuesday=False,
-      wednesday=False,
-      thursday=False,
-      friday=False,
-      saturday=False,
-      sunday=False,
+      schedule_rows=wire_schedule_rows( '1:00 PM' ),
       message=None
    )
 

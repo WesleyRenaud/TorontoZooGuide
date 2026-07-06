@@ -10,6 +10,7 @@ import './searchRows.test.mjs';
 import './scheduledOccurrenceSelector.test.mjs';
 import './scheduleTimesCheckboxField.test.mjs';
 import './wildEncounterScheduleTimesFilter.test.mjs';
+import './wildEncounterScheduleRows.test.mjs';
 import './consolePanelNavigator.test.mjs';
 import './visitDateRules.test.mjs';
 import './visitDateEarliest.test.mjs';

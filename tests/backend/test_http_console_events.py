@@ -3,8 +3,12 @@ from __future__ import annotations
 from typing import Any
 
 from http_console_support import assert_console_mutation_failure, assert_console_mutation_success
+from http_support import make_handler
+from http_support import response_json
 from http_support import StubZooControllers
 import pytest
+
+import api.server as server
 
 @pytest.mark.parametrize(
    'path, body, expected_call, response_subset',
@@ -103,14 +107,28 @@ import pytest
             'wildEncounter': 'African Rainforest',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
-            'times': [ '14:00', '15:30' ],
-            'monday': True,
-            'tuesday': False,
-            'wednesday': True,
-            'thursday': False,
-            'friday': True,
-            'saturday': False,
-            'sunday': True,
+            'scheduleRows': [
+               {
+                  'time': '2:00 PM',
+                  'monday': True,
+                  'tuesday': False,
+                  'wednesday': True,
+                  'thursday': False,
+                  'friday': True,
+                  'saturday': False,
+                  'sunday': True,
+               },
+               {
+                  'time': '3:30 PM',
+                  'monday': False,
+                  'tuesday': True,
+                  'wednesday': False,
+                  'thursday': False,
+                  'friday': False,
+                  'saturday': True,
+                  'sunday': False,
+               },
+            ],
             'message': 'Schedule.'
          },
          (
@@ -119,22 +137,35 @@ import pytest
                'wild_encounter_name': 'African Rainforest',
                'start_date': '2026-06-01',
                'end_date': '2026-06-30',
-               'encounter_times': [ '14:00', '15:30' ],
-               'monday': True,
-               'tuesday': False,
-               'wednesday': True,
-               'thursday': False,
-               'friday': True,
-               'saturday': False,
-               'sunday': True,
-               'message': 'Schedule.'
+               'message': 'Schedule.',
+               'schedule_rows': [
+                  {
+                     'time': '2:00 PM',
+                     'monday': True,
+                     'tuesday': False,
+                     'wednesday': True,
+                     'thursday': False,
+                     'friday': True,
+                     'saturday': False,
+                     'sunday': True,
+                  },
+                  {
+                     'time': '3:30 PM',
+                     'monday': False,
+                     'tuesday': True,
+                     'wednesday': False,
+                     'thursday': False,
+                     'friday': False,
+                     'saturday': True,
+                     'sunday': False,
+                  },
+               ],
             }
          ),
          {
             'wildEncounter': 'African Rainforest',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
-            'times': [ '14:00', '15:30' ]
          }
       ),
       (
@@ -213,4 +244,81 @@ def test_console_mutation_returns_error_when_database_returns_false(
       body: dict[ str, Any ],
       expected_error: str ) -> None:
    assert_console_mutation_failure( path, body, expected_error )
+
+
+WILD_ENCOUNTER_SCHEDULE_BODY = {
+   'wildEncounter': 'African Rainforest',
+   'startDate': '2026-06-01',
+   'endDate': '2026-06-30',
+   'scheduleRows': [
+      {
+         'time': '2:00 PM',
+         'monday': True,
+         'tuesday': False,
+         'wednesday': False,
+         'thursday': False,
+         'friday': False,
+         'saturday': False,
+         'sunday': False,
+      },
+   ],
+   'message': 'Schedule.',
+}
+
+
+@pytest.mark.parametrize(
+   'path, expected_method',
+   [
+      (
+         '/replace-wild-encounter-schedule-overlaps',
+         'replace_wild_encounter_schedule_overlaps'
+      ),
+      (
+         '/trim-wild-encounter-schedule-overlaps',
+         'trim_wild_encounter_schedule_overlaps'
+      ),
+   ]
+)
+def test_wild_encounter_schedule_overlap_resolution_maps_payload(
+      stub_database: type[ StubZooControllers ],
+      path: str,
+      expected_method: str ) -> None:
+   handler = make_handler( path, WILD_ENCOUNTER_SCHEDULE_BODY )
+
+   server.MyHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert handler.statuses == [ 200 ]
+   assert StubZooControllers.instances[ 0 ].calls == [
+      (
+         expected_method,
+         {
+            'wild_encounter_name': 'African Rainforest',
+            'start_date': '2026-06-01',
+            'end_date': '2026-06-30',
+            'message': 'Schedule.',
+            'schedule_rows': WILD_ENCOUNTER_SCHEDULE_BODY[ 'scheduleRows' ],
+         }
+      )
+   ]
+   assert result[ 'success' ] is True
+   assert result[ 'wildEncounter' ] == 'African Rainforest'
+   assert result[ 'startDate' ] == '2026-06-01'
+   assert result[ 'endDate' ] == '2026-06-30'
+
+
+def test_wild_encounter_schedule_overlap_failure_returns_error_type(
+      stub_database: type[ StubZooControllers ] ) -> None:
+   StubZooControllers.default_success = False
+   handler = make_handler(
+      '/set-wild-encounter-schedule',
+      WILD_ENCOUNTER_SCHEDULE_BODY )
+
+   server.MyHandler.do_POST( handler )
+
+   result = response_json( handler )
+
+   assert result[ 'success' ] is False
+   assert result[ 'errorType' ] == 'overlappingSchedule'
 

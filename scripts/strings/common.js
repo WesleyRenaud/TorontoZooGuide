@@ -1,4 +1,5 @@
 export const actions = {
+   addEncounterScheduleRow: 'Add another',
    removeAlert: 'Remove alert',
    save: 'Save',
 };

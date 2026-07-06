@@ -10,6 +10,12 @@ WILD_ENCOUNTER_ROUTES: dict[ str, PostRouteHandler ] = {
    '/get-wild-encounter-occurrences': WildEncounterController.get_wild_encounter_occurrences,
    '/get-wild-encounter-schedule-times': WildEncounterController.get_wild_encounter_schedule_times,
    '/set-wild-encounter-schedule': WildEncounterController.set_wild_encounter_schedule,
+   '/replace-wild-encounter-schedule-overlaps': (
+      WildEncounterController.replace_wild_encounter_schedule_overlaps
+   ),
+   '/trim-wild-encounter-schedule-overlaps': (
+      WildEncounterController.trim_wild_encounter_schedule_overlaps
+   ),
    '/end-wild-encounter-schedule': WildEncounterController.end_wild_encounter_schedule,
    '/cancel-wild-encounter-occurrence': WildEncounterController.cancel_wild_encounter_occurrence,
 }
