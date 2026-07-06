@@ -131,6 +131,17 @@ def test_as_nullable_string( value: Any, expected: str | None ) -> None:
    assert ValueConversion.as_nullable_string( value ) == expected
 
 
+@pytest.mark.parametrize(
+   'value, expected',
+   [
+      ( None, [] ),
+      ( 'Alert message.', [ 'Alert message.' ] ),
+   ]
+)
+def test_as_singleton_list( value: str | None, expected: list[ str ] ) -> None:
+   assert ValueConversion.as_singleton_list( value ) == expected
+
+
 def test_temperature_helpers_are_stable() -> None:
    assert Weather.get_average_temperature( 'Jan', 1 ) == -5.0
    assert Weather.get_average_temperature( 'Jul', 1 ) == 26.0

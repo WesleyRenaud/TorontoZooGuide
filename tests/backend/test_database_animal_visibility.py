@@ -34,4 +34,4 @@ def test_limited_viewing_and_alert_messages_are_returned(
    assert penguin.has_limited_viewing_schedule is True
    assert penguin.limited_viewing_message == 'Morning viewing only.'
    assert penguin.has_viewing_alert is True
-   assert penguin.viewing_alert_message == 'Penguins may be harder to spot.'
+   assert penguin.viewing_alert_messages == [ 'Penguins may be harder to spot.' ]

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from api.animals.domain.indoor_outdoor_viewing_visibility import apply_indoor_outdoor_viewing_visibility
+from api.animals.domain.indoor_outdoor_viewing_visibility import apply_single_habitat_alternate_enclosure_viewing_alert
 from api.animals.domain.indoor_outdoor_viewing_visibility import complementary_indoor_likelihood
 from api.animals.domain.indoor_outdoor_viewing_visibility import effective_viewing_likelihood
 from api.animals.domain.indoor_outdoor_viewing_visibility import preferred_single_habitat_viewing_spot_by_species_exhibit
+from api.animals.domain.indoor_outdoor_viewing_visibility import single_habitat_alternate_enclosure_viewing_alert_message
 from api.animals.domain.indoor_outdoor_viewing_visibility import single_habitat_viewing_species_exhibit_keys
 from api.animals.search.animals_matching_query import species_exhibit_key
 from api.models import Animal
@@ -110,6 +112,80 @@ def test_apply_indoor_outdoor_viewing_visibility_excludes_outdoor_for_exclusive_
 
    assert [ animal.enclosure_type for animal in visible ] == [ 'Indoor' ]
    assert visible[ 0 ].likelihood == complementary_indoor_likelihood( 30 )
+
+
+def test_single_habitat_alternate_enclosure_viewing_alert_message() -> None:
+   outdoor = _animal( enclosure_type='Outdoor', likelihood=80 )
+
+   assert single_habitat_alternate_enclosure_viewing_alert_message( outdoor ) == (
+      'If you do not see the Masai Giraffe outside, '
+      'then check their indoor habitat.' )
+
+   indoor = _animal( enclosure_type='Indoor', likelihood=70 )
+
+   assert single_habitat_alternate_enclosure_viewing_alert_message( indoor ) == (
+      'If you do not see the Masai Giraffe inside, '
+      'then check their outdoor habitat.' )
+
+
+def test_apply_single_habitat_alternate_enclosure_viewing_alert_skips_full_likelihood() -> None:
+   outdoor = _animal( enclosure_type='Outdoor', likelihood=100 )
+
+   apply_single_habitat_alternate_enclosure_viewing_alert( outdoor )
+
+   assert outdoor.has_viewing_alert is False
+   assert outdoor.viewing_alert_messages == []
+
+
+def test_apply_single_habitat_alternate_enclosure_viewing_alert_preserves_existing_messages() -> None:
+   outdoor = _animal( enclosure_type='Outdoor', likelihood=80 )
+   outdoor.viewing_alert_messages = [ 'Existing alert.' ]
+
+   apply_single_habitat_alternate_enclosure_viewing_alert( outdoor )
+
+   assert outdoor.has_viewing_alert is True
+   assert outdoor.viewing_alert_messages == [
+      'Existing alert.',
+      'If you do not see the Masai Giraffe outside, '
+      'then check their indoor habitat.',
+   ]
+
+
+def test_apply_indoor_outdoor_viewing_visibility_adds_alert_when_likelihood_below_100() -> None:
+   animals = [
+      _animal( enclosure_type='Outdoor', likelihood=30 ),
+      _animal(
+         enclosure_type='Indoor',
+         likelihood=100,
+         include_all_viewing_spots=False ),
+   ]
+
+   visible = apply_indoor_outdoor_viewing_visibility( animals )
+
+   assert len( visible ) == 1
+   assert visible[ 0 ].enclosure_type == 'Indoor'
+   assert visible[ 0 ].has_viewing_alert is True
+   assert visible[ 0 ].viewing_alert_messages == [
+      'If you do not see the Masai Giraffe inside, '
+      'then check their outdoor habitat.',
+   ]
+
+
+def test_apply_indoor_outdoor_viewing_visibility_skips_alert_at_full_likelihood() -> None:
+   animals = [
+      _animal( enclosure_type='Outdoor', likelihood=100 ),
+      _animal(
+         enclosure_type='Indoor',
+         likelihood=100,
+         include_all_viewing_spots=False ),
+   ]
+
+   visible = apply_indoor_outdoor_viewing_visibility( animals )
+
+   assert len( visible ) == 1
+   assert visible[ 0 ].enclosure_type == 'Outdoor'
+   assert visible[ 0 ].has_viewing_alert is False
+   assert visible[ 0 ].viewing_alert_messages == []
 
 
 def test_apply_indoor_outdoor_viewing_visibility_keeps_zero_likelihood_when_exhibit_closed() -> None:

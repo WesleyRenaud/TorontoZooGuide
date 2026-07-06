@@ -5,10 +5,35 @@ from collections import defaultdict
 from ...models import Animal
 from ..search.animals_matching_query import species_exhibit_key
 from ...shared.enums import EnclosureType
+from ...shared.strings import SharedStrings
 
 
 def complementary_indoor_likelihood( outdoor_likelihood: int ) -> int:
    return 100 - outdoor_likelihood
+
+
+def single_habitat_alternate_enclosure_viewing_alert_message(
+      animal: Animal ) -> str | None:
+   enclosure_type = EnclosureType.normalize( animal.enclosure_type )
+   if enclosure_type is None:
+      return None
+
+   return SharedStrings.Animals.single_habitat_alternate_enclosure_viewing_alert(
+      species=animal.species,
+      chosen_location=enclosure_type.viewing_location_label,
+      alternate_habitat=EnclosureType.opposite_type( enclosure_type ).habitat_label )
+
+
+def apply_single_habitat_alternate_enclosure_viewing_alert(
+      animal: Animal ) -> None:
+   if ( animal.likelihood or 0 ) >= 100:
+      return
+
+   message = single_habitat_alternate_enclosure_viewing_alert_message( animal )
+   if message is None:
+      return
+
+   animal.viewing_alert_messages.append( message )
 
 
 def effective_viewing_likelihood(
@@ -118,6 +143,9 @@ def apply_indoor_outdoor_viewing_visibility(
             animal,
             outdoor_likelihood=outdoor_likelihood,
             single_habitat=True )
+
+      if is_single_habitat:
+         apply_single_habitat_alternate_enclosure_viewing_alert( animal )
 
       visible_animals.append( animal )
 

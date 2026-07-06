@@ -106,7 +106,7 @@ def test_animal_to_dict_converts_boolean_flags() -> None:
    animal = Animal(
       species='Amur Tiger',
       has_limited_viewing_schedule=1,
-      has_viewing_alert=0
+      viewing_alert_messages=[]
    )
 
    result = animal.to_dict()
@@ -142,8 +142,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
             y_coord=34,
             has_limited_viewing_schedule=1,
             limited_viewing_message='Visible from 10:00 AM to 2:00 PM.',
-            has_viewing_alert=1,
-            viewing_alert_message='May be difficult to spot.',
+            viewing_alert_messages=[ 'May be difficult to spot.' ],
             likelihood=85 )
       ],
       attractions=[
@@ -207,7 +206,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
             'has_limited_viewing_schedule': True,
             'limited_viewing_message': 'Visible from 10:00 AM to 2:00 PM.',
             'has_viewing_alert': True,
-            'viewing_alert_message': 'May be difficult to spot.',
+            'viewing_alert_messages': [ 'May be difficult to spot.' ],
             'is_deleted': False,
             'old_likelihood': None,
             'is_added': False,

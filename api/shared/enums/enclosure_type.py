@@ -11,6 +11,22 @@ class EnclosureType( str, Enum ):
    OUTDOOR = 'Outdoor'
 
 
+   @property
+   def viewing_location_label( self ) -> str:
+      if self == EnclosureType.INDOOR:
+         return 'inside'
+
+      return 'outside'
+
+
+   @property
+   def habitat_label( self ) -> str:
+      if self == EnclosureType.INDOOR:
+         return 'indoor'
+
+      return 'outdoor'
+
+
    @classmethod
    def normalize(
          cls,
@@ -54,6 +70,14 @@ class EnclosureType( str, Enum ):
    @classmethod
    def is_outdoor( cls, value: Any ) -> bool:
       return cls.normalized_enclosure_type( value ) == cls.OUTDOOR.value.lower()
+
+
+   @classmethod
+   def opposite_type( cls, value: EnclosureType ) -> EnclosureType:
+      if value == cls.INDOOR:
+         return cls.OUTDOOR
+
+      return cls.INDOOR
 
 
    @classmethod

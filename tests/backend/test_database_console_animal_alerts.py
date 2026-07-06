@@ -19,11 +19,13 @@ def test_set_and_remove_animal_viewing_alert_changes_visible_animal_result(
    lion = get_animal( db, 'African Lion', 'Africa Savanna' )
 
    assert lion.has_viewing_alert is True
-   assert lion.viewing_alert_message == 'The African Lion may be less visible than usual at this time.'
+   assert lion.viewing_alert_messages == [
+      'The African Lion may be less visible than usual at this time.',
+   ]
 
    assert AnimalCoordinator.remove_animal_viewing_alert( 'African Lion', 'Africa Savanna' ) is True
 
    lion = get_animal( db, 'African Lion', 'Africa Savanna' )
 
    assert lion.has_viewing_alert is False
-   assert lion.viewing_alert_message is None
+   assert lion.viewing_alert_messages == []

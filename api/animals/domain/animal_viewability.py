@@ -10,6 +10,7 @@ from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import EnclosureType
 from ...shared.enums import ScheduleStatus
+from ...shared.value_conversion import ValueConversion
 from ...shared.weather import Weather
 from ...types import MonthInput, VisitDay, VisitYear
 from ...walk_graph.resolve_viewing_walk_node_id import apply_viewing_walk_node_id_to_animal
@@ -214,9 +215,11 @@ def build_viewable_animal_from_record(
       animal=animal,
       target_date=target_date )
 
-   has_viewing_alert, viewing_alert_message = get_active_viewing_alert_status(
+   _, viewing_alert_message = get_active_viewing_alert_status(
       animal=animal,
       target_date=target_date )
+   viewing_alert_messages = ValueConversion.as_singleton_list(
+      viewing_alert_message )
 
    exhibit_status, exhibit_closed_message = get_active_exhibit_status(
       animal=animal,
@@ -260,8 +263,7 @@ def build_viewable_animal_from_record(
       likelihood=likelihood,
       has_limited_viewing_schedule=has_limited_viewing_schedule,
       limited_viewing_message=limited_viewing_message,
-      has_viewing_alert=has_viewing_alert,
-      viewing_alert_message=viewing_alert_message,
+      viewing_alert_messages=viewing_alert_messages,
       include_all_viewing_spots=animal.include_all_viewing_spots )
 
    apply_viewing_walk_node_id_to_animal( viewable_animal )

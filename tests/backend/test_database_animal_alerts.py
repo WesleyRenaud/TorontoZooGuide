@@ -49,4 +49,4 @@ def test_setting_animal_viewing_alert_twice_updates_existing_alert(
       'ALERT_END_DATE': '2026-07-15'
    }
    assert penguin.has_viewing_alert is True
-   assert penguin.viewing_alert_message == 'Penguin viewing has moved.'
+   assert penguin.viewing_alert_messages == [ 'Penguin viewing has moved.' ]
