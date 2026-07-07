@@ -240,17 +240,32 @@
       "traversal": "two_way",
       "viewing_spots": [
         {
-          "species": "Mouflon",
+          "species": "Highland Cattle",
           "exhibit": "Eurasia Wilds",
           "name": null
         },
         {
-          "species": "Asian Wild Horse",
+          "species": "Bactrian Camel",
           "exhibit": "Eurasia Wilds",
-          "name": "Shady Acres"
+          "name": "Shelter Habitat"
         },
         {
-          "species": "West Caucasian Tur",
+          "species": "Bactrian Camel",
+          "exhibit": "Eurasia Wilds",
+          "name": "Grass Habitat"
+        },
+        {
+          "species": "Domestic Yak",
+          "exhibit": "Eurasia Wilds",
+          "name": "Eurasia Drive Thru"
+        },
+        {
+          "species": "Asian Wild Horse",
+          "exhibit": "Eurasia Wilds",
+          "name": "Eurasia Drive Thru"
+        },
+        {
+          "species": "Steller's Sea Eagle",
           "exhibit": "Eurasia Wilds",
           "name": null
         },
@@ -260,34 +275,19 @@
           "name": null
         },
         {
-          "species": "Steller's Sea Eagle",
-          "exhibit": "Eurasia Wilds",
-          "name": null
-        },
-        {
-          "species": "Bactrian Camel",
-          "exhibit": "Eurasia Wilds",
-          "name": "Grass Habitat"
-        },
-        {
-          "species": "Bactrian Camel",
-          "exhibit": "Eurasia Wilds",
-          "name": "Shelter Habitat"
-        },
-        {
-          "species": "Highland Cattle",
+          "species": "West Caucasian Tur",
           "exhibit": "Eurasia Wilds",
           "name": null
         },
         {
           "species": "Asian Wild Horse",
           "exhibit": "Eurasia Wilds",
-          "name": "Eurasia Drive Thru"
+          "name": "Shady Acres"
         },
         {
-          "species": "Domestic Yak",
+          "species": "Mouflon",
           "exhibit": "Eurasia Wilds",
-          "name": "Eurasia Drive Thru"
+          "name": null
         }
       ]
     },
