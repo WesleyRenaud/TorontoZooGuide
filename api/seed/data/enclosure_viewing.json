@@ -448,6 +448,7 @@
     "seasonally_off_display_message": null,
     "x_coord": 76.076,
     "y_coord": 76.176,
+    "walk_node_id": "v-1061",
     "default_itinerary_duration_minutes": 8
   },
   {
