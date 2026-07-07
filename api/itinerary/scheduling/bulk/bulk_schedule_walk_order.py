@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-from .bulk_schedule_visit_before_candidates import bulk_schedule_candidate_animals_after_visit_before_rules
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from .sort_animals_by_master_route import sort_animals_by_master_route
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.representative_walk_node import representative_walk_node_id_from_candidates
 from ....walk_graph.shortest_path import build_walk_graph_adjacency
 from ....walk_graph.shortest_path import shortest_path_distances
-from ....walk_graph.walk_graph_spurs import is_walk_graph_spur_active
-from ....walk_graph.walk_graph_spurs import walk_graph_spur_index_for_viewing_node_ids
-from ....walk_graph.walk_graph_spurs import walk_graph_spurs_for_graph
-from ....walk_graph.walk_graph_spurs import WalkGraphSpur
-from ....walk_graph.walk_node_id_for_viewing_spot import scheduling_walk_node_id_for_viewing_spot
+from ....walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
 
 
 def representative_walk_node_id(
@@ -41,6 +37,11 @@ def walk_travel_distance_px(
 
 
 def sort_animals_for_bulk_schedule(
+      animal_rows: list[ ItineraryAnimalRecord ] ) -> list[ ItineraryAnimalRecord ]:
+   return sort_animals_by_master_route( animal_rows )
+
+
+def sort_animals_by_nearest_neighbor(
       graph: WalkGraph,
       animal_rows: list[ ItineraryAnimalRecord ],
       *,
@@ -49,20 +50,12 @@ def sort_animals_for_bulk_schedule(
       return []
 
    adjacency = build_walk_graph_adjacency( graph )
-   spurs = walk_graph_spurs_for_graph( graph )
    viewing_node_ids_by_animal = {
       animal_row.viewing_spot_key(): _viewing_node_ids(
          animal_row.species,
          animal_row.exhibit,
          animal_row.enclosure_name )
       for animal_row in animal_rows
-   }
-   spur_index_by_animal = {
-      viewing_spot_key: walk_graph_spur_index_for_viewing_node_ids(
-         spurs,
-         viewing_node_ids )
-      for viewing_spot_key, viewing_node_ids
-         in viewing_node_ids_by_animal.items()
    }
 
    remaining_animals = list( animal_rows )
@@ -74,15 +67,9 @@ def sort_animals_for_bulk_schedule(
          graph,
          current_node_id,
          adjacency=adjacency )
-      candidate_animals = _bulk_schedule_candidate_animals(
-         remaining_animals,
-         spurs=spurs,
-         spur_index_by_animal=spur_index_by_animal,
-         current_node_id=current_node_id,
-         distances=distances )
 
       next_animal = min(
-         candidate_animals,
+         remaining_animals,
          key=lambda animal_row: _bulk_schedule_walk_sort_key_from_distances(
             distances,
             animal_row,
@@ -107,12 +94,12 @@ def _viewing_node_ids(
       species: str,
       exhibit: str,
       enclosure_name: str | None ) -> tuple[ str, ... ]:
-   walk_node_id = scheduling_walk_node_id_for_viewing_spot(
+   walk_node_id = walk_node_id_for_viewing_spot(
       species,
       exhibit,
       enclosure_name )
 
-   if walk_node_id == None:
+   if walk_node_id is None:
       return ()
 
    return ( walk_node_id, )
@@ -161,39 +148,3 @@ def _bulk_schedule_walk_sort_key_from_distances(
       enclosure_name.lower(),
       animal_row.species.lower(),
    )
-
-
-def _bulk_schedule_candidate_animals(
-      remaining_animals: list[ ItineraryAnimalRecord ],
-      *,
-      spurs: tuple[ WalkGraphSpur, ... ],
-      spur_index_by_animal: dict[ tuple[ str, str, str | None ], int | None ],
-      current_node_id: str,
-      distances: dict[ str, float ] ) -> list[ ItineraryAnimalRecord ]:
-   active_spur_indexes = {
-      spur_index
-      for spur_index in (
-         spur_index_by_animal.get( animal_row.viewing_spot_key() )
-         for animal_row in remaining_animals
-      )
-      if spur_index is not None
-      and is_walk_graph_spur_active(
-         spurs[ spur_index ],
-         current_node_id,
-         distances )
-   }
-
-   if not active_spur_indexes:
-      return bulk_schedule_candidate_animals_after_visit_before_rules(
-         remaining_animals )
-
-   spur_filtered_animals = [
-      animal_row
-      for animal_row in remaining_animals
-      if spur_index_by_animal.get( animal_row.viewing_spot_key() )
-         in active_spur_indexes
-   ]
-
-   return bulk_schedule_candidate_animals_after_visit_before_rules(
-      spur_filtered_animals,
-      fallback_animals=remaining_animals )

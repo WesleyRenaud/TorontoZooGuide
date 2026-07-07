@@ -4,7 +4,6 @@ from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRec
 from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
 from api.itinerary.scheduling.bulk.bulk_schedule_animals import is_itinerary_animal_unscheduled
 from api.itinerary.scheduling.bulk.bulk_schedule_walk_order import sort_animals_for_bulk_schedule
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.enclosure_viewing_walk_node_lookup import walk_node_id_by_enclosure_name
 
 
@@ -23,10 +22,8 @@ def test_walk_node_id_by_enclosure_name_resolves_named_and_unnamed_viewing_spots
    ] == 'v-0426'
 
 
-def test_sort_animals_for_bulk_schedule_groups_animals_at_the_same_viewing_spot() -> None:
-   graph = load_walk_graph()
+def test_sort_animals_for_bulk_schedule_orders_animals_by_master_route() -> None:
    animals = sort_animals_for_bulk_schedule(
-      graph,
       [
          ItineraryAnimalRecord(
             species='Marabou Stork',
@@ -57,21 +54,18 @@ def test_sort_animals_for_bulk_schedule_groups_animals_at_the_same_viewing_spot(
             new_likelihood=100,
          ),
       ],
-      start_node_id='v-0263',
    )
 
-   assert [ animal.enclosure_name for animal in animals[ :3 ] ] == [
-      'Savanna Overlook',
-      'Savanna Overlook',
-      'Savanna Overlook',
+   assert [ ( animal.species, animal.enclosure_name ) for animal in animals ] == [
+      ( 'Marabou Stork', "Grevy's Zebra Enclosure" ),
+      ( 'Marabou Stork', 'Savanna Overlook' ),
+      ( 'Southern Ground Hornbill', 'Savanna Overlook' ),
+      ( 'White-Headed Vulture', 'Savanna Overlook' ),
    ]
-   assert animals[ 3 ].enclosure_name == "Grevy's Zebra Enclosure"
 
 
-def test_sort_animals_for_bulk_schedule_orders_by_walk_distance_from_entrance() -> None:
-   graph = load_walk_graph()
+def test_sort_animals_for_bulk_schedule_orders_by_master_route() -> None:
    animals = sort_animals_for_bulk_schedule(
-      graph,
       [
          ItineraryAnimalRecord(
             species='African Lion',
@@ -93,12 +87,12 @@ def test_sort_animals_for_bulk_schedule_orders_by_walk_distance_from_entrance() 
             new_likelihood=100,
          ),
       ],
-      start_node_id=str( graph[ 'entrance_node_id' ] ) )
+   )
 
    assert [ ( animal.species, animal.exhibit ) for animal in animals ] == [
-      ( 'Cheetah', 'Indo-Malaya Outdoor' ),
       ( 'African Penguin', 'Africa Savanna' ),
       ( 'African Lion', 'Africa Savanna' ),
+      ( 'Cheetah', 'Indo-Malaya Outdoor' ),
    ]
 
 

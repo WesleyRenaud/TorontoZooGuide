@@ -2,15 +2,11 @@ from __future__ import annotations
 
 import json
 
-from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.routing.build_itinerary_walk_route import build_itinerary_walk_route
-from api.itinerary.scheduling.bulk.bulk_schedule_walk_order import sort_animals_for_bulk_schedule
 from api.models import Animal
 from api.models import Itinerary
-from api.walk_graph.data_access.load_walk_graph import load_walk_graph
 from api.walk_graph.data_access.paths import VIEWING_SPOT_ROUTING_OVERRIDES_DIR
 from api.walk_graph.resolve_viewing_walk_node_id import resolve_viewing_walk_node_id
-from api.walk_graph.viewing_spot_routing_overrides import bulk_schedule_visit_before_rules
 from api.walk_graph.walk_node_id_for_viewing_spot import scheduling_walk_node_id_for_viewing_spot
 from api.walk_graph.walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
 
@@ -54,52 +50,6 @@ def test_resolve_viewing_walk_node_id_uses_viewing_location_not_override() -> No
       47.091,
       66.261,
       'Outdoor' ) == 'v-0281'
-
-
-def test_bulk_schedule_visit_before_rules_include_aldabra_tortoise_outdoor() -> None:
-   rules = bulk_schedule_visit_before_rules()
-
-   assert any(
-      rule.visit_first.key()
-         == ( 'Aldabra Tortoise', 'African Rainforest Pavilion', 'Outdoor' )
-      for rule in rules )
-
-
-def test_sort_animals_for_bulk_schedule_visits_outdoor_tortoise_before_gorillas() -> None:
-   graph = load_walk_graph()
-   pavilion = 'African Rainforest Pavilion'
-   animals = sort_animals_for_bulk_schedule(
-      graph,
-      [
-         ItineraryAnimalRecord(
-            species='Western Lowland Gorilla',
-            exhibit=pavilion,
-            enclosure_name='Outdoor',
-            old_likelihood=None,
-            new_likelihood=100,
-         ),
-         ItineraryAnimalRecord(
-            species='Western Lowland Gorilla',
-            exhibit=pavilion,
-            enclosure_name='Indoor',
-            old_likelihood=None,
-            new_likelihood=100,
-         ),
-         ItineraryAnimalRecord(
-            species='Aldabra Tortoise',
-            exhibit=pavilion,
-            enclosure_name='Outdoor',
-            old_likelihood=None,
-            new_likelihood=100,
-         ),
-      ],
-      start_node_id=str( graph[ 'entrance_node_id' ] ) )
-
-   species_order = [ animal.species for animal in animals ]
-   tortoise_index = species_order.index( 'Aldabra Tortoise' )
-   gorilla_outdoor_index = species_order.index( 'Western Lowland Gorilla' )
-
-   assert tortoise_index < gorilla_outdoor_index
 
 
 def test_build_itinerary_walk_route_routes_to_outdoor_tortoise_viewing_node() -> None:
