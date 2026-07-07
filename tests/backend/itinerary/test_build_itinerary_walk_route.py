@@ -8,6 +8,7 @@ from itinerary.support import CAROUSEL
 from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY
 from itinerary.support import LION_ITINERARY_ENTRY
 from itinerary.support import LION_KEY
+from itinerary.support import PENGUIN_ITINERARY_ENTRY
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -176,7 +177,7 @@ def test_bulk_schedule_partial_itinerary_ends_at_last_scheduled_stop(
       departure_time='09:35',
       confirming_short_visit=True,
       animals=[
-         LION_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
          CHEETAH_INDO_MALAYA_ITINERARY_ENTRY,
       ],
       attractions=[],

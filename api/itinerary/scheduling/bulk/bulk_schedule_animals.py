@@ -96,10 +96,7 @@ def bulk_schedule_animals(
       saved_itinerary.animal_rows,
       anchor_seconds )
 
-   sorted_animals = sort_animals_for_bulk_schedule(
-      walk_graph,
-      animals_to_schedule,
-      start_node_id=start_state.start_node_id )
+   sorted_animals = sort_animals_for_bulk_schedule( animals_to_schedule )
 
    if not sorted_animals:
       persist_itinerary_walk_route( conn, **itinerary_context )
