@@ -14,6 +14,7 @@ from ..items.schedule_itinerary_helpers import build_itinerary_context
 from ..items.schedule_itinerary_helpers import build_save_result
 from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..items.schedule_itinerary_helpers import prepare_schedule_window
+from .loop_schedule_unit import build_loop_schedule_units
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ...routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
@@ -93,12 +94,13 @@ def bulk_schedule_animals(
       anchor_seconds )
 
    sorted_loop_groups = group_animals_by_master_route_loop( animals_to_schedule )
+   loop_units = build_loop_schedule_units( sorted_loop_groups )
    schedule_windows = partition_itinerary_schedule_windows(
       start_state.schedule_anchor_seconds,
       day_end_seconds,
       resolve_fixed_time_itinerary_stops( itinerary ) )
 
-   if not sorted_loop_groups:
+   if not loop_units:
       persist_itinerary_walk_route( conn, **itinerary_context )
 
       return ItinerarySaveResult(
@@ -109,10 +111,12 @@ def bulk_schedule_animals(
 
    remaining_animals, _ = schedule_animals_by_master_route_loop(
       conn,
-      sorted_loop_groups,
+      loop_units,
       blockers=blockers,
       schedule_windows=schedule_windows,
-      schedule_cursor_seconds=start_state.schedule_anchor_seconds )
+      schedule_cursor_seconds=start_state.schedule_anchor_seconds,
+      walk_graph=walk_graph,
+      start_node_id=start_state.start_node_id )
 
    reasons: tuple[ ItineraryResultReason, ... ] = ()
 

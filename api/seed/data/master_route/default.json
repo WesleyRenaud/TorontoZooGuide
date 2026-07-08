@@ -1373,5 +1373,25 @@
         }
       ]
     }
+  ],
+  "loop_side_clusters": [
+    {
+      "id": "north",
+      "loop_ids": [
+        "australasia",
+        "discovery_zone",
+        "eurasia",
+        "tundra_trek_mayan_temple",
+        "americas_pavilion"
+      ]
+    },
+    {
+      "id": "south",
+      "loop_ids": [
+        "africa_savanna_canadian_domain",
+        "african_rainforest_giraffe",
+        "indo_malaya"
+      ]
+    }
   ]
 }
