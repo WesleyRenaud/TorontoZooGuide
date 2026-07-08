@@ -44,12 +44,12 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
       result.reasons[ 0 ].code
       == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME )
    assert [ item.name for item in result.reasons[ 0 ].items ] == [
+      'African Penguin',
       'African Lion',
-      'Cheetah',
    ]
    assert [ item.location for item in result.reasons[ 0 ].items ] == [
       'Africa Savanna',
-      'Indo-Malaya Outdoor',
+      'Africa Savanna',
    ]
    assert result.reasons[ 0 ].items[ 0 ].item_type == ItinerarySaveIssueItemType.ANIMAL
 
@@ -58,7 +58,7 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
       for animal in result.itinerary.animals
       if animal.start_time is not None and animal.end_time is not None
    }
-   assert scheduled_species == { 'African Penguin' }
+   assert scheduled_species == { 'Cheetah' }
 
    saved = fetch_saved_itinerary( db.conn )
    lion_row = next(
@@ -110,6 +110,6 @@ def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
 
    close_connection( reopened )
 
-   assert scheduled_species == { 'African Penguin' }
+   assert scheduled_species == { 'Cheetah' }
    assert lion_row.start_time is None
    assert lion_row.end_time is None

@@ -4,16 +4,11 @@ from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .bulk_schedule_start_state import BulkScheduleStartState
 from .bulk_schedule_walk_order import representative_walk_node_id
-from .bulk_schedule_walk_order import sort_animals_for_bulk_schedule
-from ..core.resolve_schedule_slot import resolve_schedule_slot
 from ..core.time_block import collect_time_blocks_from_itinerary
-from ..core.time_block import time_block_from_schedule_times
-from ..core.time_block import TimeBlock
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
-from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...domain.itinerary import build_current_itinerary
+from .group_animals_by_master_route_loop import group_animals_by_master_route_loop
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ..items.schedule_itinerary_helpers import build_itinerary_context
 from ..items.schedule_itinerary_helpers import build_save_result
@@ -21,11 +16,12 @@ from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..items.schedule_itinerary_helpers import prepare_schedule_window
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
+from ...routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
+from ...routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
+from .schedule_animals_by_master_route_loop import schedule_animals_by_master_route_loop
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
-from ....types import Cursor
-from ....types import ScheduleTimeKey
 from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_schedules
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
@@ -96,9 +92,13 @@ def bulk_schedule_animals(
       saved_itinerary.animal_rows,
       anchor_seconds )
 
-   sorted_animals = sort_animals_for_bulk_schedule( animals_to_schedule )
+   sorted_loop_groups = group_animals_by_master_route_loop( animals_to_schedule )
+   schedule_windows = partition_itinerary_schedule_windows(
+      start_state.schedule_anchor_seconds,
+      day_end_seconds,
+      resolve_fixed_time_itinerary_stops( itinerary ) )
 
-   if not sorted_animals:
+   if not sorted_loop_groups:
       persist_itinerary_walk_route( conn, **itinerary_context )
 
       return ItinerarySaveResult(
@@ -107,12 +107,12 @@ def bulk_schedule_animals(
             fetch_saved_itinerary( conn ),
             **itinerary_context ) )
 
-   remaining_animals = _schedule_animals_in_order(
+   remaining_animals, _ = schedule_animals_by_master_route_loop(
       conn,
-      sorted_animals,
+      sorted_loop_groups,
       blockers=blockers,
-      anchor_seconds=start_state.schedule_anchor_seconds,
-      day_end_seconds=day_end_seconds )
+      schedule_windows=schedule_windows,
+      schedule_cursor_seconds=start_state.schedule_anchor_seconds )
 
    reasons: tuple[ ItineraryResultReason, ... ] = ()
 
@@ -167,84 +167,3 @@ def _bulk_schedule_start_state(
    return BulkScheduleStartState(
       start_node_id=start_node_id,
       schedule_anchor_seconds=max( anchor_seconds, last_end_seconds ) )
-
-
-def _schedule_animals_in_order(
-      conn: Connection,
-      animals: list[ ItineraryAnimalRecord ],
-      *,
-      blockers: list[ TimeBlock ],
-      anchor_seconds: int,
-      day_end_seconds: int ) -> list[ ItineraryAnimalRecord ]:
-   cur = conn.cursor()
-   scheduled_count = 0
-
-   try:
-      for index, animal_row in enumerate( animals ):
-         duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
-            conn,
-            animal_row.species,
-            animal_row.exhibit,
-            animal_row.enclosure_name )
-
-         if duration_seconds is None:
-            _commit_scheduled_animals( conn, scheduled_count )
-            return animals[ index: ]
-
-         slot = resolve_schedule_slot(
-            blockers,
-            anchor_seconds,
-            duration_seconds,
-            day_end_seconds,
-            start_time=None )
-
-         if slot is None:
-            _commit_scheduled_animals( conn, scheduled_count )
-            return animals[ index: ]
-
-         start_time, end_time = slot
-
-         if not _persist_animal_schedule(
-               cur,
-               animal_row=animal_row,
-               start_time=start_time,
-               end_time=end_time ):
-            _commit_scheduled_animals( conn, scheduled_count )
-            return animals[ index: ]
-
-         scheduled_count += 1
-
-         scheduled_block = time_block_from_schedule_times(
-            start_time,
-            end_time )
-
-         if scheduled_block is not None:
-            blockers.append( scheduled_block )
-
-      conn.commit()
-      return []
-
-   finally:
-      cur.close()
-
-
-def _commit_scheduled_animals(
-      conn: Connection,
-      scheduled_count: int ) -> None:
-   if scheduled_count > 0:
-      conn.commit()
-
-
-def _persist_animal_schedule(
-      cur: Cursor,
-      *,
-      animal_row: ItineraryAnimalRecord,
-      start_time: ScheduleTimeKey,
-      end_time: ScheduleTimeKey ) -> bool:
-   return update_itinerary_animal_schedule(
-      cur,
-      species=animal_row.species,
-      exhibit=animal_row.exhibit,
-      enclosure_name=animal_row.enclosure_name,
-      start_time=start_time,
-      end_time=end_time )
