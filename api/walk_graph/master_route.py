@@ -61,6 +61,11 @@ def default_master_route_index_by_viewing_spot_key() -> dict[
    return master_route_index_by_viewing_spot_key( default_master_route() )
 
 
+@lru_cache( maxsize=1 )
+def default_loop_index_by_viewing_spot_key() -> dict[ ViewingSpotNameKey, int ]:
+   return loop_index_by_viewing_spot_key( default_master_route() )
+
+
 def master_route_from_json_file( path: str ) -> MasterRoute:
    import json
    from pathlib import Path
