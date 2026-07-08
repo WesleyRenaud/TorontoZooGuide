@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .domain.master_route_loop import is_two_way_loop_traversal
 from .domain.master_route_loop import MasterRouteLoop
 from .domain.viewing_spot_reference import ViewingSpotReference
 from .walk_node_id_for_viewing_spot import walk_node_id_for_viewing_spot
@@ -16,6 +17,19 @@ def loop_walk_endpoint_node_ids(
    return (
       _walk_node_id_for_viewing_spot_reference( first_viewing_spot ),
       _walk_node_id_for_viewing_spot_reference( last_viewing_spot ),
+   )
+
+
+def loop_walk_endpoint_orientations(
+      loop: MasterRouteLoop ) -> tuple[ tuple[ str | None, str | None ], ... ]:
+   forward_endpoints = loop_walk_endpoint_node_ids( loop )
+
+   if not is_two_way_loop_traversal( loop.traversal ):
+      return ( forward_endpoints, )
+
+   return (
+      forward_endpoints,
+      ( forward_endpoints[ 1 ], forward_endpoints[ 0 ] ),
    )
 
 

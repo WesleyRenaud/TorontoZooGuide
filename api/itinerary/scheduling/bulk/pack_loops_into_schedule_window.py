@@ -4,9 +4,12 @@ from dataclasses import dataclass
 
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
+from .loop_schedule_unit import loop_schedule_unit_orientations
+from .loop_schedule_unit import loop_schedule_unit_reversed
 from .loop_schedule_unit import LoopScheduleUnit
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....types import Connection
+from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ....walk_graph.shortest_path import build_walk_graph_adjacency
 from ....walk_graph.shortest_path import shortest_path_distance
@@ -89,15 +92,16 @@ def _pack_loops_for_anchored_window(
    best_score: tuple[ float, float, str ] | None = None
 
    for terminal_unit in prepared_units:
-      sequence = _pack_loops_with_terminal_unit(
-         walk_graph,
-         prepared_units,
-         terminal_unit=terminal_unit,
-         window_start_seconds=window_start_seconds,
-         window_end_seconds=schedule_window.end_seconds,
-         current_node_id=current_node_id,
-         anchor_node_id=anchor_node_id,
-         departure_side_cluster_id=departure_side_cluster_id )
+      for oriented_terminal_unit in _prepared_unit_orientations( terminal_unit ):
+         sequence = _pack_loops_with_terminal_unit(
+            walk_graph,
+            prepared_units,
+            terminal_unit=oriented_terminal_unit,
+            window_start_seconds=window_start_seconds,
+            window_end_seconds=schedule_window.end_seconds,
+            current_node_id=current_node_id,
+            anchor_node_id=anchor_node_id,
+            departure_side_cluster_id=departure_side_cluster_id )
 
       if not sequence:
          continue
@@ -145,7 +149,7 @@ def _pack_loops_with_terminal_unit(
       [
          unit
          for unit in prepared_units
-         if unit is not terminal_unit
+         if not _prepared_units_share_loop( unit, terminal_unit )
       ],
       window_start_seconds=window_start_seconds,
       terminal_start_seconds=terminal_start_seconds,
@@ -208,6 +212,11 @@ def _greedy_prefix_units_before_terminal(
             adjacency=adjacency,
             prefer_side_cluster_loop_order=prefer_side_cluster_loop_order ) )
       remaining_units.remove( next_unit )
+      next_unit = _prepared_unit_with_best_approach_orientation(
+         walk_graph,
+         from_node_id=walk_node_id,
+         prepared_unit=next_unit,
+         adjacency=adjacency )
       packed_units.append( next_unit )
       cursor_seconds += next_unit.duration_seconds
       previous_side_cluster_id = next_unit.unit.side_cluster_id
@@ -262,6 +271,11 @@ def _pack_loops_for_open_window(
             adjacency=adjacency,
             prefer_side_cluster_loop_order=prefer_side_cluster_loop_order ) )
       remaining_units.remove( next_unit )
+      next_unit = _prepared_unit_with_best_approach_orientation(
+         walk_graph,
+         from_node_id=walk_node_id,
+         prepared_unit=next_unit,
+         adjacency=adjacency )
       packed_units.append( next_unit )
       cursor_seconds += next_unit.duration_seconds
       previous_side_cluster_id = next_unit.unit.side_cluster_id
@@ -398,16 +412,105 @@ def _travel_distance_to_unit_entry(
       from_node_id: str,
       prepared_unit: PreparedLoopScheduleUnit,
       adjacency: WalkGraphAdjacency ) -> float:
-   entry_walk_node_id = prepared_unit.unit.entry_walk_node_id
+   unit = prepared_unit.unit
+   entry_walk_node_id = unit.entry_walk_node_id
 
    if entry_walk_node_id is None:
       return float( 'inf' )
 
-   return _walk_distance_px(
+   forward_distance = _walk_distance_px(
       walk_graph,
       from_node_id,
       entry_walk_node_id,
       adjacency=adjacency )
+
+   if not is_two_way_loop_traversal( unit.traversal ):
+      return forward_distance
+
+   exit_walk_node_id = unit.exit_walk_node_id
+
+   if exit_walk_node_id is None:
+      return forward_distance
+
+   reverse_distance = _walk_distance_px(
+      walk_graph,
+      from_node_id,
+      exit_walk_node_id,
+      adjacency=adjacency )
+
+   return min( forward_distance, reverse_distance )
+
+
+def remove_matching_prepared_loop_unit(
+      prepared_units: list[ PreparedLoopScheduleUnit ],
+      prepared_unit: PreparedLoopScheduleUnit ) -> None:
+   for index, candidate in enumerate( prepared_units ):
+      if _prepared_units_share_loop( candidate, prepared_unit ):
+         prepared_units.pop( index )
+         return
+
+   prepared_units.remove( prepared_unit )
+
+
+def _prepared_units_share_loop(
+      left_unit: PreparedLoopScheduleUnit,
+      right_unit: PreparedLoopScheduleUnit ) -> bool:
+   left_loop_id = left_unit.unit.loop_id
+   right_loop_id = right_unit.unit.loop_id
+
+   if left_loop_id is None or right_loop_id is None:
+      return left_unit is right_unit
+
+   return left_loop_id == right_loop_id
+
+
+def _prepared_unit_orientations(
+      prepared_unit: PreparedLoopScheduleUnit ) -> tuple[
+         PreparedLoopScheduleUnit,
+         ... ]:
+   return tuple(
+      _prepared_unit_with_loop_schedule_unit(
+         prepared_unit,
+         loop_unit )
+      for loop_unit in loop_schedule_unit_orientations( prepared_unit.unit ) )
+
+
+def _prepared_unit_with_best_approach_orientation(
+      walk_graph: WalkGraph,
+      *,
+      from_node_id: str,
+      prepared_unit: PreparedLoopScheduleUnit,
+      adjacency: WalkGraphAdjacency ) -> PreparedLoopScheduleUnit:
+   unit = prepared_unit.unit
+
+   if not is_two_way_loop_traversal( unit.traversal ):
+      return prepared_unit
+
+   forward_distance = _walk_distance_px(
+      walk_graph,
+      from_node_id,
+      unit.entry_walk_node_id or '',
+      adjacency=adjacency )
+   reverse_distance = _walk_distance_px(
+      walk_graph,
+      from_node_id,
+      unit.exit_walk_node_id or '',
+      adjacency=adjacency )
+
+   if reverse_distance < forward_distance:
+      return _prepared_unit_with_loop_schedule_unit(
+         prepared_unit,
+         loop_schedule_unit_reversed( unit ) )
+
+   return prepared_unit
+
+
+def _prepared_unit_with_loop_schedule_unit(
+      prepared_unit: PreparedLoopScheduleUnit,
+      loop_unit: LoopScheduleUnit ) -> PreparedLoopScheduleUnit:
+   return PreparedLoopScheduleUnit(
+      unit=loop_unit,
+      duration_seconds=prepared_unit.duration_seconds )
 
 
 def _walk_distance_px(

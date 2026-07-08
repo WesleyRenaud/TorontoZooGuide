@@ -8,6 +8,14 @@ from .viewing_spot_reference import ViewingSpotReference
 
 MasterRouteTraversal = str
 
+TWO_WAY_LOOP_TRAVERSAL = 'two_way'
+ONE_WAY_LOOP_TRAVERSAL = 'one_way'
+
+
+def is_two_way_loop_traversal(
+      traversal: MasterRouteTraversal | None ) -> bool:
+   return traversal == TWO_WAY_LOOP_TRAVERSAL
+
 
 @dataclass( frozen=True )
 class MasterRouteLoop:

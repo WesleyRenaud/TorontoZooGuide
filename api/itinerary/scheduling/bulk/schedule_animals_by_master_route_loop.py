@@ -10,6 +10,7 @@ from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .pack_loops_into_schedule_window import pack_loops_into_schedule_window
 from .pack_loops_into_schedule_window import prepare_loop_schedule_units
 from .pack_loops_into_schedule_window import PreparedLoopScheduleUnit
+from .pack_loops_into_schedule_window import remove_matching_prepared_loop_unit
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
@@ -97,7 +98,7 @@ def schedule_animals_by_master_route_loop(
          if unscheduled_animals:
             continue
 
-         remaining_units.remove( prepared_unit )
+         remove_matching_prepared_loop_unit( remaining_units, prepared_unit )
          cursor_seconds += prepared_unit.duration_seconds
 
          if prepared_unit.unit.exit_walk_node_id is not None:

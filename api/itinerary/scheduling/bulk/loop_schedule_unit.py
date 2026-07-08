@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from ....animals.search.animals_matching_query import viewing_spot_key_from_values
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
+from ....walk_graph.domain.master_route_loop import is_two_way_loop_traversal
 from ....walk_graph.domain.master_route_loop import MasterRouteLoop
 from ....walk_graph.master_route import default_loop_id_by_viewing_spot_key
 from ....walk_graph.master_route import default_loop_index_in_side_cluster_by_loop_id
@@ -20,6 +21,28 @@ class LoopScheduleUnit:
    exit_walk_node_id: str | None
    side_cluster_id: str | None
    loop_index_in_side_cluster: int | None
+   traversal: str | None
+
+
+def loop_schedule_unit_reversed(
+      unit: LoopScheduleUnit ) -> LoopScheduleUnit:
+   return LoopScheduleUnit(
+      loop_id=unit.loop_id,
+      animals=tuple( reversed( unit.animals ) ),
+      entry_walk_node_id=unit.exit_walk_node_id,
+      exit_walk_node_id=unit.entry_walk_node_id,
+      side_cluster_id=unit.side_cluster_id,
+      loop_index_in_side_cluster=unit.loop_index_in_side_cluster,
+      traversal=unit.traversal,
+   )
+
+
+def loop_schedule_unit_orientations(
+      unit: LoopScheduleUnit ) -> tuple[ LoopScheduleUnit, ... ]:
+   if not is_two_way_loop_traversal( unit.traversal ):
+      return ( unit, )
+
+   return ( unit, loop_schedule_unit_reversed( unit ) )
 
 
 def build_loop_schedule_units(
@@ -65,6 +88,7 @@ def _loop_schedule_unit_from_group(
       exit_walk_node_id=exit_walk_node_id,
       side_cluster_id=loop_side_cluster_ids.get( loop_id ),
       loop_index_in_side_cluster=loop_indexes_in_side_cluster.get( loop_id ),
+      traversal=master_route_loop.traversal,
    )
 
 
@@ -145,4 +169,5 @@ def _unmapped_loop_schedule_unit(
       exit_walk_node_id=_walk_node_id_for_animal( last_animal ),
       side_cluster_id=None,
       loop_index_in_side_cluster=None,
+      traversal=None,
    )

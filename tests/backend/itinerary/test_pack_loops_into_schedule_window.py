@@ -250,3 +250,56 @@ def test_pack_loops_into_schedule_window_orders_temple_before_eurasia_and_tiger_
       'eurasia',
       'australasia',
    ]
+
+
+def test_pack_loops_into_schedule_window_orients_two_way_loop_for_shorter_approach() -> None:
+   walk_graph = load_walk_graph()
+   window_start_seconds = DateValues.time_value_in_seconds( '2:00 PM' )
+   window_end_seconds = DateValues.time_value_in_seconds( '5:00 PM' )
+
+   assert window_start_seconds is not None
+   assert window_end_seconds is not None
+
+   temple_unit = _prepared_loop_unit(
+      animals=[
+         _animal_record(
+            species='Capybara',
+            exhibit='Americas Outdoor Mayan Temple Ruins',
+         ),
+      ],
+      duration_seconds=600,
+   )
+   eurasia_unit = _prepared_loop_unit(
+      animals=[
+         _animal_record(
+            species='Highland Cattle',
+            exhibit='Eurasia Wilds',
+         ),
+         _animal_record(
+            species='West Caucasian Tur',
+            exhibit='Eurasia Wilds',
+         ),
+      ],
+      duration_seconds=600,
+   )
+
+   packed_units = pack_loops_into_schedule_window(
+      walk_graph,
+      ItineraryScheduleWindow(
+         start_seconds=window_start_seconds,
+         end_seconds=window_end_seconds,
+      ),
+      prepared_units=[ eurasia_unit ],
+      cursor_seconds=window_start_seconds,
+      current_node_id=temple_unit.unit.exit_walk_node_id or '',
+      departure_side_cluster_id='north',
+   )
+
+   assert len( packed_units ) == 1
+   assert packed_units[ 0 ].unit.loop_id == 'eurasia'
+   assert packed_units[ 0 ].unit.entry_walk_node_id == 'v-0955'
+   assert packed_units[ 0 ].unit.exit_walk_node_id == 'v-1018'
+   assert [ animal.species for animal in packed_units[ 0 ].unit.animals ] == [
+      'West Caucasian Tur',
+      'Highland Cattle',
+   ]
