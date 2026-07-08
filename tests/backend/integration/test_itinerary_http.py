@@ -370,10 +370,10 @@ def test_bulk_schedule_animals_via_http(
       exhibit='Africa Savanna',
    )
 
-   assert lion[ 'start_time' ] == '9:30 AM'
-   assert cheetah[ 'start_time' ] == '9:38 AM'
-   assert lion[ 'end_time' ] == '9:38 AM'
-   assert cheetah[ 'end_time' ] == '9:43 AM'
+   assert cheetah[ 'start_time' ] == '9:30 AM'
+   assert cheetah[ 'end_time' ] == '9:35 AM'
+   assert lion[ 'start_time' ] == '9:35 AM'
+   assert lion[ 'end_time' ] == '9:43 AM'
 
 
 def test_set_departure_time_via_http(

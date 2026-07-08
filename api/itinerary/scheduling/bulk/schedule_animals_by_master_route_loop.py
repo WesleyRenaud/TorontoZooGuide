@@ -1,16 +1,21 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
+from .loop_schedule_unit import LoopScheduleUnit
+from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
+from .pack_loops_into_schedule_window import pack_loops_into_schedule_window
+from .pack_loops_into_schedule_window import prepare_loop_schedule_units
+from .pack_loops_into_schedule_window import PreparedLoopScheduleUnit
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
 from ....shared.calendar_dates import DateValues
 from ....types import Connection
 from ....types import ScheduleTimeKey
+from ....walk_graph.domain.walk_graph import WalkGraph
+
 
 LoopScheduleSlot = tuple[
    ItineraryAnimalRecord,
@@ -19,140 +24,192 @@ LoopScheduleSlot = tuple[
 ]
 
 
-@dataclass( frozen=True )
-class LoopGroupWindowMatch:
-   window_index: int
-   start_seconds: int
-   schedule_window: ItineraryScheduleWindow
-
-
 def schedule_animals_by_master_route_loop(
       conn: Connection,
-      loop_groups: list[ list[ ItineraryAnimalRecord ] ],
+      loop_units: list[ LoopScheduleUnit ],
       *,
       blockers: list[ TimeBlock ],
       schedule_windows: list[ ItineraryScheduleWindow ],
-      schedule_cursor_seconds: int ) -> tuple[ list[ ItineraryAnimalRecord ], int ]:
-   remaining_animals: list[ ItineraryAnimalRecord ] = []
+      schedule_cursor_seconds: int,
+      walk_graph: WalkGraph,
+      start_node_id: str ) -> tuple[ list[ ItineraryAnimalRecord ], int ]:
+   prepared_units = prepare_loop_schedule_units( conn, loop_units )
+
+   if prepared_units is None:
+      return _animals_from_loop_units( loop_units ), schedule_cursor_seconds
+
+   remaining_units = list( prepared_units )
    cursor_seconds = schedule_cursor_seconds
    window_index = 0
+   current_node_id = start_node_id
+   departure_side_cluster_id: str | None = None
+   remaining_animals: list[ ItineraryAnimalRecord ] = []
 
-   for loop_group in loop_groups:
-      unscheduled, cursor_seconds, window_index = _schedule_loop_group(
-         conn,
-         loop_group,
-         blockers=blockers,
-         schedule_windows=schedule_windows,
+   while remaining_units and window_index < len( schedule_windows ):
+      window_index = _window_index_after_cursor(
+         schedule_windows,
+         window_index=window_index,
+         cursor_seconds=cursor_seconds )
+
+      if window_index >= len( schedule_windows ):
+         break
+
+      schedule_window = schedule_windows[ window_index ]
+
+      if not _window_has_available_time(
+            schedule_window,
+            cursor_seconds=cursor_seconds ):
+         cursor_seconds = schedule_window.end_seconds
+         continue
+
+      packed_units = pack_loops_into_schedule_window(
+         walk_graph,
+         schedule_window,
+         prepared_units=remaining_units,
          cursor_seconds=cursor_seconds,
-         window_index=window_index )
+         current_node_id=current_node_id,
+         departure_side_cluster_id=departure_side_cluster_id )
 
-      remaining_animals.extend( unscheduled )
+      if not packed_units:
+         cursor_seconds = schedule_window.end_seconds
+         continue
+
+      cursor_seconds = _packed_units_start_seconds(
+         schedule_window,
+         packed_units=packed_units,
+         cursor_seconds=cursor_seconds )
+
+      for prepared_unit in packed_units:
+         try:
+            unscheduled_animals = _schedule_prepared_loop_unit(
+               conn,
+               prepared_unit,
+               blockers=blockers,
+               start_seconds=cursor_seconds )
+         except LoopUnitSchedulePersistError as error:
+            remaining_animals.extend( error.animals )
+            remaining_animals.extend(
+               _animals_from_prepared_units( remaining_units ) )
+            return remaining_animals, cursor_seconds
+
+         remaining_animals.extend( unscheduled_animals )
+
+         if unscheduled_animals:
+            continue
+
+         remaining_units.remove( prepared_unit )
+         cursor_seconds += prepared_unit.duration_seconds
+
+         if prepared_unit.unit.exit_walk_node_id is not None:
+            current_node_id = prepared_unit.unit.exit_walk_node_id
+
+         departure_side_cluster_id = prepared_unit.unit.side_cluster_id
+
+   remaining_animals.extend(
+      _animals_from_prepared_units( remaining_units ) )
 
    return remaining_animals, cursor_seconds
 
 
-def _schedule_loop_group(
+def _packed_units_start_seconds(
+      schedule_window: ItineraryScheduleWindow,
+      *,
+      packed_units: list[ PreparedLoopScheduleUnit ],
+      cursor_seconds: int ) -> int:
+   window_start_seconds = max(
+      cursor_seconds,
+      schedule_window.start_seconds )
+
+   if schedule_window.anchor_stop is None:
+      return window_start_seconds
+
+   total_duration_seconds = sum(
+      prepared_unit.duration_seconds
+      for prepared_unit in packed_units )
+
+   return max(
+      window_start_seconds,
+      schedule_window.end_seconds - total_duration_seconds )
+
+
+def _schedule_prepared_loop_unit(
       conn: Connection,
-      animals: list[ ItineraryAnimalRecord ],
+      prepared_unit: PreparedLoopScheduleUnit,
       *,
       blockers: list[ TimeBlock ],
-      schedule_windows: list[ ItineraryScheduleWindow ],
-      cursor_seconds: int,
-      window_index: int ) -> tuple[ list[ ItineraryAnimalRecord ], int, int ]:
+      start_seconds: int ) -> list[ ItineraryAnimalRecord ]:
+   animals = list( prepared_unit.unit.animals )
    durations = _fetch_viewing_durations( conn, animals )
 
    if durations is None:
-      return animals, cursor_seconds, window_index
+      return animals
 
-   window_match = _find_window_for_loop_group(
-      schedule_windows,
-      cursor_seconds=cursor_seconds,
-      window_index=window_index,
-      total_duration_seconds=sum( durations ) )
-
-   if window_match is None:
-      return animals, cursor_seconds, window_index
-
-   animal_slots, end_seconds = _assign_contiguous_slots(
+   animal_slots, _ = _assign_contiguous_slots(
       animals,
       durations,
-      start_seconds=window_match.start_seconds )
+      start_seconds=start_seconds )
+
+   if not animal_slots:
+      return animals
 
    if not _save_loop_slots( conn, blockers, animal_slots ):
-      return animals, cursor_seconds, window_index
+      raise LoopUnitSchedulePersistError( animals )
 
-   return (
-      [],
-      end_seconds,
-      _window_index_after_schedule(
-         window_match,
-         end_seconds=end_seconds ),
-   )
+   return []
 
 
-def _find_window_for_loop_group(
+def _window_has_available_time(
+      schedule_window: ItineraryScheduleWindow,
+      *,
+      cursor_seconds: int ) -> bool:
+   return max(
+      cursor_seconds,
+      schedule_window.start_seconds ) < schedule_window.end_seconds
+
+
+def _window_index_after_cursor(
       schedule_windows: list[ ItineraryScheduleWindow ],
       *,
-      cursor_seconds: int,
       window_index: int,
-      total_duration_seconds: int ) -> LoopGroupWindowMatch | None:
-   for index in range( window_index, len( schedule_windows ) ):
-      schedule_window = schedule_windows[ index ]
-
-      if _cursor_has_passed_window( cursor_seconds, schedule_window ):
-         continue
-
-      start_seconds = _aligned_window_start_seconds(
-         schedule_window,
-         cursor_seconds )
-
-      if not _loop_group_fits_in_window(
-            schedule_window,
-            start_seconds=start_seconds,
-            total_duration_seconds=total_duration_seconds ):
-         continue
-
-      return LoopGroupWindowMatch(
-         window_index=index,
-         start_seconds=start_seconds,
-         schedule_window=schedule_window )
-
-   return None
-
-
-def _cursor_has_passed_window(
-      cursor_seconds: int,
-      schedule_window: ItineraryScheduleWindow ) -> bool:
-   return cursor_seconds >= schedule_window.end_seconds
-
-
-def _aligned_window_start_seconds(
-      schedule_window: ItineraryScheduleWindow,
       cursor_seconds: int ) -> int:
-   if cursor_seconds < schedule_window.start_seconds:
-      return schedule_window.start_seconds
+   while _cursor_has_passed_schedule_window(
+         schedule_windows,
+         window_index=window_index,
+         cursor_seconds=cursor_seconds ):
+      window_index += 1
 
-   return cursor_seconds
+   return window_index
 
 
-def _loop_group_fits_in_window(
-      schedule_window: ItineraryScheduleWindow,
+def _cursor_has_passed_schedule_window(
+      schedule_windows: list[ ItineraryScheduleWindow ],
       *,
-      start_seconds: int,
-      total_duration_seconds: int ) -> bool:
-   return (
-      schedule_window.end_seconds - start_seconds
-      >= total_duration_seconds )
+      window_index: int,
+      cursor_seconds: int ) -> bool:
+   if window_index >= len( schedule_windows ):
+      return False
+
+   return cursor_seconds >= schedule_windows[ window_index ].end_seconds
 
 
-def _window_index_after_schedule(
-      window_match: LoopGroupWindowMatch,
-      *,
-      end_seconds: int ) -> int:
-   if end_seconds >= window_match.schedule_window.end_seconds:
-      return window_match.window_index + 1
+def _animals_from_loop_units(
+      loop_units: list[ LoopScheduleUnit ] ) -> list[ ItineraryAnimalRecord ]:
+   return [
+      animal_row
+      for loop_unit in loop_units
+      for animal_row in loop_unit.animals
+   ]
 
-   return window_match.window_index
+
+def _animals_from_prepared_units(
+      prepared_units: list[ PreparedLoopScheduleUnit ] ) -> list[
+         ItineraryAnimalRecord,
+   ]:
+   return [
+      animal_row
+      for prepared_unit in prepared_units
+      for animal_row in prepared_unit.unit.animals
+   ]
 
 
 def _fetch_viewing_durations(
