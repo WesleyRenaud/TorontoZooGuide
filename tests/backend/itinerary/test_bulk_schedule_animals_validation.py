@@ -8,12 +8,20 @@ from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 
 
-def test_bulk_schedule_animals_requires_visit_date(
+def test_bulk_schedule_animals_with_no_itinerary_returns_nothing_to_schedule(
       db: DbControllers ) -> None:
    result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert not result.success
-   assert result.status == ItineraryErrorType.ITINERARY_DATE_NOT_SET
+   assert result.status == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED
+
+
+def test_unschedule_all_itinerary_items_with_no_itinerary_returns_nothing_to_unschedule(
+      db: DbControllers ) -> None:
+   result = ItineraryCoordinator.unschedule_all_itinerary_items()
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.UNSCHEDULE_ALL_NOTHING_SCHEDULED
 
 
 def test_bulk_schedule_animals_with_no_unscheduled_animals(

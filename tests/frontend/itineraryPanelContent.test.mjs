@@ -147,6 +147,76 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
+   test('buildEmptyItineraryPanelContent shows error feedback when nothing is scheduled to rebuild', async () => {
+      updateItineraryErrorTypesFromConfig({
+         errorTypes: MOCK_ERROR_TYPES,
+         suppressedErrorTypes: [],
+      });
+
+      const bodyEl = createDomNode('div', 'side-panel-body');
+      let refreshed = false;
+      const feedbackCalls = [];
+      const { deps, getPlannerOptions } = captureDayPlannerOptions({
+         bulkSchedule: async () => ({
+            errorType: MOCK_ERROR_TYPES.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
+            message: APP_STRINGS.itinerary.errors.bulkScheduleAnimalsAlreadyScheduled,
+         }),
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
+         },
+      });
+
+      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
+         onPanelRefresh: async () => {
+            refreshed = true;
+         },
+         deps,
+      });
+
+      await getPlannerOptions()?.onRebuildScheduleClick?.();
+
+      assert.equal(refreshed, true);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'error',
+         message: APP_STRINGS.itinerary.errors.bulkScheduleAnimalsAlreadyScheduled,
+      }]);
+   });
+
+   test('buildEmptyItineraryPanelContent shows error feedback when nothing is scheduled to unschedule', async () => {
+      updateItineraryErrorTypesFromConfig({
+         errorTypes: MOCK_ERROR_TYPES,
+         suppressedErrorTypes: [],
+      });
+
+      const bodyEl = createDomNode('div', 'side-panel-body');
+      let refreshed = false;
+      const feedbackCalls = [];
+      const { deps, getPlannerOptions } = captureDayPlannerOptions({
+         unscheduleAll: async () => ({
+            errorType: MOCK_ERROR_TYPES.UNSCHEDULE_ALL_NOTHING_SCHEDULED,
+            message: APP_STRINGS.itinerary.errors.unscheduleAllNothingScheduled,
+         }),
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
+         },
+      });
+
+      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
+         onPanelRefresh: async () => {
+            refreshed = true;
+         },
+         deps,
+      });
+
+      await getPlannerOptions()?.onUnscheduleAllItemsClick?.();
+
+      assert.equal(refreshed, true);
+      assert.deepEqual(feedbackCalls, [{
+         variant: 'error',
+         message: APP_STRINGS.itinerary.errors.unscheduleAllNothingScheduled,
+      }]);
+   });
+
    test('buildEmptyItineraryPanelContent refreshes and shows not-enough-time feedback', async () => {
       const bodyEl = createDomNode('div', 'side-panel-body');
       let refreshed = false;

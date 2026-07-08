@@ -63,6 +63,12 @@ def bulk_schedule_animals(
       wild_encounter_coordinator=wild_encounter_coordinator,
       visit_date_temp=visit_date_temp )
 
+   if not animals_to_schedule:
+      return build_save_result(
+         conn,
+         ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
+         **itinerary_context )
+
    saved_itinerary = fetch_saved_itinerary( conn )
    schedule_window = prepare_schedule_window(
       conn,
@@ -74,12 +80,6 @@ def bulk_schedule_animals(
       return schedule_window
 
    saved_itinerary, window = schedule_window
-
-   if not animals_to_schedule:
-      return build_save_result(
-         conn,
-         ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
-         **itinerary_context )
 
    clear_all_itinerary_schedules( conn )
 
