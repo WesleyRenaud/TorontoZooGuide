@@ -39,12 +39,11 @@ def test_wild_encounter_schedule_and_cancellation(
       item for item in WildEncounterCoordinator.get_wild_encounter_schedule( month='June', day=16, year=2026 )
       if item.name == 'African Rainforest' and item.start_time == '2:00 PM'
    )
-   out_of_range = next(
-      item for item in WildEncounterCoordinator.get_wild_encounter_schedule( month='July', day=1, year=2026 )
-      if item.name == 'African Rainforest' and item.start_time == '2:00 PM'
-   )
+   july_schedule = WildEncounterCoordinator.get_wild_encounter_schedule( month='July', day=1, year=2026 )
    assert weekday_unavailable.unavailable_message == 'African Rainforest is not offered on this day of the week.'
-   assert out_of_range.unavailable_message == 'African Rainforest is not scheduled on July 1.'
+   assert not any(
+      item.name == 'African Rainforest' and item.start_time == '2:00 PM'
+      for item in july_schedule )
 
 
 def test_wild_encounter_search_only_returns_available_schedule_days(
@@ -351,13 +350,13 @@ def test_wild_encounter_schedule_end_accepts_multiple_times(
 
    assert available_times == []
 
-   unavailable_times = sorted(
-      item.start_time
+   rainforest_on_day = [
+      item
       for item in encounters
-      if item.name == 'African Rainforest' and not item.is_available
-   )
+      if item.name == 'African Rainforest'
+   ]
 
-   assert unavailable_times == [ '2:00 PM', '3:30 PM' ]
+   assert rainforest_on_day == []
 
 
 def test_wild_encounter_schedule_times_excludes_ended_trimmed_rows(

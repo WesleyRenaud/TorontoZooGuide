@@ -85,10 +85,10 @@ def test_set_end_and_cancel_wild_encounter_schedule_changes_wild_encounter_resul
       [ '2:00 PM' ] )
 
    encounters = WildEncounterCoordinator.get_wild_encounter_schedule( month='June', day=15, year=2026 )
-   encounter = next( item for item in encounters if item.name == 'African Rainforest' and item.start_time == '2:00 PM' )
 
-   assert encounter.is_available is False
-   assert encounter.unavailable_message == 'African Rainforest is not scheduled on June 15.'
+   assert not any(
+      item.name == 'African Rainforest' and item.start_time == '2:00 PM'
+      for item in encounters )
 
    assert WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name='African Rainforest',

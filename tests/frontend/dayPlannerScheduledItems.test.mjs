@@ -185,3 +185,55 @@ test('buildScheduledItinerary tolerates missing itinerary collections', () => {
       wildEncounters: [],
    });
 });
+
+test('buildScheduledItemRowsContext omits deleted wild encounters from the timeline', () => {
+   const context = buildScheduledItemRowsContext(
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [
+            {
+               name: 'Kangaroo',
+               meeting_spot: 'Wild Encounter - Eurasia Meeting Spot',
+               start_time: '3:30 PM',
+               end_time: '4:15 PM',
+               maximum_duration: 45,
+               is_deleted: true,
+            },
+         ],
+         events: [],
+      },
+      [870, 900],
+      1140
+   );
+
+   assert.equal([...context.itemsByStart.values()].flat().length, 0);
+   assert.equal(context.scheduledWildEncounterIndexes.size, 0);
+});
+
+test('buildScheduledItemRowsContext omits deleted guardians talks from the timeline', () => {
+   const context = buildScheduledItemRowsContext(
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [
+            {
+               name: 'North American River Otter',
+               location: 'Americas Pavilion',
+               start_time: '2:00 PM',
+               end_time: '2:15 PM',
+               maximum_duration: 15,
+               is_deleted: true,
+            },
+         ],
+         wildEncounters: [],
+         events: [],
+      },
+      [840, 870],
+      1140
+   );
+
+   assert.equal([...context.itemsByStart.values()].flat().length, 0);
+   assert.equal(context.scheduledGuardiansTalkIndexes.size, 0);
+});
