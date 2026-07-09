@@ -12,12 +12,16 @@ RECORD_FIELDS = [
    'name',
    'x_coord',
    'y_coord',
+   'loop_id',
+   'loop_viewing_spot_index',
 ]
 
 DB_COLUMNS = [
    'NAME',
    'X_COORD',
    'Y_COORD',
+   'LOOP_ID',
+   'LOOP_VIEWING_SPOT_INDEX',
 ]
 
 DATA_FILE = 'wild_encounter_meeting_spot.json'

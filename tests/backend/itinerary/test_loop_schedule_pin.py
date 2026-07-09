@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from api.guardians.scheduling.guardians_talk_loop_schedule_pin import resolve_guardians_talk_loop_pin
 from api.itinerary.routing.itinerary_stop import ItineraryStop
 from api.itinerary.routing.loop_schedule_pin import LoopSchedulePin
-from api.itinerary.scheduling.bulk.guardians_talk_loop_pins import resolve_guardians_talk_loop_pin
 from api.models import GuardiansTalk
 from api.shared.enums import ScheduleItemKind
 from api.walk_graph.master_route import default_master_route_loop_by_id
