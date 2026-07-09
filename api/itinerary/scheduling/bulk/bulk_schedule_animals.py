@@ -10,6 +10,8 @@ from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...domain.itinerary import build_current_itinerary
 from .group_animals_by_master_route_loop import group_animals_by_master_route_loop
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from .guardians_talk_loop_pins import attach_loop_pins_to_schedule_windows
+from .guardians_talk_loop_pins import separate_schedule_boundaries_and_loop_pins
 from ..items.schedule_itinerary_helpers import build_itinerary_context
 from ..items.schedule_itinerary_helpers import build_save_result
 from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
@@ -95,10 +97,16 @@ def bulk_schedule_animals(
 
    sorted_loop_groups = group_animals_by_master_route_loop( animals_to_schedule )
    loop_units = build_loop_schedule_units( sorted_loop_groups )
-   schedule_windows = partition_itinerary_schedule_windows(
-      start_state.schedule_anchor_seconds,
-      day_end_seconds,
-      resolve_fixed_time_itinerary_stops( itinerary ) )
+   fixed_time_stops = resolve_fixed_time_itinerary_stops( itinerary )
+   boundary_stops, loop_pins = separate_schedule_boundaries_and_loop_pins(
+      itinerary,
+      fixed_time_stops )
+   schedule_windows = attach_loop_pins_to_schedule_windows(
+      partition_itinerary_schedule_windows(
+         start_state.schedule_anchor_seconds,
+         day_end_seconds,
+         boundary_stops ),
+      loop_pins )
 
    if not loop_units:
       persist_itinerary_walk_route( conn, **itinerary_context )

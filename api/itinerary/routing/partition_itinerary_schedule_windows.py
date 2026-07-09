@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from dataclasses import field
 
 from .itinerary_fixed_time_stop import itinerary_fixed_time_stops_from_itinerary_stops
 from .itinerary_fixed_time_stop import ItineraryFixedTimeStop
 from .itinerary_stop import ItineraryStop
+from .loop_schedule_pin import LoopSchedulePin
 
 
 @dataclass( frozen=True )
@@ -12,6 +14,7 @@ class ItineraryScheduleWindow:
    start_seconds: int
    end_seconds: int
    anchor_stop: ItineraryStop | None = None
+   loop_pins: list[ LoopSchedulePin ] = field( default_factory=list )
 
 
 def partition_itinerary_schedule_windows(

@@ -119,6 +119,31 @@ def test_loop_schedule_unit_reversed_swaps_endpoints_and_animals() -> None:
    ]
 
 
+def test_build_loop_schedule_units_orders_animals_by_loop_viewing_spot_index() -> None:
+   loop_units = build_loop_schedule_units(
+      [
+         [
+            _animal_record(
+               species='Cheetah',
+               exhibit='Africa Savanna',
+            ),
+            _animal_record(
+               species='African Penguin',
+               exhibit='Africa Savanna',
+               enclosure_name='Outdoor',
+            ),
+         ],
+      ],
+   )
+
+   assert len( loop_units ) == 1
+   assert loop_units[ 0 ].loop_id == 'africa_savanna_canadian_domain'
+   assert [ animal.species for animal in loop_units[ 0 ].animals ] == [
+      'African Penguin',
+      'Cheetah',
+   ]
+
+
 def test_build_loop_schedule_units_leaves_unmapped_animals_without_side_cluster() -> None:
    loop_units = build_loop_schedule_units(
       [
