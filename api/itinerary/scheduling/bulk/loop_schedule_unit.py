@@ -77,13 +77,16 @@ def _loop_schedule_unit_from_group(
       return _unmapped_loop_schedule_unit( animals )
 
    master_route_loop = loops_by_id[ loop_id ]
-   entry_walk_node_id, exit_walk_node_id = _loop_walk_endpoint_node_ids_for_animals(
+   animals_in_loop_order = _animals_in_master_route_loop_order(
       master_route_loop,
       animals )
+   entry_walk_node_id, exit_walk_node_id = _loop_walk_endpoint_node_ids_for_animals(
+      master_route_loop,
+      animals_in_loop_order )
 
    return LoopScheduleUnit(
       loop_id=loop_id,
-      animals=tuple( animals ),
+      animals=tuple( animals_in_loop_order ),
       entry_walk_node_id=entry_walk_node_id,
       exit_walk_node_id=exit_walk_node_id,
       side_cluster_id=loop_side_cluster_ids.get( loop_id ),

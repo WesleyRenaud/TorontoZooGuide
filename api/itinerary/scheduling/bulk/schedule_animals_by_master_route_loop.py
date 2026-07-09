@@ -1,28 +1,31 @@
 from __future__ import annotations
 
-from ..core.time_block import time_block_from_schedule_times
+from dataclasses import dataclass
+
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
-from ...data_access.itinerary_default_duration import fetch_enclosure_viewing_default_duration_seconds
-from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from .loop_schedule_unit import LoopScheduleUnit
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
+from .loop_unit_schedule_slots import assign_contiguous_slots
+from .loop_unit_schedule_slots import fetch_viewing_durations
+from .loop_unit_schedule_slots import save_loop_slots
 from .pack_loops_into_schedule_window import pack_loops_into_schedule_window
 from .pack_loops_into_schedule_window import prepare_loop_schedule_units
 from .pack_loops_into_schedule_window import PreparedLoopScheduleUnit
 from .pack_loops_into_schedule_window import remove_matching_prepared_loop_unit
+from ...routing.loop_schedule_pin import LoopSchedulePin
 from ...routing.partition_itinerary_schedule_windows import ItineraryScheduleWindow
-from ....shared.calendar_dates import DateValues
+from .schedule_loop_unit_with_pins import pinned_loop_earliest_start_seconds
+from .schedule_loop_unit_with_pins import schedule_prepared_loop_unit_with_pins
 from ....types import Connection
-from ....types import ScheduleTimeKey
 from ....walk_graph.domain.walk_graph import WalkGraph
 
 
-LoopScheduleSlot = tuple[
-   ItineraryAnimalRecord,
-   ScheduleTimeKey,
-   ScheduleTimeKey,
-]
+@dataclass
+class _LoopScheduleWindowState:
+   cursor_seconds: int
+   current_node_id: str
+   departure_side_cluster_id: str | None
 
 
 def schedule_animals_by_master_route_loop(
@@ -40,17 +43,22 @@ def schedule_animals_by_master_route_loop(
       return _animals_from_loop_units( loop_units ), schedule_cursor_seconds
 
    remaining_units = list( prepared_units )
-   cursor_seconds = schedule_cursor_seconds
+   window_state = _LoopScheduleWindowState(
+      cursor_seconds=schedule_cursor_seconds,
+      current_node_id=start_node_id,
+      departure_side_cluster_id=None )
    window_index = 0
-   current_node_id = start_node_id
-   departure_side_cluster_id: str | None = None
    remaining_animals: list[ ItineraryAnimalRecord ] = []
+   pinned_earliest_start_cache = _build_pinned_earliest_start_cache(
+      conn,
+      prepared_units,
+      schedule_windows )
 
    while remaining_units and window_index < len( schedule_windows ):
       window_index = _window_index_after_cursor(
          schedule_windows,
          window_index=window_index,
-         cursor_seconds=cursor_seconds )
+         cursor_seconds=window_state.cursor_seconds )
 
       if window_index >= len( schedule_windows ):
          break
@@ -59,25 +67,85 @@ def schedule_animals_by_master_route_loop(
 
       if not _window_has_available_time(
             schedule_window,
-            cursor_seconds=cursor_seconds ):
-         cursor_seconds = schedule_window.end_seconds
+            cursor_seconds=window_state.cursor_seconds ):
+         window_state.cursor_seconds = schedule_window.end_seconds
          continue
 
-      packed_units = pack_loops_into_schedule_window(
-         walk_graph,
-         schedule_window,
-         prepared_units=remaining_units,
-         cursor_seconds=cursor_seconds,
-         current_node_id=current_node_id,
-         departure_side_cluster_id=departure_side_cluster_id )
+      cursor_before_window = window_state.cursor_seconds
+      pinned_loop_ids = _pinned_loop_ids_in_window( schedule_window )
+      should_abort = not _process_schedule_window(
+         conn,
+         remaining_units=remaining_units,
+         schedule_window=schedule_window,
+         pinned_loop_ids=pinned_loop_ids,
+         pinned_earliest_start_cache=pinned_earliest_start_cache,
+         blockers=blockers,
+         walk_graph=walk_graph,
+         window_state=window_state,
+         remaining_animals=remaining_animals )
 
-      if not packed_units:
-         cursor_seconds = schedule_window.end_seconds
+      if should_abort:
+         return remaining_animals, window_state.cursor_seconds
+
+      if window_state.cursor_seconds > cursor_before_window:
          continue
 
-      cursor_seconds = _packed_units_start_seconds(
+      wait_until_seconds = _earliest_pinned_loop_wait_seconds(
+         remaining_units,
+         pinned_loop_ids,
+         pinned_earliest_start_cache=pinned_earliest_start_cache,
+         cursor_seconds=window_state.cursor_seconds )
+
+      if (
+            wait_until_seconds is not None
+            and wait_until_seconds > window_state.cursor_seconds
+            and wait_until_seconds < schedule_window.end_seconds ):
+         window_state.cursor_seconds = wait_until_seconds
+         continue
+
+      window_state.cursor_seconds = schedule_window.end_seconds
+
+   remaining_animals.extend(
+      _animals_from_prepared_units( remaining_units ) )
+
+   return remaining_animals, window_state.cursor_seconds
+
+
+def _process_schedule_window(
+      conn: Connection,
+      *,
+      remaining_units: list[ PreparedLoopScheduleUnit ],
+      schedule_window: ItineraryScheduleWindow,
+      pinned_loop_ids: set[ str ],
+      pinned_earliest_start_cache: dict[ int, int | None ],
+      blockers: list[ TimeBlock ],
+      walk_graph: WalkGraph,
+      window_state: _LoopScheduleWindowState,
+      remaining_animals: list[ ItineraryAnimalRecord ],
+   ) -> bool:
+   if pinned_loop_ids:
+      window_state.cursor_seconds = _drain_ready_pinned_loop_units(
+         conn,
+         remaining_units,
          schedule_window,
-         cursor_seconds=cursor_seconds )
+         pinned_earliest_start_cache=pinned_earliest_start_cache,
+         blockers=blockers,
+         cursor_seconds=window_state.cursor_seconds )
+
+   packed_units = pack_loops_into_schedule_window(
+      walk_graph,
+      schedule_window,
+      prepared_units=_units_excluding_pinned_loops(
+         remaining_units,
+         pinned_loop_ids ),
+      cursor_seconds=window_state.cursor_seconds,
+      current_node_id=window_state.current_node_id,
+      departure_side_cluster_id=window_state.departure_side_cluster_id )
+
+   if packed_units:
+      window_state.cursor_seconds = _packed_units_start_seconds(
+         schedule_window,
+         cursor_seconds=window_state.cursor_seconds )
 
       for prepared_unit in packed_units:
          try:
@@ -85,12 +153,12 @@ def schedule_animals_by_master_route_loop(
                conn,
                prepared_unit,
                blockers=blockers,
-               start_seconds=cursor_seconds )
+               start_seconds=window_state.cursor_seconds )
          except LoopUnitSchedulePersistError as error:
             remaining_animals.extend( error.animals )
             remaining_animals.extend(
                _animals_from_prepared_units( remaining_units ) )
-            return remaining_animals, cursor_seconds
+            return False
 
          remaining_animals.extend( unscheduled_animals )
 
@@ -98,17 +166,191 @@ def schedule_animals_by_master_route_loop(
             continue
 
          remove_matching_prepared_loop_unit( remaining_units, prepared_unit )
-         cursor_seconds += prepared_unit.duration_seconds
+         window_state.cursor_seconds += prepared_unit.duration_seconds
 
          if prepared_unit.unit.exit_walk_node_id is not None:
-            current_node_id = prepared_unit.unit.exit_walk_node_id
+            window_state.current_node_id = prepared_unit.unit.exit_walk_node_id
 
-         departure_side_cluster_id = prepared_unit.unit.side_cluster_id
+         window_state.departure_side_cluster_id = prepared_unit.unit.side_cluster_id
 
-   remaining_animals.extend(
-      _animals_from_prepared_units( remaining_units ) )
+         if pinned_loop_ids:
+            window_state.cursor_seconds = _drain_ready_pinned_loop_units(
+               conn,
+               remaining_units,
+               schedule_window,
+               pinned_earliest_start_cache=pinned_earliest_start_cache,
+               blockers=blockers,
+               cursor_seconds=window_state.cursor_seconds )
 
-   return remaining_animals, cursor_seconds
+   if pinned_loop_ids:
+      window_state.cursor_seconds = _drain_ready_pinned_loop_units(
+         conn,
+         remaining_units,
+         schedule_window,
+         pinned_earliest_start_cache=pinned_earliest_start_cache,
+         blockers=blockers,
+         cursor_seconds=window_state.cursor_seconds )
+
+   return True
+
+
+def _build_pinned_earliest_start_cache(
+      conn: Connection,
+      prepared_units: list[ PreparedLoopScheduleUnit ],
+      schedule_windows: list[ ItineraryScheduleWindow ],
+   ) -> dict[ int, int | None ]:
+   pinned_loop_ids = {
+      loop_pin.loop_id
+      for schedule_window in schedule_windows
+      for loop_pin in schedule_window.loop_pins
+   }
+
+   if not pinned_loop_ids:
+      return {}
+
+   loop_pins = [
+      loop_pin
+      for schedule_window in schedule_windows
+      for loop_pin in schedule_window.loop_pins
+   ]
+   cache: dict[ int, int | None ] = {}
+
+   for prepared_unit in prepared_units:
+      loop_id = prepared_unit.unit.loop_id
+
+      if loop_id is None or loop_id not in pinned_loop_ids:
+         continue
+
+      cache[ id( prepared_unit ) ] = pinned_loop_earliest_start_seconds(
+         conn,
+         prepared_unit,
+         loop_pins )
+
+   return cache
+
+
+def _drain_ready_pinned_loop_units(
+      conn: Connection,
+      remaining_units: list[ PreparedLoopScheduleUnit ],
+      schedule_window: ItineraryScheduleWindow,
+      *,
+      pinned_earliest_start_cache: dict[ int, int | None ],
+      blockers: list[ TimeBlock ],
+      cursor_seconds: int,
+   ) -> int:
+   pinned_loop_ids = _pinned_loop_ids_in_window( schedule_window )
+   schedule_cursor_seconds = cursor_seconds
+
+   while True:
+      made_progress = False
+
+      for prepared_unit in _ready_pinned_loop_units(
+            remaining_units,
+            pinned_loop_ids,
+            pinned_earliest_start_cache=pinned_earliest_start_cache,
+            cursor_seconds=schedule_cursor_seconds ):
+         unscheduled_animals, new_cursor_seconds = schedule_prepared_loop_unit_with_pins(
+            conn,
+            prepared_unit,
+            schedule_window.loop_pins,
+            blockers=blockers,
+            window_start_seconds=schedule_window.start_seconds,
+            window_end_seconds=schedule_window.end_seconds,
+            cursor_seconds=schedule_cursor_seconds )
+
+         if unscheduled_animals:
+            continue
+
+         remove_matching_prepared_loop_unit( remaining_units, prepared_unit )
+         schedule_cursor_seconds = new_cursor_seconds
+         made_progress = True
+
+      if not made_progress:
+         break
+
+   return schedule_cursor_seconds
+
+
+def _pinned_loop_ids_in_window(
+      schedule_window: ItineraryScheduleWindow ) -> set[ str ]:
+   return {
+      loop_pin.loop_id
+      for loop_pin in schedule_window.loop_pins
+   }
+
+
+def _units_excluding_pinned_loops(
+      prepared_units: list[ PreparedLoopScheduleUnit ],
+      pinned_loop_ids: set[ str ],
+   ) -> list[ PreparedLoopScheduleUnit ]:
+   return [
+      prepared_unit
+      for prepared_unit in prepared_units
+      if prepared_unit.unit.loop_id not in pinned_loop_ids
+   ]
+
+
+def _ready_pinned_loop_units(
+      prepared_units: list[ PreparedLoopScheduleUnit ],
+      pinned_loop_ids: set[ str ],
+      *,
+      pinned_earliest_start_cache: dict[ int, int | None ],
+      cursor_seconds: int,
+   ) -> list[ PreparedLoopScheduleUnit ]:
+   return [
+      prepared_unit
+      for prepared_unit in prepared_units
+      if prepared_unit.unit.loop_id in pinned_loop_ids
+      and _pinned_loop_is_ready(
+         prepared_unit,
+         pinned_earliest_start_cache=pinned_earliest_start_cache,
+         cursor_seconds=cursor_seconds )
+   ]
+
+
+def _pinned_loop_is_ready(
+      prepared_unit: PreparedLoopScheduleUnit,
+      *,
+      pinned_earliest_start_cache: dict[ int, int | None ],
+      cursor_seconds: int,
+   ) -> bool:
+   earliest_start_seconds = pinned_earliest_start_cache.get(
+      id( prepared_unit ) )
+
+   if earliest_start_seconds is None:
+      return False
+
+   return cursor_seconds >= earliest_start_seconds
+
+
+def _earliest_pinned_loop_wait_seconds(
+      remaining_units: list[ PreparedLoopScheduleUnit ],
+      pinned_loop_ids: set[ str ],
+      *,
+      pinned_earliest_start_cache: dict[ int, int | None ],
+      cursor_seconds: int,
+   ) -> int | None:
+   wait_until_seconds: int | None = None
+
+   for prepared_unit in remaining_units:
+      if prepared_unit.unit.loop_id not in pinned_loop_ids:
+         continue
+
+      earliest_start_seconds = pinned_earliest_start_cache.get(
+         id( prepared_unit ) )
+
+      if earliest_start_seconds is None:
+         continue
+
+      if earliest_start_seconds <= cursor_seconds:
+         continue
+
+      wait_until_seconds = (
+         earliest_start_seconds
+         if wait_until_seconds is None
+         else min( wait_until_seconds, earliest_start_seconds ) )
+
+   return wait_until_seconds
 
 
 def _packed_units_start_seconds(
@@ -127,12 +369,12 @@ def _schedule_prepared_loop_unit(
       blockers: list[ TimeBlock ],
       start_seconds: int ) -> list[ ItineraryAnimalRecord ]:
    animals = list( prepared_unit.unit.animals )
-   durations = _fetch_viewing_durations( conn, animals )
+   durations = fetch_viewing_durations( conn, animals )
 
    if durations is None:
       return animals
 
-   animal_slots, _ = _assign_contiguous_slots(
+   animal_slots, _ = assign_contiguous_slots(
       animals,
       durations,
       start_seconds=start_seconds )
@@ -140,7 +382,7 @@ def _schedule_prepared_loop_unit(
    if not animal_slots:
       return animals
 
-   if not _save_loop_slots( conn, blockers, animal_slots ):
+   if not save_loop_slots( conn, blockers, animal_slots ):
       raise LoopUnitSchedulePersistError( animals )
 
    return []
@@ -198,94 +440,3 @@ def _animals_from_prepared_units(
       for prepared_unit in prepared_units
       for animal_row in prepared_unit.unit.animals
    ]
-
-
-def _fetch_viewing_durations(
-      conn: Connection,
-      animals: list[ ItineraryAnimalRecord ] ) -> list[ int ] | None:
-   durations: list[ int ] = []
-
-   for animal_row in animals:
-      duration_seconds = fetch_enclosure_viewing_default_duration_seconds(
-         conn,
-         animal_row.species,
-         animal_row.exhibit,
-         animal_row.enclosure_name )
-
-      if duration_seconds is None:
-         return None
-
-      durations.append( duration_seconds )
-
-   return durations
-
-
-def _assign_contiguous_slots(
-      animals: list[ ItineraryAnimalRecord ],
-      durations: list[ int ],
-      *,
-      start_seconds: int ) -> tuple[ list[ LoopScheduleSlot ], int ]:
-   slots: list[ LoopScheduleSlot ] = []
-   slot_cursor_seconds = start_seconds
-
-   for animal_row, duration_seconds in zip( animals, durations ):
-      start_time = DateValues.schedule_time_key_from_seconds(
-         slot_cursor_seconds )
-      end_seconds = slot_cursor_seconds + duration_seconds
-      end_time = DateValues.schedule_time_key_from_seconds( end_seconds )
-
-      if start_time is None or end_time is None:
-         return [], start_seconds
-
-      slots.append( ( animal_row, start_time, end_time ) )
-      slot_cursor_seconds = end_seconds
-
-   return slots, slot_cursor_seconds
-
-
-def _save_loop_slots(
-      conn: Connection,
-      blockers: list[ TimeBlock ],
-      animal_slots: list[ LoopScheduleSlot ] ) -> bool:
-   if not _persist_loop_group_slots( conn, tuple( animal_slots ) ):
-      return False
-
-   _append_slots_to_blockers( blockers, tuple( animal_slots ) )
-
-   return True
-
-
-def _append_slots_to_blockers(
-      blockers: list[ TimeBlock ],
-      slots: tuple[ LoopScheduleSlot, ... ] ) -> None:
-   for _, start_time, end_time in slots:
-      scheduled_block = time_block_from_schedule_times(
-         start_time,
-         end_time )
-
-      if scheduled_block is not None:
-         blockers.append( scheduled_block )
-
-
-def _persist_loop_group_slots(
-      conn: Connection,
-      scheduled_slots: tuple[ LoopScheduleSlot, ... ] ) -> bool:
-   cur = conn.cursor()
-
-   try:
-      for animal_row, start_time, end_time in scheduled_slots:
-         if not update_itinerary_animal_schedule(
-               cur,
-               species=animal_row.species,
-               exhibit=animal_row.exhibit,
-               enclosure_name=animal_row.enclosure_name,
-               start_time=start_time,
-               end_time=end_time ):
-            conn.rollback()
-            return False
-
-      conn.commit()
-      return True
-
-   finally:
-      cur.close()
