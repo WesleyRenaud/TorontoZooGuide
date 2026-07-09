@@ -77,7 +77,6 @@ def schedule_animals_by_master_route_loop(
 
       cursor_seconds = _packed_units_start_seconds(
          schedule_window,
-         packed_units=packed_units,
          cursor_seconds=cursor_seconds )
 
       for prepared_unit in packed_units:
@@ -115,22 +114,10 @@ def schedule_animals_by_master_route_loop(
 def _packed_units_start_seconds(
       schedule_window: ItineraryScheduleWindow,
       *,
-      packed_units: list[ PreparedLoopScheduleUnit ],
       cursor_seconds: int ) -> int:
-   window_start_seconds = max(
+   return max(
       cursor_seconds,
       schedule_window.start_seconds )
-
-   if schedule_window.anchor_stop is None:
-      return window_start_seconds
-
-   total_duration_seconds = sum(
-      prepared_unit.duration_seconds
-      for prepared_unit in packed_units )
-
-   return max(
-      window_start_seconds,
-      schedule_window.end_seconds - total_duration_seconds )
 
 
 def _schedule_prepared_loop_unit(

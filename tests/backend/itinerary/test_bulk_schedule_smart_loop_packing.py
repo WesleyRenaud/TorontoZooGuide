@@ -76,6 +76,9 @@ def test_bulk_schedule_animals_places_south_loop_last_before_giraffe_encounter(
       and animal.exhibit == 'Indo-Malaya Outdoor' )
 
    encounter_start_seconds = DateValues.time_value_in_seconds( '11:00 AM' )
+   arrival_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
+   demoiselle_start_seconds = DateValues.time_value_in_seconds(
+      demoiselle_crane.start_time )
    demoiselle_end_seconds = DateValues.time_value_in_seconds(
       demoiselle_crane.end_time )
    cheetah_start_seconds = DateValues.time_value_in_seconds(
@@ -83,13 +86,15 @@ def test_bulk_schedule_animals_places_south_loop_last_before_giraffe_encounter(
    cheetah_end_seconds = DateValues.time_value_in_seconds( cheetah.end_time )
 
    assert encounter_start_seconds is not None
+   assert arrival_seconds is not None
+   assert demoiselle_start_seconds is not None
    assert demoiselle_end_seconds is not None
    assert cheetah_start_seconds is not None
    assert cheetah_end_seconds is not None
 
+   assert demoiselle_start_seconds == arrival_seconds
    assert demoiselle_end_seconds <= cheetah_start_seconds
-   assert cheetah_end_seconds <= encounter_start_seconds
-   assert cheetah_end_seconds == encounter_start_seconds
+   assert cheetah_end_seconds < encounter_start_seconds
 
 
 def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_encounter_window(
@@ -130,16 +135,21 @@ def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_en
 
    encounter_start_seconds = DateValues.time_value_in_seconds( '09:06 AM' )
    encounter_end_seconds = DateValues.time_value_in_seconds( '09:51 AM' )
+   arrival_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
+   cheetah_start_seconds = DateValues.time_value_in_seconds( cheetah.start_time )
    cheetah_end_seconds = DateValues.time_value_in_seconds( cheetah.end_time )
    demoiselle_start_seconds = DateValues.time_value_in_seconds(
       demoiselle_crane.start_time )
 
    assert encounter_start_seconds is not None
    assert encounter_end_seconds is not None
+   assert arrival_seconds is not None
+   assert cheetah_start_seconds is not None
    assert cheetah_end_seconds is not None
    assert demoiselle_start_seconds is not None
 
-   assert cheetah_end_seconds == encounter_start_seconds
+   assert cheetah_start_seconds == arrival_seconds
+   assert cheetah_end_seconds < encounter_start_seconds
    assert demoiselle_start_seconds >= encounter_end_seconds
 
 
@@ -179,14 +189,20 @@ def test_bulk_schedule_animals_packs_prefix_and_terminal_loops_before_giraffe_en
       and animal.exhibit == 'Indo-Malaya Outdoor' )
 
    encounter_start_seconds = DateValues.time_value_in_seconds( '09:08 AM' )
+   arrival_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
+   demoiselle_start_seconds = DateValues.time_value_in_seconds(
+      demoiselle_crane.start_time )
    demoiselle_end_seconds = DateValues.time_value_in_seconds(
       demoiselle_crane.end_time )
    cheetah_end_seconds = DateValues.time_value_in_seconds( cheetah.end_time )
 
    assert encounter_start_seconds is not None
+   assert arrival_seconds is not None
+   assert demoiselle_start_seconds is not None
    assert demoiselle_end_seconds is not None
    assert cheetah_end_seconds is not None
 
+   assert demoiselle_start_seconds == arrival_seconds
    assert demoiselle_end_seconds <= DateValues.time_value_in_seconds(
       cheetah.start_time )
    assert cheetah_end_seconds == encounter_start_seconds
