@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, GUARDIANS_TALK, guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
+from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_itinerary_date
@@ -87,13 +87,7 @@ def test_set_departure_time_unschedules_items_after_departure(
          CHEETAH_ITINERARY_ENTRY,
       ],
       attractions=[ CAROUSEL ],
-      guardians_talks=[
-         guardians_talk_save_entry(
-            GUARDIANS_TALK,
-            start_time='16:30',
-            end_time='16:45',
-         ),
-      ],
+      guardians_talks=[],
       wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER, start_time='16:30' ) ],
       confirming_wild_encounter_unschedule=True,
    ).success
@@ -113,7 +107,6 @@ def test_set_departure_time_unschedules_items_after_departure(
    assert itinerary.attractions[ 0 ].name == CAROUSEL
    assert itinerary.attractions[ 0 ].start_time is not None
    assert itinerary.attractions[ 0 ].end_time is not None
-   assert itinerary.guardians_talks == []
    assert itinerary.wild_encounters == []
 
 

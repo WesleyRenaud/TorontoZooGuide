@@ -37,28 +37,6 @@ export function getUnscheduledSectionSpecs(
       });
    }
 
-   if (safeUnscheduled.guardiansTalks?.length) {
-      sections.push({
-         items: safeUnscheduled.guardiansTalks,
-         title: strings.site.nav.meetTheGuardians,
-         subtitle: strings.itinerary.removedItems.unscheduledSubtitle,
-         rowBuilder: buildGuardiansRows,
-         stepKey: 'guardiansTalks',
-         showViewAlternatives: false,
-      });
-   }
-
-   if (safeUnscheduled.wildEncounters?.length) {
-      sections.push({
-         items: safeUnscheduled.wildEncounters,
-         title: strings.site.nav.wildEncounters,
-         subtitle: strings.itinerary.removedItems.unscheduledSubtitle,
-         rowBuilder: buildWildRows,
-         stepKey: 'wildEncounters',
-         showViewAlternatives: false,
-      });
-   }
-
    return sections;
 }
 

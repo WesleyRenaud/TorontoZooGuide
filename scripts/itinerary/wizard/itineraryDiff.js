@@ -78,6 +78,8 @@ function buildUnscheduledItemsByKey(previousItems = [], validatedItems = [], bui
 }
 
 function buildUnscheduledItems(previous, validated) {
+   // Talks and encounters use is_deleted or drop from validated; only animals and
+   // attractions can lose schedule times while staying active.
    return {
       animals: buildUnscheduledItemsByKey(
          previous.animals,
@@ -87,16 +89,6 @@ function buildUnscheduledItems(previous, validated) {
       attractions: buildUnscheduledItemsByKey(
          previous.attractions,
          validated.attractions,
-         (item) => buildItemKey(item, 'name')
-      ),
-      guardiansTalks: buildUnscheduledItemsByKey(
-         previous.guardiansTalks,
-         validated.guardiansTalks,
-         (item) => buildItemKey(item, 'name')
-      ),
-      wildEncounters: buildUnscheduledItemsByKey(
-         previous.wildEncounters,
-         validated.wildEncounters,
          (item) => buildItemKey(item, 'name')
       ),
    };

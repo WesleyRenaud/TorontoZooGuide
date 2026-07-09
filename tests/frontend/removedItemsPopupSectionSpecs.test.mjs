@@ -53,19 +53,14 @@ test('getUnscheduledSectionSpecs emits only populated unscheduled groups', () =>
    assert.deepEqual(
       getUnscheduledSectionSpecs({
          animals: [removedAnimal],
-         wildEncounters: [],
       }).map((section) => section.title),
       [APP_STRINGS.itinerary.dayPlanner.unscheduledTitle]
    );
    assert.deepEqual(
       getUnscheduledSectionSpecs({
          attractions: [removedAttraction],
-         guardiansTalks: [{ name: 'African Lion' }],
       }).map((section) => section.title),
-      [
-         APP_STRINGS.map.filter.attractions,
-         APP_STRINGS.site.nav.meetTheGuardians,
-      ]
+      [APP_STRINGS.map.filter.attractions]
    );
 });
 
