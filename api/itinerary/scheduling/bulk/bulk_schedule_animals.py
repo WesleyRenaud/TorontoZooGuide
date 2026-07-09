@@ -3,6 +3,8 @@ from __future__ import annotations
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .bulk_schedule_arrival_adjustment import adjust_arrival_after_bulk_schedule
+from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
+from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
 from .bulk_schedule_start_state import BulkScheduleStartState
 from .bulk_schedule_walk_order import representative_walk_node_id
 from ..core.time_block import collect_time_blocks_from_itinerary
@@ -12,8 +14,6 @@ from ...domain.itinerary import build_current_itinerary
 from ...domain.itinerary_adjustment import ItineraryAdjustment
 from .group_animals_by_master_route_loop import group_animals_by_master_route_loop
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from .guardians_talk_loop_pins import attach_loop_pins_to_schedule_windows
-from .guardians_talk_loop_pins import separate_schedule_boundaries_and_loop_pins
 from ..items.schedule_itinerary_helpers import build_itinerary_context
 from ..items.schedule_itinerary_helpers import build_save_result
 from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
@@ -101,6 +101,7 @@ def bulk_schedule_animals(
    loop_units = build_loop_schedule_units( sorted_loop_groups )
    fixed_time_stops = resolve_fixed_time_itinerary_stops( itinerary )
    boundary_stops, loop_pins = separate_schedule_boundaries_and_loop_pins(
+      conn,
       itinerary,
       fixed_time_stops )
    schedule_windows = attach_loop_pins_to_schedule_windows(

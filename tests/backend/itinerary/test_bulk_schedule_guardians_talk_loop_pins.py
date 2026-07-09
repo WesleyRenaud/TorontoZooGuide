@@ -6,13 +6,13 @@ from datetime import date
 from itinerary.support import guardians_talk_save_entry
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from api.guardians.scheduling.guardians_talk_loop_schedule_pin import viewing_spot_index_for_talk_in_loop
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
 from api.itinerary.routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
-from api.itinerary.scheduling.bulk.guardians_talk_loop_pins import attach_loop_pins_to_schedule_windows
-from api.itinerary.scheduling.bulk.guardians_talk_loop_pins import separate_schedule_boundaries_and_loop_pins
-from api.itinerary.scheduling.bulk.guardians_talk_loop_pins import viewing_spot_index_for_talk_in_loop
+from api.itinerary.scheduling.bulk.bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
+from api.itinerary.scheduling.bulk.bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
 from api.itinerary.scheduling.bulk.schedule_loop_unit_with_pins import viewing_spot_index_for_animal_in_loop
 from api.models import Animal
 from api.shared.calendar_dates import DateValues
@@ -94,6 +94,7 @@ def test_partition_keeps_loop_pin_talk_inside_single_schedule_window(
 
    fixed_time_stops = resolve_fixed_time_itinerary_stops( itinerary )
    boundary_stops, loop_pins = separate_schedule_boundaries_and_loop_pins(
+      db.conn,
       itinerary,
       fixed_time_stops )
    windows = attach_loop_pins_to_schedule_windows(
