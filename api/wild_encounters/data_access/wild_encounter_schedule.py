@@ -24,7 +24,8 @@ def fetch_wild_encounter_schedule_records(
 
    try:
       data = cur.execute(
-         """   SELECT
+         """   -- VISIT_DATE
+               SELECT
                   w.NAME,
                   w.MEETING_SPOT,
                   w.LINK,
@@ -49,10 +50,15 @@ def fetch_wild_encounter_schedule_records(
                   ON w.NAME = s.WILD_ENCOUNTER
                LEFT JOIN WildEncounterCancellation c
                   ON c.WILD_ENCOUNTER = s.WILD_ENCOUNTER
-                  AND c.CANCELLATION_DATE = ?
-                  AND c.ENCOUNTER_TIME = s.ENCOUNTER_TIME;
+                  AND c.CANCELLATION_DATE = :VISIT_DATE
+                  AND c.ENCOUNTER_TIME = s.ENCOUNTER_TIME
+               WHERE s.SCHEDULE_START_DATE <= :VISIT_DATE
+                  AND (
+                     s.SCHEDULE_END_DATE IS NULL
+                     OR s.SCHEDULE_END_DATE >= :VISIT_DATE
+                  );
          """,
-         ( target_date, ) )
+         { 'VISIT_DATE': target_date } )
 
       return map_wild_encounter_schedule_records( data.fetchall() )
 

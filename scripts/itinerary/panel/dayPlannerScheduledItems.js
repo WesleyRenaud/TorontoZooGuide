@@ -39,6 +39,10 @@ function hasItineraryScheduleTimes(item) {
    return Boolean(item.start_time && item.end_time);
 }
 
+function isActiveScheduledOccurrence(item) {
+   return item?.is_deleted !== true;
+}
+
 function getScheduledItemLabel(item) {
    if (item?.species) {
       return getAnimalTitleLine(item);
@@ -205,7 +209,7 @@ export function buildScheduledItemRowsContext(
    closeMinutes = null
 ) {
    const guardiansTalkRows = buildScheduledItemRows(
-      guardiansTalks,
+      guardiansTalks.filter(isActiveScheduledOccurrence),
       buildGuardiansRows,
       getScheduledMaximumDuration
    ).map((scheduledItem) => ({
@@ -214,7 +218,7 @@ export function buildScheduledItemRowsContext(
       scheduleItemKey: String(scheduledItem.item.name).trim(),
    }));
    const wildEncounterRows = buildScheduledItemRows(
-      wildEncounters,
+      wildEncounters.filter(isActiveScheduledOccurrence),
       buildWildRows,
       getScheduledMaximumDuration
    ).map((scheduledItem) => ({
