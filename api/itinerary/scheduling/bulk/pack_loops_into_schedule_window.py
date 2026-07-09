@@ -129,6 +129,40 @@ def _pack_loops_for_anchored_window(
       departure_side_cluster_id=departure_side_cluster_id )
 
 
+def pack_all_loops_before_deadline(
+      walk_graph: WalkGraph,
+      *,
+      prepared_units: list[ PreparedLoopScheduleUnit ],
+      window_start_seconds: int,
+      deadline_seconds: int,
+      current_node_id: str,
+      departure_side_cluster_id: str | None = None ) -> list[ PreparedLoopScheduleUnit ] | None:
+   if not prepared_units or window_start_seconds >= deadline_seconds:
+      return None
+
+   total_duration_seconds = sum(
+      prepared_unit.duration_seconds
+      for prepared_unit in prepared_units )
+
+   if window_start_seconds + total_duration_seconds > deadline_seconds:
+      return None
+
+   packed_units = _pack_loops_for_open_window(
+      walk_graph,
+      ItineraryScheduleWindow(
+         start_seconds=window_start_seconds,
+         end_seconds=deadline_seconds ),
+      prepared_units=prepared_units,
+      window_start_seconds=window_start_seconds,
+      current_node_id=current_node_id,
+      departure_side_cluster_id=departure_side_cluster_id )
+
+   if len( packed_units ) != len( prepared_units ):
+      return None
+
+   return packed_units
+
+
 def _pack_loops_with_terminal_unit(
       walk_graph: WalkGraph,
       prepared_units: list[ PreparedLoopScheduleUnit ],

@@ -9,6 +9,7 @@ from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots
 from .loop_unit_schedule_slots import fetch_viewing_durations
 from .loop_unit_schedule_slots import save_loop_slots
+from .pack_loops_into_schedule_window import pack_all_loops_before_deadline
 from .pack_loops_into_schedule_window import pack_loops_into_schedule_window
 from .pack_loops_into_schedule_window import prepare_loop_schedule_units
 from .pack_loops_into_schedule_window import PreparedLoopScheduleUnit
@@ -124,6 +125,23 @@ def _process_schedule_window(
       remaining_animals: list[ ItineraryAnimalRecord ],
    ) -> bool:
    if pinned_loop_ids:
+      packed_cursor_seconds, should_abort = _pack_non_pinned_loops_before_pinned_deadline(
+         conn,
+         remaining_units=remaining_units,
+         schedule_window=schedule_window,
+         pinned_loop_ids=pinned_loop_ids,
+         pinned_earliest_start_cache=pinned_earliest_start_cache,
+         blockers=blockers,
+         walk_graph=walk_graph,
+         window_state=window_state,
+         remaining_animals=remaining_animals )
+
+      if should_abort:
+         return False
+
+      window_state.cursor_seconds = packed_cursor_seconds
+
+   if pinned_loop_ids:
       window_state.cursor_seconds = _drain_ready_pinned_loop_units(
          conn,
          remaining_units,
@@ -192,6 +210,83 @@ def _process_schedule_window(
          cursor_seconds=window_state.cursor_seconds )
 
    return True
+
+
+def _pack_non_pinned_loops_before_pinned_deadline(
+      conn: Connection,
+      *,
+      remaining_units: list[ PreparedLoopScheduleUnit ],
+      schedule_window: ItineraryScheduleWindow,
+      pinned_loop_ids: set[ str ],
+      pinned_earliest_start_cache: dict[ int, int | None ],
+      blockers: list[ TimeBlock ],
+      walk_graph: WalkGraph,
+      window_state: _LoopScheduleWindowState,
+      remaining_animals: list[ ItineraryAnimalRecord ],
+   ) -> tuple[ int, bool ]:
+   non_pinned_units = _units_excluding_pinned_loops(
+      remaining_units,
+      pinned_loop_ids )
+
+   if not non_pinned_units:
+      return window_state.cursor_seconds, False
+
+   pinned_deadline_seconds = _earliest_pinned_loop_wait_seconds(
+      remaining_units,
+      pinned_loop_ids,
+      pinned_earliest_start_cache=pinned_earliest_start_cache,
+      cursor_seconds=window_state.cursor_seconds )
+
+   if (
+         pinned_deadline_seconds is None
+         or window_state.cursor_seconds >= pinned_deadline_seconds ):
+      return window_state.cursor_seconds, False
+
+   window_start_seconds = _packed_units_start_seconds(
+      schedule_window,
+      cursor_seconds=window_state.cursor_seconds )
+   packed_units = pack_all_loops_before_deadline(
+      walk_graph,
+      prepared_units=non_pinned_units,
+      window_start_seconds=window_start_seconds,
+      deadline_seconds=pinned_deadline_seconds,
+      current_node_id=window_state.current_node_id,
+      departure_side_cluster_id=window_state.departure_side_cluster_id )
+
+   if packed_units is None:
+      return window_state.cursor_seconds, False
+
+   total_duration_seconds = sum(
+      prepared_unit.duration_seconds
+      for prepared_unit in packed_units )
+   schedule_start_seconds = pinned_deadline_seconds - total_duration_seconds
+
+   for prepared_unit in packed_units:
+      try:
+         unscheduled_animals = _schedule_prepared_loop_unit(
+            conn,
+            prepared_unit,
+            blockers=blockers,
+            start_seconds=schedule_start_seconds )
+      except LoopUnitSchedulePersistError as error:
+         remaining_animals.extend( error.animals )
+         remaining_animals.extend(
+            _animals_from_prepared_units( remaining_units ) )
+         return window_state.cursor_seconds, True
+
+      if unscheduled_animals:
+         remaining_animals.extend( unscheduled_animals )
+         return window_state.cursor_seconds, False
+
+      remove_matching_prepared_loop_unit( remaining_units, prepared_unit )
+      schedule_start_seconds += prepared_unit.duration_seconds
+
+      if prepared_unit.unit.exit_walk_node_id is not None:
+         window_state.current_node_id = prepared_unit.unit.exit_walk_node_id
+
+      window_state.departure_side_cluster_id = prepared_unit.unit.side_cluster_id
+
+   return pinned_deadline_seconds, False
 
 
 def _build_pinned_earliest_start_cache(

@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
+from .bulk_schedule_arrival_adjustment import adjust_arrival_after_bulk_schedule
 from .bulk_schedule_start_state import BulkScheduleStartState
 from .bulk_schedule_walk_order import representative_walk_node_id
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...domain.itinerary import build_current_itinerary
+from ...domain.itinerary_adjustment import ItineraryAdjustment
 from .group_animals_by_master_route_loop import group_animals_by_master_route_loop
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from .guardians_talk_loop_pins import attach_loop_pins_to_schedule_windows
@@ -126,6 +128,15 @@ def bulk_schedule_animals(
       walk_graph=walk_graph,
       start_node_id=start_state.start_node_id )
 
+   adjustments: tuple[ ItineraryAdjustment, ... ] = ()
+   arrival_adjustment = adjust_arrival_after_bulk_schedule(
+      conn,
+      schedule_anchor_seconds=start_state.schedule_anchor_seconds,
+      previous_arrival_time=saved_itinerary.arrival_time )
+
+   if arrival_adjustment is not None:
+      adjustments = ( arrival_adjustment, )
+
    reasons: tuple[ ItineraryResultReason, ... ] = ()
 
    if remaining_animals:
@@ -139,6 +150,7 @@ def bulk_schedule_animals(
    return ItinerarySaveResult(
       status=ItineraryErrorType.SUCCESS,
       reasons=reasons,
+      adjustments=adjustments,
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
          **itinerary_context ) )
