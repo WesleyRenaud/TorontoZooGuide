@@ -45,9 +45,7 @@ export function hasUnscheduledItems(unscheduled) {
    }
 
    return hasItems(unscheduled.animals)
-      || hasItems(unscheduled.attractions)
-      || hasItems(unscheduled.guardiansTalks)
-      || hasItems(unscheduled.wildEncounters);
+      || hasItems(unscheduled.attractions);
 }
 
 export function isValidatedItineraryEmpty(validated) {

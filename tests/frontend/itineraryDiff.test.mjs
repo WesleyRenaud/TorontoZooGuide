@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { applyItineraryDiffToValidation } from '../../scripts/itinerary/itineraryValidationResult.js';
+import { normalizeItinerary } from '../../scripts/itinerary/itineraryNormalization.js';
 import {
    buildItineraryDiff,
    hasImprovedVisibility,
@@ -196,6 +198,114 @@ test('reports items unscheduled during validation', () => {
       ['Conservation Carousel']
    );
    assert.equal(hasUnscheduledItems(diff.unscheduled), true);
+});
+
+test('does not list deleted guardians talks as unscheduled when date removes schedule', () => {
+   const diff = buildItineraryDiff(
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [
+            {
+               name: 'Spotted Hyena',
+               start_time: '13:00',
+               end_time: '13:30',
+               location: 'Africa Savanna',
+            },
+         ],
+         wildEncounters: [],
+      },
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [
+            {
+               name: 'Spotted Hyena',
+               is_deleted: true,
+               location: 'Africa Savanna',
+            },
+         ],
+         wildEncounters: [],
+      },
+      {},
+      { animalVisibilityChangeThreshold: 20 }
+   );
+
+   assert.equal(diff.unscheduled.guardiansTalks, undefined);
+   assert.deepEqual(diff.removed.guardiansTalks, []);
+});
+
+test('does not list deleted wild encounters as unscheduled when date removes schedule', () => {
+   const diff = buildItineraryDiff(
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [
+            {
+               name: 'African Rainforest',
+               start_time: '13:00',
+               end_time: '13:45',
+            },
+         ],
+      },
+      {
+         animals: [],
+         attractions: [],
+         guardiansTalks: [],
+         wildEncounters: [
+            {
+               name: 'African Rainforest',
+               is_deleted: true,
+            },
+         ],
+      },
+      {},
+      { animalVisibilityChangeThreshold: 20 }
+   );
+
+   assert.equal(diff.unscheduled.wildEncounters, undefined);
+   assert.deepEqual(diff.removed.wildEncounters, []);
+});
+
+test('date change validation lists deleted guardians talk only once in removed', () => {
+   const previous = {
+      date: '2026-06-21',
+      guardiansTalks: [
+         {
+            name: 'Spotted Hyena',
+            start_time: '13:00',
+            end_time: '13:30',
+            location: 'Africa Savanna',
+         },
+      ],
+   };
+   const validatedItinerary = normalizeItinerary({
+      date: '2026-06-22',
+      guardiansTalks: [
+         {
+            name: 'Spotted Hyena',
+            is_deleted: true,
+            location: 'Africa Savanna',
+         },
+      ],
+   });
+   const diff = buildItineraryDiff(
+      previous,
+      validatedItinerary,
+      {},
+      validatedItinerary.itineraryConfig ?? {}
+   );
+
+   applyItineraryDiffToValidation(validatedItinerary, diff);
+
+   assert.equal(validatedItinerary.validation.unscheduled.guardiansTalks, undefined);
+   assert.deepEqual(
+      validatedItinerary.validation.removed.guardiansTalks.map((talk) => talk.name),
+      ['Spotted Hyena']
+   );
+   assert.equal(hasUnscheduledItems(validatedItinerary.validation.unscheduled), false);
+   assert.equal(hasRemovedItems(validatedItinerary.validation.removed), true);
 });
 
 test('reports guardians talks and wild encounters removed when dropped from validated', () => {

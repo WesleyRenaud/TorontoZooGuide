@@ -18,8 +18,8 @@ def schedule_guardians_talk_for_itinerary(
       return GuardiansTalkDiff(
          name=name,
          is_deleted=True,
-         start_time=None,
-         end_time=None )
+         start_time=start_time_override,
+         end_time=end_time_override )
 
    scheduled_end_time = DateValues.add_minutes_to_time(
       talk.start_time,

@@ -180,21 +180,25 @@ def set_wild_encounter_schedule( *, encounter_time: str ) -> None:
    )
 
 
-def set_guardians_talk_and_wild_encounter_schedules_at_1400() -> None:
+def set_guardians_talk_schedule( *, talk_time: str ) -> None:
    assert GuardiansCoordinator.set_guardians_talk_schedule(
       talk=GUARDIANS_TALK,
       location='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time='14:00',
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      monday_time=talk_time,
+      tuesday_time=talk_time,
+      wednesday_time=talk_time,
+      thursday_time=talk_time,
+      friday_time=talk_time,
+      saturday_time=talk_time,
+      sunday_time=talk_time,
       message=None,
    )
+
+
+def set_guardians_talk_and_wild_encounter_schedules_at_1400() -> None:
+   set_guardians_talk_schedule( talk_time='14:00' )
    assert WildEncounterCoordinator.set_wild_encounter_schedule(
       wild_encounter_name=WILD_ENCOUNTER,
       start_date='2026-06-01',

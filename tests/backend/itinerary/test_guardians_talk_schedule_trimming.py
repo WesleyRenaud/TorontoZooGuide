@@ -5,6 +5,19 @@ from api.models import WildEncounter
 from api.wild_encounters.itinerary.wild_encounter_itinerary_validation import build_wild_encounter_diff_for_visit_day
 
 
+def test_build_guardians_talk_diff_preserves_saved_times_when_talk_not_on_schedule() -> None:
+   talk = build_guardians_talk_diff_for_visit_day(
+      'Spotted Hyena',
+      None,
+      start_time_override='13:00',
+      end_time_override='13:30',
+   )
+
+   assert talk.is_deleted is True
+   assert talk.start_time == '13:00'
+   assert talk.end_time == '13:30'
+
+
 def test_apply_guardians_talk_trimming_keeps_tail_after_wild_encounter() -> None:
    encounter = build_wild_encounter_diff_for_visit_day(
       'Grizzly Bear',
