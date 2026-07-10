@@ -1,6 +1,7 @@
 import {
    buildAnimalIdentityStorageKey,
    normalizeAnimalIdentityFields,
+   normalizeAnimalIdentitySearchFields,
 } from '../../animalIdentity.js';
 
 function normalizeRegionName(name = '') {
@@ -54,7 +55,9 @@ export function shouldHideDuplicateSingleExhibit(region) {
 
    if (exhibits.length !== 1) return false;
 
-   const exhibitName = String(exhibits[0] ?? '').trim().toLowerCase();
+   const exhibitName = normalizeAnimalIdentitySearchFields({
+      exhibit: exhibits[0] ?? '',
+   }).exhibit;
    return Boolean(regionName) && regionName === exhibitName;
 }
 

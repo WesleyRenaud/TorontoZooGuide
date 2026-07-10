@@ -1,3 +1,4 @@
+import { normalizeAnimalIdentitySearchFields } from '../../animalIdentity.js';
 import {
    loadArray,
    saveArray,
@@ -65,7 +66,9 @@ export function clearRemovedAnimalKeys() {
 }
 
 export function clearRemovedAnimalKeysForExhibit(exhibitName) {
-   const normalizedExhibit = String(exhibitName ?? '').trim().toLowerCase();
+   const normalizedExhibit = normalizeAnimalIdentitySearchFields({
+      exhibit: exhibitName,
+   }).exhibit;
 
    if (!normalizedExhibit) {
       return;
