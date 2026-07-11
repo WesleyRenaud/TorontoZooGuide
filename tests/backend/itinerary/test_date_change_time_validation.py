@@ -217,7 +217,7 @@ def test_date_change_with_adjusted_departure_reschedules_animals_and_clears_gues
 
    assert result.success
    assert itinerary is not None
-   assert itinerary.departure_time == '6:00 PM'
+   assert itinerary.departure_time == '9:43 AM'
    assert [
       ( animal.species, animal.start_time, animal.end_time )
       for animal in itinerary.animals

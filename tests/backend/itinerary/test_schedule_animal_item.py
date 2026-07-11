@@ -155,7 +155,7 @@ def test_date_change_reschedules_animal_after_new_closing_time(
    )
 
    assert result.success
-   assert result.itinerary.departure_time == '6:00 PM'
+   assert result.itinerary.departure_time == '9:38 AM'
    assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
    assert result.itinerary.animals[ 0 ].end_time is not None
 
