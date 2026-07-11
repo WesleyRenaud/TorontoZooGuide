@@ -4,6 +4,10 @@ import {
 } from './dayPlannerScheduledPillOptions.js';
 import { appendScheduledDurationPill } from './dayPlannerTimelinePillAppend.js';
 import { el } from '../dom.js';
+import {
+   bindPillMenu,
+   buildPillMenuNodes,
+} from './itineraryPillMenu.js';
 import { openAnimalSpeciesOverlay } from '../../../overlays/speciesOverlay.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
 import {
@@ -36,7 +40,35 @@ export function makeUnavailableMessage(message) {
    return el('div', 'itinerary-day-unavailable', message);
 }
 
-function makeScheduledItemBlock(itemRow, maximumDuration, offsetFraction = 0) {
+function attachScheduledEventCardMenu(itemRow, {
+   menuAriaLabel = '',
+   menuItems = [],
+} = {}) {
+   if (!itemRow || !menuItems.length) {
+      return;
+   }
+
+   const { menu, menuButton, menuPanel } = buildPillMenuNodes(
+      menuAriaLabel,
+      menuItems
+   );
+
+   itemRow.classList.add('itinerary-day-event-card--with-menu');
+   itemRow.appendChild(menu);
+   bindPillMenu(itemRow, {
+      menuButton,
+      menuPanel,
+      menuItems,
+      menuOpenClass: 'itinerary-day-event-card--menu-open',
+   });
+}
+
+function makeScheduledItemBlock(
+   itemRow,
+   maximumDuration,
+   offsetFraction = 0,
+   menuOptions = {}
+) {
    const block = el('div', 'itinerary-day-event');
    const slotSpan = maximumDuration / TIMELINE_SLOT_MINUTES;
 
@@ -51,6 +83,7 @@ function makeScheduledItemBlock(itemRow, maximumDuration, offsetFraction = 0) {
    }
 
    itemRow.classList.add('itinerary-day-event-card');
+   attachScheduledEventCardMenu(itemRow, menuOptions);
    block.appendChild(itemRow);
 
    return block;
@@ -152,7 +185,12 @@ export function appendScheduledItems(
             makeScheduledItemBlock(
                scheduledItem.row,
                scheduledItem.maximumDuration,
-               scheduledItem.offsetFraction
+               scheduledItem.offsetFraction,
+               resolveScheduledPillOptions(
+                  scheduledItem,
+                  scheduleHandlers,
+                  strings
+               )
             )
          );
          return;

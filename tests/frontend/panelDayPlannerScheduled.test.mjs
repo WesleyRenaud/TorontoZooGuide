@@ -77,7 +77,9 @@ test.describe('itinerary day planner preview scheduled', () => {
    });
    
 
-   test('scheduled guardians talk renders as timeline event card without pill menu', () => {
+   test('scheduled guardians talk renders as timeline event card with remove menu only', () => {
+      const unscheduleCalls = [];
+      const removeCalls = [];
       const planner = makeDayPlannerPreview(
          {
             date: '2026-06-20',
@@ -100,26 +102,98 @@ test.describe('itinerary day planner preview scheduled', () => {
          {},
          {
             scheduleHandlers: {
-               onUnscheduleItineraryItem: () => {},
-               onRemoveItineraryItem: () => {},
+               onUnscheduleItineraryItem: (request) => {
+                  unscheduleCalls.push(request);
+               },
+               onRemoveItineraryItem: (request) => {
+                  removeCalls.push(request);
+               },
             },
          }
       );
       const tigerEvent = [...planner.querySelectorAll('.itinerary-day-event')].find((event) => (
          allTextFor(event).includes('Amur Tiger')
       ));
+      const eventCard = tigerEvent?.querySelector('.itinerary-day-event-card');
+      const menuItems = [
+         ...(eventCard?.querySelectorAll('.itinerary-day-open-pill-menu-item') ?? []),
+      ];
 
       assert.ok(tigerEvent);
-      assert.ok(tigerEvent.querySelector('.itinerary-day-event-card'));
+      assert.ok(eventCard?.classList.contains('itinerary-day-event-card--with-menu'));
       assert.match(allTextFor(tigerEvent), /Location: Eurasia Wilds/);
       assert.match(
          imageSrcFor(tigerEvent),
          /images\/details\/guardians-talks\/amur-tiger\.png$/
       );
-      assert.equal(
-         tigerEvent.querySelector('.itinerary-day-scheduled-pill--with-menu'),
-         null
+      assert.equal(tigerEvent.querySelector('.itinerary-day-scheduled-pill--with-menu'), null);
+      assert.equal(menuItems.length, 1);
+      assert.equal(menuItems[0]?.textContent, 'Remove');
+
+      menuItems[0].click();
+
+      assert.deepEqual(unscheduleCalls, []);
+      assert.deepEqual(removeCalls, [{
+         itemType: 'guardians_talks',
+         key: 'Amur Tiger',
+      }]);
+   });
+
+   test('scheduled wild encounter renders as timeline event card with remove menu only', () => {
+      const unscheduleCalls = [];
+      const removeCalls = [];
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-06-20',
+            openTime: '09:30',
+            lastAdmissionTime: '18:00',
+            closeTime: '19:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            wildEncounters: [
+               {
+                  name: 'Kangaroo',
+                  meeting_spot: 'Wild Encounter – Eurasia Meeting Spot',
+                  start_time: '3:30 PM',
+                  end_time: '4:15 PM',
+                  maximum_duration: 45,
+               },
+            ],
+         },
+         {},
+         {
+            scheduleHandlers: {
+               onUnscheduleItineraryItem: (request) => {
+                  unscheduleCalls.push(request);
+               },
+               onRemoveItineraryItem: (request) => {
+                  removeCalls.push(request);
+               },
+            },
+         }
       );
+      const kangarooEvent = [...planner.querySelectorAll('.itinerary-day-event')].find((event) => (
+         allTextFor(event).includes('Kangaroo')
+      ));
+      const eventCard = kangarooEvent?.querySelector('.itinerary-day-event-card');
+      const menuItems = [
+         ...(eventCard?.querySelectorAll('.itinerary-day-open-pill-menu-item') ?? []),
+      ];
+
+      assert.ok(kangarooEvent);
+      assert.ok(eventCard?.classList.contains('itinerary-day-event-card--with-menu'));
+      assert.match(allTextFor(kangarooEvent), /Meeting Spot:/);
+      assert.equal(menuItems.length, 1);
+      assert.equal(menuItems[0]?.textContent, 'Remove');
+
+      menuItems[0].click();
+
+      assert.deepEqual(unscheduleCalls, []);
+      assert.deepEqual(removeCalls, [{
+         itemType: 'wild_encounters',
+         key: 'Kangaroo||3:30 PM||4:15 PM',
+      }]);
    });
    
 
