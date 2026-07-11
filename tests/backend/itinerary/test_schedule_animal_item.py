@@ -6,10 +6,11 @@ from datetime import date
 from itinerary.support import ANIMAL_KEY, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, schedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.shared.enums import ItineraryErrorType
 from conftest import DbControllers
 
 
-def test_schedule_itinerary_animal_uses_early_admission_without_arrival(
+def test_schedule_itinerary_animal_uses_open_time_without_arrival(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -20,7 +21,31 @@ def test_schedule_itinerary_animal_uses_early_admission_without_arrival(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-      confirming_early_admission=True,
+   ).success
+
+   result = schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY )
+
+   assert result.success
+   assert len( result.itinerary.animals ) == 1
+   assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
+   assert result.itinerary.animals[ 0 ].end_time == '9:38 AM'
+
+
+def test_schedule_itinerary_animal_uses_early_admission_when_warning_suppressed(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+   assert ItineraryCoordinator.suppress_itinerary_warning(
+      ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP.value ).success
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
    ).success
 
    result = schedule_itinerary_item(
@@ -33,10 +58,12 @@ def test_schedule_itinerary_animal_uses_early_admission_without_arrival(
    assert result.itinerary.animals[ 0 ].end_time == '9:08 AM'
 
 
-def test_schedule_itinerary_animal_accepts_explicit_early_admission_start(
+def test_schedule_itinerary_animal_accepts_explicit_early_admission_start_when_suppressed(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
+   assert ItineraryCoordinator.suppress_itinerary_warning(
+      ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP.value ).success
 
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
@@ -44,7 +71,6 @@ def test_schedule_itinerary_animal_accepts_explicit_early_admission_start(
       attractions=[],
       guardians_talks=[],
       wild_encounters=[],
-      confirming_early_admission=True,
    ).success
 
    result = schedule_itinerary_item(
@@ -55,6 +81,28 @@ def test_schedule_itinerary_animal_accepts_explicit_early_admission_start(
    assert result.success
    assert result.itinerary.animals[ 0 ].start_time == '9:00 AM'
    assert result.itinerary.animals[ 0 ].end_time == '9:08 AM'
+
+
+def test_schedule_itinerary_animal_rejects_explicit_early_admission_start_when_not_suppressed(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='09:00' )
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.REQUESTED_TIME_NOT_AVAILABLE
 
 
 def test_schedule_itinerary_animal_uses_arrival_time_when_set(

@@ -8,15 +8,20 @@ from ....zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 def scheduling_anchor_seconds(
       zoo_hours_record: ZooHoursRecord | None,
-      arrival_time: ScheduleTimeKey ) -> int | None:
+      arrival_time: ScheduleTimeKey,
+      *,
+      allow_early_admission: bool = False ) -> int | None:
    if arrival_time is not None:
       return DateValues.time_value_in_seconds( arrival_time )
 
    if zoo_hours_record is None:
       return None
 
-   return DateValues.time_value_in_seconds(
-      earliest_arrival_time( zoo_hours_record ) )
+   if allow_early_admission:
+      return DateValues.time_value_in_seconds(
+         earliest_arrival_time( zoo_hours_record ) )
+
+   return DateValues.time_value_in_seconds( zoo_hours_record.open_time )
 
 
 def scheduling_day_end_seconds(

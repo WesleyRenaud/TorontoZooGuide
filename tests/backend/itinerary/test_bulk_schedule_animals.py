@@ -71,8 +71,33 @@ def test_bulk_schedule_animals_sets_arrival_time_to_zoo_open_when_unset(
 
    assert result.success
    assert result.itinerary.arrival_time == '9:30 AM'
+   assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
    assert result.itinerary.animals[ 0 ].end_time == '9:38 AM'
    assert result.itinerary.departure_time == '9:38 AM'
+
+
+def test_bulk_schedule_animals_uses_early_admission_when_warning_suppressed(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+   assert ItineraryCoordinator.suppress_itinerary_warning(
+      ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP.value ).success
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   assert result.itinerary.arrival_time == '9:00 AM'
+   assert result.itinerary.animals[ 0 ].start_time == '9:00 AM'
+   assert result.itinerary.animals[ 0 ].end_time == '9:08 AM'
+   assert result.itinerary.departure_time == '9:08 AM'
 
 
 def test_bulk_schedule_animals_sets_departure_to_last_animal_end_when_departure_was_set(
