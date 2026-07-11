@@ -2786,6 +2786,56 @@ nav ul li a:hover {
    text-overflow: ellipsis;
 }
 
+.itinerary-day-scheduled-pill.itinerary-day-scheduled-pill--region-colored {
+   background: var(--itinerary-scheduled-pill-region-bg);
+   border-color: color-mix(
+      in srgb,
+      var(--itinerary-scheduled-pill-region-text) 28%,
+      transparent
+   );
+   color: var(--itinerary-scheduled-pill-region-text);
+}
+
+.itinerary-day-scheduled-pill--region-africa {
+   --itinerary-scheduled-pill-region-bg: var(--color-region-africa-bg);
+   --itinerary-scheduled-pill-region-text: var(--color-region-africa-text);
+}
+
+.itinerary-day-scheduled-pill--region-indo-malaya {
+   --itinerary-scheduled-pill-region-bg: var(--color-region-indo-malaya-bg);
+   --itinerary-scheduled-pill-region-text: var(--color-region-indo-malaya-text);
+}
+
+.itinerary-day-scheduled-pill--region-canadian-domain {
+   --itinerary-scheduled-pill-region-bg: var(--color-region-canadian-domain-bg);
+   --itinerary-scheduled-pill-region-text: var(--color-region-canadian-domain-text);
+}
+
+.itinerary-day-scheduled-pill--region-discovery-zone {
+   --itinerary-scheduled-pill-region-bg: var(--color-region-discovery-zone-bg);
+   --itinerary-scheduled-pill-region-text: var(--color-region-discovery-zone-text);
+}
+
+.itinerary-day-scheduled-pill--region-americas {
+   --itinerary-scheduled-pill-region-bg: var(--color-region-americas-bg);
+   --itinerary-scheduled-pill-region-text: var(--color-region-americas-text);
+}
+
+.itinerary-day-scheduled-pill--region-tundra-trek {
+   --itinerary-scheduled-pill-region-bg: var(--color-region-tundra-trek-bg);
+   --itinerary-scheduled-pill-region-text: var(--color-region-tundra-trek-text);
+}
+
+.itinerary-day-scheduled-pill--region-eurasia-wilds {
+   --itinerary-scheduled-pill-region-bg: var(--color-region-eurasia-wilds-bg);
+   --itinerary-scheduled-pill-region-text: var(--color-region-eurasia-wilds-text);
+}
+
+.itinerary-day-scheduled-pill--region-australasia {
+   --itinerary-scheduled-pill-region-bg: var(--color-region-australasia-bg);
+   --itinerary-scheduled-pill-region-text: var(--color-region-australasia-text);
+}
+
 .itinerary-day-scheduled-pill.itinerary-day-scheduled-pill--grouped {
    min-height: 0;
    padding: 10px 12px 10px 14px;
@@ -2795,6 +2845,16 @@ nav ul li a:hover {
    box-shadow: none;
    color: #4f7f00eb;
    font-weight: 800;
+}
+
+.itinerary-day-scheduled-pill.itinerary-day-scheduled-pill--grouped.itinerary-day-scheduled-pill--region-colored {
+   background: var(--itinerary-scheduled-pill-region-bg);
+   border-color: color-mix(
+      in srgb,
+      var(--itinerary-scheduled-pill-region-text) 28%,
+      transparent
+   );
+   color: var(--itinerary-scheduled-pill-region-text);
 }
 
 .itinerary-day-scheduled-pill.itinerary-day-scheduled-pill--with-menu {
@@ -2898,6 +2958,14 @@ nav ul li a:hover {
    white-space: nowrap;
 }
 
+.itinerary-day-scheduled-pill--region-colored .itinerary-day-scheduled-pill-count {
+   color: color-mix(
+      in srgb,
+      var(--itinerary-scheduled-pill-region-text) 72%,
+      transparent
+   );
+}
+
 .itinerary-day-scheduled-pill-toggle {
    flex: 0 0 auto;
    width: 36px;
@@ -2917,6 +2985,24 @@ nav ul li a:hover {
 .itinerary-day-scheduled-pill-toggle:focus-visible {
    background: #5e96001a;
    color: var(--color-brand-primary);
+}
+
+.itinerary-day-scheduled-pill--region-colored .itinerary-day-scheduled-pill-toggle {
+   color: color-mix(
+      in srgb,
+      var(--itinerary-scheduled-pill-region-text) 72%,
+      transparent
+   );
+}
+
+.itinerary-day-scheduled-pill--region-colored .itinerary-day-scheduled-pill-toggle:hover,
+.itinerary-day-scheduled-pill--region-colored .itinerary-day-scheduled-pill-toggle:focus-visible {
+   background: color-mix(
+      in srgb,
+      var(--itinerary-scheduled-pill-region-text) 12%,
+      transparent
+   );
+   color: var(--itinerary-scheduled-pill-region-text);
 }
 
 .itinerary-day-scheduled-pill-label {

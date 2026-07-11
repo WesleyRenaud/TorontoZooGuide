@@ -46,6 +46,28 @@
    --color-marker-brown: #8a5a2b;
    --color-marker-orange: #d2691e;
 
+   /*
+    * Zoo map region colors — source of truth for map SVG fills/labels and
+    * day-planner region-colored pills. Keep scripts/shared/regionColors.js
+    * slugs and images/map/zoo-map.svg var(--color-region-*) refs in sync.
+    */
+   --color-region-africa-bg: #F0DCC9;
+   --color-region-africa-text: #7A6A5B;
+   --color-region-indo-malaya-bg: #FADDC2;
+   --color-region-indo-malaya-text: #C4713B;
+   --color-region-canadian-domain-bg: #FADCE1;
+   --color-region-canadian-domain-text: #A15041;
+   --color-region-discovery-zone-bg: #EAD0E4;
+   --color-region-discovery-zone-text: #A86298;
+   --color-region-americas-bg: #ADD1B8;
+   --color-region-americas-text: #476F4C;
+   --color-region-tundra-trek-bg: #C5E4E9;
+   --color-region-tundra-trek-text: #286261;
+   --color-region-eurasia-wilds-bg: #DADCA3;
+   --color-region-eurasia-wilds-text: #797A41;
+   --color-region-australasia-bg: #CCC5E1;
+   --color-region-australasia-text: #69599F;
+
    /* ── Typography ── */
    --font-family-base: 'Poppins', sans-serif;
    --font-weight-medium: 500;
