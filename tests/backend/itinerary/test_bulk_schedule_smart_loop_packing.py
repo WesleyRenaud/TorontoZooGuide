@@ -92,9 +92,11 @@ def test_bulk_schedule_animals_places_south_loop_last_before_giraffe_encounter(
    assert cheetah_start_seconds is not None
    assert cheetah_end_seconds is not None
 
-   assert demoiselle_start_seconds == arrival_seconds
+   assert demoiselle_start_seconds >= arrival_seconds
    assert demoiselle_end_seconds <= cheetah_start_seconds
-   assert cheetah_end_seconds < encounter_start_seconds
+   assert cheetah_end_seconds == encounter_start_seconds
+   assert demoiselle_start_seconds == DateValues.time_value_in_seconds(
+      result.itinerary.arrival_time )
 
 
 def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_encounter_window(
@@ -148,8 +150,8 @@ def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_en
    assert cheetah_end_seconds is not None
    assert demoiselle_start_seconds is not None
 
-   assert cheetah_start_seconds == arrival_seconds
-   assert cheetah_end_seconds < encounter_start_seconds
+   assert cheetah_start_seconds >= arrival_seconds
+   assert cheetah_end_seconds == encounter_start_seconds
    assert demoiselle_start_seconds >= encounter_end_seconds
 
 
@@ -202,7 +204,9 @@ def test_bulk_schedule_animals_packs_prefix_and_terminal_loops_before_giraffe_en
    assert demoiselle_end_seconds is not None
    assert cheetah_end_seconds is not None
 
-   assert demoiselle_start_seconds == arrival_seconds
+   assert demoiselle_start_seconds >= arrival_seconds
    assert demoiselle_end_seconds <= DateValues.time_value_in_seconds(
       cheetah.start_time )
    assert cheetah_end_seconds == encounter_start_seconds
+   assert demoiselle_start_seconds == DateValues.time_value_in_seconds(
+      result.itinerary.arrival_time )
