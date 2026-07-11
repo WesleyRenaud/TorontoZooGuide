@@ -59,7 +59,6 @@ export function resolveWizardStartStep(
 export function buildSelectionStepHandlers({
    selectionKey,
    preserveOnInvalid = false,
-   wizardState,
    updateSelection,
    showNextStep = null,
    finish,
@@ -72,8 +71,7 @@ export function buildSelectionStepHandlers({
          }
          : undefined,
       onFinish: (value) => {
-         updateSelection(selectionKey, value, { preserveOnInvalid });
-         void finish({ [selectionKey]: wizardState[selectionKey] });
+         void finish({ [selectionKey]: value });
       },
    };
 }

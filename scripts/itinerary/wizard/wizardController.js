@@ -4,6 +4,7 @@ import {
 } from '../draftStorage.js';
 import { showItineraryConfirmPopup } from '../../itinerary/panel/components/confirmPopup.js';
 import { createItineraryDateSelectorController } from '../../itinerary/selectors/dateSelector.js';
+import { isItineraryConfirmationCancelled } from '../itineraryConfirmationResult.js';
 import {
    getItinerary,
    isItineraryEmpty,
@@ -96,8 +97,8 @@ export async function openItineraryWizard({
       wizard.consumePendingValidation();
    }
 
-   function finish(override = {}, options = {}) {
-      return finalizeWizard(
+   async function finish(override = {}, options = {}) {
+      const result = await finalizeWizard(
          buildWizardDraft(wizardState, override),
          mountEl,
          {
@@ -105,6 +106,15 @@ export async function openItineraryWizard({
             onDone: handleFinishDone,
          }
       );
+
+      if (isItineraryConfirmationCancelled(result)) {
+         // Selector storage still holds the pending pick; restore the last saved
+         // draft so close does not sync it back and prompt to save.
+         wizard.discardChanges();
+         showStep(activeStepKey);
+      }
+
+      return result;
    }
 
    function discardAndClose() {
@@ -191,7 +201,6 @@ export async function openItineraryWizard({
          ...buildSelectionStepHandlers({
             selectionKey: config.selectionKey,
             preserveOnInvalid: config.preserveOnInvalid,
-            wizardState,
             updateSelection,
             showNextStep: config.nextStepKey
                ? () => showStep(config.nextStepKey)

@@ -14,15 +14,13 @@ test('resolveWizardStartStep falls back to the date step for unknown values', ()
    assert.equal(resolveWizardStartStep('unknown-step'), WIZARD_DEFAULT_START_STEP);
 });
 
-test('buildSelectionStepHandlers updates selections and advances or finishes', () => {
+test('buildSelectionStepHandlers updates selections on next but finishes via override only', () => {
    const updates = [];
    const finished = [];
    let advanced = 0;
-   const wizardState = { animals: ['Lion'] };
 
    const handlers = buildSelectionStepHandlers({
       selectionKey: 'animals',
-      wizardState,
       updateSelection: (selectionKey, value, options) => {
          updates.push({ selectionKey, value, options });
       },
@@ -43,14 +41,9 @@ test('buildSelectionStepHandlers updates selections and advances or finishes', (
          value: [{ id: 'lion' }],
          options: { preserveOnInvalid: false },
       },
-      {
-         selectionKey: 'animals',
-         value: [{ id: 'tiger' }],
-         options: { preserveOnInvalid: false },
-      },
    ]);
    assert.equal(advanced, 1);
-   assert.deepEqual(finished, [{ animals: ['Lion'] }]);
+   assert.deepEqual(finished, [{ animals: [{ id: 'tiger' }] }]);
 });
 
 test('WIZARD_SELECTION_STEP_DEFINITIONS_BY_KEY exposes every configured step', () => {
