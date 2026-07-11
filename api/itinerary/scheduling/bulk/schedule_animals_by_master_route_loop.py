@@ -161,8 +161,9 @@ def _process_schedule_window(
       departure_side_cluster_id=window_state.departure_side_cluster_id )
 
    if packed_units:
-      window_state.cursor_seconds = _packed_units_start_seconds(
+      window_state.cursor_seconds = _schedule_start_seconds_for_packed_units(
          schedule_window,
+         packed_units=packed_units,
          cursor_seconds=window_state.cursor_seconds )
 
       for prepared_unit in packed_units:
@@ -455,6 +456,27 @@ def _packed_units_start_seconds(
    return max(
       cursor_seconds,
       schedule_window.start_seconds )
+
+
+def _schedule_start_seconds_for_packed_units(
+      schedule_window: ItineraryScheduleWindow,
+      *,
+      packed_units: list[ PreparedLoopScheduleUnit ],
+      cursor_seconds: int ) -> int:
+   window_start_seconds = _packed_units_start_seconds(
+      schedule_window,
+      cursor_seconds=cursor_seconds )
+
+   if schedule_window.anchor_stop is None:
+      return window_start_seconds
+
+   total_duration_seconds = sum(
+      prepared_unit.duration_seconds
+      for prepared_unit in packed_units )
+
+   return max(
+      window_start_seconds,
+      schedule_window.end_seconds - total_duration_seconds )
 
 
 def _schedule_prepared_loop_unit(
