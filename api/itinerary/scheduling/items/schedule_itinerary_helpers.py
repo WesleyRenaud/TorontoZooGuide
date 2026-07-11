@@ -13,6 +13,7 @@ from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_time import set_itinerary_arrival_time
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
+from ...domain.itinerary_adjustment import ItineraryAdjustment
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
@@ -60,9 +61,11 @@ def build_save_result(
 def build_success_result(
       conn: Connection,
       *,
+      adjustments: tuple[ ItineraryAdjustment, ... ] = (),
       suppressed_warnings: tuple[ ItineraryErrorType, ... ] = (),
       **itinerary_context: Any ) -> ItinerarySaveResult:
    return ItinerarySaveResult(
+      adjustments=adjustments,
       suppressed_warnings=suppressed_warnings,
       itinerary=build_current_itinerary(
          fetch_saved_itinerary( conn ),
