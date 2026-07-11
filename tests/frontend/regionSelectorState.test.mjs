@@ -158,3 +158,68 @@ test('re-selecting an exhibit re-hydrates previously removed animals', async () 
 
    assert.deepEqual(species, ['African Lion', 'African Penguin']);
 });
+
+test('deselecting a bulk exhibit removes its animals from the draft', async () => {
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+         { species: 'African Penguin', exhibit: 'Africa Savanna' },
+      ])
+   );
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: async () => JSON.stringify({ animals: [] }),
+   });
+
+   const state = createRegionSelectorState();
+   state.setRegions([{ name: 'Africa', exhibits: ['Africa Savanna'] }]);
+   state.hydrateSelectionsFromStorage();
+   assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
+
+   const animals = await state.buildUpdatedAnimalsFromSelection();
+
+   assert.deepEqual(animals, []);
+   assert.deepEqual(JSON.parse(localStorage.getItem(ANIMALS_KEY)), []);
+});
+
+test('deselecting a bulk exhibit keeps manually added animals from other exhibits', async () => {
+   localStorage.setItem(
+      ANIMALS_KEY,
+      JSON.stringify([
+         { species: 'African Lion', exhibit: 'Africa Savanna' },
+         { species: 'Red Panda', exhibit: 'Indo-Malaya' },
+      ])
+   );
+   localStorage.setItem(
+      SELECTED_EXHIBITS_KEY,
+      JSON.stringify(['Africa Savanna'])
+   );
+
+   globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: async () => JSON.stringify({ animals: [] }),
+   });
+
+   const state = createRegionSelectorState();
+   state.setRegions([
+      { name: 'Africa', exhibits: ['Africa Savanna'] },
+      { name: 'Indo-Malaya', exhibits: ['Indo-Malaya'] },
+   ]);
+   state.hydrateSelectionsFromStorage();
+   assert.equal(state.toggleExhibit('Africa', 'Africa Savanna'), true);
+
+   const animals = await state.buildUpdatedAnimalsFromSelection();
+   const species = animals.map((animal) => animal.species);
+
+   assert.deepEqual(species, ['Red Panda']);
+});

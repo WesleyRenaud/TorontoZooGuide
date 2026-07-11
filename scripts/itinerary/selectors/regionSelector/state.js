@@ -1,3 +1,4 @@
+import { normalizeAnimalIdentitySearchFields } from '../../animalIdentity.js';
 import { getAnimalsByExhibit } from '../../../api/itinerarySelectorApi.js';
 import {
    loadArray,
@@ -47,6 +48,23 @@ export function createRegionSelectorState() {
 
    const selectedRegionNames = new Set();
    const selectedExhibitNames = new Set();
+   const bulkManagedExhibitNames = new Set();
+
+   function markExhibitBulkManaged(exhibitName) {
+      const { exhibit: normalizedExhibitName } = normalizeAnimalIdentitySearchFields({
+         exhibit: exhibitName,
+      });
+
+      if (normalizedExhibitName) {
+         bulkManagedExhibitNames.add(normalizedExhibitName);
+      }
+   }
+
+   function isBulkManagedExhibit(exhibitName) {
+      return bulkManagedExhibitNames.has(
+         normalizeAnimalIdentitySearchFields({ exhibit: exhibitName }).exhibit
+      );
+   }
 
    function persistSelectionState() {
       saveSelectedNames(SELECTED_EXHIBITS_KEY, selectedExhibitNames);
@@ -74,8 +92,13 @@ export function createRegionSelectorState() {
    function hydrateSelectionsFromStorage() {
       selectedExhibitNames.clear();
       selectedRegionNames.clear();
+      bulkManagedExhibitNames.clear();
 
       const storedExhibits = new Set(loadSelectedNames(SELECTED_EXHIBITS_KEY));
+
+      storedExhibits.forEach((exhibitName) => {
+         markExhibitBulkManaged(exhibitName);
+      });
 
       regions.forEach((region) => {
          const exhibits = getRegionExhibits(region);
@@ -108,6 +131,7 @@ export function createRegionSelectorState() {
       exhibits.forEach((exhibitName) => {
          if (shouldSelect) {
             selectedExhibitNames.add(exhibitName);
+            markExhibitBulkManaged(exhibitName);
             clearRemovedAnimalKeysForExhibit(exhibitName);
          }
          else {
@@ -133,6 +157,7 @@ export function createRegionSelectorState() {
       }
       else {
          selectedExhibitNames.add(exhibitName);
+         markExhibitBulkManaged(exhibitName);
          clearRemovedAnimalKeysForExhibit(exhibitName);
       }
 
@@ -142,17 +167,32 @@ export function createRegionSelectorState() {
       return true;
    }
 
+   function preserveAnimalsOutsideBulkManagedExhibits(currentAnimals = []) {
+      const remainingAnimals = currentAnimals.filter((animal) => {
+         const { exhibit } = normalizeAnimalIdentitySearchFields(animal);
+
+         if (!exhibit) {
+            return true;
+         }
+
+         return !isBulkManagedExhibit(exhibit);
+      });
+
+      saveArray(ANIMALS_KEY, remainingAnimals);
+
+      return remainingAnimals;
+   }
+
    async function buildUpdatedAnimalsFromSelection() {
       const selectedExhibits = Array.from(selectedExhibitNames);
-
-      if (!selectedExhibits.length) {
-         saveArray(ANIMALS_KEY, []);
-         return [];
-      }
 
       const currentAnimals = loadArray(ANIMALS_KEY)
          .map(normalizeSelectedAnimal)
          .filter(Boolean);
+
+      if (!selectedExhibits.length) {
+         return preserveAnimalsOutsideBulkManagedExhibits(currentAnimals);
+      }
 
       const { month, day, temp } = await resolveAnimalsByExhibitQueryContext();
       const fullAnimals = await getAnimalsByExhibit(selectedExhibits, {
@@ -166,21 +206,25 @@ export function createRegionSelectorState() {
       );
 
       const selectedExhibitSet = new Set(
-         selectedExhibits.map((exhibitName) => String(exhibitName).trim().toLowerCase())
+         selectedExhibits.map(
+            (exhibitName) => normalizeAnimalIdentitySearchFields({
+               exhibit: exhibitName,
+            }).exhibit
+         )
       );
       const rebuiltSpeciesExhibitKeys = new Set(
          selectedAnimals.map((animal) => buildSpeciesExhibitKey(animal))
       );
 
       const preservedAnimals = currentAnimals.filter((animal) => {
-         const exhibit = animal.exhibit.trim().toLowerCase();
+         const { exhibit } = normalizeAnimalIdentitySearchFields(animal);
 
          if (!exhibit) {
             return true;
          }
 
          if (!selectedExhibitSet.has(exhibit)) {
-            return true;
+            return !isBulkManagedExhibit(exhibit);
          }
 
          return !rebuiltSpeciesExhibitKeys.has(buildSpeciesExhibitKey(animal));
