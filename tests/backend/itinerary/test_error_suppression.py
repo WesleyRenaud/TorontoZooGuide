@@ -126,6 +126,7 @@ def test_non_suppressable_itinerary_error_types_cannot_be_persisted(
 
    non_suppressable_error_types = [
       ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+      ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT,
       ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
       ItineraryErrorType.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED,
    ]

@@ -9,6 +9,9 @@ from .set_itinerary_context import build_set_itinerary_error_result
 from .set_itinerary_context import SetItineraryContext
 from ...shared.enums import ItineraryErrorType
 from ..warnings.early_admission_warning import early_admission_warning_is_required
+from ..warnings.guardians_talk_long_wait_warning import build_guardians_talk_long_wait_issue_from_talks
+from ..warnings.guardians_talk_long_wait_warning import guardians_talk_long_wait_warning_is_required_for_validated_itinerary
+from ..warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_validated_itinerary
 from ..warnings.itinerary_suppressed_warnings import with_suppressed_warnings
 from ..warnings.short_visit_warning import short_visit_warning_is_required
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
@@ -21,6 +24,7 @@ def check_set_itinerary_save_warnings(
       confirming_early_admission: bool,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool,
+      confirming_guardians_talk_long_wait: bool,
       overriding_conflicting_guardians_talks: bool ) -> tuple[
          SetItineraryContext,
          ItinerarySaveResult | None,
@@ -104,5 +108,26 @@ def check_set_itinerary_save_warnings(
             updated_context,
             with_suppressed_warnings( unschedule_warning, warning_tuple ),
          )
+
+   if guardians_talk_long_wait_warning_is_required_for_validated_itinerary(
+         context.validated_itinerary,
+         confirming_guardians_talk_long_wait=(
+            confirming_guardians_talk_long_wait ) ):
+      isolated_talks = isolated_guardians_talks_from_validated_itinerary(
+         context.validated_itinerary )
+
+      return (
+         updated_context,
+         with_suppressed_warnings(
+            ItinerarySaveResult(
+               status=ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT,
+               reasons=(
+                  build_guardians_talk_long_wait_issue_from_talks(
+                     isolated_talks ),
+               ),
+               itinerary=context.current_itinerary,
+            ),
+            warning_tuple ),
+      )
 
    return ( updated_context, None )

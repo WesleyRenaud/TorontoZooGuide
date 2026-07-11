@@ -20,6 +20,8 @@ from ..items.schedule_itinerary_helpers import build_save_result
 from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
 from .loop_schedule_unit import build_loop_schedule_units
+from .restore_guest_schedule_state import restore_guest_schedule_state
+from .restore_guest_schedule_state import snapshot_guest_schedule_state
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ...routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
@@ -28,10 +30,13 @@ from .schedule_animals_by_master_route_loop import schedule_animals_by_master_ro
 from ....shared.calendar_dates import DateValues
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
+from ....types import ScheduleTimeKey
 from ..unscheduling.clear_all_itinerary_schedules import clear_all_itinerary_schedules
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.bulk_schedule_animals_warning import build_bulk_schedule_animals_not_enough_time_issue
+from ...warnings.guardians_talk_long_wait_warning import build_guardians_talk_long_wait_issue_from_talks
+from ...warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_itinerary
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 
 
@@ -57,6 +62,7 @@ def bulk_schedule_animals(
       guardians_coordinator: type[ GuardiansCoordinator ],
       wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       visit_date_temp: float | None = None,
+      confirming_guardians_talk_long_wait: bool = False,
       animals_to_schedule: list[ ItineraryAnimalRecord ] ) -> ItinerarySaveResult:
    itinerary_context = build_itinerary_context(
       animal_coordinator=animal_coordinator,
@@ -81,6 +87,9 @@ def bulk_schedule_animals(
       return schedule_window
 
    saved_itinerary, window = schedule_window
+   schedule_snapshot, walk_route_snapshot = snapshot_guest_schedule_state(
+      conn,
+      saved_itinerary )
 
    clear_all_itinerary_schedules( conn )
 
@@ -133,7 +142,7 @@ def bulk_schedule_animals(
    arrival_adjustment = adjust_arrival_after_bulk_schedule(
       conn,
       schedule_anchor_seconds=start_state.schedule_anchor_seconds,
-      previous_arrival_time=saved_itinerary.arrival_time )
+      previous_arrival_time=schedule_snapshot.arrival_time )
 
    if arrival_adjustment is not None:
       adjustments = ( arrival_adjustment, )
@@ -154,13 +163,30 @@ def bulk_schedule_animals(
 
    persist_itinerary_walk_route( conn, **itinerary_context )
 
+   itinerary = build_current_itinerary(
+      fetch_saved_itinerary( conn ),
+      **itinerary_context )
+   isolated_talks = isolated_guardians_talks_from_itinerary( itinerary )
+
+   if isolated_talks and not confirming_guardians_talk_long_wait:
+      long_wait_reason = build_guardians_talk_long_wait_issue_from_talks(
+         isolated_talks )
+      restore_guest_schedule_state(
+         conn,
+         schedule_snapshot,
+         walk_route_snapshot )
+
+      return build_save_result(
+         conn,
+         ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT,
+         reasons=( long_wait_reason, ),
+         **itinerary_context )
+
    return ItinerarySaveResult(
       status=ItineraryErrorType.SUCCESS,
       reasons=reasons,
       adjustments=adjustments,
-      itinerary=build_current_itinerary(
-         fetch_saved_itinerary( conn ),
-         **itinerary_context ) )
+      itinerary=itinerary )
 
 
 def _bulk_schedule_start_state(

@@ -38,4 +38,5 @@ def reschedule_itinerary_items_after_fixed_time_activity_add(
    return bulk_schedule_animals(
       conn,
       animals_to_schedule=animals_to_schedule,
+      confirming_guardians_talk_long_wait=True,
       **itinerary_context )

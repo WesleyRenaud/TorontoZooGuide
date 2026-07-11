@@ -45,7 +45,19 @@ def time_blocks_overlap(
    )
 
 
-def _append_block_from_schedule_times(
+def time_block_gap_seconds(
+      first: TimeBlock,
+      second: TimeBlock ) -> int:
+   if time_blocks_overlap( first, second ):
+      return 0
+
+   if first.end_seconds <= second.start_seconds:
+      return second.start_seconds - first.end_seconds
+
+   return first.start_seconds - second.end_seconds
+
+
+def append_block_from_schedule_times(
       blocks: list[ TimeBlock ],
       start_time: ScheduleTimeKey,
       end_time: ScheduleTimeKey ) -> None:
@@ -59,19 +71,19 @@ def collect_time_blocks_from_itinerary( itinerary: Itinerary ) -> list[ TimeBloc
    blocks: list[ TimeBlock ] = []
 
    for animal in itinerary.animals:
-      _append_block_from_schedule_times(
+      append_block_from_schedule_times(
          blocks,
          animal.start_time,
          animal.end_time )
 
    for attraction in itinerary.attractions:
-      _append_block_from_schedule_times(
+      append_block_from_schedule_times(
          blocks,
          attraction.start_time,
          attraction.end_time )
 
    for event in itinerary.events:
-      _append_block_from_schedule_times(
+      append_block_from_schedule_times(
          blocks,
          event.start_time,
          event.end_time )
@@ -80,7 +92,7 @@ def collect_time_blocks_from_itinerary( itinerary: Itinerary ) -> list[ TimeBloc
       if guardians_talk.is_deleted:
          continue
 
-      _append_block_from_schedule_times(
+      append_block_from_schedule_times(
          blocks,
          guardians_talk.start_time,
          guardians_talk.end_time )
@@ -89,7 +101,7 @@ def collect_time_blocks_from_itinerary( itinerary: Itinerary ) -> list[ TimeBloc
       if wild_encounter.is_deleted:
          continue
 
-      _append_block_from_schedule_times(
+      append_block_from_schedule_times(
          blocks,
          wild_encounter.start_time,
          wild_encounter.end_time )

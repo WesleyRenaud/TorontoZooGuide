@@ -332,6 +332,51 @@ test.describe('itineraryPanelContent', () => {
       }]);
    });
 
+   test('buildEmptyItineraryPanelContent shows long-wait confirmation after rebuild', async () => {
+      updateItineraryErrorTypesFromConfig({
+         errorTypes: MOCK_ERROR_TYPES,
+         suppressedErrorTypes: [],
+      });
+
+      const bodyEl = createDomNode('div', 'side-panel-body');
+      let refreshed = false;
+      const feedbackCalls = [];
+      const confirmationCalls = [];
+      const longWaitIssues = [{
+         type: 'guardiansTalkLongWait',
+         items: [{
+            name: 'North American River Otter',
+            start_time: '2:00 PM',
+         }],
+      }];
+      const { deps, getPlannerOptions } = captureDayPlannerOptions({
+         bulkSchedule: async () => ({
+            errorType: MOCK_ERROR_TYPES.GUARDIANS_TALK_LONG_WAIT,
+            issues: longWaitIssues,
+         }),
+         setActionFeedback: (feedback) => {
+            feedbackCalls.push(feedback);
+         },
+         showLongWaitConfirmation: (options) => {
+            confirmationCalls.push(options);
+         },
+      });
+
+      buildEmptyItineraryPanelContent(bodyEl, ZOO_HOURS, {
+         onPanelRefresh: async () => {
+            refreshed = true;
+         },
+         deps,
+      });
+
+      await getPlannerOptions()?.onRebuildScheduleClick?.();
+
+      assert.equal(refreshed, false);
+      assert.deepEqual(feedbackCalls, []);
+      assert.equal(confirmationCalls.length, 1);
+      assert.deepEqual(confirmationCalls[0].issues, longWaitIssues);
+   });
+
    test('buildItineraryPanelContent shows error feedback when nothing is scheduled to rebuild', async () => {
       updateItineraryErrorTypesFromConfig({
          errorTypes: MOCK_ERROR_TYPES,

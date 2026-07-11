@@ -295,6 +295,7 @@ export async function scheduleItineraryItemRequest(
       confirmingScheduleItemNotOnItinerary = false,
       confirmingGuardiansTalkUnschedule = false,
       confirmingWildEncounterUnschedule = false,
+      confirmingGuardiansTalkLongWait = false,
    } = {}
 ) {
    const response = await postJson('/schedule-itinerary-item', {
@@ -303,6 +304,7 @@ export async function scheduleItineraryItemRequest(
       confirmingScheduleItemNotOnItinerary,
       confirmingGuardiansTalkUnschedule,
       confirmingWildEncounterUnschedule,
+      confirmingGuardiansTalkLongWait,
    });
 
    return normalizeScheduleItineraryItemResponse(response);
@@ -366,8 +368,14 @@ export async function suppressItineraryWarningRequest(warningType) {
    return normalizeItineraryResult(response, { includeItinerary: false });
 }
 
-export async function bulkScheduleAnimalsRequest(temp) {
-   const response = await postJson('/bulk-schedule-animals', { temp });
+export async function bulkScheduleAnimalsRequest(
+   temp,
+   { confirmingGuardiansTalkLongWait = false } = {}
+) {
+   const response = await postJson('/bulk-schedule-animals', {
+      temp,
+      confirmingGuardiansTalkLongWait,
+   });
    return normalizeItineraryResponse(response);
 }
 

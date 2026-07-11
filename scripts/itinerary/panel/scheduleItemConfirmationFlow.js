@@ -1,10 +1,12 @@
 import { scheduleItineraryItemRequest } from '../../api/itineraryApi.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
+import { showGuardiansTalkLongWaitConfirmation } from './guardiansTalkLongWaitConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
 import { createItineraryConfirmationCancelledResult } from '../itineraryConfirmationResult.js';
 import {
    getItineraryErrorTypes,
    isItinerarySuccess,
+   requiresGuardiansTalkLongWaitConfirmation,
    requiresGuardiansTalkUnscheduleConfirmation,
    requiresScheduleItemNotOnItineraryConfirmation,
    requiresWildEncounterUnscheduleConfirmation,
@@ -114,6 +116,22 @@ export async function scheduleItineraryItemWithConfirmation(
          },
          buildConfirmedOptions: () => ({
             confirmingGuardiansTalkUnschedule: true,
+         }),
+      });
+   }
+
+   if (requiresGuardiansTalkLongWaitConfirmation(initialResult.errorType)) {
+      return requestScheduleItemConfirmation({
+         showConfirmation: showGuardiansTalkLongWaitConfirmation,
+         initialResult,
+         request,
+         confirmationOptions,
+         confirmationProps: {
+            mountEl: getConfirmationMountEl(),
+            issues: initialResult.issues,
+         },
+         buildConfirmedOptions: () => ({
+            confirmingGuardiansTalkLongWait: true,
          }),
       });
    }

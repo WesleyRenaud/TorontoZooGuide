@@ -12,6 +12,7 @@ export const MOCK_ERROR_TYPES = Object.freeze({
    REQUESTED_TIME_NOT_AVAILABLE: 'requestedTimeNotAvailable',
    ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',
    GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS: 'guardiansTalkWillUnscheduleItems',
+   GUARDIANS_TALK_LONG_WAIT: 'guardiansTalkLongWait',
    WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS: 'wildEncounterWillUnscheduleItems',
    BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED: 'bulkScheduleAnimalsAlreadyScheduled',
    UNSCHEDULE_ALL_NOTHING_SCHEDULED: 'unscheduleAllNothingScheduled',

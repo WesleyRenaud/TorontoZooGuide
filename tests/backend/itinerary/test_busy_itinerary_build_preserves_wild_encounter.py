@@ -92,6 +92,7 @@ def test_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
             start_time=KANGAROO_ENCOUNTER_TIME,
          ),
       ],
+      confirming_guardians_talk_long_wait=True,
    )
 
    assert initial_result.success

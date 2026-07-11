@@ -1,6 +1,7 @@
 import { setItineraryRequest } from '../api/itineraryApi.js';
 import {
    isItinerarySuccess,
+   requiresGuardiansTalkLongWaitConfirmation,
    requiresGuardiansTalkUnscheduleConfirmation,
    requiresGuardiansTalkWildEncounterTimeConflictConfirmation,
    requiresWildEncounterUnscheduleConfirmation,
@@ -14,6 +15,7 @@ import {
    toSetItineraryPayload,
 } from './itineraryShape.js';
 import { applyItineraryDiffToValidation } from './itineraryValidationResult.js';
+import { showGuardiansTalkLongWaitConfirmation } from './panel/guardiansTalkLongWaitConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
 import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
 import { showWildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
@@ -115,6 +117,19 @@ async function requestSetItineraryWithConfirmations(
          buildConfirmedPayload: () => ({
             ...payload,
             confirmingGuardiansTalkUnschedule: true,
+         }),
+      });
+   }
+
+   if (requiresGuardiansTalkLongWaitConfirmation(initialResult.errorType)) {
+      return requestSetItineraryConfirmation({
+         showConfirmation: showGuardiansTalkLongWaitConfirmation,
+         initialResult,
+         payload,
+         diffBaseline,
+         buildConfirmedPayload: () => ({
+            ...payload,
+            confirmingGuardiansTalkLongWait: true,
          }),
       });
    }

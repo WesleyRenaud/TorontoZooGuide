@@ -40,6 +40,10 @@
     "is_suppressable": 0
   },
   {
+    "status": "guardiansTalkLongWait",
+    "is_suppressable": 0
+  },
+  {
     "status": "wildEncounterWillUnscheduleItems",
     "is_suppressable": 0
   },
