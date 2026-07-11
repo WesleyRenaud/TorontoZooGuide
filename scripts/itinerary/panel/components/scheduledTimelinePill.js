@@ -6,6 +6,17 @@ import {
 import { createPillLabelNode } from './openTimelinePill.js';
 import { isExtendedScheduledPill } from '../scheduledPillPresentation.js';
 import { TIMELINE_SLOT_MINUTES } from '../../../shared/constants.js';
+import {
+   applyRegionColorsToElement,
+   resolveRegionColorSlugForScheduledItem,
+} from '../../../shared/regionColors.js';
+
+function applyScheduledPillRegionColors(pill, item = null) {
+   applyRegionColorsToElement(
+      pill,
+      resolveRegionColorSlugForScheduledItem(item)
+   );
+}
 
 function applyScheduledPillDuration(
    pill,
@@ -298,6 +309,7 @@ export function makeScheduledPill(
    }
 
    applyScheduledPillDuration(pill, displayDurationMinutes, slotSpanMinutes);
+   applyScheduledPillRegionColors(pill, item);
 
    return pill;
 }

@@ -114,10 +114,6 @@ function resolveRenderGroupLabelClick(renderGroup = {}) {
 }
 
 function resolveRenderGroupItem(renderGroup = {}) {
-   if (renderGroup.items?.length !== 1) {
-      return null;
-   }
-
    return getRenderGroupPrimaryScheduledItem(renderGroup)?.item ?? null;
 }
 
