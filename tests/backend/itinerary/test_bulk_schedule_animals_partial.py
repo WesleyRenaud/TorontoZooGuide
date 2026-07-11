@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 from pathlib import Path
+from unittest.mock import patch
 
 from itinerary.support import CHEETAH_INDO_MALAYA_ITINERARY_ENTRY, LION_ITINERARY_ENTRY, PENGUIN_ITINERARY_ENTRY
 
@@ -10,10 +11,27 @@ from api.connection import close_connection
 from api.connection import open_connection
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
+from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.scheduling.bulk.bulk_schedule_animals import has_itinerary_schedule_times
 from api.shared.enums import ItineraryErrorType
 from api.shared.enums import ItinerarySaveIssueItemType
+from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 from conftest import DbControllers
+
+FIVE_MINUTE_ZOO_HOURS = ZooHoursRecord(
+   operating_date='2026-06-20',
+   early_admission_time=None,
+   open_time='09:30',
+   last_admission_time='09:35',
+   close_time='09:35',
+)
+
+
+def _bulk_schedule_with_five_minute_zoo_hours() -> ItinerarySaveResult:
+   with patch(
+         'api.itinerary.scheduling.items.schedule_itinerary_helpers.fetch_zoo_hours_record',
+         return_value=FIVE_MINUTE_ZOO_HOURS ):
+      return ItineraryCoordinator.bulk_schedule_animals()
 
 
 def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
@@ -24,8 +42,6 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:30',
-      departure_time='09:35',
-      confirming_short_visit=True,
       animals=[
          LION_ITINERARY_ENTRY,
          PENGUIN_ITINERARY_ENTRY,
@@ -36,7 +52,7 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = _bulk_schedule_with_five_minute_zoo_hours()
 
    assert result.success
    assert len( result.reasons ) == 1
@@ -75,7 +91,7 @@ def test_bulk_schedule_animals_does_not_set_departure_when_not_enough_time(
 
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
-      arrival_time='18:50',
+      arrival_time='09:30',
       animals=[
          LION_ITINERARY_ENTRY,
          PENGUIN_ITINERARY_ENTRY,
@@ -88,7 +104,7 @@ def test_bulk_schedule_animals_does_not_set_departure_when_not_enough_time(
 
    assert ItineraryCoordinator.get_itinerary().departure_time is None
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = _bulk_schedule_with_five_minute_zoo_hours()
 
    assert result.success
    assert (
@@ -106,8 +122,6 @@ def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:30',
-      departure_time='09:35',
-      confirming_short_visit=True,
       animals=[
          LION_ITINERARY_ENTRY,
          PENGUIN_ITINERARY_ENTRY,
@@ -118,7 +132,7 @@ def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   result = _bulk_schedule_with_five_minute_zoo_hours()
 
    assert result.success
    assert len( result.reasons ) == 1
@@ -142,3 +156,33 @@ def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
    assert scheduled_species == { 'Cheetah' }
    assert lion_row.start_time is None
    assert lion_row.end_time is None
+
+
+def test_bulk_schedule_animals_packs_through_zoo_close_despite_early_departure(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='12:20',
+      departure_time='15:00',
+      animals=[
+         LION_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+         CHEETAH_INDO_MALAYA_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   assert result.reasons == ()
+   assert all(
+      animal.start_time is not None and animal.end_time is not None
+      for animal in result.itinerary.animals
+   )
+   assert result.itinerary.departure_time is not None

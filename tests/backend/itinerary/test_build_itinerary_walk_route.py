@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import date
+from unittest.mock import patch
 
 from itinerary.support import ANIMAL_KEY, schedule_itinerary_item, wild_encounter_key
 from itinerary.support import CAROUSEL
@@ -20,6 +21,7 @@ from api.itinerary.routing.walk_route_polyline import inclusive_point_slices_for
 from api.itinerary.routing.walk_route_polyline import walk_route_node_ids_for_point_slice
 from api.shared.enums import ScheduleItemKind
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
+from api.zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 from conftest import DbControllers
 
 
@@ -174,8 +176,6 @@ def test_bulk_schedule_partial_itinerary_ends_at_last_scheduled_stop(
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
       arrival_time='09:30',
-      departure_time='09:35',
-      confirming_short_visit=True,
       animals=[
          PENGUIN_ITINERARY_ENTRY,
          CHEETAH_INDO_MALAYA_ITINERARY_ENTRY,
@@ -185,7 +185,16 @@ def test_bulk_schedule_partial_itinerary_ends_at_last_scheduled_stop(
       wild_encounters=[],
    ).success
 
-   result = ItineraryCoordinator.bulk_schedule_animals()
+   with patch(
+         'api.itinerary.scheduling.items.schedule_itinerary_helpers.fetch_zoo_hours_record',
+         return_value=ZooHoursRecord(
+            operating_date='2026-06-20',
+            early_admission_time=None,
+            open_time='09:30',
+            last_admission_time='09:35',
+            close_time='09:35',
+         ) ):
+      result = ItineraryCoordinator.bulk_schedule_animals()
 
    assert result.success
    walk_route = build_itinerary_walk_route( result.itinerary )
