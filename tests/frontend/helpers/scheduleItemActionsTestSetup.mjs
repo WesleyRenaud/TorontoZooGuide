@@ -6,6 +6,8 @@ import { createLocalStorageMock } from './localStorageMock.mjs';
 export const MOCK_ERROR_TYPES = Object.freeze({
    SUCCESS: 'success',
    SAVE_FAILED: 'saveFailed',
+   ACTIVITY_NOT_ON_DAY_SCHEDULE: 'activityNotOnDaySchedule',
+   SCHEDULE_WINDOW_UNAVAILABLE: 'scheduleWindowUnavailable',
    NO_AVAILABLE_SLOT: 'noAvailableSlot',
    REQUESTED_TIME_NOT_AVAILABLE: 'requestedTimeNotAvailable',
    ITEM_NOT_ON_ITINERARY: 'itemNotOnItinerary',

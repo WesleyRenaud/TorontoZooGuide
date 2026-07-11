@@ -62,3 +62,22 @@ def test_wild_encounter_schedule_item_key_from_row() -> None:
       start_time='1:00 PM',
       end_time='1:45 PM' )
    assert record.schedule_item_key().to_wire() == 'Kangaroo||1:00 PM||1:45 PM'
+
+
+def test_wild_encounter_schedule_item_key_equality_ignores_end_time() -> None:
+   start_only = WildEncounterScheduleItemKey(
+      name='African Rainforest',
+      start_time='15:30' )
+   with_end = WildEncounterScheduleItemKey(
+      name='African Rainforest',
+      start_time='15:30',
+      end_time='16:15' )
+   different_start = WildEncounterScheduleItemKey(
+      name='African Rainforest',
+      start_time='14:00',
+      end_time='16:15' )
+
+   assert start_only == with_end
+   assert hash( start_only ) == hash( with_end )
+   assert start_only != different_start
+   assert start_only != None

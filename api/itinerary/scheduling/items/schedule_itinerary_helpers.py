@@ -128,7 +128,7 @@ def prepare_schedule_window(
    if anchor_seconds is None or day_end_seconds is None:
       return build_save_result(
          conn,
-         ItineraryErrorType.SAVE_FAILED,
+         ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE,
          **itinerary_context )
 
    return saved_itinerary, ( anchor_seconds, day_end_seconds )
@@ -161,7 +161,7 @@ def prepare_zoo_hours_schedule_window(
    if anchor_seconds is None or day_end_seconds is None:
       return build_save_result(
          conn,
-         ItineraryErrorType.SAVE_FAILED,
+         ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE,
          **itinerary_context )
 
    return saved_itinerary, ( anchor_seconds, day_end_seconds )

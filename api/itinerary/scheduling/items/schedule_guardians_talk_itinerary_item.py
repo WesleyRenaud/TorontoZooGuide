@@ -98,7 +98,7 @@ def schedule_guardians_talk_itinerary_item(
    if guardians_talk_diff.is_deleted:
       return build_save_result(
          conn,
-         ItineraryErrorType.SAVE_FAILED,
+         ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE,
          **itinerary_context )
 
    has_overlap = saved_itinerary_has_overlap_with_guardians_talks(

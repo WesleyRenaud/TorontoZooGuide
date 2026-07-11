@@ -133,6 +133,12 @@ export const itinerary = {
       ),
       itemNotOnItinerary: 'This item must be on your itinerary before it can be scheduled.',
       timeOutOfBounds: 'One or more visit times are outside operating hours for this date.',
+      activityNotOnDaySchedule: (
+         'That talk or encounter is not scheduled on your visit day.'
+      ),
+      scheduleWindowUnavailable: (
+         'Operating hours are unavailable for this visit date.'
+      ),
       bulkScheduleAnimalsAlreadyScheduled: (
          'There were no items to schedule.'
       ),
