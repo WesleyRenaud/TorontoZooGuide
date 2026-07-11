@@ -95,6 +95,33 @@ def attach_loop_pins_to_schedule_windows(
    ]
 
 
+def keep_completable_loop_pins(
+      schedule_windows: list[ ItineraryScheduleWindow ],
+      loop_pins: list[ LoopSchedulePin ],
+   ) -> list[ LoopSchedulePin ]:
+   """Drop pins that cannot finish weaving after the talk.
+
+   Those talks remain schedule boundaries/anchors so the whole loop can pack
+   against them instead of splitting across a later adjacent fixed-time stop.
+   """
+   return [
+      loop_pin
+      for loop_pin in loop_pins
+      if _loop_pin_weave_is_completable( loop_pin, schedule_windows )
+   ]
+
+
+def _loop_pin_weave_is_completable(
+      loop_pin: LoopSchedulePin,
+      schedule_windows: list[ ItineraryScheduleWindow ],
+   ) -> bool:
+   return any(
+      _loop_pin_applies_to_schedule_window( loop_pin, schedule_window )
+      and schedule_window.end_seconds > loop_pin.end_seconds
+      for schedule_window in schedule_windows
+   )
+
+
 def _loop_pin_applies_to_schedule_window(
       loop_pin: LoopSchedulePin,
       schedule_window: ItineraryScheduleWindow ) -> bool:
