@@ -10,6 +10,7 @@ from ..core.scheduling_anchor import scheduling_day_end_seconds
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.itinerary import fetch_itinerary_date
 from ...data_access.itinerary import fetch_saved_itinerary
+from ...data_access.itinerary_status import is_itinerary_error_suppressed
 from ...data_access.itinerary_time import set_itinerary_arrival_time
 from ...data_access.saved_itinerary import SavedItinerary
 from ...domain.itinerary import build_current_itinerary
@@ -21,6 +22,7 @@ from ....shared.duration_values import duration_minutes_to_seconds
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ....types import ScheduleTimeKey
+from ...validation.itinerary_arrival_time_validation import earliest_arrival_time
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
 from ....zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
@@ -111,16 +113,19 @@ def prepare_schedule_window(
          **itinerary_context )
 
    zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
+   allow_early_admission = _early_admission_scheduling_is_allowed( conn )
 
    if ensure_arrival_at_zoo_open:
       saved_itinerary = _ensure_arrival_at_zoo_open(
          conn,
          saved_itinerary,
-         zoo_hours_record )
+         zoo_hours_record,
+         allow_early_admission=allow_early_admission )
 
    anchor_seconds = scheduling_anchor_seconds(
       zoo_hours_record,
-      saved_itinerary.arrival_time )
+      saved_itinerary.arrival_time,
+      allow_early_admission=allow_early_admission )
    day_end_seconds = scheduling_day_end_seconds(
       zoo_hours_record,
       saved_itinerary.departure_time )
@@ -147,15 +152,16 @@ def prepare_zoo_hours_schedule_window(
          **itinerary_context )
 
    zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
+   allow_early_admission = _early_admission_scheduling_is_allowed( conn )
    saved_itinerary = _ensure_arrival_at_zoo_open(
       conn,
       saved_itinerary,
-      zoo_hours_record )
-   open_time = (
-      zoo_hours_record.open_time
-      if zoo_hours_record is not None
-      else None )
-   anchor_seconds = scheduling_anchor_seconds( zoo_hours_record, open_time )
+      zoo_hours_record,
+      allow_early_admission=allow_early_admission )
+   anchor_seconds = scheduling_anchor_seconds(
+      zoo_hours_record,
+      None,
+      allow_early_admission=allow_early_admission )
    day_end_seconds = scheduling_day_end_seconds( zoo_hours_record, None )
 
    if anchor_seconds is None or day_end_seconds is None:
@@ -167,21 +173,34 @@ def prepare_zoo_hours_schedule_window(
    return saved_itinerary, ( anchor_seconds, day_end_seconds )
 
 
+def _early_admission_scheduling_is_allowed( conn: Connection ) -> bool:
+   return is_itinerary_error_suppressed(
+      conn,
+      ItineraryErrorType.EARLY_ADMISSION_REQUIRES_MEMBERSHIP )
+
+
 def _ensure_arrival_at_zoo_open(
       conn: Connection,
       saved_itinerary: SavedItinerary,
-      zoo_hours_record: ZooHoursRecord | None ) -> SavedItinerary:
+      zoo_hours_record: ZooHoursRecord | None,
+      *,
+      allow_early_admission: bool = False ) -> SavedItinerary:
    if saved_itinerary.arrival_time is not None:
       return saved_itinerary
 
-   if (
-         zoo_hours_record is not None
-         and zoo_hours_record.open_time is not None
-   ):
-      set_itinerary_arrival_time( conn, zoo_hours_record.open_time )
-      return fetch_saved_itinerary( conn )
+   if zoo_hours_record is None:
+      return saved_itinerary
 
-   return saved_itinerary
+   arrival_time = (
+      earliest_arrival_time( zoo_hours_record )
+      if allow_early_admission
+      else zoo_hours_record.open_time )
+
+   if arrival_time is None:
+      return saved_itinerary
+
+   set_itinerary_arrival_time( conn, arrival_time )
+   return fetch_saved_itinerary( conn )
 
 
 def resolve_slot_times(

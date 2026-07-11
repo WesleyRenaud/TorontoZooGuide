@@ -64,16 +64,28 @@ def test_scheduling_anchor_uses_arrival_when_set( db: DbControllers ) -> None:
    zoo_hours = fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
 
    assert scheduling_anchor_seconds( zoo_hours, '09:00' ) == 9 * 3600
-   assert scheduling_anchor_seconds( zoo_hours, None ) == 9 * 3600
+   assert scheduling_anchor_seconds( zoo_hours, None ) == 9 * 3600 + 30 * 60
 
 
-def test_scheduling_anchor_uses_early_admission_without_arrival(
+def test_scheduling_anchor_uses_open_time_without_early_admission_permission(
       db: DbControllers ) -> None:
    zoo_hours = fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
 
    assert zoo_hours.early_admission_time == '09:00'
    assert zoo_hours.open_time == '09:30'
-   assert scheduling_anchor_seconds( zoo_hours, None ) == 9 * 3600
+   assert scheduling_anchor_seconds( zoo_hours, None ) == 9 * 3600 + 30 * 60
+
+
+def test_scheduling_anchor_uses_early_admission_when_allowed(
+      db: DbControllers ) -> None:
+   zoo_hours = fetch_zoo_hours_record( db.conn, date( 2026, 6, 20 ) )
+
+   assert zoo_hours.early_admission_time == '09:00'
+   assert zoo_hours.open_time == '09:30'
+   assert scheduling_anchor_seconds(
+      zoo_hours,
+      None,
+      allow_early_admission=True ) == 9 * 3600
 
 
 def test_find_next_available_slot_skips_overlapping_blockers() -> None:
