@@ -128,14 +128,12 @@ def schedule_wild_encounter_itinerary_item(
    if insert_error is not None:
       return insert_error
 
-   departure_extended = ensure_departure_covers_end_time(
+   ensure_departure_covers_end_time(
       conn,
       end_time=wild_encounter_diff.end_time,
       current_departure_time=saved_itinerary.departure_time )
 
-   if (
-         ( has_overlap and confirming_wild_encounter_unschedule )
-         or departure_extended ):
+   if has_overlap and confirming_wild_encounter_unschedule:
       return reschedule_itinerary_items_after_fixed_time_activity_add(
          conn,
          saved_itinerary_before_clear=saved_itinerary,

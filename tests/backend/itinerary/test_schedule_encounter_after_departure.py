@@ -3,15 +3,24 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from itinerary.support import LION_ITINERARY_ENTRY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key, wild_encounter_wire
+from itinerary.support import LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key, wild_encounter_wire
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.models import Itinerary
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ScheduleItemKind
 from conftest import DbControllers
 
 
-def test_schedule_wild_encounter_after_departure_extends_and_reschedules(
+def _scheduled_animal_times(
+      itinerary: Itinerary ) -> list[ tuple[ str, str | None, str | None ] ]:
+   return [
+      ( animal.species, animal.start_time, animal.end_time )
+      for animal in itinerary.animals
+   ]
+
+
+def test_schedule_wild_encounter_after_departure_extends_departure(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
@@ -26,6 +35,13 @@ def test_schedule_wild_encounter_after_departure_extends_and_reschedules(
       guardians_talks=[],
       wild_encounters=[],
    ).success
+   assert schedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      LION_KEY,
+      confirming_schedule_item_not_on_itinerary=True,
+   ).success
+
+   before_times = _scheduled_animal_times( ItineraryCoordinator.get_itinerary() )
 
    result = schedule_itinerary_item(
       ScheduleItemKind.WILD_ENCOUNTER.item_type,
@@ -44,9 +60,10 @@ def test_schedule_wild_encounter_after_departure_extends_and_reschedules(
    assert DateValues.time_value_is_at_or_after(
       result.itinerary.departure_time,
       encounter.end_time )
+   assert _scheduled_animal_times( result.itinerary ) == before_times
 
 
-def test_set_itinerary_keeps_wild_encounter_after_departure_and_extends(
+def test_set_itinerary_keeps_wild_encounter_after_departure_without_reschedule(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 15 ) )
@@ -61,6 +78,13 @@ def test_set_itinerary_keeps_wild_encounter_after_departure_and_extends(
       guardians_talks=[],
       wild_encounters=[],
    ).success
+   assert schedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      LION_KEY,
+      confirming_schedule_item_not_on_itinerary=True,
+   ).success
+
+   before_times = _scheduled_animal_times( ItineraryCoordinator.get_itinerary() )
 
    result = ItineraryCoordinator.set_itinerary(
       date='2026-06-15',
@@ -86,3 +110,4 @@ def test_set_itinerary_keeps_wild_encounter_after_departure_and_extends(
    assert DateValues.time_value_is_at_or_after(
       result.itinerary.departure_time,
       encounter.end_time )
+   assert _scheduled_animal_times( result.itinerary ) == before_times

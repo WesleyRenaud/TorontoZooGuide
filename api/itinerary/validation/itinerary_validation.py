@@ -299,14 +299,17 @@ def validate_itinerary_for_save(
       needs_schedule_reschedule=(
          itinerary_needs_schedule_reschedule(
             saved_itinerary,
-            validated_itinerary )
+            validated_itinerary,
+            requested_departure_time=save_input.departure_time )
          if has_saved_itinerary
          else False ) )
 
 
 def itinerary_needs_schedule_reschedule(
       saved_itinerary: SavedItinerary,
-      validated_itinerary: ValidatedItinerary ) -> bool:
+      validated_itinerary: ValidatedItinerary,
+      *,
+      requested_departure_time: ScheduleTimeKey ) -> bool:
    if new_guardians_talks_overlapping_saved_schedule(
          saved_itinerary,
          validated_itinerary ):
@@ -319,7 +322,7 @@ def itinerary_needs_schedule_reschedule(
 
    if (
          saved_itinerary.arrival_time != validated_itinerary.arrival_time
-         or saved_itinerary.departure_time != validated_itinerary.departure_time ):
+         or saved_itinerary.departure_time != requested_departure_time ):
       return True
 
    saved_talk_names = {
