@@ -34,7 +34,8 @@ def schedule_itinerary_item(
       wild_encounter_coordinator: type[ WildEncounterCoordinator ],
       confirming_schedule_item_not_on_itinerary: bool,
       confirming_guardians_talk_unschedule: bool,
-      confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
+      confirming_wild_encounter_unschedule: bool,
+      confirming_guardians_talk_long_wait: bool ) -> ItinerarySaveResult:
    itinerary_context = build_itinerary_context(
       animal_coordinator=animal_coordinator,
       attraction_coordinator=attraction_coordinator,
@@ -70,7 +71,9 @@ def schedule_itinerary_item(
          schedule_item_key.name,
          itinerary_context=itinerary_context,
          confirming_guardians_talk_unschedule=(
-            confirming_guardians_talk_unschedule ) )
+            confirming_guardians_talk_unschedule ),
+         confirming_guardians_talk_long_wait=(
+            confirming_guardians_talk_long_wait ) )
 
    if isinstance( schedule_item_key, WildEncounterScheduleItemKey ):
       return schedule_wild_encounter_itinerary_item(

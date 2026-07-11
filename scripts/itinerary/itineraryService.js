@@ -86,15 +86,20 @@ export async function clearItinerary() {
    return result;
 }
 
-export async function bulkScheduleAnimals() {
+export async function bulkScheduleAnimals({
+   confirmingGuardiansTalkLongWait = false,
+} = {}) {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
-   const result = await bulkScheduleAnimalsRequest(temp);
+   const result = await bulkScheduleAnimalsRequest(temp, {
+      confirmingGuardiansTalkLongWait,
+   });
 
    if (!isItinerarySuccess(result.errorType)) {
       return {
          errorType: result.errorType,
          message: resolveItineraryErrorMessage(result.errorType),
+         issues: result.issues ?? [],
       };
    }
 

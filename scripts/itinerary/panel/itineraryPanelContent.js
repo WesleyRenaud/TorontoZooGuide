@@ -3,8 +3,11 @@ import { makeActionsBar } from './components/actionsBar.js';
 import { renderBuildOnly } from './components/buildOnly.js';
 import { makeDateCard } from './components/dateCard.js';
 import { makeDayPlannerPreview } from './components/dayPlanner.js';
+import { getItineraryPanelMountEl } from './components/popup.js';
 import { makeSection } from './components/section.js';
 import { setPendingDayPlannerActionFeedback } from './dayPlannerActionFeedback.js';
+import { showGuardiansTalkLongWaitConfirmation } from './guardiansTalkLongWaitConfirmation.js';
+import { requiresGuardiansTalkLongWaitConfirmation } from '../itineraryErrorTypes.js';
 import {
    buildItineraryPanelScheduleHandlers,
    openScheduleItemModule,
@@ -48,6 +51,8 @@ function appendDayPlannerViewWithHours(
       bulkSchedule = bulkScheduleAnimals,
       unscheduleAll = unscheduleAllItineraryItems,
       hasNotEnoughTimeIssue = hasBulkScheduleAnimalsNotEnoughTimeIssue,
+      requiresLongWaitConfirmation = requiresGuardiansTalkLongWaitConfirmation,
+      showLongWaitConfirmation = showGuardiansTalkLongWaitConfirmation,
       setActionFeedback = setPendingDayPlannerActionFeedback,
       buildEventTypes = buildSchedulableEventTypes,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
@@ -78,9 +83,7 @@ function appendDayPlannerViewWithHours(
             }, deps);
          },
          onRebuildScheduleClick: async () => {
-            try {
-               const result = await bulkSchedule();
-
+            const applyRebuildResult = async (result) => {
                if (result.errorType) {
                   await queueActionFeedback({
                      variant: 'error',
@@ -108,6 +111,36 @@ function appendDayPlannerViewWithHours(
                   variant: 'success',
                   message: APP_STRINGS.itinerary.dayPlanner.rebuildScheduleSuccess,
                });
+            };
+
+            try {
+               const result = await bulkSchedule();
+
+               if (requiresLongWaitConfirmation(result.errorType)) {
+                  showLongWaitConfirmation({
+                     issues: result.issues,
+                     mountEl: getItineraryPanelMountEl() ?? document.body,
+                     onConfirm: async () => {
+                        try {
+                           await applyRebuildResult(
+                              await bulkSchedule({
+                                 confirmingGuardiansTalkLongWait: true,
+                              })
+                           );
+                        }
+                        catch (err) {
+                           console.error('Failed to rebuild schedule:', err);
+                           await queueActionFeedback({
+                              variant: 'error',
+                              message: err?.message || genericErrorMessage,
+                           });
+                        }
+                     },
+                  });
+                  return;
+               }
+
+               await applyRebuildResult(result);
             }
             catch (err) {
                console.error('Failed to rebuild schedule:', err);

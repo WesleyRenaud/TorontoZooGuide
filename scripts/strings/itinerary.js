@@ -88,6 +88,13 @@ export const itinerary = {
       guardiansTalkRescheduleMessageWithoutTime: talkName => (
          `Adding the ${talkName} guardians talk will add it to your day and update your walking route. Your items will be rescheduled around it.`
       ),
+      guardiansTalkLongWaitTitle: 'Long Wait for Guardians Talk?',
+      guardiansTalkLongWaitMessage: (talkName, talkTime) => (
+         `The ${talkName} guardians talk at ${talkTime} is a long wait from your other scheduled items. Do you still want to keep it on your plan?`
+      ),
+      guardiansTalkLongWaitMessageWithoutTime: talkName => (
+         `The ${talkName} guardians talk is a long wait from your other scheduled items. Do you still want to keep it on your plan?`
+      ),
       updatePlanConfirm: 'Update Plan',
       wildEncounterRescheduleTitle: 'Add Wild Encounter?',
       wildEncounterRescheduleMessage: (encounterName, encounterTime) => (

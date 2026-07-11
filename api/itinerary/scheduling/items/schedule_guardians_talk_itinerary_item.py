@@ -6,6 +6,7 @@ from ..core.scheduled_occurrence import schedule_guardians_talk_for_itinerary
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
+from ...domain.itinerary import build_current_itinerary
 from ..extend_departure_for_activity import ensure_departure_covers_end_time
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ....models.guardians_talk_diff import GuardiansTalkDiff
@@ -17,6 +18,8 @@ from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ..unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
+from ...warnings.guardians_talk_long_wait_warning import build_guardians_talk_long_wait_issue_from_talks
+from ...warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_after_adding_talk
 from ...warnings.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
 
 
@@ -78,7 +81,8 @@ def schedule_guardians_talk_itinerary_item(
       talk_name: str,
       *,
       itinerary_context: dict[ str, Any ],
-      confirming_guardians_talk_unschedule: bool ) -> ItinerarySaveResult:
+      confirming_guardians_talk_unschedule: bool,
+      confirming_guardians_talk_long_wait: bool ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
 
    if saved_itinerary.is_empty():
@@ -113,6 +117,24 @@ def schedule_guardians_talk_itinerary_item(
             build_guardians_talk_unschedule_issue( [ guardians_talk_diff ] ),
          ),
          **itinerary_context )
+
+   if not confirming_guardians_talk_long_wait:
+      current_itinerary = build_current_itinerary(
+         saved_itinerary,
+         **itinerary_context )
+      isolated_talks = isolated_guardians_talks_after_adding_talk(
+         current_itinerary,
+         guardians_talk_diff )
+
+      if isolated_talks:
+         return build_save_result(
+            conn,
+            ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT,
+            reasons=(
+               build_guardians_talk_long_wait_issue_from_talks(
+                  isolated_talks ),
+            ),
+            **itinerary_context )
 
    insert_error = _insert_scheduled_guardians_talk(
       conn,

@@ -99,7 +99,8 @@ class ItineraryCoordinator():
          confirming_short_visit: bool = False,
          confirming_early_admission: bool = False,
          confirming_guardians_talk_unschedule: bool = False,
-         confirming_wild_encounter_unschedule: bool = False ) -> ItinerarySaveResult:
+         confirming_wild_encounter_unschedule: bool = False,
+         confirming_guardians_talk_long_wait: bool = False ) -> ItinerarySaveResult:
       return set_itinerary_logic.set_itinerary(
          get_connection(),
          date=date,
@@ -117,6 +118,8 @@ class ItineraryCoordinator():
          confirming_early_admission=confirming_early_admission,
          confirming_guardians_talk_unschedule=confirming_guardians_talk_unschedule,
          confirming_wild_encounter_unschedule=confirming_wild_encounter_unschedule,
+         confirming_guardians_talk_long_wait=(
+            confirming_guardians_talk_long_wait ),
          animal_coordinator=AnimalCoordinator,
          attraction_coordinator=AttractionCoordinator,
          guardians_coordinator=GuardiansCoordinator,
@@ -132,7 +135,8 @@ class ItineraryCoordinator():
          duration_minutes: DurationInput = None,
          confirming_schedule_item_not_on_itinerary: bool = False,
          confirming_guardians_talk_unschedule: bool = False,
-         confirming_wild_encounter_unschedule: bool = False ) -> ItinerarySaveResult:
+         confirming_wild_encounter_unschedule: bool = False,
+         confirming_guardians_talk_long_wait: bool = False ) -> ItinerarySaveResult:
       return schedule_itinerary_item_logic.schedule_itinerary_item(
          get_connection(),
          schedule_item_key,
@@ -150,13 +154,18 @@ class ItineraryCoordinator():
          ),
          confirming_wild_encounter_unschedule=(
             confirming_wild_encounter_unschedule
+         ),
+         confirming_guardians_talk_long_wait=(
+            confirming_guardians_talk_long_wait
          ) )
 
 
    @classmethod
    def bulk_schedule_animals(
          cls,
-         visit_date_temp: float | None = None ) -> ItinerarySaveResult:
+         visit_date_temp: float | None = None,
+         *,
+         confirming_guardians_talk_long_wait: bool = False ) -> ItinerarySaveResult:
       conn = get_connection()
       saved_itinerary = fetch_saved_itinerary( conn )
 
@@ -167,6 +176,8 @@ class ItineraryCoordinator():
          guardians_coordinator=GuardiansCoordinator,
          wild_encounter_coordinator=WildEncounterCoordinator,
          visit_date_temp=visit_date_temp,
+         confirming_guardians_talk_long_wait=(
+            confirming_guardians_talk_long_wait ),
          animals_to_schedule=animals_for_bulk_schedule(
             saved_itinerary,
             only_previously_scheduled=False ) )
