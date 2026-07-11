@@ -131,6 +131,39 @@ def prepare_schedule_window(
    return saved_itinerary, ( anchor_seconds, day_end_seconds )
 
 
+def prepare_zoo_hours_schedule_window(
+      conn: Connection,
+      saved_itinerary: SavedItinerary,
+      **itinerary_context: Any ) -> tuple[ SavedItinerary, tuple[ int, int ] ] | ItinerarySaveResult:
+   visit_date = fetch_itinerary_date( conn )
+
+   if visit_date is None:
+      return build_save_result(
+         conn,
+         ItineraryErrorType.ITINERARY_DATE_NOT_SET,
+         **itinerary_context )
+
+   zoo_hours_record = fetch_zoo_hours_record( conn, visit_date )
+   saved_itinerary = _ensure_arrival_at_zoo_open(
+      conn,
+      saved_itinerary,
+      zoo_hours_record )
+   open_time = (
+      zoo_hours_record.open_time
+      if zoo_hours_record is not None
+      else None )
+   anchor_seconds = scheduling_anchor_seconds( zoo_hours_record, open_time )
+   day_end_seconds = scheduling_day_end_seconds( zoo_hours_record, None )
+
+   if anchor_seconds is None or day_end_seconds is None:
+      return build_save_result(
+         conn,
+         ItineraryErrorType.SAVE_FAILED,
+         **itinerary_context )
+
+   return saved_itinerary, ( anchor_seconds, day_end_seconds )
+
+
 def _ensure_arrival_at_zoo_open(
       conn: Connection,
       saved_itinerary: SavedItinerary,

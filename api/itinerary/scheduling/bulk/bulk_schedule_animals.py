@@ -18,7 +18,7 @@ from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from ..items.schedule_itinerary_helpers import build_itinerary_context
 from ..items.schedule_itinerary_helpers import build_save_result
 from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
-from ..items.schedule_itinerary_helpers import prepare_schedule_window
+from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
 from .loop_schedule_unit import build_loop_schedule_units
 from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
@@ -72,10 +72,9 @@ def bulk_schedule_animals(
          **itinerary_context )
 
    saved_itinerary = fetch_saved_itinerary( conn )
-   schedule_window = prepare_schedule_window(
+   schedule_window = prepare_zoo_hours_schedule_window(
       conn,
       saved_itinerary,
-      ensure_arrival_at_zoo_open=True,
       **itinerary_context )
 
    if isinstance( schedule_window, ItinerarySaveResult ):

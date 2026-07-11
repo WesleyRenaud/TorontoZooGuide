@@ -103,11 +103,11 @@ def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_en
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
-   _set_giraffe_encounter_schedule( start_time='09:06' )
+   _set_giraffe_encounter_schedule( start_time='09:36' )
 
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
-      arrival_time='09:00',
+      arrival_time='09:30',
       departure_time='17:00',
       animals=[
          DEMOISELLE_CRANE_ITINERARY_ENTRY,
@@ -116,9 +116,8 @@ def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_en
       attractions=[],
       guardians_talks=[],
       wild_encounters=[
-         wild_encounter_key( 'Masai Giraffe', start_time='09:06' ),
+         wild_encounter_key( 'Masai Giraffe', start_time='09:36' ),
       ],
-      confirming_early_admission=True,
    ).success
 
    result = ItineraryCoordinator.bulk_schedule_animals()
@@ -135,9 +134,9 @@ def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_en
       if animal.species == 'Cheetah'
       and animal.exhibit == 'Indo-Malaya Outdoor' )
 
-   encounter_start_seconds = DateValues.time_value_in_seconds( '09:06 AM' )
-   encounter_end_seconds = DateValues.time_value_in_seconds( '09:51 AM' )
-   arrival_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
+   encounter_start_seconds = DateValues.time_value_in_seconds( '09:36 AM' )
+   encounter_end_seconds = DateValues.time_value_in_seconds( '10:21 AM' )
+   open_seconds = DateValues.time_value_in_seconds( '9:30 AM' )
    cheetah_start_seconds = DateValues.time_value_in_seconds( cheetah.start_time )
    cheetah_end_seconds = DateValues.time_value_in_seconds( cheetah.end_time )
    demoiselle_start_seconds = DateValues.time_value_in_seconds(
@@ -145,12 +144,12 @@ def test_bulk_schedule_animals_schedules_only_fitting_south_loop_in_short_pre_en
 
    assert encounter_start_seconds is not None
    assert encounter_end_seconds is not None
-   assert arrival_seconds is not None
+   assert open_seconds is not None
    assert cheetah_start_seconds is not None
    assert cheetah_end_seconds is not None
    assert demoiselle_start_seconds is not None
 
-   assert cheetah_start_seconds >= arrival_seconds
+   assert cheetah_start_seconds >= open_seconds
    assert cheetah_end_seconds == encounter_start_seconds
    assert demoiselle_start_seconds >= encounter_end_seconds
 
@@ -159,11 +158,11 @@ def test_bulk_schedule_animals_packs_prefix_and_terminal_loops_before_giraffe_en
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
-   _set_giraffe_encounter_schedule( start_time='09:08' )
+   _set_giraffe_encounter_schedule( start_time='09:38' )
 
    assert ItineraryCoordinator.set_itinerary(
       date='2026-06-20',
-      arrival_time='09:00',
+      arrival_time='09:30',
       departure_time='17:00',
       animals=[
          DEMOISELLE_CRANE_ITINERARY_ENTRY,
@@ -172,9 +171,8 @@ def test_bulk_schedule_animals_packs_prefix_and_terminal_loops_before_giraffe_en
       attractions=[],
       guardians_talks=[],
       wild_encounters=[
-         wild_encounter_key( 'Masai Giraffe', start_time='09:08' ),
+         wild_encounter_key( 'Masai Giraffe', start_time='09:38' ),
       ],
-      confirming_early_admission=True,
    ).success
 
    result = ItineraryCoordinator.bulk_schedule_animals()
@@ -190,8 +188,8 @@ def test_bulk_schedule_animals_packs_prefix_and_terminal_loops_before_giraffe_en
       if animal.species == 'Cheetah'
       and animal.exhibit == 'Indo-Malaya Outdoor' )
 
-   encounter_start_seconds = DateValues.time_value_in_seconds( '09:08 AM' )
-   arrival_seconds = DateValues.time_value_in_seconds( '9:00 AM' )
+   encounter_start_seconds = DateValues.time_value_in_seconds( '09:38 AM' )
+   open_seconds = DateValues.time_value_in_seconds( '9:30 AM' )
    demoiselle_start_seconds = DateValues.time_value_in_seconds(
       demoiselle_crane.start_time )
    demoiselle_end_seconds = DateValues.time_value_in_seconds(
@@ -199,12 +197,12 @@ def test_bulk_schedule_animals_packs_prefix_and_terminal_loops_before_giraffe_en
    cheetah_end_seconds = DateValues.time_value_in_seconds( cheetah.end_time )
 
    assert encounter_start_seconds is not None
-   assert arrival_seconds is not None
+   assert open_seconds is not None
    assert demoiselle_start_seconds is not None
    assert demoiselle_end_seconds is not None
    assert cheetah_end_seconds is not None
 
-   assert demoiselle_start_seconds >= arrival_seconds
+   assert demoiselle_start_seconds >= open_seconds
    assert demoiselle_end_seconds <= DateValues.time_value_in_seconds(
       cheetah.start_time )
    assert cheetah_end_seconds == encounter_start_seconds
