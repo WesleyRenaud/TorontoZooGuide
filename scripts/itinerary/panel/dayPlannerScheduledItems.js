@@ -17,7 +17,7 @@ import {
    getAnimalTitleLine,
 } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
-import { getWildEncounterKey } from '../selectors/wildEncounterSelector/model.js';
+import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import {
    buildAnimalViewingSpotKey,
@@ -224,7 +224,7 @@ export function buildScheduledItemRowsContext(
    ).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: 'wild_encounters',
-      scheduleItemKey: getWildEncounterKey(scheduledItem.item),
+      scheduleItemKey: getWildEncounterId(scheduledItem.item),
    }));
    const animalRows = buildScheduledAnimalRows(animals).map((scheduledItem) => ({
       ...scheduledItem,

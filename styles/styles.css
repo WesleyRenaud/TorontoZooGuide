@@ -3031,12 +3031,21 @@ nav ul li a:hover {
    text-decoration: underline;
 }
 
-.itinerary-day-scheduled-pill .itinerary-day-open-pill-menu-btn {
+.itinerary-day-scheduled-pill .itinerary-day-open-pill-menu-btn,
+.itinerary-day-event-card .itinerary-day-open-pill-menu-btn {
    width: 44px;
    height: 44px;
    border-width: 1px;
-   border-color: #5e96003d;
-   background: #ffffffcc;
+   border-color: #5e960066;
+   background: #ffffff;
+   color: var(--color-brand-primary);
+}
+
+.itinerary-day-scheduled-pill .itinerary-day-open-pill-menu-btn:hover,
+.itinerary-day-scheduled-pill .itinerary-day-open-pill-menu-btn:focus-visible,
+.itinerary-day-event-card .itinerary-day-open-pill-menu-btn:hover,
+.itinerary-day-event-card .itinerary-day-open-pill-menu-btn:focus-visible {
+   background: #e4e4e4;
 }
 
 .itinerary-day-scheduled-pill--grouped .itinerary-day-open-pill-menu-btn {
@@ -3044,11 +3053,13 @@ nav ul li a:hover {
    height: 40px;
 }
 
-.itinerary-day-scheduled-pill .itinerary-day-open-pill-menu-dots {
+.itinerary-day-scheduled-pill .itinerary-day-open-pill-menu-dots,
+.itinerary-day-event-card .itinerary-day-open-pill-menu-dots {
    gap: 4px;
 }
 
-.itinerary-day-scheduled-pill .itinerary-day-open-pill-menu-dot {
+.itinerary-day-scheduled-pill .itinerary-day-open-pill-menu-dot,
+.itinerary-day-event-card .itinerary-day-open-pill-menu-dot {
    width: 4px;
    height: 4px;
 }
@@ -3098,6 +3109,27 @@ nav ul li a:hover {
    box-sizing: border-box;
    padding: 18px 22px;
    align-items: flex-start;
+}
+
+.itin-panel-item.itinerary-day-event-card--with-menu {
+   position: relative;
+   padding-right: 78px;
+}
+
+.itinerary-day-event:has(.itinerary-day-event-card--menu-open) {
+   z-index: 4;
+   overflow: visible;
+}
+
+.itinerary-day-event-card--menu-open {
+   overflow: visible;
+}
+
+.itinerary-day-event-card .itinerary-day-open-pill-menu {
+   position: absolute;
+   top: 12px;
+   right: 12px;
+   z-index: 2;
 }
 
 .itinerary-day-event-card .itin-panel-item-left {

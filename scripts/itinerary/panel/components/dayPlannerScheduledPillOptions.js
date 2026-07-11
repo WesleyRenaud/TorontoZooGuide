@@ -1,5 +1,6 @@
 import { sortScheduledItemsForGroupDisplay } from './scheduledPillOverlap.js';
 import {
+   isFixedTimeScheduleItemKind,
    isScheduleItemModuleItemType,
    ScheduleItemKind,
 } from '../../../shared/enums/scheduleItemKind.js';
@@ -27,6 +28,7 @@ function buildScheduledPillMenuItems(
    if (
       typeof scheduleHandlers.onUnscheduleItineraryItem === 'function'
       && scheduleItemKind !== ScheduleItemKind.EVENT.kind
+      && !isFixedTimeScheduleItemKind(scheduleItemKind)
    ) {
       if (
          isScheduleItemModuleItemType(scheduleItemKind)
