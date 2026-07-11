@@ -109,6 +109,19 @@ class WildEncounterScheduleItemKey:
          end_time=normalized_end_time )
 
 
+   def __eq__( self, other: Any ) -> bool:
+      if not isinstance( other, WildEncounterScheduleItemKey ):
+         return NotImplemented
+
+      return (
+         self.name == other.name
+         and self.start_time == other.start_time )
+
+
+   def __hash__( self ) -> int:
+      return hash( ( self.name, self.start_time ) )
+
+
    def to_wire( self ) -> str:
       parts = [ self.name.strip(), str( self.start_time ).strip() ]
 

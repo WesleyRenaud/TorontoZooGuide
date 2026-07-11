@@ -6,7 +6,9 @@ from api.itinerary.data_access.find_saved_itinerary_schedule_item_row import fin
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
 from api.itinerary.data_access.itinerary_attraction_record import ItineraryAttractionRecord
 from api.itinerary.data_access.itinerary_event_record import ItineraryEventRecord
+from api.itinerary.data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
 from api.itinerary.data_access.saved_itinerary import SavedItinerary
+from api.itinerary.wild_encounter_item_key import WildEncounterScheduleItemKey
 from api.shared.enums import ItineraryEventType
 
 
@@ -91,3 +93,44 @@ def test_find_saved_itinerary_schedule_item_row_finds_event_row() -> None:
 
    assert row is not None
    assert row.event_type == ItineraryEventType.LUNCH
+
+
+def test_find_saved_itinerary_schedule_item_row_matches_wild_encounter_by_name_and_start() -> None:
+   saved_itinerary = SavedItinerary(
+      date_value='2026-06-15',
+      arrival_time=None,
+      departure_time=None,
+      animal_rows=(),
+      attraction_rows=(),
+      guardians_talk_rows=(),
+      wild_encounter_rows=(
+         ItineraryWildEncounterRecord(
+            wild_encounter='African Rainforest',
+            start_time='3:30 PM',
+            end_time='4:15 PM',
+            is_deleted=False,
+         ),
+      ),
+   )
+
+   row = find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      WildEncounterScheduleItemKey(
+         name='African Rainforest',
+         start_time='15:30',
+      ),
+   )
+
+   assert row is not None
+   assert row.wild_encounter == 'African Rainforest'
+   assert row.end_time == '4:15 PM'
+
+   missing = find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      WildEncounterScheduleItemKey(
+         name='African Rainforest',
+         start_time='14:00',
+      ),
+   )
+
+   assert missing is None

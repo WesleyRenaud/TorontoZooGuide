@@ -7,6 +7,8 @@ class ItineraryErrorType( str, Enum ):
    TIME_OUT_OF_BOUNDS = 'timeOutOfBounds'
    TIME_ORDER_INVALID = 'timeOrderInvalid'
    SAVE_FAILED = 'saveFailed'
+   ACTIVITY_NOT_ON_DAY_SCHEDULE = 'activityNotOnDaySchedule'
+   SCHEDULE_WINDOW_UNAVAILABLE = 'scheduleWindowUnavailable'
    ARRIVAL_DEPARTURE_TOO_CLOSE = 'arrivalDepartureTooClose'
    EARLY_ADMISSION_REQUIRES_MEMBERSHIP = 'earlyAdmissionRequiresMembership'
    NO_AVAILABLE_SLOT = 'noAvailableSlot'

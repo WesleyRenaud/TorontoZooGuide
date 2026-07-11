@@ -93,6 +93,14 @@ export function resolveItineraryErrorMessage(
       return strings.timeOutOfBounds;
    }
 
+   if (errorType === itineraryErrorTypes?.ACTIVITY_NOT_ON_DAY_SCHEDULE) {
+      return strings.activityNotOnDaySchedule;
+   }
+
+   if (errorType === itineraryErrorTypes?.SCHEDULE_WINDOW_UNAVAILABLE) {
+      return strings.scheduleWindowUnavailable;
+   }
+
    if (errorType === itineraryErrorTypes?.BULK_SCHEDULE_ANIMALS_ALREADY_SCHEDULED) {
       return strings.bulkScheduleAnimalsAlreadyScheduled;
    }

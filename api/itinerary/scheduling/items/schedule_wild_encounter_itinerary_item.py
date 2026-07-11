@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from ..core.scheduled_occurrence import schedule_wild_encounter_for_itinerary
+from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_wild_encounter
@@ -24,10 +25,9 @@ from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEnco
 def _saved_wild_encounter_exists(
       saved_itinerary: SavedItinerary,
       wild_encounter_key: WildEncounterScheduleItemKey ) -> bool:
-   return any(
-      row.wild_encounter == wild_encounter_key.name and not row.is_deleted
-      for row in saved_itinerary.wild_encounter_rows
-   )
+   return find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      wild_encounter_key ) is not None
 
 
 def _wild_encounter_diff_for_saved_itinerary_day(
@@ -103,7 +103,7 @@ def schedule_wild_encounter_itinerary_item(
    if wild_encounter_diff.is_deleted:
       return build_save_result(
          conn,
-         ItineraryErrorType.SAVE_FAILED,
+         ItineraryErrorType.ACTIVITY_NOT_ON_DAY_SCHEDULE,
          **itinerary_context )
 
    has_overlap = saved_itinerary_has_overlap_with_wild_encounters(

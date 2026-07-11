@@ -33,3 +33,17 @@ test('resolveItineraryErrorMessage maps unscheduleAllNothingScheduled', () => {
       /no items to unschedule/i
    );
 });
+
+test('resolveItineraryErrorMessage maps activityNotOnDaySchedule', () => {
+   assert.match(
+      resolveItineraryErrorMessage('activityNotOnDaySchedule'),
+      /not scheduled on your visit day/i
+   );
+});
+
+test('resolveItineraryErrorMessage maps scheduleWindowUnavailable', () => {
+   assert.match(
+      resolveItineraryErrorMessage('scheduleWindowUnavailable'),
+      /Operating hours are unavailable/i
+   );
+});
