@@ -6,6 +6,7 @@ from ..core.scheduled_occurrence import schedule_wild_encounter_for_itinerary
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_wild_encounter
+from ..extend_departure_for_activity import ensure_departure_covers_end_time
 from ....models.wild_encounter_diff import WildEncounterDiff
 from ..reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
 from ...results.itinerary_save_result import ItinerarySaveResult
@@ -127,7 +128,14 @@ def schedule_wild_encounter_itinerary_item(
    if insert_error is not None:
       return insert_error
 
-   if has_overlap and confirming_wild_encounter_unschedule:
+   departure_extended = ensure_departure_covers_end_time(
+      conn,
+      end_time=wild_encounter_diff.end_time,
+      current_departure_time=saved_itinerary.departure_time )
+
+   if (
+         ( has_overlap and confirming_wild_encounter_unschedule )
+         or departure_extended ):
       return reschedule_itinerary_items_after_fixed_time_activity_add(
          conn,
          saved_itinerary_before_clear=saved_itinerary,

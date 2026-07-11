@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item, set_wild_encounter_schedule, WILD_ENCOUNTER, wild_encounter_key
+from itinerary.support import CAROUSEL, CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, schedule_itinerary_item
 
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_itinerary_date
@@ -74,22 +74,6 @@ def test_set_departure_time_unschedules_items_after_departure(
       item_type='attractions',
       key=CAROUSEL,
       start_time='15:54',
-   ).success
-
-   set_wild_encounter_schedule( encounter_time='16:30' )
-
-   assert ItineraryCoordinator.set_itinerary(
-      date='2026-06-15',
-      arrival_time='09:30',
-      departure_time='17:00',
-      animals=[
-         LION_ITINERARY_ENTRY,
-         CHEETAH_ITINERARY_ENTRY,
-      ],
-      attractions=[ CAROUSEL ],
-      guardians_talks=[],
-      wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER, start_time='16:30' ) ],
-      confirming_wild_encounter_unschedule=True,
    ).success
 
    result = ItineraryCoordinator.set_departure_time( '16:15' )

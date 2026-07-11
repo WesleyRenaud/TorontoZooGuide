@@ -6,6 +6,7 @@ from ..core.scheduled_occurrence import schedule_guardians_talk_for_itinerary
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
+from ..extend_departure_for_activity import ensure_departure_covers_end_time
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ....models.guardians_talk_diff import GuardiansTalkDiff
 from ..reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
@@ -122,7 +123,14 @@ def schedule_guardians_talk_itinerary_item(
    if insert_error is not None:
       return insert_error
 
-   if has_overlap and confirming_guardians_talk_unschedule:
+   departure_extended = ensure_departure_covers_end_time(
+      conn,
+      end_time=guardians_talk_diff.end_time,
+      current_departure_time=saved_itinerary.departure_time )
+
+   if (
+         ( has_overlap and confirming_guardians_talk_unschedule )
+         or departure_extended ):
       return reschedule_itinerary_items_after_fixed_time_activity_add(
          conn,
          saved_itinerary_before_clear=saved_itinerary,
