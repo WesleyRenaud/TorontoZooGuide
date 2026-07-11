@@ -3,6 +3,7 @@ from __future__ import annotations
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from .bulk_schedule_arrival_adjustment import adjust_arrival_after_bulk_schedule
+from .bulk_schedule_departure import ensure_departure_after_bulk_schedule
 from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
 from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
 from .bulk_schedule_start_state import BulkScheduleStartState
@@ -145,6 +146,12 @@ def bulk_schedule_animals(
          build_bulk_schedule_animals_not_enough_time_issue(
             remaining_animals ),
       )
+   else:
+      ensure_departure_after_bulk_schedule(
+         conn,
+         build_current_itinerary(
+            fetch_saved_itinerary( conn ),
+            **itinerary_context ) )
 
    persist_itinerary_walk_route( conn, **itinerary_context )
 

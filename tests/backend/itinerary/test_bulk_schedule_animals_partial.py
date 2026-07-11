@@ -68,6 +68,35 @@ def test_bulk_schedule_animals_returns_issue_when_day_runs_out(
    assert lion_row.end_time is None
 
 
+def test_bulk_schedule_animals_does_not_set_departure_when_not_enough_time(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='18:50',
+      animals=[
+         LION_ITINERARY_ENTRY,
+         PENGUIN_ITINERARY_ENTRY,
+         CHEETAH_INDO_MALAYA_ITINERARY_ENTRY,
+      ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+
+   assert ItineraryCoordinator.get_itinerary().departure_time is None
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   assert (
+      result.reasons[ 0 ].code
+      == ItineraryErrorType.BULK_SCHEDULE_ANIMALS_NOT_ENOUGH_TIME )
+   assert result.itinerary.departure_time is None
+
+
 def test_bulk_schedule_animals_persists_partial_schedule_after_connection_close(
       db: DbControllers,
       db_path: Path,

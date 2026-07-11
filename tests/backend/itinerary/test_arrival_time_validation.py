@@ -136,7 +136,9 @@ def test_set_arrival_time_unschedules_items_before_arrival(
       confirming_wild_encounter_unschedule=True,
    ).success
 
-   result = ItineraryCoordinator.set_arrival_time( '10:15' )
+   result = ItineraryCoordinator.set_arrival_time(
+      '10:15',
+      confirming_short_visit=True )
    itinerary = ItineraryCoordinator.get_itinerary()
 
    assert result.success

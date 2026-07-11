@@ -108,3 +108,13 @@ def test_bulk_schedule_packs_non_pinned_loops_before_guardians_talk_and_shifts_a
       for animal in scheduled_animals )
 
    assert earliest_start_seconds == adjusted_arrival_seconds
+
+   latest_end_seconds = max(
+      [
+         DateValues.time_value_in_seconds( animal.end_time )
+         for animal in scheduled_animals
+      ]
+      + [ DateValues.time_value_in_seconds( talk.end_time ) ]
+   )
+   assert DateValues.time_value_in_seconds(
+      result.itinerary.departure_time ) == latest_end_seconds
