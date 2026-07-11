@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from dataclasses import replace
 
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
@@ -354,17 +355,70 @@ def _drain_ready_pinned_loop_units(
             window_end_seconds=schedule_window.end_seconds,
             cursor_seconds=schedule_cursor_seconds )
 
-         if unscheduled_animals:
+         if not unscheduled_animals:
+            remove_matching_prepared_loop_unit( remaining_units, prepared_unit )
+            schedule_cursor_seconds = new_cursor_seconds
+            made_progress = True
             continue
 
-         remove_matching_prepared_loop_unit( remaining_units, prepared_unit )
-         schedule_cursor_seconds = new_cursor_seconds
-         made_progress = True
+         if _keep_partial_pinned_loop_progress(
+               conn,
+               remaining_units,
+               prepared_unit,
+               unscheduled_animals=unscheduled_animals,
+               pinned_earliest_start_cache=pinned_earliest_start_cache,
+               loop_pins=schedule_window.loop_pins ):
+            schedule_cursor_seconds = max(
+               schedule_cursor_seconds,
+               new_cursor_seconds )
+            made_progress = True
+            break
 
       if not made_progress:
          break
 
    return schedule_cursor_seconds
+
+
+def _keep_partial_pinned_loop_progress(
+      conn: Connection,
+      remaining_units: list[ PreparedLoopScheduleUnit ],
+      prepared_unit: PreparedLoopScheduleUnit,
+      *,
+      unscheduled_animals: list[ ItineraryAnimalRecord ],
+      pinned_earliest_start_cache: dict[ int, int | None ],
+      loop_pins: list[ LoopSchedulePin ],
+   ) -> bool:
+   original_animals = prepared_unit.unit.animals
+
+   if len( unscheduled_animals ) >= len( original_animals ):
+      return False
+
+   durations = fetch_viewing_durations( conn, unscheduled_animals )
+
+   if durations is None:
+      return False
+
+   replacement = PreparedLoopScheduleUnit(
+      unit=replace(
+         prepared_unit.unit,
+         animals=tuple( unscheduled_animals ) ),
+      duration_seconds=sum( durations ) )
+
+   for index, candidate in enumerate( remaining_units ):
+      if candidate is not prepared_unit:
+         continue
+
+      remaining_units[ index ] = replacement
+      pinned_earliest_start_cache.pop( id( prepared_unit ), None )
+      pinned_earliest_start_cache[ id( replacement ) ] = (
+         pinned_loop_earliest_start_seconds(
+            conn,
+            replacement,
+            loop_pins ) )
+      return True
+
+   return False
 
 
 def _pinned_loop_ids_in_window(

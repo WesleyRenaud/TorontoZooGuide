@@ -5,6 +5,7 @@ from ....attractions.coordinators.attraction_coordinator import AttractionCoordi
 from .bulk_schedule_arrival_adjustment import adjust_arrival_after_bulk_schedule
 from .bulk_schedule_departure import ensure_departure_after_bulk_schedule
 from .bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
+from .bulk_schedule_loop_pins import keep_completable_loop_pins
 from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
 from .bulk_schedule_start_state import BulkScheduleStartState
 from .bulk_schedule_walk_order import representative_walk_node_id
@@ -113,11 +114,13 @@ def bulk_schedule_animals(
       conn,
       itinerary,
       fixed_time_stops )
+   schedule_windows = partition_itinerary_schedule_windows(
+      start_state.schedule_anchor_seconds,
+      day_end_seconds,
+      boundary_stops )
+   loop_pins = keep_completable_loop_pins( schedule_windows, loop_pins )
    schedule_windows = attach_loop_pins_to_schedule_windows(
-      partition_itinerary_schedule_windows(
-         start_state.schedule_anchor_seconds,
-         day_end_seconds,
-         boundary_stops ),
+      schedule_windows,
       loop_pins )
 
    if not loop_units:
