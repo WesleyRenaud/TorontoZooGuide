@@ -41,7 +41,7 @@ def _set_bactrian_camels_schedule( *, encounter_time: str = '15:30' ) -> None:
    )
 
 
-def test_bulk_schedule_packs_animals_against_unpinned_afternoon_encounter(
+def test_schedule_unpinned_afternoon_encounter_does_not_bulk_reschedule(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -60,24 +60,43 @@ def test_bulk_schedule_packs_animals_against_unpinned_afternoon_encounter(
       wild_encounters=[],
    ).success
 
-   assert ItineraryCoordinator.bulk_schedule_animals().success
+   bulk_result = ItineraryCoordinator.bulk_schedule_animals()
 
-   result = schedule_itinerary_item(
+   assert bulk_result.success
+
+   morning_animal_times = [
+      ( animal.species, animal.start_time, animal.end_time )
+      for animal in bulk_result.itinerary.animals
+      if animal.start_time is not None and animal.end_time is not None
+   ]
+
+   schedule_result = schedule_itinerary_item(
       ScheduleItemKind.WILD_ENCOUNTER.item_type,
       wild_encounter_wire( BACTRIAN_CAMELS, start_time='15:30' ),
    )
 
-   assert result.success
-   assert result.status == ItineraryErrorType.SUCCESS
-   assert result.itinerary is not None
+   assert schedule_result.success
+   assert schedule_result.status == ItineraryErrorType.SUCCESS
+   assert schedule_result.itinerary is not None
+   assert schedule_result.itinerary.departure_time == '4:00 PM'
+   assert [
+      ( animal.species, animal.start_time, animal.end_time )
+      for animal in schedule_result.itinerary.animals
+      if animal.start_time is not None and animal.end_time is not None
+   ] == morning_animal_times
+
+   rebuild_result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert rebuild_result.success
+   assert rebuild_result.itinerary is not None
 
    encounter = next(
       saved_encounter
-      for saved_encounter in result.itinerary.wild_encounters
+      for saved_encounter in rebuild_result.itinerary.wild_encounters
       if saved_encounter.name == BACTRIAN_CAMELS )
    scheduled_animals = [
       animal
-      for animal in result.itinerary.animals
+      for animal in rebuild_result.itinerary.animals
       if animal.start_time is not None and animal.end_time is not None
    ]
 
@@ -93,7 +112,7 @@ def test_bulk_schedule_packs_animals_against_unpinned_afternoon_encounter(
       DateValues.time_value_in_seconds( animal.start_time )
       for animal in scheduled_animals )
    arrival_seconds = DateValues.time_value_in_seconds(
-      result.itinerary.arrival_time )
+      rebuild_result.itinerary.arrival_time )
 
    assert encounter_start_seconds is not None
    assert latest_animal_end_seconds is not None
