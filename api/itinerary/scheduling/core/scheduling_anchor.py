@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ....shared.calendar_dates import DateValues
 from ....types import ScheduleTimeKey
+from ...validation.itinerary_arrival_time_validation import earliest_arrival_time
 from ....zoo_hours.data_access.zoo_hours_record import ZooHoursRecord
 
 
@@ -14,7 +15,8 @@ def scheduling_anchor_seconds(
    if zoo_hours_record is None:
       return None
 
-   return DateValues.time_value_in_seconds( zoo_hours_record.open_time )
+   return DateValues.time_value_in_seconds(
+      earliest_arrival_time( zoo_hours_record ) )
 
 
 def scheduling_day_end_seconds(
