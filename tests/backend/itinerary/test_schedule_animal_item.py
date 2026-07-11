@@ -9,7 +9,7 @@ from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinato
 from conftest import DbControllers
 
 
-def test_schedule_itinerary_animal_uses_open_time_without_arrival(
+def test_schedule_itinerary_animal_uses_early_admission_without_arrival(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
    freeze_database_today( date( 2026, 6, 20 ) )
@@ -29,8 +29,32 @@ def test_schedule_itinerary_animal_uses_open_time_without_arrival(
 
    assert result.success
    assert len( result.itinerary.animals ) == 1
-   assert result.itinerary.animals[ 0 ].start_time == '9:30 AM'
-   assert result.itinerary.animals[ 0 ].end_time == '9:38 AM'
+   assert result.itinerary.animals[ 0 ].start_time == '9:00 AM'
+   assert result.itinerary.animals[ 0 ].end_time == '9:08 AM'
+
+
+def test_schedule_itinerary_animal_accepts_explicit_early_admission_start(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+      confirming_early_admission=True,
+   ).success
+
+   result = schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='09:00' )
+
+   assert result.success
+   assert result.itinerary.animals[ 0 ].start_time == '9:00 AM'
+   assert result.itinerary.animals[ 0 ].end_time == '9:08 AM'
 
 
 def test_schedule_itinerary_animal_uses_arrival_time_when_set(
