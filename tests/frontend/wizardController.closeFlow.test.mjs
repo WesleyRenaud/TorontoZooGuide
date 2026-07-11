@@ -221,4 +221,75 @@ test.describe('openItineraryWizard close flow', () => {
       assert.equal(finishCalls.length, 1);
       assert.deepEqual(finishCalls[0].wildEncounters, ['Great Barrier Reef']);
    });
+
+   test('cancelling finish restores selection storage so close does not prompt to save', async () => {
+      const mountEl = createDomNode('div', 'wizard-mount');
+      const popupConfigs = [];
+      const stepShows = [];
+      let finishHandler = null;
+      let closeHandler = null;
+      let wizard = null;
+      let selectionSnapshot = [{ name: "Grevy's Zebra" }];
+
+      await openItineraryWizard({
+         mountEl,
+         startAt: 'guardiansTalks',
+         deps: {
+            loadItinerary: async () => ({
+               date: '2026-06-15',
+               animals: [],
+               attractions: [],
+               guardiansTalks: [{ name: "Grevy's Zebra" }],
+               wildEncounters: [],
+            }),
+            resolveEarliestVisitDate: async () => makeNoonDate(2026, 5, 15),
+            createWizardState: (existing) => {
+               wizard = createItineraryWizardState(existing);
+               return wizard;
+            },
+            createDateStepController: () => ({ show() {} }),
+            selectionStepConfigs: [
+               {
+                  stepKey: 'guardiansTalks',
+                  selectionKey: 'guardiansTalks',
+                  factory: ({ onFinish, onClose }) => {
+                     finishHandler = onFinish;
+                     closeHandler = onClose;
+                     return {
+                        show() {
+                           stepShows.push('guardiansTalks');
+                           selectionSnapshot = [...wizard.state.guardiansTalks];
+                        },
+                        getSelectionSnapshot: async () => selectionSnapshot,
+                        shouldSkipClosingSelectionSync: () => false,
+                     };
+                  },
+               },
+            ],
+            finalizeWizard: async () => ({ cancelled: true }),
+            showConfirmPopup: (config) => {
+               popupConfigs.push(config);
+            },
+            syncAnimalDraft: () => {},
+         },
+      });
+
+      selectionSnapshot = [
+         { name: "Grevy's Zebra" },
+         { name: 'Slender-Tailed Meerkat' },
+      ];
+      finishHandler?.(selectionSnapshot);
+
+      await new Promise((resolve) => {
+         setTimeout(resolve, 0);
+      });
+
+      assert.equal(wizard.hasUnsavedChanges(), false);
+      assert.ok(stepShows.length >= 2);
+
+      await closeHandler?.();
+
+      assert.equal(popupConfigs.length, 0);
+      assert.equal(mountEl.children.length, 0);
+   });
 });

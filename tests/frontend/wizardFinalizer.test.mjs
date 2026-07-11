@@ -105,7 +105,7 @@ test.describe('finalizeItineraryWizard', () => {
       assert.equal(popupCalls[0].message, 'Save failed');
    });
 
-   test('returns null when save is cancelled from a confirmation', async () => {
+   test('returns cancelled when save is cancelled from a confirmation', async () => {
       const mountEl = createDomNode('div', 'wizard-mount');
       const popupCalls = [];
 
@@ -127,7 +127,7 @@ test.describe('finalizeItineraryWizard', () => {
          }
       );
 
-      assert.equal(result, null);
+      assert.deepEqual(result, { cancelled: true });
       assert.equal(popupCalls.length, 0);
    });
 

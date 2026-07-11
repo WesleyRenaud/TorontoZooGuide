@@ -1,5 +1,6 @@
 import { normalizeItineraryDraft } from '../draftStorage.js';
 import { syncItineraryAnimalDraftFromItinerary } from '../draftStorage.js';
+import { createItineraryConfirmationCancelledResult } from '../itineraryConfirmationResult.js';
 import { saveItinerary } from '../itineraryServiceSave.js';
 import { showItineraryNoticePopup } from '../panel/components/noticePopup.js';
 import { showSaveIssuesProceedConfirmation } from './saveIssuesProceedConfirmation.js';
@@ -86,7 +87,7 @@ export async function finalizeItineraryWizard(
    }
 
    if (!savedItinerary) {
-      return null;
+      return createItineraryConfirmationCancelledResult();
    }
 
    syncAnimalDraft(savedItinerary);
