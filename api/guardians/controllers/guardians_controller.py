@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.guardians_coordinator import GuardiansCoordinator
 from ...json_handler import JsonRequestHandler
+from ..scheduling.collapse_guardians_talks_for_map import collapse_guardians_talks_for_map
 
 
 class GuardiansController():
@@ -9,13 +10,14 @@ class GuardiansController():
    def get_guardians_talks( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      guardians_talks = GuardiansCoordinator.get_guardians_talk_schedule(
-         month=data.get( 'month' ),
-         day=data.get( 'day' ),
-         year=data.get( 'year' ) )
+      guardians_talks = collapse_guardians_talks_for_map(
+         GuardiansCoordinator.get_guardians_talk_schedule(
+            month=data.get( 'month' ),
+            day=data.get( 'day' ),
+            year=data.get( 'year' ) ) )
 
       handler._write_json( {
-         'guardians_talks': [ guardians_talk.to_dict() for guardians_talk in guardians_talks ],
+         'guardians_talks': guardians_talks,
       } )
 
 

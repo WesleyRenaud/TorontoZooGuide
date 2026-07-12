@@ -1,5 +1,6 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createTooltipCard } from './cardFactory.js';
+import { formatMapOccurrenceTimes } from '../formatMapOccurrenceTimes.js';
 import { normalizeStoredLink } from '../../itinerary/selectors/base/storedSelection.js';
 import { APP_STRINGS } from '../../strings.js';
 
@@ -10,6 +11,7 @@ export const wildEncounterRenderer = {
       const name = w.name || APP_STRINGS.entityLabels.wildEncounter;
       const normalizedName = normalizeAssetKey(name);
       const link = normalizeStoredLink(w.link);
+      const times = formatMapOccurrenceTimes(w);
 
       return createTooltipCard({
          index,
@@ -28,7 +30,7 @@ export const wildEncounterRenderer = {
          },
          details: [
             w.meeting_spot || '',
-            w.start_time || '',
+            times ? APP_STRINGS.tooltips.times(times) : '',
          ],
       });
    },

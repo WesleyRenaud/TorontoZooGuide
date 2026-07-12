@@ -40,5 +40,6 @@ export const tooltips = {
    ),
    seasonalSchedule: value => `Seasonal Schedule: ${value}`,
    startTime: value => `Start Time: ${value}`,
+   times: value => `Times: ${value}`,
    menu: 'MENU',
 };
