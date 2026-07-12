@@ -1,5 +1,6 @@
 import { endGuardiansTalkSchedule } from '../../../api/consoleOperationsApi.js';
 import { createEndRecurringScheduleFormController } from '../../forms/endRecurringScheduleFormController.js';
+import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
 import { resetFormFields } from '../../helpers/controllerUtils.js';
 import { populateGuardiansTalkDropdown } from '../../options/dropdowns.js';
 import { APP_STRINGS } from '../../../strings.js';
@@ -7,12 +8,18 @@ import { APP_STRINGS } from '../../../strings.js';
 export function createEndGuardiansTalkScheduleController({
    talkNameEl,
    locationEl,
+   timesEl,
    endDateEl,
    talkLocationFilterController = null,
+   scheduleTimesFilterController = null,
    ...controllerOptions
 } = {}) {
    function getFieldValue(fieldEl) {
       return fieldEl?.value.trim() ?? '';
+   }
+
+   function getSelectedTimes() {
+      return getSelectedScheduleTimes(timesEl);
    }
 
    function resetTalkDropdown() {
@@ -29,13 +36,17 @@ export function createEndGuardiansTalkScheduleController({
       }
    }
 
-   function validateSelection({ talk, location }) {
+   function validateSelection({ talk, location, times }) {
       if (!location) {
          return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.location);
       }
 
       if (!talk) {
          return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkName);
+      }
+
+      if (!times.length) {
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkTimes);
       }
 
       return null;
@@ -45,26 +56,31 @@ export function createEndGuardiansTalkScheduleController({
       if (talkLocationFilterController?.refreshLocations) {
          await talkLocationFilterController.refreshLocations();
       }
+
+      await scheduleTimesFilterController?.refresh?.();
    }
 
-   async function submitEndSchedule({ talk, location, endDate }) {
+   async function submitEndSchedule({ talk, location, times, endDate }) {
       return endGuardiansTalkSchedule({
          talk,
          location,
+         times,
          endDate: endDate || null,
       });
    }
 
-   return createEndRecurringScheduleFormController({
+   const controller = createEndRecurringScheduleFormController({
       ...controllerOptions,
       endDateEl,
       resetSelection: () => {
          resetFormFields([locationEl]);
          resetTalkDropdown();
+         scheduleTimesFilterController?.clear?.();
       },
       getSelectionValues: () => ({
          talk: getFieldValue(talkNameEl),
          location: getFieldValue(locationEl),
+         times: getSelectedTimes(),
       }),
       validateSelection,
       prepareForm,
@@ -72,4 +88,15 @@ export function createEndGuardiansTalkScheduleController({
       submitEndSchedule,
       successMessage: result => APP_STRINGS.status.guardiansTalkScheduleEnded(result),
    });
+
+   locationEl?.addEventListener('change', async () => {
+      scheduleTimesFilterController?.clear?.();
+   });
+
+   talkNameEl?.addEventListener('change', async () => {
+      scheduleTimesFilterController?.clear?.();
+      await scheduleTimesFilterController?.refresh?.();
+   });
+
+   return controller;
 }

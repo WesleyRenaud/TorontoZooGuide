@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, parsed_schedule_item, schedule_itinerary_item
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -31,13 +32,7 @@ def _set_talk_schedule(
       location=location,
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time=talk_time,
-      tuesday_time=talk_time,
-      wednesday_time=talk_time,
-      thursday_time=talk_time,
-      friday_time=talk_time,
-      saturday_time=talk_time,
-      sunday_time=talk_time,
+      schedule_rows=wire_schedule_rows( talk_time, monday=True, tuesday=True, wednesday=True, thursday=True, friday=True, saturday=True, sunday=True ),
       message=None,
    )
 
@@ -119,7 +114,7 @@ def test_set_itinerary_warns_when_talk_has_no_matching_animal(
       departure_time='17:00',
       animals=[],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ) ],
       wild_encounters=[],
    )
 
@@ -134,7 +129,7 @@ def test_set_itinerary_warns_when_talk_has_no_matching_animal(
       departure_time='17:00',
       animals=[],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ) ],
       wild_encounters=[],
       confirming_guardians_talk_without_animal=True,
       confirming_guardians_talk_long_wait=True,
@@ -161,7 +156,7 @@ def test_set_itinerary_skips_without_animal_warning_when_animal_matches(
       departure_time='17:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( LION_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( LION_TALK, start_time='12:00' ) ],
       wild_encounters=[],
       confirming_guardians_talk_long_wait=True,
    )
@@ -196,7 +191,7 @@ def test_schedule_talk_warns_when_no_matching_animal_on_itinerary(
 
    result = schedule_itinerary_item(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
-      ZEBRA_TALK,
+      f'{ ZEBRA_TALK }||12:00',
    )
 
    assert not result.success
@@ -206,7 +201,7 @@ def test_schedule_talk_warns_when_no_matching_animal_on_itinerary(
    confirmed = ItineraryCoordinator.schedule_itinerary_item(
       parsed_schedule_item(
          ScheduleItemKind.GUARDIANS_TALK.item_type,
-         ZEBRA_TALK ),
+         f'{ ZEBRA_TALK }||12:00' ),
       confirming_guardians_talk_without_animal=True,
       confirming_guardians_talk_long_wait=True,
    )

@@ -135,7 +135,7 @@ test.describe('itinerary day planner preview scheduled', () => {
       assert.deepEqual(unscheduleCalls, []);
       assert.deepEqual(removeCalls, [{
          itemType: 'guardians_talks',
-         key: 'Amur Tiger',
+         key: 'Amur Tiger||1:30 PM||2:00 PM',
       }]);
    });
 

@@ -42,9 +42,12 @@ def _attraction_row_matches_schedule_item_key(
 def _guardians_talk_row_matches_schedule_item_key(
       talk_row: ItineraryGuardiansTalkRecord,
       schedule_item_key: GuardiansTalkScheduleItemKey ) -> bool:
-   return (
-      not talk_row.is_deleted
-      and talk_row.talk_name == schedule_item_key.name )
+   if talk_row.is_deleted:
+      return False
+
+   row_key = GuardiansTalkScheduleItemKey.from_row( talk_row )
+
+   return row_key == schedule_item_key
 
 
 def _wild_encounter_row_matches_schedule_item_key(

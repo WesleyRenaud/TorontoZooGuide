@@ -1,4 +1,5 @@
 import { cancelGuardiansTalkOccurrence } from '../../../api/consoleOperationsApi.js';
+import { getSelectedScheduleTimes } from '../../forms/scheduleTimesCheckboxField.js';
 import {
    hideConsolePanel,
    resetFormFields,
@@ -16,23 +17,24 @@ export function createCancelGuardiansTalkOccurrenceController({
    talkNameEl,
    locationEl,
    dateEl,
-   timeEl,
+   timesEl,
    activatePanel,
    talkLocationFilterController = null,
    occurrenceFilterController = null,
 } = {}) {
-   const formFieldEls = [locationEl, talkNameEl, dateEl, timeEl];
+   const formFieldEls = [locationEl, dateEl];
 
    function getFieldValue(fieldEl) {
       return fieldEl?.value.trim() ?? '';
    }
 
-   function resetOccurrenceDropdowns() {
+   function getSelectedTimes() {
+      return getSelectedScheduleTimes(timesEl);
+   }
+
+   function resetOccurrenceFields() {
       if (occurrenceFilterController?.clear) {
          occurrenceFilterController.clear();
-      }
-      else {
-         resetFormFields([dateEl, timeEl]);
       }
    }
 
@@ -47,7 +49,7 @@ export function createCancelGuardiansTalkOccurrenceController({
          talkNameEl.value = '';
       }
 
-      resetOccurrenceDropdowns();
+      resetOccurrenceFields();
    }
 
    function resetForm() {
@@ -60,7 +62,7 @@ export function createCancelGuardiansTalkOccurrenceController({
          talk: getFieldValue(talkNameEl),
          location: getFieldValue(locationEl),
          date: getFieldValue(dateEl),
-         time: getFieldValue(timeEl),
+         times: getSelectedTimes(),
       };
    }
 
@@ -77,7 +79,7 @@ export function createCancelGuardiansTalkOccurrenceController({
       });
    }
 
-   function validateForm({ talk, location, date, time }) {
+   function validateForm({ talk, location, date, times }) {
       if (!location) {
          return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.location);
       }
@@ -90,8 +92,8 @@ export function createCancelGuardiansTalkOccurrenceController({
          return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.date);
       }
 
-      if (!time) {
-         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.time);
+      if (!times.length) {
+         return APP_STRINGS.validation.entityRequired(APP_STRINGS.labels.talkTimes);
       }
 
       return null;
@@ -103,19 +105,21 @@ export function createCancelGuardiansTalkOccurrenceController({
       }
    }
 
-   async function submitOccurrenceCancellation({ talk, location, date, time }) {
+   async function submitOccurrenceCancellation({ talk, location, date, times }) {
       return cancelGuardiansTalkOccurrence({
          talk,
          location,
          date,
-         time,
+         times,
       });
    }
 
    function handleSubmitSuccess(result) {
+      const cancelledTimes = (result.times ?? []).join(', ');
+
       setStatus(
          statusEl,
-         `${result.talk} in ${result.location} on ${result.date} at ${result.time} was cancelled.`,
+         `${result.talk} in ${result.location} on ${result.date} at ${cancelledTimes} was cancelled.`,
          'is-success'
       );
 
@@ -165,7 +169,7 @@ export function createCancelGuardiansTalkOccurrenceController({
    }
 
    locationEl?.addEventListener('change', () => {
-      resetOccurrenceDropdowns();
+      resetOccurrenceFields();
    });
 
    talkNameEl?.addEventListener('change', async () => {
@@ -173,16 +177,13 @@ export function createCancelGuardiansTalkOccurrenceController({
          await occurrenceFilterController.refresh();
       }
       else {
-         resetOccurrenceDropdowns();
+         resetOccurrenceFields();
       }
    });
 
    dateEl?.addEventListener('change', () => {
       if (occurrenceFilterController?.refreshTimes) {
          occurrenceFilterController.refreshTimes();
-      }
-      else {
-         resetFormFields([timeEl]);
       }
    });
 

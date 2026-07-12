@@ -17,13 +17,7 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
       location='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time='13:00',
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '13:00', monday=True, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=False, sunday=False ),
       message=None
    )
    WildEncounterCoordinator.set_wild_encounter_schedule(
@@ -45,7 +39,7 @@ def test_set_itinerary_groups_mutually_overlapping_activities_into_one_conflict(
       date='2026-06-15',
       animals=[],
       attractions=[],
-      guardians_talks=guardians_talk_save_entries( 'African Lion' ),
+      guardians_talks=guardians_talk_save_entries( 'African Lion', start_time='13:00' ),
       wild_encounters=wild_encounter_keys(
          'African Rainforest',
          'Kangaroo',

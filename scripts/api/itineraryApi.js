@@ -11,6 +11,7 @@ import {
    EMPTY_ITINERARY_PATH,
    normalizeItineraryPath,
 } from '../itinerary/itineraryPathModel.js';
+import { GuardiansTalkScheduleItemKey } from '../itinerary/selectors/guardiansTalkSelector/scheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
 import {
    asArray,
@@ -36,6 +37,13 @@ function mapScheduleItemKeyToWire(itemType, key) {
    if (
       kind === ScheduleItemKind.WILD_ENCOUNTER
       && key instanceof WildEncounterScheduleItemKey
+   ) {
+      return key.toWire();
+   }
+
+   if (
+      kind === ScheduleItemKind.GUARDIANS_TALK
+      && key instanceof GuardiansTalkScheduleItemKey
    ) {
       return key.toWire();
    }

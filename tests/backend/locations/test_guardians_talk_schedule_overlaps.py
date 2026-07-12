@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
+from wild_encounter_schedule_support import wire_schedule_rows
+
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.guardians.data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_records_for_talk
 from conftest import DbControllers
@@ -18,13 +20,7 @@ def _june_schedule(
       'location': 'Africa Savanna',
       'start_date': start_date,
       'end_date': end_date,
-      'monday_time': '10:00',
-      'tuesday_time': None,
-      'wednesday_time': None,
-      'thursday_time': None,
-      'friday_time': None,
-      'saturday_time': None,
-      'sunday_time': None,
+      'schedule_rows': wire_schedule_rows( '10:00' ),
       'message': message,
    }
 
@@ -71,7 +67,7 @@ def test_guardians_talk_schedule_can_replace_overlapping_schedules(
       (
          record.schedule_start_date,
          record.schedule_end_date,
-         record.monday_time,
+         record.talk_time,
       )
       for record in schedule_records
    ] == [
@@ -109,7 +105,7 @@ def test_guardians_talk_schedule_can_trim_existing_schedule_around_new_schedule(
       (
          record.schedule_start_date,
          record.schedule_end_date,
-         record.monday_time,
+         record.talk_time,
       )
       for record in schedule_records
    ] == [
@@ -129,3 +125,17 @@ def test_guardians_talk_schedule_can_trim_existing_schedule_around_new_schedule(
          '10:00 AM',
       ),
    ]
+
+
+def test_guardians_talk_schedule_allows_overlapping_dates_at_different_times(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+
+   assert GuardiansCoordinator.set_guardians_talk_schedule( **_june_schedule() )
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
+      **{
+         **_june_schedule( message='Later talk.' ),
+         'schedule_rows': wire_schedule_rows( '11:00' ),
+      }
+   )

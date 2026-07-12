@@ -23,7 +23,7 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( TURTLE_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( TURTLE_TALK, start_time='14:00' ) ],
       wild_encounters=[ wild_encounter_key( RHINO_ENCOUNTER ) ],
    )
 
@@ -39,7 +39,7 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( TURTLE_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( TURTLE_TALK, start_time='14:00' ) ],
       wild_encounters=[],
       overriding_conflicting_guardians_talks=True,
       confirming_guardians_talk_without_animal=True,
@@ -78,7 +78,7 @@ def test_set_itinerary_empty_animals_removes_lion_after_conflict_resolved(
       arrival_time='09:00',
       animals=[],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( TURTLE_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( TURTLE_TALK, start_time='14:00' ) ],
       wild_encounters=[],
       overriding_conflicting_guardians_talks=True,
       confirming_guardians_talk_without_animal=True,

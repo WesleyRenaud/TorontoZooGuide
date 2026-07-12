@@ -17,6 +17,7 @@ import {
    getAnimalTitleLine,
 } from '../selectors/animalSelector/model.js';
 import { getAttractionId } from '../selectors/attractionSelector/model.js';
+import { getGuardiansTalkId } from '../selectors/guardiansTalkSelector/model.js';
 import { getWildEncounterId } from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
 import {
@@ -215,7 +216,7 @@ export function buildScheduledItemRowsContext(
    ).map((scheduledItem) => ({
       ...scheduledItem,
       scheduleItemKind: 'guardians_talks',
-      scheduleItemKey: String(scheduledItem.item.name).trim(),
+      scheduleItemKey: getGuardiansTalkId(scheduledItem.item),
    }));
    const wildEncounterRows = buildScheduledItemRows(
       wildEncounters.filter(isActiveScheduledOccurrence),

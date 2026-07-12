@@ -217,6 +217,15 @@
   },
   {
     "kind": "guardians_talk",
+    "name": "Polar Bear",
+    "location": "Tundra Trek",
+    "x": 77.362,
+    "y": 51.988,
+    "walk_node_id": "v-0845",
+    "snap_distance_px": 7.189
+  },
+  {
+    "kind": "guardians_talk",
     "name": "River Hippopotamus",
     "location": "Africa Savanna",
     "x": 38.705,

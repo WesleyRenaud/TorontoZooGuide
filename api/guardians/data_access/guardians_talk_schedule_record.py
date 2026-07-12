@@ -14,10 +14,11 @@ class GuardiansTalkScheduleRecord:
    maximum_duration: int | None
    schedule_start_date: DateKey
    schedule_end_date: DateKey | None
-   monday_time: ScheduleTimeKey
-   tuesday_time: ScheduleTimeKey
-   wednesday_time: ScheduleTimeKey
-   thursday_time: ScheduleTimeKey
-   friday_time: ScheduleTimeKey
-   saturday_time: ScheduleTimeKey
-   sunday_time: ScheduleTimeKey
+   monday: bool
+   tuesday: bool
+   wednesday: bool
+   thursday: bool
+   friday: bool
+   saturday: bool
+   sunday: bool
+   talk_time: ScheduleTimeKey

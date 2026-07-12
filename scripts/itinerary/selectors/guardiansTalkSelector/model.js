@@ -4,12 +4,17 @@ import {
    buildOccurrenceSubtitle,
 } from '../../scheduledOccurrencePresentation.js';
 import { buildScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
+import { GuardiansTalkScheduleItemKey } from './scheduleItemKey.js';
 import { APP_STRINGS } from '../../../strings.js';
 
 export function getGuardiansTalkName(row) {
    return typeof row?.name === 'string'
       ? row.name
       : '';
+}
+
+export function getGuardiansTalkKey(row) {
+   return GuardiansTalkScheduleItemKey.fromRow(row);
 }
 
 export function formatGuardiansTalkSearchTitle(name) {
@@ -25,7 +30,7 @@ export function getGuardiansTalkSearchTitle(row) {
 }
 
 export function getGuardiansTalkId(row) {
-   return getGuardiansTalkName(row).trim();
+   return getGuardiansTalkKey(row)?.toWire() ?? '';
 }
 
 export function getGuardiansTalkLocation(row) {

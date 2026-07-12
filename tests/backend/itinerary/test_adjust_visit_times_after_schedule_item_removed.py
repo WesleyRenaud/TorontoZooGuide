@@ -89,13 +89,13 @@ def test_remove_first_guardians_talk_sets_arrival_to_new_first_start(
       departure_time='17:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK, start_time='10:00' ) ],
       wild_encounters=[],
    ).success
 
    assert schedule_itinerary_item(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
-      GUARDIANS_TALK,
+      f'{ GUARDIANS_TALK }||10:00',
    ).success
    assert schedule_itinerary_item(
       ScheduleItemKind.ANIMAL.item_type,
@@ -121,7 +121,7 @@ def test_remove_first_guardians_talk_sets_arrival_to_new_first_start(
 
    remove_result = remove_itinerary_item(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
-      GUARDIANS_TALK,
+      f'{ GUARDIANS_TALK }||10:00',
    )
 
    assert remove_result.success

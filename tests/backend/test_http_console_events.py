@@ -20,13 +20,38 @@ import api.server as server
             'location': 'Africa Savanna',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
-            'mondayTime': '10:00',
-            'tuesdayTime': None,
-            'wednesdayTime': '11:00',
-            'thursdayTime': None,
-            'fridayTime': '12:00',
-            'saturdayTime': None,
-            'sundayTime': None,
+            'scheduleRows': [
+               {
+                  'time': '10:00',
+                  'monday': True,
+                  'tuesday': False,
+                  'wednesday': False,
+                  'thursday': False,
+                  'friday': False,
+                  'saturday': False,
+                  'sunday': False,
+               },
+               {
+                  'time': '11:00',
+                  'monday': False,
+                  'tuesday': False,
+                  'wednesday': True,
+                  'thursday': False,
+                  'friday': False,
+                  'saturday': False,
+                  'sunday': False,
+               },
+               {
+                  'time': '12:00',
+                  'monday': False,
+                  'tuesday': False,
+                  'wednesday': False,
+                  'thursday': False,
+                  'friday': True,
+                  'saturday': False,
+                  'sunday': False,
+               },
+            ],
             'message': 'Schedule.'
          },
          (
@@ -36,13 +61,38 @@ import api.server as server
                'location': 'Africa Savanna',
                'start_date': '2026-06-01',
                'end_date': '2026-06-30',
-               'monday_time': '10:00',
-               'tuesday_time': None,
-               'wednesday_time': '11:00',
-               'thursday_time': None,
-               'friday_time': '12:00',
-               'saturday_time': None,
-               'sunday_time': None,
+               'schedule_rows': [
+                  {
+                     'time': '10:00',
+                     'monday': True,
+                     'tuesday': False,
+                     'wednesday': False,
+                     'thursday': False,
+                     'friday': False,
+                     'saturday': False,
+                     'sunday': False,
+                  },
+                  {
+                     'time': '11:00',
+                     'monday': False,
+                     'tuesday': False,
+                     'wednesday': True,
+                     'thursday': False,
+                     'friday': False,
+                     'saturday': False,
+                     'sunday': False,
+                  },
+                  {
+                     'time': '12:00',
+                     'monday': False,
+                     'tuesday': False,
+                     'wednesday': False,
+                     'thursday': False,
+                     'friday': True,
+                     'saturday': False,
+                     'sunday': False,
+                  },
+               ],
                'message': 'Schedule.'
             }
          ),
@@ -51,9 +101,6 @@ import api.server as server
             'location': 'Africa Savanna',
             'startDate': '2026-06-01',
             'endDate': '2026-06-30',
-            'mondayTime': '10:00',
-            'wednesdayTime': '11:00',
-            'fridayTime': '12:00'
          }
       ),
       (
@@ -61,14 +108,16 @@ import api.server as server
          {
             'talk': 'African Lion',
             'location': 'Africa Savanna',
-            'endDate': '2026-06-30'
+            'endDate': '2026-06-30',
+            'times': [ '10:00' ],
          },
          (
             'end_guardians_talk_schedule',
             {
                'talk': 'African Lion',
                'location': 'Africa Savanna',
-               'schedule_end_date': '2026-06-30'
+               'schedule_end_date': '2026-06-30',
+               'talk_times': [ '10:00' ],
             }
          ),
          {
@@ -83,7 +132,7 @@ import api.server as server
             'talk': 'African Lion',
             'location': 'Africa Savanna',
             'date': '2026-06-15',
-            'time': '10:00 AM'
+            'times': [ '10:00 AM' ],
          },
          (
             'cancel_guardians_talk_occurrence',
@@ -91,14 +140,14 @@ import api.server as server
                'talk': 'African Lion',
                'location': 'Africa Savanna',
                'date': '2026-06-15',
-               'time': '10:00 AM'
+               'talk_times': [ '10:00 AM' ],
             }
          ),
          {
             'talk': 'African Lion',
             'location': 'Africa Savanna',
             'date': '2026-06-15',
-            'time': '10:00 AM'
+            'times': [ '10:00 AM' ],
          }
       ),
       (

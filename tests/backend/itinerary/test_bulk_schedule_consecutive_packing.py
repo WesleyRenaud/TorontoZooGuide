@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import guardians_talk_save_entry
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -33,13 +34,7 @@ def _set_saturday_zebra_talk_schedule(
       location=AFRICA_SAVANNA,
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time=None,
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=talk_time,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( talk_time, monday=False, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=True, sunday=False ),
       message=None,
    )
 
@@ -56,7 +51,7 @@ def test_bulk_schedule_packs_non_pinned_loops_before_guardians_talk_and_shifts_a
       departure_time='17:00',
       animals=[],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='11:00' ) ],
       wild_encounters=[],
       selected_exhibits=_selected_exhibits_for_africa_savanna(),
       confirming_early_admission=True,

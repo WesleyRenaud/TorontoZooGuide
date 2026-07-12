@@ -23,15 +23,16 @@ export const help = {
    endSingleWildEncounterScheduleTime: (
       'Leave blank to end all times for this encounter on the selected date.'
    ),
-   endWildEncounterScheduleTimes: (
+   endScheduleTimes: (
       'Select one or more scheduled times to end.'
    ),
-   cancelWildEncounterOccurrenceTimes: (
+   cancelOccurrenceTimes: (
       'Select one or more scheduled times to cancel.'
    ),
    noScheduledEncounterTimes: 'No scheduled times for this encounter.',
    encounterTimesAddOneAtATime: 'Add one time at a time using the picker or Enter.',
    encounterScheduleRows: 'Add each encounter time with the days it runs.',
+   talkScheduleRows: 'Add each talk time with the days it runs.',
    removeEncounterScheduleRow: 'Remove this scheduled time',
    removeScheduledTime: time => `Remove ${time}`,
    keepUpdateActiveWithoutEndDate: 'Leave blank to keep the update active with no end date.',

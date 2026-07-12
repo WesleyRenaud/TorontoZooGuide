@@ -9,6 +9,7 @@ from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary import fetch_saved_itinerary
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.results.itinerary_save_result import ItinerarySaveResult
 from api.itinerary.scheduling.items.map_schedule_item_key_from_wire import map_schedule_item_key_from_wire
 from api.itinerary.scheduling.items.schedule_item_key import ScheduleItemKey
@@ -69,9 +70,15 @@ def wild_encounter_save_entry(
       end_time=end_time ).to_wire()
 
 
-def guardians_talk_save_entries( *names: str ) -> list[ dict[ str, str | None ] ]:
+def guardians_talk_save_entries(
+      *names: str,
+      start_time: str,
+      end_time: str | None = None ) -> list[ dict[ str, str | None ] ]:
    return [
-      guardians_talk_save_entry( name )
+      guardians_talk_save_entry(
+         name,
+         start_time=start_time,
+         end_time=end_time )
       for name in names
    ]
 
@@ -114,6 +121,17 @@ def wild_encounter_wire(
       end_time: str | None = None ) -> str:
    return wild_encounter_key(
       name,
+      start_time=start_time,
+      end_time=end_time ).to_wire()
+
+
+def guardians_talk_wire(
+      name: str,
+      *,
+      start_time: str,
+      end_time: str | None = None ) -> str:
+   return GuardiansTalkScheduleItemKey(
+      name=name,
       start_time=start_time,
       end_time=end_time ).to_wire()
 
@@ -186,13 +204,15 @@ def set_guardians_talk_schedule( *, talk_time: str ) -> None:
       location='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time=talk_time,
-      tuesday_time=talk_time,
-      wednesday_time=talk_time,
-      thursday_time=talk_time,
-      friday_time=talk_time,
-      saturday_time=talk_time,
-      sunday_time=talk_time,
+      schedule_rows=wire_schedule_rows(
+         talk_time,
+         monday=True,
+         tuesday=True,
+         wednesday=True,
+         thursday=True,
+         friday=True,
+         saturday=True,
+         sunday=True ),
       message=None,
    )
 
@@ -235,13 +255,7 @@ def set_turtle_talk_and_rhino_encounter_schedules_at_1400() -> None:
       location='African Rainforest Pavilion',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time='14:00',
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '14:00' ),
       message=None,
    )
    assert WildEncounterCoordinator.set_wild_encounter_schedule(
@@ -269,7 +283,7 @@ def set_itinerary_with_turtle_talk_and_lion_at_1430(
 
    assert schedule_itinerary_item(
       item_type='guardians_talks',
-      key=TURTLE_TALK,
+      key=guardians_talk_wire( TURTLE_TALK, start_time='14:00' ),
       confirming_guardians_talk_without_animal=True,
    ).success
 

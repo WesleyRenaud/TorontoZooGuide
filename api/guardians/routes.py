@@ -12,6 +12,7 @@ GUARDIANS_ROUTES: dict[ str, PostRouteHandler ] = {
       GuardiansController.get_guardians_talk_names_at_location
    ),
    '/get-guardians-talk-occurrences': GuardiansController.get_guardians_talk_occurrences,
+   '/get-guardians-talk-schedule-times': GuardiansController.get_guardians_talk_schedule_times,
    '/set-guardians-talk-schedule': GuardiansController.set_guardians_talk_schedule,
    '/replace-guardians-talk-schedule-overlaps': (
       GuardiansController.replace_guardians_talk_schedule_overlaps

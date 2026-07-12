@@ -30,7 +30,8 @@ def validate_guardians_talks_for_itinerary(
    for talk_input in guardians_talks_to_include or []:
       talk = find_guardians_talk_on_day_schedule(
          day_schedule,
-         talk_input.name )
+         talk_input.name,
+         start_time=talk_input.start_time )
       name = talk.name if talk is not None else talk_input.name
 
       diffs.append(

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from datetime import date
 
-from wild_encounter_schedule_support import wire_schedule_rows
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -19,13 +19,7 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results(
       location='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time='10:00',
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '10:00', monday=True, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=False, sunday=False ),
       message=''
    )
 
@@ -33,7 +27,7 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results(
 
    assert any( talk.name == 'African Lion' and talk.start_time == '10:00 AM' for talk in talks )
 
-   assert GuardiansCoordinator.end_guardians_talk_schedule( 'African Lion', 'Africa Savanna', '2026-06-14' )
+   assert GuardiansCoordinator.end_guardians_talk_schedule( 'African Lion', 'Africa Savanna', '2026-06-14', [ '10:00 AM' ] )
 
    talks = GuardiansCoordinator.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
@@ -44,21 +38,15 @@ def test_set_end_and_cancel_guardians_talk_schedule_changes_talk_results(
       location='Africa Savanna',
       start_date='2026-06-15',
       end_date='2026-06-30',
-      monday_time='10:00',
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '10:00', monday=True, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=False, sunday=False ),
       message=''
    )
-   assert GuardiansCoordinator.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', '10:00 AM' )
+   assert GuardiansCoordinator.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', [ '10:00 AM' ] )
 
    talks = GuardiansCoordinator.get_guardians_talk_schedule( month='June', day=15, year=2026 )
 
    assert all( not ( talk.name == 'African Lion' and talk.start_time == '10:00 AM' ) for talk in talks )
-   assert GuardiansCoordinator.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', '10:00 AM' ) is False
+   assert GuardiansCoordinator.cancel_guardians_talk_occurrence( 'African Lion', 'Africa Savanna', '2026-06-15', [ '10:00 AM' ] ) is False
 
 def test_set_end_and_cancel_wild_encounter_schedule_changes_wild_encounter_results(
       db: DbControllers,

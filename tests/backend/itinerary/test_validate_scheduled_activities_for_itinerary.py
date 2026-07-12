@@ -30,8 +30,8 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries() -> 
 
    result = validate_guardians_talks_for_itinerary(
       guardians_talks_to_include=[
-         ItineraryGuardiansTalkInput( name='African Lion' ),
-         ItineraryGuardiansTalkInput( name='Amur Tiger' ),
+         ItineraryGuardiansTalkInput( name='African Lion', start_time='10:00' ),
+         ItineraryGuardiansTalkInput( name='Amur Tiger', start_time='10:00' ),
       ],
       day_schedule=day_schedule )
 
@@ -39,8 +39,8 @@ def test_validate_guardians_talks_splits_available_and_unavailable_entries() -> 
       ( d.name, d.is_deleted, d.start_time, d.end_time )
       for d in result
    ] == [
-      ( 'African Lion', False, '10:00 AM', '10:30 AM' ),
-      ( 'Amur Tiger', True, None, None ),
+      ( 'African Lion', False, '10:00', '10:30 AM' ),
+      ( 'Amur Tiger', True, '10:00', None ),
    ]
 
 
@@ -88,13 +88,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
       location='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time='10:00',
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '10:00', monday=True, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=False, sunday=False ),
       message=None
    )
    assert GuardiansCoordinator.set_guardians_talk_schedule(
@@ -102,13 +96,7 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
       location='Eurasia Wilds',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time='09:00',
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '09:00', monday=True, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=False, sunday=False ),
       message=None
    )
    assert WildEncounterCoordinator.set_wild_encounter_schedule(
@@ -128,8 +116,8 @@ def test_scheduled_itinerary_filter_helpers_filter_case_insensitively_and_sort(
 
    talk_result = validate_guardians_talks_for_itinerary(
       [
-         ItineraryGuardiansTalkInput( name=' african lion ' ),
-         ItineraryGuardiansTalkInput( name='AMUR TIGER' ),
+         ItineraryGuardiansTalkInput( name=' african lion ', start_time='10:00' ),
+         ItineraryGuardiansTalkInput( name='AMUR TIGER', start_time='09:00' ),
       ],
       GuardiansCoordinator.get_guardians_talk_schedule(
          month='June',

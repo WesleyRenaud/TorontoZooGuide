@@ -3,7 +3,7 @@ from __future__ import annotations
 from .guardians_talk_schedule_input import GuardiansTalkScheduleInput
 from ...shared.calendar_dates import DateValues
 from ...shared.strings import SharedStrings
-from ...types import DateInput, ScheduleTimeKey
+from ...types import DateInput
 
 
 def build_guardians_talk_schedule(
@@ -11,13 +11,14 @@ def build_guardians_talk_schedule(
       location: str,
       start_date: DateInput,
       end_date: DateInput,
-      monday_time: ScheduleTimeKey,
-      tuesday_time: ScheduleTimeKey,
-      wednesday_time: ScheduleTimeKey,
-      thursday_time: ScheduleTimeKey,
-      friday_time: ScheduleTimeKey,
-      saturday_time: ScheduleTimeKey,
-      sunday_time: ScheduleTimeKey,
+      talk_time: str,
+      monday: bool,
+      tuesday: bool,
+      wednesday: bool,
+      thursday: bool,
+      friday: bool,
+      saturday: bool,
+      sunday: bool,
       message: str ) -> GuardiansTalkScheduleInput:
    date_range = DateValues.resolve_open_ended_date_range(
       start_date=start_date,
@@ -33,13 +34,12 @@ def build_guardians_talk_schedule(
       location=location,
       start_date=date_range.start_date,
       end_date=date_range.end_date,
-      monday_time=DateValues.normalize_itinerary_schedule_time( monday_time ),
-      tuesday_time=DateValues.normalize_itinerary_schedule_time( tuesday_time ),
-      wednesday_time=DateValues.normalize_itinerary_schedule_time( wednesday_time ),
-      thursday_time=DateValues.normalize_itinerary_schedule_time( thursday_time ),
-      friday_time=DateValues.normalize_itinerary_schedule_time( friday_time ),
-      saturday_time=DateValues.normalize_itinerary_schedule_time( saturday_time ),
-      sunday_time=DateValues.normalize_itinerary_schedule_time( sunday_time ),
+      talk_time=talk_time,
+      monday=monday,
+      tuesday=tuesday,
+      wednesday=wednesday,
+      thursday=thursday,
+      friday=friday,
+      saturday=saturday,
+      sunday=sunday,
       message=message )
-
-

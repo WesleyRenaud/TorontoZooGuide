@@ -9,12 +9,12 @@ from ...shared.schedule_row_input import SCHEDULE_ROW_WEEKDAY_KEYS
 from ...shared.schedule_row_input import ScheduleRowInput
 
 
-WILD_ENCOUNTER_SCHEDULE_WEEKDAY_KEYS = SCHEDULE_ROW_WEEKDAY_KEYS
+GUARDIANS_TALK_SCHEDULE_WEEKDAY_KEYS = SCHEDULE_ROW_WEEKDAY_KEYS
 
 
 @dataclass( frozen=True )
-class WildEncounterScheduleRowInput:
-   encounter_time: str
+class GuardiansTalkScheduleRowInput:
+   talk_time: str
    monday: bool
    tuesday: bool
    wednesday: bool
@@ -36,7 +36,7 @@ class WildEncounterScheduleRowInput:
    @classmethod
    def from_schedule_row( cls, row: ScheduleRowInput ) -> Self:
       return cls(
-         encounter_time=row.time,
+         talk_time=row.time,
          monday=row.monday,
          tuesday=row.tuesday,
          wednesday=row.wednesday,
@@ -46,9 +46,9 @@ class WildEncounterScheduleRowInput:
          sunday=row.sunday )
 
 
-def parse_wild_encounter_schedule_rows(
-      schedule_rows: list[ dict[ str, Any ] ] | None ) -> list[ WildEncounterScheduleRowInput ]:
+def parse_guardians_talk_schedule_rows(
+      schedule_rows: list[ dict[ str, Any ] ] | None ) -> list[ GuardiansTalkScheduleRowInput ]:
    return [
-      WildEncounterScheduleRowInput.from_schedule_row( row )
+      GuardiansTalkScheduleRowInput.from_schedule_row( row )
       for row in parse_schedule_rows( schedule_rows )
    ]

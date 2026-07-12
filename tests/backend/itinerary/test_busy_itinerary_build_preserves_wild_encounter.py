@@ -4,7 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import guardians_talk_save_entry, wild_encounter_key
-from wild_encounter_schedule_support import wire_schedule_row
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -33,13 +33,7 @@ def _set_july_ninth_schedules() -> None:
       location='Americas Pavilion',
       start_date='2026-07-01',
       end_date='2026-07-31',
-      monday_time=None,
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time='14:00',
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '14:00', monday=False, tuesday=False, wednesday=False, thursday=True, friday=False, saturday=False, sunday=False ),
       message=None,
    )
    assert WildEncounterCoordinator.set_wild_encounter_schedule(
@@ -85,7 +79,7 @@ def test_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
       date=VISIT_DATE,
       animals=[],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( OTTER_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( OTTER_TALK, start_time='14:00' ) ],
       wild_encounters=[
          wild_encounter_key(
             KANGAROO_ENCOUNTER,
@@ -111,7 +105,7 @@ def test_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
       date=VISIT_DATE,
       animals=[],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( OTTER_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( OTTER_TALK, start_time='14:00' ) ],
       wild_encounters=[
          wild_encounter_key(
             KANGAROO_ENCOUNTER,
@@ -146,7 +140,7 @@ def test_one_shot_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
       date=VISIT_DATE,
       animals=[],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( OTTER_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( OTTER_TALK, start_time='14:00' ) ],
       wild_encounters=[
          wild_encounter_key(
             KANGAROO_ENCOUNTER,
@@ -232,13 +226,7 @@ def test_busy_itinerary_build_keeps_kangaroo_when_expired_schedule_row_also_exis
       location='Americas Pavilion',
       start_date='2026-07-01',
       end_date='2026-07-31',
-      monday_time=None,
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time='14:00',
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '14:00', monday=False, tuesday=False, wednesday=False, thursday=True, friday=False, saturday=False, sunday=False ),
       message=None,
    )
    selected_exhibits = _selected_exhibits_for_busy_regions()
@@ -247,7 +235,7 @@ def test_busy_itinerary_build_keeps_kangaroo_when_expired_schedule_row_also_exis
       date=VISIT_DATE,
       animals=[],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( OTTER_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( OTTER_TALK, start_time='14:00' ) ],
       wild_encounters=[
          wild_encounter_key(
             KANGAROO_ENCOUNTER,

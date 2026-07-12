@@ -23,7 +23,7 @@ def test_set_itinerary_blocks_talk_and_encounter_conflict_before_unschedule_warn
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK, start_time='14:00' ) ],
       wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER ) ],
    )
 
@@ -59,7 +59,7 @@ def test_set_itinerary_blocks_talk_encounter_conflict_when_no_other_items_overla
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK, start_time='14:00' ) ],
       wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER ) ],
    )
 
