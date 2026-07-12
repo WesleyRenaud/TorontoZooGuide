@@ -95,6 +95,13 @@ export const itinerary = {
       guardiansTalkLongWaitMessageWithoutTime: talkName => (
          `The ${talkName} guardians talk is a long wait from your other scheduled items. Do you still want to keep it on your plan?`
       ),
+      guardiansTalkWithoutAnimalTitle: 'Guardians Talk Without Matching Animal?',
+      guardiansTalkWithoutAnimalMessage: (talkName, talkTime) => (
+         `The ${talkName} guardians talk at ${talkTime} does not match an animal on your itinerary. Do you still want to keep it on your plan?`
+      ),
+      guardiansTalkWithoutAnimalMessageWithoutTime: talkName => (
+         `The ${talkName} guardians talk does not match an animal on your itinerary. Do you still want to keep it on your plan?`
+      ),
       updatePlanConfirm: 'Update Plan',
       wildEncounterRescheduleTitle: 'Add Wild Encounter?',
       wildEncounterRescheduleMessage: (encounterName, encounterTime) => (

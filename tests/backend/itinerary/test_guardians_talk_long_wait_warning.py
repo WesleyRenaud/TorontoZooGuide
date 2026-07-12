@@ -136,6 +136,7 @@ def test_set_itinerary_warns_when_talk_is_far_from_other_scheduled_talk(
          guardians_talk_save_entry( MEERKAT_TALK ),
       ],
       wild_encounters=[],
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert not result.success
@@ -158,6 +159,7 @@ def test_set_itinerary_warns_when_talk_is_far_from_other_scheduled_talk(
       ],
       wild_encounters=[],
       confirming_guardians_talk_long_wait=True,
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert confirmed.success
@@ -177,6 +179,7 @@ def test_schedule_talk_warns_when_far_from_existing_scheduled_items(
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK ) ],
       wild_encounters=[],
+      confirming_guardians_talk_without_animal=True,
    ).success
    assert schedule_itinerary_item(
       ScheduleItemKind.ANIMAL.item_type,
@@ -186,11 +189,13 @@ def test_schedule_talk_warns_when_far_from_existing_scheduled_items(
    assert schedule_itinerary_item(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
       ZEBRA_TALK,
+      confirming_guardians_talk_without_animal=True,
    ).success
 
    result = schedule_itinerary_item(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
       MEERKAT_TALK,
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert not result.success
@@ -202,6 +207,7 @@ def test_schedule_talk_warns_when_far_from_existing_scheduled_items(
          ScheduleItemKind.GUARDIANS_TALK.item_type,
          MEERKAT_TALK ),
       confirming_guardians_talk_long_wait=True,
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert confirmed.success
@@ -225,6 +231,7 @@ def test_bulk_schedule_warns_and_leaves_schedule_unchanged_until_confirmed(
       ],
       wild_encounters=[],
       confirming_guardians_talk_long_wait=True,
+      confirming_guardians_talk_without_animal=True,
    ).success
 
    warning = ItineraryCoordinator.bulk_schedule_animals()

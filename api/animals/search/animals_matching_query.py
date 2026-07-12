@@ -32,6 +32,13 @@ def species_exhibit_key( animal: Animal ) -> tuple[ str, str ]:
    return species_exhibit_key_from_values( animal.species, animal.exhibit )
 
 
+def species_exhibit_keys( animals: list[ Any ] ) -> set[ tuple[ str, str ] ]:
+   return {
+      species_exhibit_key_from_values( animal.species, animal.exhibit )
+      for animal in animals
+   }
+
+
 def viewing_spot_key( animal: Animal ) -> tuple[ str, str, str | None ]:
    return viewing_spot_key_from_values(
       animal.species,

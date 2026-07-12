@@ -191,6 +191,7 @@ def test_adjacent_zebra_then_camel_anchors_savanna_loop_before_zebra(
       wild_encounters=[],
       selected_exhibits=_selected_exhibits_for_africa_savanna(),
       confirming_early_admission=True,
+      confirming_guardians_talk_without_animal=True,
    ).success
 
    result = ItineraryCoordinator.bulk_schedule_animals()

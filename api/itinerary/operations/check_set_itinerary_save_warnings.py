@@ -12,6 +12,9 @@ from ..warnings.early_admission_warning import early_admission_warning_is_requir
 from ..warnings.guardians_talk_long_wait_warning import build_guardians_talk_long_wait_issue_from_talks
 from ..warnings.guardians_talk_long_wait_warning import guardians_talk_long_wait_warning_is_required_for_validated_itinerary
 from ..warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_validated_itinerary
+from ..warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
+from ..warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required
+from ..warnings.guardians_talk_without_animal_warning import guardians_talks_without_matching_animal
 from ..warnings.itinerary_suppressed_warnings import with_suppressed_warnings
 from ..warnings.short_visit_warning import short_visit_warning_is_required
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
@@ -25,6 +28,7 @@ def check_set_itinerary_save_warnings(
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool,
       confirming_guardians_talk_long_wait: bool,
+      confirming_guardians_talk_without_animal: bool,
       overriding_conflicting_guardians_talks: bool ) -> tuple[
          SetItineraryContext,
          ItinerarySaveResult | None,
@@ -108,6 +112,27 @@ def check_set_itinerary_save_warnings(
             updated_context,
             with_suppressed_warnings( unschedule_warning, warning_tuple ),
          )
+
+   if guardians_talk_without_animal_warning_is_required(
+         context.validated_itinerary,
+         confirming_guardians_talk_without_animal=(
+            confirming_guardians_talk_without_animal ) ):
+      missing_animal_talks = guardians_talks_without_matching_animal(
+         context.validated_itinerary )
+
+      return (
+         updated_context,
+         with_suppressed_warnings(
+            ItinerarySaveResult(
+               status=ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+               reasons=(
+                  build_guardians_talk_without_animal_issue_from_talks(
+                     missing_animal_talks ),
+               ),
+               itinerary=context.current_itinerary,
+            ),
+            warning_tuple ),
+      )
 
    if guardians_talk_long_wait_warning_is_required_for_validated_itinerary(
          context.validated_itinerary,

@@ -21,6 +21,8 @@ from ..unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_o
 from ...warnings.guardians_talk_long_wait_warning import build_guardians_talk_long_wait_issue_from_talks
 from ...warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_after_adding_talk
 from ...warnings.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
+from ...warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
+from ...warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required_for_talk
 
 
 def _saved_guardians_talk_exists(
@@ -82,7 +84,8 @@ def schedule_guardians_talk_itinerary_item(
       *,
       itinerary_context: dict[ str, Any ],
       confirming_guardians_talk_unschedule: bool,
-      confirming_guardians_talk_long_wait: bool ) -> ItinerarySaveResult:
+      confirming_guardians_talk_long_wait: bool,
+      confirming_guardians_talk_without_animal: bool ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
 
    if saved_itinerary.is_empty():
@@ -115,6 +118,20 @@ def schedule_guardians_talk_itinerary_item(
          ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
          reasons=(
             build_guardians_talk_unschedule_issue( [ guardians_talk_diff ] ),
+         ),
+         **itinerary_context )
+
+   if guardians_talk_without_animal_warning_is_required_for_talk(
+         guardians_talk_diff,
+         saved_itinerary.species_exhibit_pairs(),
+         confirming_guardians_talk_without_animal=(
+            confirming_guardians_talk_without_animal ) ):
+      return build_save_result(
+         conn,
+         ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+         reasons=(
+            build_guardians_talk_without_animal_issue_from_talks(
+               [ guardians_talk_diff ] ),
          ),
          **itinerary_context )
 

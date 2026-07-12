@@ -296,6 +296,7 @@ export async function scheduleItineraryItemRequest(
       confirmingGuardiansTalkUnschedule = false,
       confirmingWildEncounterUnschedule = false,
       confirmingGuardiansTalkLongWait = false,
+      confirmingGuardiansTalkWithoutAnimal = false,
    } = {}
 ) {
    const response = await postJson('/schedule-itinerary-item', {
@@ -305,6 +306,7 @@ export async function scheduleItineraryItemRequest(
       confirmingGuardiansTalkUnschedule,
       confirmingWildEncounterUnschedule,
       confirmingGuardiansTalkLongWait,
+      confirmingGuardiansTalkWithoutAnimal,
    });
 
    return normalizeScheduleItineraryItemResponse(response);

@@ -270,6 +270,7 @@ def set_itinerary_with_turtle_talk_and_lion_at_1430(
    assert schedule_itinerary_item(
       item_type='guardians_talks',
       key=TURTLE_TALK,
+      confirming_guardians_talk_without_animal=True,
    ).success
 
    assert schedule_itinerary_item(

@@ -38,6 +38,8 @@ class ItineraryController():
          data.get( 'confirmingWildEncounterUnschedule' ) )
       confirming_guardians_talk_long_wait = bool(
          data.get( 'confirmingGuardiansTalkLongWait' ) )
+      confirming_guardians_talk_without_animal = bool(
+         data.get( 'confirmingGuardiansTalkWithoutAnimal' ) )
 
       save_result = ItineraryCoordinator.set_itinerary(
          date=date,
@@ -58,7 +60,9 @@ class ItineraryController():
          confirming_wild_encounter_unschedule=(
             confirming_wild_encounter_unschedule ),
          confirming_guardians_talk_long_wait=(
-            confirming_guardians_talk_long_wait ) )
+            confirming_guardians_talk_long_wait ),
+         confirming_guardians_talk_without_animal=(
+            confirming_guardians_talk_without_animal ) )
 
       response = itinerary_result_to_dict(
          save_result,
@@ -92,6 +96,8 @@ class ItineraryController():
          data.get( 'confirmingWildEncounterUnschedule' ) )
       confirming_guardians_talk_long_wait = bool(
          data.get( 'confirmingGuardiansTalkLongWait' ) )
+      confirming_guardians_talk_without_animal = bool(
+         data.get( 'confirmingGuardiansTalkWithoutAnimal' ) )
 
       save_result = ItineraryCoordinator.schedule_itinerary_item(
          schedule_item_key,
@@ -105,7 +111,9 @@ class ItineraryController():
          confirming_wild_encounter_unschedule=(
             confirming_wild_encounter_unschedule ),
          confirming_guardians_talk_long_wait=(
-            confirming_guardians_talk_long_wait ) )
+            confirming_guardians_talk_long_wait ),
+         confirming_guardians_talk_without_animal=(
+            confirming_guardians_talk_without_animal ) )
 
       response = itinerary_result_to_dict(
          save_result,
