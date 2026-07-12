@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import Any
 
 from ..core.scheduled_occurrence import schedule_guardians_talk_for_itinerary
+from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
 from ...domain.itinerary import build_current_itinerary
 from ..extend_departure_for_activity import ensure_departure_covers_end_time
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ....models.guardians_talk_diff import GuardiansTalkDiff
 from ..reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
 from ...results.itinerary_save_result import ItinerarySaveResult
@@ -27,30 +29,32 @@ from ...warnings.guardians_talk_without_animal_warning import guardians_talk_wit
 
 def _saved_guardians_talk_exists(
       saved_itinerary: SavedItinerary,
-      talk_name: str ) -> bool:
-   return any(
-      row.talk_name == talk_name and not row.is_deleted
-      for row in saved_itinerary.guardians_talk_rows
-   )
+      guardians_talk_key: GuardiansTalkScheduleItemKey ) -> bool:
+   return find_saved_itinerary_schedule_item_row(
+      saved_itinerary,
+      guardians_talk_key ) is not None
 
 
 def _guardians_talk_diff_for_saved_itinerary_day(
       saved_itinerary: SavedItinerary,
-      talk_name: str,
+      guardians_talk_key: GuardiansTalkScheduleItemKey,
       guardians_coordinator: type[ GuardiansCoordinator ] ) -> GuardiansTalkDiff:
    talk = guardians_coordinator.get_guardians_talk_on_day_schedule(
       month=saved_itinerary.month(),
       day=saved_itinerary.day(),
       year=saved_itinerary.year(),
-      talk_name=talk_name )
+      talk_name=guardians_talk_key.name,
+      start_time=guardians_talk_key.start_time )
 
-   return schedule_guardians_talk_for_itinerary( talk_name, talk )
+   return schedule_guardians_talk_for_itinerary(
+      guardians_talk_key.name,
+      talk )
 
 
 def _insert_scheduled_guardians_talk(
       conn: Connection,
       *,
-      talk_name: str,
+      guardians_talk_key: GuardiansTalkScheduleItemKey,
       guardians_talk_diff: GuardiansTalkDiff,
       itinerary_context: dict[ str, Any ] ) -> ItinerarySaveResult | None:
    cur = conn.cursor()
@@ -58,7 +62,7 @@ def _insert_scheduled_guardians_talk(
    try:
       scheduled = insert_itinerary_guardians_talk(
          cur,
-         talk_name=talk_name,
+         talk_name=guardians_talk_key.name,
          start_time=guardians_talk_diff.start_time,
          end_time=guardians_talk_diff.end_time,
          is_deleted=guardians_talk_diff.is_deleted,
@@ -80,7 +84,7 @@ def _insert_scheduled_guardians_talk(
 
 def schedule_guardians_talk_itinerary_item(
       conn: Connection,
-      talk_name: str,
+      guardians_talk_key: GuardiansTalkScheduleItemKey,
       *,
       itinerary_context: dict[ str, Any ],
       confirming_guardians_talk_unschedule: bool,
@@ -94,12 +98,12 @@ def schedule_guardians_talk_itinerary_item(
          ItineraryErrorType.ITINERARY_DATE_NOT_SET,
          **itinerary_context )
 
-   if _saved_guardians_talk_exists( saved_itinerary, talk_name ):
+   if _saved_guardians_talk_exists( saved_itinerary, guardians_talk_key ):
       return build_success_result( conn, **itinerary_context )
 
    guardians_talk_diff = _guardians_talk_diff_for_saved_itinerary_day(
       saved_itinerary,
-      talk_name,
+      guardians_talk_key,
       itinerary_context[ 'guardians_coordinator' ] )
 
    if guardians_talk_diff.is_deleted:
@@ -155,7 +159,7 @@ def schedule_guardians_talk_itinerary_item(
 
    insert_error = _insert_scheduled_guardians_talk(
       conn,
-      talk_name=talk_name,
+      guardians_talk_key=guardians_talk_key,
       guardians_talk_diff=guardians_talk_diff,
       itinerary_context=itinerary_context )
 

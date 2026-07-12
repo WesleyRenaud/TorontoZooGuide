@@ -48,6 +48,7 @@ export const labels = {
    description: 'Description',
    encounterTime: 'Encounter time',
    encounterTimes: 'Encounter times',
+   talkTimes: 'Talk times',
    endDate: 'End date',
    location: 'Location',
    message: 'Message',

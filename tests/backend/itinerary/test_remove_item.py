@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from itinerary.support import CHEETAH_ITINERARY_ENTRY, CHEETAH_KEY, LION_ITINERARY_ENTRY, LION_KEY, PENGUIN_ITINERARY_ENTRY, PENGUIN_KEY, remove_itinerary_item, schedule_itinerary_item, wild_encounter_key, wild_encounter_wire
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -19,13 +20,7 @@ def _set_base_itinerary( db: DbControllers ) -> None:
       location='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time='10:00',
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '10:00', monday=True, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=False, sunday=False ),
       message=None,
    )
 
@@ -42,7 +37,7 @@ def _set_base_itinerary( db: DbControllers ) -> None:
       attractions=[ CAROUSEL ],
       guardians_talks=[ {
          'name': GUARDIANS_TALK,
-         'start_time': None,
+         'start_time': '10:00',
          'end_time': None,
       } ],
       wild_encounters=[ wild_encounter_key( AFRICAN_RAINFOREST ) ],
@@ -78,7 +73,7 @@ def test_remove_itinerary_guardians_talk_deletes_row( db: DbControllers ) -> Non
 
    assert remove_itinerary_item(
       'guardians_talks',
-      GUARDIANS_TALK ).success
+      f'{ GUARDIANS_TALK }||10:00' ).success
 
    saved = fetch_saved_itinerary( db.conn )
 

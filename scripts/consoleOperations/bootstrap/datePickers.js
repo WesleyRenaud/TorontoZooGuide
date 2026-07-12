@@ -42,19 +42,6 @@ const DATE_PICKER_BINDINGS = {
          startTimeKey: 'dailyStartTimeEl',
          endTimeKey: 'dailyEndTimeEl',
       },
-      {
-         path: ['guardiansTalks', 'schedule'],
-         timeFieldKeys: [
-            'dailyTimeEl',
-            'mondayTimeEl',
-            'tuesdayTimeEl',
-            'wednesdayTimeEl',
-            'thursdayTimeEl',
-            'fridayTimeEl',
-            'saturdayTimeEl',
-            'sundayTimeEl',
-         ],
-      },
    ],
 };
 

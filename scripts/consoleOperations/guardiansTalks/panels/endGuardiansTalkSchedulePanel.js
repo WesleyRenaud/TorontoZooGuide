@@ -3,6 +3,7 @@ import {
    createActions,
    createDateField,
    createPanelShell,
+   createScheduleTimesCheckboxField,
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
@@ -21,6 +22,11 @@ export function createEndGuardiansTalkSchedulePanel() {
             label: APP_STRINGS.labels.talkName,
             inputId: 'endGuardiansTalkScheduleTalkName',
             emptyOptionLabel: APP_STRINGS.placeholders.talk,
+         }),
+         createScheduleTimesCheckboxField({
+            label: APP_STRINGS.labels.talkTimes,
+            inputId: 'endGuardiansTalkScheduleTimes',
+            helpText: APP_STRINGS.help.endScheduleTimes,
          }),
          createDateField({
             label: APP_STRINGS.labels.endDate,

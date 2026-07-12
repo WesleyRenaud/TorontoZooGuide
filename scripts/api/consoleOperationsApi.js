@@ -200,6 +200,10 @@ export function getGuardiansTalkOccurrences(payload) {
    return postJson('/get-guardians-talk-occurrences', payload);
 }
 
+export function getGuardiansTalkScheduleTimes(payload) {
+   return postJson('/get-guardians-talk-schedule-times', payload);
+}
+
 export function cancelGuardiansTalkOccurrence(payload) {
    return postJson('/cancel-guardians-talk-occurrence', payload);
 }

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import date
 
 from ..cancellations.guardians_talk_cancellation_status import build_guardians_talk_cancellation
@@ -11,7 +12,8 @@ from ..data_access.guardians_talk_cancellation import save_guardians_talk_cancel
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_cancellation_records
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_occurrence_is_cancelled
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_records
-from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_records_for_talk
+from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_records_for_occurrences
+from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_times
 from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule
 from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule_end
 from ..domain.guardians_talk import build_guardians_talk_details
@@ -26,13 +28,66 @@ from ..scheduling.guardians_talk_schedule import find_guardians_talk_on_day_sche
 from ..scheduling.guardians_talk_schedule_conflict_resolution import save_guardians_talk_schedule_replacing_overlaps
 from ..scheduling.guardians_talk_schedule_conflict_resolution import save_guardians_talk_schedule_trimming_overlaps
 from ..scheduling.guardians_talk_schedule_ending import build_guardians_talk_schedule_end
+from ..scheduling.guardians_talk_schedule_input import GuardiansTalkScheduleInput
+from ..scheduling.guardians_talk_schedule_row_input import parse_guardians_talk_schedule_rows
 from ..scheduling.guardians_talk_schedule_status import build_guardians_talk_schedule
 from ..search.guardians_talks_matching_query import build_guardians_talks_matching_query
 from ...shared.calendar_dates import CalendarDates
-from ...types import DateInput, DateKey, MonthInput, VisitDay, VisitYear
+from ...shared.calendar_dates import DateValues
+from ...shared.constants import SCHEDULED_OCCURRENCE_DAYS_AHEAD
+from ...types import Connection, DateInput, DateKey, MonthInput, VisitDay, VisitYear
 
 
 class GuardiansCoordinator():
+   @classmethod
+   def _build_guardians_talk_schedules(
+         cls,
+         talk: str,
+         location: str,
+         start_date: DateInput,
+         end_date: DateInput,
+         message: str,
+         *,
+         schedule_rows: list[ dict[ str, object ] ] | None = None ) -> list[ GuardiansTalkScheduleInput ]:
+      resolved_schedule_rows = parse_guardians_talk_schedule_rows( schedule_rows )
+
+      return [
+         build_guardians_talk_schedule(
+            talk=talk,
+            location=location,
+            start_date=start_date,
+            end_date=end_date,
+            talk_time=schedule_row.talk_time,
+            monday=schedule_row.monday,
+            tuesday=schedule_row.tuesday,
+            wednesday=schedule_row.wednesday,
+            thursday=schedule_row.thursday,
+            friday=schedule_row.friday,
+            saturday=schedule_row.saturday,
+            sunday=schedule_row.sunday,
+            message=message )
+         for schedule_row in resolved_schedule_rows
+      ]
+
+
+   @classmethod
+   def _save_guardians_talk_schedules(
+         cls,
+         schedules: list[ GuardiansTalkScheduleInput ],
+         *,
+         save_schedule: Callable[ [ Connection, GuardiansTalkScheduleInput ], bool ] ) -> bool:
+      if not schedules:
+         return False
+
+      conn = get_connection()
+
+      for schedule in schedules:
+         if not save_schedule( conn, schedule ):
+            return False
+
+      return True
+
+
    @classmethod
    def get_guardians_talk_locations( cls ) -> list[ str ]:
       return fetch_guardians_talk_locations( get_connection() )
@@ -55,8 +110,8 @@ class GuardiansCoordinator():
          cls,
          talk: str,
          location: str,
-         days_ahead: int = 60 ) -> list[ ScheduledOccurrence ]:
-      schedule_records = fetch_guardians_talk_schedule_records_for_talk(
+         days_ahead: int = SCHEDULED_OCCURRENCE_DAYS_AHEAD ) -> list[ ScheduledOccurrence ]:
+      schedule_records = fetch_guardians_talk_schedule_records_for_occurrences(
          get_connection(),
          talk_name=talk,
          location=location )
@@ -65,18 +120,10 @@ class GuardiansCoordinator():
          talk_name=talk,
          location=location )
 
-      occurrences: list[ ScheduledOccurrence ] = []
-
-      for schedule_record in schedule_records:
-         occurrences.extend(
-            build_guardians_talk_occurrences(
-               schedule_record=schedule_record,
-               cancellation_records=cancellation_records,
-               days_ahead=days_ahead ) )
-
-      return sorted(
-         occurrences,
-         key=lambda occurrence: ( occurrence.date, occurrence.time ) )
+      return build_guardians_talk_occurrences(
+         schedule_records=schedule_records,
+         cancellation_records=cancellation_records,
+         days_ahead=days_ahead )
 
 
    @classmethod
@@ -97,31 +144,20 @@ class GuardiansCoordinator():
          location: str,
          start_date: DateInput,
          end_date: DateInput,
-         monday_time: str | None,
-         tuesday_time: str | None,
-         wednesday_time: str | None,
-         thursday_time: str | None,
-         friday_time: str | None,
-         saturday_time: str | None,
-         sunday_time: str | None,
-         message: str ) -> bool:
-      schedule = build_guardians_talk_schedule(
-         talk=talk,
-         location=location,
-         start_date=start_date,
-         end_date=end_date,
-         monday_time=monday_time,
-         tuesday_time=tuesday_time,
-         wednesday_time=wednesday_time,
-         thursday_time=thursday_time,
-         friday_time=friday_time,
-         saturday_time=saturday_time,
-         sunday_time=sunday_time,
-         message=message )
+         message: str = '',
+         *,
+         schedule_rows: list[ dict[ str, object ] ] | None = None ) -> bool:
+      schedules = cls._build_guardians_talk_schedules(
+         talk,
+         location,
+         start_date,
+         end_date,
+         message,
+         schedule_rows=schedule_rows )
 
-      return save_guardians_talk_schedule(
-         get_connection(),
-         schedule=schedule )
+      return cls._save_guardians_talk_schedules(
+         schedules,
+         save_schedule=save_guardians_talk_schedule )
 
 
    @classmethod
@@ -131,31 +167,20 @@ class GuardiansCoordinator():
          location: str,
          start_date: DateInput,
          end_date: DateInput,
-         monday_time: str | None,
-         tuesday_time: str | None,
-         wednesday_time: str | None,
-         thursday_time: str | None,
-         friday_time: str | None,
-         saturday_time: str | None,
-         sunday_time: str | None,
-         message: str ) -> bool:
-      schedule = build_guardians_talk_schedule(
-         talk=talk,
-         location=location,
-         start_date=start_date,
-         end_date=end_date,
-         monday_time=monday_time,
-         tuesday_time=tuesday_time,
-         wednesday_time=wednesday_time,
-         thursday_time=thursday_time,
-         friday_time=friday_time,
-         saturday_time=saturday_time,
-         sunday_time=sunday_time,
-         message=message )
+         message: str = '',
+         *,
+         schedule_rows: list[ dict[ str, object ] ] | None = None ) -> bool:
+      schedules = cls._build_guardians_talk_schedules(
+         talk,
+         location,
+         start_date,
+         end_date,
+         message,
+         schedule_rows=schedule_rows )
 
-      return save_guardians_talk_schedule_replacing_overlaps(
-         get_connection(),
-         schedule=schedule )
+      return cls._save_guardians_talk_schedules(
+         schedules,
+         save_schedule=save_guardians_talk_schedule_replacing_overlaps )
 
 
    @classmethod
@@ -165,31 +190,36 @@ class GuardiansCoordinator():
          location: str,
          start_date: DateInput,
          end_date: DateInput,
-         monday_time: str | None,
-         tuesday_time: str | None,
-         wednesday_time: str | None,
-         thursday_time: str | None,
-         friday_time: str | None,
-         saturday_time: str | None,
-         sunday_time: str | None,
-         message: str ) -> bool:
-      schedule = build_guardians_talk_schedule(
-         talk=talk,
-         location=location,
-         start_date=start_date,
-         end_date=end_date,
-         monday_time=monday_time,
-         tuesday_time=tuesday_time,
-         wednesday_time=wednesday_time,
-         thursday_time=thursday_time,
-         friday_time=friday_time,
-         saturday_time=saturday_time,
-         sunday_time=sunday_time,
-         message=message )
+         message: str = '',
+         *,
+         schedule_rows: list[ dict[ str, object ] ] | None = None ) -> bool:
+      schedules = cls._build_guardians_talk_schedules(
+         talk,
+         location,
+         start_date,
+         end_date,
+         message,
+         schedule_rows=schedule_rows )
 
-      return save_guardians_talk_schedule_trimming_overlaps(
+      return cls._save_guardians_talk_schedules(
+         schedules,
+         save_schedule=save_guardians_talk_schedule_trimming_overlaps )
+
+
+   @classmethod
+   def get_guardians_talk_schedule_times(
+         cls,
+         talk: str,
+         location: str ) -> list[ str ]:
+      schedule_times = fetch_guardians_talk_schedule_times(
          get_connection(),
-         schedule=schedule )
+         talk_name=talk,
+         location=location,
+         target_date=DateValues.today_date_key() )
+
+      return sorted(
+         schedule_times,
+         key=DateValues.time_value_in_seconds )
 
 
    @classmethod
@@ -197,15 +227,22 @@ class GuardiansCoordinator():
          cls,
          talk: str,
          location: str,
-         schedule_end_date: DateInput ) -> bool:
-      schedule_end = build_guardians_talk_schedule_end(
-         talk=talk,
-         location=location,
-         schedule_end_date=schedule_end_date )
+         schedule_end_date: DateInput,
+         talk_times: list[ str ] ) -> bool:
+      for talk_time in DateValues.normalize_unique_schedule_times(
+            talk_times ):
+         schedule_end = build_guardians_talk_schedule_end(
+            talk=talk,
+            location=location,
+            schedule_end_date=schedule_end_date,
+            talk_time=talk_time )
 
-      return save_guardians_talk_schedule_end(
-         get_connection(),
-         schedule_end=schedule_end )
+         if not save_guardians_talk_schedule_end(
+               get_connection(),
+               schedule_end=schedule_end ):
+            return False
+
+      return True
 
 
    @classmethod
@@ -214,16 +251,21 @@ class GuardiansCoordinator():
          talk: str,
          location: str,
          date: DateKey,
-         time: str ) -> bool:
-      cancellation = build_guardians_talk_cancellation(
-         talk=talk,
-         location=location,
-         date=date,
-         time=time )
+         talk_times: list[ str ] ) -> bool:
+      for talk_time in DateValues.normalize_unique_schedule_times(
+            talk_times ):
+         cancellation = build_guardians_talk_cancellation(
+            talk=talk,
+            location=location,
+            date=date,
+            time=talk_time )
 
-      return save_guardians_talk_cancellation(
-         get_connection(),
-         cancellation=cancellation )
+         if not save_guardians_talk_cancellation(
+               get_connection(),
+               cancellation=cancellation ):
+            return False
+
+      return True
 
 
    @classmethod
@@ -284,6 +326,8 @@ class GuardiansCoordinator():
          day: VisitDay,
          talk_name: str,
          year: VisitYear,
+         *,
+         start_time: str,
          day_schedule: list[ GuardiansTalk ] | None = None ) -> GuardiansTalk | None:
       rows = (
          day_schedule
@@ -296,7 +340,8 @@ class GuardiansCoordinator():
 
       return find_guardians_talk_on_day_schedule(
          rows,
-         talk_name )
+         talk_name,
+         start_time=start_time )
 
 
    @classmethod

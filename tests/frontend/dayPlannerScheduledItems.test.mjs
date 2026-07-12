@@ -111,7 +111,7 @@ test('resolveScheduledPillOptions adds remove for animals and guardians talks', 
    const talkOptions = resolveScheduledPillOptions(
       {
          scheduleItemKind: 'guardians_talks',
-         scheduleItemKey: 'Amur Tiger',
+         scheduleItemKey: 'Amur Tiger||1:30 PM||2:00 PM',
       },
       {
          onRemoveItineraryItem: (request) => {
@@ -128,7 +128,7 @@ test('resolveScheduledPillOptions adds remove for animals and guardians talks', 
 
    assert.deepEqual(removeRequests[1], {
       itemType: 'guardians_talks',
-      key: 'Amur Tiger',
+      key: 'Amur Tiger||1:30 PM||2:00 PM',
    });
 });
 

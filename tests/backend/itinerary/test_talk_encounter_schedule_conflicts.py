@@ -15,7 +15,7 @@ def test_set_itinerary_reports_guardians_talk_and_wild_encounter_time_conflicts(
       date='2026-06-15',
       animals=[],
       attractions=[ CAROUSEL ],
-      guardians_talks=guardians_talk_save_entries( GUARDIANS_TALK ),
+      guardians_talks=guardians_talk_save_entries( GUARDIANS_TALK, start_time='14:00' ),
       wild_encounters=[ wild_encounter_key( WILD_ENCOUNTER ) ],
    )
 

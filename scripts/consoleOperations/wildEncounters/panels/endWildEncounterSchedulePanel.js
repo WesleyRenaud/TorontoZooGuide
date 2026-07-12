@@ -21,7 +21,7 @@ export function createEndWildEncounterSchedulePanel() {
          createScheduleTimesCheckboxField({
             label: APP_STRINGS.labels.encounterTimes,
             inputId: 'endWildEncounterScheduleTimes',
-            helpText: APP_STRINGS.help.endWildEncounterScheduleTimes,
+            helpText: APP_STRINGS.help.endScheduleTimes,
          }),
          createDateField({
             label: APP_STRINGS.labels.endDate,

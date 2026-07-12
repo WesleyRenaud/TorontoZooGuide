@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { getItineraryItemKey } from '../../scripts/itinerary/panel/scheduleItemSearch.js';
+import { GuardiansTalkScheduleItemKey } from '../../scripts/itinerary/selectors/guardiansTalkSelector/scheduleItemKey.js';
 import { WildEncounterScheduleItemKey } from '../../scripts/itinerary/selectors/wildEncounterSelector/scheduleItemKey.js';
 
 test('getItineraryItemKey resolves keys for itinerary item types', () => {
@@ -18,7 +19,14 @@ test('getItineraryItemKey resolves keys for itinerary item types', () => {
    );
    assert.equal(
       getItineraryItemKey('guardians_talks', { name: 'Amur Tiger' }),
-      'Amur Tiger'
+      ''
+   );
+   assert.equal(
+      getItineraryItemKey('guardians_talks', {
+         name: 'Amur Tiger',
+         start_time: '14:00',
+      }),
+      'Amur Tiger||14:00'
    );
    assert.equal(
       getItineraryItemKey('wild_encounters', { name: 'African Rainforest' }),
@@ -30,6 +38,24 @@ test('getItineraryItemKey resolves keys for itinerary item types', () => {
          start_time: '14:00',
       }),
       new WildEncounterScheduleItemKey('Masai Giraffe', '14:00')
+   );
+});
+
+test('guardians talk schedule item key wire round-trips', () => {
+   const key = new GuardiansTalkScheduleItemKey('Amur Tiger', '11:30', '12:00');
+
+   assert.equal(key.toWire(), 'Amur Tiger||11:30||12:00');
+   assert.deepEqual(
+      GuardiansTalkScheduleItemKey.fromWire('Amur Tiger||11:30||12:00'),
+      key
+   );
+   assert.deepEqual(
+      GuardiansTalkScheduleItemKey.fromRow({
+         name: 'Amur Tiger',
+         start_time: '11:30',
+         end_time: '12:00',
+      }),
+      key
    );
 });
 

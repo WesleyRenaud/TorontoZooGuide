@@ -42,13 +42,7 @@ def test_set_get_and_clear_itinerary(
       location='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time='10:00',
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '10:00', monday=True, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=False, sunday=False ),
       message=None
    )
    WildEncounterCoordinator.set_wild_encounter_schedule(
@@ -65,7 +59,7 @@ def test_set_get_and_clear_itinerary(
       departure_time='5:00 PM',
       animals=[ { 'species': 'African Lion', 'exhibit': 'Africa Savanna' } ],
       attractions=[ 'Conservation Carousel' ],
-      guardians_talks=guardians_talk_save_entries( 'African Lion' ),
+      guardians_talks=guardians_talk_save_entries( 'African Lion', start_time='10:00' ),
       wild_encounters=[ wild_encounter_key( 'African Rainforest' ) ],
    ).success
 
@@ -95,7 +89,7 @@ def test_set_get_and_clear_itinerary(
       talk='African Lion',
       location='Africa Savanna',
       date='2026-06-15',
-      time='10:00 AM'
+      talk_times=[ '10:00 AM' ]
    )
    assert WildEncounterCoordinator.cancel_wild_encounter_occurrence(
       wild_encounter_name='African Rainforest',

@@ -236,5 +236,12 @@
     "x_coord": 47.678,
     "y_coord": 66.931,
     "maximum_duration": 30
+  },
+  {
+    "name": "Polar Bear",
+    "location": "Tundra Trek",
+    "x_coord": 77.362,
+    "y_coord": 51.988,
+    "maximum_duration": 30
   }
 ]

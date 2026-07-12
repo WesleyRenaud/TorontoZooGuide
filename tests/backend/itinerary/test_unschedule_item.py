@@ -218,9 +218,9 @@ def test_set_arrival_time_none_clears_arrival_time( db: DbControllers ) -> None:
 def test_map_schedule_item_key_from_wire_guardians_and_wild_kinds() -> None:
    guardians_key = map_schedule_item_key_from_wire(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
-      'Gorilla Guardians' )
+      'Gorilla Guardians||10:00' )
 
-   assert guardians_key == GuardiansTalkScheduleItemKey( name='Gorilla Guardians' )
+   assert guardians_key == GuardiansTalkScheduleItemKey( name='Gorilla Guardians', start_time='10:00' )
 
    wild_key = map_schedule_item_key_from_wire(
       ScheduleItemKind.WILD_ENCOUNTER.item_type,

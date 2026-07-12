@@ -2,6 +2,7 @@ import { APP_STRINGS } from '../../../strings.js';
 import {
    createActions,
    createPanelShell,
+   createScheduleTimesCheckboxField,
    createSelectField,
    createStatus,
 } from '../../templates/fragments.js';
@@ -26,10 +27,10 @@ export function createCancelGuardiansTalkOccurrencePanel() {
             inputId: 'cancelGuardiansTalkOccurrenceDate',
             emptyOptionLabel: APP_STRINGS.placeholders.date,
          }),
-         createSelectField({
-            label: APP_STRINGS.labels.time,
-            inputId: 'cancelGuardiansTalkOccurrenceTime',
-            emptyOptionLabel: APP_STRINGS.placeholders.time,
+         createScheduleTimesCheckboxField({
+            label: APP_STRINGS.labels.talkTimes,
+            inputId: 'cancelGuardiansTalkOccurrenceTimes',
+            helpText: APP_STRINGS.help.cancelOccurrenceTimes,
          }),
          createActions({
             submitId: 'submitCancelGuardiansTalkOccurrence',

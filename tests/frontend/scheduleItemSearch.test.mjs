@@ -218,6 +218,7 @@ test('getScheduleItemRowKind and getScheduleItemRowId resolve mixed rows', () =>
    };
    const guardiansTalkRow = {
       name: 'Amur Tiger',
+      start_time: '14:00',
       scheduleItemKind: 'guardians_talks',
    };
    const wildEncounterRow = {
@@ -232,7 +233,7 @@ test('getScheduleItemRowKind and getScheduleItemRowId resolve mixed rows', () =>
    assert.equal(getScheduleItemRowKind(wildEncounterRow), 'wild_encounters');
    assert.equal(getScheduleItemRowId(animalRow), 'Tiger||Savanna');
    assert.equal(getScheduleItemRowId(attractionRow), 'Carousel');
-   assert.equal(getScheduleItemRowId(guardiansTalkRow), 'Amur Tiger');
+   assert.equal(getScheduleItemRowId(guardiansTalkRow), 'Amur Tiger||14:00');
    assert.equal(getScheduleItemRowId(wildEncounterRow), 'African Rainforest||14:00');
 });
 
@@ -269,7 +270,7 @@ test('buildItineraryScheduleItemRowIds collects schedule item keys', () => {
 
    assert.equal(ids.animalIds.has('Tiger||Savanna'), true);
    assert.equal(ids.attractionIds.has('Carousel'), true);
-   assert.equal(ids.guardiansTalkIds.has('Amur Tiger'), true);
+   assert.equal(ids.guardiansTalkIds.has('Amur Tiger||1:30 PM'), true);
    assert.equal(ids.wildEncounterIds.has('African Rainforest'), false);
    assert.equal(ids.wildEncounterIds.has('Americas||2:00 PM'), true);
 });
@@ -288,8 +289,8 @@ test('buildItineraryScheduleItemRowIds can exclude scheduled items', () => {
 
    assert.equal(ids.animalIds.has('Tiger||Savanna'), false);
    assert.equal(ids.animalIds.has('Giant Panda||Bamboo'), true);
-   assert.equal(ids.guardiansTalkIds.has('Amur Tiger'), false);
-   assert.equal(ids.guardiansTalkIds.has('Polar Bear'), true);
+   assert.equal(ids.guardiansTalkIds.has('Amur Tiger||1:30 PM'), false);
+   assert.equal(ids.guardiansTalkIds.has(''), true);
 });
 
 test('buildItineraryScheduleItemRowIds can include scheduled items only', () => {
@@ -303,8 +304,8 @@ test('buildItineraryScheduleItemRowIds can include scheduled items only', () => 
       ],
    }, { scheduledOnly: true });
 
-   assert.equal(ids.guardiansTalkIds.has('Amur Tiger'), true);
-   assert.equal(ids.guardiansTalkIds.has('Polar Bear'), false);
+   assert.equal(ids.guardiansTalkIds.has('Amur Tiger||1:30 PM'), true);
+   assert.equal(ids.guardiansTalkIds.has(''), false);
    assert.equal(ids.wildEncounterIds.has('African Rainforest||2:00 PM'), true);
 });
 
@@ -312,10 +313,12 @@ test('filterScheduleItemRowsExcludingScheduledOccurrences hides scheduled talks 
    const rows = [
       {
          name: 'Amur Tiger',
+         start_time: '1:30 PM',
          scheduleItemKind: 'guardians_talks',
       },
       {
          name: 'Polar Bear',
+         start_time: '2:00 PM',
          scheduleItemKind: 'guardians_talks',
       },
       {
@@ -338,6 +341,7 @@ test('filterScheduleItemRowsExcludingScheduledOccurrences hides scheduled talks 
       [
          {
             name: 'Polar Bear',
+            start_time: '2:00 PM',
             scheduleItemKind: 'guardians_talks',
          },
          {
@@ -363,6 +367,7 @@ test('filterScheduleItemRowsForScheduleModule applies module-specific occurrence
       },
       {
          name: 'Amur Tiger',
+         start_time: '1:30 PM',
          scheduleItemKind: 'guardians_talks',
       },
       {
@@ -431,10 +436,12 @@ test('filterScheduleItemRowsToItinerary keeps only rows on the itinerary', () =>
       },
       {
          name: 'Amur Tiger',
+         start_time: '1:30 PM',
          scheduleItemKind: 'guardians_talks',
       },
       {
          name: 'Polar Bear',
+         start_time: '2:00 PM',
          scheduleItemKind: 'guardians_talks',
       },
       {
@@ -448,7 +455,7 @@ test('filterScheduleItemRowsToItinerary keeps only rows on the itinerary', () =>
       filterScheduleItemRowsToItinerary(rows, {
          animals: [{ species: 'Tiger', exhibit: 'Savanna' }],
          attractions: [{ name: 'Carousel' }],
-         guardiansTalks: [{ name: 'Amur Tiger' }],
+         guardiansTalks: [{ name: 'Amur Tiger', start_time: '1:30 PM' }],
          wildEncounters: [{ name: 'African Rainforest', start_time: '2:00 PM' }],
       }),
       [
@@ -463,6 +470,7 @@ test('filterScheduleItemRowsToItinerary keeps only rows on the itinerary', () =>
          },
          {
             name: 'Amur Tiger',
+            start_time: '1:30 PM',
             scheduleItemKind: 'guardians_talks',
          },
          {
@@ -484,6 +492,7 @@ test('tagScheduleItemRow tags itinerary rows for the schedule module', () => {
    });
    const guardiansTalkRow = tagScheduleItemRow(ScheduleItemKind.GUARDIANS_TALK.itemType, {
       name: 'Amur Tiger',
+      start_time: '1:30 PM',
    });
 
    assert.equal(animalRow.scheduleItemKind, ScheduleItemKind.ANIMAL.itemType);
@@ -497,6 +506,6 @@ test('tagScheduleItemRow tags itinerary rows for the schedule module', () => {
       guardiansTalkRow.scheduleItemKind,
       ScheduleItemKind.GUARDIANS_TALK.itemType
    );
-   assert.equal(getScheduleItemRowId(guardiansTalkRow), 'Amur Tiger');
+   assert.equal(getScheduleItemRowId(guardiansTalkRow), 'Amur Tiger||1:30 PM');
    assert.equal(tagScheduleItemRow(ScheduleItemKind.ANIMAL.itemType, null), null);
 });

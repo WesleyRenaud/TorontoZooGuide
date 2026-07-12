@@ -25,7 +25,7 @@ export function createCancelWildEncounterOccurrencePanel() {
          createScheduleTimesCheckboxField({
             label: APP_STRINGS.labels.encounterTimes,
             inputId: 'cancelWildEncounterOccurrenceTimes',
-            helpText: APP_STRINGS.help.cancelWildEncounterOccurrenceTimes,
+            helpText: APP_STRINGS.help.cancelOccurrenceTimes,
          }),
          createActions({
             submitId: 'submitCancelWildEncounterOccurrence',

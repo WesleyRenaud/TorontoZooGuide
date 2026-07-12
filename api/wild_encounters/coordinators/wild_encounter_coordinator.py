@@ -31,6 +31,7 @@ from ..scheduling.wild_encounter_schedule_status import build_wild_encounter_sch
 from ..search.wild_encounters_matching_query import build_wild_encounters_matching_query
 from ...shared.calendar_dates import CalendarDates
 from ...shared.calendar_dates import DateValues
+from ...shared.constants import SCHEDULED_OCCURRENCE_DAYS_AHEAD
 from ...types import Connection, DateInput, DateKey, MonthInput, VisitDay, VisitYear
 
 
@@ -91,7 +92,7 @@ class WildEncounterCoordinator():
    def get_wild_encounter_occurrences(
          cls,
          wild_encounter_name: str,
-         days_ahead: int = 60 ) -> list[ ScheduledOccurrence ]:
+         days_ahead: int = SCHEDULED_OCCURRENCE_DAYS_AHEAD ) -> list[ ScheduledOccurrence ]:
       schedule_records = fetch_wild_encounter_schedule_records_for_occurrences(
          get_connection(),
          wild_encounter=wild_encounter_name )

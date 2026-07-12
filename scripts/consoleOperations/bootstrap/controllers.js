@@ -20,6 +20,7 @@ import { createEndGuardiansTalkScheduleController } from '../guardiansTalks/cont
 import { createGuardiansTalkLocationFilterController } from '../guardiansTalks/controllers/guardiansTalkLocationFilter.js';
 import { createGuardiansTalkOccurrenceFilterController } from '../guardiansTalks/controllers/guardiansTalkOccurrenceFilter.js';
 import { createGuardiansTalkScheduleController } from '../guardiansTalks/controllers/guardiansTalkSchedule.js';
+import { createGuardiansTalkScheduleTimesFilterController } from '../guardiansTalks/controllers/guardiansTalkScheduleTimesFilter.js';
 import { createRestaurantClosedController } from '../restaurants/controllers/restaurantClosed.js';
 import { createRestaurantClosureOverrideController } from '../restaurants/controllers/restaurantClosureOverride.js';
 import { createRestaurantOpeningScheduleController } from '../restaurants/controllers/restaurantOpeningSchedule.js';
@@ -155,8 +156,12 @@ const CONTROLLER_BINDINGS = [
    {
       createController: createEndGuardiansTalkScheduleController,
       getRefs: refs => refs.guardiansTalks.endSchedule,
-      getExtraOptions: ({ endGuardiansTalkScheduleLocationFilterController }) => ({
+      getExtraOptions: ({
+         endGuardiansTalkScheduleLocationFilterController,
+         guardiansTalkScheduleTimesFilterController,
+      }) => ({
          talkLocationFilterController: endGuardiansTalkScheduleLocationFilterController,
+         scheduleTimesFilterController: guardiansTalkScheduleTimesFilterController,
       }),
    },
    {
@@ -274,7 +279,13 @@ export function createConsoleSpecialControllers({ guardiansTalks, wildEncounters
             locationEl: guardiansTalks.cancelOccurrence.locationEl,
             talkNameEl: guardiansTalks.cancelOccurrence.talkNameEl,
             dateEl: guardiansTalks.cancelOccurrence.dateEl,
-            timeEl: guardiansTalks.cancelOccurrence.timeEl,
+            timesEl: guardiansTalks.cancelOccurrence.timesEl,
+         }),
+      guardiansTalkScheduleTimesFilterController:
+         createGuardiansTalkScheduleTimesFilterController({
+            locationEl: guardiansTalks.endSchedule.locationEl,
+            talkNameEl: guardiansTalks.endSchedule.talkNameEl,
+            timesEl: guardiansTalks.endSchedule.timesEl,
          }),
       wildEncounterOccurrenceFilterController:
          createWildEncounterOccurrenceFilterController({
@@ -297,6 +308,7 @@ export function wireConsoleOperationControllers({
    endGuardiansTalkScheduleLocationFilterController,
    cancelGuardiansTalkOccurrenceLocationFilterController,
    cancelGuardiansTalkOccurrenceFilterController,
+   guardiansTalkScheduleTimesFilterController,
    wildEncounterOccurrenceFilterController,
    wildEncounterScheduleTimesFilterController,
 }) {
@@ -310,6 +322,7 @@ export function wireConsoleOperationControllers({
          endGuardiansTalkScheduleLocationFilterController,
          cancelGuardiansTalkOccurrenceLocationFilterController,
          cancelGuardiansTalkOccurrenceFilterController,
+         guardiansTalkScheduleTimesFilterController,
          wildEncounterOccurrenceFilterController,
          wildEncounterScheduleTimesFilterController,
       },

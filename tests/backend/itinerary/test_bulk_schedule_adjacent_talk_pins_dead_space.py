@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import guardians_talk_save_entry
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -46,13 +47,7 @@ def _set_summer_zebra_and_camel_schedules_from_database() -> None:
       location=AFRICA_SAVANNA,
       start_date='2026-06-27',
       end_date='2026-09-07',
-      monday_time=ZEBRA_TIME,
-      tuesday_time=None,
-      wednesday_time=ZEBRA_TIME,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( ZEBRA_TIME, monday=True, tuesday=False, wednesday=True, thursday=False, friday=False, saturday=False, sunday=False ),
       message="The Grevy's Zebra at Africa Savanna is not scheduled today.",
    )
    assert GuardiansCoordinator.set_guardians_talk_schedule(
@@ -60,13 +55,7 @@ def _set_summer_zebra_and_camel_schedules_from_database() -> None:
       location=EURASIA_WILDS,
       start_date='2026-06-27',
       end_date='2026-09-07',
-      monday_time=CAMEL_TIME,
-      tuesday_time=CAMEL_TIME,
-      wednesday_time=CAMEL_TIME,
-      thursday_time=CAMEL_TIME,
-      friday_time=CAMEL_TIME,
-      saturday_time=CAMEL_TIME,
-      sunday_time=CAMEL_TIME,
+      schedule_rows=wire_schedule_rows( CAMEL_TIME, monday=True, tuesday=True, wednesday=True, thursday=True, friday=True, saturday=True, sunday=True ),
       message='The Bactrian Camel at Eurasia Wilds is not scheduled today.',
    )
 
@@ -185,8 +174,8 @@ def test_adjacent_zebra_then_camel_anchors_savanna_loop_before_zebra(
       animals=[],
       attractions=[],
       guardians_talks=[
-         guardians_talk_save_entry( ZEBRA_TALK ),
-         guardians_talk_save_entry( CAMEL_TALK ),
+         guardians_talk_save_entry( ZEBRA_TALK, start_time=ZEBRA_TIME ),
+         guardians_talk_save_entry( CAMEL_TALK, start_time=CAMEL_TIME ),
       ],
       wild_encounters=[],
       selected_exhibits=_selected_exhibits_for_africa_savanna(),

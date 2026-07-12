@@ -69,7 +69,7 @@ def schedule_itinerary_item(
    if isinstance( schedule_item_key, GuardiansTalkScheduleItemKey ):
       return schedule_guardians_talk_itinerary_item(
          conn,
-         schedule_item_key.name,
+         schedule_item_key,
          itinerary_context=itinerary_context,
          confirming_guardians_talk_unschedule=(
             confirming_guardians_talk_unschedule ),

@@ -16,13 +16,7 @@ def _set_lion_talk_and_grizzly_encounter_partial_overlap_schedules() -> None:
       location='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time='13:30',
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( '13:30', monday=True, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=False, sunday=False ),
       message=None
    )
    WildEncounterCoordinator.set_wild_encounter_schedule(
@@ -42,7 +36,7 @@ def test_set_itinerary_reports_partial_guardians_talk_encounter_overlap_without_
       date='2026-06-15',
       animals=[],
       attractions=[],
-      guardians_talks=guardians_talk_save_entries( 'African Lion' ),
+      guardians_talks=guardians_talk_save_entries( 'African Lion', start_time='13:30' ),
       wild_encounters=[ wild_encounter_key( 'Grizzly Bear', start_time='13:00' ) ],
    )
 
@@ -71,7 +65,7 @@ def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overl
       date='2026-06-15',
       animals=[],
       attractions=[],
-      guardians_talks=guardians_talk_save_entries( 'African Lion' ),
+      guardians_talks=guardians_talk_save_entries( 'African Lion', start_time='13:30' ),
       wild_encounters=[ wild_encounter_key( 'Grizzly Bear', start_time='13:00' ) ],
       overriding_conflicting_guardians_talks=True,
       confirming_guardians_talk_without_animal=True,

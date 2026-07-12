@@ -24,6 +24,7 @@ const ATTRACTION_ROW = {
 
 const GUARDIANS_TALK_ROW = {
    name: 'Amur Tiger',
+   start_time: '1:30 PM',
    scheduleItemKind: 'guardians_talks',
 };
 

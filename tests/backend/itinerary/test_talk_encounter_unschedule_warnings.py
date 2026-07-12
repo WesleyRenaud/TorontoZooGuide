@@ -24,7 +24,7 @@ def test_set_itinerary_returns_guardians_unschedule_after_talk_encounter_conflic
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK, start_time='14:00' ) ],
       wild_encounters=[],
       overriding_conflicting_guardians_talks=True,
    )
@@ -92,7 +92,7 @@ def test_set_itinerary_saves_talk_after_conflict_and_unschedule_confirmations(
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( GUARDIANS_TALK, start_time='14:00' ) ],
       wild_encounters=[],
       overriding_conflicting_guardians_talks=True,
       confirming_guardians_talk_unschedule=True,

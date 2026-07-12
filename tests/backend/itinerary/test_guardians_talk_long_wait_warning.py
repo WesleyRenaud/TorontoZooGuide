@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, parsed_schedule_item, schedule_itinerary_item
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -33,13 +34,7 @@ def _set_talk_schedule(
       location=location,
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time=talk_time,
-      tuesday_time=talk_time,
-      wednesday_time=talk_time,
-      thursday_time=talk_time,
-      friday_time=talk_time,
-      saturday_time=talk_time,
-      sunday_time=talk_time,
+      schedule_rows=wire_schedule_rows( talk_time, monday=True, tuesday=True, wednesday=True, thursday=True, friday=True, saturday=True, sunday=True ),
       message=None,
    )
 
@@ -132,8 +127,8 @@ def test_set_itinerary_warns_when_talk_is_far_from_other_scheduled_talk(
       animals=[],
       attractions=[],
       guardians_talks=[
-         guardians_talk_save_entry( ZEBRA_TALK ),
-         guardians_talk_save_entry( MEERKAT_TALK ),
+         guardians_talk_save_entry( ZEBRA_TALK, start_time='10:00' ),
+         guardians_talk_save_entry( MEERKAT_TALK, start_time='13:00' ),
       ],
       wild_encounters=[],
       confirming_guardians_talk_without_animal=True,
@@ -154,8 +149,8 @@ def test_set_itinerary_warns_when_talk_is_far_from_other_scheduled_talk(
       animals=[],
       attractions=[],
       guardians_talks=[
-         guardians_talk_save_entry( ZEBRA_TALK ),
-         guardians_talk_save_entry( MEERKAT_TALK ),
+         guardians_talk_save_entry( ZEBRA_TALK, start_time='10:00' ),
+         guardians_talk_save_entry( MEERKAT_TALK, start_time='13:00' ),
       ],
       wild_encounters=[],
       confirming_guardians_talk_long_wait=True,
@@ -177,7 +172,7 @@ def test_schedule_talk_warns_when_far_from_existing_scheduled_items(
       departure_time='17:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK ) ],
+      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='10:00' ) ],
       wild_encounters=[],
       confirming_guardians_talk_without_animal=True,
    ).success
@@ -188,13 +183,13 @@ def test_schedule_talk_warns_when_far_from_existing_scheduled_items(
    ).success
    assert schedule_itinerary_item(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
-      ZEBRA_TALK,
+      f'{ ZEBRA_TALK }||10:00',
       confirming_guardians_talk_without_animal=True,
    ).success
 
    result = schedule_itinerary_item(
       ScheduleItemKind.GUARDIANS_TALK.item_type,
-      MEERKAT_TALK,
+      f'{ MEERKAT_TALK }||13:00',
       confirming_guardians_talk_without_animal=True,
    )
 
@@ -205,7 +200,7 @@ def test_schedule_talk_warns_when_far_from_existing_scheduled_items(
    confirmed = ItineraryCoordinator.schedule_itinerary_item(
       parsed_schedule_item(
          ScheduleItemKind.GUARDIANS_TALK.item_type,
-         MEERKAT_TALK ),
+         f'{ MEERKAT_TALK }||13:00' ),
       confirming_guardians_talk_long_wait=True,
       confirming_guardians_talk_without_animal=True,
    )
@@ -226,8 +221,8 @@ def test_bulk_schedule_warns_and_leaves_schedule_unchanged_until_confirmed(
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
       guardians_talks=[
-         guardians_talk_save_entry( ZEBRA_TALK ),
-         guardians_talk_save_entry( MEERKAT_TALK ),
+         guardians_talk_save_entry( ZEBRA_TALK, start_time='10:00' ),
+         guardians_talk_save_entry( MEERKAT_TALK, start_time='13:00' ),
       ],
       wild_encounters=[],
       confirming_guardians_talk_long_wait=True,

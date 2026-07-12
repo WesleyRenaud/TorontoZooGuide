@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import schedule_itinerary_item
+from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
@@ -27,7 +28,7 @@ LION_ITINERARY_ENTRY = {
 def _guardians_talk_save_entry(
       name: str,
       *,
-      start_time: str | None = None,
+      start_time: str = '10:00',
       end_time: str | None = None ) -> dict[ str, str | None ]:
    return {
       'name': name,
@@ -44,13 +45,7 @@ def _set_guardians_talk_schedule(
       location='Africa Savanna',
       start_date='2026-06-01',
       end_date='2026-06-30',
-      monday_time=monday_time,
-      tuesday_time=None,
-      wednesday_time=None,
-      thursday_time=None,
-      friday_time=None,
-      saturday_time=None,
-      sunday_time=None,
+      schedule_rows=wire_schedule_rows( monday_time, monday=True, tuesday=False, wednesday=False, thursday=False, friday=False, saturday=False, sunday=False ),
       message=None,
    )
 
@@ -90,7 +85,7 @@ def test_set_itinerary_returns_warning_when_guardians_talk_would_unschedule_item
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ _guardians_talk_save_entry( GUARDIANS_TALK ) ],
+      guardians_talks=[ _guardians_talk_save_entry( GUARDIANS_TALK, start_time='10:00' ) ],
       wild_encounters=[],
    )
 
@@ -124,7 +119,7 @@ def test_set_itinerary_unschedules_overlapping_items_when_confirmed(
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ _guardians_talk_save_entry( GUARDIANS_TALK ) ],
+      guardians_talks=[ _guardians_talk_save_entry( GUARDIANS_TALK, start_time='10:00' ) ],
       wild_encounters=[],
       confirming_guardians_talk_unschedule=True,
    )
@@ -152,7 +147,7 @@ def test_schedule_guardians_talk_returns_warning_when_it_would_unschedule_items(
 
    result = schedule_itinerary_item(
       item_type='guardians_talks',
-      key=GUARDIANS_TALK,
+      key=f'{ GUARDIANS_TALK }||10:00',
    )
 
    assert not result.success
@@ -181,7 +176,7 @@ def test_schedule_guardians_talk_unschedules_overlapping_items_when_confirmed(
 
    result = schedule_itinerary_item(
       item_type='guardians_talks',
-      key=GUARDIANS_TALK,
+      key=f'{ GUARDIANS_TALK }||10:00',
       confirming_guardians_talk_unschedule=True,
    )
 
@@ -211,7 +206,7 @@ def test_confirmed_guardians_talk_reschedule_persists_walk_route(
 
    result = schedule_itinerary_item(
       item_type='guardians_talks',
-      key=GUARDIANS_TALK,
+      key=f'{ GUARDIANS_TALK }||10:00',
       confirming_guardians_talk_unschedule=True,
    )
 
@@ -243,7 +238,7 @@ def test_guardians_talk_unschedule_warning_cannot_be_suppressed(
       arrival_time='09:00',
       animals=[ LION_ITINERARY_ENTRY ],
       attractions=[],
-      guardians_talks=[ _guardians_talk_save_entry( GUARDIANS_TALK ) ],
+      guardians_talks=[ _guardians_talk_save_entry( GUARDIANS_TALK, start_time='10:00' ) ],
       wild_encounters=[],
    )
 
