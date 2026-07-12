@@ -5,13 +5,13 @@ from dataclasses import replace
 from ..conflicts.itinerary_schedule_time_conflicts import schedule_time_conflict_warning
 from ..conflicts.itinerary_unschedule_confirmations import unschedule_confirmation_warning
 from ..results.itinerary_save_result import ItinerarySaveResult
+from ..scheduling.bulk.simulate_bulk_reschedule_for_long_wait import isolated_guardians_talks_after_simulated_bulk_for_validated_itinerary
 from .set_itinerary_context import build_set_itinerary_error_result
 from .set_itinerary_context import SetItineraryContext
 from ...shared.enums import ItineraryErrorType
 from ..warnings.early_admission_warning import early_admission_warning_is_required
 from ..warnings.guardians_talk_long_wait_warning import build_guardians_talk_long_wait_issue_from_talks
 from ..warnings.guardians_talk_long_wait_warning import guardians_talk_long_wait_warning_is_required_for_validated_itinerary
-from ..warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_validated_itinerary
 from ..warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
 from ..warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required
 from ..warnings.guardians_talk_without_animal_warning import guardians_talks_without_matching_animal
@@ -140,21 +140,25 @@ def check_set_itinerary_save_warnings(
          context.validated_itinerary,
          confirming_guardians_talk_long_wait=(
             confirming_guardians_talk_long_wait ) ):
-      isolated_talks = isolated_guardians_talks_from_validated_itinerary(
-         context.validated_itinerary )
+      isolated_talks = isolated_guardians_talks_after_simulated_bulk_for_validated_itinerary(
+         context.conn,
+         context.validated_itinerary,
+         visit_date=context.save_input.date,
+         itinerary_context=context.itinerary_controller_kwargs )
 
-      return (
-         updated_context,
-         with_suppressed_warnings(
-            ItinerarySaveResult(
-               status=ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT,
-               reasons=(
-                  build_guardians_talk_long_wait_issue_from_talks(
-                     isolated_talks ),
+      if isolated_talks:
+         return (
+            updated_context,
+            with_suppressed_warnings(
+               ItinerarySaveResult(
+                  status=ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT,
+                  reasons=(
+                     build_guardians_talk_long_wait_issue_from_talks(
+                        isolated_talks ),
+                  ),
+                  itinerary=context.current_itinerary,
                ),
-               itinerary=context.current_itinerary,
-            ),
-            warning_tuple ),
-      )
+               warning_tuple ),
+         )
 
    return ( updated_context, None )

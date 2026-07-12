@@ -158,6 +158,23 @@ def prepare_zoo_hours_schedule_window(
       saved_itinerary,
       zoo_hours_record,
       allow_early_admission=allow_early_admission )
+   window = zoo_hours_schedule_window_seconds(
+      zoo_hours_record,
+      allow_early_admission=allow_early_admission )
+
+   if window is None:
+      return build_save_result(
+         conn,
+         ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE,
+         **itinerary_context )
+
+   return saved_itinerary, window
+
+
+def zoo_hours_schedule_window_seconds(
+      zoo_hours_record: ZooHoursRecord | None,
+      *,
+      allow_early_admission: bool = False ) -> tuple[ int, int ] | None:
    anchor_seconds = scheduling_anchor_seconds(
       zoo_hours_record,
       None,
@@ -165,12 +182,9 @@ def prepare_zoo_hours_schedule_window(
    day_end_seconds = scheduling_day_end_seconds( zoo_hours_record, None )
 
    if anchor_seconds is None or day_end_seconds is None:
-      return build_save_result(
-         conn,
-         ItineraryErrorType.SCHEDULE_WINDOW_UNAVAILABLE,
-         **itinerary_context )
+      return None
 
-   return saved_itinerary, ( anchor_seconds, day_end_seconds )
+   return ( anchor_seconds, day_end_seconds )
 
 
 def _early_admission_scheduling_is_allowed( conn: Connection ) -> bool:

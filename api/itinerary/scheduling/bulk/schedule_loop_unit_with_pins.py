@@ -10,6 +10,7 @@ from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots
 from .loop_unit_schedule_slots import assign_contiguous_slots_ending_by
 from .loop_unit_schedule_slots import fetch_viewing_durations
+from .loop_unit_schedule_slots import LoopScheduleSlotSink
 from .loop_unit_schedule_slots import save_loop_slots
 from .pack_loops_into_schedule_window import PreparedLoopScheduleUnit
 from ...routing.loop_schedule_pin import LoopSchedulePin
@@ -25,6 +26,7 @@ def schedule_prepared_loop_unit_with_pins(
       window_start_seconds: int,
       window_end_seconds: int,
       cursor_seconds: int,
+      slot_sink: LoopScheduleSlotSink | None = None,
    ) -> tuple[ list[ ItineraryAnimalRecord ], int ]:
    loop_id = prepared_unit.unit.loop_id
 
@@ -44,7 +46,8 @@ def schedule_prepared_loop_unit_with_pins(
          blockers=blockers,
          window_start_seconds=window_start_seconds,
          window_end_seconds=window_end_seconds,
-         cursor_seconds=cursor_seconds )
+         cursor_seconds=cursor_seconds,
+         slot_sink=slot_sink )
    except LoopUnitSchedulePersistError as error:
       return error.animals, cursor_seconds
 
@@ -106,6 +109,7 @@ def _schedule_animals_around_loop_pins(
       window_start_seconds: int,
       window_end_seconds: int,
       cursor_seconds: int,
+      slot_sink: LoopScheduleSlotSink | None = None,
    ) -> tuple[ int, list[ ItineraryAnimalRecord ] ]:
    animals = list( prepared_unit.unit.animals )
    loop_id = prepared_unit.unit.loop_id
@@ -145,7 +149,8 @@ def _schedule_animals_around_loop_pins(
          animals=animals,
          loop_pins=loop_pins,
          schedule_cursor_seconds=schedule_cursor_seconds,
-         scheduled_animal_ids=scheduled_animal_ids )
+         scheduled_animal_ids=scheduled_animal_ids,
+         slot_sink=slot_sink )
 
    if schedule_cursor_seconds > window_end_seconds:
       raise LoopUnitSchedulePersistError( animals )
@@ -162,6 +167,7 @@ def _schedule_animal_segment_step(
       loop_pins: list[ LoopSchedulePin ],
       schedule_cursor_seconds: int,
       scheduled_animal_ids: set[ int ],
+      slot_sink: LoopScheduleSlotSink | None = None,
    ) -> int:
    if _should_skip_animal_segment_step(
          schedule_step,
@@ -185,7 +191,8 @@ def _schedule_animal_segment_step(
       animal_group=unscheduled_animals,
       start_seconds=schedule_cursor_seconds,
       segment_end_seconds=schedule_step.end_before_seconds,
-      backward_anchor=schedule_step.anchor_at_end )
+      backward_anchor=schedule_step.anchor_at_end,
+      slot_sink=slot_sink )
    scheduled_animal_ids.update(
       id( animal_row )
       for animal_row in unscheduled_animals )
@@ -217,6 +224,7 @@ def _schedule_animal_segment(
       start_seconds: int,
       segment_end_seconds: int,
       backward_anchor: bool,
+      slot_sink: LoopScheduleSlotSink | None = None,
    ) -> int:
    durations = fetch_viewing_durations( conn, animal_group )
 
@@ -260,7 +268,11 @@ def _schedule_animal_segment(
    if not animal_slots:
       raise LoopUnitSchedulePersistError( animals )
 
-   if not save_loop_slots( conn, blockers, animal_slots ):
+   if not save_loop_slots(
+         conn,
+         blockers,
+         animal_slots,
+         slot_sink=slot_sink ):
       raise LoopUnitSchedulePersistError( animals )
 
    return segment_end_cursor_seconds

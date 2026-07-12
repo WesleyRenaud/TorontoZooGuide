@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..bulk.simulate_bulk_reschedule_for_long_wait import isolated_guardians_talks_after_adding_talk_with_simulated_bulk
 from ..core.scheduled_occurrence import schedule_guardians_talk_for_itinerary
 from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
-from ...domain.itinerary import build_current_itinerary
 from ..extend_departure_for_activity import ensure_departure_covers_end_time
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
@@ -21,7 +21,6 @@ from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ..unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
 from ...warnings.guardians_talk_long_wait_warning import build_guardians_talk_long_wait_issue_from_talks
-from ...warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_after_adding_talk
 from ...warnings.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
 from ...warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
 from ...warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required_for_talk
@@ -141,12 +140,10 @@ def schedule_guardians_talk_itinerary_item(
          **itinerary_context )
 
    if not confirming_guardians_talk_long_wait:
-      current_itinerary = build_current_itinerary(
-         saved_itinerary,
-         **itinerary_context )
-      isolated_talks = isolated_guardians_talks_after_adding_talk(
-         current_itinerary,
-         guardians_talk_diff )
+      isolated_talks = isolated_guardians_talks_after_adding_talk_with_simulated_bulk(
+         conn,
+         guardians_talk_diff,
+         itinerary_context=itinerary_context )
 
       if isolated_talks:
          return build_save_result(
