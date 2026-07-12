@@ -4,7 +4,6 @@ from .enclosure_viewing_walk_node import EnclosureViewingWalkNode
 
 
 ViewingSpotKey = tuple[ str, str, float, float ]
-SpeciesExhibitKey = tuple[ str, str ]
 
 
 def viewing_spot_key(

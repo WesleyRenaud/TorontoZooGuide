@@ -4,6 +4,7 @@ from collections import defaultdict
 
 from ...models import Animal
 from ..search.animals_matching_query import species_exhibit_key
+from ..search.species_exhibit_key import SpeciesExhibitKey
 from ...shared.enums import EnclosureType
 from ...shared.strings import SharedStrings
 
@@ -54,13 +55,13 @@ def effective_viewing_likelihood(
 
 
 def single_habitat_viewing_species_exhibit_keys(
-      animals: list[ Animal ] ) -> set[ tuple[ str, str ] ]:
+      animals: list[ Animal ] ) -> set[ SpeciesExhibitKey ]:
    candidate_keys = {
       species_exhibit_key( animal )
       for animal in animals
       if animal.include_all_viewing_spots is False
    }
-   max_likelihood_by_key: dict[ tuple[ str, str ], int ] = defaultdict( int )
+   max_likelihood_by_key: dict[ SpeciesExhibitKey, int ] = defaultdict( int )
 
    for animal in animals:
       key = species_exhibit_key( animal )
@@ -94,9 +95,9 @@ def preferred_viewing_spot_among(
 def preferred_single_habitat_viewing_spot_by_species_exhibit(
       animals: list[ Animal ],
       *,
-      outdoor_likelihood_by_species_exhibit: dict[ tuple[ str, str ], int ],
-      single_habitat_species_exhibit_keys: set[ tuple[ str, str ] ] ) -> dict[ tuple[ str, str ], Animal ]:
-   viewing_spots_by_species_exhibit: dict[ tuple[ str, str ], list[ Animal ] ] = defaultdict( list )
+      outdoor_likelihood_by_species_exhibit: dict[ SpeciesExhibitKey, int ],
+      single_habitat_species_exhibit_keys: set[ SpeciesExhibitKey ] ) -> dict[ SpeciesExhibitKey, Animal ]:
+   viewing_spots_by_species_exhibit: dict[ SpeciesExhibitKey, list[ Animal ] ] = defaultdict( list )
 
    for animal in animals:
       key = species_exhibit_key( animal )
@@ -113,7 +114,7 @@ def preferred_single_habitat_viewing_spot_by_species_exhibit(
 
 def apply_indoor_outdoor_viewing_visibility(
       animals: list[ Animal ] ) -> list[ Animal ]:
-   outdoor_likelihood_by_species_exhibit: dict[ tuple[ str, str ], int ] = {}
+   outdoor_likelihood_by_species_exhibit: dict[ SpeciesExhibitKey, int ] = {}
    single_habitat_species_exhibit_keys = single_habitat_viewing_species_exhibit_keys(
       animals )
 

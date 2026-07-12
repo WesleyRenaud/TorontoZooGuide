@@ -23,6 +23,7 @@ from . import gift_shop
 from . import gift_shop_day_seasonal_availability_multiplier
 from . import gift_shop_opening_schedule
 from . import gift_shop_schedule_override
+from . import guardians_talk_animal
 from . import guardians_talk_cancellation
 from . import guardians_talk_schedule
 from . import guest_service
@@ -83,6 +84,7 @@ static_tables = [
    zoomobile_station,
    zoomobile_day_route,
    meet_the_guardians_talk,
+   guardians_talk_animal,
    wild_encounter_meeting_spot,
    wild_encounter,
    drinking_fountain_day_seasonal_availability_multiplier,

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 
+from ...animals.search.species_exhibit_key import SpeciesExhibitKey
 from .itinerary_animal_record import ItineraryAnimalRecord
 from .itinerary_attraction_record import ItineraryAttractionRecord
 from .itinerary_event_record import ItineraryEventRecord
@@ -44,7 +45,7 @@ class SavedItinerary:
       return self.itinerary_date().year
 
 
-   def species_exhibit_pairs( self ) -> list[ tuple[ str, str ] ]:
+   def species_exhibit_pairs( self ) -> list[ SpeciesExhibitKey ]:
       return [
          animal.species_exhibit_key()
          for animal in self.animal_rows

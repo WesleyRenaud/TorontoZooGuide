@@ -3,15 +3,14 @@ from __future__ import annotations
 from typing import Any
 
 from ...models import Animal
-from ...shared.name_matching_query import normalize_search_key
 from ...shared.value_conversion import ValueConversion
+from .species_exhibit_key import SpeciesExhibitKey
 
 
-def species_exhibit_key_from_values( species: str, exhibit: str ) -> tuple[ str, str ]:
-   return (
-      normalize_search_key( species ),
-      normalize_search_key( exhibit ),
-   )
+def species_exhibit_key_from_values(
+      species: str,
+      exhibit: str ) -> SpeciesExhibitKey:
+   return SpeciesExhibitKey.from_values( species, exhibit )
 
 
 def viewing_spot_name_from_value( value: Any ) -> str | None:
@@ -22,21 +21,24 @@ def viewing_spot_key_from_values(
       species: str,
       exhibit: str,
       enclosure_name: Any = None ) -> tuple[ str, str, str | None ]:
+   key = species_exhibit_key_from_values( species, exhibit )
+
    return (
-      *species_exhibit_key_from_values( species, exhibit ),
+      key.species,
+      key.exhibit,
       viewing_spot_name_from_value( enclosure_name ),
    )
 
 
-def species_exhibit_key( animal: Animal ) -> tuple[ str, str ]:
+def species_exhibit_key( animal: Animal ) -> SpeciesExhibitKey:
    return species_exhibit_key_from_values( animal.species, animal.exhibit )
 
 
-def species_exhibit_keys( animals: list[ Any ] ) -> set[ tuple[ str, str ] ]:
-   return {
+def species_exhibit_keys( animals: list[ Any ] ) -> list[ SpeciesExhibitKey ]:
+   return [
       species_exhibit_key_from_values( animal.species, animal.exhibit )
       for animal in animals
-   }
+   ]
 
 
 def viewing_spot_key( animal: Animal ) -> tuple[ str, str, str | None ]:
@@ -47,8 +49,7 @@ def viewing_spot_key( animal: Animal ) -> tuple[ str, str, str | None ]:
 
 
 def animal_matches_query( animal: Animal, query_lower: str ) -> bool:
-   species, _exhibit = species_exhibit_key( animal )
-   return query_lower in species
+   return query_lower in species_exhibit_key( animal ).species
 
 
 def filter_animals_matching_query(
@@ -66,7 +67,7 @@ def filter_animals_matching_query(
 
 def filter_animals_by_species_exhibit_keys(
       animals: list[ Animal ],
-      species_exhibit_keys: list[ tuple[ str, str ] ] ) -> list[ Animal ]:
+      species_exhibit_keys: list[ SpeciesExhibitKey ] ) -> list[ Animal ]:
    keys = set( species_exhibit_keys )
 
    if not keys:

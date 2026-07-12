@@ -4,10 +4,10 @@ from collections import defaultdict
 from functools import lru_cache
 import json
 
+from ..animals.search.species_exhibit_key import SpeciesExhibitKey
 from .data_access.load_enclosure_viewing_walk_nodes import load_enclosure_viewing_walk_nodes
 from .data_access.paths import ENCLOSURE_VIEWING_PATH
 from .domain.enclosure_viewing_walk_node import EnclosureViewingWalkNode
-from .domain.viewing_spot_key import SpeciesExhibitKey
 from .domain.viewing_spot_key import viewing_spot_key
 from .domain.viewing_spot_key import viewing_spot_key_from_enclosure_viewing_row
 from .domain.viewing_spot_key import viewing_spot_key_from_walk_node_row
@@ -60,7 +60,9 @@ def walk_nodes_grouped_by_species_exhibit() -> dict[
    grouped: dict[ SpeciesExhibitKey, list[ EnclosureViewingWalkNode ] ] = defaultdict( list )
 
    for row in load_enclosure_viewing_walk_nodes():
-      grouped[ ( row[ 'species' ], row[ 'exhibit' ] ) ].append( row )
+      grouped[
+         SpeciesExhibitKey.from_values( row[ 'species' ], row[ 'exhibit' ] )
+      ].append( row )
 
    return dict( grouped )
 
@@ -78,4 +80,6 @@ def walk_nodes_for_species_exhibit(
       species: str,
       exhibit: str ) -> list[ EnclosureViewingWalkNode ]:
    return list(
-      walk_nodes_grouped_by_species_exhibit().get( ( species, exhibit ), [] ) )
+      walk_nodes_grouped_by_species_exhibit().get(
+         SpeciesExhibitKey.from_values( species, exhibit ),
+         [] ) )
