@@ -19,6 +19,11 @@ import { applyItineraryDiffToValidation } from './itineraryValidationResult.js';
 import { showGuardiansTalkLongWaitConfirmation } from './panel/guardiansTalkLongWaitConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
 import { showGuardiansTalkWithoutAnimalConfirmation } from './panel/guardiansTalkWithoutAnimalConfirmation.js';
+import {
+   buildConfirmedOptionsFromBuildWarnings,
+   hasMultipleItineraryBuildWarnings,
+   showItineraryBuildWarningsConfirmation,
+} from './panel/itineraryBuildWarningsConfirmation.js';
 import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
 import { showWildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
 import { buildItineraryDiff } from './wizard/itineraryDiff.js';
@@ -107,6 +112,19 @@ async function requestSetItineraryWithConfirmations(
             };
          },
          getConfirmedDiffBaseline: (confirmedPayload) => confirmedPayload,
+      });
+   }
+
+   if (hasMultipleItineraryBuildWarnings(initialResult.issues)) {
+      return requestSetItineraryConfirmation({
+         showConfirmation: showItineraryBuildWarningsConfirmation,
+         initialResult,
+         payload,
+         diffBaseline,
+         buildConfirmedPayload: () => ({
+            ...payload,
+            ...buildConfirmedOptionsFromBuildWarnings(initialResult.issues),
+         }),
       });
    }
 

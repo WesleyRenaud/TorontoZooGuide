@@ -11,7 +11,6 @@ from ..results.itinerary_save_result import ItinerarySaveResult
 from ..scheduling.unscheduling.fixed_time_activity_unschedule_items import prepare_validated_itinerary_for_fixed_time_activity_reschedule
 from ..scheduling.unscheduling.guardians_talk_unschedule_items import guardians_talk_time_blocks
 from ..scheduling.unscheduling.wild_encounter_unschedule_items import wild_encounter_time_blocks
-from ...shared.enums import ItineraryErrorType
 from ..warnings.guardians_talk_unschedule_warning import build_guardians_talk_unschedule_issue
 from ..warnings.guardians_talk_unschedule_warning import new_guardians_talks_overlapping_saved_schedule
 from ..warnings.wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
@@ -45,29 +44,29 @@ def unschedule_confirmation_warning(
       *,
       confirming_guardians_talk_unschedule: bool,
       confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult | None:
+   pending_reasons = []
+
    if (
          requirements.talks
          and not confirming_guardians_talk_unschedule ):
-      return ItinerarySaveResult(
-         status=ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-         reasons=(
-            build_guardians_talk_unschedule_issue(
-               list( requirements.talks ) ),
-         ),
-         itinerary=itinerary )
+      pending_reasons.append(
+         build_guardians_talk_unschedule_issue(
+            list( requirements.talks ) ) )
 
    if (
          requirements.encounters
          and not confirming_wild_encounter_unschedule ):
-      return ItinerarySaveResult(
-         status=ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
-         reasons=(
-            build_wild_encounter_unschedule_issue(
-               list( requirements.encounters ) ),
-         ),
-         itinerary=itinerary )
+      pending_reasons.append(
+         build_wild_encounter_unschedule_issue(
+            list( requirements.encounters ) ) )
 
-   return None
+   if not pending_reasons:
+      return None
+
+   return ItinerarySaveResult(
+      status=pending_reasons[ 0 ].code,
+      reasons=tuple( pending_reasons ),
+      itinerary=itinerary )
 
 
 def apply_confirmed_itinerary_unschedule_changes(

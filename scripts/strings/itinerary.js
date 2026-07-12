@@ -40,6 +40,33 @@ export const itinerary = {
       saveIssuesButton: 'Proceed',
       proceedAnyway: 'Proceed Anyway',
       saveIssuesTitle: 'Your Itinerary Has the Following Issues:',
+      buildWarningScheduleOverlapTitle: 'Schedule overlap',
+      buildWarningWithoutAnimalTitle: 'No matching animal',
+      buildWarningLongWaitTitle: 'Long wait',
+      buildWarningScheduleOverlapMessage: (talkName, talkTime) => (
+         `The ${talkName} guardians talk at ${talkTime} overlaps scheduled items. Those items will be rescheduled around it.`
+      ),
+      buildWarningScheduleOverlapMessageWithoutTime: talkName => (
+         `The ${talkName} guardians talk overlaps scheduled items. Those items will be rescheduled around it.`
+      ),
+      buildWarningWildEncounterOverlapMessage: (encounterName, encounterTime) => (
+         `The ${encounterName} wild encounter at ${encounterTime} overlaps scheduled items. Those items will be rescheduled around it.`
+      ),
+      buildWarningWildEncounterOverlapMessageWithoutTime: encounterName => (
+         `The ${encounterName} wild encounter overlaps scheduled items. Those items will be rescheduled around it.`
+      ),
+      buildWarningWithoutAnimalMessage: (talkName, talkTime) => (
+         `The ${talkName} guardians talk at ${talkTime} does not match an animal on your itinerary.`
+      ),
+      buildWarningWithoutAnimalMessageWithoutTime: talkName => (
+         `The ${talkName} guardians talk does not match an animal on your itinerary.`
+      ),
+      buildWarningLongWaitMessage: (talkName, talkTime) => (
+         `The ${talkName} guardians talk at ${talkTime} is a long wait from your other scheduled items.`
+      ),
+      buildWarningLongWaitMessageWithoutTime: talkName => (
+         `The ${talkName} guardians talk is a long wait from your other scheduled items.`
+      ),
       proceedWithoutConflictSelectionMessage: (
          'None of these conflicting activities will be added to your itinerary.'
       ),

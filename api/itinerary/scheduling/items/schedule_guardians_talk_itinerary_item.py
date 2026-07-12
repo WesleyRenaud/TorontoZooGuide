@@ -13,6 +13,7 @@ from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from ....models.guardians_talk_diff import GuardiansTalkDiff
 from ..reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
+from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
@@ -115,14 +116,11 @@ def schedule_guardians_talk_itinerary_item(
       saved_itinerary,
       [ guardians_talk_diff ] )
 
+   pending_reasons: list[ ItineraryResultReason ] = []
+
    if has_overlap and not confirming_guardians_talk_unschedule:
-      return build_save_result(
-         conn,
-         ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
-         reasons=(
-            build_guardians_talk_unschedule_issue( [ guardians_talk_diff ] ),
-         ),
-         **itinerary_context )
+      pending_reasons.append(
+         build_guardians_talk_unschedule_issue( [ guardians_talk_diff ] ) )
 
    if guardians_talk_without_animal_warning_is_required_for_talk(
          guardians_talk_diff,
@@ -130,14 +128,9 @@ def schedule_guardians_talk_itinerary_item(
          conn,
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal ) ):
-      return build_save_result(
-         conn,
-         ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
-         reasons=(
-            build_guardians_talk_without_animal_issue_from_talks(
-               [ guardians_talk_diff ] ),
-         ),
-         **itinerary_context )
+      pending_reasons.append(
+         build_guardians_talk_without_animal_issue_from_talks(
+            [ guardians_talk_diff ] ) )
 
    if not confirming_guardians_talk_long_wait:
       isolated_talks = isolated_guardians_talks_after_adding_talk_with_simulated_bulk(
@@ -146,14 +139,16 @@ def schedule_guardians_talk_itinerary_item(
          itinerary_context=itinerary_context )
 
       if isolated_talks:
-         return build_save_result(
-            conn,
-            ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT,
-            reasons=(
-               build_guardians_talk_long_wait_issue_from_talks(
-                  isolated_talks ),
-            ),
-            **itinerary_context )
+         pending_reasons.append(
+            build_guardians_talk_long_wait_issue_from_talks(
+               isolated_talks ) )
+
+   if pending_reasons:
+      return build_save_result(
+         conn,
+         pending_reasons[ 0 ].code,
+         reasons=tuple( pending_reasons ),
+         **itinerary_context )
 
    insert_error = _insert_scheduled_guardians_talk(
       conn,

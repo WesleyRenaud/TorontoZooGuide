@@ -213,6 +213,60 @@ def test_schedule_talk_warns_when_no_matching_animal_on_itinerary(
    )
 
 
+def test_schedule_talk_returns_overlap_and_without_animal_warnings_together(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   _set_talk_schedule(
+      ZEBRA_TALK,
+      location='Africa Savanna',
+      talk_time='12:00' )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+   assert schedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      LION_KEY,
+      start_time='12:00',
+   ).success
+
+   result = schedule_itinerary_item(
+      ScheduleItemKind.GUARDIANS_TALK.item_type,
+      f'{ ZEBRA_TALK }||12:00',
+   )
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
+   assert [ reason.code for reason in result.reasons ] == [
+      ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS,
+      ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
+   ]
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ ZEBRA_TALK ]
+   assert [ item.name for item in result.reasons[ 1 ].items ] == [ ZEBRA_TALK ]
+
+   confirmed = ItineraryCoordinator.schedule_itinerary_item(
+      parsed_schedule_item(
+         ScheduleItemKind.GUARDIANS_TALK.item_type,
+         f'{ ZEBRA_TALK }||12:00' ),
+      confirming_guardians_talk_unschedule=True,
+      confirming_guardians_talk_without_animal=True,
+      confirming_guardians_talk_long_wait=True,
+   )
+
+   assert confirmed.success
+   assert any(
+      talk.name == ZEBRA_TALK and not talk.is_deleted
+      for talk in confirmed.itinerary.guardians_talks
+   )
+
+
 def test_talk_matches_associated_species_exhibit_pairs() -> None:
    tamarin_key = SpeciesExhibitKey.from_values(
       'Golden Lion Tamarin',

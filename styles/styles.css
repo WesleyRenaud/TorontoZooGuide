@@ -4360,6 +4360,41 @@ nav ul li a:hover {
    gap: 28px;
 }
 
+.itin-build-warnings {
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   gap: 14px;
+}
+
+.itin-build-warning-module {
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+   padding: 16px 18px;
+   border: 2px solid #14230a1f;
+   border-radius: 12px;
+   background: #14230a08;
+}
+
+.itin-build-warning-module-title {
+   margin: 0;
+
+   font-family: var(--font-family-base);
+   font-size: 3.4em;
+   font-weight: 900;
+   color: #14230aeb;
+}
+
+.itin-build-warning-module-message {
+   margin: 0;
+
+   font-size: 3em;
+   font-weight: 800;
+   line-height: 1.25;
+   color: #14230abf;
+}
+
 .itin-save-issue-section {
    display: flex;
    flex-direction: column;
