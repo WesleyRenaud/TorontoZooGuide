@@ -106,6 +106,83 @@ def test_set_itinerary_returns_warning_when_guardians_talk_would_unschedule_item
    assert not saved.guardians_talk_names()
 
 
+def test_set_itinerary_keeps_talk_before_arrival_and_warns_about_overlap(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
+      talk=GUARDIANS_TALK,
+      location='Africa Savanna',
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      schedule_rows=wire_schedule_rows(
+         '11:00',
+         monday=True,
+         tuesday=False,
+         wednesday=False,
+         thursday=False,
+         friday=False,
+         saturday=False,
+         sunday=False ),
+      message=None,
+   )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='11:21',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+   assert schedule_itinerary_item(
+      item_type='animals',
+      key=ANIMAL_KEY,
+      start_time='11:21',
+   ).success
+
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='11:21',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[
+         _guardians_talk_save_entry( GUARDIANS_TALK, start_time='11:00' ),
+      ],
+      wild_encounters=[],
+   )
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ GUARDIANS_TALK ]
+
+   confirmed = ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='11:21',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[
+         _guardians_talk_save_entry( GUARDIANS_TALK, start_time='11:00' ),
+      ],
+      wild_encounters=[],
+      confirming_guardians_talk_unschedule=True,
+      confirming_guardians_talk_without_animal=True,
+      confirming_guardians_talk_long_wait=True,
+   )
+
+   assert confirmed.success
+   assert any(
+      talk.name == GUARDIANS_TALK and not talk.is_deleted
+      for talk in confirmed.itinerary.guardians_talks
+   )
+   assert DateValues.time_value_in_seconds( confirmed.itinerary.arrival_time ) <= (
+      DateValues.time_value_in_seconds( '11:00 AM' )
+   )
+
+
 def test_set_itinerary_unschedules_overlapping_items_when_confirmed(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:
