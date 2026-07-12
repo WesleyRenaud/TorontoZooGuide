@@ -128,6 +128,7 @@ def schedule_guardians_talk_itinerary_item(
    if guardians_talk_without_animal_warning_is_required_for_talk(
          guardians_talk_diff,
          saved_itinerary.species_exhibit_pairs(),
+         conn,
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal ) ):
       return build_save_result(

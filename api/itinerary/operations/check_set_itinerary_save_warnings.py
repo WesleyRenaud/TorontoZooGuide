@@ -115,10 +115,12 @@ def check_set_itinerary_save_warnings(
 
    if guardians_talk_without_animal_warning_is_required(
          context.validated_itinerary,
+         context.conn,
          confirming_guardians_talk_without_animal=(
             confirming_guardians_talk_without_animal ) ):
       missing_animal_talks = guardians_talks_without_matching_animal(
-         context.validated_itinerary )
+         context.validated_itinerary,
+         context.conn )
 
       return (
          updated_context,
