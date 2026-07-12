@@ -8,13 +8,15 @@ from ..data_access.itinerary import fetch_saved_itinerary
 from ..domain.itinerary import build_current_itinerary
 from ..domain.itinerary_adjustment import ItineraryAdjustment
 from ...guardians.coordinators.guardians_coordinator import GuardiansCoordinator
-from ..results.itinerary_save_result import ItinerarySaveResult
+from ..guardians_talk_item_key import GuardiansTalkScheduleItemKey
+from ..scheduling.bulk.guardians_talk_covered_animals import restore_covered_animals_after_talk_removed
 from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ..scheduling.items.schedule_itinerary_helpers import build_itinerary_context
 from ..scheduling.items.schedule_itinerary_helpers import build_success_result
 from ..scheduling.items.schedule_itinerary_helpers import persist_itinerary_walk_route
 from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import apply_guest_schedule_shift_for_unschedule
 from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import resolve_unscheduled_item_time_block
+from ..scheduling.unscheduling.shift_guest_schedules_after_unschedule import shift_guest_scheduled_items_after_unschedule
 from ..scheduling.unscheduling.update_visit_times_after_schedule_item_removed import update_arrival_to_earliest_scheduled_start
 from ..scheduling.unscheduling.update_visit_times_after_schedule_item_removed import update_departure_to_latest_scheduled_end
 from ..scheduling.unscheduling.update_visit_times_after_schedule_item_removed import was_first_scheduled_item
@@ -51,15 +53,40 @@ def commit_itinerary_item_schedule_change(
    removed_last_item = was_last_scheduled_item(
       itinerary_before,
       removed_block )
+   restored_talk_covered_animals = None
    cur = conn.cursor()
 
    try:
       if schedule_item_key is not None:
-         apply_guest_schedule_shift_for_unschedule(
-            conn,
-            cur,
-            saved_itinerary=saved_itinerary,
-            schedule_item_key=schedule_item_key )
+         if (
+               isinstance( schedule_item_key, GuardiansTalkScheduleItemKey )
+               and removed_block is not None ):
+            restored_talk_covered_animals = restore_covered_animals_after_talk_removed(
+               cur,
+               conn,
+               talk_name=schedule_item_key.name,
+               talk_block=removed_block,
+               animal_rows=saved_itinerary.animal_rows )
+
+         if (
+               restored_talk_covered_animals is not None
+               and restored_talk_covered_animals.replacement_end_seconds is not None
+               and removed_block is not None ):
+            shift_guest_scheduled_items_after_unschedule(
+               conn,
+               cur,
+               anchor_end_seconds=removed_block.end_seconds,
+               shift_seconds=(
+                  restored_talk_covered_animals.replacement_end_seconds
+                  - removed_block.end_seconds ),
+               freed_block=removed_block )
+         else:
+            apply_guest_schedule_shift_for_unschedule(
+               conn,
+               cur,
+               saved_itinerary=saved_itinerary,
+               schedule_item_key=schedule_item_key )
+
          apply_change( cur, schedule_item_key )
 
       conn.commit()

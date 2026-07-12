@@ -42,6 +42,7 @@ def separate_schedule_boundaries_and_loop_pins(
          continue
 
       loop_pin = resolve_guardians_talk_loop_pin(
+         conn,
          guardians_talk,
          fixed_time_stop )
 

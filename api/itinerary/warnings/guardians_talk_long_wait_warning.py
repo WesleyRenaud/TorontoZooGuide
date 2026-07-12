@@ -81,6 +81,9 @@ def collect_time_blocks_from_validated_itinerary(
    blocks: list[ TimeBlock ] = []
 
    for animal in validated_itinerary.animals:
+      if animal.covered_by_talk:
+         continue
+
       append_block_from_schedule_times(
          blocks,
          animal.start_time,

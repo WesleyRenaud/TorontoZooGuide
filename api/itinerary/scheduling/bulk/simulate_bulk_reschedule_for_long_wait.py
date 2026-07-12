@@ -21,6 +21,9 @@ from ...data_access.validated_itinerary import ValidatedItinerary
 from ...domain.itinerary import build_current_itinerary
 from ...domain.itinerary import build_itinerary
 from .group_animals_by_master_route_loop import group_animals_by_master_route_loop
+from .guardians_talk_covered_animals import CoveredAnimalPin
+from .guardians_talk_covered_animals import filter_animals_excluding_covered
+from .guardians_talk_covered_animals import viewing_spot_keys_to_cover_for_loop_pins
 from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
 from .loop_schedule_unit import build_loop_schedule_units
 from .loop_unit_schedule_slots import LoopScheduleSlot
@@ -34,6 +37,7 @@ from ...routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stop
 from .schedule_animals_by_master_route_loop import schedule_animals_by_master_route_loop
 from ....types import Connection
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
+from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
 from ....walk_graph.domain.walk_graph import WalkGraph
 from ...warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_after_adding_talk
 from ...warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_itinerary
@@ -113,6 +117,7 @@ def isolated_guardians_talks_after_simulated_bulk_for_validated_itinerary(
          old_likelihood=animal.old_likelihood,
          new_likelihood=animal.new_likelihood,
          is_added=animal.is_added,
+         covered_by_talk=animal.covered_by_talk,
          start_time=animal.start_time,
          end_time=animal.end_time )
       for animal in animals_with_times
@@ -165,8 +170,6 @@ def pack_animals_into_itinerary_in_memory(
    start_state = _bulk_schedule_start_state_for_unscheduled_animals(
       walk_graph,
       anchor_seconds )
-   sorted_loop_groups = group_animals_by_master_route_loop( animals_to_schedule )
-   loop_units = build_loop_schedule_units( sorted_loop_groups )
    fixed_time_stops = resolve_fixed_time_itinerary_stops( packing_itinerary )
    boundary_stops, loop_pins = separate_schedule_boundaries_and_loop_pins(
       conn,
@@ -177,24 +180,33 @@ def pack_animals_into_itinerary_in_memory(
       day_end_seconds,
       boundary_stops )
    loop_pins = keep_completable_loop_pins( schedule_windows, loop_pins )
+   covered_by_pin = viewing_spot_keys_to_cover_for_loop_pins(
+      conn,
+      loop_pins,
+      animals_to_schedule )
+   animals_to_pack = filter_animals_excluding_covered(
+      animals_to_schedule,
+      covered_by_pin )
+   sorted_loop_groups = group_animals_by_master_route_loop( animals_to_pack )
+   loop_units = build_loop_schedule_units( sorted_loop_groups )
    schedule_windows = attach_loop_pins_to_schedule_windows(
       schedule_windows,
       loop_pins )
 
-   if not loop_units:
-      return packing_itinerary
+   if loop_units:
+      slot_sink = LoopScheduleSlotSink( persist=False )
+      schedule_animals_by_master_route_loop(
+         conn,
+         loop_units,
+         blockers=blockers,
+         schedule_windows=schedule_windows,
+         schedule_cursor_seconds=start_state.schedule_anchor_seconds,
+         walk_graph=walk_graph,
+         start_node_id=start_state.start_node_id,
+         slot_sink=slot_sink )
+      _apply_slots_to_itinerary_animals( packing_itinerary, slot_sink.slots )
 
-   slot_sink = LoopScheduleSlotSink( persist=False )
-   schedule_animals_by_master_route_loop(
-      conn,
-      loop_units,
-      blockers=blockers,
-      schedule_windows=schedule_windows,
-      schedule_cursor_seconds=start_state.schedule_anchor_seconds,
-      walk_graph=walk_graph,
-      start_node_id=start_state.start_node_id,
-      slot_sink=slot_sink )
-   _apply_slots_to_itinerary_animals( packing_itinerary, slot_sink.slots )
+   _apply_covered_to_itinerary_animals( packing_itinerary, covered_by_pin )
 
    return packing_itinerary
 
@@ -214,6 +226,7 @@ def _itinerary_with_cleared_animal_times( itinerary: Itinerary ) -> Itinerary:
       cleared_animal = copy( animal )
       cleared_animal.start_time = None
       cleared_animal.end_time = None
+      cleared_animal.covered_by_talk = False
       cleared_animals.append( cleared_animal )
 
    return build_itinerary(
@@ -280,6 +293,7 @@ def _build_itinerary_from_proposed_items(
          old_likelihood=animal.old_likelihood,
          new_likelihood=animal.new_likelihood,
          is_added=animal.is_added,
+         covered_by_talk=animal.covered_by_talk,
          start_time=animal.start_time,
          end_time=animal.end_time )
       for animal in proposed.animals
@@ -360,3 +374,23 @@ def _apply_slots_to_itinerary_animals(
 
       animal.start_time = start_time
       animal.end_time = end_time
+
+
+def _apply_covered_to_itinerary_animals(
+      itinerary: Itinerary,
+      covered_by_pin: dict[ ViewingSpotNameKey, CoveredAnimalPin ],
+   ) -> None:
+   animals_by_spot = {
+      viewing_spot_key( animal ): animal
+      for animal in itinerary.animals
+   }
+
+   for animal_row, loop_pin in covered_by_pin.values():
+      animal = animals_by_spot.get( animal_row.viewing_spot_key() )
+
+      if animal is None:
+         continue
+
+      animal.start_time = loop_pin.stop.start_time
+      animal.end_time = loop_pin.stop.end_time
+      animal.covered_by_talk = True

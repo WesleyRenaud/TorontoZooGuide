@@ -88,6 +88,7 @@ def validate_itinerary_animals(
             old_likelihood=carryover.old_likelihood,
             new_likelihood=new_likelihood,
             is_added=carryover.is_added,
+            covered_by_talk=carryover.covered_by_talk,
             start_time=start_time,
             end_time=end_time,
          )

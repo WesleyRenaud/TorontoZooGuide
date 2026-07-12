@@ -210,6 +210,7 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
             'is_deleted': False,
             'old_likelihood': None,
             'is_added': False,
+            'covered_by_talk': False,
             'start_time': None,
             'end_time': None,
             'viewing_walk_node_id': None,

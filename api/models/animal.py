@@ -33,6 +33,7 @@ class Animal:
          is_deleted: bool = False,
          old_likelihood: int | None = None,
          is_added: bool = False,
+         covered_by_talk: bool = False,
          start_time: ScheduleTimeKey = None,
          end_time: ScheduleTimeKey = None,
          viewing_walk_node_id: str | None = None,
@@ -63,6 +64,7 @@ class Animal:
       self.is_deleted = is_deleted
       self.old_likelihood = old_likelihood
       self.is_added = is_added
+      self.covered_by_talk = covered_by_talk
       self.start_time = start_time
       self.end_time = end_time
       self.viewing_walk_node_id = viewing_walk_node_id
@@ -103,6 +105,7 @@ class Animal:
          'is_deleted': ValueConversion.as_boolean( self.is_deleted ),
          'old_likelihood': self.old_likelihood,
          'is_added': ValueConversion.as_boolean( self.is_added ),
+         'covered_by_talk': ValueConversion.as_boolean( self.covered_by_talk ),
          'start_time': self.start_time,
          'end_time': self.end_time,
          'viewing_walk_node_id': self.viewing_walk_node_id,

@@ -12,6 +12,7 @@ class AnimalDiff:
          new_likelihood: int | None,
          enclosure_name: str | None = None,
          is_added: bool = False,
+         covered_by_talk: bool = False,
          start_time: ScheduleTimeKey = None,
          end_time: ScheduleTimeKey = None ) -> None:
       self.species = species
@@ -20,6 +21,7 @@ class AnimalDiff:
       self.old_likelihood = old_likelihood
       self.new_likelihood = new_likelihood
       self.is_added = is_added
+      self.covered_by_talk = covered_by_talk
       self.start_time = start_time
       self.end_time = end_time
 
@@ -32,6 +34,7 @@ class AnimalDiff:
          'old_likelihood': self.old_likelihood,
          'new_likelihood': self.new_likelihood,
          'is_added': self.is_added,
+         'covered_by_talk': self.covered_by_talk,
          'start_time': self.start_time,
          'end_time': self.end_time,
       }

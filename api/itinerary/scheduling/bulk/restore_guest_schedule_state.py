@@ -6,6 +6,7 @@ from ...data_access.itinerary_time import set_itinerary_departure_time
 from ...data_access.save_itinerary_walk_route import save_itinerary_walk_route
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_event_schedule
+from ...data_access.schedule_itinerary_item import update_itinerary_animal_cover_and_schedule
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
 from ....models import ItineraryEvent
@@ -48,13 +49,23 @@ def restore_guest_schedule_state(
                animal_row.end_time ):
             continue
 
-         update_itinerary_animal_schedule(
-            cur,
-            species=animal_row.species,
-            exhibit=animal_row.exhibit,
-            enclosure_name=animal_row.enclosure_name,
-            start_time=animal_row.start_time,
-            end_time=animal_row.end_time )
+         if animal_row.covered_by_talk:
+            update_itinerary_animal_cover_and_schedule(
+               cur,
+               species=animal_row.species,
+               exhibit=animal_row.exhibit,
+               enclosure_name=animal_row.enclosure_name,
+               covered_by_talk=True,
+               start_time=animal_row.start_time,
+               end_time=animal_row.end_time )
+         else:
+            update_itinerary_animal_schedule(
+               cur,
+               species=animal_row.species,
+               exhibit=animal_row.exhibit,
+               enclosure_name=animal_row.enclosure_name,
+               start_time=animal_row.start_time,
+               end_time=animal_row.end_time )
 
       for attraction_row in saved_itinerary.attraction_rows:
          if not _has_schedule_times(

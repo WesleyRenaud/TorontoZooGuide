@@ -40,6 +40,10 @@ function hasItineraryScheduleTimes(item) {
    return Boolean(item.start_time && item.end_time);
 }
 
+function isCoveredByTalk(item) {
+   return item?.covered_by_talk === true;
+}
+
 function isActiveScheduledOccurrence(item) {
    return item?.is_deleted !== true;
 }
@@ -113,7 +117,9 @@ function buildScheduledItemRows(items, buildRows, getDurationMinutes) {
 
 function buildScheduledAnimalRows(animals = []) {
    return buildUniqueSpeciesExhibitEntries(animals, {
-      includeAnimal: hasItineraryScheduleTimes,
+      includeAnimal: (item) => (
+         hasItineraryScheduleTimes(item) && !isCoveredByTalk(item)
+      ),
       buildKey: buildAnimalViewingSpotKey,
       requireExhibit: false,
    }).map(({ item, index }) => {
