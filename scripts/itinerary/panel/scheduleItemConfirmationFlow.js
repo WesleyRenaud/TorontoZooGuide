@@ -3,6 +3,11 @@ import { getItineraryPanelMountEl } from './components/popup.js';
 import { showGuardiansTalkLongWaitConfirmation } from './guardiansTalkLongWaitConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './guardiansTalkUnscheduleConfirmation.js';
 import { showGuardiansTalkWithoutAnimalConfirmation } from './guardiansTalkWithoutAnimalConfirmation.js';
+import {
+   buildConfirmedOptionsFromBuildWarnings,
+   hasMultipleItineraryBuildWarnings,
+   showItineraryBuildWarningsConfirmation,
+} from './itineraryBuildWarningsConfirmation.js';
 import { createItineraryConfirmationCancelledResult } from '../itineraryConfirmationResult.js';
 import {
    getItineraryErrorTypes,
@@ -103,6 +108,22 @@ export async function scheduleItineraryItemWithConfirmation(
             }
          },
          resolveConfirmErrorAsSaveFailed: true,
+      });
+   }
+
+   if (hasMultipleItineraryBuildWarnings(initialResult.issues)) {
+      return requestScheduleItemConfirmation({
+         showConfirmation: showItineraryBuildWarningsConfirmation,
+         initialResult,
+         request,
+         confirmationOptions,
+         confirmationProps: {
+            mountEl: getConfirmationMountEl(),
+            issues: initialResult.issues,
+         },
+         buildConfirmedOptions: () => buildConfirmedOptionsFromBuildWarnings(
+            initialResult.issues
+         ),
       });
    }
 

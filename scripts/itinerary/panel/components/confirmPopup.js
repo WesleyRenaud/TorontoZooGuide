@@ -32,6 +32,7 @@ function createConfirmPopupBody(message, doNotShowAgainLabel) {
 export function showItineraryConfirmPopup({
    title = 'Heads up',
    message = '',
+   bodyContent = null,
    confirmText = 'Confirm',
    cancelText = 'Cancel',
    doNotShowAgainLabel = null,
@@ -43,7 +44,9 @@ export function showItineraryConfirmPopup({
    existingPopup?.__tzgPopupCleanup?.();
    existingPopup?.remove();
 
-   const confirmBody = createConfirmPopupBody(message, doNotShowAgainLabel);
+   const confirmBody = bodyContent
+      ? { body: bodyContent }
+      : createConfirmPopupBody(message, doNotShowAgainLabel);
 
    const {
       root,

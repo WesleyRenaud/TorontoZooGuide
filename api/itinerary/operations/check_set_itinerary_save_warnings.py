@@ -98,6 +98,8 @@ def check_set_itinerary_save_warnings(
          with_suppressed_warnings( schedule_conflict_warning, warning_tuple ),
       )
 
+   pending_reasons = []
+
    if context.saved_itinerary is not None:
       unschedule_warning = unschedule_confirmation_warning(
          context.unschedule_requirements,
@@ -108,10 +110,7 @@ def check_set_itinerary_save_warnings(
             confirming_wild_encounter_unschedule ) )
 
       if unschedule_warning is not None:
-         return (
-            updated_context,
-            with_suppressed_warnings( unschedule_warning, warning_tuple ),
-         )
+         pending_reasons.extend( unschedule_warning.reasons )
 
    if guardians_talk_without_animal_warning_is_required(
          context.validated_itinerary,
@@ -121,20 +120,9 @@ def check_set_itinerary_save_warnings(
       missing_animal_talks = guardians_talks_without_matching_animal(
          context.validated_itinerary,
          context.conn )
-
-      return (
-         updated_context,
-         with_suppressed_warnings(
-            ItinerarySaveResult(
-               status=ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL,
-               reasons=(
-                  build_guardians_talk_without_animal_issue_from_talks(
-                     missing_animal_talks ),
-               ),
-               itinerary=context.current_itinerary,
-            ),
-            warning_tuple ),
-      )
+      pending_reasons.append(
+         build_guardians_talk_without_animal_issue_from_talks(
+            missing_animal_talks ) )
 
    if guardians_talk_long_wait_warning_is_required_for_validated_itinerary(
          context.validated_itinerary,
@@ -147,18 +135,20 @@ def check_set_itinerary_save_warnings(
          itinerary_context=context.itinerary_controller_kwargs )
 
       if isolated_talks:
-         return (
-            updated_context,
-            with_suppressed_warnings(
-               ItinerarySaveResult(
-                  status=ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT,
-                  reasons=(
-                     build_guardians_talk_long_wait_issue_from_talks(
-                        isolated_talks ),
-                  ),
-                  itinerary=context.current_itinerary,
-               ),
-               warning_tuple ),
-         )
+         pending_reasons.append(
+            build_guardians_talk_long_wait_issue_from_talks(
+               isolated_talks ) )
+
+   if pending_reasons:
+      return (
+         updated_context,
+         with_suppressed_warnings(
+            ItinerarySaveResult(
+               status=pending_reasons[ 0 ].code,
+               reasons=tuple( pending_reasons ),
+               itinerary=context.current_itinerary,
+            ),
+            warning_tuple ),
+      )
 
    return ( updated_context, None )

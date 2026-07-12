@@ -389,3 +389,88 @@ test('scheduleSelectedItineraryItem confirms before scheduling a wild encounter'
    assert.equal(requests[0].body.confirmingWildEncounterUnschedule, false);
    assert.equal(requests[1].body.confirmingWildEncounterUnschedule, true);
 });
+
+test('scheduleSelectedItineraryItem confirms multiple build warnings together', async () => {
+   const requests = [];
+
+   globalThis.fetch = async (url, options = {}) => {
+      if (url === '/get-itinerary-date') {
+         return mockItineraryDateResponse();
+      }
+
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
+
+      const body = requests.at(-1)?.body ?? {};
+      const isConfirmed = Boolean(
+         body.confirmingGuardiansTalkUnschedule
+         && body.confirmingGuardiansTalkWithoutAnimal
+      );
+
+      return mockJsonResponse({
+         status: isConfirmed ? 'success' : 'guardiansTalkWillUnscheduleItems',
+         reasons: isConfirmed ? [] : [
+            {
+               code: 'guardiansTalkWillUnscheduleItems',
+               items: [{
+                  name: 'Amur Tiger',
+                  item_type: 'guardiansTalk',
+                  start_time: '11:00 AM',
+               }],
+            },
+            {
+               code: 'guardiansTalkWithoutAnimal',
+               items: [{
+                  name: 'Amur Tiger',
+                  item_type: 'guardiansTalk',
+                  start_time: '11:00 AM',
+               }],
+            },
+         ],
+      });
+   };
+
+   const schedulePromise = scheduleSelectedItineraryItem(
+      {
+         date: '2026-06-15',
+         animals: [{ species: 'African Lion', exhibit: 'Africa Savanna', start_time: '11:00 AM' }],
+         attractions: [],
+         guardiansTalks: [],
+      },
+      'guardians_talks',
+      {
+         name: 'Amur Tiger',
+         start_time: '11:00 AM',
+         scheduleItemKind: 'guardians_talks',
+      },
+      []
+   );
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   assert.equal(
+      document.querySelector('.itin-top-title')?.textContent,
+      'Your Itinerary Has the Following Issues:'
+   );
+   assert.equal(
+      document.querySelectorAll('.itin-build-warning-module').length,
+      2
+   );
+
+   document.querySelector('.tzg-popup-confirm')?.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const result = await schedulePromise;
+
+   assert.equal(result.errorType, 'success');
+   assert.equal(requests.length, 2);
+   assert.equal(requests[1].body.confirmingGuardiansTalkUnschedule, true);
+   assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
+});
