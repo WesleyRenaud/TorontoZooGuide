@@ -8,6 +8,22 @@ from ...types import Connection
 from ...types import ScheduleTimeKey
 
 
+def arrival_time_covering_schedule_starts(
+      arrival_time: ScheduleTimeKey,
+      schedule_start_times: Iterable[ ScheduleTimeKey ],
+   ) -> ScheduleTimeKey:
+   if arrival_time is None:
+      return None
+
+   covered_arrival_time = arrival_time
+
+   for start_time in schedule_start_times:
+      if DateValues.time_value_is_before( start_time, covered_arrival_time ):
+         covered_arrival_time = start_time
+
+   return covered_arrival_time
+
+
 def departure_time_covering_schedule_ends(
       departure_time: ScheduleTimeKey,
       schedule_end_times: Iterable[ ScheduleTimeKey ],

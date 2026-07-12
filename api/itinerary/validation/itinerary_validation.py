@@ -24,6 +24,7 @@ from ...models import AttractionDiff
 from ...models import GuardiansTalkDiff
 from ...models import WildEncounterDiff
 from ...models.itinerary_event import ItineraryEvent
+from ..scheduling.extend_departure_for_activity import arrival_time_covering_schedule_starts
 from ..scheduling.extend_departure_for_activity import departure_time_covering_schedule_ends
 from ...shared.enums import ItineraryEventType
 from ...types import Connection, DateKey, ScheduleTimeKey
@@ -235,22 +236,38 @@ def validate_itinerary_for_save(
          day=save_input.day(),
          year=save_input.year() ) )
    departure_time = save_input.departure_time
+   fixed_time_activity_start_times = [
+      *(
+         talk.start_time
+         for talk in guardians_talk_diffs
+         if not talk.is_deleted
+      ),
+      *(
+         encounter.start_time
+         for encounter in wild_encounter_diffs
+         if not encounter.is_deleted
+      ),
+   ]
+   fixed_time_activity_end_times = [
+      *(
+         talk.end_time
+         for talk in guardians_talk_diffs
+         if not talk.is_deleted
+      ),
+      *(
+         encounter.end_time
+         for encounter in wild_encounter_diffs
+         if not encounter.is_deleted
+      ),
+   ]
 
    if not visit_date_is_changing:
+      arrival_time = arrival_time_covering_schedule_starts(
+         arrival_time,
+         fixed_time_activity_start_times )
       departure_time = departure_time_covering_schedule_ends(
          departure_time,
-         [
-            *(
-               talk.end_time
-               for talk in guardians_talk_diffs
-               if not talk.is_deleted
-            ),
-            *(
-               encounter.end_time
-               for encounter in wild_encounter_diffs
-               if not encounter.is_deleted
-            ),
-         ] )
+         fixed_time_activity_end_times )
 
    validated_itinerary = ValidatedItinerary(
       arrival_time=arrival_time,
