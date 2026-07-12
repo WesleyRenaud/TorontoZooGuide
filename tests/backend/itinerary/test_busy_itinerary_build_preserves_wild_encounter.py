@@ -93,6 +93,7 @@ def test_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
          ),
       ],
       confirming_guardians_talk_long_wait=True,
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert initial_result.success
@@ -118,6 +119,7 @@ def test_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
          ),
       ],
       selected_exhibits=selected_exhibits,
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert build_result.success
@@ -152,6 +154,7 @@ def test_one_shot_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
          ),
       ],
       selected_exhibits=selected_exhibits,
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert result.success
@@ -252,6 +255,7 @@ def test_busy_itinerary_build_keeps_kangaroo_when_expired_schedule_row_also_exis
          ),
       ],
       selected_exhibits=selected_exhibits,
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert result.success

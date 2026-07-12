@@ -83,6 +83,7 @@ def test_partition_keeps_loop_pin_talk_inside_single_schedule_window(
       guardians_talks=[ guardians_talk_save_entry( AFRICAN_LION_TALK ) ],
       wild_encounters=[],
       confirming_early_admission=True,
+      confirming_guardians_talk_without_animal=True,
    ).success
 
    itinerary = ItineraryCoordinator.get_itinerary()
@@ -139,6 +140,7 @@ def test_bulk_schedule_weaves_african_lion_talk_into_africa_savanna_loop(
       wild_encounters=[],
       selected_exhibits=[ AFRICA_SAVANNA ],
       confirming_early_admission=True,
+      confirming_guardians_talk_without_animal=True,
    ).success
 
    result = ItineraryCoordinator.bulk_schedule_animals()
@@ -273,6 +275,7 @@ def test_bulk_schedule_does_not_overlap_loop_pin_guardians_talk(
       wild_encounters=[],
       selected_exhibits=_selected_exhibits_for_regions( MULTI_REGION_NAMES ),
       confirming_early_admission=True,
+      confirming_guardians_talk_without_animal=True,
    ).success
 
    result = ItineraryCoordinator.bulk_schedule_animals()

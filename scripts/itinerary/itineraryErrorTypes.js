@@ -61,6 +61,10 @@ export function requiresGuardiansTalkLongWaitConfirmation(errorType) {
    return errorType === itineraryErrorTypes?.GUARDIANS_TALK_LONG_WAIT;
 }
 
+export function requiresGuardiansTalkWithoutAnimalConfirmation(errorType) {
+   return errorType === itineraryErrorTypes?.GUARDIANS_TALK_WITHOUT_ANIMAL;
+}
+
 export function requiresWildEncounterUnscheduleConfirmation(errorType) {
    return errorType === itineraryErrorTypes?.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS;
 }

@@ -1,0 +1,218 @@
+from __future__ import annotations
+
+from collections.abc import Callable
+from datetime import date
+
+from itinerary.support import guardians_talk_save_entry, LION_ITINERARY_ENTRY, LION_KEY, parsed_schedule_item, schedule_itinerary_item
+
+from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
+from api.itinerary.data_access.validated_itinerary import ValidatedItinerary
+from api.itinerary.warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
+from api.itinerary.warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required_for_talk
+from api.itinerary.warnings.guardians_talk_without_animal_warning import guardians_talks_without_matching_animal
+from api.itinerary.warnings.guardians_talk_without_animal_warning import talk_matches_species_exhibit_pairs
+from api.models.guardians_talk_diff import GuardiansTalkDiff
+from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ScheduleItemKind
+from conftest import DbControllers
+
+LION_TALK = 'African Lion'
+ZEBRA_TALK = "Grevy's Zebra"
+
+
+def _set_talk_schedule(
+      talk: str,
+      *,
+      location: str,
+      talk_time: str ) -> None:
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
+      talk=talk,
+      location=location,
+      start_date='2026-06-01',
+      end_date='2026-06-30',
+      monday_time=talk_time,
+      tuesday_time=talk_time,
+      wednesday_time=talk_time,
+      thursday_time=talk_time,
+      friday_time=talk_time,
+      saturday_time=talk_time,
+      sunday_time=talk_time,
+      message=None,
+   )
+
+
+def test_talk_matches_species_exhibit_pairs_when_location_missing() -> None:
+   talk = GuardiansTalkDiff(
+      name=ZEBRA_TALK,
+      is_deleted=False,
+      location=None )
+
+   assert talk_matches_species_exhibit_pairs( talk, set() )
+
+
+def test_guardians_talks_without_matching_animal_skips_deleted_talks() -> None:
+   validated = ValidatedItinerary(
+      arrival_time='9:30 AM',
+      departure_time='5:00 PM',
+      animals=[],
+      attractions=[],
+      guardians_talks=[
+         GuardiansTalkDiff(
+            name=ZEBRA_TALK,
+            is_deleted=True,
+            location='Africa Savanna' ),
+         GuardiansTalkDiff(
+            name=LION_TALK,
+            is_deleted=False,
+            location='Africa Savanna' ),
+      ],
+      wild_encounters=[],
+      events=[],
+   )
+
+   missing = guardians_talks_without_matching_animal( validated )
+
+   assert [ talk.name for talk in missing ] == [ LION_TALK ]
+
+
+def test_talk_without_animal_warning_skips_deleted_talk() -> None:
+   talk = GuardiansTalkDiff(
+      name=ZEBRA_TALK,
+      is_deleted=True,
+      location='Africa Savanna' )
+
+   assert not guardians_talk_without_animal_warning_is_required_for_talk(
+      talk,
+      set(),
+      confirming_guardians_talk_without_animal=False )
+
+
+def test_build_guardians_talk_without_animal_issue_from_talks() -> None:
+   talk = GuardiansTalkDiff(
+      name=ZEBRA_TALK,
+      is_deleted=False,
+      start_time='12:00 PM',
+      end_time='12:30 PM',
+      location='Africa Savanna' )
+
+   issue = build_guardians_talk_without_animal_issue_from_talks( [ talk ] )
+
+   assert issue.code == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
+   assert len( issue.items ) == 1
+   assert issue.items[ 0 ].name == ZEBRA_TALK
+   assert issue.items[ 0 ].location == 'Africa Savanna'
+
+
+def test_set_itinerary_warns_when_talk_has_no_matching_animal(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   _set_talk_schedule(
+      ZEBRA_TALK,
+      location='Africa Savanna',
+      talk_time='12:00' )
+
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK ) ],
+      wild_encounters=[],
+   )
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
+   assert result.reasons[ 0 ].code == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ ZEBRA_TALK ]
+
+   confirmed = ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK ) ],
+      wild_encounters=[],
+      confirming_guardians_talk_without_animal=True,
+      confirming_guardians_talk_long_wait=True,
+   )
+
+   assert confirmed.success
+   assert [ talk.name for talk in confirmed.itinerary.guardians_talks ] == [
+      ZEBRA_TALK,
+   ]
+
+
+def test_set_itinerary_skips_without_animal_warning_when_animal_matches(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   _set_talk_schedule(
+      LION_TALK,
+      location='Africa Savanna',
+      talk_time='12:00' )
+
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[ guardians_talk_save_entry( LION_TALK ) ],
+      wild_encounters=[],
+      confirming_guardians_talk_long_wait=True,
+   )
+
+   assert result.success
+   assert result.status == ItineraryErrorType.SUCCESS
+
+
+def test_schedule_talk_warns_when_no_matching_animal_on_itinerary(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   _set_talk_schedule(
+      ZEBRA_TALK,
+      location='Africa Savanna',
+      talk_time='12:00' )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+   assert schedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      LION_KEY,
+      start_time='10:30',
+   ).success
+
+   result = schedule_itinerary_item(
+      ScheduleItemKind.GUARDIANS_TALK.item_type,
+      ZEBRA_TALK,
+   )
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ ZEBRA_TALK ]
+
+   confirmed = ItineraryCoordinator.schedule_itinerary_item(
+      parsed_schedule_item(
+         ScheduleItemKind.GUARDIANS_TALK.item_type,
+         ZEBRA_TALK ),
+      confirming_guardians_talk_without_animal=True,
+      confirming_guardians_talk_long_wait=True,
+   )
+
+   assert confirmed.success
+   assert any(
+      talk.name == ZEBRA_TALK
+      for talk in confirmed.itinerary.guardians_talks
+   )

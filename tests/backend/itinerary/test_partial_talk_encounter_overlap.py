@@ -74,6 +74,7 @@ def test_set_itinerary_saves_trimmed_guardians_talk_with_partial_encounter_overl
       guardians_talks=guardians_talk_save_entries( 'African Lion' ),
       wild_encounters=[ wild_encounter_key( 'Grizzly Bear', start_time='13:00' ) ],
       overriding_conflicting_guardians_talks=True,
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert result.success is True

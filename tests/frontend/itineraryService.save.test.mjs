@@ -93,6 +93,90 @@ test('saveItinerary omits selected exhibits by default', async () => {
    });
 });
 
+test('saveItinerary confirms before saving a guardians talk without a matching animal', async () => {
+   const requests = [];
+   const itineraryConfig = {
+      itinerary_error_types: {
+         SUCCESS: 'success',
+         GUARDIANS_TALK_WITHOUT_ANIMAL: 'guardiansTalkWithoutAnimal',
+      },
+      suppressed_error_types: [],
+   };
+
+   updateItineraryErrorTypesFromConfig({
+      errorTypes: itineraryConfig.itinerary_error_types,
+      suppressedErrorTypes: itineraryConfig.suppressed_error_types,
+   });
+
+   globalThis.fetch = async (url, options) => {
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
+
+      const isConfirmed = Boolean(
+         requests.at(-1)?.body?.confirmingGuardiansTalkWithoutAnimal
+      );
+
+      return {
+         ok: true,
+         status: 200,
+         statusText: 'OK',
+         text: async () => JSON.stringify({
+            status: isConfirmed ? 'success' : 'guardiansTalkWithoutAnimal',
+            reasons: isConfirmed ? [] : [{
+               code: 'guardiansTalkWithoutAnimal',
+               items: [{
+                  name: 'Komodo Dragon',
+                  item_type: 'guardiansTalk',
+                  start_time: '2:00 PM',
+                  location: 'Australasia Pavilion',
+               }],
+            }],
+            itinerary_config: itineraryConfig,
+            itinerary: {
+               date: '2026-06-15',
+               animals: [],
+               attractions: [],
+               guardians_talks: [],
+               wild_encounters: [],
+            },
+         }),
+      };
+   };
+
+   const savePromise = saveItinerary({
+      date: '2026-06-15',
+      animals: [],
+      attractions: [],
+      guardiansTalks: [{ name: 'Komodo Dragon' }],
+      wildEncounters: [],
+   });
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const popupMessage = document.querySelector('.tzg-popup-message');
+
+   assert.match(
+      popupMessage?.textContent ?? '',
+      /The Komodo Dragon guardians talk at .* does not match an animal on your itinerary\. Do you still want to keep it on your plan\?/
+   );
+
+   document.querySelector('.tzg-popup-confirm')?.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   await savePromise;
+
+   assert.equal(requests.length, 2);
+   assert.equal(requests[0].body.confirmingGuardiansTalkWithoutAnimal, undefined);
+   assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
+});
+
 test('saveItinerary confirms before saving a guardians talk that unschedules items', async () => {
    const requests = [];
    const itineraryConfig = {

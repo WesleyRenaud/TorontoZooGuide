@@ -4,6 +4,7 @@ import {
    requiresGuardiansTalkLongWaitConfirmation,
    requiresGuardiansTalkUnscheduleConfirmation,
    requiresGuardiansTalkWildEncounterTimeConflictConfirmation,
+   requiresGuardiansTalkWithoutAnimalConfirmation,
    requiresWildEncounterUnscheduleConfirmation,
    resolveItineraryErrorMessage,
 } from './itineraryErrorTypes.js';
@@ -17,6 +18,7 @@ import {
 import { applyItineraryDiffToValidation } from './itineraryValidationResult.js';
 import { showGuardiansTalkLongWaitConfirmation } from './panel/guardiansTalkLongWaitConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
+import { showGuardiansTalkWithoutAnimalConfirmation } from './panel/guardiansTalkWithoutAnimalConfirmation.js';
 import { showScheduleTimeConflictConfirmation } from './panel/scheduleTimeConflictConfirmation.js';
 import { showWildEncounterUnscheduleConfirmation } from './panel/wildEncounterUnscheduleConfirmation.js';
 import { buildItineraryDiff } from './wizard/itineraryDiff.js';
@@ -117,6 +119,19 @@ async function requestSetItineraryWithConfirmations(
          buildConfirmedPayload: () => ({
             ...payload,
             confirmingGuardiansTalkUnschedule: true,
+         }),
+      });
+   }
+
+   if (requiresGuardiansTalkWithoutAnimalConfirmation(initialResult.errorType)) {
+      return requestSetItineraryConfirmation({
+         showConfirmation: showGuardiansTalkWithoutAnimalConfirmation,
+         initialResult,
+         payload,
+         diffBaseline,
+         buildConfirmedPayload: () => ({
+            ...payload,
+            confirmingGuardiansTalkWithoutAnimal: true,
          }),
       });
    }

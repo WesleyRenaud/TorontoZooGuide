@@ -42,6 +42,7 @@ def test_set_itinerary_keeps_boundary_animal_when_choosing_talk_over_encounter(
       guardians_talks=[ guardians_talk_save_entry( TURTLE_TALK ) ],
       wild_encounters=[],
       overriding_conflicting_guardians_talks=True,
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert result.success
@@ -80,6 +81,7 @@ def test_set_itinerary_empty_animals_removes_lion_after_conflict_resolved(
       guardians_talks=[ guardians_talk_save_entry( TURTLE_TALK ) ],
       wild_encounters=[],
       overriding_conflicting_guardians_talks=True,
+      confirming_guardians_talk_without_animal=True,
    )
 
    assert result.success

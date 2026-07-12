@@ -144,6 +144,75 @@ test('scheduleSelectedItineraryItem confirms before scheduling a new animal', as
    assert.equal(requests[1].body.confirmingScheduleItemNotOnItinerary, true);
 });
 
+test('scheduleSelectedItineraryItem confirms before scheduling a talk without matching animal', async () => {
+   const requests = [];
+
+   globalThis.fetch = async (url, options = {}) => {
+      if (url === '/get-itinerary-date') {
+         return mockItineraryDateResponse();
+      }
+
+      requests.push({
+         url,
+         body: JSON.parse(options.body ?? '{}'),
+      });
+
+      const isConfirmed = Boolean(
+         requests.at(-1)?.body?.confirmingGuardiansTalkWithoutAnimal
+      );
+
+      return mockJsonResponse({
+         status: isConfirmed ? 'success' : 'guardiansTalkWithoutAnimal',
+         reasons: isConfirmed ? [] : [{
+            code: 'guardiansTalkWithoutAnimal',
+            items: [{
+               name: 'Komodo Dragon',
+               item_type: 'guardiansTalk',
+               start_time: '2:00 PM',
+               location: 'Australasia Pavilion',
+            }],
+         }],
+      });
+   };
+
+   const schedulePromise = scheduleSelectedItineraryItem(
+      {
+         date: '2026-06-15',
+         animals: [],
+         attractions: [],
+         guardiansTalks: [{ name: 'Komodo Dragon' }],
+      },
+      'guardians_talks',
+      { name: 'Komodo Dragon', scheduleItemKind: 'guardians_talks' },
+      []
+   );
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const confirmButton = document.querySelector('.tzg-popup-confirm');
+   const popupMessage = document.querySelector('.tzg-popup-message');
+
+   assert.ok(confirmButton);
+   assert.match(
+      popupMessage?.textContent ?? '',
+      /The Komodo Dragon guardians talk at .* does not match an animal on your itinerary\. Do you still want to keep it on your plan\?/
+   );
+   confirmButton.click();
+
+   await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+   });
+
+   const result = await schedulePromise;
+
+   assert.equal(result.errorType, 'success');
+   assert.equal(requests.length, 2);
+   assert.equal(requests[0].body.confirmingGuardiansTalkWithoutAnimal, false);
+   assert.equal(requests[1].body.confirmingGuardiansTalkWithoutAnimal, true);
+});
+
 test('scheduleSelectedItineraryItem confirms before scheduling a guardians talk', async () => {
    const requests = [];
 

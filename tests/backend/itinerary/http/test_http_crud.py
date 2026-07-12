@@ -57,6 +57,7 @@ def test_itinerary_endpoints_return_success_payloads(
          'confirming_guardians_talk_unschedule': False,
          'confirming_wild_encounter_unschedule': False,
          'confirming_guardians_talk_long_wait': False,
+         'confirming_guardians_talk_without_animal': False,
       }
    )
    assert response_json( get_handler )[ 'itinerary' ][ 'date' ] == '2026-06-15'
