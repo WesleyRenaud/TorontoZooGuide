@@ -22,6 +22,13 @@ from conftest import DbControllers
 
 ZEBRA_TALK = "Grevy's Zebra"
 MEERKAT_TALK = 'Slender-Tailed Meerkat'
+NEW_WORLD_PRIMATES_TALK = 'New World Primates'
+TAMARIN_ITINERARY_ENTRY = {
+   'species': 'Golden Lion Tamarin',
+   'exhibit': 'Americas Pavilion',
+   'enclosure_name': 'Outdoor',
+}
+TAMARIN_KEY = 'Golden Lion Tamarin||Americas Pavilion||Outdoor'
 
 
 def _set_talk_schedule(
@@ -206,6 +213,94 @@ def test_schedule_talk_warns_when_far_from_existing_scheduled_items(
    )
 
    assert confirmed.success
+
+
+def test_schedule_talk_skips_long_wait_when_bulk_pack_would_close_gap(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   _set_talk_schedule(
+      NEW_WORLD_PRIMATES_TALK,
+      location='Americas Pavilion',
+      talk_time='12:00' )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[ TAMARIN_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[],
+      wild_encounters=[],
+   ).success
+   animal_scheduled = schedule_itinerary_item(
+      ScheduleItemKind.ANIMAL.item_type,
+      TAMARIN_KEY,
+      start_time='09:30',
+   )
+
+   assert animal_scheduled.success
+
+   animal_times_before = [
+      ( animal.species, animal.start_time, animal.end_time )
+      for animal in animal_scheduled.itinerary.animals
+   ]
+
+   assert animal_times_before
+   assert all(
+      has_itinerary_schedule_times( start_time, end_time )
+      for _, start_time, end_time in animal_times_before
+   )
+
+   result = schedule_itinerary_item(
+      ScheduleItemKind.GUARDIANS_TALK.item_type,
+      f'{ NEW_WORLD_PRIMATES_TALK }||12:00',
+   )
+
+   assert result.success
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert [
+      ( animal.species, animal.start_time, animal.end_time )
+      for animal in result.itinerary.animals
+   ] == animal_times_before
+   assert [ talk.name for talk in result.itinerary.guardians_talks ] == [
+      NEW_WORLD_PRIMATES_TALK,
+   ]
+
+
+def test_schedule_talk_warns_when_no_previously_scheduled_animals_to_pack(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   _set_zebra_and_meerkat_schedules()
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[ LION_ITINERARY_ENTRY ],
+      attractions=[],
+      guardians_talks=[
+         guardians_talk_save_entry( ZEBRA_TALK, start_time='10:00' ),
+      ],
+      wild_encounters=[],
+      confirming_guardians_talk_without_animal=True,
+   ).success
+   assert schedule_itinerary_item(
+      ScheduleItemKind.GUARDIANS_TALK.item_type,
+      f'{ ZEBRA_TALK }||10:00',
+      confirming_guardians_talk_without_animal=True,
+   ).success
+
+   result = schedule_itinerary_item(
+      ScheduleItemKind.GUARDIANS_TALK.item_type,
+      f'{ MEERKAT_TALK }||13:00',
+      confirming_guardians_talk_without_animal=True,
+   )
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_LONG_WAIT
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ MEERKAT_TALK ]
 
 
 def test_bulk_schedule_warns_and_leaves_schedule_unchanged_until_confirmed(

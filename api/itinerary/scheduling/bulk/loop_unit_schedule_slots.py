@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+from dataclasses import field
+
 from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import TimeBlock
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
@@ -15,6 +18,28 @@ LoopScheduleSlot = tuple[
    ScheduleTimeKey,
    ScheduleTimeKey,
 ]
+
+
+@dataclass
+class LoopScheduleSlotSink:
+   persist: bool = True
+   slots: list[ LoopScheduleSlot ] = field( default_factory=list )
+
+
+   def save(
+         self,
+         conn: Connection,
+         blockers: list[ TimeBlock ],
+         animal_slots: list[ LoopScheduleSlot ] ) -> bool:
+      self.slots.extend( animal_slots )
+
+      if self.persist and not _persist_loop_group_slots(
+            conn,
+            tuple( animal_slots ) ):
+         return False
+
+      _append_slots_to_blockers( blockers, tuple( animal_slots ) )
+      return True
 
 
 def fetch_viewing_durations(
@@ -85,13 +110,13 @@ def assign_contiguous_slots_ending_by(
 def save_loop_slots(
       conn: Connection,
       blockers: list[ TimeBlock ],
-      animal_slots: list[ LoopScheduleSlot ] ) -> bool:
-   if not _persist_loop_group_slots( conn, tuple( animal_slots ) ):
-      return False
+      animal_slots: list[ LoopScheduleSlot ],
+      *,
+      slot_sink: LoopScheduleSlotSink | None = None ) -> bool:
+   if slot_sink is None:
+      slot_sink = LoopScheduleSlotSink()
 
-   _append_slots_to_blockers( blockers, tuple( animal_slots ) )
-
-   return True
+   return slot_sink.save( conn, blockers, animal_slots )
 
 
 def _append_slots_to_blockers(

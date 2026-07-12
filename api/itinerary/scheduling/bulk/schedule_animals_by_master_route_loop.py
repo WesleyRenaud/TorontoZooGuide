@@ -9,6 +9,7 @@ from .loop_schedule_unit import LoopScheduleUnit
 from .loop_unit_schedule_persist_error import LoopUnitSchedulePersistError
 from .loop_unit_schedule_slots import assign_contiguous_slots
 from .loop_unit_schedule_slots import fetch_viewing_durations
+from .loop_unit_schedule_slots import LoopScheduleSlotSink
 from .loop_unit_schedule_slots import save_loop_slots
 from .pack_loops_into_schedule_window import pack_all_loops_before_deadline
 from .pack_loops_into_schedule_window import pack_loops_into_schedule_window
@@ -38,7 +39,8 @@ def schedule_animals_by_master_route_loop(
       schedule_windows: list[ ItineraryScheduleWindow ],
       schedule_cursor_seconds: int,
       walk_graph: WalkGraph,
-      start_node_id: str ) -> tuple[ list[ ItineraryAnimalRecord ], int ]:
+      start_node_id: str,
+      slot_sink: LoopScheduleSlotSink | None = None ) -> tuple[ list[ ItineraryAnimalRecord ], int ]:
    prepared_units = prepare_loop_schedule_units( conn, loop_units )
 
    if prepared_units is None:
@@ -84,7 +86,8 @@ def schedule_animals_by_master_route_loop(
          blockers=blockers,
          walk_graph=walk_graph,
          window_state=window_state,
-         remaining_animals=remaining_animals )
+         remaining_animals=remaining_animals,
+         slot_sink=slot_sink )
 
       if should_abort:
          return remaining_animals, window_state.cursor_seconds
@@ -124,6 +127,7 @@ def _process_schedule_window(
       walk_graph: WalkGraph,
       window_state: _LoopScheduleWindowState,
       remaining_animals: list[ ItineraryAnimalRecord ],
+      slot_sink: LoopScheduleSlotSink | None = None,
    ) -> bool:
    if pinned_loop_ids:
       packed_cursor_seconds, should_abort = _pack_non_pinned_loops_before_pinned_deadline(
@@ -135,7 +139,8 @@ def _process_schedule_window(
          blockers=blockers,
          walk_graph=walk_graph,
          window_state=window_state,
-         remaining_animals=remaining_animals )
+         remaining_animals=remaining_animals,
+         slot_sink=slot_sink )
 
       if should_abort:
          return False
@@ -149,7 +154,8 @@ def _process_schedule_window(
          schedule_window,
          pinned_earliest_start_cache=pinned_earliest_start_cache,
          blockers=blockers,
-         cursor_seconds=window_state.cursor_seconds )
+         cursor_seconds=window_state.cursor_seconds,
+         slot_sink=slot_sink )
 
    packed_units = pack_loops_into_schedule_window(
       walk_graph,
@@ -173,7 +179,8 @@ def _process_schedule_window(
                conn,
                prepared_unit,
                blockers=blockers,
-               start_seconds=window_state.cursor_seconds )
+               start_seconds=window_state.cursor_seconds,
+               slot_sink=slot_sink )
          except LoopUnitSchedulePersistError as error:
             remaining_animals.extend( error.animals )
             remaining_animals.extend(
@@ -200,7 +207,8 @@ def _process_schedule_window(
                schedule_window,
                pinned_earliest_start_cache=pinned_earliest_start_cache,
                blockers=blockers,
-               cursor_seconds=window_state.cursor_seconds )
+               cursor_seconds=window_state.cursor_seconds,
+               slot_sink=slot_sink )
 
    if pinned_loop_ids:
       window_state.cursor_seconds = _drain_ready_pinned_loop_units(
@@ -209,7 +217,8 @@ def _process_schedule_window(
          schedule_window,
          pinned_earliest_start_cache=pinned_earliest_start_cache,
          blockers=blockers,
-         cursor_seconds=window_state.cursor_seconds )
+         cursor_seconds=window_state.cursor_seconds,
+         slot_sink=slot_sink )
 
    return True
 
@@ -225,6 +234,7 @@ def _pack_non_pinned_loops_before_pinned_deadline(
       walk_graph: WalkGraph,
       window_state: _LoopScheduleWindowState,
       remaining_animals: list[ ItineraryAnimalRecord ],
+      slot_sink: LoopScheduleSlotSink | None = None,
    ) -> tuple[ int, bool ]:
    non_pinned_units = _units_excluding_pinned_loops(
       remaining_units,
@@ -269,7 +279,8 @@ def _pack_non_pinned_loops_before_pinned_deadline(
             conn,
             prepared_unit,
             blockers=blockers,
-            start_seconds=schedule_start_seconds )
+            start_seconds=schedule_start_seconds,
+            slot_sink=slot_sink )
       except LoopUnitSchedulePersistError as error:
          remaining_animals.extend( error.animals )
          remaining_animals.extend(
@@ -334,6 +345,7 @@ def _drain_ready_pinned_loop_units(
       pinned_earliest_start_cache: dict[ int, int | None ],
       blockers: list[ TimeBlock ],
       cursor_seconds: int,
+      slot_sink: LoopScheduleSlotSink | None = None,
    ) -> int:
    pinned_loop_ids = _pinned_loop_ids_in_window( schedule_window )
    schedule_cursor_seconds = cursor_seconds
@@ -353,7 +365,8 @@ def _drain_ready_pinned_loop_units(
             blockers=blockers,
             window_start_seconds=schedule_window.start_seconds,
             window_end_seconds=schedule_window.end_seconds,
-            cursor_seconds=schedule_cursor_seconds )
+            cursor_seconds=schedule_cursor_seconds,
+            slot_sink=slot_sink )
 
          if not unscheduled_animals:
             remove_matching_prepared_loop_unit( remaining_units, prepared_unit )
@@ -538,7 +551,8 @@ def _schedule_prepared_loop_unit(
       prepared_unit: PreparedLoopScheduleUnit,
       *,
       blockers: list[ TimeBlock ],
-      start_seconds: int ) -> list[ ItineraryAnimalRecord ]:
+      start_seconds: int,
+      slot_sink: LoopScheduleSlotSink | None = None ) -> list[ ItineraryAnimalRecord ]:
    animals = list( prepared_unit.unit.animals )
    durations = fetch_viewing_durations( conn, animals )
 
@@ -553,7 +567,11 @@ def _schedule_prepared_loop_unit(
    if not animal_slots:
       return animals
 
-   if not save_loop_slots( conn, blockers, animal_slots ):
+   if not save_loop_slots(
+         conn,
+         blockers,
+         animal_slots,
+         slot_sink=slot_sink ):
       raise LoopUnitSchedulePersistError( animals )
 
    return []
