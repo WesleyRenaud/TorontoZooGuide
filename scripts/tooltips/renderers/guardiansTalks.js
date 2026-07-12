@@ -1,5 +1,6 @@
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createTooltipCard } from './cardFactory.js';
+import { formatMapOccurrenceTimes } from '../formatMapOccurrenceTimes.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export const guardiansTalkRenderer = {
@@ -8,6 +9,7 @@ export const guardiansTalkRenderer = {
    createCard(t, index) {
       const name = t.name || APP_STRINGS.entityLabels.guardiansTalk;
       const normalizedName = normalizeAssetKey(name);
+      const times = formatMapOccurrenceTimes(t);
 
       return createTooltipCard({
          index,
@@ -19,7 +21,7 @@ export const guardiansTalkRenderer = {
          title: { text: name },
          details: [
             APP_STRINGS.search.location(t.location),
-            APP_STRINGS.tooltips.startTime(t.start_time),
+            times ? APP_STRINGS.tooltips.times(times) : '',
             APP_STRINGS.tooltips.description(APP_STRINGS.tooltips.guardiansTalkDescription),
          ],
       });

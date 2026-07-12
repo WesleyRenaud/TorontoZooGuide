@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ..coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ...json_handler import JsonRequestHandler
+from ..scheduling.collapse_wild_encounters_for_map import collapse_wild_encounters_for_map
 
 
 class WildEncounterController():
@@ -9,13 +10,14 @@ class WildEncounterController():
    def get_wild_encounters( handler: JsonRequestHandler ) -> None:
       data = handler._read_json_body()
 
-      wild_encounters = WildEncounterCoordinator.get_available_wild_encounters(
-         month=data.get( 'month' ),
-         day=data.get( 'day' ),
-         year=data.get( 'year' ) )
+      wild_encounters = collapse_wild_encounters_for_map(
+         WildEncounterCoordinator.get_available_wild_encounters(
+            month=data.get( 'month' ),
+            day=data.get( 'day' ),
+            year=data.get( 'year' ) ) )
 
       handler._write_json( {
-         'wild_encounters': [ wild_encounter.to_dict() for wild_encounter in wild_encounters ],
+         'wild_encounters': wild_encounters,
       } )
 
 
