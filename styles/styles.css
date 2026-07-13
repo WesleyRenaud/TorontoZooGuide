@@ -1175,6 +1175,11 @@ nav ul li a:hover {
    color: var(--color-white);
 }
 
+.species-overlay-card {
+   /* Top chrome lives in .species-overlay-header so nav/close can center in it */
+   padding-top: 0;
+}
+
 .species-overlay-card h2,
 .species-overlay-card h4,
 .species-overlay-card h6,
@@ -1271,7 +1276,7 @@ nav ul li a:hover {
    max-width: 90vw;
    display: flex;
    flex-direction: column;
-   gap: 24px;
+   gap: 0;
 
    font-family: 'Arial', sans-serif;
    font-size: 2em;
@@ -1340,11 +1345,37 @@ nav ul li a:hover {
    pointer-events: auto;
 }
 
-/* Close button */
+/* Top chrome: same fixed band with or without linked-animal nav */
+.species-overlay-header {
+   box-sizing: border-box;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-shrink: 0;
+   height: 118px;
+   padding: 0 96px;
+   font-size: 16px;
+   line-height: 1;
+}
+
+.species-overlay-nav {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 16px;
+}
+
+.species-overlay-nav-position {
+   min-width: 4.5em;
+   text-align: center;
+   font-size: 42px;
+   font-weight: bold;
+   line-height: 1;
+   color: var(--color-white);
+}
+
+.species-overlay-nav-btn,
 .species-close {
-   position: absolute;
-   top: 16px;
-   right: 16px;
    width: 70px;
    height: 70px;
 
@@ -1354,6 +1385,7 @@ nav ul li a:hover {
 
    font-size: 42px;
    font-weight: bold;
+   line-height: 1;
    color: var(--color-white);
 
    background-color: #5e9600f2;
@@ -1368,6 +1400,14 @@ nav ul li a:hover {
    padding: 0;
 }
 
+.species-close {
+   /* Center in the 118px header band: (118 - 70) / 2 = 24 */
+   position: absolute;
+   top: 24px;
+   right: 16px;
+}
+
+.species-overlay-nav-btn:hover,
 .species-close:hover {
    background-color: var(--color-brand-primary);
    transform: scale(1.1);

@@ -5,12 +5,15 @@ export const actions = {
 };
 
 export const common = {
+   animalPosition: (index, total) => `${index} of ${total}`,
    close: 'Close',
    closeSymbol: '×',
    genericFailed: 'Failed.',
    moreInfo: 'More Info',
+   nextAnimal: 'Next animal',
    nextSymbol: '>',
    noMatches: 'No matches',
+   previousAnimal: 'Previous animal',
    previousSymbol: '<',
    requestFailed: 'Request failed.',
    viewOnMap: 'View on Map',
