@@ -3178,15 +3178,9 @@ nav ul li a:hover {
 }
 
 .itinerary-day-event-card .itin-panel-thumb {
-   width: 150px;
-   height: min(
-      calc(
-         (var(--itinerary-event-slot-span, 1) * var(--itinerary-half-hour-slot-height))
-         - 88px
-      ),
-      156px
-   );
-   border-radius: 14px;
+   width: 180px;
+   height: 140px;
+   border-radius: 18px;
 }
 
 .itinerary-day-event-card .itin-panel-text {
