@@ -7,7 +7,8 @@ export function getGuardiansTalkLinkedAnimal(talk = {}) {
 }
 
 export async function openGuardiansTalkLinkedAnimal(talk) {
-   const linked = getGuardiansTalkLinkedAnimal(talk);
+   const linkedAnimals = normalizeGuardiansTalkLinkedAnimals(talk.linked_animals);
+   const linked = linkedAnimals[0];
 
    if (!linked) {
       return;
@@ -16,6 +17,6 @@ export async function openGuardiansTalkLinkedAnimal(talk) {
    const animal = await getAnimalInformation(linked);
 
    if (animal) {
-      openAnimalSpeciesOverlay(animal);
+      openAnimalSpeciesOverlay(animal, { linkedAnimals });
    }
 }
