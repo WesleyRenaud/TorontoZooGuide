@@ -106,6 +106,7 @@ export function createSearchImageRowRenderer({
    imageDirectory,
    getInfoLink = () => null,
    onTitleClick = null,
+   shouldEnableTitleClick = null,
 } = {}) {
    const getImageName = presentation.getImageName ?? presentation.getTitle;
 
@@ -118,6 +119,7 @@ export function createSearchImageRowRenderer({
       ),
       getInfoLink,
       onTitleClick,
+      shouldEnableTitleClick,
    });
 }
 

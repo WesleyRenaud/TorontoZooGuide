@@ -4,6 +4,10 @@ import {
    normalizeTalk,
    normalizeWild,
 } from './format.js';
+import {
+   getGuardiansTalkLinkedAnimal,
+   openGuardiansTalkLinkedAnimal,
+} from '../../guardians/openGuardiansTalkLinkedAnimal.js';
 import { openAnimalSpeciesOverlay } from '../../overlays/speciesOverlay.js';
 import {
    buildRemoveRowProps,
@@ -120,12 +124,23 @@ export function buildGuardiansRows(
       ],
       getAlertLine: buildGuardiansRemovalReasonLine,
       getLink: (talk) => talk.link,
-      extendRowProps: (talk) => buildRemoveRowProps(
-         'guardians_talks',
-         talk,
-         onRemoveItem,
-         { useSecondaryAction: false }
-      ),
+      extendRowProps: (talk) => ({
+         ...(
+            getGuardiansTalkLinkedAnimal(talk)
+               ? {
+                  onNameClick: () => {
+                     void openGuardiansTalkLinkedAnimal(talk);
+                  },
+               }
+               : {}
+         ),
+         ...buildRemoveRowProps(
+            'guardians_talks',
+            talk,
+            onRemoveItem,
+            { useSecondaryAction: false }
+         ),
+      }),
    });
 }
 

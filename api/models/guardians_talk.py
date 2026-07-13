@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .guardians_talk_linked_animal import GuardiansTalkLinkedAnimal
 from ..shared.value_conversion import ValueConversion
 from ..types import Coordinate, ScheduleTimeKey
 
@@ -16,7 +17,8 @@ class GuardiansTalk:
          end_time: ScheduleTimeKey = None,
          is_available: bool = True,
          unavailable_message: str | None = None,
-         is_deleted: bool = False ) -> None:
+         is_deleted: bool = False,
+         linked_animals: list[ GuardiansTalkLinkedAnimal ] | None = None ) -> None:
       self.name = name
       self.location = location
       self.x_coord = x_coord
@@ -27,6 +29,7 @@ class GuardiansTalk:
       self.is_available = is_available
       self.unavailable_message = unavailable_message
       self.is_deleted = is_deleted
+      self.linked_animals = list( linked_animals or [] )
 
 
    def to_dict( self ) -> dict[ str, object ]:
@@ -40,5 +43,9 @@ class GuardiansTalk:
          'end_time': self.end_time,
          'is_available': ValueConversion.as_boolean( self.is_available ),
          'unavailable_message': self.unavailable_message,
-         'is_deleted': ValueConversion.as_boolean( self.is_deleted )
+         'is_deleted': ValueConversion.as_boolean( self.is_deleted ),
+         'linked_animals': [
+            linked_animal.to_dict()
+            for linked_animal in self.linked_animals
+         ],
       }

@@ -1,4 +1,8 @@
 import {
+   getGuardiansTalkLinkedAnimal,
+   openGuardiansTalkLinkedAnimal,
+} from '../guardians/openGuardiansTalkLinkedAnimal.js';
+import {
    buildAnimalImageSrc,
    getAnimalEnclosureName,
    getAnimalSpecies,
@@ -55,8 +59,13 @@ const ROW_LEFT_RENDERERS = {
       getInfoLink: () => null,
       onTitleClick: openWildEncounterLink,
    }),
+   guardiansTalk: createSearchImageRowRenderer({
+      presentation: SEARCH_RESULT_PRESENTATIONS.guardiansTalk,
+      imageDirectory: 'guardians-talks',
+      onTitleClick: openGuardiansTalkLinkedAnimal,
+      shouldEnableTitleClick: (row) => Boolean(getGuardiansTalkLinkedAnimal(row)),
+   }),
    ...createSearchImageRowRenderers([
-      { type: 'guardiansTalk', imageDirectory: 'guardians-talks' },
       { type: 'restaurant', imageDirectory: 'restaurants', getInfoLink: getRestaurantMenuLink },
       { type: 'giftShop', imageDirectory: 'gift-shops' },
       { type: 'pavilion', imageDirectory: 'pavilions' },

@@ -22,6 +22,12 @@ test('normalizes search response collections before rows are rendered', () => {
             location: '  Eurasia Wilds  ',
             start_time: '  13:30  ',
             maximum_duration: 30,
+            linked_animals: [
+               {
+                  species: '  Amur Tiger  ',
+                  exhibit: '  Eurasia Wilds  ',
+               },
+            ],
          },
       ],
       wild_encounters: [
@@ -47,6 +53,12 @@ test('normalizes search response collections before rows are rendered', () => {
       location: 'Eurasia Wilds',
       start_time: '13:30',
       maximum_duration: 30,
+      linked_animals: [
+         {
+            species: 'Amur Tiger',
+            exhibit: 'Eurasia Wilds',
+         },
+      ],
    });
    assert.deepEqual(response.wild_encounters[0], {
       name: 'African Rainforest',

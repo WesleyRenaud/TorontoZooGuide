@@ -127,6 +127,7 @@ export function createDefaultSelectorRowLeftRenderer({
    getImageSrc,
    getInfoLink,
    onTitleClick = null,
+   shouldEnableTitleClick = null,
 } = {}) {
    return function renderDefaultRowLeft(row) {
       const titleParts = typeof getTitleParts === 'function'
@@ -136,6 +137,13 @@ export function createDefaultSelectorRowLeftRenderer({
       const subtitle = getSubtitle(row);
       const imageSrc = getImageSrc(row);
       const infoLink = getInfoLink(row);
+      const titleClickEnabled = (
+         typeof onTitleClick === 'function'
+         && (
+            typeof shouldEnableTitleClick !== 'function'
+            || shouldEnableTitleClick(row)
+         )
+      );
 
       return createSelectorRowContent({
          imageSrc,
@@ -145,7 +153,7 @@ export function createDefaultSelectorRowLeftRenderer({
             titleParts,
             subtitle,
             infoLink,
-            onTitleClick: typeof onTitleClick === 'function'
+            onTitleClick: titleClickEnabled
                ? () => onTitleClick(row)
                : null,
          }),

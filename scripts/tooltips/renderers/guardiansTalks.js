@@ -1,6 +1,8 @@
+import { createSpeciesLinkTitleElement } from '../../animals/createSpeciesLinkTitle.js';
 import { normalizeAssetKey } from '../../assets/normalizeAssetKey.js';
 import { createTooltipCard } from './cardFactory.js';
 import { formatMapOccurrenceTimes } from '../formatMapOccurrenceTimes.js';
+import { getGuardiansTalkLinkedAnimal } from '../../guardians/openGuardiansTalkLinkedAnimal.js';
 import { APP_STRINGS } from '../../strings.js';
 
 export const guardiansTalkRenderer = {
@@ -10,6 +12,19 @@ export const guardiansTalkRenderer = {
       const name = t.name || APP_STRINGS.entityLabels.guardiansTalk;
       const normalizedName = normalizeAssetKey(name);
       const times = formatMapOccurrenceTimes(t);
+      const linkedAnimal = getGuardiansTalkLinkedAnimal(t);
+      const title = linkedAnimal
+         ? {
+            element: createSpeciesLinkTitleElement({
+               text: name,
+               tagName: 'strong',
+               className: 'tooltip-card-title',
+               dataset: {
+                  index,
+               },
+            }),
+         }
+         : { text: name };
 
       return createTooltipCard({
          index,
@@ -18,7 +33,7 @@ export const guardiansTalkRenderer = {
             alt: t.name || name,
             fallbackSrc: 'images/icons/guardians-talk/guardians-talk.png',
          },
-         title: { text: name },
+         title,
          details: [
             APP_STRINGS.search.location(t.location),
             times ? APP_STRINGS.tooltips.times(times) : '',

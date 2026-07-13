@@ -197,6 +197,21 @@ test.describe('itinerary panel format and schedule', () => {
          info_link: '  https://www.torontozoo.com/tickets/carousel  ',
       }).infoLink, 'https://www.torontozoo.com/tickets/carousel');
       assert.equal(normalizeTalk({ name: '  Amur Tiger  ' }).name, 'Amur Tiger');
+      assert.deepEqual(
+         normalizeTalk({
+            name: 'New World Primates',
+            linked_animals: [
+               { species: '  Golden Lion Tamarin  ', exhibit: '  Americas Pavilion  ' },
+               { species: '', exhibit: 'Americas Pavilion' },
+               { species: 'Two-Toed Sloth', exhibit: 'Americas Pavilion' },
+            ],
+         }).linked_animals,
+         [
+            { species: 'Golden Lion Tamarin', exhibit: 'Americas Pavilion' },
+            { species: 'Two-Toed Sloth', exhibit: 'Americas Pavilion' },
+         ]
+      );
+      assert.deepEqual(normalizeTalk({ name: 'Unmapped Talk' }).linked_animals, []);
       assert.equal(normalizeWild({ name: '  African Rainforest  ' }).name, 'African Rainforest');
    });
    

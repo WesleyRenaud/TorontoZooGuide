@@ -1,3 +1,4 @@
+import { normalizeGuardiansTalkLinkedAnimals } from '../../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import { WildEncounterScheduleItemKey } from '../selectors/wildEncounterSelector/scheduleItemKey.js';
 
 function asObject(value) {
@@ -154,6 +155,7 @@ export function normalizeTalk(value) {
       end_time: normalizeText(source.end_time),
       link: normalizeOptionalText(source.link),
       removalReason: normalizeOptionalText(source.removalReason),
+      linked_animals: normalizeGuardiansTalkLinkedAnimals(source.linked_animals),
    };
 }
 

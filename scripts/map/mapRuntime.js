@@ -6,6 +6,7 @@ import { createRestaurantClosedBanner } from '../banners/restaurantClosedBanner.
 import { createRestroomMessageBanner } from '../banners/restroomMessageBanner.js';
 import { DEFAULT_MAP_CONTAIN } from '../config/appConfig.js';
 import { createFocusController } from '../focus/focusController.js';
+import { openGuardiansTalkLinkedAnimal } from '../guardians/openGuardiansTalkLinkedAnimal.js';
 import { initLabelVisibilityToggle } from './labelVisibility.js';
 import { createHoverTooltip } from '../markers/hoverTooltip.js';
 import { createMarkerLayer } from '../markers/markers.js';
@@ -37,11 +38,16 @@ function createMapBannerSet() {
 
 function createAnimalCardClickHandler(speciesOverlay) {
    return (item) => {
-      if (!item || String(item.type || '') !== 'animal') {
+      const itemType = String(item?.type || '');
+
+      if (itemType === 'animal') {
+         speciesOverlay.openFromAnimal(item);
          return;
       }
 
-      speciesOverlay.openFromAnimal(item);
+      if (itemType === 'guardiansTalk') {
+         void openGuardiansTalkLinkedAnimal(item);
+      }
    };
 }
 
