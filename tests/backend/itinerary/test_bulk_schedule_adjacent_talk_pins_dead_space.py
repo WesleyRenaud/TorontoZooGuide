@@ -4,6 +4,8 @@ from collections.abc import Callable
 from datetime import date
 
 from itinerary.support import guardians_talk_save_entry
+from itinerary.support import guardians_talk_wire
+from itinerary.support import unschedule_itinerary_item
 from wild_encounter_schedule_support import wire_schedule_row, wire_schedule_rows
 
 from api.exhibits.coordinators.exhibit_coordinator import ExhibitCoordinator
@@ -227,3 +229,200 @@ def test_adjacent_zebra_then_camel_anchors_savanna_loop_before_zebra(
       'Savanna loop must not continue after the camel talk when zebra was '
       'demoted to an anchor'
    )
+
+
+def test_unschedule_zebra_does_not_shift_animals_into_camel_talk(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 7, 1 ) )
+   _set_summer_zebra_and_camel_schedules_from_database()
+
+   assert ItineraryCoordinator.set_itinerary(
+      date=VISIT_DATE,
+      arrival_time='09:00',
+      departure_time='17:00',
+      animals=[
+         {
+            'species': 'Masai Giraffe',
+            'exhibit': AFRICA_SAVANNA,
+            'enclosure_name': 'Outdoor',
+         },
+         {
+            'species': 'Pygmy Hippopotamus',
+            'exhibit': 'African Rainforest Pavilion',
+         },
+         {
+            'species': 'Western Lowland Gorilla',
+            'exhibit': 'African Rainforest Pavilion',
+            'enclosure_name': 'Outdoor',
+         },
+      ],
+      attractions=[],
+      guardians_talks=[
+         guardians_talk_save_entry( ZEBRA_TALK, start_time=ZEBRA_TIME ),
+         guardians_talk_save_entry( CAMEL_TALK, start_time=CAMEL_TIME ),
+      ],
+      wild_encounters=[],
+      confirming_early_admission=True,
+      confirming_guardians_talk_without_animal=True,
+   ).success
+
+   assert db.conn is not None
+   db.conn.execute(
+      """   UPDATE ItineraryAnimal
+            SET START_TIME = ?,
+                END_TIME = ?
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME IS ?;
+      """,
+      ( '1:00 PM', '1:10 PM', 'Masai Giraffe', AFRICA_SAVANNA, 'Outdoor' ),
+   )
+   db.conn.execute(
+      """   UPDATE ItineraryAnimal
+            SET START_TIME = ?,
+                END_TIME = ?
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME IS ?;
+      """,
+      (
+         '1:00 PM',
+         '1:05 PM',
+         'Pygmy Hippopotamus',
+         'African Rainforest Pavilion',
+         None,
+      ),
+   )
+   db.conn.execute(
+      """   UPDATE ItineraryAnimal
+            SET START_TIME = ?,
+                END_TIME = ?
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME IS ?;
+      """,
+      (
+         '1:05 PM',
+         '1:10 PM',
+         'Western Lowland Gorilla',
+         'African Rainforest Pavilion',
+         'Outdoor',
+      ),
+   )
+   db.conn.commit()
+
+   result = unschedule_itinerary_item(
+      item_type='guardians_talks',
+      key=guardians_talk_wire( ZEBRA_TALK, start_time=ZEBRA_TIME ),
+   )
+
+   assert result.success
+
+   giraffe = next(
+      animal
+      for animal in result.itinerary.animals
+      if animal.species == 'Masai Giraffe'
+      and animal.enclosure_name == 'Outdoor' )
+   hippo = next(
+      animal
+      for animal in result.itinerary.animals
+      if animal.species == 'Pygmy Hippopotamus' )
+   gorilla = next(
+      animal
+      for animal in result.itinerary.animals
+      if (
+         animal.species == 'Western Lowland Gorilla'
+         and animal.enclosure_name == 'Outdoor' ) )
+   camel_talk = next(
+      talk for talk in result.itinerary.guardians_talks
+      if talk.name == CAMEL_TALK )
+
+   assert giraffe.start_time == '1:00 PM'
+   assert giraffe.end_time == '1:10 PM'
+   assert hippo.start_time == '1:00 PM'
+   assert hippo.end_time == '1:05 PM'
+   assert gorilla.start_time == '1:05 PM'
+   assert gorilla.end_time == '1:10 PM'
+
+   giraffe_start = _seconds( giraffe.start_time )
+   giraffe_end = _seconds( giraffe.end_time )
+   camel_start = _seconds( camel_talk.start_time )
+   camel_end = _seconds( camel_talk.end_time )
+
+   assert giraffe_start is not None
+   assert giraffe_end is not None
+   assert camel_start is not None
+   assert camel_end is not None
+   assert not ( giraffe_start < camel_end and camel_start < giraffe_end )
+
+
+def test_unschedule_talk_still_shifts_animals_when_freed_slot_is_empty(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 7, 1 ) )
+   assert GuardiansCoordinator.set_guardians_talk_schedule(
+      talk=ZEBRA_TALK,
+      location=AFRICA_SAVANNA,
+      start_date='2026-06-27',
+      end_date='2026-09-07',
+      schedule_rows=wire_schedule_rows(
+         ZEBRA_TIME,
+         monday=True,
+         tuesday=False,
+         wednesday=True,
+         thursday=False,
+         friday=False,
+         saturday=False,
+         sunday=False ),
+      message="The Grevy's Zebra at Africa Savanna is not scheduled today.",
+   )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date=VISIT_DATE,
+      arrival_time='09:00',
+      departure_time='17:00',
+      animals=[
+         {
+            'species': 'Masai Giraffe',
+            'exhibit': AFRICA_SAVANNA,
+            'enclosure_name': 'Outdoor',
+         },
+      ],
+      attractions=[],
+      guardians_talks=[
+         guardians_talk_save_entry( ZEBRA_TALK, start_time=ZEBRA_TIME ),
+      ],
+      wild_encounters=[],
+      confirming_early_admission=True,
+      confirming_guardians_talk_without_animal=True,
+   ).success
+
+   assert db.conn is not None
+   db.conn.execute(
+      """   UPDATE ItineraryAnimal
+            SET START_TIME = ?,
+                END_TIME = ?
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME IS ?;
+      """,
+      ( '1:00 PM', '1:10 PM', 'Masai Giraffe', AFRICA_SAVANNA, 'Outdoor' ),
+   )
+   db.conn.commit()
+
+   result = unschedule_itinerary_item(
+      item_type='guardians_talks',
+      key=guardians_talk_wire( ZEBRA_TALK, start_time=ZEBRA_TIME ),
+   )
+
+   assert result.success
+
+   giraffe = next(
+      animal
+      for animal in result.itinerary.animals
+      if animal.species == 'Masai Giraffe'
+      and animal.enclosure_name == 'Outdoor' )
+
+   assert giraffe.start_time == '12:30 PM'
+   assert giraffe.end_time == '12:40 PM'

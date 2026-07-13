@@ -175,6 +175,43 @@ test.describe('buildScheduledItemRowsContext scheduled animals', () => {
       );
       assert.equal(context.scheduledAnimalIndexes.size, 2);
    });
+
+   test('omits covered-by-talk animals from timeline pills but keeps them scheduled', () => {
+      const context = buildScheduledItemRowsContext(
+         {
+            animals: [
+               {
+                  species: 'African Lion',
+                  exhibit: 'Africa Savanna',
+                  enclosure_name: null,
+                  start_time: '11:00 AM',
+                  end_time: '11:30 AM',
+                  covered_by_talk: true,
+               },
+               {
+                  species: 'Cheetah',
+                  exhibit: 'Africa Savanna',
+                  enclosure_name: null,
+                  start_time: '11:40 AM',
+                  end_time: '11:45 AM',
+                  covered_by_talk: false,
+               },
+            ],
+            attractions: [],
+            guardiansTalks: [],
+            wildEncounters: [],
+            events: [],
+         },
+         [660, 690, 720],
+         1140
+      );
+      const animalItems = [...context.itemsByStart.values()].flat()
+         .filter((item) => item.scheduleItemKind === ScheduleItemKind.ANIMAL.itemType);
+
+      assert.equal(animalItems.length, 1);
+      assert.equal(animalItems[0].item.species, 'Cheetah');
+      assert.equal(context.scheduledAnimalIndexes.size, 2);
+   });
 });
 
 test('buildScheduledItinerary tolerates missing itinerary collections', () => {

@@ -16,6 +16,9 @@ from ...domain.itinerary import build_current_itinerary
 from ...domain.itinerary_adjustment import ItineraryAdjustment
 from .group_animals_by_master_route_loop import group_animals_by_master_route_loop
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
+from .guardians_talk_covered_animals import apply_covered_by_talk_schedules
+from .guardians_talk_covered_animals import filter_animals_excluding_covered
+from .guardians_talk_covered_animals import viewing_spot_keys_to_cover_for_loop_pins
 from ..items.schedule_itinerary_helpers import build_itinerary_context
 from ..items.schedule_itinerary_helpers import build_save_result
 from ..items.schedule_itinerary_helpers import persist_itinerary_walk_route
@@ -107,8 +110,6 @@ def bulk_schedule_animals(
       saved_itinerary.animal_rows,
       anchor_seconds )
 
-   sorted_loop_groups = group_animals_by_master_route_loop( animals_to_schedule )
-   loop_units = build_loop_schedule_units( sorted_loop_groups )
    fixed_time_stops = resolve_fixed_time_itinerary_stops( itinerary )
    boundary_stops, loop_pins = separate_schedule_boundaries_and_loop_pins(
       conn,
@@ -119,11 +120,20 @@ def bulk_schedule_animals(
       day_end_seconds,
       boundary_stops )
    loop_pins = keep_completable_loop_pins( schedule_windows, loop_pins )
+   covered_by_pin = viewing_spot_keys_to_cover_for_loop_pins(
+      conn,
+      loop_pins,
+      animals_to_schedule )
+   animals_to_pack = filter_animals_excluding_covered(
+      animals_to_schedule,
+      covered_by_pin )
+   sorted_loop_groups = group_animals_by_master_route_loop( animals_to_pack )
+   loop_units = build_loop_schedule_units( sorted_loop_groups )
    schedule_windows = attach_loop_pins_to_schedule_windows(
       schedule_windows,
       loop_pins )
 
-   if not loop_units:
+   if not loop_units and not covered_by_pin:
       persist_itinerary_walk_route( conn, **itinerary_context )
 
       return ItinerarySaveResult(
@@ -132,14 +142,19 @@ def bulk_schedule_animals(
             fetch_saved_itinerary( conn ),
             **itinerary_context ) )
 
-   remaining_animals, _ = schedule_animals_by_master_route_loop(
-      conn,
-      loop_units,
-      blockers=blockers,
-      schedule_windows=schedule_windows,
-      schedule_cursor_seconds=start_state.schedule_anchor_seconds,
-      walk_graph=walk_graph,
-      start_node_id=start_state.start_node_id )
+   remaining_animals: list[ ItineraryAnimalRecord ] = []
+
+   if loop_units:
+      remaining_animals, _ = schedule_animals_by_master_route_loop(
+         conn,
+         loop_units,
+         blockers=blockers,
+         schedule_windows=schedule_windows,
+         schedule_cursor_seconds=start_state.schedule_anchor_seconds,
+         walk_graph=walk_graph,
+         start_node_id=start_state.start_node_id )
+
+   apply_covered_by_talk_schedules( conn, covered_by_pin )
 
    adjustments: tuple[ ItineraryAdjustment, ... ] = ()
    arrival_adjustment = adjust_arrival_after_bulk_schedule(

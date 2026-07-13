@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS GuardiansTalkAnimal;
+DROP TABLE IF EXISTS GuardiansTalkAnimalMigration;
 
-CREATE TABLE GuardiansTalkAnimal
+CREATE TABLE GuardiansTalkAnimalMigration
 (  TALK_NAME       VARCHAR(64) NOT NULL,
    LOCATION        VARCHAR(64) NOT NULL,
    SPECIES         VARCHAR(64) NOT NULL,
@@ -11,3 +11,22 @@ CREATE TABLE GuardiansTalkAnimal
    FOREIGN KEY (SPECIES, EXHIBIT) REFERENCES Enclosure(SPECIES, EXHIBIT),
    FOREIGN KEY (SPECIES, EXHIBIT, ENCLOSURE_NAME)
       REFERENCES EnclosureViewing(SPECIES, EXHIBIT, NAME) );
+
+INSERT OR IGNORE INTO GuardiansTalkAnimalMigration (
+   TALK_NAME,
+   LOCATION,
+   SPECIES,
+   EXHIBIT,
+   ENCLOSURE_NAME
+)
+SELECT
+   TALK_NAME,
+   LOCATION,
+   SPECIES,
+   EXHIBIT,
+   NULL
+FROM GuardiansTalkAnimal;
+
+DROP TABLE GuardiansTalkAnimal;
+
+ALTER TABLE GuardiansTalkAnimalMigration RENAME TO GuardiansTalkAnimal;

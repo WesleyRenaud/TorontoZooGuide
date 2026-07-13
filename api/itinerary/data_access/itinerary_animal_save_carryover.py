@@ -15,6 +15,7 @@ class ItineraryAnimalSaveCarryover:
    enclosure_name: str | None
    old_likelihood: int | None
    is_added: bool
+   covered_by_talk: bool
    start_time: ScheduleTimeKey
    end_time: ScheduleTimeKey
 
@@ -35,6 +36,7 @@ def itinerary_animal_save_carryover(
          enclosure_name=enclosure_name,
          old_likelihood=None,
          is_added=False,
+         covered_by_talk=False,
          start_time=None,
          end_time=None,
       )
@@ -52,6 +54,7 @@ def itinerary_animal_save_carryover(
             enclosure_name=enclosure_name,
             old_likelihood=row.new_likelihood,
             is_added=animal.is_added or row.is_added,
+            covered_by_talk=row.covered_by_talk,
             start_time=row.start_time,
             end_time=row.end_time,
          )
@@ -62,6 +65,7 @@ def itinerary_animal_save_carryover(
       enclosure_name=enclosure_name,
       old_likelihood=None,
       is_added=animal.is_added,
+      covered_by_talk=False,
       start_time=None,
       end_time=None,
    )

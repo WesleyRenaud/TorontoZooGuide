@@ -15,9 +15,16 @@ def adjust_arrival_after_bulk_schedule(
       previous_arrival_time: str | None ) -> ItineraryAdjustment | None:
    earliest_start_seconds = _earliest_scheduled_animal_start_seconds( conn )
 
-   if (
-         earliest_start_seconds is None
-         or earliest_start_seconds <= schedule_anchor_seconds ):
+   if earliest_start_seconds is None:
+      return None
+
+   previous_arrival_seconds = DateValues.time_value_in_seconds(
+      previous_arrival_time )
+
+   if not _should_sync_arrival_to_earliest_animal(
+         earliest_start_seconds=earliest_start_seconds,
+         schedule_anchor_seconds=schedule_anchor_seconds,
+         previous_arrival_seconds=previous_arrival_seconds ):
       return None
 
    adjusted_arrival_time = DateValues.schedule_time_key_from_seconds(
@@ -36,6 +43,22 @@ def adjust_arrival_after_bulk_schedule(
       previous_value=previous_arrival_time,
       value=adjusted_arrival_time,
       reason='bulkScheduleConsecutivePacking' )
+
+
+def _should_sync_arrival_to_earliest_animal(
+      *,
+      earliest_start_seconds: int,
+      schedule_anchor_seconds: int,
+      previous_arrival_seconds: int | None ) -> bool:
+   if previous_arrival_seconds is None:
+      return earliest_start_seconds > schedule_anchor_seconds
+
+   if previous_arrival_seconds > earliest_start_seconds:
+      return True
+
+   return (
+      earliest_start_seconds > schedule_anchor_seconds
+      and earliest_start_seconds > previous_arrival_seconds )
 
 
 def _earliest_scheduled_animal_start_seconds(

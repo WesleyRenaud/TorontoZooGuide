@@ -46,10 +46,11 @@ def save_itinerary_animals( cur: Cursor, animals: list[ AnimalDiff ] ) -> None:
                   OLD_LIKELIHOOD,
                   NEW_LIKELIHOOD,
                   IS_ADDED,
+                  COVERED_BY_TALK,
                   START_TIME,
                   END_TIME
                )
-               VALUES ( ?, ?, ?, ?, ?, ?, ?, ? );
+               VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? );
          """,
          (
             animal.species,
@@ -58,6 +59,7 @@ def save_itinerary_animals( cur: Cursor, animals: list[ AnimalDiff ] ) -> None:
             animal.old_likelihood,
             animal.new_likelihood,
             animal.is_added,
+            animal.covered_by_talk,
             DateValues.normalize_itinerary_schedule_time( animal.start_time ),
             DateValues.normalize_itinerary_schedule_time( animal.end_time ),
          ) )

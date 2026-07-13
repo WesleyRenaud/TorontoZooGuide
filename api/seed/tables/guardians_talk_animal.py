@@ -13,6 +13,7 @@ RECORD_FIELDS = [
    'location',
    'species',
    'exhibit',
+   'enclosure_name',
 ]
 
 DB_COLUMNS = [
@@ -20,6 +21,7 @@ DB_COLUMNS = [
    'LOCATION',
    'SPECIES',
    'EXHIBIT',
+   'ENCLOSURE_NAME',
 ]
 
 DATA_FILE = 'guardians_talk_animal.json'

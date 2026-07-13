@@ -3,11 +3,14 @@ from __future__ import annotations
 from ..bulk.bulk_schedule_animals import has_itinerary_schedule_times
 from ..core.time_block import time_block_from_schedule_times
 from ..core.time_block import time_block_from_seconds
+from ..core.time_block import time_blocks_overlap
 from ..core.time_block import TimeBlock
 from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_itinerary_schedule_item_row
 from ...data_access.itinerary import fetch_itinerary_animal_rows
 from ...data_access.itinerary import fetch_itinerary_attraction_rows
 from ...data_access.itinerary import fetch_itinerary_event_rows
+from ...data_access.itinerary import fetch_itinerary_guardians_talk_rows
+from ...data_access.itinerary import fetch_itinerary_wild_encounter_rows
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import update_itinerary_animal_schedule
 from ...data_access.schedule_itinerary_item import update_itinerary_attraction_schedule
@@ -58,6 +61,144 @@ def resolve_unscheduled_item_time_block(
       row.end_time )
 
 
+def _should_shift_guest_scheduled_event(
+      event_type: ItineraryEventType ) -> bool:
+   return event_type not in (
+      ItineraryEventType.ARRIVAL,
+      ItineraryEventType.DEPARTURE,
+   )
+
+
+def _collect_fixed_activity_blocks(
+      conn: Connection,
+      *,
+      freed_block: TimeBlock | None ) -> list[ TimeBlock ]:
+   occupied: list[ TimeBlock ] = []
+
+   for talk_row in fetch_itinerary_guardians_talk_rows( conn ):
+      if talk_row.is_deleted:
+         continue
+
+      block = time_block_from_schedule_times(
+         talk_row.start_time,
+         talk_row.end_time )
+
+      if block is not None:
+         occupied.append( block )
+
+   for encounter_row in fetch_itinerary_wild_encounter_rows( conn ):
+      if encounter_row.is_deleted:
+         continue
+
+      block = time_block_from_schedule_times(
+         encounter_row.start_time,
+         encounter_row.end_time )
+
+      if block is not None:
+         occupied.append( block )
+
+   if freed_block is None:
+      return occupied
+
+   return [
+      block
+      for block in occupied
+      if block != freed_block
+   ]
+
+
+def _shifted_block_overlaps_occupied(
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey,
+      delta_seconds: int,
+      occupied_blocks: list[ TimeBlock ] ) -> bool:
+   shifted_times = shifted_schedule_times( start_time, end_time, delta_seconds )
+
+   if shifted_times is None:
+      return True
+
+   shifted_block = time_block_from_schedule_times(
+      shifted_times[ 0 ],
+      shifted_times[ 1 ] )
+
+   if shifted_block is None:
+      return True
+
+   return any(
+      time_blocks_overlap( shifted_block, occupied_block )
+      for occupied_block in occupied_blocks
+   )
+
+
+def _guest_shift_would_overlap_fixed_activity(
+      conn: Connection,
+      *,
+      anchor_end_time: ScheduleTimeKey,
+      delta_seconds: int,
+      occupied_blocks: list[ TimeBlock ] ) -> bool:
+   for animal_row in fetch_itinerary_animal_rows( conn ):
+      if animal_row.covered_by_talk:
+         continue
+
+      if not has_itinerary_schedule_times(
+            animal_row.start_time,
+            animal_row.end_time ):
+         continue
+
+      if not DateValues.time_value_is_at_or_after(
+            animal_row.start_time,
+            anchor_end_time ):
+         continue
+
+      if _shifted_block_overlaps_occupied(
+            animal_row.start_time,
+            animal_row.end_time,
+            delta_seconds,
+            occupied_blocks ):
+         return True
+
+   for attraction_row in fetch_itinerary_attraction_rows( conn ):
+      if not has_itinerary_schedule_times(
+            attraction_row.start_time,
+            attraction_row.end_time ):
+         continue
+
+      if not DateValues.time_value_is_at_or_after(
+            attraction_row.start_time,
+            anchor_end_time ):
+         continue
+
+      if _shifted_block_overlaps_occupied(
+            attraction_row.start_time,
+            attraction_row.end_time,
+            delta_seconds,
+            occupied_blocks ):
+         return True
+
+   for event_row in fetch_itinerary_event_rows( conn ):
+      if not _should_shift_guest_scheduled_event( event_row.event_type ):
+         continue
+
+      if not has_itinerary_schedule_times(
+            event_row.start_time,
+            event_row.end_time ):
+         continue
+
+      if not DateValues.time_value_is_at_or_after(
+            event_row.start_time,
+            anchor_end_time ):
+         continue
+
+      if _shifted_block_overlaps_occupied(
+            event_row.start_time,
+            event_row.end_time,
+            delta_seconds,
+            occupied_blocks ):
+         return True
+
+   return False
+
+
 def _shift_guest_scheduled_animal_rows(
       conn: Connection,
       cur: Cursor,
@@ -65,6 +206,9 @@ def _shift_guest_scheduled_animal_rows(
       anchor_end_time: ScheduleTimeKey,
       delta_seconds: int ) -> None:
    for animal_row in fetch_itinerary_animal_rows( conn ):
+      if animal_row.covered_by_talk:
+         continue
+
       if not has_itinerary_schedule_times(
             animal_row.start_time,
             animal_row.end_time ):
@@ -126,14 +270,6 @@ def _shift_guest_scheduled_attraction_rows(
       )
 
 
-def _should_shift_guest_scheduled_event(
-      event_type: ItineraryEventType ) -> bool:
-   return event_type not in (
-      ItineraryEventType.ARRIVAL,
-      ItineraryEventType.DEPARTURE,
-   )
-
-
 def _shift_guest_scheduled_event_rows(
       conn: Connection,
       cur: Cursor,
@@ -175,11 +311,22 @@ def shift_guest_scheduled_items_after_unschedule(
       cur: Cursor,
       *,
       anchor_end_seconds: int,
-      shift_seconds: int ) -> None:
+      shift_seconds: int,
+      freed_block: TimeBlock | None = None ) -> None:
    if shift_seconds == 0:
       return
 
    anchor_end_time = DateValues.schedule_time_key_from_seconds( anchor_end_seconds )
+   occupied_blocks = _collect_fixed_activity_blocks(
+      conn,
+      freed_block=freed_block )
+
+   if _guest_shift_would_overlap_fixed_activity(
+         conn,
+         anchor_end_time=anchor_end_time,
+         delta_seconds=shift_seconds,
+         occupied_blocks=occupied_blocks ):
+      return
 
    _shift_guest_scheduled_animal_rows(
       conn,
@@ -218,4 +365,5 @@ def apply_guest_schedule_shift_for_unschedule(
       conn,
       cur,
       anchor_end_seconds=removed_block.end_seconds,
-      shift_seconds=shift_seconds )
+      shift_seconds=shift_seconds,
+      freed_block=removed_block )

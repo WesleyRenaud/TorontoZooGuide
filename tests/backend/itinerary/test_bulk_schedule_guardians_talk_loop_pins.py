@@ -10,14 +10,17 @@ from api.guardians.coordinators.guardians_coordinator import GuardiansCoordinato
 from api.guardians.scheduling.guardians_talk_loop_schedule_pin import viewing_spot_index_for_talk_in_loop
 from api.itinerary.coordinators.itinerary_coordinator import ItineraryCoordinator
 from api.itinerary.data_access.itinerary_animal_record import ItineraryAnimalRecord
+from api.itinerary.guardians_talk_item_key import GuardiansTalkScheduleItemKey
 from api.itinerary.routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
 from api.itinerary.routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
+from api.itinerary.routing.resolve_itinerary_stops import resolve_itinerary_stops
 from api.itinerary.scheduling.bulk.bulk_schedule_loop_pins import attach_loop_pins_to_schedule_windows
 from api.itinerary.scheduling.bulk.bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
 from api.itinerary.scheduling.bulk.schedule_loop_unit_with_pins import viewing_spot_index_for_animal_in_loop
 from api.models import Animal
 from api.shared.calendar_dates import DateValues
 from api.shared.enums import ItineraryErrorType
+from api.shared.enums import ScheduleItemKind
 from api.walk_graph.master_route import default_master_route_loop_by_id
 from conftest import DbControllers
 
@@ -158,7 +161,10 @@ def test_bulk_schedule_weaves_african_lion_talk_into_africa_savanna_loop(
    scheduled_animals = [
       animal
       for animal in result.itinerary.animals
-      if animal.start_time is not None and animal.end_time is not None
+      if (
+         animal.start_time is not None
+         and animal.end_time is not None
+         and not animal.covered_by_talk )
    ]
 
    assert scheduled_animals
@@ -284,6 +290,9 @@ def test_bulk_schedule_does_not_overlap_loop_pin_guardians_talk(
    assert talk_end_seconds is not None
 
    for animal in result.itinerary.animals:
+      if animal.covered_by_talk:
+         continue
+
       animal_start_seconds = DateValues.time_value_in_seconds( animal.start_time )
       animal_end_seconds = DateValues.time_value_in_seconds( animal.end_time )
 
@@ -301,3 +310,105 @@ def test_bulk_schedule_does_not_overlap_loop_pin_guardians_talk(
    ]
 
    assert unscheduled_animals == []
+
+
+def test_bulk_schedule_covers_african_lion_animal_when_talk_is_woven(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+   _set_saturday_african_lion_talk_schedule()
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[ guardians_talk_save_entry( AFRICAN_LION_TALK, start_time='11:00' ) ],
+      wild_encounters=[],
+      selected_exhibits=[ AFRICA_SAVANNA ],
+      confirming_early_admission=True,
+      confirming_guardians_talk_without_animal=True,
+   ).success
+
+   result = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert result.success
+   assert result.status == ItineraryErrorType.SUCCESS
+
+   lion = next(
+      animal
+      for animal in result.itinerary.animals
+      if animal.species == AFRICAN_LION_TALK and animal.exhibit == AFRICA_SAVANNA )
+
+   assert lion.covered_by_talk is True
+   assert lion.start_time == '11:00 AM'
+   assert lion.end_time == '11:30 AM'
+
+   animal_stops = [
+      stop
+      for stop in resolve_itinerary_stops( result.itinerary )
+      if (
+         stop.schedule_item_kind == ScheduleItemKind.ANIMAL
+         and AFRICAN_LION_TALK in stop.item_key )
+   ]
+
+   assert animal_stops == []
+
+
+def test_unschedule_woven_talk_restores_enclosure_at_default_duration_and_shifts_later_items(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 20 ) )
+   _set_saturday_african_lion_talk_schedule()
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-20',
+      arrival_time='09:00',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[ guardians_talk_save_entry( AFRICAN_LION_TALK, start_time='11:00' ) ],
+      wild_encounters=[],
+      selected_exhibits=[ AFRICA_SAVANNA ],
+      confirming_early_admission=True,
+      confirming_guardians_talk_without_animal=True,
+   ).success
+
+   scheduled = ItineraryCoordinator.bulk_schedule_animals()
+
+   assert scheduled.success
+
+   cheetah_before = next(
+      animal
+      for animal in scheduled.itinerary.animals
+      if animal.species == 'Cheetah' and animal.exhibit == AFRICA_SAVANNA )
+   cheetah_start_before = DateValues.time_value_in_seconds( cheetah_before.start_time )
+
+   assert cheetah_start_before is not None
+   assert cheetah_start_before >= DateValues.time_value_in_seconds( '11:30 AM' )
+
+   result = ItineraryCoordinator.unschedule_itinerary_item(
+      GuardiansTalkScheduleItemKey(
+         name=AFRICAN_LION_TALK,
+         start_time='11:00' ) )
+
+   assert result.success
+
+   lion = next(
+      animal
+      for animal in result.itinerary.animals
+      if animal.species == AFRICAN_LION_TALK and animal.exhibit == AFRICA_SAVANNA )
+   cheetah_after = next(
+      animal
+      for animal in result.itinerary.animals
+      if animal.species == 'Cheetah' and animal.exhibit == AFRICA_SAVANNA )
+
+   assert lion.covered_by_talk is False
+   assert lion.start_time == '11:00 AM'
+   assert lion.end_time == '11:08 AM'
+
+   cheetah_start_after = DateValues.time_value_in_seconds( cheetah_after.start_time )
+
+   assert cheetah_start_after is not None
+   assert cheetah_start_after == cheetah_start_before - 22 * 60

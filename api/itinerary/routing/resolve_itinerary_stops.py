@@ -34,6 +34,9 @@ def resolve_itinerary_stops( itinerary: Itinerary ) -> list[ ItineraryStop ]:
    stops: list[ ItineraryStop ] = [ resolve_entrance_itinerary_stop() ]
 
    for animal in itinerary.animals:
+      if animal.covered_by_talk:
+         continue
+
       walk_node_id = resolve_viewing_walk_node_id(
          animal.species,
          animal.exhibit,

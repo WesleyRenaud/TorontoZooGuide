@@ -236,6 +236,7 @@ EXPECTED_RUNTIME_COLUMNS = {
       'OLD_LIKELIHOOD',
       'NEW_LIKELIHOOD',
       'IS_ADDED',
+      'COVERED_BY_TALK',
       'START_TIME',
       'END_TIME',
    },

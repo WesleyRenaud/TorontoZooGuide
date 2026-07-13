@@ -209,9 +209,9 @@ def test_set_itinerary_unschedules_overlapping_items_when_confirmed(
    lion = next(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Lion' )
-   assert lion.start_time is not None
-   assert lion.end_time is not None
-   assert DateValues.time_value_in_seconds( lion.end_time ) <= DateValues.time_value_in_seconds( '10:00 AM' )
+   assert lion.covered_by_talk is True
+   assert lion.start_time == '10:00 AM'
+   assert lion.end_time == '10:30 AM'
 
 
 def test_schedule_guardians_talk_returns_warning_when_it_would_unschedule_items(
@@ -262,9 +262,9 @@ def test_schedule_guardians_talk_unschedules_overlapping_items_when_confirmed(
    lion = next(
       animal for animal in result.itinerary.animals
       if animal.species == 'African Lion' )
-   assert lion.start_time is not None
-   assert lion.end_time is not None
-   assert DateValues.time_value_in_seconds( lion.end_time ) <= DateValues.time_value_in_seconds( '10:00 AM' )
+   assert lion.covered_by_talk is True
+   assert lion.start_time == '10:00 AM'
+   assert lion.end_time == '10:30 AM'
 
    talk = next(
       saved_talk for saved_talk in result.itinerary.guardians_talks

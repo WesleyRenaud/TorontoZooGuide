@@ -98,6 +98,37 @@ def update_itinerary_animal_schedule(
    return cur.rowcount > 0
 
 
+def update_itinerary_animal_cover_and_schedule(
+      cur: Cursor,
+      *,
+      species: str,
+      exhibit: str,
+      enclosure_name: str | None = None,
+      covered_by_talk: bool,
+      start_time: ScheduleTimeKey,
+      end_time: ScheduleTimeKey ) -> bool:
+   cur.execute(
+      """   UPDATE ItineraryAnimal
+            SET START_TIME = ?,
+                END_TIME = ?,
+                COVERED_BY_TALK = ?
+            WHERE SPECIES = ?
+              AND EXHIBIT = ?
+              AND ENCLOSURE_NAME IS ?;
+         """,
+         (
+            DateValues.normalize_itinerary_schedule_time( start_time ),
+            DateValues.normalize_itinerary_schedule_time( end_time ),
+            covered_by_talk,
+            species,
+            exhibit,
+            enclosure_name,
+         ),
+   )
+
+   return cur.rowcount > 0
+
+
 def update_itinerary_attraction_schedule(
       cur: Cursor,
       *,

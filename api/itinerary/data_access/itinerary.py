@@ -54,6 +54,7 @@ def fetch_itinerary_animal_rows( conn: Connection ) -> list[ ItineraryAnimalReco
                OLD_LIKELIHOOD,
                NEW_LIKELIHOOD,
                IS_ADDED,
+               COVERED_BY_TALK,
                START_TIME,
                END_TIME
             FROM ItineraryAnimal;

@@ -71,6 +71,9 @@ def collect_time_blocks_from_itinerary( itinerary: Itinerary ) -> list[ TimeBloc
    blocks: list[ TimeBlock ] = []
 
    for animal in itinerary.animals:
+      if animal.covered_by_talk:
+         continue
+
       append_block_from_schedule_times(
          blocks,
          animal.start_time,

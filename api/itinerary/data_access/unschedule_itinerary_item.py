@@ -8,7 +8,8 @@ def clear_all_itinerary_animal_schedules( cur: Cursor ) -> None:
    cur.execute(
       """   UPDATE ItineraryAnimal
             SET START_TIME = NULL,
-                END_TIME = NULL;
+                END_TIME = NULL,
+                COVERED_BY_TALK = 0;
          """ )
 
 
@@ -33,7 +34,8 @@ def clear_itinerary_animal_schedule(
    cur.execute(
       """   UPDATE ItineraryAnimal
             SET START_TIME = NULL,
-                END_TIME = NULL
+                END_TIME = NULL,
+                COVERED_BY_TALK = 0
             WHERE SPECIES = ?
               AND EXHIBIT = ?
               AND ENCLOSURE_NAME IS ?;
