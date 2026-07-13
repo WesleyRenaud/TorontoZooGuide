@@ -633,9 +633,35 @@ test.describe('itinerary panel row builders', () => {
             removeCalls.push(request);
          },
       });
-   
+
       assert.equal(row.querySelectorAll('.itin-panel-item-action-btn').length, 0);
       assert.equal(removeCalls.length, 0);
+   });
+
+   test('buildGuardiansRows links the talk name only when a linked animal is present', () => {
+      const [linkedRow, plainRow] = buildGuardiansRows([
+         {
+            name: 'African Lion',
+            location: 'Africa Savanna',
+            linked_animals: [
+               { species: 'African Lion', exhibit: 'Africa Savanna' },
+            ],
+         },
+         {
+            name: 'Guardians of Plants',
+            location: 'Greenhouse',
+            linked_animals: [],
+         },
+      ]);
+
+      assert.ok(
+         linkedRow.querySelector('.itin-panel-name')?.querySelector('.species-link'),
+         'talks with linked animals should open the animal overlay'
+      );
+      assert.equal(
+         plainRow.querySelector('.itin-panel-name')?.querySelector('.species-link'),
+         null
+      );
    });
    
    test('buildAnimalRows omits image src when asset path segments are invalid', () => {

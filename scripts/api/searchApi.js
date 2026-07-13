@@ -1,4 +1,5 @@
 import { postJson } from './apiClient.js';
+import { normalizeGuardiansTalkLinkedAnimals } from '../guardians/normalizeGuardiansTalkLinkedAnimals.js';
 import {
    asArray,
    asBoolean,
@@ -28,6 +29,7 @@ function normalizeGuardiansTalkRow(row) {
       name: asTrimmedString(source.name),
       location: asTrimmedString(source.location),
       start_time: asTrimmedString(source.start_time),
+      linked_animals: normalizeGuardiansTalkLinkedAnimals(source.linked_animals),
    };
 }
 

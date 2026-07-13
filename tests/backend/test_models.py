@@ -18,6 +18,7 @@ from api.models import Update
 from api.models import WildEncounter
 from api.models import ZoomobileRouteMarker
 from api.models import ZoomobileStation
+from api.models.guardians_talk_linked_animal import GuardiansTalkLinkedAnimal
 
 
 def test_domain_objects_serialize_to_frontend_shapes() -> None:
@@ -161,7 +162,12 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
             y_coord=2,
             start_time='10:00 AM',
             maximum_duration=30,
-            is_available=1 )
+            is_available=1,
+            linked_animals=[
+               GuardiansTalkLinkedAnimal(
+                  species='Amur Tiger',
+                  exhibit='Eurasia Wilds' ),
+            ] )
       ],
       wild_encounters=[
          WildEncounter(
@@ -237,6 +243,12 @@ def test_itinerary_serializes_objects_and_dicts_with_types() -> None:
             'is_available': True,
             'unavailable_message': None,
             'is_deleted': False,
+            'linked_animals': [
+               {
+                  'species': 'Amur Tiger',
+                  'exhibit': 'Eurasia Wilds',
+               },
+            ],
             'type': 'guardiansTalk'
          }
       ],

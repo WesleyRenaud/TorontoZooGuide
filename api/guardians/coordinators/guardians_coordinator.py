@@ -16,6 +16,7 @@ from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_
 from ..data_access.guardians_talk_schedule import fetch_guardians_talk_schedule_times
 from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule
 from ..data_access.guardians_talk_schedule import save_guardians_talk_schedule_end
+from ..domain.attach_guardians_talk_linked_animals import attach_guardians_talk_linked_animals
 from ..domain.guardians_talk import build_guardians_talk_details
 from ...itinerary.data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from ..itinerary.itinerary_guardians_talks import build_itinerary_guardians_talks
@@ -282,10 +283,13 @@ class GuardiansCoordinator():
 
       guardians_talks = cls.get_guardians_talk_details(
          guardians_talk_names )
-
-      return build_itinerary_guardians_talks(
+      itinerary_talks = build_itinerary_guardians_talks(
          guardians_talks,
          saved_guardians_talks )
+
+      return attach_guardians_talk_linked_animals(
+         get_connection(),
+         itinerary_talks )
 
 
    @classmethod
@@ -364,8 +368,11 @@ class GuardiansCoordinator():
          cls,
          target_date: date ) -> list[ GuardiansTalk ]:
       records = fetch_guardians_talk_schedule_records( get_connection() )
-
-      return build_guardians_talk_schedule_for_target_date(
+      guardians_talks = build_guardians_talk_schedule_for_target_date(
          records,
          target_date,
          cls._guardians_talk_occurrence_is_cancelled )
+
+      return attach_guardians_talk_linked_animals(
+         get_connection(),
+         guardians_talks )
