@@ -7,6 +7,7 @@ from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_iti
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_wild_encounter
+from ..extend_departure_for_activity import ensure_arrival_covers_start_time
 from ..extend_departure_for_activity import ensure_departure_covers_end_time
 from ....models.wild_encounter_diff import WildEncounterDiff
 from ..reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
@@ -128,6 +129,10 @@ def schedule_wild_encounter_itinerary_item(
    if insert_error is not None:
       return insert_error
 
+   ensure_arrival_covers_start_time(
+      conn,
+      start_time=wild_encounter_diff.start_time,
+      current_arrival_time=saved_itinerary.arrival_time )
    ensure_departure_covers_end_time(
       conn,
       end_time=wild_encounter_diff.end_time,

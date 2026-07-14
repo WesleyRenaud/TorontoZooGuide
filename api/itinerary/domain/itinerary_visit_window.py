@@ -3,12 +3,8 @@ from __future__ import annotations
 from ..data_access.itinerary import fetch_itinerary_animal_rows
 from ..data_access.itinerary import fetch_itinerary_attraction_rows
 from ..data_access.itinerary import fetch_itinerary_event_rows
-from ..data_access.itinerary import fetch_itinerary_guardians_talk_rows
-from ..data_access.itinerary import fetch_itinerary_wild_encounter_rows
 from ..data_access.unschedule_itinerary_item import clear_itinerary_animal_schedule
 from ..data_access.unschedule_itinerary_item import clear_itinerary_attraction_schedule
-from ..data_access.unschedule_itinerary_item import clear_itinerary_guardians_talk_schedule
-from ..data_access.unschedule_itinerary_item import clear_itinerary_wild_encounter_schedule
 from ..data_access.unschedule_itinerary_item import delete_itinerary_event_schedule
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryEventType
@@ -80,38 +76,6 @@ def clear_schedules_outside_visit_window(
          clear_itinerary_attraction_schedule(
             cur,
             name=attraction.attraction )
-         did_clear_schedule = True
-
-      for talk in fetch_itinerary_guardians_talk_rows( conn ):
-         if talk.is_deleted:
-            continue
-
-         if not schedule_time_occurs_outside_visit_window(
-               talk.start_time,
-               talk.end_time,
-               arrival_time=arrival_time,
-               departure_time=departure_time ):
-            continue
-
-         clear_itinerary_guardians_talk_schedule(
-            cur,
-            talk_name=talk.talk_name )
-         did_clear_schedule = True
-
-      for encounter in fetch_itinerary_wild_encounter_rows( conn ):
-         if encounter.is_deleted:
-            continue
-
-         if not schedule_time_occurs_outside_visit_window(
-               encounter.start_time,
-               encounter.end_time,
-               arrival_time=arrival_time,
-               departure_time=departure_time ):
-            continue
-
-         clear_itinerary_wild_encounter_schedule(
-            cur,
-            wild_encounter=encounter.wild_encounter )
          did_clear_schedule = True
 
       for event in fetch_itinerary_event_rows( conn ):

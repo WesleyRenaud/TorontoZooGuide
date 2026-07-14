@@ -1,4 +1,5 @@
 import { formatClockTime } from './format.js';
+import { normalizeItineraryItems } from '../itineraryShape.js';
 import { TIMELINE_SLOT_MINUTES } from '../../shared/constants.js';
 
 export function parseClockTimeMinutes(timeValue) {
@@ -68,6 +69,43 @@ export function formatMinutesAsScheduleTimeKey(totalMinutes) {
 
 export function formatMinutesAsClockTime(totalMinutes) {
    return formatClockTime(formatMinutesAsScheduleTimeKey(totalMinutes));
+}
+
+export function collectFixedZooScheduleStartMinutes(itinerary = {}) {
+   return [
+      ...normalizeItineraryItems(itinerary.guardiansTalks),
+      ...normalizeItineraryItems(itinerary.wildEncounters),
+   ]
+      .filter((item) => item && item.is_deleted !== true)
+      .map((item) => parseClockTimeMinutes(item.start_time))
+      .filter((startMinutes) => Number.isFinite(startMinutes));
+}
+
+export function earliestFixedZooScheduleStartMinutes(itinerary = {}) {
+   const startMinutes = collectFixedZooScheduleStartMinutes(itinerary);
+
+   return startMinutes.length > 0
+      ? Math.min(...startMinutes)
+      : null;
+}
+
+export function resolveDayPlannerTimelineStartMinutes(zooHours = {}, itinerary = {}) {
+   const earlyAdmissionMinutes = parseClockTimeMinutes(zooHours.earlyAdmissionTime);
+   const openMinutes = parseClockTimeMinutes(zooHours.openTime);
+   const arrivalMinutes = parseClockTimeMinutes(itinerary.arrivalTime);
+   const zooFloorMinutes = Number.isFinite(earlyAdmissionMinutes)
+      ? earlyAdmissionMinutes
+      : openMinutes;
+   const fixedZooStartMinutes = earliestFixedZooScheduleStartMinutes(itinerary);
+   const candidates = [
+      zooFloorMinutes,
+      arrivalMinutes,
+      fixedZooStartMinutes,
+   ].filter((value) => Number.isFinite(value));
+
+   return candidates.length > 0
+      ? Math.min(...candidates)
+      : null;
 }
 
 export function buildArrivalTimeBounds(zooHours = {}) {

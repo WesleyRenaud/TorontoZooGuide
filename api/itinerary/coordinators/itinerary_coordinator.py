@@ -30,6 +30,7 @@ from ..scheduling.items.schedule_item_key import ScheduleItemKey
 from ...shared.calendar_dates import DateValues
 from ...shared.enums import ItineraryErrorType
 from ...types import Connection, DateInput, DurationInput, TimeInput
+from ..validation.fixed_zoo_schedule_start_times import fixed_zoo_schedule_start_times_from_saved_itinerary
 from ..validation.itinerary_arrival_time_validation import arrival_time_is_valid_for_zoo_hours
 from ..validation.itinerary_departure_time_validation import departure_time_is_valid_for_zoo_hours
 from ..warnings.early_admission_warning import early_admission_warning_is_required
@@ -258,7 +259,10 @@ class ItineraryCoordinator():
       validation_error = arrival_time_is_valid_for_zoo_hours(
          normalized_arrival_time,
          zoo_hours_record,
-         departure_time=saved_itinerary.departure_time )
+         departure_time=saved_itinerary.departure_time,
+         fixed_zoo_start_times=(
+            fixed_zoo_schedule_start_times_from_saved_itinerary(
+               saved_itinerary ) ) )
 
       if validation_error != ItineraryErrorType.SUCCESS:
          return ItineraryTimeSetResult( status=validation_error )

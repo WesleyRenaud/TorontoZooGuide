@@ -8,6 +8,7 @@ import {
    buildHalfHourSlotStarts,
    formatMinutesAsClockTime,
    parseClockTimeMinutes,
+   resolveDayPlannerTimelineStartMinutes,
 } from '../dayPlannerSchedule.js';
 import {
    buildScheduledItemRowsContext,
@@ -235,9 +236,7 @@ export function makeDayPlannerPreview(
    const openMinutes = parseClockTimeMinutes(hours.openTime);
    const lastAdmissionMinutes = parseClockTimeMinutes(hours.lastAdmissionTime);
    const closeMinutes = parseClockTimeMinutes(hours.closeTime);
-   const timelineStartMinutes = Number.isFinite(earlyAdmissionMinutes)
-      ? earlyAdmissionMinutes
-      : openMinutes;
+   const timelineStartMinutes = resolveDayPlannerTimelineStartMinutes(hours, itinerary);
    const halfHourSlotStarts = buildHalfHourSlotStarts(timelineStartMinutes, closeMinutes);
    const itineraryTimeMarkers = buildItineraryTimeMarkers(itinerary, strings);
    const timelineSlotStarts = buildTimelineSlotStarts(

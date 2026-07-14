@@ -15,6 +15,7 @@ import {
    isDepartureTimeWithinBounds,
    parseClockTimeMinutes,
    resolveArrivalTimeValidationError,
+   resolveDayPlannerTimelineStartMinutes,
    resolveDepartureTimeValidationError,
 } from '../../scripts/itinerary/panel/dayPlannerSchedule.js';
 import {
@@ -101,6 +102,40 @@ test.describe('itinerary panel format and schedule', () => {
          openTime: '09:30',
          lastAdmissionTime: '18:00',
       })), false);
+      assert.equal(
+         resolveDayPlannerTimelineStartMinutes(
+            { openTime: '09:30', closeTime: '19:00' },
+            {
+               arrivalTime: '9:30 AM',
+               wildEncounters: [
+                  {
+                     name: 'Mornings in Malaysia',
+                     start_time: '8:45 AM',
+                     end_time: '9:45 AM',
+                  },
+               ],
+            }
+         ),
+         525
+      );
+      assert.deepEqual(
+         buildHalfHourSlotStarts(
+            resolveDayPlannerTimelineStartMinutes(
+               { openTime: '09:30', closeTime: '19:00' },
+               {
+                  wildEncounters: [
+                     {
+                        name: 'Mornings in Malaysia',
+                        start_time: '8:45 AM',
+                        end_time: '9:45 AM',
+                     },
+                  ],
+               }
+            ),
+            1140
+         ).slice(0, 3),
+         [525, 540, 570]
+      );
       assert.equal(isArrivalTimeWithinBounds('6:00 PM', buildArrivalTimeBounds({
          earlyAdmissionTime: '09:00',
          openTime: '09:30',

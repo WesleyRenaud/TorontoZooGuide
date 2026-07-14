@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from ....shared.calendar_dates import DateValues
 from ....types import ScheduleTimeKey
 from ...validation.itinerary_arrival_time_validation import earliest_arrival_time
@@ -22,6 +24,32 @@ def scheduling_anchor_seconds(
          earliest_arrival_time( zoo_hours_record ) )
 
    return DateValues.time_value_in_seconds( zoo_hours_record.open_time )
+
+
+def scheduling_anchor_seconds_covering_fixed_zoo_starts(
+      zoo_hours_record: ZooHoursRecord | None,
+      arrival_time: ScheduleTimeKey,
+      fixed_zoo_start_times: Iterable[ ScheduleTimeKey ] = (),
+      *,
+      allow_early_admission: bool = False ) -> int | None:
+   anchor_seconds = scheduling_anchor_seconds(
+      zoo_hours_record,
+      arrival_time,
+      allow_early_admission=allow_early_admission )
+
+   if anchor_seconds is None:
+      return None
+
+   for start_time in fixed_zoo_start_times:
+      start_seconds = DateValues.time_value_in_seconds( start_time )
+
+      if start_seconds is None:
+         continue
+
+      if start_seconds < anchor_seconds:
+         anchor_seconds = start_seconds
+
+   return anchor_seconds
 
 
 def scheduling_day_end_seconds(
