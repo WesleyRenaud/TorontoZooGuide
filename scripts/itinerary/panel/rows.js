@@ -39,7 +39,16 @@ import {
    getAnimalSpecies,
    getAnimalSubtitle,
 } from '../selectors/animalSelector/model.js';
+import {
+   getGuardiansTalkName,
+   getGuardiansTalkTitleSuffix,
+} from '../selectors/guardiansTalkSelector/model.js';
+import {
+   getWildEncounterName,
+   getWildEncounterTitleSuffix,
+} from '../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../shared/enums/scheduleItemKind.js';
+import { APP_STRINGS } from '../../strings.js';
 
 export function buildAnimalRows(
    animals = [],
@@ -115,9 +124,11 @@ export function buildGuardiansRows(
    return buildNamedRows(guardiansTalks, {
       normalizeItem: normalizeTalk,
       prepareItems: sortScheduledOccurrencesByStartTime,
-      defaultName: 'Talk',
+      defaultName: APP_STRINGS.entityLabels.guardiansTalk,
       imageDirectory: 'guardians-talks',
-      getName: (talk) => talk.name,
+      getName: getGuardiansTalkName,
+      getImageName: getGuardiansTalkName,
+      getNameSuffix: getGuardiansTalkTitleSuffix,
       getMetaLines: (talk) => [
          buildFieldLine('Location', talk.location),
          buildScheduledTimeFieldLine(talk),
@@ -151,9 +162,11 @@ export function buildWildRows(
    return buildNamedRows(wildEncounters, {
       normalizeItem: normalizeWild,
       prepareItems: sortScheduledOccurrencesByStartTime,
-      defaultName: 'Wild Encounter',
+      defaultName: APP_STRINGS.entityLabels.wildEncounter,
       imageDirectory: 'wild-encounters',
-      getName: (wild) => wild.name,
+      getName: getWildEncounterName,
+      getImageName: getWildEncounterName,
+      getNameSuffix: getWildEncounterTitleSuffix,
       getMetaLines: (wild) => [
          buildFieldLine('Meeting Spot', wild.meeting_spot),
          buildScheduledTimeFieldLine(wild),

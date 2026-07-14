@@ -53,6 +53,7 @@ export function createSelectorThumb({
 
 export function createSelectorTextColumn({
    title = APP_STRINGS.entityLabels.item,
+   titleSuffix = '',
    subtitle = '',
    infoLink = null,
    titleNode = null,
@@ -77,6 +78,7 @@ export function createSelectorTextColumn({
    else {
       left.appendChild(createSpeciesLinkTitleElement({
          text: title,
+         suffix: titleSuffix,
          className: 'animal-result-species',
          onClick: onTitleClick,
       }));
@@ -123,6 +125,7 @@ export function createSelectorRowContent({
 export function createDefaultSelectorRowLeftRenderer({
    getTitle,
    getTitleParts = null,
+   getTitleSuffix = null,
    getSubtitle,
    getImageSrc,
    getInfoLink,
@@ -134,6 +137,9 @@ export function createDefaultSelectorRowLeftRenderer({
          ? getTitleParts(row)
          : null;
       const title = getTitle(row) || APP_STRINGS.entityLabels.item;
+      const titleSuffix = typeof getTitleSuffix === 'function'
+         ? getTitleSuffix(row)
+         : '';
       const subtitle = getSubtitle(row);
       const imageSrc = getImageSrc(row);
       const infoLink = getInfoLink(row);
@@ -144,12 +150,14 @@ export function createDefaultSelectorRowLeftRenderer({
             || shouldEnableTitleClick(row)
          )
       );
+      const titleForAlt = `${title}${titleSuffix}`;
 
       return createSelectorRowContent({
          imageSrc,
-         imageAlt: title ? APP_STRINGS.itinerary.itemImage(title) : '',
+         imageAlt: titleForAlt ? APP_STRINGS.itinerary.itemImage(titleForAlt) : '',
          textColumnEl: createSelectorTextColumn({
             title,
+            titleSuffix,
             titleParts,
             subtitle,
             infoLink,

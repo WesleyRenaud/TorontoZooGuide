@@ -1,4 +1,5 @@
 import { buildDetailImageSrc } from '../assets/detailImageSrc.js';
+import { normalizeStoredString } from './selectors/base/storedSelection.js';
 
 export function buildOccurrenceDetailImageSrc(imageDirectory, name) {
    if (!name) {
@@ -8,6 +9,20 @@ export function buildOccurrenceDetailImageSrc(imageDirectory, name) {
    return buildDetailImageSrc(imageDirectory, name, {
       basePath: '../images/details',
    });
+}
+
+export function formatOccurrenceTitleSuffix(name, label) {
+   return normalizeStoredString(name)
+      ? ` ${label}`
+      : '';
+}
+
+export function formatOccurrenceSearchTitle(name, label) {
+   const trimmed = normalizeStoredString(name);
+
+   return trimmed
+      ? `${trimmed}${formatOccurrenceTitleSuffix(trimmed, label)}`
+      : label;
 }
 
 export function buildOccurrenceSubtitle({

@@ -2,6 +2,8 @@ import { normalizeStoredString } from '../base/storedSelection.js';
 import {
    buildOccurrenceDetailImageSrc,
    buildOccurrenceSubtitle,
+   formatOccurrenceSearchTitle,
+   formatOccurrenceTitleSuffix,
 } from '../../scheduledOccurrencePresentation.js';
 import { buildScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
 import { GuardiansTalkScheduleItemKey } from './scheduleItemKey.js';
@@ -17,16 +19,26 @@ export function getGuardiansTalkKey(row) {
    return GuardiansTalkScheduleItemKey.fromRow(row);
 }
 
-export function formatGuardiansTalkSearchTitle(name) {
-   const trimmed = String(name ?? '').trim();
+export function formatGuardiansTalkTitleSuffix(name) {
+   return formatOccurrenceTitleSuffix(
+      name,
+      APP_STRINGS.entityLabels.guardiansTalk
+   );
+}
 
-   return trimmed
-      ? `${trimmed} ${APP_STRINGS.entityLabels.guardiansTalk}`
-      : APP_STRINGS.entityLabels.guardiansTalk;
+export function formatGuardiansTalkSearchTitle(name) {
+   return formatOccurrenceSearchTitle(
+      name,
+      APP_STRINGS.entityLabels.guardiansTalk
+   );
 }
 
 export function getGuardiansTalkSearchTitle(row) {
    return formatGuardiansTalkSearchTitle(getGuardiansTalkName(row));
+}
+
+export function getGuardiansTalkTitleSuffix(row) {
+   return formatGuardiansTalkTitleSuffix(getGuardiansTalkName(row));
 }
 
 export function getGuardiansTalkId(row) {

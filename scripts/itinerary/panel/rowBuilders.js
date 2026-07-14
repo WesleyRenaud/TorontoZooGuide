@@ -74,6 +74,8 @@ export function buildNamedRows(
       defaultName,
       imageDirectory,
       getName,
+      getImageName = getName,
+      getNameSuffix = () => '',
       getMetaLines = () => [],
       getAlertLine = () => '',
       getLink = () => null,
@@ -85,10 +87,12 @@ export function buildNamedRows(
       prepareItems,
       buildRowProps: (item) => {
          const name = getName(item) || defaultName;
+         const imageName = getImageName(item) || name;
 
          return {
             name,
-            imageSrc: buildImageSrc(imageDirectory, name),
+            nameSuffix: getNameSuffix(item),
+            imageSrc: buildImageSrc(imageDirectory, imageName),
             metaLines: buildMetaLines(getMetaLines(item)),
             alertLine: getAlertLine(item),
             ...buildLinkRowProps(getLink(item)),

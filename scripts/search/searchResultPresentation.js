@@ -7,13 +7,13 @@ import { createDefaultSelectorRowLeftRenderer } from '../itinerary/selectors/bas
 import { normalizeStoredLink } from '../itinerary/selectors/base/storedSelection.js';
 import {
    getGuardiansTalkName,
-   getGuardiansTalkSearchTitle,
    getGuardiansTalkSubtitle,
+   getGuardiansTalkTitleSuffix,
 } from '../itinerary/selectors/guardiansTalkSelector/model.js';
 import {
    getWildEncounterName,
-   getWildEncounterSearchTitle,
    getWildEncounterSubtitle,
+   getWildEncounterTitleSuffix,
 } from '../itinerary/selectors/wildEncounterSelector/model.js';
 import { APP_STRINGS } from '../strings.js';
 
@@ -53,12 +53,14 @@ function buildNamedResultPresentation(fallbackTitle, getSubtitle) {
 
 export const SEARCH_RESULT_PRESENTATIONS = {
    wildEncounter: {
-      getTitle: getWildEncounterSearchTitle,
+      getTitle: getWildEncounterName,
+      getTitleSuffix: getWildEncounterTitleSuffix,
       getImageName: getWildEncounterName,
       getSubtitle: getWildEncounterSubtitle,
    },
    guardiansTalk: {
-      getTitle: getGuardiansTalkSearchTitle,
+      getTitle: getGuardiansTalkName,
+      getTitleSuffix: getGuardiansTalkTitleSuffix,
       getImageName: getGuardiansTalkName,
       getSubtitle: getGuardiansTalkSubtitle,
    },
@@ -112,6 +114,7 @@ export function createSearchImageRowRenderer({
 
    return createDefaultSelectorRowLeftRenderer({
       getTitle: presentation.getTitle,
+      getTitleSuffix: presentation.getTitleSuffix,
       getSubtitle: presentation.getSubtitle,
       getImageSrc: (row) => buildSearchDetailImageSrc(
          imageDirectory,
