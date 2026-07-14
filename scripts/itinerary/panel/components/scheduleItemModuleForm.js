@@ -17,14 +17,16 @@ import {
 import { createDefaultSelectorRowLeftRenderer } from '../../selectors/base/resultRenderer.js';
 import {
    buildGuardiansTalkImageSrc,
-   getGuardiansTalkSearchTitle,
+   getGuardiansTalkName,
    getGuardiansTalkSubtitle,
+   getGuardiansTalkTitleSuffix,
 } from '../../selectors/guardiansTalkSelector/model.js';
 import {
    buildWildEncounterImageSrc,
    getWildEncounterLink,
-   getWildEncounterSearchTitle,
+   getWildEncounterName,
    getWildEncounterSubtitle,
+   getWildEncounterTitleSuffix,
 } from '../../selectors/wildEncounterSelector/model.js';
 import { ScheduleItemKind } from '../../../shared/enums/scheduleItemKind.js';
 
@@ -93,7 +95,8 @@ export function buildSearchRowRenderer(moduleType) {
 
    if (moduleType === ScheduleItemKind.GUARDIANS_TALK.itemType) {
       return createDefaultSelectorRowLeftRenderer({
-         getTitle: getGuardiansTalkSearchTitle,
+         getTitle: getGuardiansTalkName,
+         getTitleSuffix: getGuardiansTalkTitleSuffix,
          getSubtitle: getGuardiansTalkSubtitle,
          getImageSrc: buildGuardiansTalkImageSrc,
          getInfoLink: () => null,
@@ -102,7 +105,8 @@ export function buildSearchRowRenderer(moduleType) {
 
    if (moduleType === ScheduleItemKind.WILD_ENCOUNTER.itemType) {
       return createDefaultSelectorRowLeftRenderer({
-         getTitle: getWildEncounterSearchTitle,
+         getTitle: getWildEncounterName,
+         getTitleSuffix: getWildEncounterTitleSuffix,
          getSubtitle: getWildEncounterSubtitle,
          getImageSrc: buildWildEncounterImageSrc,
          getInfoLink: getWildEncounterLink,

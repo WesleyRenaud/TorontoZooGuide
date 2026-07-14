@@ -174,7 +174,7 @@ test.describe('itinerary day planner preview scheduled', () => {
          }
       );
       const kangarooEvent = [...planner.querySelectorAll('.itinerary-day-event')].find((event) => (
-         allTextFor(event).includes('Kangaroo')
+         /Kangaroo\s+Wild Encounter/.test(allTextFor(event))
       ));
       const eventCard = kangarooEvent?.querySelector('.itinerary-day-event-card');
       const menuItems = [
@@ -433,9 +433,9 @@ test.describe('itinerary day planner preview scheduled', () => {
       );
       const text = allTextFor(planner);
    
-      assert.match(text, /Amur Tiger/);
+      assert.match(text, /Amur Tiger\s+Meet The Guardians Talk/);
       assert.match(text, /Location: Eurasia Wilds/);
-      assert.match(text, /African Rainforest/);
+      assert.match(text, /African Rainforest\s+Wild Encounter/);
       assert.match(text, /Meeting Spot: Wild Encounter - Africa Meeting Spot/);
       assert.match(text, /Scheduled Items/);
       assert.match(text, /Meet The Guardians \(1\)/);
@@ -457,8 +457,8 @@ test.describe('itinerary day planner preview scheduled', () => {
    
       assert.equal(timelineEventTexts.length, 4);
       assert.ok(timelineEventTexts.some((eventText) => eventText.includes('African Lion')));
-      assert.ok(timelineEventTexts.some((eventText) => eventText.includes('Amur Tiger')));
-      assert.ok(timelineEventTexts.some((eventText) => eventText.includes('African Rainforest')));
+      assert.ok(timelineEventTexts.some((eventText) => /Amur Tiger\s+Meet The Guardians Talk/.test(eventText)));
+      assert.ok(timelineEventTexts.some((eventText) => /African Rainforest\s+Wild Encounter/.test(eventText)));
       assert.ok(timelineEventTexts.some((eventText) => eventText.includes('Zoomobile')));
    
       const dayItemsSections = [...planner.querySelectorAll('.itinerary-day-items-sections')];

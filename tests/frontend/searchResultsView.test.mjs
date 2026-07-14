@@ -96,6 +96,10 @@ test('renderSearchResults links wild encounter titles when url is present', () =
    assert.ok(findDescendant(row, 'species-link'));
    assert.equal(title?.textContent, 'African Rainforest Wild Encounter');
    assert.equal(
+      title?.querySelector('.species-link')?.textContent,
+      'African Rainforest'
+   );
+   assert.equal(
       findDescendant(row, 'animal-result-exhibit')?.textContent,
       'Wild Encounter - Africa Meeting Spot'
    );
@@ -187,6 +191,10 @@ test('renderSearchResults shows thumbnails for named map detail image types', ()
    assert.equal(
       guardiansTalkTitle?.textContent,
       'Amur Tiger Meet The Guardians Talk'
+   );
+   assert.equal(
+      guardiansTalkTitle?.querySelector('.species-link'),
+      null
    );
    assert.equal(
       findDescendant(resultsEl.children[2], 'animal-result-exhibit')?.textContent,

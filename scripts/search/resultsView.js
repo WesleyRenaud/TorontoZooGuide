@@ -74,7 +74,13 @@ const ROW_LEFT_RENDERERS = {
 };
 
 function getRowTitle(row) {
-   return getSearchResultPresentation(row).getTitle(row);
+   const presentation = getSearchResultPresentation(row);
+   const title = presentation.getTitle(row) || '';
+   const suffix = typeof presentation.getTitleSuffix === 'function'
+      ? presentation.getTitleSuffix(row)
+      : '';
+
+   return `${title}${suffix}`;
 }
 
 function getRowSubtitle(row) {

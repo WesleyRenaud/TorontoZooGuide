@@ -7,7 +7,13 @@ import {
    safeImg,
 } from '../dom.js';
 
-function createItemNameElement({ name, species, enclosureName, onNameClick } = {}) {
+function createItemNameElement({
+   name,
+   nameSuffix = '',
+   species,
+   enclosureName,
+   onNameClick,
+} = {}) {
    if (species !== undefined) {
       return createAnimalTitleLinkElement({
          species,
@@ -19,6 +25,7 @@ function createItemNameElement({ name, species, enclosureName, onNameClick } = {
 
    return createSpeciesLinkTitleElement({
       text: name,
+      suffix: nameSuffix,
       className: 'itin-panel-name',
       onClick: onNameClick,
    });
@@ -26,6 +33,7 @@ function createItemNameElement({ name, species, enclosureName, onNameClick } = {
 
 export function makeItemRow({
    name,
+   nameSuffix = '',
    species,
    enclosureName,
    imageSrc,
@@ -51,7 +59,13 @@ export function makeItemRow({
    }
 
    const text = el('div', 'itin-panel-text');
-   text.appendChild(createItemNameElement({ name, species, enclosureName, onNameClick }));
+   text.appendChild(createItemNameElement({
+      name,
+      nameSuffix,
+      species,
+      enclosureName,
+      onNameClick,
+   }));
 
    metaLines.forEach(line => {
       if (!line) return;

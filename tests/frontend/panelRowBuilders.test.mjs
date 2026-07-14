@@ -459,7 +459,11 @@ test.describe('itinerary panel row builders', () => {
          },
       ]);
    
-      assert.equal(textFor(talkRow, '.itin-panel-name'), 'Amur Tiger');
+      assert.equal(textFor(talkRow, '.itin-panel-name'), 'Amur Tiger Meet The Guardians Talk');
+      assert.equal(
+         talkRow.querySelector('.itin-panel-name')?.querySelector('.species-link'),
+         null
+      );
       assert.equal(
          imageSrcFor(talkRow),
          'images/details/guardians-talks/amur-tiger.png'
@@ -469,7 +473,11 @@ test.describe('itinerary panel row builders', () => {
          talkRow.querySelectorAll('.itin-panel-meta')[1].textContent,
          'Time: 1:30 PM - 2:00 PM'
       );
-      assert.equal(textFor(wildRow, '.itin-panel-name'), 'African Rainforest');
+      assert.equal(textFor(wildRow, '.itin-panel-name'), 'African Rainforest Wild Encounter');
+      assert.equal(
+         wildRow.querySelector('.itin-panel-name')?.querySelector('.species-link'),
+         null
+      );
       assert.equal(
          imageSrcFor(wildRow),
          'images/details/wild-encounters/african-rainforest.png'
@@ -492,9 +500,18 @@ test.describe('itinerary panel row builders', () => {
             link: 'https://www.torontozoo.com/wildencounters/african-rainforest',
          },
       ]);
-   
+
       assert.ok(
          wildRow.querySelector('.itin-panel-name')?.querySelector('.species-link')
+      );
+      assert.equal(
+         wildRow.querySelector('.itin-panel-name')?.querySelector('.species-link')
+            ?.textContent,
+         'African Rainforest'
+      );
+      assert.equal(
+         textFor(wildRow, '.itin-panel-name'),
+         'African Rainforest Wild Encounter'
       );
       assert.equal(wildRow.querySelector('.itin-panel-link'), null);
    });
@@ -561,11 +578,11 @@ test.describe('itinerary panel row builders', () => {
       );
       assert.deepEqual(
          talkRows.map((row) => textFor(row, '.itin-panel-name')),
-         ['Early Talk', 'Late Talk']
+         ['Early Talk Meet The Guardians Talk', 'Late Talk Meet The Guardians Talk']
       );
       assert.deepEqual(
          wildRows.map((row) => textFor(row, '.itin-panel-name')),
-         ['Morning Encounter', 'Afternoon Encounter']
+         ['Morning Encounter Wild Encounter', 'Afternoon Encounter Wild Encounter']
       );
    });
    
@@ -659,8 +676,21 @@ test.describe('itinerary panel row builders', () => {
          'talks with linked animals should open the animal overlay'
       );
       assert.equal(
+         linkedRow.querySelector('.itin-panel-name')?.querySelector('.species-link')
+            ?.textContent,
+         'African Lion'
+      );
+      assert.equal(
+         textFor(linkedRow, '.itin-panel-name'),
+         'African Lion Meet The Guardians Talk'
+      );
+      assert.equal(
          plainRow.querySelector('.itin-panel-name')?.querySelector('.species-link'),
          null
+      );
+      assert.equal(
+         textFor(plainRow, '.itin-panel-name'),
+         'Guardians of Plants Meet The Guardians Talk'
       );
    });
    

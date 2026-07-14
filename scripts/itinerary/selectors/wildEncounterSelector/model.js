@@ -5,6 +5,8 @@ import {
 import {
    buildOccurrenceDetailImageSrc,
    buildOccurrenceSubtitle,
+   formatOccurrenceSearchTitle,
+   formatOccurrenceTitleSuffix,
 } from '../../scheduledOccurrencePresentation.js';
 import { buildScheduledOccurrenceTimeRange } from '../../scheduledOccurrenceTimeRange.js';
 import { WildEncounterScheduleItemKey } from './scheduleItemKey.js';
@@ -24,16 +26,26 @@ export function getWildEncounterId(row) {
    return getWildEncounterKey(row).toWire();
 }
 
-export function formatWildEncounterSearchTitle(name) {
-   const trimmed = String(name ?? '').trim();
+export function formatWildEncounterTitleSuffix(name) {
+   return formatOccurrenceTitleSuffix(
+      name,
+      APP_STRINGS.entityLabels.wildEncounter
+   );
+}
 
-   return trimmed
-      ? `${trimmed} ${APP_STRINGS.entityLabels.wildEncounter}`
-      : APP_STRINGS.entityLabels.wildEncounter;
+export function formatWildEncounterSearchTitle(name) {
+   return formatOccurrenceSearchTitle(
+      name,
+      APP_STRINGS.entityLabels.wildEncounter
+   );
 }
 
 export function getWildEncounterSearchTitle(row) {
    return formatWildEncounterSearchTitle(getWildEncounterName(row));
+}
+
+export function getWildEncounterTitleSuffix(row) {
+   return formatWildEncounterTitleSuffix(getWildEncounterName(row));
 }
 
 export function getWildEncounterMeetingSpot(row) {
