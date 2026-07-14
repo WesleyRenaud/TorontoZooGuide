@@ -141,6 +141,90 @@ def test_set_itinerary_warns_when_talk_has_no_matching_animal(
    ]
 
 
+def test_set_itinerary_skips_without_animal_warning_for_already_saved_talk(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   _set_talk_schedule(
+      ZEBRA_TALK,
+      location='Africa Savanna',
+      talk_time='12:00' )
+
+   confirmed = ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ) ],
+      wild_encounters=[],
+      confirming_guardians_talk_without_animal=True,
+      confirming_guardians_talk_long_wait=True,
+   )
+
+   assert confirmed.success
+
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ) ],
+      wild_encounters=[],
+      confirming_guardians_talk_long_wait=True,
+   )
+
+   assert result.success
+   assert result.status == ItineraryErrorType.SUCCESS
+   assert [ talk.name for talk in result.itinerary.guardians_talks ] == [
+      ZEBRA_TALK,
+   ]
+
+
+def test_set_itinerary_warns_only_for_newly_added_talk_without_animal(
+      db: DbControllers,
+      freeze_database_today: Callable[ [ date ], None ] ) -> None:
+   freeze_database_today( date( 2026, 6, 15 ) )
+   _set_talk_schedule(
+      ZEBRA_TALK,
+      location='Africa Savanna',
+      talk_time='12:00' )
+   _set_talk_schedule(
+      LION_TALK,
+      location='Africa Savanna',
+      talk_time='13:00' )
+
+   assert ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ) ],
+      wild_encounters=[],
+      confirming_guardians_talk_without_animal=True,
+      confirming_guardians_talk_long_wait=True,
+   ).success
+
+   result = ItineraryCoordinator.set_itinerary(
+      date='2026-06-15',
+      arrival_time='09:30',
+      departure_time='17:00',
+      animals=[],
+      attractions=[],
+      guardians_talks=[
+         guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ),
+         guardians_talk_save_entry( LION_TALK, start_time='13:00' ),
+      ],
+      wild_encounters=[],
+   )
+
+   assert not result.success
+   assert result.status == ItineraryErrorType.GUARDIANS_TALK_WITHOUT_ANIMAL
+   assert [ item.name for item in result.reasons[ 0 ].items ] == [ LION_TALK ]
+
+
 def test_set_itinerary_skips_without_animal_warning_when_animal_matches(
       db: DbControllers,
       freeze_database_today: Callable[ [ date ], None ] ) -> None:

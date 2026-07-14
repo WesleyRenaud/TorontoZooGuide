@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from ...animals.search.animals_matching_query import species_exhibit_keys
 from ...animals.search.species_exhibit_key import SpeciesExhibitKey
+from ..data_access.itinerary_name_key import itinerary_name_key
+from ..data_access.saved_itinerary import SavedItinerary
 from ..data_access.validated_itinerary import ValidatedItinerary
 from ...guardians.data_access.guardians_talk_animal import fetch_guardians_talk_linked_animals
 from ...models.guardians_talk_diff import GuardiansTalkDiff
@@ -45,18 +47,45 @@ def guardians_talks_without_matching_animal(
    return missing_talks
 
 
+def newly_added_guardians_talks_without_matching_animal(
+      validated_itinerary: ValidatedItinerary,
+      conn: Connection,
+      *,
+      saved_itinerary: SavedItinerary | None ) -> list[ GuardiansTalkDiff ]:
+   missing_talks = guardians_talks_without_matching_animal(
+      validated_itinerary,
+      conn )
+
+   if saved_itinerary is None:
+      return missing_talks
+
+   saved_names = {
+      row.name_key()
+      for row in saved_itinerary.guardians_talk_rows
+      if not row.is_deleted
+   }
+
+   return [
+      talk
+      for talk in missing_talks
+      if itinerary_name_key( talk.name ) not in saved_names
+   ]
+
+
 def guardians_talk_without_animal_warning_is_required(
       validated_itinerary: ValidatedItinerary,
       conn: Connection,
       *,
-      confirming_guardians_talk_without_animal: bool ) -> bool:
+      confirming_guardians_talk_without_animal: bool,
+      saved_itinerary: SavedItinerary | None = None ) -> bool:
    if confirming_guardians_talk_without_animal:
       return False
 
    return bool(
-      guardians_talks_without_matching_animal(
+      newly_added_guardians_talks_without_matching_animal(
          validated_itinerary,
-         conn ) )
+         conn,
+         saved_itinerary=saved_itinerary ) )
 
 
 def guardians_talk_without_animal_warning_is_required_for_talk(

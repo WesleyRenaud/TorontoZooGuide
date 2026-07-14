@@ -14,7 +14,7 @@ from ..warnings.guardians_talk_long_wait_warning import build_guardians_talk_lon
 from ..warnings.guardians_talk_long_wait_warning import guardians_talk_long_wait_warning_is_required_for_validated_itinerary
 from ..warnings.guardians_talk_without_animal_warning import build_guardians_talk_without_animal_issue_from_talks
 from ..warnings.guardians_talk_without_animal_warning import guardians_talk_without_animal_warning_is_required
-from ..warnings.guardians_talk_without_animal_warning import guardians_talks_without_matching_animal
+from ..warnings.guardians_talk_without_animal_warning import newly_added_guardians_talks_without_matching_animal
 from ..warnings.itinerary_suppressed_warnings import with_suppressed_warnings
 from ..warnings.short_visit_warning import short_visit_warning_is_required
 from ...zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
@@ -116,10 +116,12 @@ def check_set_itinerary_save_warnings(
          context.validated_itinerary,
          context.conn,
          confirming_guardians_talk_without_animal=(
-            confirming_guardians_talk_without_animal ) ):
-      missing_animal_talks = guardians_talks_without_matching_animal(
+            confirming_guardians_talk_without_animal ),
+         saved_itinerary=context.saved_itinerary ):
+      missing_animal_talks = newly_added_guardians_talks_without_matching_animal(
          context.validated_itinerary,
-         context.conn )
+         context.conn,
+         saved_itinerary=context.saved_itinerary )
       pending_reasons.append(
          build_guardians_talk_without_animal_issue_from_talks(
             missing_animal_talks ) )
