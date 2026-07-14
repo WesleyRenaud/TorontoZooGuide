@@ -156,7 +156,12 @@ def test_set_arrival_time_unschedules_items_before_arrival(
    ] == [
       ( CAROUSEL, None, None ),
    ]
-   assert itinerary.wild_encounters == []
+   assert [
+      ( encounter.name, encounter.start_time, encounter.end_time )
+      for encounter in itinerary.wild_encounters
+   ] == [
+      ( WILD_ENCOUNTER, '9:45 AM', '10:30 AM' ),
+   ]
 
 
 def test_set_arrival_time_unschedules_generic_event_before_arrival(

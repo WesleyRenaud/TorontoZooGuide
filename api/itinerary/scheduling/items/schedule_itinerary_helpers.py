@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import Any
 
 from ....animals.coordinators.animal_coordinator import AnimalCoordinator
 from ....attractions.coordinators.attraction_coordinator import AttractionCoordinator
 from ..core.resolve_schedule_slot import resolve_schedule_slot
-from ..core.scheduling_anchor import scheduling_anchor_seconds
+from ..core.scheduling_anchor import scheduling_anchor_seconds_covering_fixed_zoo_starts
 from ..core.scheduling_anchor import scheduling_day_end_seconds
 from ..core.time_block import collect_time_blocks_from_itinerary
 from ...data_access.itinerary import fetch_itinerary_date
@@ -22,6 +23,7 @@ from ....shared.duration_values import duration_minutes_to_seconds
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ....types import ScheduleTimeKey
+from ...validation.fixed_zoo_schedule_start_times import fixed_zoo_schedule_start_times_from_saved_itinerary
 from ...validation.itinerary_arrival_time_validation import earliest_arrival_time
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
 from ....zoo_hours.data_access.zoo_hours import fetch_zoo_hours_record
@@ -122,9 +124,12 @@ def prepare_schedule_window(
          zoo_hours_record,
          allow_early_admission=allow_early_admission )
 
-   anchor_seconds = scheduling_anchor_seconds(
+   fixed_zoo_start_times = fixed_zoo_schedule_start_times_from_saved_itinerary(
+      saved_itinerary )
+   anchor_seconds = scheduling_anchor_seconds_covering_fixed_zoo_starts(
       zoo_hours_record,
       saved_itinerary.arrival_time,
+      fixed_zoo_start_times,
       allow_early_admission=allow_early_admission )
    day_end_seconds = scheduling_day_end_seconds(
       zoo_hours_record,
@@ -160,6 +165,8 @@ def prepare_zoo_hours_schedule_window(
       allow_early_admission=allow_early_admission )
    window = zoo_hours_schedule_window_seconds(
       zoo_hours_record,
+      fixed_zoo_start_times=(
+         fixed_zoo_schedule_start_times_from_saved_itinerary( saved_itinerary ) ),
       allow_early_admission=allow_early_admission )
 
    if window is None:
@@ -174,10 +181,12 @@ def prepare_zoo_hours_schedule_window(
 def zoo_hours_schedule_window_seconds(
       zoo_hours_record: ZooHoursRecord | None,
       *,
+      fixed_zoo_start_times: Iterable[ ScheduleTimeKey ] = (),
       allow_early_admission: bool = False ) -> tuple[ int, int ] | None:
-   anchor_seconds = scheduling_anchor_seconds(
+   anchor_seconds = scheduling_anchor_seconds_covering_fixed_zoo_starts(
       zoo_hours_record,
       None,
+      fixed_zoo_start_times,
       allow_early_admission=allow_early_admission )
    day_end_seconds = scheduling_day_end_seconds( zoo_hours_record, None )
 

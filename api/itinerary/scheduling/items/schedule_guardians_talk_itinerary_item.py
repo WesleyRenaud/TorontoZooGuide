@@ -8,6 +8,7 @@ from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_iti
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
+from ..extend_departure_for_activity import ensure_arrival_covers_start_time
 from ..extend_departure_for_activity import ensure_departure_covers_end_time
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
 from ...guardians_talk_item_key import GuardiansTalkScheduleItemKey
@@ -159,6 +160,10 @@ def schedule_guardians_talk_itinerary_item(
    if insert_error is not None:
       return insert_error
 
+   ensure_arrival_covers_start_time(
+      conn,
+      start_time=guardians_talk_diff.start_time,
+      current_arrival_time=saved_itinerary.arrival_time )
    ensure_departure_covers_end_time(
       conn,
       end_time=guardians_talk_diff.end_time,

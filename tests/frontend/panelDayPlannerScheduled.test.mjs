@@ -195,6 +195,42 @@ test.describe('itinerary day planner preview scheduled', () => {
          key: 'Kangaroo||3:30 PM||4:15 PM',
       }]);
    });
+
+
+   test('pre-open wild encounter keeps its start slot before zoo open', () => {
+      const planner = makeDayPlannerPreview(
+         {
+            date: '2026-07-06',
+            openTime: '09:30',
+            lastAdmissionTime: '17:00',
+            closeTime: '18:00',
+         },
+         {
+            ...EMPTY_ITINERARY,
+            arrivalTime: '8:45 AM',
+            wildEncounters: [
+               {
+                  name: 'Mornings in Malaysia',
+                  meeting_spot: 'Wild Encounter - Zoo Front Entrance Gates Meeting Spot',
+                  start_time: '8:45 AM',
+                  end_time: '9:45 AM',
+                  maximum_duration: 60,
+               },
+            ],
+         }
+      );
+      const timelineText = allTextFor(
+         planner.querySelector('.itinerary-day-timeline')
+      );
+      const malaysiaEvent = [...planner.querySelectorAll('.itinerary-day-event')].find(
+         (event) => /Mornings in Malaysia\s+Wild Encounter/.test(allTextFor(event))
+      );
+
+      assert.match(timelineText, /8:45 AM/);
+      assert.ok(malaysiaEvent);
+      assert.match(allTextFor(malaysiaEvent), /8:45 AM/);
+      assert.match(allTextFor(malaysiaEvent), /9:45 AM/);
+   });
    
 
    test('scheduled animal pill menu offers unschedule and remove', () => {
