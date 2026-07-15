@@ -1,7 +1,7 @@
 import { setItineraryRequest } from '../api/itineraryApi.js';
 import {
    isItinerarySuccess,
-   requiresGuardiansTalkLongWaitConfirmation,
+   requiresFixedTimeItemLongWaitConfirmation,
    requiresGuardiansTalkUnscheduleConfirmation,
    requiresGuardiansTalkWildEncounterTimeConflictConfirmation,
    requiresGuardiansTalkWithoutAnimalConfirmation,
@@ -16,7 +16,7 @@ import {
    toSetItineraryPayload,
 } from './itineraryShape.js';
 import { applyItineraryDiffToValidation } from './itineraryValidationResult.js';
-import { showGuardiansTalkLongWaitConfirmation } from './panel/guardiansTalkLongWaitConfirmation.js';
+import { showFixedTimeItemLongWaitConfirmation } from './panel/fixedTimeItemLongWaitConfirmation.js';
 import { showGuardiansTalkUnscheduleConfirmation } from './panel/guardiansTalkUnscheduleConfirmation.js';
 import { showGuardiansTalkWithoutAnimalConfirmation } from './panel/guardiansTalkWithoutAnimalConfirmation.js';
 import {
@@ -154,15 +154,15 @@ async function requestSetItineraryWithConfirmations(
       });
    }
 
-   if (requiresGuardiansTalkLongWaitConfirmation(initialResult.errorType)) {
+   if (requiresFixedTimeItemLongWaitConfirmation(initialResult.errorType)) {
       return requestSetItineraryConfirmation({
-         showConfirmation: showGuardiansTalkLongWaitConfirmation,
+         showConfirmation: showFixedTimeItemLongWaitConfirmation,
          initialResult,
          payload,
          diffBaseline,
          buildConfirmedPayload: () => ({
             ...payload,
-            confirmingGuardiansTalkLongWait: true,
+            confirmingFixedTimeItemLongWait: true,
          }),
       });
    }

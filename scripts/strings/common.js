@@ -40,6 +40,11 @@ export const entityLabels = {
    zoomobileStations: 'zoomobile stations',
 };
 
+export const entityPhrases = {
+   guardiansTalk: 'guardians talk',
+   wildEncounter: 'wild encounter',
+};
+
 export const labels = {
    alertMessage: 'Alert message',
    closedMessage: 'Closed message',

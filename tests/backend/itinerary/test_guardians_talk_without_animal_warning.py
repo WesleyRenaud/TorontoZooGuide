@@ -132,7 +132,7 @@ def test_set_itinerary_warns_when_talk_has_no_matching_animal(
       guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ) ],
       wild_encounters=[],
       confirming_guardians_talk_without_animal=True,
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
    )
 
    assert confirmed.success
@@ -159,7 +159,7 @@ def test_set_itinerary_skips_without_animal_warning_for_already_saved_talk(
       guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ) ],
       wild_encounters=[],
       confirming_guardians_talk_without_animal=True,
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
    )
 
    assert confirmed.success
@@ -172,7 +172,7 @@ def test_set_itinerary_skips_without_animal_warning_for_already_saved_talk(
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ) ],
       wild_encounters=[],
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
    )
 
    assert result.success
@@ -204,7 +204,7 @@ def test_set_itinerary_warns_only_for_newly_added_talk_without_animal(
       guardians_talks=[ guardians_talk_save_entry( ZEBRA_TALK, start_time='12:00' ) ],
       wild_encounters=[],
       confirming_guardians_talk_without_animal=True,
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
    ).success
 
    result = ItineraryCoordinator.set_itinerary(
@@ -242,7 +242,7 @@ def test_set_itinerary_skips_without_animal_warning_when_animal_matches(
       attractions=[],
       guardians_talks=[ guardians_talk_save_entry( LION_TALK, start_time='12:00' ) ],
       wild_encounters=[],
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
    )
 
    assert result.success
@@ -287,7 +287,7 @@ def test_schedule_talk_warns_when_no_matching_animal_on_itinerary(
          ScheduleItemKind.GUARDIANS_TALK.item_type,
          f'{ ZEBRA_TALK }||12:00' ),
       confirming_guardians_talk_without_animal=True,
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
    )
 
    assert confirmed.success
@@ -341,7 +341,7 @@ def test_schedule_talk_returns_overlap_and_without_animal_warnings_together(
          f'{ ZEBRA_TALK }||12:00' ),
       confirming_guardians_talk_unschedule=True,
       confirming_guardians_talk_without_animal=True,
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
    )
 
    assert confirmed.success
@@ -422,7 +422,7 @@ def test_set_itinerary_skips_warning_when_linked_new_world_primates_animal_match
          guardians_talk_save_entry( NEW_WORLD_PRIMATES_TALK, start_time='12:00' ),
       ],
       wild_encounters=[],
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
    )
 
    assert result.success

@@ -57,8 +57,8 @@ export function requiresGuardiansTalkUnscheduleConfirmation(errorType) {
    return errorType === itineraryErrorTypes?.GUARDIANS_TALK_WILL_UNSCHEDULE_ITEMS;
 }
 
-export function requiresGuardiansTalkLongWaitConfirmation(errorType) {
-   return errorType === itineraryErrorTypes?.GUARDIANS_TALK_LONG_WAIT;
+export function requiresFixedTimeItemLongWaitConfirmation(errorType) {
+   return errorType === itineraryErrorTypes?.FIXED_TIME_ITEM_LONG_WAIT;
 }
 
 export function requiresGuardiansTalkWithoutAnimalConfirmation(errorType) {

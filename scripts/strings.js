@@ -2,6 +2,7 @@ import {
    actions,
    common,
    entityLabels,
+   entityPhrases,
    labels,
    likelihood,
    schedule,
@@ -50,6 +51,7 @@ export const APP_STRINGS = {
    tooltips,
    updateTypes,
    entityLabels,
+   entityPhrases,
    validation,
    viewingScopes,
 };

@@ -170,7 +170,7 @@ def test_set_itinerary_keeps_talk_before_arrival_and_warns_about_overlap(
       wild_encounters=[],
       confirming_guardians_talk_unschedule=True,
       confirming_guardians_talk_without_animal=True,
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
    )
 
    assert confirmed.success

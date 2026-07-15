@@ -40,7 +40,7 @@
     "is_suppressable": 0
   },
   {
-    "status": "guardiansTalkLongWait",
+    "status": "fixedTimeItemLongWait",
     "is_suppressable": 0
   },
   {

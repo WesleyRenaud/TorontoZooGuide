@@ -56,7 +56,7 @@ def test_itinerary_endpoints_return_success_payloads(
          'confirming_early_admission': False,
          'confirming_guardians_talk_unschedule': False,
          'confirming_wild_encounter_unschedule': False,
-         'confirming_guardians_talk_long_wait': False,
+         'confirming_fixed_time_item_long_wait': False,
          'confirming_guardians_talk_without_animal': False,
       }
    )

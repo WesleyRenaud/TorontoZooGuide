@@ -86,7 +86,7 @@ def test_busy_itinerary_build_preserves_kangaroo_encounter_schedule(
             start_time=KANGAROO_ENCOUNTER_TIME,
          ),
       ],
-      confirming_guardians_talk_long_wait=True,
+      confirming_fixed_time_item_long_wait=True,
       confirming_guardians_talk_without_animal=True,
    )
 

@@ -80,6 +80,8 @@ import './itineraryService.normalize.test.mjs';
 import './itineraryService.core.test.mjs';
 import './itineraryService.save.test.mjs';
 import './guardiansTalkWithoutAnimalConfirmation.test.mjs';
+import './fixedTimeItemLongWaitConfirmation.test.mjs';
+import './itineraryBuildWarningsConfirmation.test.mjs';
 import './itineraryService.time.confirmations.test.mjs';
 import './itineraryService.time.dispatch.test.mjs';
 import './storedSelection.test.mjs';

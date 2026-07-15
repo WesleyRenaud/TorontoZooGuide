@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from copy import copy
 from datetime import date
 from typing import Any
@@ -13,6 +14,7 @@ from .bulk_schedule_loop_pins import keep_completable_loop_pins
 from .bulk_schedule_loop_pins import separate_schedule_boundaries_and_loop_pins
 from .bulk_schedule_start_state import BulkScheduleStartState
 from ..core.time_block import collect_time_blocks_from_itinerary
+from ..core.time_block import time_block_from_schedule_times
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
@@ -29,53 +31,60 @@ from ..items.schedule_itinerary_helpers import prepare_zoo_hours_schedule_window
 from .loop_schedule_unit import build_loop_schedule_units
 from .loop_unit_schedule_slots import LoopScheduleSlot
 from .loop_unit_schedule_slots import LoopScheduleSlotSink
-from ....models import GuardiansTalk
 from ....models import Itinerary
-from ....models.guardians_talk_diff import GuardiansTalkDiff
+from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from ...routing.partition_itinerary_schedule_windows import partition_itinerary_schedule_windows
 from ...routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
 from .schedule_animals_by_master_route_loop import schedule_animals_by_master_route_loop
+from ....shared.enums import ItineraryErrorType
+from ....shared.enums import ItinerarySaveIssueItemType
 from ....types import Connection
-from ..unscheduling.guardians_talk_unschedule_items import newly_added_active_guardians_talks
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
 from ....walk_graph.domain.walk_graph import WalkGraph
-from ...warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_after_adding_talk
-from ...warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_itinerary
-from ...warnings.guardians_talk_long_wait_warning import isolated_guardians_talks_from_validated_itinerary
+from ...warnings.fixed_time_item_long_wait_warning import filter_newly_added_fixed_time_items
+from ...warnings.fixed_time_item_long_wait_warning import fixed_time_item_is_isolated_after_adding
+from ...warnings.fixed_time_item_long_wait_warning import FIXED_TIME_ITEM_LONG_WAIT_TYPES
+from ...warnings.fixed_time_item_long_wait_warning import fixed_time_items_from_validated
+from ...warnings.fixed_time_item_long_wait_warning import fixed_time_long_wait_issue_item
+from ...warnings.fixed_time_item_long_wait_warning import isolated_fixed_time_items_from_itinerary
+from ...warnings.fixed_time_item_long_wait_warning import isolated_fixed_time_items_from_validated_itinerary
+from ...warnings.fixed_time_item_long_wait_warning import time_block_is_isolated_on_schedule
 
 
-def isolated_guardians_talks_after_adding_talk_with_simulated_bulk(
+def fixed_time_item_isolated_after_adding_with_simulated_bulk(
       conn: Connection,
-      new_talk: GuardiansTalkDiff,
+      new_item: Any,
       *,
-      itinerary_context: dict[ str, Any ] ) -> list[ GuardiansTalkDiff ]:
+      propose_on_itinerary: Callable[
+         [ Itinerary, Any, dict[ str, Any ] ],
+         Itinerary | None,
+      ],
+      itinerary_context: dict[ str, Any ] ) -> bool:
+   """True when scheduling new_item leaves it isolated even after packing animals."""
    saved_itinerary = fetch_saved_itinerary( conn )
    current_itinerary = build_current_itinerary(
       saved_itinerary,
       **itinerary_context )
-   currently_isolated = isolated_guardians_talks_after_adding_talk(
-      current_itinerary,
-      new_talk )
 
-   if not currently_isolated:
-      return []
+   if not fixed_time_item_is_isolated_after_adding( current_itinerary, new_item ):
+      return False
 
    animals_to_schedule = animals_for_bulk_schedule(
       saved_itinerary,
       only_previously_scheduled=True )
 
    if not animals_to_schedule:
-      return currently_isolated
+      return True
 
-   proposed_itinerary = _itinerary_with_proposed_talk(
+   proposed_itinerary = propose_on_itinerary(
       current_itinerary,
-      new_talk,
-      itinerary_context[ 'guardians_coordinator' ] )
+      new_item,
+      itinerary_context )
 
    if proposed_itinerary is None:
-      return currently_isolated
+      return True
 
    packed_itinerary = pack_animals_into_itinerary_in_memory(
       conn,
@@ -84,34 +93,45 @@ def isolated_guardians_talks_after_adding_talk_with_simulated_bulk(
       itinerary_context=itinerary_context )
 
    if packed_itinerary is None:
-      return currently_isolated
+      return True
 
-   isolated_after_pack = isolated_guardians_talks_from_itinerary( packed_itinerary )
-   isolated_names = { talk.name for talk in isolated_after_pack }
+   new_item_block = time_block_from_schedule_times(
+      new_item.start_time,
+      new_item.end_time )
 
-   if new_talk.name in isolated_names:
-      return [ new_talk ]
+   if new_item_block is None:
+      return False
 
-   return []
+   return time_block_is_isolated_on_schedule(
+      new_item_block,
+      collect_time_blocks_from_itinerary( packed_itinerary ) )
 
 
-def newly_added_guardians_talks_with_long_waits(
+def newly_added_fixed_time_item_long_wait_reason(
       conn: Connection,
       validated_itinerary: ValidatedItinerary,
       *,
       visit_date: date,
       itinerary_context: dict[ str, Any ],
-      saved_itinerary: SavedItinerary | None = None ) -> list[ GuardiansTalkDiff ]:
+      saved_itinerary: SavedItinerary | None = None,
+      ) -> ItineraryResultReason | None:
+   if not any(
+         _has_newly_added_isolated_fixed_time_items(
+            validated_itinerary,
+            item_type,
+            saved_itinerary=saved_itinerary )
+         for item_type in FIXED_TIME_ITEM_LONG_WAIT_TYPES
+   ):
+      return None
+
    animals_with_times = [
       animal
       for animal in validated_itinerary.animals
       if has_itinerary_schedule_times( animal.start_time, animal.end_time )
    ]
+   packed_itinerary: Itinerary | None = None
 
-   if not animals_with_times:
-      isolated_talks = isolated_guardians_talks_from_validated_itinerary(
-         validated_itinerary )
-   else:
+   if animals_with_times:
       animals_to_schedule = [
          ItineraryAnimalRecord(
             species=animal.species,
@@ -135,25 +155,74 @@ def newly_added_guardians_talks_with_long_waits(
          animals_to_schedule=animals_to_schedule,
          itinerary_context=itinerary_context )
 
-      if packed_itinerary is None:
-         isolated_talks = isolated_guardians_talks_from_validated_itinerary(
-            validated_itinerary )
-      else:
-         isolated_after_pack = isolated_guardians_talks_from_itinerary(
-            packed_itinerary )
-         isolated_names = { talk.name for talk in isolated_after_pack }
-         isolated_talks = [
-            talk
-            for talk in validated_itinerary.guardians_talks
-            if not talk.is_deleted and talk.name in isolated_names
-         ]
+   issue_items = []
+
+   for item_type in FIXED_TIME_ITEM_LONG_WAIT_TYPES:
+      for item in _newly_added_long_wait_items_for_type(
+            validated_itinerary,
+            item_type,
+            packed_itinerary=packed_itinerary,
+            saved_itinerary=saved_itinerary ):
+         issue_items.append(
+            fixed_time_long_wait_issue_item( item_type, item ) )
+
+   if not issue_items:
+      return None
+
+   return ItineraryResultReason(
+      code=ItineraryErrorType.FIXED_TIME_ITEM_LONG_WAIT,
+      items=tuple( issue_items ) )
+
+
+def _has_newly_added_isolated_fixed_time_items(
+      validated_itinerary: ValidatedItinerary,
+      item_type: ItinerarySaveIssueItemType,
+      *,
+      saved_itinerary: SavedItinerary | None ) -> bool:
+   isolated_items = isolated_fixed_time_items_from_validated_itinerary(
+      validated_itinerary,
+      item_type )
 
    if saved_itinerary is None:
-      return isolated_talks
+      return bool( isolated_items )
 
-   return newly_added_active_guardians_talks(
+   return bool(
+      filter_newly_added_fixed_time_items(
+         saved_itinerary,
+         isolated_items,
+         item_type ) )
+
+
+def _newly_added_long_wait_items_for_type(
+      validated_itinerary: ValidatedItinerary,
+      item_type: ItinerarySaveIssueItemType,
+      *,
+      packed_itinerary: Itinerary | None,
+      saved_itinerary: SavedItinerary | None ) -> list[ Any ]:
+   if packed_itinerary is None:
+      isolated_items = isolated_fixed_time_items_from_validated_itinerary(
+         validated_itinerary,
+         item_type )
+   else:
+      isolated_after_pack = isolated_fixed_time_items_from_itinerary(
+         packed_itinerary,
+         item_type )
+      isolated_names = { item.name for item in isolated_after_pack }
+      isolated_items = [
+         item
+         for item in fixed_time_items_from_validated(
+            validated_itinerary,
+            item_type )
+         if not item.is_deleted and item.name in isolated_names
+      ]
+
+   if saved_itinerary is None:
+      return isolated_items
+
+   return filter_newly_added_fixed_time_items(
       saved_itinerary,
-      isolated_talks )
+      isolated_items,
+      item_type )
 
 
 def pack_animals_into_itinerary_in_memory(
@@ -244,44 +313,6 @@ def _itinerary_with_cleared_animal_times( itinerary: Itinerary ) -> Itinerary:
       animals=cleared_animals,
       attractions=list( itinerary.attractions ),
       guardians_talks=list( itinerary.guardians_talks ),
-      wild_encounters=list( itinerary.wild_encounters ),
-      events=list( itinerary.events ),
-      arrival_time=itinerary.arrival_time,
-      departure_time=itinerary.departure_time )
-
-
-def _itinerary_with_proposed_talk(
-      itinerary: Itinerary,
-      new_talk: GuardiansTalkDiff,
-      guardians_coordinator: Any ) -> Itinerary | None:
-   talk_details = guardians_coordinator.get_guardians_talk_details(
-      [ new_talk.name ] )
-
-   if not talk_details:
-      return None
-
-   detail = talk_details[ 0 ]
-   proposed_talk = GuardiansTalk(
-      name=new_talk.name,
-      location=new_talk.location or detail.location,
-      x_coord=detail.x_coord,
-      y_coord=detail.y_coord,
-      maximum_duration=detail.maximum_duration,
-      start_time=new_talk.start_time,
-      end_time=new_talk.end_time,
-      is_deleted=new_talk.is_deleted )
-   talks = [
-      talk
-      for talk in itinerary.guardians_talks
-      if talk.name != new_talk.name
-   ]
-   talks.append( proposed_talk )
-
-   return build_itinerary(
-      date=itinerary.date,
-      animals=list( itinerary.animals ),
-      attractions=list( itinerary.attractions ),
-      guardians_talks=talks,
       wild_encounters=list( itinerary.wild_encounters ),
       events=list( itinerary.events ),
       arrival_time=itinerary.arrival_time,

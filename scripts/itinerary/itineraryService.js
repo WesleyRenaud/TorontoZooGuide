@@ -87,12 +87,12 @@ export async function clearItinerary() {
 }
 
 export async function bulkScheduleAnimals({
-   confirmingGuardiansTalkLongWait = false,
+   confirmingFixedTimeItemLongWait = false,
 } = {}) {
    const date = await fetchSavedItineraryVisitDate();
    const { temp } = await getItineraryDateSearchContext({ date });
    const result = await bulkScheduleAnimalsRequest(temp, {
-      confirmingGuardiansTalkLongWait,
+      confirmingFixedTimeItemLongWait,
    });
 
    if (!isItinerarySuccess(result.errorType)) {

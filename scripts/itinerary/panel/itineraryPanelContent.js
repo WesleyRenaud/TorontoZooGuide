@@ -6,8 +6,13 @@ import { makeDayPlannerPreview } from './components/dayPlanner.js';
 import { getItineraryPanelMountEl } from './components/popup.js';
 import { makeSection } from './components/section.js';
 import { setPendingDayPlannerActionFeedback } from './dayPlannerActionFeedback.js';
-import { showGuardiansTalkLongWaitConfirmation } from './guardiansTalkLongWaitConfirmation.js';
-import { requiresGuardiansTalkLongWaitConfirmation } from '../itineraryErrorTypes.js';
+import { showFixedTimeItemLongWaitConfirmation } from './fixedTimeItemLongWaitConfirmation.js';
+import {
+   buildConfirmedOptionsFromBuildWarnings,
+   hasMultipleItineraryBuildWarnings,
+   showItineraryBuildWarningsConfirmation,
+} from './itineraryBuildWarningsConfirmation.js';
+import { requiresFixedTimeItemLongWaitConfirmation } from '../itineraryErrorTypes.js';
 import {
    buildItineraryPanelScheduleHandlers,
    openScheduleItemModule,
@@ -51,8 +56,10 @@ function appendDayPlannerViewWithHours(
       bulkSchedule = bulkScheduleAnimals,
       unscheduleAll = unscheduleAllItineraryItems,
       hasNotEnoughTimeIssue = hasBulkScheduleAnimalsNotEnoughTimeIssue,
-      requiresLongWaitConfirmation = requiresGuardiansTalkLongWaitConfirmation,
-      showLongWaitConfirmation = showGuardiansTalkLongWaitConfirmation,
+      hasMultipleBuildWarnings = hasMultipleItineraryBuildWarnings,
+      showBuildWarningsConfirmation = showItineraryBuildWarningsConfirmation,
+      requiresLongWaitConfirmation = requiresFixedTimeItemLongWaitConfirmation,
+      showLongWaitConfirmation = showFixedTimeItemLongWaitConfirmation,
       setActionFeedback = setPendingDayPlannerActionFeedback,
       buildEventTypes = buildSchedulableEventTypes,
       buildScheduleHandlers = buildItineraryPanelScheduleHandlers,
@@ -113,29 +120,45 @@ function appendDayPlannerViewWithHours(
                });
             };
 
+            const mountEl = getItineraryPanelMountEl() ?? document.body;
+            const confirmRebuildWithOptions = (confirmedOptions) => (
+               async () => {
+                  try {
+                     await applyRebuildResult(
+                        await bulkSchedule(confirmedOptions)
+                     );
+                  }
+                  catch (err) {
+                     console.error('Failed to rebuild schedule:', err);
+                     await queueActionFeedback({
+                        variant: 'error',
+                        message: err?.message || genericErrorMessage,
+                     });
+                  }
+               }
+            );
+
             try {
                const result = await bulkSchedule();
+
+               if (hasMultipleBuildWarnings(result.issues)) {
+                  showBuildWarningsConfirmation({
+                     issues: result.issues,
+                     mountEl,
+                     onConfirm: confirmRebuildWithOptions(
+                        buildConfirmedOptionsFromBuildWarnings(result.issues)
+                     ),
+                  });
+                  return;
+               }
 
                if (requiresLongWaitConfirmation(result.errorType)) {
                   showLongWaitConfirmation({
                      issues: result.issues,
-                     mountEl: getItineraryPanelMountEl() ?? document.body,
-                     onConfirm: async () => {
-                        try {
-                           await applyRebuildResult(
-                              await bulkSchedule({
-                                 confirmingGuardiansTalkLongWait: true,
-                              })
-                           );
-                        }
-                        catch (err) {
-                           console.error('Failed to rebuild schedule:', err);
-                           await queueActionFeedback({
-                              variant: 'error',
-                              message: err?.message || genericErrorMessage,
-                           });
-                        }
-                     },
+                     mountEl,
+                     onConfirm: confirmRebuildWithOptions({
+                        confirmingFixedTimeItemLongWait: true,
+                     }),
                   });
                   return;
                }

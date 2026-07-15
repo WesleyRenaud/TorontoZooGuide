@@ -11,6 +11,7 @@ from ..extend_departure_for_activity import ensure_arrival_covers_start_time
 from ..extend_departure_for_activity import ensure_departure_covers_end_time
 from ....models.wild_encounter_diff import WildEncounterDiff
 from ..reschedule_itinerary_item_schedules import reschedule_itinerary_items_after_fixed_time_activity_add
+from ...results.itinerary_result_reason import ItineraryResultReason
 from ...results.itinerary_save_result import ItinerarySaveResult
 from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
@@ -18,6 +19,7 @@ from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ....shared.enums import ItineraryErrorType
 from ....types import Connection
 from ..unscheduling.wild_encounter_unschedule_items import saved_itinerary_has_overlap_with_wild_encounters
+from ...warnings.wild_encounter_long_wait_warning import wild_encounter_long_wait_reason_after_adding_with_simulated_bulk
 from ...warnings.wild_encounter_unschedule_warning import build_wild_encounter_unschedule_issue
 from ...wild_encounter_item_key import WildEncounterScheduleItemKey
 from ....wild_encounters.coordinators.wild_encounter_coordinator import WildEncounterCoordinator
@@ -84,7 +86,8 @@ def schedule_wild_encounter_itinerary_item(
       wild_encounter_key: WildEncounterScheduleItemKey,
       *,
       itinerary_context: dict[ str, Any ],
-      confirming_wild_encounter_unschedule: bool ) -> ItinerarySaveResult:
+      confirming_wild_encounter_unschedule: bool,
+      confirming_fixed_time_item_long_wait: bool ) -> ItinerarySaveResult:
    saved_itinerary = fetch_saved_itinerary( conn )
 
    if saved_itinerary.is_empty():
@@ -111,13 +114,28 @@ def schedule_wild_encounter_itinerary_item(
       saved_itinerary,
       [ wild_encounter_diff ] )
 
+   pending_reasons: list[ ItineraryResultReason ] = []
+
    if has_overlap and not confirming_wild_encounter_unschedule:
+      pending_reasons.append(
+         build_wild_encounter_unschedule_issue( [ wild_encounter_diff ] ) )
+
+   if not confirming_fixed_time_item_long_wait:
+      long_wait_reason = (
+         wild_encounter_long_wait_reason_after_adding_with_simulated_bulk(
+            conn,
+            wild_encounter_diff,
+            itinerary_context=itinerary_context )
+      )
+
+      if long_wait_reason is not None:
+         pending_reasons.append( long_wait_reason )
+
+   if pending_reasons:
       return build_save_result(
          conn,
-         ItineraryErrorType.WILD_ENCOUNTER_WILL_UNSCHEDULE_ITEMS,
-         reasons=(
-            build_wild_encounter_unschedule_issue( [ wild_encounter_diff ] ),
-         ),
+         pending_reasons[ 0 ].code,
+         reasons=tuple( pending_reasons ),
          **itinerary_context )
 
    insert_error = _insert_scheduled_wild_encounter(

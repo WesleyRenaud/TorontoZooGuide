@@ -303,7 +303,7 @@ export async function scheduleItineraryItemRequest(
       confirmingScheduleItemNotOnItinerary = false,
       confirmingGuardiansTalkUnschedule = false,
       confirmingWildEncounterUnschedule = false,
-      confirmingGuardiansTalkLongWait = false,
+      confirmingFixedTimeItemLongWait = false,
       confirmingGuardiansTalkWithoutAnimal = false,
    } = {}
 ) {
@@ -313,7 +313,7 @@ export async function scheduleItineraryItemRequest(
       confirmingScheduleItemNotOnItinerary,
       confirmingGuardiansTalkUnschedule,
       confirmingWildEncounterUnschedule,
-      confirmingGuardiansTalkLongWait,
+      confirmingFixedTimeItemLongWait,
       confirmingGuardiansTalkWithoutAnimal,
    });
 
@@ -380,11 +380,11 @@ export async function suppressItineraryWarningRequest(warningType) {
 
 export async function bulkScheduleAnimalsRequest(
    temp,
-   { confirmingGuardiansTalkLongWait = false } = {}
+   { confirmingFixedTimeItemLongWait = false } = {}
 ) {
    const response = await postJson('/bulk-schedule-animals', {
       temp,
-      confirmingGuardiansTalkLongWait,
+      confirmingFixedTimeItemLongWait,
    });
    return normalizeItineraryResponse(response);
 }
