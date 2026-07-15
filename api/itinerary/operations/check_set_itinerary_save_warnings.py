@@ -5,7 +5,7 @@ from dataclasses import replace
 from ..conflicts.itinerary_schedule_time_conflicts import schedule_time_conflict_warning
 from ..conflicts.itinerary_unschedule_confirmations import unschedule_confirmation_warning
 from ..results.itinerary_save_result import ItinerarySaveResult
-from ..scheduling.bulk.simulate_bulk_reschedule_for_long_wait import isolated_guardians_talks_after_simulated_bulk_for_validated_itinerary
+from ..scheduling.bulk.simulate_bulk_reschedule_for_long_wait import newly_added_guardians_talks_with_long_waits
 from .set_itinerary_context import build_set_itinerary_error_result
 from .set_itinerary_context import SetItineraryContext
 from ...shared.enums import ItineraryErrorType
@@ -129,17 +129,19 @@ def check_set_itinerary_save_warnings(
    if guardians_talk_long_wait_warning_is_required_for_validated_itinerary(
          context.validated_itinerary,
          confirming_guardians_talk_long_wait=(
-            confirming_guardians_talk_long_wait ) ):
-      isolated_talks = isolated_guardians_talks_after_simulated_bulk_for_validated_itinerary(
+            confirming_guardians_talk_long_wait ),
+         saved_itinerary=context.saved_itinerary ):
+      long_wait_talks = newly_added_guardians_talks_with_long_waits(
          context.conn,
          context.validated_itinerary,
          visit_date=context.save_input.date,
-         itinerary_context=context.itinerary_controller_kwargs )
+         itinerary_context=context.itinerary_controller_kwargs,
+         saved_itinerary=context.saved_itinerary )
 
-      if isolated_talks:
+      if long_wait_talks:
          pending_reasons.append(
             build_guardians_talk_long_wait_issue_from_talks(
-               isolated_talks ) )
+               long_wait_talks ) )
 
    if pending_reasons:
       return (

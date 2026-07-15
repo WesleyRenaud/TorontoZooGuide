@@ -17,6 +17,7 @@ from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.itinerary_animal_record import ItineraryAnimalRecord
 from ...data_access.itinerary_guardians_talk_record import ItineraryGuardiansTalkRecord
 from ...data_access.itinerary_wild_encounter_record import ItineraryWildEncounterRecord
+from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.validated_itinerary import ValidatedItinerary
 from ...domain.itinerary import build_current_itinerary
 from ...domain.itinerary import build_itinerary
@@ -36,6 +37,7 @@ from ...routing.partition_itinerary_schedule_windows import partition_itinerary_
 from ...routing.resolve_itinerary_stops import resolve_fixed_time_itinerary_stops
 from .schedule_animals_by_master_route_loop import schedule_animals_by_master_route_loop
 from ....types import Connection
+from ..unscheduling.guardians_talk_unschedule_items import newly_added_active_guardians_talks
 from ....walk_graph.data_access.load_walk_graph import load_walk_graph
 from ....walk_graph.domain.viewing_spot_name_key import ViewingSpotNameKey
 from ....walk_graph.domain.walk_graph import WalkGraph
@@ -93,12 +95,13 @@ def isolated_guardians_talks_after_adding_talk_with_simulated_bulk(
    return []
 
 
-def isolated_guardians_talks_after_simulated_bulk_for_validated_itinerary(
+def newly_added_guardians_talks_with_long_waits(
       conn: Connection,
       validated_itinerary: ValidatedItinerary,
       *,
       visit_date: date,
-      itinerary_context: dict[ str, Any ] ) -> list[ GuardiansTalkDiff ]:
+      itinerary_context: dict[ str, Any ],
+      saved_itinerary: SavedItinerary | None = None ) -> list[ GuardiansTalkDiff ]:
    animals_with_times = [
       animal
       for animal in validated_itinerary.animals
@@ -106,44 +109,51 @@ def isolated_guardians_talks_after_simulated_bulk_for_validated_itinerary(
    ]
 
    if not animals_with_times:
-      return isolated_guardians_talks_from_validated_itinerary(
+      isolated_talks = isolated_guardians_talks_from_validated_itinerary(
          validated_itinerary )
+   else:
+      animals_to_schedule = [
+         ItineraryAnimalRecord(
+            species=animal.species,
+            exhibit=animal.exhibit,
+            enclosure_name=animal.enclosure_name,
+            old_likelihood=animal.old_likelihood,
+            new_likelihood=animal.new_likelihood,
+            is_added=animal.is_added,
+            covered_by_talk=animal.covered_by_talk,
+            start_time=animal.start_time,
+            end_time=animal.end_time )
+         for animal in animals_with_times
+      ]
+      proposed_itinerary = _build_itinerary_from_proposed_items(
+         validated_itinerary,
+         visit_date=visit_date,
+         itinerary_context=itinerary_context )
+      packed_itinerary = pack_animals_into_itinerary_in_memory(
+         conn,
+         proposed_itinerary,
+         animals_to_schedule=animals_to_schedule,
+         itinerary_context=itinerary_context )
 
-   animals_to_schedule = [
-      ItineraryAnimalRecord(
-         species=animal.species,
-         exhibit=animal.exhibit,
-         enclosure_name=animal.enclosure_name,
-         old_likelihood=animal.old_likelihood,
-         new_likelihood=animal.new_likelihood,
-         is_added=animal.is_added,
-         covered_by_talk=animal.covered_by_talk,
-         start_time=animal.start_time,
-         end_time=animal.end_time )
-      for animal in animals_with_times
-   ]
-   proposed_itinerary = _build_itinerary_from_proposed_items(
-      validated_itinerary,
-      visit_date=visit_date,
-      itinerary_context=itinerary_context )
-   packed_itinerary = pack_animals_into_itinerary_in_memory(
-      conn,
-      proposed_itinerary,
-      animals_to_schedule=animals_to_schedule,
-      itinerary_context=itinerary_context )
+      if packed_itinerary is None:
+         isolated_talks = isolated_guardians_talks_from_validated_itinerary(
+            validated_itinerary )
+      else:
+         isolated_after_pack = isolated_guardians_talks_from_itinerary(
+            packed_itinerary )
+         isolated_names = { talk.name for talk in isolated_after_pack }
+         isolated_talks = [
+            talk
+            for talk in validated_itinerary.guardians_talks
+            if not talk.is_deleted and talk.name in isolated_names
+         ]
 
-   if packed_itinerary is None:
-      return isolated_guardians_talks_from_validated_itinerary(
-         validated_itinerary )
+   if saved_itinerary is None:
+      return isolated_talks
 
-   isolated_after_pack = isolated_guardians_talks_from_itinerary( packed_itinerary )
-   isolated_names = { talk.name for talk in isolated_after_pack }
-
-   return [
-      talk
-      for talk in validated_itinerary.guardians_talks
-      if not talk.is_deleted and talk.name in isolated_names
-   ]
+   return newly_added_active_guardians_talks(
+      saved_itinerary,
+      isolated_talks )
 
 
 def pack_animals_into_itinerary_in_memory(
