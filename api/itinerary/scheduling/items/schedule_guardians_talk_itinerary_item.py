@@ -7,6 +7,7 @@ from ...data_access.find_saved_itinerary_schedule_item_row import find_saved_iti
 from ...data_access.itinerary import fetch_saved_itinerary
 from ...data_access.saved_itinerary import SavedItinerary
 from ...data_access.schedule_itinerary_item import insert_itinerary_guardians_talk
+from ...domain.itinerary import build_current_itinerary
 from ..extend_departure_for_activity import ensure_arrival_covers_start_time
 from ..extend_departure_for_activity import ensure_departure_covers_end_time
 from ....guardians.coordinators.guardians_coordinator import GuardiansCoordinator
@@ -19,6 +20,7 @@ from .schedule_itinerary_helpers import build_save_result
 from .schedule_itinerary_helpers import build_success_result
 from .schedule_itinerary_helpers import persist_itinerary_walk_route
 from ....shared.enums import ItineraryErrorType
+from ..sync_visit_times_to_scheduled_endpoints import seed_visit_times_to_scheduled_endpoints_if_complete
 from ....types import Connection
 from ..unscheduling.guardians_talk_unschedule_items import saved_itinerary_has_overlap_with_guardians_talks
 from ...warnings.guardians_talk_long_wait_warning import guardians_talk_long_wait_reason_after_adding_with_simulated_bulk
@@ -167,6 +169,11 @@ def schedule_guardians_talk_itinerary_item(
       conn,
       end_time=guardians_talk_diff.end_time,
       current_departure_time=saved_itinerary.departure_time )
+   seed_visit_times_to_scheduled_endpoints_if_complete(
+      conn,
+      build_current_itinerary(
+         fetch_saved_itinerary( conn ),
+         **itinerary_context ) )
 
    if has_overlap and confirming_guardians_talk_unschedule:
       return reschedule_itinerary_items_after_fixed_time_activity_add(
